@@ -16,11 +16,25 @@
 package com.stormpath.sdk.client;
 
 /**
+ * An ApiKey represents an account's API-specific ID and secret.  All Stormpath REST invocations must be authenticated
+ * with an ApiKey.
+ *
  * @since 0.1
  */
 public interface ApiKey {
 
+    /**
+     * Returns the public unique identifier.
+     *
+     * @return the public unique identifier.
+     */
     String getId();
 
+    /**
+     * Returns the raw SECRET used for API authentication. <b>NEVER EVER</b> print this value anywhere - logs,
+     * files, etc.  It is TOP SECRET.
+     *
+     * @return the raw SECRET used for API authentication
+     */
     String getSecret();
 }
