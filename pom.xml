@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2012 Stormpath, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.stormpath.sdk.java</groupId>
+    <artifactId>stormpath-sdk-java-root</artifactId>
+    <packaging>pom</packaging>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <name>Stormpath SDK for Java</name>
+    <url>https://github.com/stormpath/stormpath-sdk-java</url>
+    <description>
+        The Stormpath SDK for Java enables JVM-based applications to easily interact with Stormpath's REST API.
+    </description>
+    <inceptionYear>2012</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/stormpath/stormpath-sdk-java.git</connection>
+        <developerConnection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</developerConnection>
+        <url>https://github.com/stormpath/stormpath-sdk-java</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/stormpath/stormpath-sdk-java/issues</url>
+    </issueManagement>
+    <distributionManagement>
+        <repository>
+            <id>stormpath-sdk-java.repository.releases</id>
+            <name>Stormpath SDK Java Release Distribution Repository</name>
+            <url>${stormpath-sdk-java.repository.releases.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>stormpath-sdk-java.repository.snapshots</id>
+            <name>Stormpath SDK Java Snapshot Distribution Repository</name>
+            <url>${stormpath-sdk-java.repository.snapshots.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <id>lhazlewood</id>
+            <name>Les Hazlewood</name>
+            <email>les@stormpath.com</email>
+            <url>http://www.leshazlewood.com</url>
+            <timezone>-8</timezone>
+            <organization>Stormpath, Inc.</organization>
+            <organizationUrl>http://www.stormpath.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>main</module>
+    </modules>
+
+    <properties>
+
+        <!-- Redefine these properties in your $HOME/.m2/settings.xml to point to your own Maven repository (e.g. Nexus) -->
+        <stormpath-sdk-java.repository.releases.url>file://${user.home}/.m2/local-releases</stormpath-sdk-java.repository.releases.url>
+        <stormpath-sdk-java.repository.snapshots.url>file://${user.home}/.m2/local-snapshots</stormpath-sdk-java.repository.snapshots.url>
+
+        <!-- Optional 3rd-party Compile Dependencies: -->
+        <jackson.version>1.9.6</jackson.version>
+
+        <!-- Test Dependencies: -->
+        <logback.version>1.0.1</logback.version>
+        <easymock.version>3.1</easymock.version>
+        <groovy.version>1.8.6</groovy.version>
+        <httpClient.version>4.1.3</httpClient.version>
+        <slf4j.version>1.6.1</slf4j.version>
+        <testng.version>6.4</testng.version>
+
+    </properties>
+
+    <dependencies>
+
+        <!-- Test Dependencies for _all_ children modules: -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easymock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+
+        <dependencies>
+
+            <!-- Pool of dependencies available to any sub-module, but not included automatically.
+        They must be explicitly referenced in the children POMs, but _don't_ include
+        version numbers in the child POMs.  Define them here only to guarantee version
+        compatibility across children modules! -->
+
+            <!-- Stormpath SDK for Java sub-modules dependency .jars (alphabetized based on artifactId for easy scanning please!): -->
+            <dependency>
+                <groupId>com.stormpath.sdk.java</groupId>
+                <artifactId>stormpath-sdk-java-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk.java</groupId>
+                <artifactId>stormpath-sdk-java-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- 3rd party dependencies: -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpClient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- For unit tests: -->
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <providerSelection>1.7</providerSelection>
+                    <source>src/main/groovy</source>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.gmaven.runtime</groupId>
+                        <artifactId>gmaven-runtime-1.7</artifactId>
+                        <version>1.3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.codehaus.groovy</groupId>
+                                <artifactId>groovy-all</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <version>${groovy.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <preparationGoals>clean install</preparationGoals>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <!-- <goals>deploy site-deploy</goals> -->
+                    <goals>deploy</goals>
+                    <arguments>-Prelease</arguments>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.8.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-api-docs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <inherited>true</inherited>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <inherited>true</inherited>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

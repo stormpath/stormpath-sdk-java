@@ -1,0 +1,17 @@
+Stormpath SDK for Java
+Copyright 2012 Stormpath, Inc. or its affiliates.  All Rights Reserved.
+
+This product includes software developed by Stormpath, Inc.
+http://www.stormpath.com
+
+=================
+3rd Party Notices
+=================
+This software includes third party software subject to the following
+copyrights:
+- Request, Response, and Signature functions were based on those in the
+  Amazon AWS SDK for Java, Copyright 2010-2012 Amazon.com, Inc. or its
+  affiliates.  Apache 2.0 licensed.
+- *Util classes, HttpHeaders, and Media type classes and functions from the
+  Spring Framework project (http://www.springframework.org).  Copyright
+  2002-2012 SpringSource and original authors.  Apache 2.0 licensed.
