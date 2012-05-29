@@ -28,7 +28,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -224,46 +223,14 @@ public class Sauthc1Signer implements Signer {
     }
 
     protected String canonicalizeQueryString(Request request) {
-        return getCanonicalizedQueryString(request.getQueryString());
-    }
-
-    /**
-     * Examines the specified query string parameters and returns a
-     * canonicalized form.
-     * <p/>
-     * The canonicalized query string is formed by first sorting all the query
-     * string parameters, then URI encoding both the key and value and then
-     * joining them, in order, separating key value pairs with an '&'.
-     *
-     * @param parameters The query string parameters to be canonicalized.
-     * @return A canonicalized form for the specified query string parameters.
-     */
-    protected String getCanonicalizedQueryString(Map<String, String> parameters) {
-        SortedMap<String, String> sorted = new TreeMap<String, String>();
-        sorted.putAll(parameters);
-
-        StringBuilder builder = new StringBuilder();
-        Iterator<Map.Entry<String, String>> pairs = sorted.entrySet().iterator();
-        while (pairs.hasNext()) {
-            Map.Entry<String, String> pair = pairs.next();
-            String key = pair.getKey();
-            String value = pair.getValue();
-            builder.append(urlEncode(key, false));
-            builder.append("=");
-            builder.append(urlEncode(value, false));
-            if (pairs.hasNext()) {
-                builder.append("&");
-            }
-        }
-
-        return builder.toString();
+        return request.getQueryString().toString(true);
     }
 
     private String canonicalizeResourcePath(String resourcePath) {
         if (resourcePath == null || resourcePath.length() == 0) {
             return "/";
         } else {
-            return urlEncode(resourcePath, true);
+            return RequestUtils.encodeUrl(resourcePath, true, true);
         }
     }
 
@@ -274,8 +241,19 @@ public class Sauthc1Signer implements Signer {
 
         StringBuilder buffer = new StringBuilder();
         for (String header : sortedHeaders) {
-            buffer.append(header.toLowerCase()).append(":").append(request.getHeaders().get(header));
-            buffer.append("\n");
+            buffer.append(header.toLowerCase()).append(":");
+            List<String> values = request.getHeaders().get(header);
+            boolean first = true;
+            if (values != null) {
+                for(String value : values) {
+                    if (!first) {
+                        buffer.append(",");
+                    }
+                    buffer.append(value);
+                    first = false;
+                }
+            }
+            buffer.append(NL);
         }
 
         return buffer.toString();
@@ -294,25 +272,4 @@ public class Sauthc1Signer implements Signer {
 
         return buffer.toString();
     }
-
-    private static String urlEncode(String value, boolean path) {
-        if (value == null) return "";
-
-        try {
-            String encoded =
-                    URLEncoder.encode(value, DEFAULT_ENCODING)
-                            .replace("+", "%20")
-                            .replace("*", "%2A")
-                            .replace("%7E", "~"); //yes, this is reversed (compared to the 2 above it) intentionally
-
-            if (path) {
-                encoded = encoded.replace("%2F", "/");
-            }
-
-            return encoded;
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
 }

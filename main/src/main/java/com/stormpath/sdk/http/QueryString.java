@@ -15,10 +15,12 @@
  */
 package com.stormpath.sdk.http;
 
+import com.stormpath.sdk.util.RequestUtils;
 import com.stormpath.sdk.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,29 +32,29 @@ public class QueryString extends TreeMap<String,String> {
     public QueryString(){}
 
     public String toString() {
+        return toString(false);
+    }
+
+    /**
+     * The canonicalized query string is formed by first sorting all the query
+     * string parameters, then URI encoding both the key and value and then
+     * joining them, in order, separating key value pairs with an '&'.
+     *
+     * @param canonical
+     * @return
+     */
+    public String toString(boolean canonical) {
         if (isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<String,String> entry : entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
+            String key = RequestUtils.encodeUrl(entry.getKey(), false, canonical);
+            String value = RequestUtils.encodeUrl(entry.getValue(), false, canonical);
 
             if (sb.length() > 0) {
                 sb.append('&');
-            }
-
-            if (!isEncoded(key)) {
-                key = encode(key);
-            }
-
-            if (!isEncoded(value)) {
-                value = encode(value);
-            }
-
-            if (value == null) {
-                value = "";
             }
 
             sb.append(key).append("=").append(value);
@@ -61,30 +63,14 @@ public class QueryString extends TreeMap<String,String> {
         return sb.toString();
     }
 
-    private static boolean isEncoded(String s) {
-        return s != null && s.contains("%");
-    }
-
-    private static String encode(String s) {
-        if (s == null || s.equals("")) {
-            return s;
-        }
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Unable to UTF-8 encode query string component [" + s + "]", e);
-        }
-    }
-
     public static QueryString create(String query) {
         if (!StringUtils.hasLength(query)) {
             return null;
         }
-        boolean alreadyEncoded = query.contains("%");
 
         QueryString queryString = new QueryString();
 
-        String[] tokens = StringUtils.tokenizeToStringArray(query, "&", alreadyEncoded, false);
+        String[] tokens = StringUtils.tokenizeToStringArray(query, "&", false, false);
         if (tokens != null) {
             for( String token : tokens) {
                 applyKeyValuePair(queryString, token);
@@ -109,6 +95,5 @@ public class QueryString extends TreeMap<String,String> {
             qs.put(kv, null);
         }
     }
-
 
 }

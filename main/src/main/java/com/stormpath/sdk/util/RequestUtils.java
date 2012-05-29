@@ -15,14 +15,12 @@
  */
 package com.stormpath.sdk.util;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 
 /**
- * Created with IntelliJ IDEA.
- * User: lhazlewood
- * Date: 5/25/12
- * Time: 6:34 PM
- * To change this template use File | Settings | File Templates.
+ * @since 0.1
  */
 public class RequestUtils {
 
@@ -37,5 +35,31 @@ public class RequestUtils {
         String scheme = uri.getScheme().toLowerCase();
         int port = uri.getPort();
         return port <= 0 || (port == 80 && scheme.equals("http")) || (port == 443 && scheme.equals("https"));
+    }
+
+    public static String encodeUrl(String value, boolean path, boolean canonical) {
+        if (value == null || value.equals("")) {
+            return "";
+        }
+
+        String encoded;
+
+        try {
+            encoded = URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            throw new IllegalStateException("Unable to UTF-8 encode url string component [" + value + "]", ex);
+        }
+
+        if (canonical) {
+            encoded = encoded.replace("+", "%20")
+                    .replace("*", "%2A")
+                    .replace("%7E", "~"); //yes, this is reversed (compared to the 2 above it) intentionally
+
+            if (path) {
+                encoded = encoded.replace("%2F", "/");
+            }
+        }
+
+        return encoded;
     }
 }
