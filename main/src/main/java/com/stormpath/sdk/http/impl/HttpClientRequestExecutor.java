@@ -255,7 +255,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         delay = Math.min(delay, MAX_BACKOFF_IN_MILLISECONDS);
         if (log.isDebugEnabled()) {
-            log.debug("Retryable error detected, will retry in " + delay + "ms, attempt number: " + retries);
+            log.debug("Retryable condition detected, will retry in " + delay + "ms, attempt number: " + retries);
         }
 
         try {
