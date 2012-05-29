@@ -37,13 +37,16 @@ import java.util.*;
  */
 public class Sauthc1Signer implements Signer {
 
-    private static final String DEFAULT_ENCODING = "UTF-8";
-    private static final String HOST_HEADER = "Host";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String STORMAPTH_DATE_HEADER = "X-Stormpath-Date";
-    private static final String SCOPE_TERMINATOR = "sauthc1_request";
-    private static final String ALGORITHM = "HMAC-SHA-256";
-    private static final String AUTHENTICATION_SCHEME = "SAuthc1";
+    public static final String DEFAULT_ENCODING = "UTF-8";
+    public static final String HOST_HEADER = "Host";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String STORMAPTH_DATE_HEADER = "X-Stormpath-Date";
+    public static final String SCOPE_TERMINATOR = "sauthc1_request";
+    public static final String ALGORITHM = "HMAC-SHA-256";
+    public static final String AUTHENTICATION_SCHEME = "SAuthc1";
+    public static final String SAUTHC1_ID = "sauthc1Id";
+    public static final String SAUTHC1_SIGNED_HEADERS = "sauthc1SignedHeaders";
+    public static final String SAUTHC1_SIGNATURE = "sauthc1Signature";
     private static final String NL = "\n";
 
     private static final Logger log = LoggerFactory.getLogger(Sauthc1Signer.class);
@@ -115,11 +118,15 @@ public class Sauthc1Signer implements Signer {
 
         String authorizationHeader =
                 AUTHENTICATION_SCHEME + " " +
-                "sauthc1Id=" + id + ", " +
-                "sauthcSignedHeaders=" + signedHeadersString + ", " +
-                "sauthc1Signature=" + signatureHex;
+                createNameValuePair(SAUTHC1_ID, id) + ", " +
+                createNameValuePair(SAUTHC1_SIGNED_HEADERS, signedHeadersString) + ", " +
+                createNameValuePair(SAUTHC1_SIGNATURE, signatureHex);
 
         request.getHeaders().set(AUTHORIZATION_HEADER, authorizationHeader);
+    }
+
+    private static String createNameValuePair(String name, String value) {
+        return name + "=" + value;
     }
 
     public static byte[] toUtf8Bytes(String s) {
