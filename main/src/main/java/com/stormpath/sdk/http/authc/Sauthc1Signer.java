@@ -47,24 +47,33 @@ public class Sauthc1Signer implements Signer {
     public static final String SAUTHC1_ID = "sauthc1Id";
     public static final String SAUTHC1_SIGNED_HEADERS = "sauthc1SignedHeaders";
     public static final String SAUTHC1_SIGNATURE = "sauthc1Signature";
+
+    public static final String DATE_FORMAT = "yyyyMMdd";
+    public static final String TIMESTAMP_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
+    public static final String TIME_ZONE = "UTC";
+
+
     private static final String NL = "\n";
 
     private static final Logger log = LoggerFactory.getLogger(Sauthc1Signer.class);
 
     @Override
     public void sign(Request request, ApiKey apiKey) throws SignatureException {
+        Date date = new Date();
+        String nonce = UUID.randomUUID().toString();
+        sign(request, apiKey, date, nonce);
+    }
 
-        SimpleDateFormat dateStampFormat = new SimpleDateFormat("yyyyMMdd");
-        dateStampFormat.setTimeZone(new SimpleTimeZone(0, "UTC"));
+    public void sign(final Request request, final ApiKey apiKey, final Date date, final String nonce) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        dateFormat.setTimeZone(new SimpleTimeZone(0, TIME_ZONE));
 
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-        dateTimeFormat.setTimeZone(new SimpleTimeZone(0, "UTC"));
+        SimpleDateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+        timestampFormat.setTimeZone(new SimpleTimeZone(0, TIME_ZONE));
 
         URI uri = request.getResourceUrl();
 
-        String nonce = UUID.randomUUID().toString();
-
-        // Stormpath1 requires that we sign the Host header so we
+        // SAuthc1 requires that we sign the Host header so we
         // have to have it in the request by the time we sign.
         String hostHeader = uri.getHost();
         if (!RequestUtils.isDefaultPort(uri)) {
@@ -72,12 +81,10 @@ public class Sauthc1Signer implements Signer {
         }
         request.getHeaders().set(HOST_HEADER, hostHeader);
 
-        Date date = new Date();
+        String timestamp = timestampFormat.format(date);
+        String dateStamp = dateFormat.format(date);
 
-        String dateTime = dateTimeFormat.format(date);
-        String dateStamp = dateStampFormat.format(date);
-
-        request.getHeaders().set(STORMAPTH_DATE_HEADER, dateTime);
+        request.getHeaders().set(STORMAPTH_DATE_HEADER, timestamp);
 
         String method = request.getMethod().toString();
         String canonicalResourcePath = canonicalizeResourcePath(uri.getPath());
@@ -88,22 +95,23 @@ public class Sauthc1Signer implements Signer {
 
         String canonicalRequest =
                 method + NL +
-                canonicalResourcePath + NL +
-                canonicalQueryString + NL +
-                canonicalHeadersString + NL +
-                signedHeadersString + NL +
-                requestPayloadHashHex;
+                        canonicalResourcePath + NL +
+                        canonicalQueryString + NL +
+                        canonicalHeadersString + NL +
+                        signedHeadersString + NL +
+                        requestPayloadHashHex;
 
         log.debug(AUTHENTICATION_SCHEME + " Canonical Request: " + canonicalRequest);
 
         String id = apiKey.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
+
         String canonicalRequestHashHex = toHex(hash(canonicalRequest));
 
         String stringToSign =
                 ALGORITHM + NL +
-                dateTime + NL +
-                id + NL +
-                canonicalRequestHashHex;
+                        timestamp + NL +
+                        id + NL +
+                        canonicalRequestHashHex;
 
         log.debug(AUTHENTICATION_SCHEME + " String to Sign: " + stringToSign);
 
@@ -118,9 +126,11 @@ public class Sauthc1Signer implements Signer {
 
         String authorizationHeader =
                 AUTHENTICATION_SCHEME + " " +
-                createNameValuePair(SAUTHC1_ID, id) + ", " +
-                createNameValuePair(SAUTHC1_SIGNED_HEADERS, signedHeadersString) + ", " +
-                createNameValuePair(SAUTHC1_SIGNATURE, signatureHex);
+                        createNameValuePair(SAUTHC1_ID, id) + ", " +
+                        createNameValuePair(SAUTHC1_SIGNED_HEADERS, signedHeadersString) + ", " +
+                        createNameValuePair(SAUTHC1_SIGNATURE, signatureHex);
+
+        log.debug(AUTHORIZATION_HEADER + ":{}", authorizationHeader);
 
         request.getHeaders().set(AUTHORIZATION_HEADER, authorizationHeader);
     }
@@ -213,17 +223,24 @@ public class Sauthc1Signer implements Signer {
             }
 
             if (!content.markSupported()) {
-                throw new SignatureException("Unable to read request payload to sign request.");
+                throw new SignatureException("Unable to read request payload to sign request (mark not supported).");
             }
 
-            StringBuilder sb = new StringBuilder();
             content.mark(-1);
-            int b;
-            while ((b = content.read()) > -1) {
-                sb.append((char) b);
+
+            //convert InputStream into a String in one shot:
+            String string;
+            try {
+                string = new Scanner(content, "UTF-8").useDelimiter("\\A").next();
+            } catch (NoSuchElementException nsee) {
+                string = "";
             }
+            //BAM!  That just happened.
+
             content.reset();
-            return sb.toString();
+
+            return string;
+
         } catch (Exception e) {
             throw new SignatureException("Unable to read request payload to sign request: " + e.getMessage(), e);
         }

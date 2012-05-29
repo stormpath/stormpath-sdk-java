@@ -39,6 +39,11 @@ public class Client {
         this.dataStore = new DefaultDataStore(requestExecutor, apiVersion);
     }
 
+    public Client(ApiKey apiKey, String baseUrl) {
+        RequestExecutor requestExecutor = new HttpClientRequestExecutor(apiKey);
+        this.dataStore = new DefaultDataStore(requestExecutor, baseUrl);
+    }
+
     public Tenant getCurrentTenant() {
         Tenant current = currentTenant;
         if (current == null) {

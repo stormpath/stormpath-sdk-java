@@ -16,12 +16,14 @@
 package com.stormpath.sdk.ds.impl;
 
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.http.impl.Version;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.http.*;
 import com.stormpath.sdk.http.impl.DefaultRequest;
 import com.stormpath.sdk.util.Assert;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -45,10 +47,10 @@ public class DefaultDataStore implements DataStore {
     }
 
     public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion) {
-        this("https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, requestExecutor);
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion);
     }
 
-    public DefaultDataStore(String baseUrl, RequestExecutor requestExecutor) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
         this.baseUrl = baseUrl;
@@ -77,6 +79,9 @@ public class DefaultDataStore implements DataStore {
         }
 
         Request request = new DefaultRequest(method, href);
+        request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+
         Response response = this.requestExecutor.executeRequest(request);
 
         String body = null;

@@ -24,6 +24,8 @@ import com.stormpath.sdk.util.Assert;
 import com.stormpath.sdk.util.StringInputStream;
 import org.apache.http.*;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.params.AllClientPNames;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.slf4j.Logger;
@@ -83,9 +85,10 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         connMgr.setDefaultMaxPerRoute(10);
 
         this.httpClient = new DefaultHttpClient(connMgr);
-        httpClient.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_1);
-        httpClient.getParams().setParameter("http.socket.timeout", CONNECTION_TIMEOUT);
-        httpClient.getParams().setParameter("http.connection.timeout", CONNECTION_TIMEOUT);
+        httpClient.getParams().setParameter(AllClientPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        httpClient.getParams().setParameter(AllClientPNames.SO_TIMEOUT, CONNECTION_TIMEOUT);
+        httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
+        httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
     }
 
@@ -113,9 +116,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         /*if (requestLog.isDebugEnabled()) {
             requestLog.debug("Sending Request: " + request.toString());
         }*/
-
-        // Apply whatever request options we know how to handle, such as user-agent.
-        applyRequestData(request);
 
         int retryCount = 0;
         URI redirectUri = null;
@@ -218,15 +218,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         } catch (java.util.NoSuchElementException e) {
             return null;
         }
-    }
-
-    /**
-     * Applies any additional options set in the request.
-     */
-    private void applyRequestData(Request request) {
-        //todo: move to the client
-        request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
     }
 
     private boolean isRedirect(org.apache.http.HttpResponse response) {
