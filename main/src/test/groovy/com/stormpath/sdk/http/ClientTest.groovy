@@ -26,7 +26,7 @@ class ClientTest {
 
     public static void main(String[] args) {
         DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
-        Client client = new Client(apiKey)
+        Client client = new Client(apiKey, "http://localhost:8080/v1")
         long start = System.currentTimeMillis()
         Tenant tenant = client.getCurrentTenant();
         long end = System.currentTimeMillis();

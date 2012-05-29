@@ -20,6 +20,7 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.TypeReference;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,9 +28,6 @@ import java.util.Map;
  * @since 0.1
  */
 public class JacksonMapMarshaller implements MapMarshaller {
-
-    private static final TypeReference<LinkedHashMap<String,String>> TYPE_REFERENCE =
-            new TypeReference<LinkedHashMap<String,String>>() {};
 
     private ObjectMapper objectMapper;
 
@@ -68,9 +66,9 @@ public class JacksonMapMarshaller implements MapMarshaller {
 
     @Override
     public Map unmarshal(String marshalled) {
-
         try {
-            return this.objectMapper.readValue(marshalled, TYPE_REFERENCE);
+            TypeReference<LinkedHashMap<String,Object>> typeRef = new TypeReference<LinkedHashMap<String,Object>>(){};
+            return this.objectMapper.readValue(marshalled, typeRef);
         } catch (IOException e) {
             throw new MarshalingException("Unable to convert JSON String to Map.", e);
         }
