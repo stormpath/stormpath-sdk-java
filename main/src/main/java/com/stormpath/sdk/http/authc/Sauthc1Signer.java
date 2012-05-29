@@ -41,7 +41,7 @@ public class Sauthc1Signer implements Signer {
     public static final String HOST_HEADER = "Host";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String STORMAPTH_DATE_HEADER = "X-Stormpath-Date";
-    public static final String SCOPE_TERMINATOR = "sauthc1_request";
+    public static final String ID_TERMINATOR = "sauthc1_request";
     public static final String ALGORITHM = "HMAC-SHA-256";
     public static final String AUTHENTICATION_SCHEME = "SAuthc1";
     public static final String SAUTHC1_ID = "sauthc1Id";
@@ -96,7 +96,7 @@ public class Sauthc1Signer implements Signer {
 
         log.debug(AUTHENTICATION_SCHEME + " Canonical Request: " + canonicalRequest);
 
-        String id = apiKey.getId() + "/" + dateStamp + "/" + nonce + "/" + SCOPE_TERMINATOR;
+        String id = apiKey.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
         String canonicalRequestHashHex = toHex(hash(canonicalRequest));
 
         String stringToSign =
@@ -111,7 +111,7 @@ public class Sauthc1Signer implements Signer {
         byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + apiKey.getSecret());
         byte[] kDate = sign(dateStamp, kSecret, MacAlgorithm.HmacSHA256);
         byte[] kNonce = sign(nonce, kDate, MacAlgorithm.HmacSHA256);
-        byte[] kSigning = sign(SCOPE_TERMINATOR, kNonce, MacAlgorithm.HmacSHA256);
+        byte[] kSigning = sign(ID_TERMINATOR, kNonce, MacAlgorithm.HmacSHA256);
 
         byte[] signature = sign(toUtf8Bytes(stringToSign), kSigning, MacAlgorithm.HmacSHA256);
         String signatureHex = toHex(signature);
