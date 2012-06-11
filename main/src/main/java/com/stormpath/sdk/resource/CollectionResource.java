@@ -18,7 +18,6 @@ package com.stormpath.sdk.resource;
 /**
  * @since 0.1
  */
-public interface CollectionResource<T> extends Resource, Iterable<T> {
+public interface CollectionResource<T extends Resource> extends Resource, Iterable<T> {
 
-    Page<T> getCurrentPage();
 }

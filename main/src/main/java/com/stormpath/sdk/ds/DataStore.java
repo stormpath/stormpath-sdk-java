@@ -17,6 +17,8 @@ package com.stormpath.sdk.ds;
 
 import com.stormpath.sdk.resource.Resource;
 
+import java.util.Map;
+
 /**
  * @since 0.1
  */
@@ -34,6 +36,8 @@ public interface DataStore {
      * @return a new instance of the specified Resource.
      */
     <T extends Resource> T instantiate(Class<T> clazz);
+
+    <T extends Resource> T instantiate(Class<T> clazz, Map<String,Object> properties);
 
     <T extends Resource> T load(String href, Class<T> clazz);
 

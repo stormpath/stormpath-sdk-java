@@ -47,6 +47,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         return getStringProperty(USERNAME);
     }
 
+    @Override
     public void setUsername(String username) {
         setProperty(USERNAME, username);
     }
@@ -56,6 +57,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         return getStringProperty(EMAIL);
     }
 
+    @Override
     public void setEmail(String email) {
         setProperty(EMAIL, email);
     }
@@ -65,6 +67,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         return getStringProperty(GIVEN_NAME);
     }
 
+    @Override
     public void setGivenName(String givenName) {
         setProperty(GIVEN_NAME, givenName);
     }
@@ -74,6 +77,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         return getStringProperty(MIDDLE_NAME);
     }
 
+    @Override
     public void setMiddleName(String middleName) {
         setProperty(MIDDLE_NAME, middleName);
     }
@@ -83,6 +87,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         return getStringProperty(SURNAME);
     }
 
+    @Override
     public void setSurname(String surname) {
         setProperty(SURNAME, surname);
     }
@@ -96,6 +101,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         return Status.valueOf(value.toUpperCase());
     }
 
+    @Override
     public void setStatus(Status status) {
         setProperty(STATUS, status.name());
     }

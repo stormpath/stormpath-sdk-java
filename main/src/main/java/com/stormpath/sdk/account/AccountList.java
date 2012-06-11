@@ -15,36 +15,10 @@
  */
 package com.stormpath.sdk.account;
 
-import com.stormpath.sdk.resource.InstanceResource;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Status;
+import com.stormpath.sdk.resource.CollectionResource;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface Account extends Resource {
-
-    String getUsername();
-
-    void setUsername(String username);
-
-    String getEmail();
-
-    void setEmail(String email);
-
-    String getGivenName();
-
-    void setGivenName(String givenName);
-
-    String getMiddleName();
-
-    void setMiddleName(String middleName);
-
-    String getSurname();
-
-    void setSurname(String surname);
-
-    Status getStatus();
-
-    void setStatus(Status status);
+public interface AccountList extends CollectionResource<Account> {
 }

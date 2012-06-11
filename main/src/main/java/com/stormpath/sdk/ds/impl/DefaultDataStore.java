@@ -65,6 +65,11 @@ public class DefaultDataStore implements DataStore {
     }
 
     @Override
+    public <T extends Resource> T instantiate(Class<T> clazz, Map<String, Object> properties) {
+        return this.resourceFactory.instantiate(clazz, properties);
+    }
+
+    @Override
     public <T extends Resource> T load(String href, Class<T> clazz) {
         Map<String,?> data = executeRequest(HttpMethod.GET, href);
         return this.resourceFactory.instantiate(clazz, data);

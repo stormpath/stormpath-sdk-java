@@ -13,44 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.tenant.impl;
+package com.stormpath.sdk.application.impl;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.resource.impl.AbstractResource;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.resource.impl.AbstractCollectionResource;
 
 import java.util.Map;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public class DefaultTenant extends AbstractResource implements Tenant {
+public class DefaultApplicationList extends AbstractCollectionResource<Application> implements ApplicationList {
 
-    private static final String NAME = "name";
-    private static final String KEY = "key";
-    private static final String APPLICATIONS = "applications";
-
-    public DefaultTenant(DataStore dataStore) {
+    public DefaultApplicationList(DataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultTenant(DataStore dataStore, Map<String,Object> properties) {
+    public DefaultApplicationList(DataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
     @Override
-    public String getName() {
-        return getStringProperty(NAME);
-    }
-
-    @Override
-    public String getKey() {
-        return getStringProperty(KEY);
-    }
-
-    @Override
-    public ApplicationList getApplications() {
-        return getResourceProperty(APPLICATIONS, ApplicationList.class);
+    protected Class<Application> getItemType() {
+        return Application.class;
     }
 }

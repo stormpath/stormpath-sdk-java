@@ -15,10 +15,9 @@
  */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Status;
 
@@ -29,11 +28,17 @@ public interface Application extends Resource {
 
     String getName();
 
+    void setName(String name);
+
     String getDescription();
+
+    void setDescription(String description);
 
     Status getStatus();
 
-    CollectionResource<Account> getAccounts();
+    void setStatus(Status status);
+
+    AccountList getAccounts();
 
     AuthenticationResult authenticate(AuthenticationRequest request);
 }

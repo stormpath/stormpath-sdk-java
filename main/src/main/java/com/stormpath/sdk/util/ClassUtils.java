@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.lang;
+package com.stormpath.sdk.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,15 +111,17 @@ public class ClassUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Object newInstance(String fqcn) {
         return newInstance(forName(fqcn));
     }
 
+    @SuppressWarnings("unchecked")
     public static Object newInstance(String fqcn, Object... args) {
         return newInstance(forName(fqcn), args);
     }
 
-    public static Object newInstance(Class clazz) {
+    public static <T> T newInstance(Class<T> clazz) {
         if (clazz == null) {
             String msg = "Class method parameter cannot be null.";
             throw new IllegalArgumentException(msg);
@@ -131,16 +133,16 @@ public class ClassUtils {
         }
     }
 
-    public static Object newInstance(Class clazz, Object... args) {
+    public static <T> T newInstance(Class<T> clazz, Object... args) {
         Class[] argTypes = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
             argTypes[i] = args[i].getClass();
         }
-        Constructor ctor = getConstructor(clazz, argTypes);
+        Constructor<T> ctor = getConstructor(clazz, argTypes);
         return instantiate(ctor, args);
     }
 
-    public static Constructor getConstructor(Class clazz, Class... argTypes) {
+    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class... argTypes) {
         try {
             return clazz.getConstructor(argTypes);
         } catch (NoSuchMethodException e) {
@@ -149,7 +151,7 @@ public class ClassUtils {
 
     }
 
-    public static Object instantiate(Constructor ctor, Object... args) {
+    public static <T> T instantiate(Constructor<T> ctor, Object... args) {
         try {
             return ctor.newInstance(args);
         } catch (Exception e) {

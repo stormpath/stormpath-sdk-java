@@ -39,8 +39,8 @@ public abstract class AbstractResource implements Resource {
 
     private final Map<String, Object> properties;
     private final DataStore dataStore;
-    private final Lock readLock;
-    private final Lock writeLock;
+    protected final Lock readLock;
+    protected final Lock writeLock;
 
     private volatile boolean materialized;
     private volatile boolean dirty;
@@ -71,6 +71,10 @@ public abstract class AbstractResource implements Resource {
 
     public String getHref() {
         return getStringProperty(HREF_PROP_NAME);
+    }
+
+    protected final DataStore getDataStore() {
+        return this.dataStore;
     }
 
     protected final boolean isMaterialized() {
@@ -146,13 +150,32 @@ public abstract class AbstractResource implements Resource {
     protected int getIntProperty(String key) {
         Object value = getProperty(key);
         if (value != null) {
-            if (value instanceof Number) {
+            if (value instanceof String) {
+                return parseInt((String)value);
+            } else if (value instanceof Number) {
                 return ((Number) value).intValue();
-            } else if (value instanceof String) {
-                return parseInt((String) value);
             }
         }
         return -1;
+    }
+
+    private String getHref(Map props) {
+        Object value = props != null ? props.get(HREF_PROP_NAME) : null;
+        if (value instanceof String) {
+            return (String)value;
+        }
+        return null;
+    }
+
+    protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
+        Object value = getProperty(key);
+        if (value instanceof Map) {
+            String href = getHref((Map)value);
+            if (href != null) {
+                return dataStore.load(href, clazz);
+            }
+        }
+        return null;
     }
 
     private int parseInt(String value) {
@@ -176,7 +199,7 @@ public abstract class AbstractResource implements Resource {
                 if (!first) {
                     sb.append(", ");
                 }
-                sb.append(entry.getKey()).append("=").append(String.valueOf(entry.getValue()));
+                sb.append(entry.getKey()).append(": ").append(String.valueOf(entry.getValue()));
                 first = false;
             }
             return sb.toString();

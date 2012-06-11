@@ -18,6 +18,8 @@ package com.stormpath.sdk.http
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.DefaultApiKey
+import com.stormpath.sdk.application.ApplicationList
+import com.stormpath.sdk.application.Application
 
 /**
  * @since 0.1
@@ -26,11 +28,25 @@ class ClientTest {
 
     public static void main(String[] args) {
         DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
+
         Client client = new Client(apiKey, "http://localhost:8080/v1")
-        long start = System.currentTimeMillis()
+
+        long start = System.currentTimeMillis();
+
         Tenant tenant = client.getCurrentTenant();
-        long end = System.currentTimeMillis();
-        long millis = end - start;
-        println "Tenant: " + tenant + ", millis: ${millis}";
+
+        ApplicationList applications = tenant.getApplications();
+
+        for( Application application : applications) {
+            println "Application $application"
+        }
+
+        long stop = System.currentTimeMillis();
+
+        long duration = stop - start;
+
+        println "Duration: $duration millis";
+
+        System.exit(0);
     }
 }

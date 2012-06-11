@@ -16,7 +16,7 @@
 package com.stormpath.sdk.ds.impl;
 
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.lang.ClassUtils;
+import com.stormpath.sdk.util.ClassUtils;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Constructor;
@@ -51,11 +51,9 @@ public class DefaultResourceFactory implements ResourceFactory {
 
         Object[] ctorArgs = createConstructorArgs(constructorArgs);
 
-        //noinspection unchecked
-        Constructor ctor = ClassUtils.getConstructor(implClass, DataStore.class, Map.class);
+        Constructor<T> ctor = ClassUtils.getConstructor(implClass, DataStore.class, Map.class);
 
-        //noinspection unchecked
-        return (T) ClassUtils.instantiate(ctor, ctorArgs);
+        return ClassUtils.instantiate(ctor, ctorArgs);
     }
 
     private <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
