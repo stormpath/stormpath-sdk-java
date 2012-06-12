@@ -16,6 +16,7 @@
 package com.stormpath.sdk.tenant.impl;
 
 import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.resource.impl.AbstractResource;
 import com.stormpath.sdk.tenant.Tenant;
@@ -30,6 +31,7 @@ public class DefaultTenant extends AbstractResource implements Tenant {
     private static final String NAME = "name";
     private static final String KEY = "key";
     private static final String APPLICATIONS = "applications";
+    private static final String DIRECTORIES = "directories";
 
     public DefaultTenant(DataStore dataStore) {
         super(dataStore);
@@ -52,5 +54,10 @@ public class DefaultTenant extends AbstractResource implements Tenant {
     @Override
     public ApplicationList getApplications() {
         return getResourceProperty(APPLICATIONS, ApplicationList.class);
+    }
+
+    @Override
+    public DirectoryList getDirectories() {
+        return getResourceProperty(DIRECTORIES, DirectoryList.class);
     }
 }

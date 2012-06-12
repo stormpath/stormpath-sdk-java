@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.tenant;
+package com.stormpath.sdk.directory.impl;
 
-import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.resource.impl.AbstractCollectionResource;
+
+import java.util.Map;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface Tenant extends Resource {
+public class DefaultDirectoryList extends AbstractCollectionResource<Directory> implements DirectoryList {
 
-    String getName();
+    public DefaultDirectoryList(DataStore dataStore) {
+        super(dataStore);
+    }
 
-    String getKey();
+    public DefaultDirectoryList(DataStore dataStore, Map<String, Object> properties) {
+        super(dataStore, properties);
+    }
 
-    ApplicationList getApplications();
-
-    DirectoryList getDirectories();
-
+    @Override
+    protected Class<Directory> getItemType() {
+        return Directory.class;
+    }
 }

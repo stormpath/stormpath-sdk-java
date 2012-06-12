@@ -20,6 +20,8 @@ import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.DefaultApiKey
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.directory.Directory
 
 /**
  * @since 0.1
@@ -38,7 +40,15 @@ class ClientTest {
         ApplicationList applications = tenant.getApplications();
 
         for( Application application : applications) {
+            application.getName();
             println "Application $application"
+        }
+
+        DirectoryList directories = tenant.getDirectories();
+
+        for (Directory directory : directories) {
+            directory.getName();
+            println "Directory $directory";
         }
 
         long stop = System.currentTimeMillis();

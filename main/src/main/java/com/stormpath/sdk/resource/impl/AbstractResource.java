@@ -108,14 +108,15 @@ public abstract class AbstractResource implements Resource {
     }
 
     public Object getProperty(String name) {
+        if (!HREF_PROP_NAME.equals(name)) {
+            //not the href/id, must be a property that requires materialization:
+            if (!isMaterialized()) {
+                materialize();
+            }
+        }
+
         readLock.lock();
         try {
-            if (!HREF_PROP_NAME.equals(name)) {
-                //not the href/id, must be a property that requires materialization:
-                if (!isMaterialized()) {
-                    materialize();
-                }
-            }
             return this.properties.get(name);
         } finally {
             readLock.unlock();

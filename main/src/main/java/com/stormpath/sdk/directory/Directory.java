@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.tenant;
+package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.directory.DirectoryList;
+import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Status;
+import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface Tenant extends Resource {
+public interface Directory extends Resource {
 
     String getName();
 
-    String getKey();
+    void setName(String name);
 
-    ApplicationList getApplications();
+    String getDescription();
 
-    DirectoryList getDirectories();
+    void setDescription(String description);
 
+    Status getStatus();
+
+    void setStatus(Status status);
+
+    AccountList getAccounts();
+
+    Tenant getTenant();
 }
