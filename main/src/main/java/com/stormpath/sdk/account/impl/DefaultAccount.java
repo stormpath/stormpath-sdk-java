@@ -16,9 +16,12 @@
 package com.stormpath.sdk.account.impl;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.resource.impl.AbstractResource;
+import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
 
@@ -29,10 +32,14 @@ public class DefaultAccount extends AbstractResource implements Account {
 
     private final String USERNAME = "username";
     private final String EMAIL = "email";
+    private final String PASSWORD = "password";
     private final String GIVEN_NAME = "givenName";
     private final String MIDDLE_NAME = "middleName";
     private final String SURNAME = "surname";
     private final String STATUS = "status";
+    private final String GROUPS = "groups";
+    private final String DIRECTORY = "directory";
+    private final String TENANT = "tenant";
 
     public DefaultAccount(DataStore dataStore) {
         super(dataStore);
@@ -60,6 +67,11 @@ public class DefaultAccount extends AbstractResource implements Account {
     @Override
     public void setEmail(String email) {
         setProperty(EMAIL, email);
+    }
+
+    @Override
+    public void setPassword(String password) {
+        setProperty(PASSWORD, password);
     }
 
     @Override
@@ -104,5 +116,20 @@ public class DefaultAccount extends AbstractResource implements Account {
     @Override
     public void setStatus(Status status) {
         setProperty(STATUS, status.name());
+    }
+
+    @Override
+    public GroupList getGroups() {
+        return getResourceProperty(GROUPS, GroupList.class);
+    }
+
+    @Override
+    public Directory getDirectory() {
+        return getResourceProperty(DIRECTORY, Directory.class);
+    }
+
+    @Override
+    public Tenant getTenant() {
+        return getResourceProperty(TENANT, Tenant.class);
     }
 }

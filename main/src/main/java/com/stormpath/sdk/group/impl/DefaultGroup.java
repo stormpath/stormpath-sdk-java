@@ -14,6 +14,7 @@ import java.util.Map;
  * @author Jeff Wysong
  *         Date: 6/13/12
  *         Time: 11:31 AM
+ * @since 0.2
  */
 public class DefaultGroup extends AbstractResource implements Group {
 

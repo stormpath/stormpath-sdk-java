@@ -15,9 +15,12 @@
  */
 package com.stormpath.sdk.account;
 
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.InstanceResource;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Status;
+import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * @since 0.1
@@ -31,6 +34,8 @@ public interface Account extends Resource {
     String getEmail();
 
     void setEmail(String email);
+
+    void setPassword(String password);
 
     String getGivenName();
 
@@ -47,4 +52,8 @@ public interface Account extends Resource {
     Status getStatus();
 
     void setStatus(Status status);
+
+    GroupList getGroups();
+    Directory getDirectory();
+    Tenant getTenant();
 }

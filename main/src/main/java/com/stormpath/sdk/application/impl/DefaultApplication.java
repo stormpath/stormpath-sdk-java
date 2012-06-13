@@ -16,12 +16,14 @@
 package com.stormpath.sdk.application.impl;
 
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.resource.impl.AbstractResource;
+import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class DefaultApplication extends AbstractResource implements Application 
     private static final String STATUS = "status";
     private static final String TENANT = "tenant";
     private static final String ACCOUNTS = "accounts";
+    private static final String PASSWORD_RESET_TOKENS = "passwordResetTokens";
 
     public DefaultApplication(DataStore dataStore) {
         super(dataStore);
@@ -81,6 +84,16 @@ public class DefaultApplication extends AbstractResource implements Application 
     @Override
     public AccountList getAccounts() {
         return getResourceProperty(ACCOUNTS, AccountList.class);
+    }
+
+    @Override
+    public Tenant getTenant() {
+        return getResourceProperty(TENANT, Tenant.class);
+    }
+
+    @Override
+    public PasswordResetToken getPasswordResetToken() {
+        return getResourceProperty(PASSWORD_RESET_TOKENS, PasswordResetToken.class);
     }
 
     @Override

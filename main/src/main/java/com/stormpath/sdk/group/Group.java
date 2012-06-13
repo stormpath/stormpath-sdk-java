@@ -10,6 +10,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * @author Jeff Wysong
  *         Date: 6/13/12
  *         Time: 11:22 AM
+ * @since 0.2
  */
 public interface Group extends Resource {
     String getName();

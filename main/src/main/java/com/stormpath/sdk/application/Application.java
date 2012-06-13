@@ -16,10 +16,12 @@
 package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Status;
+import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * @since 0.1
@@ -39,6 +41,10 @@ public interface Application extends Resource {
     void setStatus(Status status);
 
     AccountList getAccounts();
+
+    Tenant getTenant();
+
+    PasswordResetToken getPasswordResetToken();
 
     AuthenticationResult authenticate(AuthenticationRequest request);
 }
