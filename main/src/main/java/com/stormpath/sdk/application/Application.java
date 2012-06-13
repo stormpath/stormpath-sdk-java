@@ -44,6 +44,7 @@ public interface Application extends Resource {
 
     Tenant getTenant();
 
+    //TODO:  Fix this.  Will need to create a token with HTTP.POST with an email as the body.
     PasswordResetToken getPasswordResetToken();
 
     AuthenticationResult authenticate(AuthenticationRequest request);
