@@ -80,7 +80,7 @@ public class DefaultApplication extends AbstractResource implements Application 
 
     @Override
     public AccountList getAccounts() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        return getResourceProperty(ACCOUNTS, AccountList.class);
     }
 
     @Override

@@ -1,24 +1,9 @@
-/*
- * Copyright 2012 Stormpath, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.stormpath.sdk.directory.impl;
+package com.stormpath.sdk.group.impl;
 
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.resource.impl.AbstractResource;
 import com.stormpath.sdk.tenant.Tenant;
@@ -26,23 +11,24 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
- * @since 0.2
+ * @author Jeff Wysong
+ *         Date: 6/13/12
+ *         Time: 11:31 AM
  */
-public class DefaultDirectory extends AbstractResource implements Directory {
+public class DefaultGroup extends AbstractResource implements Group {
 
     private static String NAME = "name";
     private static String DESCRIPTION = "description";
     private static String STATUS = "status";
-    private static String ACCOUNTS = "accounts";
-    private static String GROUPS = "groups";
     private static String TENANT = "tenant";
+    private static String DIRECTORY = "directory";
+    private static String ACCOUNTS = "accounts";
 
-
-    public DefaultDirectory(DataStore dataStore) {
+    public DefaultGroup(DataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultDirectory(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultGroup(DataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -81,17 +67,17 @@ public class DefaultDirectory extends AbstractResource implements Directory {
     }
 
     @Override
-    public AccountList getAccounts() {
-        return getResourceProperty(ACCOUNTS, AccountList.class);
-    }
-
-    @Override
-    public GroupList getGroups() {
-        return getResourceProperty(GROUPS, GroupList.class);
-    }
-
-    @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT, Tenant.class);
+    }
+
+    @Override
+    public Directory getDirectory() {
+        return getResourceProperty(DIRECTORY, Directory.class);
+    }
+
+    @Override
+    public AccountList getAccounts() {
+        return getResourceProperty(ACCOUNTS, AccountList.class);
     }
 }

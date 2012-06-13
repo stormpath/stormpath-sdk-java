@@ -22,6 +22,10 @@ import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.Group
 
 /**
  * @since 0.1
@@ -49,6 +53,17 @@ class ClientTest {
         for (Directory directory : directories) {
             directory.getName();
             println "Directory $directory";
+
+            GroupList groupList = directory.getGroups();
+            for (Group group : groupList) {
+                group.getName()
+                println("- Group $group");
+            }
+
+            AccountList accountList = directory.getAccounts()
+            for (Account account : accountList) {
+                println("-- Account $account");
+            }
         }
 
         long stop = System.currentTimeMillis();
