@@ -155,7 +155,7 @@ public class ClassUtils {
         try {
             return ctor.newInstance(args);
         } catch (Exception e) {
-            String msg = "Unable to instantiate Permission instance with constructor [" + ctor + "]";
+            String msg = "Unable to instantiate instance with constructor [" + ctor + "]";
             throw new InstantiationException(msg, e);
         }
     }

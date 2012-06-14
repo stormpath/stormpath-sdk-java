@@ -15,9 +15,11 @@
  */
 package com.stormpath.sdk.tenant;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
  * @since 0.1
@@ -27,6 +29,8 @@ public interface Tenant extends Resource {
     String getName();
 
     String getKey();
+
+    void createApplication(Application application);
 
     ApplicationList getApplications();
 

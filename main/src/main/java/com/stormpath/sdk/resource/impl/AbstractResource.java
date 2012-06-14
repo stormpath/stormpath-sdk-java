@@ -17,6 +17,7 @@ package com.stormpath.sdk.resource.impl;
 
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public abstract class AbstractResource implements Resource {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractResource.class);
 
-    private static final String HREF_PROP_NAME = "href";
+    public static final String HREF_PROP_NAME = "href";
 
     private final Map<String, Object> properties;
     private final DataStore dataStore;
@@ -50,23 +51,31 @@ public abstract class AbstractResource implements Resource {
     }
 
     protected AbstractResource(DataStore dataStore, Map<String, Object> properties) {
-        this.properties = new LinkedHashMap<String, Object>();
-        if (properties != null && !properties.isEmpty()) {
-            this.properties.putAll(properties);
-            // Don't consider this resource materialized if it is only a reference.  A reference is any object that
-            // has only one 'href' property.
-            boolean hrefOnly = this.properties.size() == 1 && this.properties.containsKey(HREF_PROP_NAME);
-            this.materialized = !hrefOnly;
-        } else {
-            this.materialized = false;
-        }
-        this.dataStore = dataStore;
-
         ReadWriteLock rwl = new ReentrantReadWriteLock();
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
+        this.dataStore = dataStore;
+        this.properties = new LinkedHashMap<String, Object>();
+        setProperties(properties);
+    }
 
-        this.dirty = false;
+    public final void setProperties(Map<String, Object> properties) {
+        writeLock.lock();
+        try {
+            this.properties.clear();
+            this.dirty = false;
+            if (properties != null && !properties.isEmpty()) {
+                this.properties.putAll(properties);
+                // Don't consider this resource materialized if it is only a reference.  A reference is any object that
+                // has only one 'href' property.
+                boolean hrefOnly = this.properties.size() == 1 && this.properties.containsKey(HREF_PROP_NAME);
+                this.materialized = !hrefOnly;
+            } else {
+                this.materialized = false;
+            }
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public String getHref() {
@@ -83,6 +92,22 @@ public abstract class AbstractResource implements Resource {
 
     protected final boolean isDirty() {
         return this.dirty;
+    }
+
+    /**
+     * Returns {@code true} if the resource doesn't yet have an assigned 'href' property, {@code false} otherwise.
+     *
+     * @return {@code true} if the resource doesn't yet have an assigned 'href' property, {@code false} otherwise.
+     * @since 0.2
+     */
+    protected final boolean isNew() {
+        //we can't call getHref() in here, otherwise we'll have an infinite loop:
+        Object prop = readProperty(HREF_PROP_NAME);
+        if (prop == null) {
+            return true;
+        }
+        String href = String.valueOf(prop);
+        return !StringUtils.hasText(href);
     }
 
     protected void materialize() {
@@ -110,11 +135,15 @@ public abstract class AbstractResource implements Resource {
     public Object getProperty(String name) {
         if (!HREF_PROP_NAME.equals(name)) {
             //not the href/id, must be a property that requires materialization:
-            if (!isMaterialized()) {
+            if (!isNew() && !isMaterialized()) {
                 materialize();
             }
         }
 
+        return readProperty(name);
+    }
+
+    private Object readProperty(String name) {
         readLock.lock();
         try {
             return this.properties.get(name);
@@ -152,7 +181,7 @@ public abstract class AbstractResource implements Resource {
         Object value = getProperty(key);
         if (value != null) {
             if (value instanceof String) {
-                return parseInt((String)value);
+                return parseInt((String) value);
             } else if (value instanceof Number) {
                 return ((Number) value).intValue();
             }
@@ -163,7 +192,7 @@ public abstract class AbstractResource implements Resource {
     private String getHref(Map props) {
         Object value = props != null ? props.get(HREF_PROP_NAME) : null;
         if (value instanceof String) {
-            return (String)value;
+            return (String) value;
         }
         return null;
     }
@@ -171,7 +200,7 @@ public abstract class AbstractResource implements Resource {
     protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
         Object value = getProperty(key);
         if (value instanceof Map) {
-            String href = getHref((Map)value);
+            String href = getHref((Map) value);
             if (href != null) {
                 return dataStore.load(href, clazz);
             }

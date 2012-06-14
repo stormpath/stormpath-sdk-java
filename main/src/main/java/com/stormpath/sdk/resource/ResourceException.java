@@ -13,50 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.error.impl;
+package com.stormpath.sdk.resource;
 
 import com.stormpath.sdk.error.Error;
-import com.stormpath.sdk.resource.impl.AbstractResource;
-
-import java.util.Map;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public class DefaultError extends AbstractResource implements Error {
+public class ResourceException extends RuntimeException implements Error {
 
-    private static final String STATUS = "status";
-    private static final String CODE = "code";
-    private static final String MESSAGE = "message";
-    private static final String DEV_MESSAGE = "developerMessage";
-    private static final String MORE_INFO = "moreInfo";
+    private final Error error;
 
-    public DefaultError(Map<String,Object> body) {
-        super(null, body);
+    public ResourceException(Error error) {
+        super(error != null ? error.getMessage() : "");
+        this.error = error;
     }
 
     @Override
     public int getStatus() {
-        return getIntProperty(STATUS);
+        return error != null ? error.getStatus() : -1;
     }
 
     @Override
     public int getCode() {
-        return getIntProperty(CODE);
-    }
-
-    @Override
-    public String getMessage() {
-        return getStringProperty(MESSAGE);
+        return error != null ? error.getCode() : -1;
     }
 
     @Override
     public String getDeveloperMessage() {
-        return getStringProperty(DEV_MESSAGE);
+        return error != null ? error.getDeveloperMessage() : null;
     }
 
     @Override
     public String getMoreInfo() {
-        return getStringProperty(MORE_INFO);
+        return error != null ? error.getMoreInfo() : null;
     }
 }

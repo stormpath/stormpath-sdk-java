@@ -51,7 +51,13 @@ public class DefaultResourceFactory implements ResourceFactory {
 
         Object[] ctorArgs = createConstructorArgs(constructorArgs);
 
-        Constructor<T> ctor = ClassUtils.getConstructor(implClass, DataStore.class, Map.class);
+        Constructor<T> ctor;
+
+        if (ctorArgs.length == 1) {
+            ctor = ClassUtils.getConstructor(implClass, DataStore.class);
+        } else {
+            ctor = ClassUtils.getConstructor(implClass, DataStore.class, Map.class);
+        }
 
         return ClassUtils.instantiate(ctor, ctorArgs);
     }

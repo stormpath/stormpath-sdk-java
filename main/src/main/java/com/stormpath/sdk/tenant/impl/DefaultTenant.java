@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.tenant.impl;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
@@ -49,6 +50,14 @@ public class DefaultTenant extends AbstractResource implements Tenant {
     @Override
     public String getKey() {
         return getStringProperty(KEY);
+    }
+
+    @Override
+    public void createApplication(Application application) {
+        //ApplicationList list = getApplications();
+        //String href = list.getHref();
+        String href = "/applications"; //TODO enable auto discovery
+        getDataStore().create(href, application);
     }
 
     @Override

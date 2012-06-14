@@ -54,6 +54,8 @@ public interface Account extends Resource {
     void setStatus(Status status);
 
     GroupList getGroups();
+
     Directory getDirectory();
+
     Tenant getTenant();
 }

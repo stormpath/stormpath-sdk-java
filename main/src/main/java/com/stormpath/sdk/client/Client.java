@@ -28,8 +28,6 @@ public class Client {
 
     private DataStore dataStore;
 
-    private volatile Tenant currentTenant;
-
     public Client(ApiKey apiKey) {
         this(apiKey, DefaultDataStore.DEFAULT_API_VERSION);
     }
@@ -45,15 +43,10 @@ public class Client {
     }
 
     public Tenant getCurrentTenant() {
-        Tenant current = currentTenant;
-        if (current == null) {
-            synchronized (this) {
-                current = currentTenant;
-                if (current == null) {
-                    currentTenant = current = this.dataStore.load("/tenants/current", Tenant.class);
-                }
-            }
-        }
-        return current;
+        return this.dataStore.load("/tenants/current", Tenant.class);
+    }
+
+    public DataStore getDataStore() {
+        return this.dataStore;
     }
 }

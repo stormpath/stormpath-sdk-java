@@ -15,17 +15,17 @@
  */
 package com.stormpath.sdk.http
 
-import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.DefaultApiKey
-import com.stormpath.sdk.application.ApplicationList
-import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.account.AccountList
-import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.tenant.Tenant
 
 /**
  * @since 0.1
@@ -43,7 +43,7 @@ class ClientTest {
 
         ApplicationList applications = tenant.getApplications();
 
-        for( Application application : applications) {
+        for (Application application : applications) {
             application.getName();
             println "Application $application"
         }

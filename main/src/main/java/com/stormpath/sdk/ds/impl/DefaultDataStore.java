@@ -16,21 +16,27 @@
 package com.stormpath.sdk.ds.impl;
 
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.http.impl.Version;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.error.impl.DefaultError;
 import com.stormpath.sdk.http.*;
 import com.stormpath.sdk.http.impl.DefaultRequest;
+import com.stormpath.sdk.http.impl.Version;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.resource.impl.AbstractResource;
 import com.stormpath.sdk.util.Assert;
+import com.stormpath.sdk.util.StringInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @since 0.1
  */
 public class DefaultDataStore implements DataStore {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultDataStore.class);
 
     public static final String DEFAULT_SERVER_HOST = "api.stormpath.com";
 
@@ -76,6 +82,62 @@ public class DefaultDataStore implements DataStore {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Resource> T create(String parentHref, T resource) {
+        Assert.notNull(resource, "resource argument cannot be null.");
+        //Assert.isInstanceOf(InstanceResource.class, resource);
+        Assert.isInstanceOf(AbstractResource.class, resource);
+
+        if (needsToBeFullyQualified(parentHref)) {
+            parentHref = qualify(parentHref);
+        }
+
+        AbstractResource abstractResource = (AbstractResource)resource;
+
+        Set<String> propNames = abstractResource.getPropertyNames();
+
+        LinkedHashMap<String,Object> props = new LinkedHashMap<String,Object>(propNames.size());
+
+        for( String propName : propNames) {
+            Object prop = abstractResource.getProperty(propName);
+
+            //if the property is a reference, don't write the entire object - just the href will do:
+            if (prop instanceof Map) {
+                prop = toSimpleReference(propName, (Map)prop);
+            }
+
+            props.put(propName, prop);
+        }
+
+        String bodyString = mapMarshaller.marshal(props);
+
+        StringInputStream body = new StringInputStream(bodyString);
+        long length = body.available();
+
+        Request request = new DefaultRequest(HttpMethod.POST, parentHref, null, null, body, length);
+
+        Map<String,Object> responseBody = executeRequest(request);
+
+        //ensure the caller's argument is updated with what is returned from the server
+        if (responseBody != null && !responseBody.isEmpty()) {
+            abstractResource.setProperties(responseBody);
+        }
+
+        Object newResource = resourceFactory.instantiate(resource.getClass(), responseBody);
+        return (T)newResource;
+    }
+
+    private Map<String,String> toSimpleReference(String propName, Map map) {
+        Assert.isTrue(!map.isEmpty() && map.containsKey(AbstractResource.HREF_PROP_NAME),
+                "Nested resource '" + propName + "' must have an 'href' property.");
+        String href = String.valueOf(map.get(AbstractResource.HREF_PROP_NAME));
+
+        Map<String,String> reference = new HashMap<String,String>(1);
+        reference.put(AbstractResource.HREF_PROP_NAME, href);
+
+        return reference;
+    }
+
     private Map<String,?> executeRequest(HttpMethod method, String href) {
         Assert.notNull(href, "href argument cannot be null.");
 
@@ -84,8 +146,14 @@ public class DefaultDataStore implements DataStore {
         }
 
         Request request = new DefaultRequest(method, href);
-        request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+
+        return executeRequest(request);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String,Object> executeRequest(Request request) {
+
+        applyDefaultRequestHeaders(request);
 
         Response response = this.requestExecutor.executeRequest(request);
 
@@ -95,11 +163,28 @@ public class DefaultDataStore implements DataStore {
             body = toString(response.getBody());
         }
 
+        Map<String,Object> mapBody = null;
+
         if (body != null) {
-            return mapMarshaller.unmarshal(body);
+            log.trace("Obtained response body: \n{}", body);
+            mapBody = mapMarshaller.unmarshal(body);
         }
 
-        return null;
+        if (response.isError()) {
+            DefaultError error = new DefaultError(mapBody);
+            throw new ResourceException(error);
+        }
+
+        return mapBody;
+    }
+
+    protected void applyDefaultRequestHeaders(Request request) {
+        request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+        if (request.getBody() != null) {
+            //this data store currently only deals with JSON messages:
+            request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        }
     }
 
     protected boolean needsToBeFullyQualified(String href) {

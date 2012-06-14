@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.directory.impl;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
@@ -78,6 +79,21 @@ public class DefaultDirectory extends AbstractResource implements Directory {
     @Override
     public void setStatus(Status status) {
         setProperty(STATUS, status.name());
+    }
+
+    @Override
+    public void createAccount(Account account) {
+        AccountList accounts = getAccounts();
+        String href = accounts.getHref();
+        getDataStore().create(href, account);
+    }
+
+    @Override
+    public void createAccount(Account account, boolean registrationWorkflowEnabled) {
+        AccountList accounts = getAccounts();
+        String href = accounts.getHref();
+        href += "?registrationWorkflowEnabled=" + registrationWorkflowEnabled;
+        getDataStore().create(href, account);
     }
 
     @Override
