@@ -238,4 +238,38 @@ public abstract class AbstractResource implements Resource {
         }
     }
 
+    @Override
+    public int hashCode() {
+        readLock.lock();
+        try {
+            return this.properties.isEmpty() ? 0 : this.properties.hashCode();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (this == o) {
+            return true;
+        }
+        if (!o.getClass().equals(getClass())) {
+            return false;
+        }
+        AbstractResource other = (AbstractResource)o;
+        readLock.lock();
+        try {
+            other.readLock.lock();
+            try {
+                return this.properties.equals(other.properties);
+            } finally {
+                other.readLock.unlock();
+            }
+        } finally {
+            readLock.unlock();
+        }
+    }
 }
