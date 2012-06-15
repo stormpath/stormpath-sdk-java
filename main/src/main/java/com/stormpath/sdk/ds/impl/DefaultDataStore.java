@@ -84,8 +84,24 @@ public class DefaultDataStore implements DataStore {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource> T create(String parentHref, T resource) {
+
+        Class<T> clazz = (Class<T>)resource.getClass();
+
+        T returnValue = create(parentHref, resource, clazz);
+
+        //ensure the caller's argument is updated with what is returned from the server:
+        AbstractResource in = (AbstractResource)resource;
+        AbstractResource ret = (AbstractResource)returnValue;
+        LinkedHashMap<String,Object> props = toMap(ret);
+        in.setProperties(props);
+
+        return (T)in;
+    }
+
+    @Override
+    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType) {
         Assert.notNull(resource, "resource argument cannot be null.");
-        //Assert.isInstanceOf(InstanceResource.class, resource);
+        Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
 
         if (needsToBeFullyQualified(parentHref)) {
@@ -94,20 +110,7 @@ public class DefaultDataStore implements DataStore {
 
         AbstractResource abstractResource = (AbstractResource)resource;
 
-        Set<String> propNames = abstractResource.getPropertyNames();
-
-        LinkedHashMap<String,Object> props = new LinkedHashMap<String,Object>(propNames.size());
-
-        for( String propName : propNames) {
-            Object prop = abstractResource.getProperty(propName);
-
-            //if the property is a reference, don't write the entire object - just the href will do:
-            if (prop instanceof Map) {
-                prop = toSimpleReference(propName, (Map)prop);
-            }
-
-            props.put(propName, prop);
-        }
+        LinkedHashMap<String,Object> props = toMap(abstractResource);
 
         String bodyString = mapMarshaller.marshal(props);
 
@@ -118,13 +121,30 @@ public class DefaultDataStore implements DataStore {
 
         Map<String,Object> responseBody = executeRequest(request);
 
-        //ensure the caller's argument is updated with what is returned from the server
-        if (responseBody != null && !responseBody.isEmpty()) {
-            abstractResource.setProperties(responseBody);
+        if (responseBody == null || responseBody.isEmpty()) {
+            return null;
         }
 
-        Object newResource = resourceFactory.instantiate(resource.getClass(), responseBody);
-        return (T)newResource;
+        return resourceFactory.instantiate(returnType, responseBody);
+    }
+
+    private LinkedHashMap<String, Object> toMap(AbstractResource resource) {
+        Set<String> propNames = resource.getPropertyNames();
+
+        LinkedHashMap<String,Object> props = new LinkedHashMap<String,Object>(propNames.size());
+
+        for( String propName : propNames) {
+            Object prop = resource.getProperty(propName);
+
+            //if the property is a reference, don't write the entire object - just the href will do:
+            if (prop instanceof Map) {
+                prop = toSimpleReference(propName, (Map)prop);
+            }
+
+            props.put(propName, prop);
+        }
+
+        return props;
     }
 
     private Map<String,String> toSimpleReference(String propName, Map map) {

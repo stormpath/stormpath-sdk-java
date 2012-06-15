@@ -15,11 +15,13 @@
  */
 package com.stormpath.sdk.application;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -47,5 +49,5 @@ public interface Application extends Resource {
     //TODO:  Fix this.  Will need to create a token with HTTP.POST with an email as the body.
     PasswordResetToken getPasswordResetToken();
 
-    AuthenticationResult authenticate(AuthenticationRequest request);
+    Account authenticate(AuthenticationRequest request) throws ResourceException;
 }

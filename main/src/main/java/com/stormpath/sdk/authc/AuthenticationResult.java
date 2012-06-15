@@ -15,17 +15,13 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.resource.Resource;
 
 /**
  * @since 0.1
  */
-public interface AuthenticationResult {
-
-    boolean isSuccessful();
-
-    Error getError();
+public interface AuthenticationResult extends Resource {
 
     Account getAccount();
 }

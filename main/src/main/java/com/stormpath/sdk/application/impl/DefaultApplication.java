@@ -15,16 +15,23 @@
  */
 package com.stormpath.sdk.application.impl;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.BasicLoginAttempt;
+import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.authc.impl.BasicAuthenticator;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.resource.impl.AbstractResource;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.util.Assert;
+import com.stormpath.sdk.util.Base64;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -97,7 +104,7 @@ public class DefaultApplication extends AbstractResource implements Application 
     }
 
     @Override
-    public AuthenticationResult authenticate(AuthenticationRequest request) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+    public Account authenticate(AuthenticationRequest request) {
+        return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
     }
 }

@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.ds;
 
-import com.stormpath.sdk.resource.InstanceResource;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
@@ -43,5 +42,7 @@ public interface DataStore {
     <T extends Resource> T load(String href, Class<T> clazz);
 
     <T extends Resource> T create(String parentHref, T resource);
+
+    <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType);
 
 }

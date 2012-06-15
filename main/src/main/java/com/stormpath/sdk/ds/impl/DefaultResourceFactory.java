@@ -69,6 +69,7 @@ public class DefaultResourceFactory implements ResourceFactory {
         return clazz;
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Resource> Class<T> convertToImplClass(Class<T> clazz) {
         String fqcn = clazz.getName();
 
@@ -82,7 +83,6 @@ public class DefaultResourceFactory implements ResourceFactory {
         String implFqcn = BASE_PACKAGE + beforeImpl + '.' + IMPL_PACKAGE_NAME_FRAGMENT + '.' +
                 IMPL_CLASS_PREFIX + clazz.getSimpleName();
 
-        //noinspection unchecked
         return ClassUtils.forName(implFqcn);
     }
 

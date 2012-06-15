@@ -15,16 +15,14 @@
  */
 package com.stormpath.sdk.authc;
 
+import com.stormpath.sdk.resource.Resource;
+
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface AuthenticationRequest<P,C> {
+public interface LoginAttempt extends Resource {
 
-    P getPrincipals();
+    String getType();
 
-    C getCredentials();
-
-    String getHost();
-
-    void clear();
+    void setType(String type);
 }

@@ -16,15 +16,11 @@
 package com.stormpath.sdk.authc;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface AuthenticationRequest<P,C> {
+public interface BasicLoginAttempt extends LoginAttempt {
 
-    P getPrincipals();
+    String getValue();
 
-    C getCredentials();
-
-    String getHost();
-
-    void clear();
+    void setValue(String value);
 }
