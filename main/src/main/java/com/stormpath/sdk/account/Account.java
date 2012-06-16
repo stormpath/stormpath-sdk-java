@@ -19,13 +19,14 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.InstanceResource;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * @since 0.1
  */
-public interface Account extends Resource {
+public interface Account extends Resource, Saveable {
 
     String getUsername();
 

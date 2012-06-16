@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.resource.impl.AbstractResource;
+import com.stormpath.sdk.resource.impl.AbstractInstanceResource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-public class DefaultTenant extends AbstractResource implements Tenant {
+public class DefaultTenant extends AbstractInstanceResource implements Tenant {
 
     private static final String NAME = "name";
     private static final String KEY = "key";

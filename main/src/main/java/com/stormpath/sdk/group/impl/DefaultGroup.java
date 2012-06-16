@@ -5,18 +5,15 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.resource.Status;
-import com.stormpath.sdk.resource.impl.AbstractResource;
+import com.stormpath.sdk.resource.impl.AbstractInstanceResource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
 
 /**
- * @author Jeff Wysong
- *         Date: 6/13/12
- *         Time: 11:31 AM
  * @since 0.2
  */
-public class DefaultGroup extends AbstractResource implements Group {
+public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     private static String NAME = "name";
     private static String DESCRIPTION = "description";

@@ -20,7 +20,7 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Status;
-import com.stormpath.sdk.resource.impl.AbstractResource;
+import com.stormpath.sdk.resource.impl.AbstractInstanceResource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-public class DefaultAccount extends AbstractResource implements Account {
+public class DefaultAccount extends AbstractInstanceResource implements Account {
 
     private final String USERNAME = "username";
     private final String EMAIL = "email";
@@ -45,7 +45,7 @@ public class DefaultAccount extends AbstractResource implements Account {
         super(dataStore);
     }
 
-    public DefaultAccount(DataStore dataStore, Map<String,Object> properties) {
+    public DefaultAccount(DataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

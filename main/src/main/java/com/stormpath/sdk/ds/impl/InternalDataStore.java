@@ -13,28 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.tenant;
+package com.stormpath.sdk.ds.impl;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.directory.DirectoryList;
+import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.resource.Saveable;
+
+import java.util.Map;
 
 /**
- * @since 0.1
+ * Internal DataStore used for implementation purposes only.  Not intended to be called by SDK end users!
+ * <p/>
+ * <b>WARNING: This API CAN CHANGE AT ANY TIME, WITHOUT NOTICE.  DO NOT DEPEND ON IT.</b>
+ *
+ * @since 0.2
  */
-public interface Tenant extends Resource, Saveable {
+public interface InternalDataStore extends DataStore {
 
-    String getName();
-
-    String getKey();
-
-    void createApplication(Application application);
-
-    ApplicationList getApplications();
-
-    DirectoryList getDirectories();
+    <T extends Resource> T instantiate(Class<T> clazz, Map<String,Object> properties);
 
 }

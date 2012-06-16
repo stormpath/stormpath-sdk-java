@@ -13,28 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.tenant;
-
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.resource.Saveable;
+package com.stormpath.sdk.resource;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface Tenant extends Resource, Saveable {
+public interface Saveable {
 
-    String getName();
-
-    String getKey();
-
-    void createApplication(Application application);
-
-    ApplicationList getApplications();
-
-    DirectoryList getDirectories();
+    void save();
 
 }

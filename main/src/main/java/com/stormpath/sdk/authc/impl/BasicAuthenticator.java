@@ -17,6 +17,7 @@ package com.stormpath.sdk.authc.impl;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.BasicLoginAttempt;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.ds.DataStore;
@@ -64,7 +65,8 @@ public class BasicAuthenticator {
 
         String href = parentHref + "/loginAttempts";
 
-        return this.dataStore.create(href, attempt, Account.class);
+        AuthenticationResult result = this.dataStore.create(href, attempt, AuthenticationResult.class);
+        return result.getAccount();
     }
 
 }

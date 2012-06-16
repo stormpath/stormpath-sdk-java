@@ -21,7 +21,7 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Status;
-import com.stormpath.sdk.resource.impl.AbstractResource;
+import com.stormpath.sdk.resource.impl.AbstractInstanceResource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class DefaultDirectory extends AbstractResource implements Directory {
+public class DefaultDirectory extends AbstractInstanceResource implements Directory {
 
     private static String NAME = "name";
     private static String DESCRIPTION = "description";

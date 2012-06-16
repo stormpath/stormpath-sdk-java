@@ -22,9 +22,11 @@ import com.stormpath.sdk.http.impl.DefaultRequest;
 import com.stormpath.sdk.http.impl.Version;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.impl.AbstractResource;
 import com.stormpath.sdk.util.Assert;
 import com.stormpath.sdk.util.StringInputStream;
+import com.stormpath.sdk.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,14 +100,44 @@ public class DefaultDataStore implements DataStore {
         return (T)in;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Resource & Saveable> void save(T resource) {
+        Assert.notNull(resource, "resource argument cannot be null.");
+        Assert.isInstanceOf(AbstractResource.class, resource);
+        Assert.isInstanceOf(Saveable.class, resource);
+
+        AbstractResource aResource = (AbstractResource)resource;
+
+        String href = aResource.getHref();
+        Assert.isTrue(StringUtils.hasLength(href), "save may only be called on objects that have already been persisted (i.e. they have an existing href).");
+
+        if (needsToBeFullyQualified(href)) {
+            href = qualify(href);
+        }
+
+        Class<T> clazz = (Class<T>)resource.getClass();
+
+        T returnValue = save(href, resource, clazz);
+
+        //ensure the caller's argument is updated with what is returned from the server:
+        AbstractResource ret = (AbstractResource)returnValue;
+        LinkedHashMap<String,Object> props = toMap(ret);
+        aResource.setProperties(props);
+    }
+
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType) {
+        return save(parentHref, resource, returnType);
+    }
+
+    private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
 
-        if (needsToBeFullyQualified(parentHref)) {
-            parentHref = qualify(parentHref);
+        if (needsToBeFullyQualified(href)) {
+            href = qualify(href);
         }
 
         AbstractResource abstractResource = (AbstractResource)resource;
@@ -117,7 +149,7 @@ public class DefaultDataStore implements DataStore {
         StringInputStream body = new StringInputStream(bodyString);
         long length = body.available();
 
-        Request request = new DefaultRequest(HttpMethod.POST, parentHref, null, null, body, length);
+        Request request = new DefaultRequest(HttpMethod.POST, href, null, null, body, length);
 
         Map<String,Object> responseBody = executeRequest(request);
 

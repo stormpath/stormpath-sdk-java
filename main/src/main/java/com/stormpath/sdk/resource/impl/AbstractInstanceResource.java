@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.tenant;
+package com.stormpath.sdk.resource.impl;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.resource.Saveable;
 
+import java.util.Map;
+
 /**
- * @since 0.1
+ * @since 0.2
  */
-public interface Tenant extends Resource, Saveable {
+public class AbstractInstanceResource extends AbstractResource implements Saveable {
 
-    String getName();
+    protected AbstractInstanceResource(DataStore dataStore) {
+        super(dataStore);
+    }
 
-    String getKey();
+    protected AbstractInstanceResource(DataStore dataStore, Map<String, Object> properties) {
+        super(dataStore, properties);
+    }
 
-    void createApplication(Application application);
-
-    ApplicationList getApplications();
-
-    DirectoryList getDirectories();
-
+    @Override
+    public void save() {
+        getDataStore().save(this);
+    }
 }
