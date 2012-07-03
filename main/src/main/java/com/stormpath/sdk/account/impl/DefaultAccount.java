@@ -41,7 +41,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     private final String GROUPS = "groups";
     private final String DIRECTORY = "directory";
     private final String TENANT = "tenant";
-    private final String EMAIL_VERIFICATION_TOKEN = "emailVerificationToken";
+    private final String EMAIL_VERIFICATION_TOKEN = "emailVerificationTokens";
 
     public DefaultAccount(DataStore dataStore) {
         super(dataStore);
