@@ -17,7 +17,6 @@ package com.stormpath.sdk.account;
 
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.resource.InstanceResource;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
@@ -60,5 +59,5 @@ public interface Account extends Resource, Saveable {
 
     Tenant getTenant();
 
-    EmailVerificationToken getEmailVerificationToken();
+    EmailVerificationToken getEmailVerificationTokens();
 }

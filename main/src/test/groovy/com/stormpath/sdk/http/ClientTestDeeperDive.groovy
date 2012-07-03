@@ -91,6 +91,9 @@ class ClientTestDeeperDive {
             AccountList accountList = directory.getAccounts()
             for (Account account : accountList) {
                 println("-- Account $account");
+                if (account.emailVerificationTokens) {
+                    println("--- EmailVerificationToken $account.emailVerificationTokens")
+                }
             }
         }
 

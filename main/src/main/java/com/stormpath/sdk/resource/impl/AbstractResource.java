@@ -202,7 +202,7 @@ public abstract class AbstractResource implements Resource {
         if (value instanceof Map) {
             String href = getHref((Map) value);
             if (href != null) {
-                return dataStore.load(href, clazz);
+                return dataStore.instantiate(clazz, (Map<String,Object>) value);
             }
         }
         return null;

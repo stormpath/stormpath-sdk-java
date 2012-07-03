@@ -41,7 +41,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     private final String GROUPS = "groups";
     private final String DIRECTORY = "directory";
     private final String TENANT = "tenant";
-    private final String EMAIL_VERIFICATION_TOKEN = "emailVerificationTokens";
+    private final String EMAIL_VERIFICATION_TOKENS = "emailVerificationTokens";
 
     public DefaultAccount(DataStore dataStore) {
         super(dataStore);
@@ -136,7 +136,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     }
 
     @Override
-    public EmailVerificationToken getEmailVerificationToken() {
-        return getResourceProperty(EMAIL_VERIFICATION_TOKEN, EmailVerificationToken.class);
+    public EmailVerificationToken getEmailVerificationTokens() {
+        return getResourceProperty(EMAIL_VERIFICATION_TOKENS, EmailVerificationToken.class);
     }
 }
