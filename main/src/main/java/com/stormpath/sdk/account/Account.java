@@ -59,4 +59,6 @@ public interface Account extends Resource, Saveable {
     Directory getDirectory();
 
     Tenant getTenant();
+
+    EmailVerificationToken getEmailVerificationToken();
 }

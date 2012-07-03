@@ -16,6 +16,7 @@
 package com.stormpath.sdk.account.impl;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupList;
@@ -40,6 +41,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     private final String GROUPS = "groups";
     private final String DIRECTORY = "directory";
     private final String TENANT = "tenant";
+    private final String EMAIL_VERIFICATION_TOKEN = "emailVerificationToken";
 
     public DefaultAccount(DataStore dataStore) {
         super(dataStore);
@@ -131,5 +133,10 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT, Tenant.class);
+    }
+
+    @Override
+    public EmailVerificationToken getEmailVerificationToken() {
+        return getResourceProperty(EMAIL_VERIFICATION_TOKEN, EmailVerificationToken.class);
     }
 }
