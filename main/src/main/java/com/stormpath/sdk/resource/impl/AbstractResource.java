@@ -189,21 +189,10 @@ public abstract class AbstractResource implements Resource {
         return -1;
     }
 
-    private String getHref(Map props) {
-        Object value = props != null ? props.get(HREF_PROP_NAME) : null;
-        if (value instanceof String) {
-            return (String) value;
-        }
-        return null;
-    }
-
     protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
         Object value = getProperty(key);
-        if (value instanceof Map) {
-            String href = getHref((Map) value);
-            if (href != null) {
-                return dataStore.instantiate(clazz, (Map<String,Object>) value);
-            }
+        if (value instanceof Map && !((Map)value).isEmpty()) {
+            return dataStore.instantiate(clazz, (Map<String,Object>)value);
         }
         return null;
     }
