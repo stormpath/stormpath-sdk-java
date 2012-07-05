@@ -69,6 +69,14 @@
             <organization>Stormpath, Inc.</organization>
             <organizationUrl>http://www.stormpath.com</organizationUrl>
         </developer>
+        <developer>
+            <id>jwysong</id>
+            <name>Jeff Wysong</name>
+            <email>jeff@stormpath.com</email>
+            <timezone>-5</timezone>
+            <organization>Stormpath, Inc.</organization>
+            <organizationUrl>http://www.stormpath.com</organizationUrl>
+        </developer>
     </developers>
 
     <modules>
