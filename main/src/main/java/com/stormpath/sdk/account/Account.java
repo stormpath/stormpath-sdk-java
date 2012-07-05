@@ -59,5 +59,5 @@ public interface Account extends Resource, Saveable {
 
     Tenant getTenant();
 
-    EmailVerificationToken getEmailVerificationTokens();
+    EmailVerificationToken getEmailVerificationToken();
 }

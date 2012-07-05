@@ -136,7 +136,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     }
 
     @Override
-    public EmailVerificationToken getEmailVerificationTokens() {
+    public EmailVerificationToken getEmailVerificationToken() {
         return getResourceProperty(EMAIL_VERIFICATION_TOKENS, EmailVerificationToken.class);
     }
 }
