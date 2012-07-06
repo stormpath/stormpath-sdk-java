@@ -16,10 +16,11 @@
 package com.stormpath.sdk.account;
 
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 
 /**
  * @since 0.2
  */
-public interface EmailVerificationToken extends Resource {
+public interface EmailVerificationToken extends Resource, Saveable {
 
 }
