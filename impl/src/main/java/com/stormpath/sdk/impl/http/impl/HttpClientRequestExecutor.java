@@ -27,7 +27,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
-        ThreadSafeClientConnManager connMgr = new ThreadSafeClientConnManager();
+        PoolingClientConnectionManager connMgr = new PoolingClientConnectionManager();
         connMgr.setDefaultMaxPerRoute(10);
 
         this.httpClient = new DefaultHttpClient(connMgr);

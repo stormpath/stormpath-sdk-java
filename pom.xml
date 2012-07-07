@@ -90,16 +90,15 @@
         <stormpath-sdk-java.repository.releases.url>file://${user.home}/.m2/local-releases</stormpath-sdk-java.repository.releases.url>
         <stormpath-sdk-java.repository.snapshots.url>file://${user.home}/.m2/local-snapshots</stormpath-sdk-java.repository.snapshots.url>
 
-        <!-- Optional 3rd-party Compile Dependencies: -->
-        <jackson.version>1.9.6</jackson.version>
+        <slf4j.version>1.6.6</slf4j.version>
+        <httpClient.version>4.2.1</httpClient.version>
+        <jackson.version>1.9.7</jackson.version>
 
-        <!-- Test Dependencies: -->
-        <logback.version>1.0.1</logback.version>
-        <easymock.version>3.1</easymock.version>
+        <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.6</groovy.version>
-        <httpClient.version>4.1.3</httpClient.version>
-        <slf4j.version>1.6.1</slf4j.version>
-        <testng.version>6.4</testng.version>
+        <logback.version>1.0.6</logback.version>
+        <easymock.version>3.1</easymock.version>
+        <testng.version>6.5.2</testng.version>
 
     </properties>
 
