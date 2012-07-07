@@ -18,14 +18,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.stormpath.sdk.java</groupId>
-    <artifactId>stormpath-sdk-java-root</artifactId>
+    <artifactId>stormpath-sdk-root</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.0</version>
+    <version>0.3.0-SNAPSHOT</version>
 
-    <name>Stormpath SDK for Java</name>
+    <name>Stormpath Java SDK</name>
     <url>https://github.com/stormpath/stormpath-sdk-java</url>
     <description>
-        The Stormpath SDK for Java enables JVM-based applications to easily interact with Stormpath's REST API.
+        The Stormpath Java SDK enables JVM-based applications to easily interact with Stormpath's REST API.
     </description>
     <inceptionYear>2012</inceptionYear>
 
@@ -80,7 +80,8 @@
     </developers>
 
     <modules>
-        <module>main</module>
+        <module>api</module>
+        <module>impl</module>
     </modules>
 
     <properties>
@@ -144,12 +145,12 @@
             <!-- Stormpath SDK for Java sub-modules dependency .jars (alphabetized based on artifactId for easy scanning please!): -->
             <dependency>
                 <groupId>com.stormpath.sdk.java</groupId>
-                <artifactId>stormpath-sdk-java-api</artifactId>
+                <artifactId>stormpath-sdk-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk.java</groupId>
-                <artifactId>stormpath-sdk-java-impl</artifactId>
+                <artifactId>stormpath-sdk-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
