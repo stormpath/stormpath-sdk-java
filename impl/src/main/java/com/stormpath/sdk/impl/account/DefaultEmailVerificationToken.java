@@ -17,14 +17,14 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 
 import java.util.Map;
 
 /**
  * @since 0.2
  */
-public class DefaultEmailVerificationToken extends AbstractResource implements EmailVerificationToken {
+public class DefaultEmailVerificationToken extends AbstractInstanceResource implements EmailVerificationToken {
 
     public DefaultEmailVerificationToken(DataStore dataStore) {
         super(dataStore);
