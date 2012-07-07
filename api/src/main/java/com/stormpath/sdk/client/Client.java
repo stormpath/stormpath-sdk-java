@@ -22,7 +22,32 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 
 /**
+ * The {@code Client} is the main entry point to the Stormpath Java SDK.  A Java project wishing to
+ * communicate with the Stormpath REST API service must instantiate a {@code Client} instance.  After obtaining
+ * a {@code Client instance}, the REST API may be used by making simple Java calls on objects returned from
+ * the Client (or any children objects obtained therein).
+ * <p/>
+ * For example:
+ * <pre>
+ * String accessId = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key's Access ID</a>
+ * String secret = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key's Secret</a>
+ *
+ * //create the Client instance:
+ * Client client = new Client(new DefaultApiKey(accessId, secret));
+ *
+ * //interact with the REST API resources as desired:
+ * Tenant myTenant = client.getCurrentTenant();
+ *
+ * ApplicationList applications = tenant.getApplications();
+ *
+ * System.out.println("My Applications: ");
+ * for (Application application : applications) {
+ *     System.out.println(application);
+ * }
+ * </pre>
+ *
  * @since 0.1
+ * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
  */
 public class Client {
 
@@ -30,23 +55,26 @@ public class Client {
 
     private final DataStore dataStore;
 
+    /**
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
+     * JavaDoc for a usage example.
+     *
+     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with
+     *               Stormpath's REST API.
+     */
     public Client(ApiKey apiKey) {
-        this(apiKey, DEFAULT_API_VERSION);
-    }
-
-    public Client(ApiKey apiKey, int apiVersion) {
         Object requestExecutor = createRequestExecutor(apiKey);
-        this.dataStore = createDataStore(requestExecutor, apiVersion);
+        this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
     }
 
-    //no modifier on purpose: for testing only:
+    //no modifier on purpose: for local development testing only:
     Client(ApiKey apiKey, String baseUrl) {
         Object requestExecutor = createRequestExecutor(apiKey);
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
 
     public Tenant getCurrentTenant() {
-        return this.dataStore.load("/tenants/current", Tenant.class);
+        return this.dataStore.getResource("/tenants/current", Tenant.class);
     }
 
     public DataStore getDataStore() {
@@ -57,15 +85,18 @@ public class Client {
     @SuppressWarnings("unchecked")
     private Object createRequestExecutor(ApiKey apiKey) {
 
-        String className = "com.stormpath.sdk.impl.http.impl.HttpClientRequestExecutor";
+        String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
         Class requestExecutorClass = null;
 
         if (ClassUtils.isAvailable(className)) {
             requestExecutorClass = ClassUtils.forName(className);
         } else {
+            //we might be able to check for other implementations in the future, but for now, we only support
+            //HTTP calls via the HttpClient.  Throw an exception:
+
             String msg = "Unable to find the '" + className + "' implementation on the classpath.  Please ensure you " +
-                    "have added the stormpath-sdk-impl .jar file to your runtime classpath.";
+                    "have added the stormpath-sdk-impl-httpclient .jar file to your runtime classpath.";
             throw new RuntimeException(msg);
         }
 

@@ -16,11 +16,16 @@
 package com.stormpath.sdk.ds;
 
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 
 import java.util.Map;
 
 /**
+ * A {@code DataStore} is the liaison between client SDK components and the raw Stormpath REST API.  It is
+ * responsible for converting SDK objects (Account, Directory, Group instances, etc) into REST HTTP requests,
+ * executing those requests, and converting REST HTTP responses back into SDK objects.
+ *
  * @since 0.1
  */
 public interface DataStore {
@@ -30,7 +35,7 @@ public interface DataStore {
      * and is not saved/synchronized with the server in any way.
      * <p/>
      * This method effectively replaces the {@code new} keyword that would have been used otherwise if the concrete
-     * implementation was known (implementation classes are intentionally not exposed to SDK end-users).
+     * implementation was known (Resource implementation classes are intentionally not exposed to SDK end-users).
      *
      * @param clazz the Resource class to instantiate.
      * @param <T>   the Resource sub-type
@@ -38,14 +43,19 @@ public interface DataStore {
      */
     <T extends Resource> T instantiate(Class<T> clazz);
 
-    <T extends Resource> T instantiate(Class<T> clazz, Map<String,Object> properties);
-
-    <T extends Resource> T load(String href, Class<T> clazz);
-
-    <T extends Resource> T create(String parentHref, T resource);
-
-    <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType);
-
-    <T extends Resource & Saveable> void save(T resource);
+    /**
+     * Looks up (retrieves) the resource at the specified {@code href} URL and returns the resource as an instance
+     * of the specified {@code class}.
+     * <p/>
+     * The {@code Class} argument must represent an interface that is a sub-interface of
+     * {@link Resource}, for example {@link com.stormpath.sdk.account.Account Account},
+     * {@link com.stormpath.sdk.directory.Directory Directory}, etc.
+     *
+     * @param href  the resource URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
+     */
+    <T extends Resource> T getResource(String href, Class<T> clazz);
 
 }

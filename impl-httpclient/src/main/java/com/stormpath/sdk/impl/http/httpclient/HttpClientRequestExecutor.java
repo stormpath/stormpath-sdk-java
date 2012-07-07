@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.impl;
+package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.*;
 import com.stormpath.sdk.impl.http.authc.Sauthc1Signer;
 import com.stormpath.sdk.impl.http.authc.Signer;
+import com.stormpath.sdk.impl.http.support.BackoffStrategy;
+import com.stormpath.sdk.impl.http.support.DefaultRequest;
+import com.stormpath.sdk.impl.http.support.DefaultResponse;
 import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import org.apache.http.*;
@@ -181,9 +184,9 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 exception = null;
                 retryCount++;
 
-                long start = System.currentTimeMillis();
+                //long start = System.currentTimeMillis();
                 httpResponse = httpClient.execute(httpRequest);
-                long end = System.currentTimeMillis();
+                //long end = System.currentTimeMillis();
                 //executionContext.getTimingInfo().addSubMeasurement(HTTP_REQUEST_TIME, new TimingInfo(start, end));
 
                 if (isRedirect(httpResponse)) {

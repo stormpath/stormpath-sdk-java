@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 
 import java.util.Map;
@@ -27,11 +27,11 @@ import java.util.Map;
  */
 public class DefaultAccountList extends AbstractCollectionResource<Account> implements AccountList {
 
-    public DefaultAccountList(DataStore dataStore) {
+    public DefaultAccountList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAccountList(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultAccountList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

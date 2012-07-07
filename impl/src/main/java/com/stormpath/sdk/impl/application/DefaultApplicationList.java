@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 
 import java.util.Map;
@@ -27,11 +27,11 @@ import java.util.Map;
  */
 public class DefaultApplicationList extends AbstractCollectionResource<Application> implements ApplicationList {
 
-    public DefaultApplicationList(DataStore dataStore) {
+    public DefaultApplicationList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultApplicationList(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultApplicationList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

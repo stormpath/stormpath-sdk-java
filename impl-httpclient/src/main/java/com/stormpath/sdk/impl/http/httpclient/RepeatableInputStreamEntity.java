@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.impl;
+package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.Request;

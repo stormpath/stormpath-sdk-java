@@ -15,11 +15,10 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.*;
-import com.stormpath.sdk.impl.http.impl.DefaultRequest;
-import com.stormpath.sdk.impl.http.impl.Version;
+import com.stormpath.sdk.impl.http.support.DefaultRequest;
+import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.StringInputStream;
@@ -36,7 +35,7 @@ import java.util.*;
 /**
  * @since 0.1
  */
-public class DefaultDataStore implements DataStore {
+public class DefaultDataStore implements InternalDataStore {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultDataStore.class);
 
@@ -78,7 +77,7 @@ public class DefaultDataStore implements DataStore {
     }
 
     @Override
-    public <T extends Resource> T load(String href, Class<T> clazz) {
+    public <T extends Resource> T getResource(String href, Class<T> clazz) {
         Map<String,?> data = executeRequest(HttpMethod.GET, href);
         return this.resourceFactory.instantiate(clazz, data);
     }

@@ -18,8 +18,8 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
@@ -39,11 +39,11 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     private static String TENANT = "tenant";
 
 
-    public DefaultDirectory(DataStore dataStore) {
+    public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultDirectory(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultDirectory(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

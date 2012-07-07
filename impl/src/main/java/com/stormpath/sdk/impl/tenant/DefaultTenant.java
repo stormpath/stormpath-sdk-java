@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.tenant;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -34,11 +34,11 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     private static final String APPLICATIONS = "applications";
     private static final String DIRECTORIES = "directories";
 
-    public DefaultTenant(DataStore dataStore) {
+    public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultTenant(DataStore dataStore, Map<String,Object> properties) {
+    public DefaultTenant(InternalDataStore dataStore, Map<String,Object> properties) {
         super(dataStore, properties);
     }
 

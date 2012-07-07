@@ -18,8 +18,8 @@ package com.stormpath.sdk.impl.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
@@ -43,11 +43,11 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     private final String TENANT = "tenant";
     private final String EMAIL_VERIFICATION_TOKENS = "emailVerificationTokens";
 
-    public DefaultAccount(DataStore dataStore) {
+    public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAccount(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultAccount(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

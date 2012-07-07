@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.resource;
+package com.stormpath.sdk.impl.http.support;
 
-import java.util.Collection;
+import com.stormpath.sdk.impl.http.HttpMessage;
+
+import java.io.InputStream;
 
 /**
  * @since 0.1
  */
-public interface Page<T> {
+public abstract class AbstractHttpMessage implements HttpMessage {
 
-    int getOffset();
-
-    int getLimit();
-
-    Collection<T> getItems();
+    @Override
+    public boolean hasBody() {
+        InputStream is = getBody();
+        return is != null && getHeaders().getContentLength() != 0;
+    }
 }

@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.impl;
+package com.stormpath.sdk.impl.http.support;
+
+import com.stormpath.sdk.impl.http.RestException;
 
 /**
  * @since 0.1
  */
-public interface BackoffStrategy {
+public class SignatureException extends RestException {
 
-    long getDelayMillis(int retryCount);
+    public SignatureException(String s) {
+        super(s);
+    }
+
+    public SignatureException(Throwable cause) {
+        super(cause);
+    }
+
+    public SignatureException(String s, Throwable cause) {
+        super(s, cause);
+    }
 }

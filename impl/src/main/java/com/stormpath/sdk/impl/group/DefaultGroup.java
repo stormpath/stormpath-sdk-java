@@ -2,8 +2,8 @@ package com.stormpath.sdk.impl.group;
 
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
@@ -22,11 +22,11 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     private static String DIRECTORY = "directory";
     private static String ACCOUNTS = "accounts";
 
-    public DefaultGroup(DataStore dataStore) {
+    public DefaultGroup(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultGroup(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultGroup(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

@@ -15,9 +15,8 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Page;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.*;
@@ -31,11 +30,11 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
     private static final String LIMIT = "limit";
     private static final String ITEMS = "items";
 
-    protected AbstractCollectionResource(DataStore dataStore) {
+    protected AbstractCollectionResource(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    protected AbstractCollectionResource(DataStore dataStore, Map<String, Object> properties) {
+    protected AbstractCollectionResource(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

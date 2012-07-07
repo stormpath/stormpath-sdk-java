@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.directory;
 
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 
 import java.util.Map;
@@ -27,11 +27,11 @@ import java.util.Map;
  */
 public class DefaultDirectoryList extends AbstractCollectionResource<Directory> implements DirectoryList {
 
-    public DefaultDirectoryList(DataStore dataStore) {
+    public DefaultDirectoryList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultDirectoryList(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultDirectoryList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

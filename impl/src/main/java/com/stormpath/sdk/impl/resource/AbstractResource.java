@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.StringUtils;
 import com.stormpath.sdk.resource.Resource;
 import org.slf4j.Logger;
@@ -39,18 +39,18 @@ public abstract class AbstractResource implements Resource {
     public static final String HREF_PROP_NAME = "href";
 
     private final Map<String, Object> properties;
-    private final DataStore dataStore;
+    private final InternalDataStore dataStore;
     protected final Lock readLock;
     protected final Lock writeLock;
 
     private volatile boolean materialized;
     private volatile boolean dirty;
 
-    protected AbstractResource(DataStore dataStore) {
+    protected AbstractResource(InternalDataStore dataStore) {
         this(dataStore, null);
     }
 
-    protected AbstractResource(DataStore dataStore, Map<String, Object> properties) {
+    protected AbstractResource(InternalDataStore dataStore, Map<String, Object> properties) {
         ReadWriteLock rwl = new ReentrantReadWriteLock();
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
@@ -82,7 +82,7 @@ public abstract class AbstractResource implements Resource {
         return getStringProperty(HREF_PROP_NAME);
     }
 
-    protected final DataStore getDataStore() {
+    protected final InternalDataStore getDataStore() {
         return this.dataStore;
     }
 
@@ -111,7 +111,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     protected void materialize() {
-        AbstractResource resource = dataStore.load(getHref(), getClass());
+        AbstractResource resource = dataStore.getResource(getHref(), getClass());
         writeLock.lock();
         try {
             this.properties.clear();
@@ -189,6 +189,7 @@ public abstract class AbstractResource implements Resource {
         return -1;
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
         Object value = getProperty(key);
         if (value instanceof Map && !((Map)value).isEmpty()) {

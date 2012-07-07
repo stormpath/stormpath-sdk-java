@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.http.authc;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.impl.SignatureException;
+import com.stormpath.sdk.impl.http.support.SignatureException;
 
 /**
  * @since 0.1

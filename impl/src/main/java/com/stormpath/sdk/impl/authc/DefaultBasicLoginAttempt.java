@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.authc;
 
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 
 import java.util.Map;
@@ -28,11 +28,11 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     private static final String TYPE = "type";
     private static final String VALUE = "value";
 
-    public DefaultBasicLoginAttempt(DataStore dataStore) {
+    public DefaultBasicLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultBasicLoginAttempt(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultBasicLoginAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

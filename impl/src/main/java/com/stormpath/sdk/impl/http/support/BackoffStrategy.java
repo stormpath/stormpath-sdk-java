@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.resource;
+package com.stormpath.sdk.impl.http.support;
 
 /**
  * @since 0.1
  */
-public interface InstanceResource extends Resource {
+public interface BackoffStrategy {
 
-    void save();
-
-    void delete();
+    long getDelayMillis(int retryCount);
 }

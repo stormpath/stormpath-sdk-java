@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.resource.Saveable;
 
 import java.util.Map;
@@ -25,11 +25,11 @@ import java.util.Map;
  */
 public class AbstractInstanceResource extends AbstractResource implements Saveable {
 
-    protected AbstractInstanceResource(DataStore dataStore) {
+    protected AbstractInstanceResource(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    protected AbstractInstanceResource(DataStore dataStore, Map<String, Object> properties) {
+    protected AbstractInstanceResource(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

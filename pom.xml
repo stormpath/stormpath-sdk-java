@@ -82,6 +82,7 @@
     <modules>
         <module>api</module>
         <module>impl</module>
+        <module>impl-httpclient</module>
     </modules>
 
     <properties>
@@ -163,7 +164,6 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-mapper-asl</artifactId>
                 <version>${jackson.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

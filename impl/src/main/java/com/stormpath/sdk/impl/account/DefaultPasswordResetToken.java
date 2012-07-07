@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 
 import java.util.Map;
@@ -30,11 +30,11 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     private final String EMAIL = "email";
     private final String ACCOUNT = "account";
 
-    protected DefaultPasswordResetToken(DataStore dataStore) {
+    protected DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    protected DefaultPasswordResetToken(DataStore dataStore, Map<String, Object> properties) {
+    protected DefaultPasswordResetToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

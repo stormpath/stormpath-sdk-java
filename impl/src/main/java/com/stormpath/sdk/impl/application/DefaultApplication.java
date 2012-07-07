@@ -20,8 +20,8 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
@@ -40,11 +40,11 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     private static final String ACCOUNTS = "accounts";
     private static final String PASSWORD_RESET_TOKENS = "passwordResetTokens";
 
-    public DefaultApplication(DataStore dataStore) {
+    public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultApplication(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultApplication(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

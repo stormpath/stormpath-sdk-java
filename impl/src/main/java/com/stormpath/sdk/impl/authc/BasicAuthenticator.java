@@ -19,7 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.Base64;
 
@@ -30,12 +30,11 @@ import java.io.UnsupportedEncodingException;
  */
 public class BasicAuthenticator {
 
-    private DataStore dataStore;
+    private InternalDataStore dataStore;
 
-    public BasicAuthenticator(DataStore dataStore) {
+    public BasicAuthenticator(InternalDataStore dataStore) {
         this.dataStore = dataStore;
     }
-
 
     public Account authenticate(String parentHref, AuthenticationRequest request) {
         Assert.notNull(parentHref, "href argument must be specified");

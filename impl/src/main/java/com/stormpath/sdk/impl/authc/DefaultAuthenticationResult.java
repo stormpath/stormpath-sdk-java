@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 
 import java.util.Map;
@@ -29,11 +29,11 @@ public class DefaultAuthenticationResult extends AbstractResource implements Aut
 
     private static final String ACCOUNT = "account";
 
-    public DefaultAuthenticationResult(DataStore dataStore) {
+    public DefaultAuthenticationResult(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAuthenticationResult(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultAuthenticationResult(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

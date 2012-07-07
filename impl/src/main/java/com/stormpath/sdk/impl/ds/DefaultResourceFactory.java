@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.util.ClassUtils;
 import com.stormpath.sdk.resource.Resource;
 
@@ -30,13 +29,13 @@ import java.util.Map;
  */
 public class DefaultResourceFactory implements ResourceFactory {
 
-    private DataStore dataStore;
+    private InternalDataStore dataStore;
 
     private static final String BASE_PACKAGE = "com.stormpath.sdk.";
     private static final String IMPL_PACKAGE_NAME_FRAGMENT = "impl";
     private static final String IMPL_CLASS_PREFIX = "Default";
 
-    public DefaultResourceFactory(DataStore dataStore) {
+    public DefaultResourceFactory(InternalDataStore dataStore) {
         this.dataStore = dataStore;
     }
 
@@ -54,9 +53,9 @@ public class DefaultResourceFactory implements ResourceFactory {
         Constructor<T> ctor;
 
         if (ctorArgs.length == 1) {
-            ctor = ClassUtils.getConstructor(implClass, DataStore.class);
+            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class);
         } else {
-            ctor = ClassUtils.getConstructor(implClass, DataStore.class, Map.class);
+            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class, Map.class);
         }
 
         return ClassUtils.instantiate(ctor, ctorArgs);

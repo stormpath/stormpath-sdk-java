@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.http.authc;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.impl.SignatureException;
+import com.stormpath.sdk.impl.http.support.SignatureException;
 import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import org.slf4j.Logger;
@@ -51,7 +51,6 @@ public class Sauthc1Signer implements Signer {
     public static final String DATE_FORMAT = "yyyyMMdd";
     public static final String TIMESTAMP_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
     public static final String TIME_ZONE = "UTC";
-
 
     private static final String NL = "\n";
 
@@ -95,13 +94,13 @@ public class Sauthc1Signer implements Signer {
 
         String canonicalRequest =
                 method + NL +
-                        canonicalResourcePath + NL +
-                        canonicalQueryString + NL +
-                        canonicalHeadersString + NL +
-                        signedHeadersString + NL +
-                        requestPayloadHashHex;
+                canonicalResourcePath + NL +
+                canonicalQueryString + NL +
+                canonicalHeadersString + NL +
+                signedHeadersString + NL +
+                requestPayloadHashHex;
 
-        log.debug(AUTHENTICATION_SCHEME + " Canonical Request: " + canonicalRequest);
+        log.debug("{} Canonical Request: {}", AUTHENTICATION_SCHEME, canonicalRequest);
 
         String id = apiKey.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
 
@@ -113,7 +112,7 @@ public class Sauthc1Signer implements Signer {
                         id + NL +
                         canonicalRequestHashHex;
 
-        log.debug(AUTHENTICATION_SCHEME + " String to Sign: " + stringToSign);
+        log.debug("{} String to Sign: {}", AUTHENTICATION_SCHEME, stringToSign);
 
         // SAuthc1 uses a series of derived keys, formed by hashing different pieces of data
         byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + apiKey.getSecret());
@@ -130,7 +129,7 @@ public class Sauthc1Signer implements Signer {
                         createNameValuePair(SAUTHC1_SIGNED_HEADERS, signedHeadersString) + ", " +
                         createNameValuePair(SAUTHC1_SIGNATURE, signatureHex);
 
-        log.debug(AUTHORIZATION_HEADER + ":{}", authorizationHeader);
+        log.debug("{}: {}", AUTHORIZATION_HEADER,  authorizationHeader);
 
         request.getHeaders().set(AUTHORIZATION_HEADER, authorizationHeader);
     }

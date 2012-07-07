@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.group;
 
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 
 import java.util.Map;
@@ -26,11 +26,11 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultGroupList extends AbstractCollectionResource<Group> implements GroupList {
-    public DefaultGroupList(DataStore dataStore) {
+    public DefaultGroupList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultGroupList(DataStore dataStore, Map<String, Object> properties) {
+    public DefaultGroupList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
