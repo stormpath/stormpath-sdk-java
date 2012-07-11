@@ -140,7 +140,7 @@ public class Client {
     }
 
     //since 0.3
-    private static class ClassUtils {
+    static class ClassUtils {
 
         private static final ClassLoaderAccessor THREAD_CL_ACCESSOR = new ExceptionIgnoringAccessor() {
             @Override
@@ -162,6 +162,33 @@ public class Client {
                 return ClassLoader.getSystemClassLoader();
             }
         };
+
+        /**
+         * Returns the specified resource by checking the current thread's
+         * {@link Thread#getContextClassLoader() context class loader}, then the
+         * current ClassLoader (<code>ClassUtils.class.getClassLoader()</code>), then the system/application
+         * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order, using
+         * {@link ClassLoader#getResourceAsStream(String) getResourceAsStream(name)}.
+         *
+         * @param name the name of the resource to acquire from the classloader(s).
+         * @return the InputStream of the resource found, or <code>null</code> if the resource cannot be found from any
+         *         of the three mentioned ClassLoaders.
+         * @since 0.9
+         */
+        static InputStream getResourceAsStream(String name) {
+
+            InputStream is = THREAD_CL_ACCESSOR.getResourceStream(name);
+
+            if (is == null) {
+                is = CLASS_CL_ACCESSOR.getResourceStream(name);
+            }
+
+            if (is == null) {
+                is = SYSTEM_CL_ACCESSOR.getResourceStream(name);
+            }
+
+            return is;
+        }
 
         /**
          * Attempts to load the specified class name from the current thread's

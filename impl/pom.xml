@@ -27,6 +27,12 @@
 
     <artifactId>stormpath-sdk-impl</artifactId>
     <name>Stormpath Java SDK :: Impl</name>
+    <description>
+        The Stormpath Java SDK core implemenation .jar is used at runtime to support API invocations.  This
+        implementation jar should be a runtime dependency only and should NOT be depended on at compile time by
+        your code.  The implementations within this jar can change at any time without warning - use it with runtime
+        scope only.
+    </description>
     <packaging>jar</packaging>
 
     <dependencies>
