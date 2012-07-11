@@ -31,9 +31,12 @@ import com.stormpath.sdk.tenant.Tenant
 class ClientTest {
 
     public static void main(String[] args) {
-        DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
 
-        Client client = new Client(apiKey, "http://localhost:8080/v1")
+        //apiKey path:
+        String location = System.getProperty("user.home") + "/.stormpath/iam/localhost/apiKey.properties";
+        String baseUrl = "http://localhost:8080/v1"; //dev local test environment
+
+        Client client = new ClientBuilder().setBaseUrl(baseUrl).setApiKeyFileLocation(location).build();
 
         long start = System.currentTimeMillis();
 

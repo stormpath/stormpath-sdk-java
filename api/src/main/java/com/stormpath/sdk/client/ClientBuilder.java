@@ -50,6 +50,7 @@ public class ClientBuilder {
     private Properties apiKeyProperties;
     private String apiKeyIdPropertyName = "apiKey.id";
     private String apiKeySecretPropertyName = "apiKey.secret";
+    private String baseUrl; //internal/private testing only
 
     /**
      * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
@@ -193,6 +194,12 @@ public class ClientBuilder {
         return this;
     }
 
+    //For internal Stormpath testing needs only:
+    ClientBuilder setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
+    }
+
     /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *
@@ -232,7 +239,11 @@ public class ClientBuilder {
 
         ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
 
-        return new Client(apiKey);
+        if (this.baseUrl != null) { //at the moment, for internal testing only:
+            return new Client(apiKey, this.baseUrl);
+        } else {
+            return new Client(apiKey);
+        }
     }
 
     private String getPropertyValue(Properties properties, String propName) {
