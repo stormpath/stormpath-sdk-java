@@ -33,6 +33,7 @@ public class DefaultResourceFactory implements ResourceFactory {
 
     private static final String BASE_PACKAGE = "com.stormpath.sdk.";
     private static final String IMPL_PACKAGE_NAME_FRAGMENT = "impl";
+    private static final String IMPL_PACKAGE_NAME = IMPL_PACKAGE_NAME_FRAGMENT + ".";
     private static final String IMPL_CLASS_PREFIX = "Default";
 
     public DefaultResourceFactory(InternalDataStore dataStore) {
@@ -76,6 +77,12 @@ public class DefaultResourceFactory implements ResourceFactory {
         //e.g. if interface is com.stormpath.sdk.account.Account, 'afterBase' is account.Account
 
         //split interface simple name and the remainder of the package structure:
+
+        //if this is an impl-module-specific class, strip off the existing 'impl.' package:
+        if (afterBase.startsWith(IMPL_PACKAGE_NAME)) {
+            afterBase = afterBase.substring(IMPL_PACKAGE_NAME.length());
+        }
+
         int index = afterBase.indexOf('.');
         String beforeImpl = afterBase.substring(0, index);
 

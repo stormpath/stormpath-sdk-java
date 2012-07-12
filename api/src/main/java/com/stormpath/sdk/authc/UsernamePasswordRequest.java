@@ -28,9 +28,17 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
         this(username, password, null);
     }
 
+    public UsernamePasswordRequest(String username, char[] password) {
+        this(username, password, null);
+    }
+
     public UsernamePasswordRequest(String username, String password, String host) {
+        this(username, password != null ? password.toCharArray() : "".toCharArray(), host);
+    }
+
+    public UsernamePasswordRequest(String username, char[] password, String host) {
         this.username = username;
-        this.password = (password != null && password.length() > 0) ? password.toCharArray() : "".toCharArray();
+        this.password = password;
         this.host = host;
     }
 
