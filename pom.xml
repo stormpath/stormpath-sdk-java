@@ -17,16 +17,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
-    <packaging>pom</packaging>
     <version>0.3.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>Stormpath Java SDK</name>
-    <url>https://github.com/stormpath/stormpath-sdk-java</url>
     <description>
         The Stormpath Java SDK enables JVM-based applications to easily interact with Stormpath's REST API.
     </description>
+    <url>https://github.com/stormpath/stormpath-sdk-java</url>
     <inceptionYear>2012</inceptionYear>
 
     <licenses>
@@ -38,26 +44,14 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/stormpath/stormpath-sdk-java.git</connection>
+        <connection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</developerConnection>
-        <url>https://github.com/stormpath/stormpath-sdk-java</url>
+        <url>git@github.com:stormpath/stormpath-sdk-java.git</url>
     </scm>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/stormpath/stormpath-sdk-java/issues</url>
     </issueManagement>
-    <distributionManagement>
-        <repository>
-            <id>stormpath-sdk-java.repository.releases</id>
-            <name>Stormpath SDK Java Release Distribution Repository</name>
-            <url>${stormpath-sdk-java.repository.releases.url}</url>
-        </repository>
-        <snapshotRepository>
-            <id>stormpath-sdk-java.repository.snapshots</id>
-            <name>Stormpath SDK Java Snapshot Distribution Repository</name>
-            <url>${stormpath-sdk-java.repository.snapshots.url}</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <developers>
         <developer>
@@ -86,12 +80,6 @@
     </modules>
 
     <properties>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!-- Redefine these properties in your $HOME/.m2/settings.xml to point to your own Maven repository (e.g. Nexus) -->
-        <stormpath-sdk-java.repository.releases.url>file://${user.home}/.m2/local-releases</stormpath-sdk-java.repository.releases.url>
-        <stormpath-sdk-java.repository.snapshots.url>file://${user.home}/.m2/local-snapshots</stormpath-sdk-java.repository.snapshots.url>
 
         <slf4j.version>1.6.6</slf4j.version>
         <httpClient.version>4.2.1</httpClient.version>
@@ -139,12 +127,12 @@
 
         <dependencies>
 
-            <!-- Pool of dependencies available to any sub-module, but not included automatically.
-        They must be explicitly referenced in the children POMs, but _don't_ include
-        version numbers in the child POMs.  Define them here only to guarantee version
-        compatibility across children modules! -->
+            <!-- 'Pool' of dependencies available to any sub-module, but not included automatically.
+                 They must be explicitly referenced in the children POMs, but _don't_ include
+                 version numbers in the child POMs.  Define them here only to guarantee version
+                 compatibility across children modules! -->
 
-            <!-- Stormpath SDK for Java sub-modules dependency .jars (alphabetized based on artifactId for easy scanning please!): -->
+            <!-- Stormpath Java SDK sub-module .jars (alphabetized by artifactId for easy scanning please!): -->
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-api</artifactId>
@@ -242,13 +230,11 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.2.2</version>
                 <configuration>
-                    <preparationGoals>clean install</preparationGoals>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <!-- <goals>deploy site-deploy</goals> -->
-                    <goals>deploy</goals>
-                    <arguments>-Prelease</arguments>
                     <mavenExecutorId>forked-path</mavenExecutorId>
+                    <preparationGoals>clean install</preparationGoals>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>-Pdocs,stormpath-signature</arguments>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
         </plugins>
@@ -256,7 +242,28 @@
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>stormpath-signature</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docs</id>
             <build>
                 <plugins>
                     <plugin>
@@ -281,7 +288,7 @@
                             <execution>
                                 <id>attach-sources</id>
                                 <goals>
-                                    <goal>jar</goal>
+                                    <goal>jar-no-fork</goal>
                                 </goals>
                             </execution>
                         </executions>
