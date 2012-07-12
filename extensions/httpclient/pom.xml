@@ -19,16 +19,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.stormpath.sdk.java</groupId>
+        <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>0.3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-sdk-impl-httpclient</artifactId>
-    <name>Stormpath Java SDK :: Impl :: Http Client</name>
+    <artifactId>stormpath-sdk-ext-httpclient</artifactId>
+    <name>Stormpath Java SDK :: Extensions :: Http Client</name>
     <description>
-        The Stormpath Java SDK HTTP Client implemenation .jar is used at runtime to make HTTP calls to Stormpath's
+        The Stormpath Java SDK HTTP Client implementation .jar is used at runtime to make HTTP calls to Stormpath's
         REST API using the Apache Http Client library.  This implementation jar should be a runtime dependency only
         and should NOT be depended on at compile time by your code.  The implementations within this jar can change at
         any time without warning - use it with runtime scope only.
@@ -37,7 +37,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.stormpath.sdk.java</groupId>
+            <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-impl</artifactId>
         </dependency>
         <dependency>

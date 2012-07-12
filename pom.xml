@@ -17,7 +17,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.stormpath.sdk.java</groupId>
+    <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
     <packaging>pom</packaging>
     <version>0.3.0-SNAPSHOT</version>
@@ -82,7 +82,7 @@
     <modules>
         <module>api</module>
         <module>impl</module>
-        <module>impl-httpclient</module>
+        <module>extensions</module>
     </modules>
 
     <properties>
@@ -146,12 +146,12 @@
 
             <!-- Stormpath SDK for Java sub-modules dependency .jars (alphabetized based on artifactId for easy scanning please!): -->
             <dependency>
-                <groupId>com.stormpath.sdk.java</groupId>
+                <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.stormpath.sdk.java</groupId>
+                <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>

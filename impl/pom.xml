@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.stormpath.sdk.java</groupId>
+        <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -37,7 +37,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.stormpath.sdk.java</groupId>
+            <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-api</artifactId>
         </dependency>
         <dependency>
