@@ -87,6 +87,8 @@
 
     <properties>
 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <!-- Redefine these properties in your $HOME/.m2/settings.xml to point to your own Maven repository (e.g. Nexus) -->
         <stormpath-sdk-java.repository.releases.url>file://${user.home}/.m2/local-releases</stormpath-sdk-java.repository.releases.url>
         <stormpath-sdk-java.repository.snapshots.url>file://${user.home}/.m2/local-snapshots</stormpath-sdk-java.repository.snapshots.url>
@@ -184,7 +186,7 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>

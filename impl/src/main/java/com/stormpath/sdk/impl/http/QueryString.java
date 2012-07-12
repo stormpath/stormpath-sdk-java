@@ -37,8 +37,8 @@ public class QueryString extends TreeMap<String,String> {
      * string parameters, then URI encoding both the key and value and then
      * joining them, in order, separating key value pairs with an '&'.
      *
-     * @param canonical
-     * @return
+     * @param canonical whether or not the string should be canonicalized
+     * @return the canonical query string
      */
     public String toString(boolean canonical) {
         if (isEmpty()) {
