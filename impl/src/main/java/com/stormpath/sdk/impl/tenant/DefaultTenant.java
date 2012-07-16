@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.tenant;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.DirectoryList;
@@ -22,6 +24,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -68,5 +71,20 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     @Override
     public DirectoryList getDirectories() {
         return getResourceProperty(DIRECTORIES, DirectoryList.class);
+    }
+
+    @Override
+    public Account verifyAccountEmail(String token) {
+
+        //TODO enable auto discovery via Tenant resource (should be just /emailVerificationTokens
+        String href = "/accounts/emailVerificationTokens/" + token;
+
+        Map<String,Object> props = new LinkedHashMap<String, Object>(1);
+        props.put(HREF_PROP_NAME, href);
+
+        EmailVerificationToken evToken = getDataStore().instantiate(EmailVerificationToken.class, props);
+
+        //execute a POST (should clean this up / make it more obvious)
+        return getDataStore().save(evToken, Account.class);
     }
 }

@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.tenant;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.DirectoryList;
@@ -36,4 +37,8 @@ public interface Tenant extends Resource, Saveable {
 
     DirectoryList getDirectories();
 
+    /**
+     * @since 0.4
+     */
+    Account verifyAccountEmail(String token);
 }

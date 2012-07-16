@@ -130,6 +130,11 @@ public class DefaultDataStore implements InternalDataStore {
         return save(parentHref, resource, returnType);
     }
 
+    @Override
+    public <T extends Resource & Saveable, R extends Resource> R save(T resource, Class<? extends R> returnType) {
+        return save(resource.getHref(), resource, returnType);
+    }
+
     private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
