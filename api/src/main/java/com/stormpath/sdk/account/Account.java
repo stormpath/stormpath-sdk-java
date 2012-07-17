@@ -70,7 +70,7 @@ public interface Account extends Resource, Saveable {
     /**
      * @since 0.4
      */
-    void addGroup(Group group);
+    GroupMembership addGroup(Group group);
 
     EmailVerificationToken getEmailVerificationToken();
 }

@@ -261,11 +261,16 @@ public class HttpHeaders implements MultiValueMap<String, String> {
      * Set the {@linkplain MediaType media type} of the body, as specified by the {@code Content-Type} header.
      *
      * @param mediaType the media type
+     * @since 0.1
+     * @since 0.4 -> null check
      */
     public void setContentType(MediaType mediaType) {
-        Assert.isTrue(!mediaType.isWildcardType(), "'Content-Type' cannot contain wildcard type '*'");
-        Assert.isTrue(!mediaType.isWildcardSubtype(), "'Content-Type' cannot contain wildcard subtype '*'");
-        set(CONTENT_TYPE, mediaType.toString());
+        //mediaType will be null when a 204 status is returned.
+        if (mediaType != null) {
+            Assert.isTrue(!mediaType.isWildcardType(), "'Content-Type' cannot contain wildcard type '*'");
+            Assert.isTrue(!mediaType.isWildcardSubtype(), "'Content-Type' cannot contain wildcard subtype '*'");
+            set(CONTENT_TYPE, mediaType.toString());
+        }
     }
 
     /**

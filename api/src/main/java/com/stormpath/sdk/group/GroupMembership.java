@@ -30,4 +30,5 @@ public interface GroupMembership extends Resource, Saveable {
     void setGroup(Group group);
 
     GroupMembership create(Account account, Group group);
+    void delete();
 }

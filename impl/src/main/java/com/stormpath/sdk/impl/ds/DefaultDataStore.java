@@ -164,6 +164,14 @@ public class DefaultDataStore implements InternalDataStore {
         return resourceFactory.instantiate(returnType, responseBody);
     }
 
+    @Override
+    public <T extends Resource> void delete(T resource) {
+        Assert.notNull(resource, "resource argument cannot be null.");
+        Assert.isInstanceOf(AbstractResource.class, resource);
+        AbstractResource abstractResource = (AbstractResource)resource;
+        executeRequest(HttpMethod.DELETE, abstractResource.getHref());
+    }
+
     private LinkedHashMap<String, Object> toMap(AbstractResource resource) {
         Set<String> propNames = resource.getPropertyNames();
 

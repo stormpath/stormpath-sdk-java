@@ -92,7 +92,7 @@ class ClientTestDeeperDive {
                     println "group.directory = $group.directory"
                     println "group.accounts = $group.accounts"
                 }
-                if (group.getName() == "Testor Group 5") {
+                if (group.getName() == "DeleteMe") {
                     groupToAddMembership = group;
                 }
                 first=false;
@@ -116,10 +116,17 @@ class ClientTestDeeperDive {
 //                        GroupMembership testor = client.dataStore.instantiate(GroupMembership.class)
 //                        testor.create(account, groupToAddMembership);
 //                        account.addGroup(groupToAddMembership);
-                        groupToAddMembership.addAccount(account);
+                        GroupMembership deletor = groupToAddMembership.addAccount(account);
                         println("*** WORKED ***")
+
+                        deletor.account
+                        println "deletor = $deletor"
+
+                        deletor.delete()
+                        println("DELETED MEMBERSHIP!!!")
                     }
                     println()
+
                 }
 
 

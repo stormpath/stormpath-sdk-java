@@ -74,4 +74,9 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
         GroupMembership groupMembership = getDataStore().instantiate(GroupMembership.class, props);
         return getDataStore().create(href, groupMembership);
     }
+
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
+    }
 }
