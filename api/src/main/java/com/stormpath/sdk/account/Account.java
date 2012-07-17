@@ -16,7 +16,10 @@
 package com.stormpath.sdk.account;
 
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
@@ -58,6 +61,16 @@ public interface Account extends Resource, Saveable {
     Directory getDirectory();
 
     Tenant getTenant();
+
+    /**
+     * @since 0.4
+     */
+    GroupMembershipList getGroupMemberships();
+
+    /**
+     * @since 0.4
+     */
+    void addGroup(Group group);
 
     EmailVerificationToken getEmailVerificationToken();
 }

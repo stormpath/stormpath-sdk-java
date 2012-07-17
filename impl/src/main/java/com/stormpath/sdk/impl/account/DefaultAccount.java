@@ -18,7 +18,10 @@ package com.stormpath.sdk.impl.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
@@ -41,7 +44,8 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     private final String GROUPS = "groups";
     private final String DIRECTORY = "directory";
     private final String TENANT = "tenant";
-    private final String EMAIL_VERIFICATION_TOKENS = "emailVerificationTokens";
+    private final String GROUP_MEMBERSHIPS = "groupMemberships";
+    private final String EMAIL_VERIFICATION_TOKENS = "emailVerificationToken";
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -133,6 +137,17 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT, Tenant.class);
+    }
+
+    @Override
+    public GroupMembershipList getGroupMemberships() {
+        return getResourceProperty(GROUP_MEMBERSHIPS, GroupMembershipList.class);
+    }
+
+    @Override
+    public void addGroup(Group group) {
+        GroupMembership groupMembership = getDataStore().instantiate(GroupMembership.class);
+        groupMembership.create(this, group);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.stormpath.sdk.group;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Resource;
@@ -29,4 +30,6 @@ public interface Group extends Resource, Saveable {
     Directory getDirectory();
 
     AccountList getAccounts();
+
+    void addAccount(Account account);
 }

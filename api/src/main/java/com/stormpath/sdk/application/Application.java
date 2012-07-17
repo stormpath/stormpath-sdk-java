@@ -46,8 +46,11 @@ public interface Application extends Resource, Saveable {
 
     Tenant getTenant();
 
-    //TODO:  Fix this.  Will need to create a token with HTTP.POST with an email as the body.
     PasswordResetToken getPasswordResetToken();
+
+    PasswordResetToken createPasswordResetToken(String email);
+
+    PasswordResetToken verifyPasswordResetToken(String token);
 
     Account authenticate(AuthenticationRequest request) throws ResourceException;
 }

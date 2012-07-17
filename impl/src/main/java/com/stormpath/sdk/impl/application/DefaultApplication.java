@@ -20,12 +20,14 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.impl.account.DefaultPasswordResetToken;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -95,6 +97,24 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public PasswordResetToken getPasswordResetToken() {
         return getResourceProperty(PASSWORD_RESET_TOKENS, PasswordResetToken.class);
+    }
+
+    @Override
+    public PasswordResetToken createPasswordResetToken(String email) {
+        String href = getPasswordResetToken().getHref();
+        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
+        props.put("email", email);
+        PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class, props);
+//        passwordResetToken.setEmail(email);
+        return getDataStore().create(href, passwordResetToken);
+    }
+
+    public PasswordResetToken verifyPasswordResetToken(String token) {
+        String href = getPasswordResetToken().getHref();
+        href += "/" + token;
+        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
+        props.put("href", href);
+        return getDataStore().instantiate(PasswordResetToken.class, props);
     }
 
     @Override

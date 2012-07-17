@@ -30,11 +30,11 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     private final String EMAIL = "email";
     private final String ACCOUNT = "account";
 
-    protected DefaultPasswordResetToken(InternalDataStore dataStore) {
+    public DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    protected DefaultPasswordResetToken(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultPasswordResetToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

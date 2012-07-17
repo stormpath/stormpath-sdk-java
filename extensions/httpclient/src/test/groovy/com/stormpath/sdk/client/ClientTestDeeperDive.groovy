@@ -24,6 +24,9 @@ import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.group.GroupMembershipList
+import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.account.PasswordResetToken
 
 /**
  * @since 0.1
@@ -41,9 +44,14 @@ class ClientTestDeeperDive {
 
         ApplicationList applications = tenant.getApplications();
 
+        Application applicationForPasswordResetSmut = null;
+
         boolean first=true;
         for( Application application : applications) {
             application.getName();
+            if (application.getName() == "REST Application 99") {
+                applicationForPasswordResetSmut = application;
+            }
             println "Application $application"
             if (first) {
                 println "application.name = $application.name"
@@ -71,6 +79,7 @@ class ClientTestDeeperDive {
                 println "directory.tenant = $directory.tenant"
             }
 
+            Group groupToAddMembership = null;
             GroupList groupList = directory.getGroups();
             for (Group group : groupList) {
                 group.getName()
@@ -83,15 +92,73 @@ class ClientTestDeeperDive {
                     println "group.directory = $group.directory"
                     println "group.accounts = $group.accounts"
                 }
+                if (group.getName() == "Testor Group 5") {
+                    groupToAddMembership = group;
+                }
                 first=false;
             }
 
             AccountList accountList = directory.getAccounts()
             for (Account account : accountList) {
                 println("-- Account $account");
+
+                if (account.email == "Sandra@Fisher.com") {
+                    GroupMembershipList memberships = account.groupMemberships
+                    println(memberships)
+                    println("*****")
+                    for (GroupMembership groupMembership : memberships) {
+                        groupMembership.account
+                        println("---- $groupMembership")
+                    }
+                    println("*****")
+                    if (groupToAddMembership) {
+                        println()
+//                        GroupMembership testor = client.dataStore.instantiate(GroupMembership.class)
+//                        testor.create(account, groupToAddMembership);
+//                        account.addGroup(groupToAddMembership);
+                        groupToAddMembership.addAccount(account);
+                        println("*** WORKED ***")
+                    }
+                    println()
+                }
+
+
                 if (account.emailVerificationToken) {
                     println("--- EmailVerificationToken $account.emailVerificationToken")
+                    if (account.email == "bob@mupply.com") {
+                        account.emailVerificationToken.save()
+                    }
+                    println("**************")
+                    println("")
+                    println("-- Account $account");
                 }
+            }
+            if (directory.name == "Workflow Testing 3") {
+                //"givenName":"Women", "surname":"InKitchen", "password":"Screwyou1", "email":"wysong@mindless.com"
+                Account account = client.dataStore.instantiate(Account.class)
+                account.setGivenName("SDK name")
+                account.setSurname("SDK last name")
+                account.setPassword("SDK3password")
+                def emailAddress = "sdk6@mindless.com"
+                account.setEmail(emailAddress)
+                directory.createAccount(account)
+                println "account = $account"
+                String[] splits = account.getEmailVerificationToken().getHref().split("/")
+
+                tenant.verifyAccountEmail(splits.last())
+                account.getGivenName()
+                println "account = $account"
+
+                if (applicationForPasswordResetSmut) {
+                    PasswordResetToken prt = applicationForPasswordResetSmut.createPasswordResetToken(emailAddress)
+                    println "prt = $prt"
+
+                    String[] splits2 = prt.getHref().split("/")
+                    PasswordResetToken passwordResetToken = applicationForPasswordResetSmut.verifyPasswordResetToken(splits2.last())
+                    passwordResetToken.getAccount()
+                    println "passwordResetToken = $passwordResetToken"
+                }
+
             }
         }
 

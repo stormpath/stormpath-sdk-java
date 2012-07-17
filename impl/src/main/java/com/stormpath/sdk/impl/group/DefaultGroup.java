@@ -1,8 +1,10 @@
 package com.stormpath.sdk.impl.group;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
@@ -77,5 +79,11 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     @Override
     public AccountList getAccounts() {
         return getResourceProperty(ACCOUNTS, AccountList.class);
+    }
+
+    @Override
+    public void addAccount(Account account) {
+        GroupMembership groupMembership = getDataStore().instantiate(GroupMembership.class);
+        groupMembership.create(account, this);
     }
 }
