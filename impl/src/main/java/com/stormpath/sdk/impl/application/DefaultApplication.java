@@ -112,9 +112,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     public PasswordResetToken verifyPasswordResetToken(String token) {
         String href = getPasswordResetToken().getHref();
         href += "/" + token;
-        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
-        props.put("href", href);
-        return getDataStore().instantiate(PasswordResetToken.class, props);
+        return getDataStore().getResource(href, PasswordResetToken.class);
     }
 
     @Override
