@@ -95,24 +95,33 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public PasswordResetToken getPasswordResetToken() {
-        return getResourceProperty(PASSWORD_RESET_TOKENS, PasswordResetToken.class);
+    public Account sendPasswordResetEmail(String accountUsernameOrEmail) {
+        PasswordResetToken token = createPasswordResetToken(accountUsernameOrEmail);
+        return token.getAccount();
     }
 
-    @Override
-    public PasswordResetToken createPasswordResetToken(String email) {
-        String href = getPasswordResetToken().getHref();
-        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
-        props.put("email", email);
-        PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class, props);
-//        passwordResetToken.setEmail(email);
+    private PasswordResetToken createPasswordResetToken(String email) {
+        String href = getPasswordResetTokensHref();
+        PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class);
+        passwordResetToken.setEmail(email);
         return getDataStore().create(href, passwordResetToken);
     }
 
-    public PasswordResetToken verifyPasswordResetToken(String token) {
-        String href = getPasswordResetToken().getHref();
-        href += "/" + token;
-        return getDataStore().getResource(href, PasswordResetToken.class);
+    private String getPasswordResetTokensHref() {
+        Map<String,String> passwordResetTokensRef = (Map<String,String>)getProperty(PASSWORD_RESET_TOKENS);
+        if (passwordResetTokensRef != null && !passwordResetTokensRef.isEmpty()) {
+            return passwordResetTokensRef.get(HREF_PROP_NAME);
+        }
+
+        return null;
+    }
+
+    public Account verifyPasswordResetToken(String token) {
+        String href = getPasswordResetTokensHref() + "/" + token;
+        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
+        props.put("href", href);
+        PasswordResetToken prToken = getDataStore().instantiate(PasswordResetToken.class, props);
+        return prToken.getAccount();
     }
 
     @Override

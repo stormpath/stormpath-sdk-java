@@ -17,7 +17,6 @@ package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -46,11 +45,35 @@ public interface Application extends Resource, Saveable {
 
     Tenant getTenant();
 
-    PasswordResetToken getPasswordResetToken();
+    /**
+     * Sends a password reset email for the specified account username or email address.
+     *
+     * @param accountUsernameOrEmail a username or email address of an Account that may login to the application.
+     * @return the account corresponding to the specified username or email address.
+     * @see #verifyPasswordResetToken(String)
+     */
+    Account sendPasswordResetEmail(String accountUsernameOrEmail);
 
-    PasswordResetToken createPasswordResetToken(String email);
-
-    PasswordResetToken verifyPasswordResetToken(String token);
+    /**
+     * Verifies a password reset token in a user-clicked link within an email.  When the user clicks the link in
+     * the email, the token is extracted from the link HREF and submitted to this method.  If the token is valid, the
+     * Account will be returned and you can set the account's new password and save the account.
+     * <p/>
+     * Usage Example:
+     * <pre>
+     * String token = httpServletRequest.getParameter("spToken");
+     *
+     * Account account = verifyPasswordResetToken(token);
+     * account.setPassword(user_submitted_new_password);
+     *
+     * account.save();
+     * </pre>
+     *
+     * @param token the verification token, usually obtained as a request parameter by your application.
+     * @return the Account matching the specified token.
+     * @since 0.4
+     */
+    Account verifyPasswordResetToken(String token);
 
     Account authenticate(AuthenticationRequest request) throws ResourceException;
 }

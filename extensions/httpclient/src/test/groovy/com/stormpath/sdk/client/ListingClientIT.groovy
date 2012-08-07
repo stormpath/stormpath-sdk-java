@@ -24,21 +24,15 @@ import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.tenant.Tenant
+import org.testng.annotations.Test
 
 /**
  * @since 0.1
  */
-class ClientTest {
+class ListingClientIT extends ClientIT {
 
-    public static void main(String[] args) {
-
-        //apiKey path:
-        String location = System.getProperty("user.home") + "/.stormpath/iam/localhost/apiKey.properties";
-        String baseUrl = "http://localhost:8080/v1"; //dev local test environment
-
-        Client client = new ClientBuilder().setBaseUrl(baseUrl).setApiKeyFileLocation(location).build();
-
-        long start = System.currentTimeMillis();
+    @Test
+    void testListing() {
 
         Tenant tenant = client.getCurrentTenant();
 
@@ -66,13 +60,5 @@ class ClientTest {
                 println("-- Account $account");
             }
         }
-
-        long stop = System.currentTimeMillis();
-
-        long duration = stop - start;
-
-        println "Duration: $duration millis";
-
-        System.exit(0);
     }
 }
