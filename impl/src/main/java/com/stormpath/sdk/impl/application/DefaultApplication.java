@@ -20,7 +20,6 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.impl.account.DefaultPasswordResetToken;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;

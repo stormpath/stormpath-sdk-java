@@ -130,7 +130,12 @@ public class Client {
                     "runtime classpath.", t);
         }
 
-        Constructor ctor = ClassUtils.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArg.getClass());
+        Class secondCtorArgClass = secondCtorArg.getClass();
+        if (Integer.class.equals(secondCtorArgClass)) {
+            secondCtorArgClass = int.class;
+        }
+
+        Constructor ctor = ClassUtils.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass);
 
         try {
             return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg);
