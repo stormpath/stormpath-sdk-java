@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
@@ -124,7 +125,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public Account authenticate(AuthenticationRequest request) {
+    public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
         return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
     }
 }

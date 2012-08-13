@@ -83,7 +83,7 @@ class PasswordResetIT extends ClientIT {
         acct.save()
 
         def request = new UsernamePasswordRequest(email, newPassword)
-        Account authenticated = appToTest.authenticate(request)
+        Account authenticated = appToTest.authenticateAccount(request).account
 
         assertEquals acct.href, authenticated.href
     }

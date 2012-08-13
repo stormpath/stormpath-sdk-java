@@ -81,7 +81,7 @@ class PasswordResetAndAuthenticationTest {
 //        println "acctToTest = $acctToTest"
 
         UsernamePasswordRequest request = new UsernamePasswordRequest(acctToTest.username, oldPassword)
-        println(appToTest.authenticate(request))
+        println(appToTest.authenticateAccount(request).getAccount())
 
 //     1 - I create a password reset token
         PasswordResetToken token = appToTest.createPasswordResetToken(acctToTest.email)
@@ -92,7 +92,7 @@ class PasswordResetAndAuthenticationTest {
 //     3 - I get the Account from the PasswordResetToken
         Account accountFromToken = token.account
         request = new UsernamePasswordRequest(accountFromToken.username, oldPassword)
-        appToTest.authenticate(request)
+        appToTest.authenticateAccount(request)
 
 //     4 - I set the new password on the Account
         accountFromToken.setPassword(newPassword)
@@ -101,7 +101,7 @@ class PasswordResetAndAuthenticationTest {
 
 //     6 - I try to authenticate with the new password
         request = new UsernamePasswordRequest(accountFromToken.username, newPassword)
-        appToTest.authenticate(request)
+        appToTest.authenticateAccount(request)
 
         long stop = System.currentTimeMillis();
         long duration = stop - start;
