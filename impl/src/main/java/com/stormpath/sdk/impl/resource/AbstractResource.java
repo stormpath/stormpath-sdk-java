@@ -38,7 +38,8 @@ public abstract class AbstractResource implements Resource {
 
     public static final String HREF_PROP_NAME = "href";
 
-    private final Map<String, Object> properties;
+    private final Map<String, Object> properties;       //Protected by read/write lock
+    private final Map<String, Object> dirtyProperties;  //Protected by read/write lock
     private final InternalDataStore dataStore;
     protected final Lock readLock;
     protected final Lock writeLock;
@@ -56,6 +57,7 @@ public abstract class AbstractResource implements Resource {
         this.writeLock = rwl.writeLock();
         this.dataStore = dataStore;
         this.properties = new LinkedHashMap<String, Object>();
+        this.dirtyProperties = new LinkedHashMap<String, Object>();
         setProperties(properties);
     }
 
@@ -63,6 +65,7 @@ public abstract class AbstractResource implements Resource {
         writeLock.lock();
         try {
             this.properties.clear();
+            this.dirtyProperties.clear();
             this.dirty = false;
             if (properties != null && !properties.isEmpty()) {
                 this.properties.putAll(properties);
@@ -116,6 +119,10 @@ public abstract class AbstractResource implements Resource {
         try {
             this.properties.clear();
             this.properties.putAll(resource.properties);
+
+            //retain dirty properties:
+            this.properties.putAll(this.dirtyProperties);
+
             this.materialized = true;
         } finally {
             writeLock.unlock();
@@ -136,7 +143,21 @@ public abstract class AbstractResource implements Resource {
         if (!HREF_PROP_NAME.equals(name)) {
             //not the href/id, must be a property that requires materialization:
             if (!isNew() && !isMaterialized()) {
-                materialize();
+
+                //only materialize if the property hasn't been set previously (no need to execute a server
+                // request since we have the most recent value already):
+                boolean present = false;
+                readLock.lock();
+                try {
+                    present = this.dirtyProperties.containsKey(name);
+                } finally {
+                    readLock.unlock();
+                }
+
+                if (!present) {
+                    //exhausted present properties - we require a server call:
+                    materialize();
+                }
             }
         }
 
@@ -155,15 +176,9 @@ public abstract class AbstractResource implements Resource {
     protected void setProperty(String name, Object value) {
         writeLock.lock();
         try {
-            if (value == null) {
-                Object removed = this.properties.remove(name);
-                if (removed != null) {
-                    this.dirty = true;
-                }
-            } else {
-                this.properties.put(name, value);
-                this.dirty = true;
-            }
+            this.properties.put(name, value);
+            this.dirtyProperties.put(name, value);
+            this.dirty = true;
         } finally {
             writeLock.unlock();
         }
@@ -192,8 +207,8 @@ public abstract class AbstractResource implements Resource {
     @SuppressWarnings("unchecked")
     protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
         Object value = getProperty(key);
-        if (value instanceof Map && !((Map)value).isEmpty()) {
-            return dataStore.instantiate(clazz, (Map<String,Object>)value);
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            return dataStore.instantiate(clazz, (Map<String, Object>) value);
         }
         return null;
     }
@@ -214,18 +229,31 @@ public abstract class AbstractResource implements Resource {
         readLock.lock();
         try {
             StringBuilder sb = new StringBuilder();
-            boolean first = true;
             for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
-                if (!first) {
+                if (sb.length() > 0) {
                     sb.append(", ");
                 }
-                sb.append(entry.getKey()).append(": ").append(String.valueOf(entry.getValue()));
-                first = false;
+                String key = entry.getKey();
+                //prevent printing of any sensitive values:
+                if (isPrintableProperty(key)) {
+                    sb.append(key).append(": ").append(String.valueOf(entry.getValue()));
+                }
             }
             return sb.toString();
         } finally {
             readLock.unlock();
         }
+    }
+
+    /**
+     * Returns {@code true} if the internal property is safe to print in toString(), {@code false} otherwise.
+     *
+     * @param name The name of the property to check for safe printing
+     * @return {@code true} if the internal property is safe to print in toString(), {@code false} otherwise.
+     * @since 0.4.1
+     */
+    protected boolean isPrintableProperty(String name) {
+        return true;
     }
 
     @Override
@@ -249,7 +277,7 @@ public abstract class AbstractResource implements Resource {
         if (!o.getClass().equals(getClass())) {
             return false;
         }
-        AbstractResource other = (AbstractResource)o;
+        AbstractResource other = (AbstractResource) o;
         readLock.lock();
         try {
             other.readLock.lock();
