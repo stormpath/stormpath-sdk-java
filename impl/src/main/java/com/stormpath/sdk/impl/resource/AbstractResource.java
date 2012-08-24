@@ -207,8 +207,8 @@ public abstract class AbstractResource implements Resource {
     @SuppressWarnings("unchecked")
     protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
         Object value = getProperty(key);
-        if (value instanceof Map && !((Map)value).isEmpty()) {
-            return dataStore.instantiate(clazz, (Map<String,Object>)value);
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            return dataStore.instantiate(clazz, (Map<String, Object>) value);
         }
         return null;
     }
@@ -245,6 +245,13 @@ public abstract class AbstractResource implements Resource {
         }
     }
 
+    /**
+     * Returns {@code true} if the internal property is safe to print in toString(), {@code false} otherwise.
+     *
+     * @param name The name of the property to check for safe printing
+     * @return {@code true} if the internal property is safe to print in toString(), {@code false} otherwise.
+     * @since 0.4.1
+     */
     protected boolean isPrintableProperty(String name) {
         return true;
     }
@@ -270,7 +277,7 @@ public abstract class AbstractResource implements Resource {
         if (!o.getClass().equals(getClass())) {
             return false;
         }
-        AbstractResource other = (AbstractResource)o;
+        AbstractResource other = (AbstractResource) o;
         readLock.lock();
         try {
             other.readLock.lock();
