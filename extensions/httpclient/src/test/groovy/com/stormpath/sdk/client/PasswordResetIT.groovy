@@ -32,11 +32,13 @@ import static org.testng.Assert.assertEquals
  *
  * @since 0.4
  */
-@Test(enabled=false)
+@Test
 class PasswordResetIT extends ClientIT {
 
+    def appName = 'Tooter' //change to be whatever app you want to test
+
     def email = 'changeme@somewhere.com' //change for your own testing needs.
-    def spToken = 'changeMeToSomeResetKeyValue' //update based on your locally stored value
+    def spToken = 'bcnU_GtBRHu8hoKPmHaxlA' //update based on your locally stored value
 
     @Test //sends an email based on 'email' property.  After sent, you need to look for the reset token in the datastore
     void testSendPasswordResetEmail() {
@@ -47,7 +49,7 @@ class PasswordResetIT extends ClientIT {
 
         ApplicationList applications = tenant.getApplications()
         for (Application app : applications) {
-            if (app.name != "Stormpath IAM") {
+            if (app.name == appName) {
                 appToTest = app;
                 break;
             }
@@ -67,7 +69,7 @@ class PasswordResetIT extends ClientIT {
 
         ApplicationList applications = tenant.getApplications()
         for (Application app : applications) {
-            if (app.name != "Stormpath IAM") {
+            if (app.name == appName) {
                 appToTest = app;
                 break;
             }
@@ -77,7 +79,7 @@ class PasswordResetIT extends ClientIT {
 
         assertEquals(email, acct.email, "Could not retrieve correct account during password reset.")
 
-        def newPassword = 'Aabc1234'
+        def newPassword = 'test'
 
         acct.password = newPassword
         acct.save()

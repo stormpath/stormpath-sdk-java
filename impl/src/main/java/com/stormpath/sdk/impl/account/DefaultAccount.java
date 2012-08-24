@@ -56,6 +56,11 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     }
 
     @Override
+    protected boolean isPrintableProperty(String name) {
+        return !PASSWORD.equalsIgnoreCase(name);
+    }
+
+    @Override
     public String getUsername() {
         return getStringProperty(USERNAME);
     }
