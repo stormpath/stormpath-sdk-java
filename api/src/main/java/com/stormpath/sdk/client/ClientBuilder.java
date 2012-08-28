@@ -237,13 +237,19 @@ public class ClientBuilder {
         assert apiKeyId != null;
         assert apiKeySecret != null;
 
-        ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+        ApiKey apiKey = createApiKey(apiKeyId, apiKeySecret);
 
-        if (this.baseUrl != null) { //at the moment, for internal testing only:
-            return new Client(apiKey, this.baseUrl);
-        } else {
-            return new Client(apiKey);
-        }
+        return createClient(apiKey, this.baseUrl);
+    }
+
+    //since 0.5
+    protected ApiKey createApiKey(String id, String secret) {
+        return new DefaultApiKey(id, secret);
+    }
+
+    //since 0.5
+    protected Client createClient(ApiKey key, String baseUrl) {
+        return baseUrl != null ? new Client(key, baseUrl) : new Client(key);
     }
 
     private String getPropertyValue(Properties properties, String propName) {
