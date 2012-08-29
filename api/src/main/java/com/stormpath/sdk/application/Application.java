@@ -26,24 +26,70 @@ import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
+ * An {@code Application} instance represents a Stormpath
+ * <a href="https://www.stormpath.com/docs/managing-applications">registered application</a>.
+ *
  * @since 0.1
  */
 public interface Application extends Resource, Saveable {
 
+    /**
+     * Returns the Application's name.  An application's name must be unique across all other applications in the
+     * Stormpath Tenant.
+     *
+     * @return the Application's name
+     */
     String getName();
 
+    /**
+     * Sets the application's name.  Application names must be unique per Tenant.
+     *
+     * @param name tenant-unique name of the application.
+     */
     void setName(String name);
 
+    /**
+     * Returns the application description.
+     *
+     * @return the application description.
+     */
     String getDescription();
 
+    /**
+     * Sets the application description.
+     *
+     * @param description the application description.
+     */
     void setDescription(String description);
 
+    /**
+     * Returns the application's Status.  Application users may login to an enabled application.  They may not login
+     * to a disabled application.
+     *
+     * @return the application's Status.
+     */
     Status getStatus();
 
+    /**
+     * Sets the application's Status.  Application users may login to an enabled application.  They may not login
+     * to a disabled application.
+     *
+     * @param status the application's Status.
+     */
     void setStatus(Status status);
 
+    /**
+     * Returns the AccountList for all accounts that may login to the application.
+     *
+     * @return the AccountList for all accounts that may login to the application.
+     */
     AccountList getAccounts();
 
+    /**
+     * Returns the application's parent (owning) Tenant.
+     *
+     * @return the application's parent (owning) Tenant.
+     */
     Tenant getTenant();
 
     /**
