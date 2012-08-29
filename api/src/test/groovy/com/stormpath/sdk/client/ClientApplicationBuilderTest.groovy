@@ -36,6 +36,126 @@ class ClientApplicationBuilderTest {
     }
 
     @Test
+    void testSetApiKeyProperties() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = createStrictMock(Properties);
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setApiKeyProperties(same(arg))).andReturn clientBuilder
+
+        replay clientBuilder, arg
+
+        builder.setApiKeyProperties(arg)
+
+        verify clientBuilder, arg
+    }
+
+    @Test
+    void testSetApiKeyReader() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = createStrictMock(Reader)
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setApiKeyReader(same(arg))).andReturn clientBuilder
+
+        replay clientBuilder, arg
+
+        builder.setApiKeyReader arg
+
+        verify clientBuilder, arg
+    }
+
+    @Test
+    void testSetApiKeyInputStream() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = createStrictMock(InputStream)
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setApiKeyInputStream(same(arg))).andReturn clientBuilder
+
+        replay clientBuilder, arg
+
+        builder.setApiKeyInputStream arg
+
+        verify clientBuilder, arg
+    }
+
+    @Test
+    void testSetApiKeyFileLocation() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = 'test'
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setApiKeyFileLocation(eq(arg))).andReturn clientBuilder
+
+        replay clientBuilder
+
+        builder.setApiKeyFileLocation arg
+
+        verify clientBuilder
+    }
+
+    @Test
+    void testSetApiKeyIdPropertyName() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = 'test'
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setApiKeyIdPropertyName(eq(arg))).andReturn clientBuilder
+
+        replay clientBuilder
+
+        builder.setApiKeyIdPropertyName arg
+
+        verify clientBuilder
+    }
+
+    @Test
+    void testSetApiKeySecretPropertyName() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = 'test'
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setApiKeySecretPropertyName(eq(arg))).andReturn clientBuilder
+
+        replay clientBuilder
+
+        builder.setApiKeySecretPropertyName arg
+
+        verify clientBuilder
+    }
+
+    @Test
+    void testSetBaseUrl() {
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        def arg = 'test'
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.setBaseUrl(eq(arg))).andReturn clientBuilder
+
+        replay clientBuilder
+
+        builder.setBaseUrl arg
+
+        verify clientBuilder
+    }
+
+    @Test
+    void testBuildClient() {
+        Client client = createStrictMock(Client)
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        builder = new ClientApplicationBuilder(clientBuilder);
+
+        expect(clientBuilder.build()).andReturn client
+
+        replay clientBuilder, client
+
+        assertSame builder.buildClient(), client
+
+        verify clientBuilder, client
+    }
+
+    @Test
     void testGetHrefWithUserInfo() {
 
         String href = 'https://foo:bar@api.stormpath.com/v1/applications/appUid'
@@ -89,7 +209,7 @@ class ClientApplicationBuilderTest {
 
     @Test(expectedExceptions = [IllegalArgumentException])
     void testBuildApplicationWithNullHref() {
-        builder.buildApplication()
+        builder.build()
     }
 
     @Test
@@ -104,23 +224,34 @@ class ClientApplicationBuilderTest {
 
         replay client, ds, application
 
+        String id = null;
+        String secret = null
+
         builder = new ClientApplicationBuilder() {
+
             @Override
-            protected Client createClient(ApiKey key, String baseUrl) {
-                assertEquals key.id, 'foo'
-                assertEquals key.secret, 'bar'
+            protected Client buildClient() {
                 return client;
+            }
+
+            @Override
+            ClientApplicationBuilder setApiKeyProperties(Properties properties) {
+                id = properties.get('apiKey.id')
+                secret = properties.get('apiKey.secret')
+                return super.setApiKeyProperties(properties)
             }
         }
 
         String href = 'https://foo:bar@api.stormpath.com/v1/applications/appUid'
 
         builder.applicationHref = href
-        def clientApp = builder.buildApplication();
+        def clientApp = builder.build();
 
         assertNotNull clientApp
         assertSame clientApp.client, client
         assertSame clientApp.application, application
+        assertEquals 'foo', id
+        assertEquals 'bar', secret
 
         verify client, ds, application
     }

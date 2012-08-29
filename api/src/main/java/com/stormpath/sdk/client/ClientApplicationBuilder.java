@@ -17,6 +17,8 @@ package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.application.Application;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
@@ -40,9 +42,8 @@ import java.util.Properties;
  * String appHref = "https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE";
  *
  * Application application = new ClientApplicationBuilder()
- *     .setApiKeyFileLocation(apiKeyFileLocation)
  *     <b>.setApplicationHref(appHref)</b>
- *     .buildApplication().getApplication();
+ *     .build().getApplication();
  * </pre>
  * <p/>
  * After acquiring the {@code application} instance, you can interact with it to login accounts, reset passwords,
@@ -51,9 +52,9 @@ import java.util.Properties;
  * Some hosting service providers (e.g. like <a href="http://www.heroku.com">Heroku</a>) do not allow easy access to
  * a a configuration file and therefore it might be difficult to reference an API Key File.  If you cannot reference an
  * API Key File via the {@code file:}, {@code classpath:} or {@code url:}
- * {@link ClientBuilder#setApiKeyFileLocation(String) resource locations}, the Application HREF URL must contain the
- * API Key embedded as the <em><a href="http://en.wikipedia.org/wiki/URI_scheme">user info</a></em> portion of the
- * URL.  For example:
+ * {@link #setApiKeyFileLocation(String) resource locations}, the Application HREF URL must
+ * contain the API Key embedded as the <em><a href="http://en.wikipedia.org/wiki/URI_scheme">user info</a></em> portion
+ * of the URL.  For example:
  * <p/>
  * <pre>
  * https://<b>apiKeyId:apiKeySecret@</b>api.stormpath.com/v1/applications/YOUR_APP_UID_HERE
@@ -67,11 +68,11 @@ import java.util.Properties;
  *
  * Application application = new ClientApplicationBuilder()
  *     <b>.setApplicationHref(appHref)</b>
- *     .buildApplication().getApplication();
+ *     .build().getApplication();
  * </pre>
  * <p/>
  * <b>WARNING: ONLY use the embedded API Key technique if you do not have access to {@code file:}, {@code classpath:}
- * or {@code url:} {@link ClientBuilder#setApiKeyFileLocation(String) resource locations}</b>.  File based API Key
+ * or {@code url:} {@link #setApiKeyFileLocation(String) resource locations}</b>.  File based API Key
  * storage is a more secure technique than embedding the key in the URL itself.  Also, again, NEVER share your API Key
  * Secret with <em>anyone</em> (not even co-workers).  Stormpath staff will never ask for your API Key Secret.
  *
@@ -79,25 +80,175 @@ import java.util.Properties;
  * @see #setApplicationHref(String)
  * @since 0.5
  */
-public class ClientApplicationBuilder extends ClientBuilder {
+public class ClientApplicationBuilder {
 
     private static final String DOUBLE_SLASH = "//";
     private static final String ENCODING = "UTF-8";
 
     private String applicationHref;
+    private final ClientBuilder clientBuilder; //internal delegate object
 
     public ClientApplicationBuilder() {
+        this.clientBuilder = new ClientBuilder();
+    }
+
+    protected ClientApplicationBuilder(ClientBuilder builder) {
+        this.clientBuilder = builder;
     }
 
     /**
+     * Allows usage of a Properties instance instead of loading a {@code .properties} file via
+     * {@link #setApiKeyFileLocation(String) apiKeyFileLocation} configuration.
+     * <p/>
+     * The {@code Properties} contents and property name overrides function the same as described in the
+     * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     *
+     * @param properties the properties instance to use to load the API Key ID and Secret.
+     * @return this ClientApplicationBuilder instance for method chaining.
+     */
+    public ClientApplicationBuilder setApiKeyProperties(Properties properties) {
+        this.clientBuilder.setApiKeyProperties(properties);
+        return this;
+    }
+
+    /**
+     * Creates an API Key Properties instance based on the specified Reader instead of loading a {@code .properties}
+     * file via  {@link #setApiKeyFileLocation(String) apiKeyFileLocation} configuration.
+     * <p/>
+     * The constructed {@code Properties} contents and property name overrides function the same as described in the
+     * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     * @param reader the reader to use to construct a Properties instance.
+     * @return this ClientApplicationBuilder instance for method chaining.
+     */
+    public ClientApplicationBuilder setApiKeyReader(Reader reader) {
+        this.clientBuilder.setApiKeyReader(reader);
+        return this;
+    }
+
+    /**
+     * Creates an API Key Properties instance based on the specified InputStream
+     * instead of loading a {@code .properties} file via
+     * {@link #setApiKeyFileLocation(String) apiKeyFileLocation} configuration.
+     * <p/>
+     * The constructed {@code Properties} contents and property name overrides function the same as described in the
+     * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     * @param is the InputStream to use to construct a Properties instance.
+     * @return this ClientApplicationBuilder instance for method chaining.
+     */
+    public ClientApplicationBuilder setApiKeyInputStream(InputStream is) {
+        this.clientBuilder.setApiKeyInputStream(is);
+        return this;
+    }
+
+    /**
+     * Sets the location of the {@code .properties} file to load containing the API Key (Id and secret) used by the
+     * Client to communicate with the Stormpath REST API.
+     * <p/>
+     * You may load files from the filesystem, classpath, or URLs by prefixing the location path with
+     * {@code file:}, {@code classpath:}, or {@code url:} respectively.  If no prefix is found, {@code file:}
+     * is assumed by default.
+     * <h3>File Contents</h3>
+     * <p/>
+     * When the file is loaded, the following name/value pairs are expected to be present by default:
+     * <table>
+     *     <tr>
+     *         <th>Key</th>
+     *         <th>Value</th>
+     *     </tr>
+     *     <tr>
+     *         <td>apiKey.id</td>
+     *         <td>An individual account's API Key ID</td>
+     *     </tr>
+     *     <tr>
+     *         <td>apiKey.secret</td>
+     *         <td>The API Key Secret (password) that verifies the paired API Key ID.</td>
+     *     </tr>
+     * </table>
+     * <p/>
+     * Assuming you were using these default property names, your {@code ClientApplicationBuilder} usage might look
+     * like the following:
+     * <pre>
+     * String location = "/home/jsmith/.stormpath/apiKey.properties";
+     *
+     * Application app = new ClientApplicationBuilder().setApiKeyFileLocation(location).build().getApplication();
+     * </pre>
+     * <h3>Custom Property Names</h3>
+     * If you want to control the property names used in the file, you may configure them via
+     * {@link #setApiKeyIdPropertyName(String) setApiKeyIdPropertyName} and
+     * {@link #setApiKeySecretPropertyName(String) setApiKeySecretPropertyName}.
+     * <p/>
+     * For example, if you had a {@code /home/jsmith/.stormpath/apiKey.properties} file with the following
+     * name/value pairs:
+     * <pre>
+     * myStormpathApiKeyId = foo
+     * myStormpathApiKeySecret = mySuperSecretValue
+     * </pre>
+     * Your {@code ClientApplicationBuilder} usage would look like the following:
+     * <pre>
+     * String location = "/home/jsmith/.stormpath/apiKey.properties";
+     *
+     * Application app = new ClientApplicationBuilder()
+     *     .setApiKeyFileLocation(location)
+     *     .setApiKeyIdPropertyName("myStormpathApiKeyId")
+     *     .setApiKeySecretPropertyName("myStormpathApiKeySecret")
+     *     .build().getApplication();
+     * </pre>
+     *
+     * @param location the file, classpath or url location of the API Key {@code .properties} file to load when
+     *                 constructing the API Key to use for communicating with the Stormpath REST API.
+     * @return this ClientApplicationBuilder instance for method chaining.
+     */
+    public ClientApplicationBuilder setApiKeyFileLocation(String location) {
+        this.clientBuilder.setApiKeyFileLocation(location);
+        return this;
+    }
+
+    /**
+     * Sets the name used to query for the API Key ID from a Properties instance.  That is:
+     * <pre>
+     * String apiKeyId = properties.getProperty(<b>apiKeyIdPropertyName</b>);
+     * </pre>
+     *
+     * @param apiKeyIdPropertyName the name used to query for the API Key ID from a Properties instance.
+     * @return this ClientApplicationBuilder instance for method chaining.
+     */
+    public ClientApplicationBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName) {
+        this.clientBuilder.setApiKeyIdPropertyName(apiKeyIdPropertyName);
+        return this;
+    }
+
+    /**
+     * Sets the name used to query for the API Key Secret from a Properties instance.  That is:
+     * <pre>
+     * String apiKeySecret = properties.getProperty(<b>apiKeySecretPropertyName</b>);
+     * </pre>
+     *
+     * @param apiKeySecretPropertyName the name used to query for the API Key Secret from a Properties instance.
+     * @return this ClientApplicationBuilder instance for method chaining.
+     */
+    public ClientApplicationBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName) {
+        this.clientBuilder.setApiKeySecretPropertyName(apiKeySecretPropertyName);
+        return this;
+    }
+
+    //For internal Stormpath testing needs only:
+    ClientApplicationBuilder setBaseUrl(String baseUrl) {
+        this.clientBuilder.setBaseUrl(baseUrl);
+        return this;
+    }
+
+
+    /**
      * Sets the fully qualified Stormpath Application HREF (a URL) to use to acquire the Application instance when
-     * {@link #buildApplication()} is called.  See the Class-level JavaDoc for usage scenarios.
+     * {@link #build()} is called.  See the Class-level JavaDoc for usage scenarios.
      *
      * @param applicationHref the fully qualified Stormpath Application HREF (a URL) to use to acquire the
-     *                        Application instance when {@link #buildApplication()} is called.
+     *                        Application instance when {@link #build()} is called.
+     * @return this ClientApplicationBuilder instance for method chaining.
      */
-    public void setApplicationHref(String applicationHref) {
+    public ClientApplicationBuilder setApplicationHref(String applicationHref) {
         this.applicationHref = applicationHref;
+        return this;
     }
 
     /**
@@ -106,7 +257,7 @@ public class ClientApplicationBuilder extends ClientBuilder {
      *
      * @return a Client and Application wrapper instance based on the configured {@link #setApplicationHref(String) applicationHref}.
      */
-    public ClientApplication buildApplication() {
+    public ClientApplication build() {
 
         String href = this.applicationHref != null ? this.applicationHref.trim() : null;
         if (href == null || href.equals("")) {
@@ -133,10 +284,14 @@ public class ClientApplicationBuilder extends ClientBuilder {
 
         } //otherwise an apiKey File/Reader/InputStream/etc for the API Key is required
 
-        Client client = build();
+        Client client = buildClient();
         Application application = client.getDataStore().getResource(cleanedHref, Application.class);
 
         return new ClientApplication(client, application);
+    }
+
+    protected Client buildClient() {
+        return this.clientBuilder.build();
     }
 
     protected String[] getHrefWithUserInfo(String href, int atSignIndex) {
