@@ -31,7 +31,7 @@ import java.util.Properties;
  * of an entire Stormpath Tenant's data space.  However, a software application may only be interested in its own
  * functionality and not the entire Stormpath Tenant data space.
  * <p/>
- * The {@code ClientApplicationBuilder} provides a means to more easily acquiring a single
+ * The {@code ClientApplicationBuilder} provides a means to more easily acquire a single
  * {@link Application} instance.  From this {@code Application} instance, everything a particular Application needs to
  * perform can be based off of this instance and the wider-scoped concerns of an entire Tenant can be ignored.
  * <h2>Default Usage</h2>

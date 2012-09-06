@@ -16,6 +16,8 @@
 package com.stormpath.sdk.client;
 
 /**
+ * Default implementation of the {@link ApiKey} interface.  This implementation is immutable and (therefore) thread-safe.
+ *
  * @since 0.1
  */
 public class DefaultApiKey implements ApiKey {
@@ -35,5 +37,29 @@ public class DefaultApiKey implements ApiKey {
 
     public String getSecret() {
         return secret;
+    }
+
+    @Override
+    public String toString() {
+        return getId(); //never ever print the secret
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof DefaultApiKey) {
+            DefaultApiKey other = (DefaultApiKey)o;
+            return (id != null ? id.equals(other.id) : other.id == null) &&
+                   (secret != null ? secret.equals(other.secret) : other.secret == null);
+        }
+
+        return false;
     }
 }

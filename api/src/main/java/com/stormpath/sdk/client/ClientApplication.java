@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 
 /**
  * A ClientApplication is a simple wrapper around a {@link Client} and {@link Application} instance, returned from
- * the {@code ClientApplicationBuilder}.{@link com.stormpath.sdk.client.ClientApplicationBuilder#buildApplication()}
+ * the {@code ClientApplicationBuilder}.{@link com.stormpath.sdk.client.ClientApplicationBuilder#build()}
  * method.
  *
  * @since 0.5

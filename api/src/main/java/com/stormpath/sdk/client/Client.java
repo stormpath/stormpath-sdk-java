@@ -29,11 +29,11 @@ import java.lang.reflect.Constructor;
  * <p/>
  * For example:
  * <pre>
- * String accessId = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key's Access ID</a>
- * String secret = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key's Secret</a>
+ * String apiKeyId = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key ID</a>
+ * String apiKeySecret = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key Secret</a>
  *
  * //create the Client instance:
- * Client client = new Client(new DefaultApiKey(accessId, secret));
+ * Client client = new Client(new DefaultApiKey(apKeyId, apiKeySecret));
  *
  * //interact with the REST API resources as desired:
  * Tenant myTenant = client.getCurrentTenant();

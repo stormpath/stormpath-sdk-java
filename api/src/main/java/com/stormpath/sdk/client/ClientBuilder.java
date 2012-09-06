@@ -39,6 +39,7 @@ import java.util.Properties;
  * {@link #setApiKeyFileLocation(String)} for more information.
  *
  * @see #setApiKeyFileLocation(String)
+ * @see ClientApplicationBuilder
  *
  * @since 0.3
  */
@@ -348,36 +349,6 @@ public class ClientBuilder {
         }
 
         /**
-         * Returns {@code true} if the resource at the specified path exists, {@code false} otherwise.  This
-         * method supports scheme prefixes on the path as defined in {@link #getInputStreamForPath(String)}.
-         *
-         * @param resourcePath the path of the resource to check.
-         * @return {@code true} if the resource at the specified path exists, {@code false} otherwise.
-         * @since 0.9
-         */
-        public static boolean resourceExists(String resourcePath) {
-            InputStream stream = null;
-            boolean exists = false;
-
-            try {
-                stream = getInputStreamForPath(resourcePath);
-                exists = true;
-            } catch (IOException e) {
-                stream = null;
-            } finally {
-                if (stream != null) {
-                    try {
-                        stream.close();
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
-
-            return exists;
-        }
-
-
-        /**
          * Returns the InputStream for the resource represented by the specified path, supporting scheme
          * prefixes that direct how to acquire the input stream
          * ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
@@ -427,22 +398,6 @@ public class ClientBuilder {
 
         private static String stripPrefix(String resourcePath) {
             return resourcePath.substring(resourcePath.indexOf(":") + 1);
-        }
-
-        /**
-         * Convenience method that closes the specified {@link InputStream InputStream}, logging any
-         * {@link IOException IOException} that might occur. If the {@code InputStream}
-         * argument is {@code null}, this method does nothing.  It returns quietly in all cases.
-         *
-         * @param is the {@code InputStream} to close, logging any {@code IOException} that might occur.
-         */
-        public static void close(InputStream is) {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
     }
 }
