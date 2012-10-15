@@ -98,7 +98,6 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public GroupMembership addAccount(Account account) {
-        GroupMembership groupMembership = getDataStore().instantiate(GroupMembership.class);
-        return groupMembership.create(account, this);
+        return DefaultGroupMembership.create(account, this, getDataStore());
     }
 }

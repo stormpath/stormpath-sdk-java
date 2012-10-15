@@ -29,8 +29,8 @@ import java.util.Map;
  */
 public class DefaultGroupMembership extends AbstractInstanceResource implements GroupMembership {
 
-    private final String ACCOUNT = "account";
-    private final String GROUP = "group";
+    private final static String ACCOUNT = "account";
+    private final static String GROUP = "group";
 
 
     public DefaultGroupMembership(InternalDataStore dataStore) {
@@ -46,33 +46,30 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
         return getResourceProperty(ACCOUNT, Account.class);
     }
 
-    public void setAccount(Account account) {
-        setProperty(ACCOUNT, account);
-    }
-
     @Override
     public Group getGroup() {
         return getResourceProperty(GROUP, Group.class);
     }
 
-    public void setGroup(Group group) {
-        setProperty(GROUP, group);
-    }
+    public static GroupMembership create(Account account, Group group, InternalDataStore dataStore) {
 
-    @Override
-    public GroupMembership create(Account account, Group group) {
         //TODO: enable auto discovery
         String href = "/groupMemberships";
 
         Map<String, Object> props = new LinkedHashMap<String, Object>(2);
+
         Map<String, String> accountProps = new LinkedHashMap<String, String>(1);
         accountProps.put(HREF_PROP_NAME, account.getHref());
+
         Map<String, String> groupProps = new LinkedHashMap<String, String>(1);
         groupProps.put(HREF_PROP_NAME, group.getHref());
+
         props.put(ACCOUNT, accountProps);
         props.put(GROUP, groupProps);
-        GroupMembership groupMembership = getDataStore().instantiate(GroupMembership.class, props);
-        return getDataStore().create(href, groupMembership);
+
+        GroupMembership groupMembership = dataStore.instantiate(GroupMembership.class, props);
+
+        return dataStore.create(href, groupMembership);
     }
 
     @Override

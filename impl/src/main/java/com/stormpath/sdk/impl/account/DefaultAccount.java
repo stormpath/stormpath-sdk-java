@@ -23,6 +23,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
@@ -151,8 +152,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public GroupMembership addGroup(Group group) {
-        GroupMembership groupMembership = getDataStore().instantiate(GroupMembership.class);
-        return groupMembership.create(this, group);
+        return DefaultGroupMembership.create(this, group, getDataStore());
     }
 
     @Override

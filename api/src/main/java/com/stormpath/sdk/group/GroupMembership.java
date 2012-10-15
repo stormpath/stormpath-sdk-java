@@ -22,13 +22,9 @@ import com.stormpath.sdk.resource.Saveable;
 /**
  * @since 0.4
  */
-public interface GroupMembership extends Resource, Saveable {
+public interface GroupMembership extends Resource {
 
     Account getAccount();
-    void setAccount(Account account);
     Group getGroup();
-    void setGroup(Group group);
-
-    GroupMembership create(Account account, Group group);
     void delete();
 }

@@ -71,6 +71,14 @@
             <organization>Stormpath, Inc.</organization>
             <organizationUrl>http://www.stormpath.com</organizationUrl>
         </developer>
+        <developer>
+            <id>ecrisostomo</id>
+            <name>Elder Crisostomo</name>
+            <email>elder@stormpath.com</email>
+            <timezone>-8</timezone>
+            <organization>Stormpath, Inc.</organization>
+            <organizationUrl>http://www.stormpath.com</organizationUrl>
+        </developer>
     </developers>
 
     <modules>

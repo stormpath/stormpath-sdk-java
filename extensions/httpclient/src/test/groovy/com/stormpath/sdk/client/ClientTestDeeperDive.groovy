@@ -102,7 +102,7 @@ class ClientTestDeeperDive {
             for (Account account : accountList) {
                 println("-- Account $account");
 
-                if (account.email == "Sandra@Fisher.com") {
+                if (account.email == "whatever@dowhatyouwant.com") {
                     GroupMembershipList memberships = account.groupMemberships
                     println(memberships)
                     println("*****")
@@ -117,13 +117,22 @@ class ClientTestDeeperDive {
 //                        testor.create(account, groupToAddMembership);
 //                        account.addGroup(groupToAddMembership);
                         GroupMembership deletor = groupToAddMembership.addAccount(account);
-                        println("*** WORKED ***")
+                        println("*** WORKED ADDING ACCOUNT TO GROUP ***")
 
                         deletor.account
                         println "deletor = $deletor"
 
                         deletor.delete()
                         println("DELETED MEMBERSHIP!!!")
+
+                        deletor = account.addGroup(groupToAddMembership);
+                        println("*** WORKED ADDING GROUP TO ACCOUNT ***")
+
+                        deletor.account
+                        println "deletor = $deletor"
+
+                        deletor.delete()
+                        println("DELETED MEMBERSHIP, AGAIN!!!")
                     }
                     println()
 
