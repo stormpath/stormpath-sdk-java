@@ -69,8 +69,18 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
                     c = vals;
                 }
             }
-            if (c != null) {
-                items = toResourceList(c, getItemType());
+            if (c != null && !c.isEmpty()) {
+                //do a look ahead to see if resource conversion has already taken place:
+                if (!getItemType().isInstance(c.iterator().next())) {
+                    //need to convert the list of links to a list of unmaterialized Resources
+                    items = toResourceList(c, getItemType());
+                    //replace the existing list of links with the newly constructed list of Resources.  Don't dirty
+                    //the instance - we're just swapping out a property that already exists for the materialized version.
+                    setProperty(ITEMS, items, false);
+                } else {
+                    //the collection has already been converted to Resources - use it directly:
+                    items = c;
+                }
             }
         }
 

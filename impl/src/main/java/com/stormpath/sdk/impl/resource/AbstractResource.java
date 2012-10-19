@@ -174,14 +174,24 @@ public abstract class AbstractResource implements Resource {
     }
 
     protected void setProperty(String name, Object value) {
+        setProperty(name, value, true);
+    }
+
+    /**
+     * @since 0.6.0
+     */
+    protected void setProperty(String name, Object value, final boolean dirty) {
         writeLock.lock();
         try {
             this.properties.put(name, value);
-            this.dirtyProperties.put(name, value);
-            this.dirty = true;
+            if (dirty) {
+                this.dirtyProperties.put(name, value);
+                this.dirty = true;
+            }
         } finally {
             writeLock.unlock();
         }
+
     }
 
     protected String getStringProperty(String key) {
@@ -207,10 +217,25 @@ public abstract class AbstractResource implements Resource {
     @SuppressWarnings("unchecked")
     protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
         Object value = getProperty(key);
-        if (value instanceof Map && !((Map) value).isEmpty()) {
-            return dataStore.instantiate(clazz, (Map<String, Object>) value);
+        if (value == null) {
+            return null;
         }
-        return null;
+        if (clazz.isInstance(value)) {
+            return (T)value;
+        }
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            T resource = dataStore.instantiate(clazz, (Map<String, Object>) value);
+
+            //replace the existing link object (map with an href) with the newly constructed Resource instance.
+            //Don't dirty the instance - we're just swapping out a property that already exists for the materialized version.
+            setProperty(key, resource, false);
+            return resource;
+        }
+
+        String msg = "'" + key + "' property value type does not match the specified type.  Specified type: " +
+                clazz.getName() + ".  Existing type: " + value.getClass().getName();
+        msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
+        throw new IllegalArgumentException(msg);
     }
 
     private int parseInt(String value) {

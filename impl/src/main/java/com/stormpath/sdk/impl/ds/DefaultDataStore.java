@@ -183,6 +183,8 @@ public class DefaultDataStore implements InternalDataStore {
             //if the property is a reference, don't write the entire object - just the href will do:
             if (prop instanceof Map) {
                 prop = toSimpleReference(propName, (Map)prop);
+            } else if (prop instanceof Resource) {
+                prop = toSimpleReference(propName, (Resource)prop);
             }
 
             props.put(propName, prop);
@@ -195,6 +197,19 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.isTrue(!map.isEmpty() && map.containsKey(AbstractResource.HREF_PROP_NAME),
                 "Nested resource '" + propName + "' must have an 'href' property.");
         String href = String.valueOf(map.get(AbstractResource.HREF_PROP_NAME));
+
+        Map<String,String> reference = new HashMap<String,String>(1);
+        reference.put(AbstractResource.HREF_PROP_NAME, href);
+
+        return reference;
+    }
+
+    /**
+     * @since 0.6.0
+     */
+    private Map<String,String> toSimpleReference(String propName, Resource resource) {
+        String href = resource.getHref();
+        Assert.hasText(href, "Nested Resource '" + propName + "' must have an 'href' property.");
 
         Map<String,String> reference = new HashMap<String,String>(1);
         reference.put(AbstractResource.HREF_PROP_NAME, href);
