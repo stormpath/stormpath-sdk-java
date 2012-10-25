@@ -51,6 +51,16 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
         return getResourceProperty(GROUP, Group.class);
     }
 
+    /**
+     * THIS IS NOT PART OF THE STORMPATH PUBLIC API.  SDK end-users should not call it - it could be removed or
+     * changed at any time.  It has the public modifier only as an implementation technique to be accessible to other
+     * {@code Default*} implementations.
+     *
+     * @param account the account to associate with the group.
+     * @param group the group which will contain the account.
+     * @param dataStore the datastore used to create the membership
+     * @return the created GroupMembership instance.
+     */
     public static GroupMembership create(Account account, Group group, InternalDataStore dataStore) {
 
         //TODO: enable auto discovery
