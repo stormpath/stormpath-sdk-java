@@ -44,6 +44,10 @@ public interface Directory extends Resource, Saveable {
     /**
      * Creates a new account instance in the directory using the Directory's default registration workflow setting.
      * Whether a registration workflow is triggered or not for the account is based on the Directory's default setting.
+     * <p/>
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the directory's
+     * {@link #getAccounts() account collection}.
      *
      * @param account the account instance to create in the directory.
      * @see #createAccount(com.stormpath.sdk.account.Account, boolean)
@@ -61,6 +65,10 @@ public interface Directory extends Resource, Saveable {
      * </p>
      * If you want to ensure the registration workflow behavior matches the Directory default, call the
      * {@link #createAccount(com.stormpath.sdk.account.Account)} method instead.
+     * <p/>
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the directory's
+     * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} argument.
      *
      * @param account                     account the account instance to create in the directory.
      * @param registrationWorkflowEnabled whether or not the account registration workflow will be triggered, no matter
@@ -76,6 +84,10 @@ public interface Directory extends Resource, Saveable {
 
     /**
      * Creates a new group instance in the directory.
+     * <p/>
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the directory's
+     * {@link #getGroups() group collection}.
      *
      * @param group the group instance to create in the directory.
      * @since 0.6
