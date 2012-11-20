@@ -17,6 +17,7 @@ package com.stormpath.sdk.directory;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -72,4 +73,11 @@ public interface Directory extends Resource, Saveable {
     GroupList getGroups();
 
     Tenant getTenant();
+
+    /**
+     * Creates a new group instance in the directory.
+     *
+     * @param group the group instance to create in the directory.
+     */
+    void createGroup(Group group);
 }

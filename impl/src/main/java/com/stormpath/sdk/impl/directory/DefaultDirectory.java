@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
@@ -109,5 +110,12 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT, Tenant.class);
+    }
+
+    @Override
+    public void createGroup(Group group) {
+        GroupList groups = getGroups();
+        String href = groups.getHref();
+        getDataStore().create(href, group);
     }
 }
