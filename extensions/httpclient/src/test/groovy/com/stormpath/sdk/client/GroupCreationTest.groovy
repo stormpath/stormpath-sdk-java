@@ -19,11 +19,7 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 
 /**
- * Created with IntelliJ IDEA.
- * User: ecrisostomo
- * Date: 11/19/12
- * Time: 6:29 PM
- * To change this template use File | Settings | File Templates.
+ * @since 0.6
  */
 class GroupCreationTest {
 

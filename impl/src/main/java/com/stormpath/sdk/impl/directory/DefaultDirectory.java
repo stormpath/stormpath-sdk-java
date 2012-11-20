@@ -112,6 +112,9 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         return getResourceProperty(TENANT, Tenant.class);
     }
 
+    /**
+     * @since 0.6
+     */
     @Override
     public void createGroup(Group group) {
         GroupList groups = getGroups();

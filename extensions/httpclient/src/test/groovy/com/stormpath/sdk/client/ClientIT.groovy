@@ -17,13 +17,6 @@ package com.stormpath.sdk.client
 
 import org.testng.annotations.BeforeClass
 
-/**
- * Created with IntelliJ IDEA.
- * User: lhazlewood
- * Date: 8/6/12
- * Time: 6:00 PM
- * To change this template use File | Settings | File Templates.
- */
 class ClientIT {
 
     String apiKeyFileLocation = System.getProperty('user.home') + "/.stormpath/iam/localhost/apiKey.properties"

@@ -78,6 +78,7 @@ public interface Directory extends Resource, Saveable {
      * Creates a new group instance in the directory.
      *
      * @param group the group instance to create in the directory.
+     * @since 0.6
      */
     void createGroup(Group group);
 }
