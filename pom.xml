@@ -158,6 +158,20 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpClient.version}</version>
+                <!-- The Stormpath Java SDK project uses SLF4J: -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <!-- Runtime only - replaces commons-logging runtime need for HTTPClient: -->
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
