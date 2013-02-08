@@ -1,4 +1,5 @@
-https://api.travis-ci.org/stormpath/stormpath-sdk-java.png?branch=master
+[![Build Status](https://api.travis-ci.org/stormpath/stormpath-sdk-java.png?branch=master)](https://travis-ci.org/stormpath/stormpath-sdk-java)
+
 # Stormpath Java SDK #
 
 Copyright &copy; 2012 Stormpath, Inc. and contributors.
