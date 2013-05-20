@@ -63,13 +63,31 @@ public class Client {
      *               Stormpath's REST API.
      */
     public Client(ApiKey apiKey) {
-        Object requestExecutor = createRequestExecutor(apiKey);
+        Object requestExecutor = createRequestExecutor(apiKey, Proxy.NO_PROXY);
+        this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
+    }
+
+    /**
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API using proxy.  See the class-level
+     * JavaDoc for a usage example.
+     *
+     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with
+     *               Stormpath's REST API.
+     */
+    public Client(ApiKey apiKey, Proxy proxy) {
+        Object requestExecutor = createRequestExecutor(apiKey, proxy);
         this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
     }
 
     //no modifier on purpose: for local development testing only:
     Client(ApiKey apiKey, String baseUrl) {
-        Object requestExecutor = createRequestExecutor(apiKey);
+        Object requestExecutor = createRequestExecutor(apiKey, Proxy.NO_PROXY);
+        this.dataStore = createDataStore(requestExecutor, baseUrl);
+    }
+
+    //no modifier on purpose: for local development testing only:
+    Client(ApiKey apiKey, String baseUrl, Proxy proxy) {
+        Object requestExecutor = createRequestExecutor(apiKey, proxy);
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
 
@@ -82,8 +100,8 @@ public class Client {
     }
 
     //since 0.3
-    @SuppressWarnings("unchecked")
-    private Object createRequestExecutor(ApiKey apiKey) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -100,13 +118,13 @@ public class Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = ClassUtils.getConstructor(requestExecutorClass, ApiKey.class);
+        Constructor ctor = ClassUtils.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class);
 
-        return ClassUtils.instantiate(ctor, apiKey);
+        return ClassUtils.instantiate(ctor, apiKey, proxy);
     }
 
     //@since 0.3
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private DataStore createDataStore(Object requestExecutor, Object secondCtorArg) {
 
         String requestExecutorInterfaceClassName = "com.stormpath.sdk.impl.http.RequestExecutor";
@@ -207,7 +225,8 @@ public class Client {
          * @return the located class
          * @throws RuntimeException if the class cannot be found.
          */
-        public static Class forName(String fqcn) throws RuntimeException {
+        @SuppressWarnings("rawtypes")
+		public static Class forName(String fqcn) throws RuntimeException {
 
             Class clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
 
@@ -237,7 +256,8 @@ public class Client {
             }
         }
 
-        public static <T> Constructor<T> getConstructor(Class<T> clazz, Class... argTypes) {
+        @SuppressWarnings("rawtypes")
+		public static <T> Constructor<T> getConstructor(Class<T> clazz, Class... argTypes) {
             try {
                 return clazz.getConstructor(argTypes);
             } catch (NoSuchMethodException e) {
@@ -256,14 +276,16 @@ public class Client {
         }
 
         private static interface ClassLoaderAccessor {
-            Class loadClass(String fqcn);
+            @SuppressWarnings("rawtypes")
+			Class loadClass(String fqcn);
 
             InputStream getResourceStream(String name);
         }
 
         private static abstract class ExceptionIgnoringAccessor implements ClassLoaderAccessor {
 
-            public Class loadClass(String fqcn) {
+            @SuppressWarnings("rawtypes")
+			public Class loadClass(String fqcn) {
                 Class clazz = null;
                 ClassLoader cl = getClassLoader();
                 if (cl != null) {
