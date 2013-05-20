@@ -52,6 +52,7 @@ public class ClientBuilder {
     private String apiKeyIdPropertyName = "apiKey.id";
     private String apiKeySecretPropertyName = "apiKey.secret";
     private String baseUrl; //internal/private testing only
+    private Proxy proxy = Proxy.NO_PROXY;
 
     /**
      * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
@@ -195,6 +196,17 @@ public class ClientBuilder {
         return this;
     }
 
+    /**
+     * Sets the proxy to be used for Stormpath's requests
+     *
+     * @param proxy the {@code Proxy} you need to use.
+     * @return the ClientBuilder instance for method chaining.
+     */
+    public ClientBuilder setProxy(Proxy proxy) {
+        this.proxy = proxy;
+        return this;
+    }
+
     //For internal Stormpath testing needs only:
     ClientBuilder setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -240,7 +252,7 @@ public class ClientBuilder {
 
         ApiKey apiKey = createApiKey(apiKeyId, apiKeySecret);
 
-        return createClient(apiKey, this.baseUrl);
+        return createClient(apiKey, this.baseUrl, proxy);
     }
 
     //since 0.5
@@ -250,7 +262,12 @@ public class ClientBuilder {
 
     //since 0.5
     protected Client createClient(ApiKey key, String baseUrl) {
-        return baseUrl != null ? new Client(key, baseUrl) : new Client(key);
+        return createClient(key, baseUrl, proxy);
+    }
+
+    //since 0.8
+    protected Client createClient(ApiKey key, String baseUrl, Proxy proxy) {
+        return baseUrl != null ? new Client(key, baseUrl, proxy) : new Client(key, proxy);
     }
 
     private String getPropertyValue(Properties properties, String propName) {
