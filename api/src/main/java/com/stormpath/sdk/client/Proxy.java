@@ -2,7 +2,7 @@ package com.stormpath.sdk.client;
 
 public class Proxy {
 	
-	public final static Proxy NO_PROXY = new Proxy("null", -1);
+	public final static Proxy NO_PROXY = new Proxy(null, -1);
 	
 	private final String host;
 	private final int port;
