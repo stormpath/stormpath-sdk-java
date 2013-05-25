@@ -15,7 +15,12 @@
  */
 package com.stormpath.sdk.client;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -27,9 +32,10 @@ import java.util.Properties;
  * information loaded from an external {@code .properties} file (or Properties instance) to ensure the API Key secret
  * (password) does not reside in plaintext in code.
  * <p/>
- * Example usage:
+ * Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
+ * client as follows:
  * <pre>
- * String location = "/home/jsmith/.stormpath/apiKey.properties";
+ * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
  *
  * Client = new ClientBuilder().setApiKeyFileLocation(location).build();
  * </pre>
@@ -287,7 +293,9 @@ public class ClientBuilder {
             try {
                 is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
             } catch (IOException e) {
-                String msg = "Unable to load InputStream for specified apiKeyFileLocation";
+                String msg = "Unable to load API Key using apiKeyFileLocation '" + this.apiKeyFileLocation + "'.  " +
+                        "Please check and ensure that file exists or use the 'setApiKeyFileLocation' method to specify " +
+                        "a valid location.";
                 throw new IllegalStateException(msg, e);
             }
         }
