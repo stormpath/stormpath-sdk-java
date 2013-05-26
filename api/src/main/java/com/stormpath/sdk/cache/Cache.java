@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.cache;
+package com.stormpath.sdk.cache;
 
 /**
  * A Cache efficiently stores temporary objects primarily to improve an application's performance.

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.cache.impl;
+package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.impl.cache.Cache;
+import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
@@ -262,8 +262,8 @@ public class DefaultCache<K, V> implements Cache<K, V> {
      * {@link #getCreationTimeMillis() creationTimeMillis} and {@link #getLastAccessTimeMillis() lastAccessTimeMillis}
      * metadata about the entry itself.  The {@code creationTimeMillis} and {@code lastAccessTimeMillis} values are used
      * to support expunging cache entries based on
-     * {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToIdle() timeToIdle} and
-     * {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive() timeToLive} settings, respectively.
+     * {@link DefaultCache#getTimeToIdle() timeToIdle} and
+     * {@link DefaultCache#getTimeToLive() timeToLive} settings, respectively.
      *
      * @param <V> the type of value that is stored in the cache.
      */
@@ -298,7 +298,7 @@ public class DefaultCache<K, V> implements Cache<K, V> {
         /**
          * Returns the creation time in millis since Epoch when this {@code Entry} instance was created.  This is used to
          * support expunging cache entries when this value is older than the cache's
-         * {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive() timeToLive} setting.
+         * {@link DefaultCache#getTimeToLive() timeToLive} setting.
          *
          * @return the creation time in millis since Epoch when this {@code Entry} instance was created.
          */
@@ -309,7 +309,7 @@ public class DefaultCache<K, V> implements Cache<K, V> {
         /**
          * Returns the time in millis since Epoch when this {@code Entry} instance was last accessed.  This is used to
          * support expunging cache entries when this value is older than the cache's
-         * {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToIdle() timeToIdle} setting.
+         * {@link DefaultCache#getTimeToIdle() timeToIdle} setting.
          *
          * @return the time in millis since Epoch when this {@code Entry} instance was last accessed.
          */

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.cache.impl;
+package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.impl.cache.Cache;
-import com.stormpath.sdk.impl.cache.CacheManager;
+import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
@@ -91,25 +91,25 @@ public class DefaultCacheManager implements CacheManager {
     }
 
     /**
-     * Returns the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive() timeToLive} duration
+     * Returns the default {@link DefaultCache#getTimeToLive() timeToLive} duration
      * to apply to newly created {@link DefaultCache} instances.  This setting does not affect existing
      * {@link DefaultCache} instances.
      *
-     * @return the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive() timeToLive} duration
+     * @return the default {@link DefaultCache#getTimeToLive() timeToLive} duration
      *         to apply to newly created {@link DefaultCache} instances.
      * @see DefaultCache
-     * @see com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive()
+     * @see DefaultCache#getTimeToLive()
      */
     public Duration getDefaultTimeToLive() {
         return defaultTimeToLive;
     }
 
     /**
-     * Sets the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive() timeToLive} duration
+     * Sets the default {@link DefaultCache#getTimeToLive() timeToLive} duration
      * to apply to newly created {@link DefaultCache} instances.  This setting does not affect existing
      * {@link DefaultCache} instances.
      *
-     * @param defaultTimeToLive the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToLive() timeToLive}
+     * @param defaultTimeToLive the default {@link DefaultCache#getTimeToLive() timeToLive}
      *                          duration to apply to newly created {@link DefaultCache} instances.
      */
     public void setDefaultTimeToLive(Duration defaultTimeToLive) {
@@ -128,11 +128,11 @@ public class DefaultCacheManager implements CacheManager {
     }
 
     /**
-     * Returns the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToIdle() timeToIdle} duration
+     * Returns the default {@link DefaultCache#getTimeToIdle() timeToIdle} duration
      * to apply to newly created {@link DefaultCache} instances.  This setting does not affect existing
      * {@link DefaultCache} instances.
      *
-     * @return the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToIdle() timeToIdle} duration
+     * @return the default {@link DefaultCache#getTimeToIdle() timeToIdle} duration
      *         to apply to newly created {@link DefaultCache} instances.
      */
     public Duration getDefaultTimeToIdle() {
@@ -140,11 +140,11 @@ public class DefaultCacheManager implements CacheManager {
     }
 
     /**
-     * Sets the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToIdle() timeToIdle} duration
+     * Sets the default {@link DefaultCache#getTimeToIdle() timeToIdle} duration
      * to apply to newly created {@link DefaultCache} instances.  This setting does not affect existing
      * {@link DefaultCache} instances.
      *
-     * @param defaultTimeToIdle the default {@link com.stormpath.sdk.impl.cache.impl.DefaultCache#getTimeToIdle() timeToIdle}
+     * @param defaultTimeToIdle the default {@link DefaultCache#getTimeToIdle() timeToIdle}
      *                          duration to apply to newly created {@link DefaultCache} instances.
      */
     public void setDefaultTimeToIdle(Duration defaultTimeToIdle) {

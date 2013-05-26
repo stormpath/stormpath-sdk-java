@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.cache;
+package com.stormpath.sdk.cache;
 
 /**
  * A CacheManager provides and maintains the lifecycles of {@link Cache Cache} instances.

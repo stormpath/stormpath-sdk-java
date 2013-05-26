@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.cache.impl
+package com.stormpath.sdk.impl.cache
 
-import com.stormpath.sdk.impl.cache.Cache
+import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.impl.util.Duration
 import org.junit.Before
 import org.junit.Test
