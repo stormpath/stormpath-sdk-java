@@ -63,30 +63,47 @@ public class Client {
      *               Stormpath's REST API.
      */
     public Client(ApiKey apiKey) {
-        Object requestExecutor = createRequestExecutor(apiKey, Proxy.NO_PROXY);
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        Object requestExecutor = createRequestExecutor(apiKey, null);
         this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
     }
 
     /**
-     * Instantiates a new Client instance that will communicate with the Stormpath REST API using proxy.  See the class-level
-     * JavaDoc for a usage example.
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API using an HTTP Proxy.
      *
      * @param apiKey the Stormpath account API Key that will be used to authenticate the client with
      *               Stormpath's REST API.
      */
     public Client(ApiKey apiKey, Proxy proxy) {
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        if (proxy == null) {
+            throw new IllegalArgumentException("proxy argument cannot be null.");
+        }
         Object requestExecutor = createRequestExecutor(apiKey, proxy);
         this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
     }
 
     //no modifier on purpose: for local development testing only:
     Client(ApiKey apiKey, String baseUrl) {
-        Object requestExecutor = createRequestExecutor(apiKey, Proxy.NO_PROXY);
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        Object requestExecutor = createRequestExecutor(apiKey, null);
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
 
     //no modifier on purpose: for local development testing only:
-    Client(ApiKey apiKey, String baseUrl, Proxy proxy) {
+    Client(ApiKey apiKey, Proxy proxy, String baseUrl) {
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        if (proxy == null) {
+            throw new IllegalArgumentException("proxy argument cannot be null.");
+        }
         Object requestExecutor = createRequestExecutor(apiKey, proxy);
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
@@ -105,7 +122,7 @@ public class Client {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
-        Class requestExecutorClass = null;
+        Class requestExecutorClass;
 
         if (ClassUtils.isAvailable(className)) {
             requestExecutorClass = ClassUtils.forName(className);

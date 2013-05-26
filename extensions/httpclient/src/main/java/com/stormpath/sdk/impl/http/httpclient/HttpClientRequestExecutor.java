@@ -15,13 +15,22 @@
  */
 package com.stormpath.sdk.impl.http.httpclient;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.util.Random;
-
+import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.impl.http.RestException;
+import com.stormpath.sdk.impl.http.authc.Sauthc1Signer;
+import com.stormpath.sdk.impl.http.authc.Signer;
+import com.stormpath.sdk.impl.http.support.BackoffStrategy;
+import com.stormpath.sdk.impl.http.support.DefaultRequest;
+import com.stormpath.sdk.impl.http.support.DefaultResponse;
+import com.stormpath.sdk.impl.util.Assert;
+import com.stormpath.sdk.impl.util.StringInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -41,24 +50,18 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.stormpath.sdk.client.ApiKey;
-import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.http.HttpHeaders;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.http.Response;
-import com.stormpath.sdk.impl.http.RestException;
-import com.stormpath.sdk.impl.http.authc.Sauthc1Signer;
-import com.stormpath.sdk.impl.http.authc.Signer;
-import com.stormpath.sdk.impl.http.support.BackoffStrategy;
-import com.stormpath.sdk.impl.http.support.DefaultRequest;
-import com.stormpath.sdk.impl.http.support.DefaultResponse;
-import com.stormpath.sdk.impl.util.Assert;
-import com.stormpath.sdk.impl.util.StringInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.util.Random;
 
 /**
+ * {@code RequestExecutor} implementation that uses the
+ * <a href="http://hc.apache.org/httpcomponents-client-ga">Apache HttpClient</a> implementation to
+ * execute http requests.
+ *
  * @since 0.1
  */
 public class HttpClientRequestExecutor implements RequestExecutor {
@@ -92,7 +95,15 @@ public class HttpClientRequestExecutor implements RequestExecutor {
     //doesn't need to be SecureRandom: only used in backoff strategy, not for crypto:
     private final Random random = new Random();
 
+    /**
+     * Creates a new {@code HttpClientRequestExecutor} using the specified {@code ApiKey} and optional {@code Proxy}
+     * configuration.
+     *
+     * @param apiKey the ApiKey
+     * @param proxy
+     */
     public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy) {
+        Assert.notNull(apiKey, "apiKey argument is required.");
 
         this.apiKey = apiKey;
 
@@ -109,19 +120,18 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
         httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
-        
-        if (!Proxy.NO_PROXY.equals(proxy))
-        {
-        	//We have some proxy setting to use!
-        	HttpHost httpProxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
-        	httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, httpProxyHost);
-        	
-        	if (proxy.isWithAuthentication())
-        	{
-        		httpClient.getCredentialsProvider().setCredentials(
+
+        if (proxy != null) {
+            //We have some proxy setting to use!
+            HttpHost httpProxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, httpProxyHost);
+
+            if (proxy.isAuthenticationRequired()) {
+                httpClient.getCredentialsProvider().setCredentials(
                         new AuthScope(proxy.getHost(), proxy.getPort()),
                         new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
-        	}
+            }
+
         }
     }
 
