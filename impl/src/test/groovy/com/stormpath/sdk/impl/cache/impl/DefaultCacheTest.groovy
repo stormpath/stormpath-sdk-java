@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.impl.cache.impl
 
 import com.stormpath.sdk.impl.util.Duration
@@ -13,6 +28,12 @@ import static org.junit.Assert.*
 class DefaultCacheTest {
 
     @Test
+    void testDefault() {
+        def cache = new DefaultCache('foo')
+        assertEquals 'foo', cache.name
+    }
+
+    @Test
     void testGetReturningNull() {
         def cache = new DefaultCache('foo');
         assertNull cache.get('key')
@@ -26,12 +47,40 @@ class DefaultCacheTest {
         assertSame ttl, cache.timeToLive
     }
 
+    @Test(expected=IllegalArgumentException)
+    void testSetNegativeTtl() {
+        def cache = new DefaultCache('foo')
+        def ttl = new Duration(-30, TimeUnit.MILLISECONDS)
+        cache.setTimeToLive(ttl)
+    }
+
+    @Test(expected=IllegalArgumentException)
+    void testSetZeroTtl() {
+        def cache = new DefaultCache('foo')
+        def ttl = new Duration(0, TimeUnit.MILLISECONDS)
+        cache.setTimeToLive(ttl)
+    }
+
     @Test
     void testSetTti() {
         def cache = new DefaultCache('foo')
         def tti = new Duration(30, TimeUnit.MILLISECONDS)
         cache.setTimeToIdle(tti)
         assertSame tti, cache.timeToIdle
+    }
+
+    @Test(expected=IllegalArgumentException)
+    void testSetNegativeTti() {
+        def cache = new DefaultCache('foo')
+        def tti = new Duration(-30, TimeUnit.MILLISECONDS)
+        cache.setTimeToIdle(tti)
+    }
+
+    @Test(expected=IllegalArgumentException)
+    void testSetZeroTti() {
+        def cache = new DefaultCache('foo')
+        def tti = new Duration(0, TimeUnit.MILLISECONDS)
+        cache.setTimeToIdle(tti)
     }
 
     @Test
