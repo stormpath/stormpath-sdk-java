@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.client;
 
+import com.stormpath.sdk.lang.ClassUtils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -552,7 +554,7 @@ public class ClientBuilder {
         }
 
         private static InputStream loadFromClassPath(String path) {
-            return Client.ClassUtils.getResourceAsStream(path);
+            return ClassUtils.getResourceAsStream(path);
         }
 
         private static String stripPrefix(String resourcePath) {

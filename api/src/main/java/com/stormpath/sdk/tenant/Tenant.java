@@ -18,6 +18,7 @@ package com.stormpath.sdk.tenant;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -32,6 +33,32 @@ public interface Tenant extends Resource, Saveable {
     String getKey();
 
     void createApplication(Application application);
+
+    /**
+     * Creates a new Application instance based on the specified request.
+     * <h3>Usage</h3>
+     * <pre>
+     * tenant.createApplication(CreateApplicationRequest.with(application).build());
+     * </pre>
+     * <p/>
+     * If you would like to automatically create a Directory for this application's own needs:
+     * <pre>
+     * tenant.createApplication(CreateApplicationRequest.with(application).createDirectory(true).build());
+     * </pre>
+     * The directory's name will be auto-generated to reflect your Application as closely as possible and not conflict
+     * with any existing Directories in your tenant.
+     * <p/>
+     * Or if you prefer to specify the directory name yourself:
+     * <pre>
+     * tenant.createApplication(CreateApplicationRequest.with(application).withDirectoryName("My Directory");
+     * </pre>
+     * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
+     * know you must choose another Directory name.
+     *
+     * @param request the request reflecting how to create the Application
+     * @return the application created.
+     */
+    Application createApplication(CreateApplicationRequest request);
 
     ApplicationList getApplications();
 

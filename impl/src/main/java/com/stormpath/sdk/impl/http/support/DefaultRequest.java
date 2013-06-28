@@ -19,7 +19,7 @@ import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.StringUtils;
 
 import java.io.InputStream;
 import java.net.URI;

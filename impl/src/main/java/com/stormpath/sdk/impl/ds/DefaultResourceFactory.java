@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.util.ClassUtils;
+import com.stormpath.sdk.lang.ClassUtils;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Constructor;
