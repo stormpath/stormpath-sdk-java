@@ -67,21 +67,19 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     public Application createApplication(CreateApplicationRequest request) {
 
         final Application application = request.getApplication();
-        final String[] href = new String[1]; //holder
+        final String[] href = new String[]{"/" + APPLICATIONS };
 
         request.accept(new CreateApplicationRequestVisitor() {
             @Override
-            public void visit(CreateApplicationRequest request) {
-                href[0] = "/" + APPLICATIONS;
+            public void visit(CreateApplicationRequest ignored) {
             }
-
             @Override
             public void visit(CreateApplicationAndDirectoryRequest request) {
                 String name = request.getDirectoryName();
                 if (name == null) {
                     name = "true"; //boolean true means 'auto name the directory'
                 }
-                href[0] = "/" + APPLICATIONS + "?createDirectory=" + name;
+                href[0] += "?createDirectory=" + name;
             }
         });
 
