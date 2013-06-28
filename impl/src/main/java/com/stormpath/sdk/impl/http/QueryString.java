@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http;
 
 import com.stormpath.sdk.impl.util.RequestUtils;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.StringUtils;
 
 import java.util.Map;
 import java.util.TreeMap;

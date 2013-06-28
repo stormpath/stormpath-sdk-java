@@ -15,13 +15,23 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.impl.util.Assert;
-import com.stormpath.sdk.impl.util.CollectionUtils;
 import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.CollectionUtils;
+import com.stormpath.sdk.lang.StringUtils;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * @since 0.1, borrowed from the Spring Framework.

@@ -19,6 +19,9 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.application.CreateApplicationAndDirectoryRequest;
+import com.stormpath.sdk.application.CreateApplicationRequest;
+import com.stormpath.sdk.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
@@ -41,7 +44,7 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
         super(dataStore);
     }
 
-    public DefaultTenant(InternalDataStore dataStore, Map<String,Object> properties) {
+    public DefaultTenant(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -56,11 +59,32 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     }
 
     @Override
-    public void createApplication(Application application) {
-        //ApplicationList list = getApplications();
-        //String href = list.getHref();
-        String href = "/applications"; //TODO enable auto discovery
-        getDataStore().create(href, application);
+    public Application createApplication(Application application) {
+        CreateApplicationRequest request = CreateApplicationRequest.with(application).build();
+        return createApplication(request);
+    }
+
+    @Override
+    public Application createApplication(CreateApplicationRequest request) {
+
+        final Application application = request.getApplication();
+        final String[] href = new String[]{"/" + APPLICATIONS };
+
+        request.accept(new CreateApplicationRequestVisitor() {
+            @Override
+            public void visit(CreateApplicationRequest ignored) {
+            }
+            @Override
+            public void visit(CreateApplicationAndDirectoryRequest request) {
+                String name = request.getDirectoryName();
+                if (name == null) {
+                    name = "true"; //boolean true means 'auto name the directory'
+                }
+                href[0] += "?createDirectory=" + name;
+            }
+        });
+
+        return getDataStore().create(href[0], application);
     }
 
     @Override
@@ -79,7 +103,7 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
         //TODO enable auto discovery via Tenant resource (should be just /emailVerificationTokens
         String href = "/accounts/emailVerificationTokens/" + token;
 
-        Map<String,Object> props = new LinkedHashMap<String, Object>(1);
+        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
         props.put(HREF_PROP_NAME, href);
 
         EmailVerificationToken evToken = getDataStore().instantiate(EmailVerificationToken.class, props);

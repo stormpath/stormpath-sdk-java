@@ -16,10 +16,10 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.lang.ClassUtils;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 
 /**
@@ -216,163 +216,6 @@ public class Client implements DataStore {
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         return this.dataStore.getResource(href, clazz);
     }
-
-    //since 0.3
-    static class ClassUtils {
-
-        private static final ClassLoaderAccessor THREAD_CL_ACCESSOR = new ExceptionIgnoringAccessor() {
-            @Override
-            protected ClassLoader doGetClassLoader() throws Throwable {
-                return Thread.currentThread().getContextClassLoader();
-            }
-        };
-
-        private static final ClassLoaderAccessor CLASS_CL_ACCESSOR = new ExceptionIgnoringAccessor() {
-            @Override
-            protected ClassLoader doGetClassLoader() throws Throwable {
-                return ClassUtils.class.getClassLoader();
-            }
-        };
-
-        private static final ClassLoaderAccessor SYSTEM_CL_ACCESSOR = new ExceptionIgnoringAccessor() {
-            @Override
-            protected ClassLoader doGetClassLoader() throws Throwable {
-                return ClassLoader.getSystemClassLoader();
-            }
-        };
-
-        /**
-         * Returns the specified resource by checking the current thread's
-         * {@link Thread#getContextClassLoader() context class loader}, then the
-         * current ClassLoader (<code>ClassUtils.class.getClassLoader()</code>), then the system/application
-         * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order, using
-         * {@link ClassLoader#getResourceAsStream(String) getResourceAsStream(name)}.
-         *
-         * @param name the name of the resource to acquire from the classloader(s).
-         * @return the InputStream of the resource found, or <code>null</code> if the resource cannot be found from any
-         *         of the three mentioned ClassLoaders.
-         * @since 0.9
-         */
-        static InputStream getResourceAsStream(String name) {
-
-            InputStream is = THREAD_CL_ACCESSOR.getResourceStream(name);
-
-            if (is == null) {
-                is = CLASS_CL_ACCESSOR.getResourceStream(name);
-            }
-
-            if (is == null) {
-                is = SYSTEM_CL_ACCESSOR.getResourceStream(name);
-            }
-
-            return is;
-        }
-
-        /**
-         * Attempts to load the specified class name from the current thread's
-         * {@link Thread#getContextClassLoader() context class loader}, then the
-         * current ClassLoader (<code>ClassUtils.class.getClassLoader()</code>), then the system/application
-         * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order.  If any of them cannot locate
-         * the specified class, an <code>UnknownClassException</code> is thrown (our RuntimeException equivalent of
-         * the JRE's <code>ClassNotFoundException</code>.
-         *
-         * @param fqcn the fully qualified class name to load
-         * @return the located class
-         * @throws RuntimeException if the class cannot be found.
-         */
-        @SuppressWarnings("rawtypes")
-		public static Class forName(String fqcn) throws RuntimeException {
-
-            Class clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
-
-            if (clazz == null) {
-                clazz = CLASS_CL_ACCESSOR.loadClass(fqcn);
-            }
-
-            if (clazz == null) {
-                clazz = SYSTEM_CL_ACCESSOR.loadClass(fqcn);
-            }
-
-            if (clazz == null) {
-                String msg = "Unable to load class named [" + fqcn + "] from the thread context, current, or " +
-                        "system/application ClassLoaders.  All heuristics have been exhausted.  Class could not be found.";
-                throw new RuntimeException(msg);
-            }
-
-            return clazz;
-        }
-
-        public static boolean isAvailable(String fullyQualifiedClassName) {
-            try {
-                forName(fullyQualifiedClassName);
-                return true;
-            } catch (RuntimeException e) {
-                return false;
-            }
-        }
-
-        @SuppressWarnings("rawtypes")
-		public static <T> Constructor<T> getConstructor(Class<T> clazz, Class... argTypes) {
-            try {
-                return clazz.getConstructor(argTypes);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException(e);
-            }
-
-        }
-
-        public static <T> T instantiate(Constructor<T> ctor, Object... args) {
-            try {
-                return ctor.newInstance(args);
-            } catch (Exception e) {
-                String msg = "Unable to instantiate instance with constructor [" + ctor + "]";
-                throw new RuntimeException(msg, e);
-            }
-        }
-
-        private static interface ClassLoaderAccessor {
-            @SuppressWarnings("rawtypes")
-			Class loadClass(String fqcn);
-
-            InputStream getResourceStream(String name);
-        }
-
-        private static abstract class ExceptionIgnoringAccessor implements ClassLoaderAccessor {
-
-            @SuppressWarnings("rawtypes")
-			public Class loadClass(String fqcn) {
-                Class clazz = null;
-                ClassLoader cl = getClassLoader();
-                if (cl != null) {
-                    try {
-                        clazz = cl.loadClass(fqcn);
-                    } catch (ClassNotFoundException ignored) {
-                    }
-                }
-                return clazz;
-            }
-
-            public InputStream getResourceStream(String name) {
-                InputStream is = null;
-                ClassLoader cl = getClassLoader();
-                if (cl != null) {
-                    is = cl.getResourceAsStream(name);
-                }
-                return is;
-            }
-
-            protected final ClassLoader getClassLoader() {
-                try {
-                    return doGetClassLoader();
-                } catch (Throwable ignored) {
-                }
-                return null;
-            }
-
-            protected abstract ClassLoader doGetClassLoader() throws Throwable;
-        }
-    }
-
 }
 
 

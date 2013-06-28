@@ -19,8 +19,8 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.lang.Assert;
 
 import java.io.UnsupportedEncodingException;
 

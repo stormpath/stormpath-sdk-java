@@ -15,16 +15,28 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
 import com.stormpath.sdk.impl.util.MultiValueMap;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.StringUtils;
 
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * @since 0.1, gratefully imported from the Spring Framework.

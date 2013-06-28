@@ -16,13 +16,17 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.http.HttpMethod;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.StringInputStream;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.StringUtils;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
@@ -30,7 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @since 0.1
