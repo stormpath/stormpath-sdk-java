@@ -16,6 +16,7 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.io.InputStream;
@@ -45,11 +46,15 @@ import java.lang.reflect.Constructor;
  *     System.out.println(application);
  * }
  * </pre>
+ * <h3>DataStore API</h3>
+ * This class implements the {@link DataStore} interface, but the implementation merely acts as a wrapper to the
+ * underlying 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
+ * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
  * @since 0.1
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
  */
-public class Client {
+public class Client implements DataStore {
 
     public static final int DEFAULT_API_VERSION = 1;
 
@@ -177,6 +182,39 @@ public class Client {
         } catch (Throwable t) {
             throw new RuntimeException("Unable to instantiate DataStore implementation: " + className, t);
         }
+    }
+
+    // ========================================================================
+    // DataStore methods (delegate to underlying DataStore instance)
+    // ========================================================================
+
+    /**
+     * Delegates to the internal {@code dataStore} instance. This is a convenience mechanism to eliminate the constant
+     * need to call {@code client.getDataStore()} every time one needs to instantiate Resource.
+     *
+     * @param clazz the Resource class to instantiate.
+     * @param <T>   the Resource sub-type
+     * @return a new instance of the specified Resource.
+     * @since 0.9
+     */
+    @Override
+    public <T extends Resource> T instantiate(Class<T> clazz) {
+        return this.dataStore.instantiate(clazz);
+    }
+
+    /**
+     * Delegates to the internal {@code dataStore} instance. This is a convenience mechanism to eliminate the constant
+     * need to call {@code client.getDataStore()} every time one needs to look up a Resource.
+     *
+     * @param href  the resource URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
+     * @since 0.9
+     */
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz) {
+        return this.dataStore.getResource(href, clazz);
     }
 
     //since 0.3
