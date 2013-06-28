@@ -59,8 +59,9 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     }
 
     @Override
-    public void createApplication(Application application) {
-        createApplication(CreateApplicationRequest.with(application).build());
+    public Application createApplication(Application application) {
+        CreateApplicationRequest request = CreateApplicationRequest.with(application).build();
+        return createApplication(request);
     }
 
     @Override
