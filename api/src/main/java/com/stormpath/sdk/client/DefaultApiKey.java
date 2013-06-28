@@ -27,6 +27,12 @@ public class DefaultApiKey implements ApiKey {
     private final String secret;
 
     public DefaultApiKey(String id, String secret) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null.");
+        }
+        if (secret == null) {
+            throw new IllegalArgumentException("secret cannot be null.");
+        }
         this.id = id;
         this.secret = secret;
     }

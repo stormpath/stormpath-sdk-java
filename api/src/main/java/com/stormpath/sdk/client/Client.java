@@ -16,6 +16,7 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.io.InputStream;
@@ -45,11 +46,15 @@ import java.lang.reflect.Constructor;
  *     System.out.println(application);
  * }
  * </pre>
+ * <h3>DataStore API</h3>
+ * This class implements the {@link DataStore} interface, but the implementation merely acts as a wrapper to the
+ * underlying 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
+ * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
  * @since 0.1
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
  */
-public class Client {
+public class Client implements DataStore {
 
     public static final int DEFAULT_API_VERSION = 1;
 
@@ -63,13 +68,48 @@ public class Client {
      *               Stormpath's REST API.
      */
     public Client(ApiKey apiKey) {
-        Object requestExecutor = createRequestExecutor(apiKey);
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        Object requestExecutor = createRequestExecutor(apiKey, null);
+        this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
+    }
+
+    /**
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API using an HTTP Proxy.
+     *
+     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with
+     *               Stormpath's REST API.
+     */
+    public Client(ApiKey apiKey, Proxy proxy) {
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        if (proxy == null) {
+            throw new IllegalArgumentException("proxy argument cannot be null.");
+        }
+        Object requestExecutor = createRequestExecutor(apiKey, proxy);
         this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
     }
 
     //no modifier on purpose: for local development testing only:
     Client(ApiKey apiKey, String baseUrl) {
-        Object requestExecutor = createRequestExecutor(apiKey);
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        Object requestExecutor = createRequestExecutor(apiKey, null);
+        this.dataStore = createDataStore(requestExecutor, baseUrl);
+    }
+
+    //no modifier on purpose: for local development testing only:
+    Client(ApiKey apiKey, Proxy proxy, String baseUrl) {
+        if (apiKey == null) {
+            throw new IllegalArgumentException("apiKey argument cannot be null.");
+        }
+        if (proxy == null) {
+            throw new IllegalArgumentException("proxy argument cannot be null.");
+        }
+        Object requestExecutor = createRequestExecutor(apiKey, proxy);
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
 
@@ -82,12 +122,12 @@ public class Client {
     }
 
     //since 0.3
-    @SuppressWarnings("unchecked")
-    private Object createRequestExecutor(ApiKey apiKey) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
-        Class requestExecutorClass = null;
+        Class requestExecutorClass;
 
         if (ClassUtils.isAvailable(className)) {
             requestExecutorClass = ClassUtils.forName(className);
@@ -100,13 +140,13 @@ public class Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = ClassUtils.getConstructor(requestExecutorClass, ApiKey.class);
+        Constructor ctor = ClassUtils.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class);
 
-        return ClassUtils.instantiate(ctor, apiKey);
+        return ClassUtils.instantiate(ctor, apiKey, proxy);
     }
 
     //@since 0.3
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private DataStore createDataStore(Object requestExecutor, Object secondCtorArg) {
 
         String requestExecutorInterfaceClassName = "com.stormpath.sdk.impl.http.RequestExecutor";
@@ -142,6 +182,39 @@ public class Client {
         } catch (Throwable t) {
             throw new RuntimeException("Unable to instantiate DataStore implementation: " + className, t);
         }
+    }
+
+    // ========================================================================
+    // DataStore methods (delegate to underlying DataStore instance)
+    // ========================================================================
+
+    /**
+     * Delegates to the internal {@code dataStore} instance. This is a convenience mechanism to eliminate the constant
+     * need to call {@code client.getDataStore()} every time one needs to instantiate Resource.
+     *
+     * @param clazz the Resource class to instantiate.
+     * @param <T>   the Resource sub-type
+     * @return a new instance of the specified Resource.
+     * @since 0.9
+     */
+    @Override
+    public <T extends Resource> T instantiate(Class<T> clazz) {
+        return this.dataStore.instantiate(clazz);
+    }
+
+    /**
+     * Delegates to the internal {@code dataStore} instance. This is a convenience mechanism to eliminate the constant
+     * need to call {@code client.getDataStore()} every time one needs to look up a Resource.
+     *
+     * @param href  the resource URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
+     * @since 0.9
+     */
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz) {
+        return this.dataStore.getResource(href, clazz);
     }
 
     //since 0.3
@@ -207,7 +280,8 @@ public class Client {
          * @return the located class
          * @throws RuntimeException if the class cannot be found.
          */
-        public static Class forName(String fqcn) throws RuntimeException {
+        @SuppressWarnings("rawtypes")
+		public static Class forName(String fqcn) throws RuntimeException {
 
             Class clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
 
@@ -237,7 +311,8 @@ public class Client {
             }
         }
 
-        public static <T> Constructor<T> getConstructor(Class<T> clazz, Class... argTypes) {
+        @SuppressWarnings("rawtypes")
+		public static <T> Constructor<T> getConstructor(Class<T> clazz, Class... argTypes) {
             try {
                 return clazz.getConstructor(argTypes);
             } catch (NoSuchMethodException e) {
@@ -256,14 +331,16 @@ public class Client {
         }
 
         private static interface ClassLoaderAccessor {
-            Class loadClass(String fqcn);
+            @SuppressWarnings("rawtypes")
+			Class loadClass(String fqcn);
 
             InputStream getResourceStream(String name);
         }
 
         private static abstract class ExceptionIgnoringAccessor implements ClassLoaderAccessor {
 
-            public Class loadClass(String fqcn) {
+            @SuppressWarnings("rawtypes")
+			public Class loadClass(String fqcn) {
                 Class clazz = null;
                 ClassLoader cl = getClassLoader();
                 if (cl != null) {
