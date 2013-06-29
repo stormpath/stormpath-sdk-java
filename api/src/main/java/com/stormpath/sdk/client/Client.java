@@ -195,7 +195,7 @@ public class Client implements DataStore {
      * @param clazz the Resource class to instantiate.
      * @param <T>   the Resource sub-type
      * @return a new instance of the specified Resource.
-     * @since 0.9
+     * @since 0.8
      */
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz) {
@@ -210,7 +210,7 @@ public class Client implements DataStore {
      * @param clazz the {@link Resource} sub-interface to instantiate
      * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
      * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
-     * @since 0.9
+     * @since 0.8
      */
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {

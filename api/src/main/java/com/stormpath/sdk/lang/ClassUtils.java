@@ -112,7 +112,7 @@ public class ClassUtils {
      * @param name the name of the resource to acquire from the classloader(s).
      * @return the InputStream of the resource found, or <code>null</code> if the resource cannot be found from any
      *         of the three mentioned ClassLoaders.
-     * @since 0.9
+     * @since 0.8
      */
     public static InputStream getResourceAsStream(String name) {
 

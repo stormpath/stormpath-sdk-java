@@ -16,7 +16,7 @@
 package com.stormpath.sdk.application;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public class CreateApplicationAndDirectoryRequest extends CreateApplicationRequest {
 

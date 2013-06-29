@@ -1,7 +1,7 @@
 package com.stormpath.sdk.application;
 
 /**
- * @since 2013-06-28
+ * @since 0.8
  */
 public interface CreateApplicationRequestVisitor {
 

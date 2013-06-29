@@ -84,7 +84,7 @@ public interface Tenant extends Resource, Saveable {
      * @param request the request reflecting how to create the Application
      * @return the application created.
      * @throws ResourceException if there was a problem creating the application.
-     * @since 0.9
+     * @since 0.8
      */
     Application createApplication(CreateApplicationRequest request) throws ResourceException;
 
