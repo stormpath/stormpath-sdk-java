@@ -76,7 +76,7 @@ public interface Tenant extends Resource, Saveable {
      * <p/>
      * Or if you prefer to specify the directory name yourself:
      * <pre>
-     * tenant.createApplication(CreateApplicationRequest.with(application).withDirectoryName("My Directory");
+     * tenant.createApplication(CreateApplicationRequest.with(application).withDirectoryName("My Directory").build());
      * </pre>
      * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
      * know you must choose another Directory name.
