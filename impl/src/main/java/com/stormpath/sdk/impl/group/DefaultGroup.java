@@ -25,6 +25,7 @@ import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -92,8 +93,19 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
+    public Iterator<Account> iterator() {
+        return getAccounts().iterator();
+    }
+
+    @Override
     public AccountList getAccounts() {
         return getResourceProperty(ACCOUNTS, AccountList.class);
+    }
+
+    @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
     }
 
     @Override

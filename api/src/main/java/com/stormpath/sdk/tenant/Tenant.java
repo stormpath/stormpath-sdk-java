@@ -24,6 +24,8 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 
+import java.util.Map;
+
 /**
  * @since 0.1
  */
@@ -76,7 +78,7 @@ public interface Tenant extends Resource, Saveable {
      * <p/>
      * Or if you prefer to specify the directory name yourself:
      * <pre>
-     * tenant.createApplication(CreateApplicationRequest.with(application).withDirectoryName("My Directory");
+     * tenant.createApplication(CreateApplicationRequest.with(application).withDirectoryName("My Directory").build());
      * </pre>
      * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
      * know you must choose another Directory name.
@@ -84,23 +86,61 @@ public interface Tenant extends Resource, Saveable {
      * @param request the request reflecting how to create the Application
      * @return the application created.
      * @throws ResourceException if there was a problem creating the application.
-     * @since 0.9
+     * @since 0.8
      */
     Application createApplication(CreateApplicationRequest request) throws ResourceException;
 
     /**
      * Returns a paginated list of all of the Tenant's {@link Application} resources.
+     * <p/>
+     * Tip: Instead of iterating over all applications, it might be more convenient (and practical) to execute a search
+     * for one or more directories using the {@link #getApplications(java.util.Map)} method instead of this one.
      *
      * @return a paginated list of all of the Tenant's {@link Application} resources.
+     * @see #getApplications(java.util.Map)
      */
     ApplicationList getApplications();
 
     /**
+     * Returns a paginated list of the Tenant's applications that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../tenants/tenantId/applications?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's applications that match the specified query criteria.
+     * @since 0.8
+     */
+    ApplicationList getApplications(Map<String, Object> queryParams);
+
+    /**
      * Returns a paginated list of all of the Tenant's {@link com.stormpath.sdk.directory.Directory Directory} instances.
+     * <p/>
+     * Tip: Instead of iterating over all directories, it might be more convenient (and practical) to execute a search
+     * for one or more directories using the {@link #getDirectories(java.util.Map)} method instead of this one.
      *
      * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.directory.Directory Directory} instances.
+     * @see #getDirectories(java.util.Map)
      */
     DirectoryList getDirectories();
+
+    /**
+     * Returns a paginated list of the Tenant's directories that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../tenants/tenantId/directories?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's directories that match the specified query criteria.
+     * @since 0.8
+     */
+    DirectoryList getDirectories(Map<String, Object> queryParams);
 
     /**
      * Verifies an account's email address based on a {@code sptoken} query parameter embedded in a clickable URL

@@ -113,7 +113,7 @@ public class ClientBuilder {
      * @param apiKeyId     the {@link ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @param apiKeySecret the {@link ApiKey#getSecret() ApiKey secret} value to use when communicating with Stormpath.
      * @return the ClientBuilder instance for method chaining.
-     * @since 0.9
+     * @since 0.8
      */
     public ClientBuilder setApiKey(String apiKeyId, String apiKeySecret) {
         ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
@@ -166,7 +166,7 @@ public class ClientBuilder {
      *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
-     * @since 0.9
+     * @since 0.8
      */
     public ClientBuilder setApiKey(ApiKey apiKey) {
         this.apiKey = apiKey;
@@ -502,7 +502,7 @@ public class ClientBuilder {
          * @param resourcePath the resource path to check
          * @return {@code true} if the resource path is not null and starts with one of the recognized
          *         resource prefixes, {@code false} otherwise.
-         * @since 0.9
+         * @since 0.8
          */
         @SuppressWarnings({"UnusedDeclaration"})
         public static boolean hasResourcePrefix(String resourcePath) {

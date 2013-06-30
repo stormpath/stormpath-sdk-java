@@ -26,12 +26,17 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultGroupList extends AbstractCollectionResource<Group> implements GroupList {
+
     public DefaultGroupList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
     public DefaultGroupList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+    }
+
+    public DefaultGroupList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+        super(dataStore, properties, queryParams);
     }
 
     @Override

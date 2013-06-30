@@ -16,15 +16,15 @@
 package com.stormpath.sdk.group;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
 
 /**
  * @since 0.4
  */
-public interface GroupMembership extends Resource {
+public interface GroupMembership extends Resource, Deletable {
 
     Account getAccount();
+
     Group getGroup();
-    void delete();
 }

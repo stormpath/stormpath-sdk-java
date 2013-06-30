@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.ds;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
@@ -26,6 +27,7 @@ import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.CollectionUtils;
 import com.stormpath.sdk.lang.StringUtils;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -89,6 +91,12 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         Map<String,?> data = executeRequest(HttpMethod.GET, href);
         return this.resourceFactory.instantiate(clazz, data);
+    }
+
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
+        Map<String,?> data = executeRequest(HttpMethod.GET, href, queryParameters);
+        return this.resourceFactory.instantiate(clazz, data, queryParameters);
     }
 
     @SuppressWarnings("unchecked")
@@ -227,15 +235,35 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private Map<String,?> executeRequest(HttpMethod method, String href) {
+        return executeRequest(method, href, null);
+    }
+
+    private Map<String,?> executeRequest(HttpMethod method, String href, Map<String,?> queryParameters) {
         Assert.notNull(href, "href argument cannot be null.");
 
         if (needsToBeFullyQualified(href)) {
             href = qualify(href);
         }
 
-        Request request = new DefaultRequest(method, href);
+        QueryString qs = null;
+        if (!CollectionUtils.isEmpty(queryParameters)) {
+            qs = toQueryString(queryParameters);
+        }
+
+        Request request = new DefaultRequest(method, href, qs);
 
         return executeRequest(request);
+    }
+
+    private QueryString toQueryString(Map<String,?> params) {
+        QueryString qs = new QueryString();
+        for(Map.Entry<String,?> entry : params.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String sValue = String.valueOf(value);
+            qs.put(key, sValue);
+        }
+        return qs;
     }
 
     @SuppressWarnings("unchecked")

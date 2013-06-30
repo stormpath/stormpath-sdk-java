@@ -136,6 +136,12 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     }
 
     @Override
+    public GroupList getGroups(Map<String, Object> queryParams) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, queryParams);
+    }
+
+    @Override
     public Directory getDirectory() {
         return getResourceProperty(DIRECTORY, Directory.class);
     }

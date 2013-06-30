@@ -25,7 +25,11 @@ import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Map;
+
 /**
+ * An Account is a unique identity within a {@link Directory}.
+ *
  * @since 0.1
  */
 public interface Account extends Resource, Saveable {
@@ -56,7 +60,32 @@ public interface Account extends Resource, Saveable {
 
     void setStatus(Status status);
 
+    /**
+     * Returns a paginated list of the account's assigned groups.
+     * <p/>
+     * Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and
+     * practical) to execute a search for one or more of the account's groups using the
+     * {@link #getGroups(java.util.Map)} method instead of this one.
+     *
+     * @return a paginated list of all groups assigned to the Account.
+     * @see #getGroups(java.util.Map)
+     */
     GroupList getGroups();
+
+    /**
+     * Returns a paginated list of the account's assigned groups that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/groups?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the account's groups that match the specified query criteria.
+     * @since 0.8
+     */
+    GroupList getGroups(Map<String, Object> queryParams);
 
     Directory getDirectory();
 

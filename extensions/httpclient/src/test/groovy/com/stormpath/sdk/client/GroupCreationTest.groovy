@@ -31,9 +31,9 @@ class GroupCreationTest {
 
         String directoryHref = args[3];
 
-        Directory directory = client.getDataStore().getResource(directoryHref, Directory.class);
+        Directory directory = client.getResource(directoryHref, Directory.class);
 
-        Group group = client.getDataStore().instantiate(Group.class);
+        Group group = client.instantiate(Group.class);
 
         group.setDescription("New Group Desc");
         group.setName("New Group");
