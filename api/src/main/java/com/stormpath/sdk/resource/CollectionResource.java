@@ -20,4 +20,8 @@ package com.stormpath.sdk.resource;
  */
 public interface CollectionResource<T extends Resource> extends Resource, Iterable<T> {
 
+    public int getOffset();
+
+    public int getLimit();
+
 }

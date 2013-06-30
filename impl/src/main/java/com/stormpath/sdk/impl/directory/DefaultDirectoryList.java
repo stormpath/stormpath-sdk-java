@@ -35,6 +35,10 @@ public class DefaultDirectoryList extends AbstractCollectionResource<Directory> 
         super(dataStore, properties);
     }
 
+    public DefaultDirectoryList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+        super(dataStore, properties, queryParams);
+    }
+
     @Override
     protected Class<Directory> getItemType() {
         return Directory.class;

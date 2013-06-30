@@ -41,4 +41,6 @@ public interface InternalDataStore extends DataStore {
     <T extends Resource & Saveable, R extends Resource> R save(T resource, Class<? extends R> returnType);
 
     <T extends Resource> void delete(T resource);
+
+    <T extends Resource> T getResource(String href, Class<T> clazz, Map<String,Object> queryParameters);
 }

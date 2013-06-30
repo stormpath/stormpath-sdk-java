@@ -55,8 +55,11 @@ public class DefaultResourceFactory implements ResourceFactory {
 
         if (ctorArgs.length == 1) {
             ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class);
-        } else {
+        } else if (ctorArgs.length == 2) {
             ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class, Map.class);
+        } else {
+            //collection resource - we want to retain the query parameters (3rd ctor argument):
+            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class, Map.class, Map.class);
         }
 
         return ClassUtils.instantiate(ctor, ctorArgs);

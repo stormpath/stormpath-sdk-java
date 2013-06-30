@@ -35,6 +35,10 @@ public class DefaultApplicationList extends AbstractCollectionResource<Applicati
         super(dataStore, properties);
     }
 
+    public DefaultApplicationList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+        super(dataStore, properties, queryParams);
+    }
+
     @Override
     protected Class<Application> getItemType() {
         return Application.class;

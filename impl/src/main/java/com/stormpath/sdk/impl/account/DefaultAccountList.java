@@ -35,6 +35,10 @@ public class DefaultAccountList extends AbstractCollectionResource<Account> impl
         super(dataStore, properties);
     }
 
+    public DefaultAccountList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+        super(dataStore, properties, queryParams);
+    }
+
     @Override
     protected Class<Account> getItemType() {
         return Account.class;

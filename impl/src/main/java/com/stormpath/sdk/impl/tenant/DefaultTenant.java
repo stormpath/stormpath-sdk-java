@@ -93,8 +93,20 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     }
 
     @Override
+    public ApplicationList getApplications(Map<String,Object> queryParams) {
+        ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, queryParams);
+    }
+
+    @Override
     public DirectoryList getDirectories() {
         return getResourceProperty(DIRECTORIES, DirectoryList.class);
+    }
+
+    @Override
+    public DirectoryList getDirectories(Map<String, Object> queryParams) {
+        DirectoryList proxy = getDirectories();
+        return getDataStore().getResource(proxy.getHref(), DirectoryList.class, queryParams);
     }
 
     @Override

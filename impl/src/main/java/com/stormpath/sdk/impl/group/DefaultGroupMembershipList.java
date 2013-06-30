@@ -26,12 +26,17 @@ import java.util.Map;
  * @since 0.4
  */
 public class DefaultGroupMembershipList extends AbstractCollectionResource<GroupMembership> implements GroupMembershipList {
+
     public DefaultGroupMembershipList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
     public DefaultGroupMembershipList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+    }
+
+    public DefaultGroupMembershipList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+        super(dataStore, properties, queryParams);
     }
 
     @Override

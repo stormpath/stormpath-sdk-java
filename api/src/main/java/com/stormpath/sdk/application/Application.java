@@ -19,11 +19,15 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
+
+import java.util.Map;
 
 /**
  * An {@code Application} instance represents a Stormpath
@@ -31,11 +35,11 @@ import com.stormpath.sdk.tenant.Tenant;
  *
  * @since 0.1
  */
-public interface Application extends Resource, Saveable {
+public interface Application extends Resource, Saveable, Deletable {
 
     /**
      * Returns the Application's name.  An application's name must be unique across all other applications in the
-     * Stormpath Tenant.
+     * owning Tenant.
      *
      * @return the Application's name
      */
@@ -79,11 +83,59 @@ public interface Application extends Resource, Saveable {
     void setStatus(Status status);
 
     /**
-     * Returns the AccountList for all accounts that may login to the application.
+     * Returns a paginated list of all accounts that may login to the application.
+     * <p/>
+     * Tip: Instead of iterating over all accounts, it might be more convenient (and practical) to execute a search
+     * for one or more accounts using the {@link #getAccounts(java.util.Map)} method instead of this one.
      *
-     * @return the AccountList for all accounts that may login to the application.
+     * @return a paginated list of all accounts that may login to the application.
+     * @see #getAccounts(java.util.Map)
      */
     AccountList getAccounts();
+
+    /**
+     * Returns a paginated list of the accounts that may login to the application that also match the specified query
+     * criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../applications/applicationId/accounts?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the application's accounts that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList getAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns all Groups accessible to the application (based on the Application's associated Account stores).
+     * <p/>
+     * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
+     * for one or more groups using the {@link #getGroups(java.util.Map)} method instead of this one.
+     *
+     * @return all Groups accessible to the application (based on the Application's associated Account stores).
+     * @see #getGroups(java.util.Map)
+     * @since 0.8
+     */
+    GroupList getGroups();
+
+    /**
+     * Returns a paginated list of the groups accessible to the application (based on the mapped Account stores) that
+     * that also match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../applications/applicationId/groups?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the application's groups that match the specified query criteria.
+     * @since 0.8
+     */
+    GroupList getGroups(Map<String, Object> queryParams);
 
     /**
      * Returns the application's parent (owning) Tenant.
@@ -128,7 +180,7 @@ public interface Application extends Resource, Saveable {
      * <p/>
      * Your code:
      * <pre>
-     * String token = httpServletRequest.getParameter("spToken");
+     * String token = httpServletRequest.getParameter("sptoken");
      *
      * Account account = application.verifyPasswordResetToken(token);
      *
