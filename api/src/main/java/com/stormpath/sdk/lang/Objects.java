@@ -18,7 +18,7 @@ package com.stormpath.sdk.lang;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public abstract class ObjectUtils {
+public abstract class Objects {
 
     private static final int INITIAL_HASH = 7;
     private static final int MULTIPLIER = 31;

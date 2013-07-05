@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public abstract class CollectionUtils {
+public abstract class Collections {
 
     /**
      * Return <code>true</code> if the supplied Collection is <code>null</code>
@@ -53,10 +53,10 @@ public abstract class CollectionUtils {
      * empty List.
      * @param source the (potentially primitive) array
      * @return the converted List result
-     * @see ObjectUtils#toObjectArray(Object)
+     * @see Objects#toObjectArray(Object)
      */
     public static List arrayToList(Object source) {
-        return Arrays.asList(ObjectUtils.toObjectArray(source));
+        return Arrays.asList(Objects.toObjectArray(source));
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class CollectionUtils {
         if (collection == null) {
             throw new IllegalArgumentException("Collection must not be null");
         }
-        Object[] arr = ObjectUtils.toObjectArray(array);
+        Object[] arr = Objects.toObjectArray(array);
         for (Object elem : arr) {
             collection.add(elem);
         }
@@ -112,7 +112,7 @@ public abstract class CollectionUtils {
         if (iterator != null) {
             while (iterator.hasNext()) {
                 Object candidate = iterator.next();
-                if (ObjectUtils.nullSafeEquals(candidate, element)) {
+                if (Objects.nullSafeEquals(candidate, element)) {
                     return true;
                 }
             }
@@ -130,7 +130,7 @@ public abstract class CollectionUtils {
         if (enumeration != null) {
             while (enumeration.hasMoreElements()) {
                 Object candidate = enumeration.nextElement();
-                if (ObjectUtils.nullSafeEquals(candidate, element)) {
+                if (Objects.nullSafeEquals(candidate, element)) {
                     return true;
                 }
             }
@@ -232,7 +232,7 @@ public abstract class CollectionUtils {
      * or <code>null</code> if none or more than one such value found
      */
     public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
-        if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
+        if (isEmpty(collection) || Objects.isEmpty(types)) {
             return null;
         }
         for (Class<?> type : types) {

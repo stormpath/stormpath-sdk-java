@@ -24,12 +24,12 @@ import java.lang.reflect.Constructor;
 /**
  * @since 0.1
  */
-public class ClassUtils {
+public class Classes {
 
     /**
      * Private internal log instance.
      */
-    private static final Logger log = LoggerFactory.getLogger(ClassUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(Classes.class);
 
     /**
      * @since 0.1
@@ -47,7 +47,7 @@ public class ClassUtils {
     private static final ClassLoaderAccessor CLASS_CL_ACCESSOR = new ExceptionIgnoringAccessor() {
         @Override
         protected ClassLoader doGetClassLoader() throws Throwable {
-            return ClassUtils.class.getClassLoader();
+            return Classes.class.getClassLoader();
         }
     };
 
@@ -64,7 +64,7 @@ public class ClassUtils {
     /**
      * Attempts to load the specified class name from the current thread's
      * {@link Thread#getContextClassLoader() context class loader}, then the
-     * current ClassLoader (<code>ClassUtils.class.getClassLoader()</code>), then the system/application
+     * current ClassLoader (<code>Classes.class.getClassLoader()</code>), then the system/application
      * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order.  If any of them cannot locate
      * the specified class, an <code>UnknownClassException</code> is thrown (our RuntimeException equivalent of
      * the JRE's <code>ClassNotFoundException</code>.
@@ -105,7 +105,7 @@ public class ClassUtils {
     /**
      * Returns the specified resource by checking the current thread's
      * {@link Thread#getContextClassLoader() context class loader}, then the
-     * current ClassLoader (<code>ClassUtils.class.getClassLoader()</code>), then the system/application
+     * current ClassLoader (<code>Classes.class.getClassLoader()</code>), then the system/application
      * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order, using
      * {@link ClassLoader#getResourceAsStream(String) getResourceAsStream(name)}.
      *

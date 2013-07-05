@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.group;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -85,6 +86,11 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT, Tenant.class);
+    }
+
+    @Override
+    public AccountList list(AccountCriteria criteria) {
+        throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override

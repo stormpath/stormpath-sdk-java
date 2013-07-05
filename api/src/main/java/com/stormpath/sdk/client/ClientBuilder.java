@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.client;
 
-import com.stormpath.sdk.lang.ClassUtils;
+import com.stormpath.sdk.lang.Classes;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,7 +47,6 @@ import java.util.Properties;
  * {@link #setApiKeyFileLocation(String)} for more information.
  *
  * @see #setApiKeyFileLocation(String)
- * @see ClientApplicationBuilder
  * @since 0.3
  */
 public class ClientBuilder {
@@ -113,6 +112,7 @@ public class ClientBuilder {
      * @param apiKeyId     the {@link ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @param apiKeySecret the {@link ApiKey#getSecret() ApiKey secret} value to use when communicating with Stormpath.
      * @return the ClientBuilder instance for method chaining.
+     * @see #setApiKey(ApiKey)
      * @since 0.8
      */
     public ClientBuilder setApiKey(String apiKeyId, String apiKeySecret) {
@@ -166,6 +166,7 @@ public class ClientBuilder {
      *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
+     * @see #setApiKey(String, String)
      * @since 0.8
      */
     public ClientBuilder setApiKey(ApiKey apiKey) {
@@ -557,7 +558,7 @@ public class ClientBuilder {
         }
 
         private static InputStream loadFromClassPath(String path) {
-            return ClassUtils.getResourceAsStream(path);
+            return Classes.getResourceAsStream(path);
         }
 
         private static String stripPrefix(String resourcePath) {

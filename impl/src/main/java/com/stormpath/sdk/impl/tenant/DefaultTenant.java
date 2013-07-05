@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.tenant;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.CreateApplicationAndDirectoryRequest;
 import com.stormpath.sdk.application.CreateApplicationRequest;
@@ -107,6 +108,11 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     public DirectoryList getDirectories(Map<String, Object> queryParams) {
         DirectoryList proxy = getDirectories();
         return getDataStore().getResource(proxy.getHref(), DirectoryList.class, queryParams);
+    }
+
+    @Override
+    public ApplicationList list(ApplicationCriteria criteria) {
+        throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override

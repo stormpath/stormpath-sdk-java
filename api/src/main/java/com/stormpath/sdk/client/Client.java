@@ -16,7 +16,7 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.lang.ClassUtils;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -30,11 +30,8 @@ import java.lang.reflect.Constructor;
  * <p/>
  * For example:
  * <pre>
- * String apiKeyId = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key ID</a>
- * String apiKeySecret = //<a href="http://www.stormpath.com/docs/quickstart/connect">Your Stormpath API Key Secret</a>
- *
- * //create the Client instance:
- * Client client = new Client(new DefaultApiKey(apKeyId, apiKeySecret));
+ * String path = System.getProperty("user.home") + "/.stormpath/<a href="http://www.stormpath.com/docs/get-api-key">apiKey.properties</a>";
+ * Client client = new {@link ClientBuilder ClientBuilder}().setApiKeyFileLocation(path).build();
  *
  * //interact with the REST API resources as desired:
  * Tenant myTenant = client.getCurrentTenant();
@@ -47,8 +44,8 @@ import java.lang.reflect.Constructor;
  * }
  * </pre>
  * <h3>DataStore API</h3>
- * This class implements the {@link DataStore} interface, but the implementation merely acts as a wrapper to the
- * underlying 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
+ * As of 0.8, this class implements the {@link DataStore} interface, but the implementation merely acts as a wrapper to
+ * the underlying 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
  * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
  * @since 0.1
@@ -129,8 +126,8 @@ public class Client implements DataStore {
 
         Class requestExecutorClass;
 
-        if (ClassUtils.isAvailable(className)) {
-            requestExecutorClass = ClassUtils.forName(className);
+        if (Classes.isAvailable(className)) {
+            requestExecutorClass = Classes.forName(className);
         } else {
             //we might be able to check for other implementations in the future, but for now, we only support
             //HTTP calls via the HttpClient.  Throw an exception:
@@ -140,9 +137,9 @@ public class Client implements DataStore {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = ClassUtils.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class);
+        Constructor ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class);
 
-        return ClassUtils.instantiate(ctor, apiKey, proxy);
+        return Classes.instantiate(ctor, apiKey, proxy);
     }
 
     //@since 0.3
@@ -153,7 +150,7 @@ public class Client implements DataStore {
         Class requestExecutorInterfaceClass;
 
         try {
-            requestExecutorInterfaceClass = ClassUtils.forName(requestExecutorInterfaceClassName);
+            requestExecutorInterfaceClass = Classes.forName(requestExecutorInterfaceClassName);
         } catch (Throwable t) {
             throw new RuntimeException("Unable to load required interface: " + requestExecutorInterfaceClassName +
                     ".  Please ensure you have added the stormpath-sdk-impl .jar file to your runtime classpath.", t);
@@ -163,7 +160,7 @@ public class Client implements DataStore {
         Class dataStoreClass;
 
         try {
-            dataStoreClass = ClassUtils.forName(className);
+            dataStoreClass = Classes.forName(className);
         } catch (Throwable t) {
             throw new RuntimeException("Unable to load default DataStore implementation class: " +
                     className + ".  Please ensure you have added the stormpath-sdk-impl .jar file to your " +
@@ -175,7 +172,7 @@ public class Client implements DataStore {
             secondCtorArgClass = int.class;
         }
 
-        Constructor ctor = ClassUtils.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass);
+        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass);
 
         try {
             return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg);

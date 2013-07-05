@@ -16,9 +16,11 @@
 package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -86,10 +88,12 @@ public interface Application extends Resource, Saveable, Deletable {
      * Returns a paginated list of all accounts that may login to the application.
      * <p/>
      * Tip: Instead of iterating over all accounts, it might be more convenient (and practical) to execute a search
-     * for one or more accounts using the {@link #getAccounts(java.util.Map)} method instead of this one.
+     * for one or more accounts using the {@link #list(com.stormpath.sdk.account.AccountCriteria)} or
+     * {@link #listAccounts(java.util.Map)} methods instead of this one.
      *
      * @return a paginated list of all accounts that may login to the application.
-     * @see #getAccounts(java.util.Map)
+     * @see #list(com.stormpath.sdk.account.AccountCriteria)
+     * @see #listAccounts(java.util.Map)
      */
     AccountList getAccounts();
 
@@ -107,23 +111,44 @@ public interface Application extends Resource, Saveable, Deletable {
      * @return a paginated list of the application's accounts that match the specified query criteria.
      * @since 0.8
      */
-    AccountList getAccounts(Map<String, Object> queryParams);
+    AccountList listAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the accounts that may login to the application that also match the specified query
+     * criteria.
+     * The {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * application.list(Accounts
+     *     .where(Accounts.SURNAME.icontains("Smith"))
+     *     .and(Accounts.GIVEN_NAME.ieq("John"))
+     *     .orderBySurname().descending()
+     *     .expandGroups(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the application's accounts that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList list(AccountCriteria criteria);
 
     /**
      * Returns all Groups accessible to the application (based on the Application's associated Account stores).
      * <p/>
      * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
-     * for one or more groups using the {@link #getGroups(java.util.Map)} method instead of this one.
+     * for one or more groups using the {@link #listGroups(java.util.Map)} method instead of this one.
      *
      * @return all Groups accessible to the application (based on the Application's associated Account stores).
-     * @see #getGroups(java.util.Map)
+     * @see #listGroups(java.util.Map)
      * @since 0.8
      */
     GroupList getGroups();
 
     /**
-     * Returns a paginated list of the groups accessible to the application (based on the mapped Account stores) that
-     * that also match the specified query criteria.
+     * Returns a paginated list of the groups accessible to the application (based on the app's mapped Account stores)
+     * that that also match the specified query criteria.
      * <p/>
      * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
      * the resource URL as query parameters, for example:
@@ -135,7 +160,28 @@ public interface Application extends Resource, Saveable, Deletable {
      * @return a paginated list of the application's groups that match the specified query criteria.
      * @since 0.8
      */
-    GroupList getGroups(Map<String, Object> queryParams);
+    GroupList listGroups(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the groups accessible to the application (based on the app's mapped Account stores)
+     * that also match the specified query criteria.
+     * The {@link com.stormpath.sdk.group.Groups Groups} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * application.list(Groups
+     *     .where(Groups.DESCRIPTION.icontains("foo"))
+     *     .and(Groups.NAME.iStartsWith("bar"))
+     *     .orderByName().descending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the application's accessible groups that match the specified query criteria.
+     * @since 0.8
+     */
+    GroupList list(GroupCriteria criteria);
 
     /**
      * Returns the application's parent (owning) Tenant.

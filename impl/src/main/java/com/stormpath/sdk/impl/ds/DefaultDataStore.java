@@ -19,16 +19,19 @@ import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
+import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.CollectionUtils;
-import com.stormpath.sdk.lang.StringUtils;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
@@ -60,6 +63,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     private String baseUrl;
 
+    private final QueryStringFactory queryStringFactory;
+
     public DefaultDataStore(RequestExecutor requestExecutor) {
         this(requestExecutor, DEFAULT_API_VERSION);
     }
@@ -75,6 +80,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.requestExecutor = requestExecutor;
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
+        this.queryStringFactory = new QueryStringFactory();
     }
 
     @Override
@@ -95,8 +101,24 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
-        Map<String,?> data = executeRequest(HttpMethod.GET, href, queryParameters);
-        return this.resourceFactory.instantiate(clazz, data, queryParameters);
+        QueryString qs = queryStringFactory.createQueryString(queryParameters);
+        return getResource(href, clazz, qs);
+    }
+
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
+        Assert.isInstanceOf(DefaultCriteria.class, criteria,
+                "The " + getClass().getName() + " implementation only functions with " +
+                        DefaultCriteria.class.getName() + " instances.");
+
+        DefaultCriteria dc = (DefaultCriteria)criteria;
+        QueryString qs = queryStringFactory.createQueryString(dc);
+        return getResource(href, clazz, qs);
+    }
+
+    private <T extends Resource> T getResource(String href, Class<T> clazz, QueryString qs) {
+        Map<String,?> data = executeRequest(HttpMethod.GET, href, qs);
+        return this.resourceFactory.instantiate(clazz, data, qs);
     }
 
     @SuppressWarnings("unchecked")
@@ -126,7 +148,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource aResource = (AbstractResource)resource;
 
         String href = aResource.getHref();
-        Assert.isTrue(StringUtils.hasLength(href), "save may only be called on objects that have already been persisted (i.e. they have an existing href).");
+        Assert.isTrue(Strings.hasLength(href), "save may only be called on objects that have already been persisted (i.e. they have an existing href).");
 
         if (needsToBeFullyQualified(href)) {
             href = qualify(href);
@@ -246,7 +268,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         QueryString qs = null;
-        if (!CollectionUtils.isEmpty(queryParameters)) {
+        if (!Collections.isEmpty(queryParameters)) {
             qs = toQueryString(queryParameters);
         }
 
@@ -256,6 +278,10 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private QueryString toQueryString(Map<String,?> params) {
+        if (params instanceof QueryString) {
+            return (QueryString)params;
+        }
+
         QueryString qs = new QueryString();
         for(Map.Entry<String,?> entry : params.entrySet()) {
             String key = entry.getKey();

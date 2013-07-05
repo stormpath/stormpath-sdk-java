@@ -16,6 +16,7 @@
 package com.stormpath.sdk.group;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Resource;
@@ -74,6 +75,27 @@ public interface Group extends Resource, Saveable, Iterable<Account> {
      * @since 0.8
      */
     AccountList getAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of accounts in the group that match the specified query criteria.
+     * <p/>
+     * The {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * group.list(Accounts
+     *     .where(Accounts.DESCRIPTION.icontains("foo"))
+     *     .and(Accounts.NAME.iStartsWith("bar"))
+     *     .orderBySurname()
+     *     .orderByGivenName().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of accounts in the group that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList list(AccountCriteria criteria);
 
     /**
      * @since 0.4

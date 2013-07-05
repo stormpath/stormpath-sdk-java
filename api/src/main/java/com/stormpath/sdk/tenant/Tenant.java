@@ -17,6 +17,7 @@ package com.stormpath.sdk.tenant;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.directory.DirectoryList;
@@ -66,7 +67,7 @@ public interface Tenant extends Resource, Saveable {
      * Creates a new Application resource in the Tenant based on the specified {@code CreateApplicationRequest}.
      * <h3>Usage</h3>
      * <pre>
-     * tenant.createApplication(CreateApplicationRequest.with(application).build());
+     * tenant.createApplication(CreateApplica8tionRequest.with(application).build());
      * </pre>
      * <p/>
      * If you would like to automatically create a Directory for this application's own needs:
@@ -100,6 +101,26 @@ public interface Tenant extends Resource, Saveable {
      * @see #getApplications(java.util.Map)
      */
     ApplicationList getApplications();
+
+    /**
+     * Returns a paginated list of the Tenant's applications that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.application.Applications Applications} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * tenant.list(Applications
+     *     .where(Applications.DESCRIPTION.icontains("foo"))
+     *     .and(Applications.NAME.iStartsWith("bar"))
+     *     .orderByName().descending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the  the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's applications that match the specified query criteria.
+     * @since 0.8
+     */
+    ApplicationList list(ApplicationCriteria criteria);
 
     /**
      * Returns a paginated list of the Tenant's applications that match the specified query criteria.

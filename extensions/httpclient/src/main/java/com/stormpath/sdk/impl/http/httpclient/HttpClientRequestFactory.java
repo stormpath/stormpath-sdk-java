@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RestException;
 import com.stormpath.sdk.impl.util.RequestUtils;
-import com.stormpath.sdk.lang.StringUtils;
+import com.stormpath.sdk.lang.Strings;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -135,7 +135,7 @@ class HttpClientRequestFactory {
              * signing schemes.
              */
             if (!"Content-Length".equalsIgnoreCase(key) && !"Host".equalsIgnoreCase(key)) {
-                String delimited = StringUtils.collectionToCommaDelimitedString(value);
+                String delimited = Strings.collectionToCommaDelimitedString(value);
                 httpRequest.addHeader(key, delimited);
             }
         }

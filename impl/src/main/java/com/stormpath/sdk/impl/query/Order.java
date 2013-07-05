@@ -1,24 +1,34 @@
+/*
+ * Copyright 2013 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.impl.query;
 
-import com.stormpath.sdk.impl.util.Assert;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
 
 import java.io.Serializable;
 
 /**
- * @since 1.3
+ * @since 0.8
  */
 public class Order implements Serializable {
 
     private final String propertyName;
     private final boolean ascending;
 
-    public Order(String propertyName) {
-        this(propertyName, true); //ascending by default.
-    }
-
     public Order(String propertyName, boolean ascending) {
-        Assert.isTrue(StringUtils.hasText(propertyName), "propertyName cannot be null or empty.");
+        Assert.hasText(propertyName, "propertyName cannot be null or empty.");
         this.propertyName = propertyName;
         this.ascending = ascending;
     }

@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.http;
 import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
 import com.stormpath.sdk.impl.util.MultiValueMap;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.StringUtils;
+import com.stormpath.sdk.lang.Strings;
 
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -186,7 +186,7 @@ public class HttpHeaders implements MultiValueMap<String, String> {
      * @param allowedMethods the allowed methods
      */
     public void setAllow(Set<HttpMethod> allowedMethods) {
-        set(ALLOW, StringUtils.collectionToCommaDelimitedString(allowedMethods));
+        set(ALLOW, Strings.collectionToCommaDelimitedString(allowedMethods));
     }
 
     /**

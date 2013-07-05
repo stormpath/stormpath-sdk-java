@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.lang.StringUtils;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +110,7 @@ public abstract class AbstractResource implements Resource {
             return true;
         }
         String href = String.valueOf(prop);
-        return !StringUtils.hasText(href);
+        return !Strings.hasText(href);
     }
 
     protected void materialize() {

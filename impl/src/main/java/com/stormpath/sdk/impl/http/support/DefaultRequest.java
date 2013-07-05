@@ -19,7 +19,7 @@ import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.lang.StringUtils;
+import com.stormpath.sdk.lang.Strings;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -46,7 +46,7 @@ public class DefaultRequest extends AbstractHttpMessage implements Request {
     public DefaultRequest(HttpMethod method, String href, QueryString query, HttpHeaders headers, InputStream body, long contentLength) {
         this.method = method;
 
-        String[] split = StringUtils.split(href, "?");
+        String[] split = Strings.split(href, "?");
         if (split != null) {
             this.resourceUrl = URI.create(split[0]);
             this.queryString = QueryString.create(split[1]);

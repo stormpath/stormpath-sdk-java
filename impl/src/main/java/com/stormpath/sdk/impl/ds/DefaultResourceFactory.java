@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.lang.ClassUtils;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Constructor;
@@ -54,15 +54,15 @@ public class DefaultResourceFactory implements ResourceFactory {
         Constructor<T> ctor;
 
         if (ctorArgs.length == 1) {
-            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class);
+            ctor = Classes.getConstructor(implClass, InternalDataStore.class);
         } else if (ctorArgs.length == 2) {
-            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class, Map.class);
+            ctor = Classes.getConstructor(implClass, InternalDataStore.class, Map.class);
         } else {
             //collection resource - we want to retain the query parameters (3rd ctor argument):
-            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class, Map.class, Map.class);
+            ctor = Classes.getConstructor(implClass, InternalDataStore.class, Map.class, Map.class);
         }
 
-        return ClassUtils.instantiate(ctor, ctorArgs);
+        return Classes.instantiate(ctor, ctorArgs);
     }
 
     private <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
@@ -92,7 +92,7 @@ public class DefaultResourceFactory implements ResourceFactory {
         String implFqcn = BASE_PACKAGE + IMPL_PACKAGE_NAME_FRAGMENT + "." +
                 beforeImpl + "." + IMPL_CLASS_PREFIX + clazz.getSimpleName();
 
-        return ClassUtils.forName(implFqcn);
+        return Classes.forName(implFqcn);
     }
 
     private Object[] createConstructorArgs(Object[] existing) {
