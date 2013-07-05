@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
-import com.stormpath.sdk.tenant.Tenant
-import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.group.GroupMembership
-import com.stormpath.sdk.account.PasswordResetToken
+import com.stormpath.sdk.group.GroupMembershipList
+import com.stormpath.sdk.tenant.Tenant
 
 /**
  * @since 0.1
