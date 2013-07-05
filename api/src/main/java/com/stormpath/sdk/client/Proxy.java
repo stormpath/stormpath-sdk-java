@@ -81,6 +81,19 @@ public class Proxy {
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("host=").append(host).append(", port=").append(port);
+        if (username != null) {
+            sb.append(", username=").append(username);
+        }
+        if (password != null) {
+            sb.append(", password=<hidden>");
+        }
+        return sb.toString();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

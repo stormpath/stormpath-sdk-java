@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.util;
+package com.stormpath.sdk.lang;
 
 import java.util.Collection;
 import java.util.Map;
@@ -97,10 +97,10 @@ public abstract class Assert {
      * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
      * @param text the String to check
      * @param message the exception message to use if the assertion fails
-     * @see StringUtils#hasLength
+     * @see Strings#hasLength
      */
     public static void hasLength(String text, String message) {
-        if (!StringUtils.hasLength(text)) {
+        if (!Strings.hasLength(text)) {
             throw new IllegalArgumentException(message);
         }
     }
@@ -110,7 +110,7 @@ public abstract class Assert {
      * it must not be <code>null</code> and not the empty String.
      * <pre class="code">Assert.hasLength(name);</pre>
      * @param text the String to check
-     * @see StringUtils#hasLength
+     * @see Strings#hasLength
      */
     public static void hasLength(String text) {
         hasLength(text,
@@ -123,10 +123,10 @@ public abstract class Assert {
      * <pre class="code">Assert.hasText(name, "'name' must not be empty");</pre>
      * @param text the String to check
      * @param message the exception message to use if the assertion fails
-     * @see StringUtils#hasText
+     * @see Strings#hasText
      */
     public static void hasText(String text, String message) {
-        if (!StringUtils.hasText(text)) {
+        if (!Strings.hasText(text)) {
             throw new IllegalArgumentException(message);
         }
     }
@@ -136,7 +136,7 @@ public abstract class Assert {
      * be <code>null</code> and must contain at least one non-whitespace character.
      * <pre class="code">Assert.hasText(name, "'name' must not be empty");</pre>
      * @param text the String to check
-     * @see StringUtils#hasText
+     * @see Strings#hasText
      */
     public static void hasText(String text) {
         hasText(text,
@@ -151,7 +151,7 @@ public abstract class Assert {
      * @param message the exception message to use if the assertion fails
      */
     public static void doesNotContain(String textToSearch, String substring, String message) {
-        if (StringUtils.hasLength(textToSearch) && StringUtils.hasLength(substring) &&
+        if (Strings.hasLength(textToSearch) && Strings.hasLength(substring) &&
                 textToSearch.indexOf(substring) != -1) {
             throw new IllegalArgumentException(message);
         }
@@ -178,7 +178,7 @@ public abstract class Assert {
      * @throws IllegalArgumentException if the object array is <code>null</code> or has no elements
      */
     public static void notEmpty(Object[] array, String message) {
-        if (ObjectUtils.isEmpty(array)) {
+        if (Objects.isEmpty(array)) {
             throw new IllegalArgumentException(message);
         }
     }
@@ -232,7 +232,7 @@ public abstract class Assert {
      * @throws IllegalArgumentException if the collection is <code>null</code> or has no elements
      */
     public static void notEmpty(Collection collection, String message) {
-        if (CollectionUtils.isEmpty(collection)) {
+        if (Collections.isEmpty(collection)) {
             throw new IllegalArgumentException(message);
         }
     }
@@ -258,7 +258,7 @@ public abstract class Assert {
      * @throws IllegalArgumentException if the map is <code>null</code> or has no entries
      */
     public static void notEmpty(Map map, String message) {
-        if (CollectionUtils.isEmpty(map)) {
+        if (Collections.isEmpty(map)) {
             throw new IllegalArgumentException(message);
         }
     }

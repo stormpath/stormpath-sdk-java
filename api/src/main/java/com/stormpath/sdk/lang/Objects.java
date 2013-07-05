@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.util;
+package com.stormpath.sdk.lang;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public abstract class ObjectUtils {
+public abstract class Objects {
 
     private static final int INITIAL_HASH = 7;
     private static final int MULTIPLIER = 31;

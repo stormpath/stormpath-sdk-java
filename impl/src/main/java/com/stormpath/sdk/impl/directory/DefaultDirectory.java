@@ -103,8 +103,20 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
     public GroupList getGroups() {
         return getResourceProperty(GROUPS, GroupList.class);
+    }
+
+    @Override
+    public GroupList getGroups(Map<String, Object> queryParams) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, queryParams);
     }
 
     @Override
@@ -120,5 +132,10 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         GroupList groups = getGroups();
         String href = groups.getHref();
         getDataStore().create(href, group);
+    }
+
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
     }
 }

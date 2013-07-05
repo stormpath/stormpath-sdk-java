@@ -19,26 +19,69 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Map;
+
 /**
  * @since 0.2
  */
-public interface Directory extends Resource, Saveable {
+public interface Directory extends Resource, Saveable, Deletable {
 
+    /**
+     * Returns this Directory's name.  The name is guaranteed to be non-null and unique among all other Directories in
+     * the owning Tenant.
+     *
+     * @return this Directory's name
+     */
     String getName();
 
+    /**
+     * Sets the directory's name.  The name is required and must be unique among all other directories in the owning
+     * Tenant.
+     *
+     * @param name the name to set (must be non-null, non-empty and unique).
+     */
     void setName(String name);
 
+    /**
+     * Returns the description.  This is an optional property and may be null or empty.
+     *
+     * @return
+     */
     String getDescription();
 
+    /**
+     * Sets the description.  This is an optional property and may be null or empty.
+     *
+     * @param description the description to apply.
+     */
     void setDescription(String description);
 
+    /**
+     * Returns the directory's status.
+     * <p/>
+     * An {@link Status#ENABLED} directory may be used by applications to login accounts
+     * found within the directory.  A {@link Status#DISABLED} directory prevents its accounts from being used to login
+     * to applications.
+     *
+     * @return the directory's status.
+     */
     Status getStatus();
 
+    /**
+     * Sets the directory's status.
+     * <p/>
+     * An {@link Status#ENABLED} directory may be used by applications to login accounts
+     * found within the directory.  A {@link Status#DISABLED} directory prevents its accounts from being used to login
+     * to applications.
+     *
+     * @param status the status to apply.
+     */
     void setStatus(Status status);
 
     /**
@@ -76,10 +119,63 @@ public interface Directory extends Resource, Saveable {
      */
     void createAccount(Account account, boolean registrationWorkflowEnabled);
 
+    /**
+     * Returns a paginated list of all accounts in the Directory.
+     * <p/>
+     * Tip: Instead of iterating over all accounts, it might be more convenient (and practical) to execute a search
+     * for one or more accounts using the {@link #getAccounts(java.util.Map)} method instead of this one.
+     *
+     * @return a paginated list of all accounts in the Directory.
+     * @see #getAccounts(java.util.Map)
+     */
     AccountList getAccounts();
 
+    /**
+     * Returns a paginated list of the directory's accounts that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../directories/directoryId/accounts?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the directory's accounts that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList getAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of all groups in the Directory.
+     * <p/>
+     * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
+     * for one or more groups using the {@link #getGroups(java.util.Map)} method instead of this one.
+     *
+     * @return a paginated list of all groups in the directory.
+     * @see #getGroups(java.util.Map)
+     */
     GroupList getGroups();
 
+    /**
+     * Returns a paginated list of the directory's groups that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../directories/directoryId/groups?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the directory's groups that match the specified query criteria.
+     * @since 0.8
+     */
+    GroupList getGroups(Map<String, Object> queryParams);
+
+    /**
+     * Returns the Tenant to which this Directory belongs.
+     *
+     * @return the Tenant to which this Directory belongs.
+     */
     Tenant getTenant();
 
     /**

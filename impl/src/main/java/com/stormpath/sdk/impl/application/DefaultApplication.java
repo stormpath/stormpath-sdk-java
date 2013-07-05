@@ -16,11 +16,14 @@
 package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
@@ -40,6 +43,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     private static final String STATUS = "status";
     private static final String TENANT = "tenant";
     private static final String ACCOUNTS = "accounts";
+    private static final String GROUPS = "groups";
     private static final String PASSWORD_RESET_TOKENS = "passwordResetTokens";
 
     public DefaultApplication(InternalDataStore dataStore) {
@@ -90,6 +94,34 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
+    public AccountList listAccounts(Map<String, Object> queryParams) {
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public AccountList list(AccountCriteria criteria) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public GroupList list(GroupCriteria criteria) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    //since 0.8
+    public GroupList getGroups() {
+        return getResourceProperty(GROUPS, GroupList.class);
+    }
+
+    @Override
+    public GroupList listGroups(Map<String, Object> queryParams) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, queryParams);
+    }
+
+    @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT, Tenant.class);
     }
@@ -127,5 +159,10 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
         return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
+    }
+
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
     }
 }

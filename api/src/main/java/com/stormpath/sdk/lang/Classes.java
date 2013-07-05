@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.util;
+package com.stormpath.sdk.lang;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +24,12 @@ import java.lang.reflect.Constructor;
 /**
  * @since 0.1
  */
-public class ClassUtils {
+public class Classes {
 
     /**
      * Private internal log instance.
      */
-    private static final Logger log = LoggerFactory.getLogger(ClassUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(Classes.class);
 
     /**
      * @since 0.1
@@ -47,7 +47,7 @@ public class ClassUtils {
     private static final ClassLoaderAccessor CLASS_CL_ACCESSOR = new ExceptionIgnoringAccessor() {
         @Override
         protected ClassLoader doGetClassLoader() throws Throwable {
-            return ClassUtils.class.getClassLoader();
+            return Classes.class.getClassLoader();
         }
     };
 
@@ -64,7 +64,7 @@ public class ClassUtils {
     /**
      * Attempts to load the specified class name from the current thread's
      * {@link Thread#getContextClassLoader() context class loader}, then the
-     * current ClassLoader (<code>ClassUtils.class.getClassLoader()</code>), then the system/application
+     * current ClassLoader (<code>Classes.class.getClassLoader()</code>), then the system/application
      * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order.  If any of them cannot locate
      * the specified class, an <code>UnknownClassException</code> is thrown (our RuntimeException equivalent of
      * the JRE's <code>ClassNotFoundException</code>.
@@ -100,6 +100,33 @@ public class ClassUtils {
         }
 
         return clazz;
+    }
+
+    /**
+     * Returns the specified resource by checking the current thread's
+     * {@link Thread#getContextClassLoader() context class loader}, then the
+     * current ClassLoader (<code>Classes.class.getClassLoader()</code>), then the system/application
+     * ClassLoader (<code>ClassLoader.getSystemClassLoader()</code>, in that order, using
+     * {@link ClassLoader#getResourceAsStream(String) getResourceAsStream(name)}.
+     *
+     * @param name the name of the resource to acquire from the classloader(s).
+     * @return the InputStream of the resource found, or <code>null</code> if the resource cannot be found from any
+     *         of the three mentioned ClassLoaders.
+     * @since 0.8
+     */
+    public static InputStream getResourceAsStream(String name) {
+
+        InputStream is = THREAD_CL_ACCESSOR.getResourceStream(name);
+
+        if (is == null) {
+            is = CLASS_CL_ACCESSOR.getResourceStream(name);
+        }
+
+        if (is == null) {
+            is = SYSTEM_CL_ACCESSOR.getResourceStream(name);
+        }
+
+        return is;
     }
 
     public static boolean isAvailable(String fullyQualifiedClassName) {

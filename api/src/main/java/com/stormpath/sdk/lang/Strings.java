@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.util;
+package com.stormpath.sdk.lang;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
-public abstract class StringUtils {
+public abstract class Strings {
 
     private static final String FOLDER_SEPARATOR = "/";
 
@@ -38,10 +49,10 @@ public abstract class StringUtils {
      * Check that the given CharSequence is neither <code>null</code> nor of length 0.
      * Note: Will return <code>true</code> for a CharSequence that purely consists of whitespace.
      * <p><pre>
-     * StringUtils.hasLength(null) = false
-     * StringUtils.hasLength("") = false
-     * StringUtils.hasLength(" ") = true
-     * StringUtils.hasLength("Hello") = true
+     * Strings.hasLength(null) = false
+     * Strings.hasLength("") = false
+     * Strings.hasLength(" ") = true
+     * Strings.hasLength("Hello") = true
      * </pre>
      * @param str the CharSequence to check (may be <code>null</code>)
      * @return <code>true</code> if the CharSequence is not null and has length
@@ -67,11 +78,11 @@ public abstract class StringUtils {
      * More specifically, returns <code>true</code> if the string not <code>null</code>,
      * its length is greater than 0, and it contains at least one non-whitespace character.
      * <p><pre>
-     * StringUtils.hasText(null) = false
-     * StringUtils.hasText("") = false
-     * StringUtils.hasText(" ") = false
-     * StringUtils.hasText("12345") = true
-     * StringUtils.hasText(" 12345 ") = true
+     * Strings.hasText(null) = false
+     * Strings.hasText("") = false
+     * Strings.hasText(" ") = false
+     * Strings.hasText("12345") = true
+     * Strings.hasText(" 12345 ") = true
      * </pre>
      * @param str the CharSequence to check (may be <code>null</code>)
      * @return <code>true</code> if the CharSequence is not <code>null</code>,
@@ -682,7 +693,7 @@ public abstract class StringUtils {
      * @return the new array (never <code>null</code>)
      */
     public static String[] addStringToArray(String[] array, String str) {
-        if (ObjectUtils.isEmpty(array)) {
+        if (Objects.isEmpty(array)) {
             return new String[] {str};
         }
         String[] newArr = new String[array.length + 1];
@@ -700,10 +711,10 @@ public abstract class StringUtils {
      * @return the new array (<code>null</code> if both given arrays were <code>null</code>)
      */
     public static String[] concatenateStringArrays(String[] array1, String[] array2) {
-        if (ObjectUtils.isEmpty(array1)) {
+        if (Objects.isEmpty(array1)) {
             return array2;
         }
-        if (ObjectUtils.isEmpty(array2)) {
+        if (Objects.isEmpty(array2)) {
             return array1;
         }
         String[] newArr = new String[array1.length + array2.length];
@@ -723,10 +734,10 @@ public abstract class StringUtils {
      * @return the new array (<code>null</code> if both given arrays were <code>null</code>)
      */
     public static String[] mergeStringArrays(String[] array1, String[] array2) {
-        if (ObjectUtils.isEmpty(array1)) {
+        if (Objects.isEmpty(array1)) {
             return array2;
         }
-        if (ObjectUtils.isEmpty(array2)) {
+        if (Objects.isEmpty(array2)) {
             return array1;
         }
         List<String> result = new ArrayList<String>();
@@ -745,7 +756,7 @@ public abstract class StringUtils {
      * @return the sorted array (never <code>null</code>)
      */
     public static String[] sortStringArray(String[] array) {
-        if (ObjectUtils.isEmpty(array)) {
+        if (Objects.isEmpty(array)) {
             return new String[0];
         }
         Arrays.sort(array);
@@ -777,7 +788,7 @@ public abstract class StringUtils {
         if (enumeration == null) {
             return null;
         }
-        List<String> list = Collections.list(enumeration);
+        List<String> list = java.util.Collections.list(enumeration);
         return list.toArray(new String[list.size()]);
     }
 
@@ -788,7 +799,7 @@ public abstract class StringUtils {
      * @return the resulting array (of the same size) with trimmed elements
      */
     public static String[] trimArrayElements(String[] array) {
-        if (ObjectUtils.isEmpty(array)) {
+        if (Objects.isEmpty(array)) {
             return new String[0];
         }
         String[] result = new String[array.length];
@@ -806,7 +817,7 @@ public abstract class StringUtils {
      * @return an array without duplicates, in natural sort order
      */
     public static String[] removeDuplicateStrings(String[] array) {
-        if (ObjectUtils.isEmpty(array)) {
+        if (Objects.isEmpty(array)) {
             return array;
         }
         Set<String> set = new TreeSet<String>();
@@ -870,7 +881,7 @@ public abstract class StringUtils {
     public static Properties splitArrayElementsIntoProperties(
             String[] array, String delimiter, String charsToDelete) {
 
-        if (ObjectUtils.isEmpty(array)) {
+        if (Objects.isEmpty(array)) {
             return null;
         }
         Properties result = new Properties();
@@ -1035,7 +1046,7 @@ public abstract class StringUtils {
      * @return the delimited String
      */
     public static String collectionToDelimitedString(Collection<?> coll, String delim, String prefix, String suffix) {
-        if (CollectionUtils.isEmpty(coll)) {
+        if (Collections.isEmpty(coll)) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
@@ -1078,11 +1089,11 @@ public abstract class StringUtils {
      * @return the delimited String
      */
     public static String arrayToDelimitedString(Object[] arr, String delim) {
-        if (ObjectUtils.isEmpty(arr)) {
+        if (Objects.isEmpty(arr)) {
             return "";
         }
         if (arr.length == 1) {
-            return ObjectUtils.nullSafeToString(arr[0]);
+            return Objects.nullSafeToString(arr[0]);
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {

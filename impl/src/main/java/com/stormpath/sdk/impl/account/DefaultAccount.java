@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
@@ -133,6 +134,18 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     @Override
     public GroupList getGroups() {
         return getResourceProperty(GROUPS, GroupList.class);
+    }
+
+    @Override
+    public GroupList listGroups(Map<String, Object> queryParams) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, queryParams);
+    }
+
+    @Override
+    public GroupList list(GroupCriteria criteria) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, criteria);
     }
 
     @Override

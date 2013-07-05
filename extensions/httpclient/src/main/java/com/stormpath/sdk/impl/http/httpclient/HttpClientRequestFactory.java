@@ -20,9 +20,15 @@ import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RestException;
 import com.stormpath.sdk.impl.util.RequestUtils;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Strings;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.params.CoreProtocolPNames;
 
@@ -129,7 +135,7 @@ class HttpClientRequestFactory {
              * signing schemes.
              */
             if (!"Content-Length".equalsIgnoreCase(key) && !"Host".equalsIgnoreCase(key)) {
-                String delimited = StringUtils.collectionToCommaDelimitedString(value);
+                String delimited = Strings.collectionToCommaDelimitedString(value);
                 httpRequest.addHeader(key, delimited);
             }
         }

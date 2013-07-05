@@ -15,13 +15,22 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.impl.util.Assert;
-import com.stormpath.sdk.impl.util.CollectionUtils;
 import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * @since 0.1, borrowed from the Spring Framework.
@@ -254,7 +263,7 @@ public class MediaType implements Comparable<MediaType> {
      * @throws IllegalArgumentException if any of the parameters contain illegal characters
      */
     public MediaType(String type, String subtype) {
-        this(type, subtype, Collections.<String, String>emptyMap());
+        this(type, subtype, java.util.Collections.<String, String>emptyMap());
     }
 
     /**
@@ -265,7 +274,7 @@ public class MediaType implements Comparable<MediaType> {
      * @throws IllegalArgumentException if any of the parameters contain illegal characters
      */
     public MediaType(String type, String subtype, Charset charSet) {
-        this(type, subtype, Collections.singletonMap(PARAM_CHARSET, charSet.name()));
+        this(type, subtype, java.util.Collections.singletonMap(PARAM_CHARSET, charSet.name()));
     }
 
     /**
@@ -277,7 +286,7 @@ public class MediaType implements Comparable<MediaType> {
      * @throws IllegalArgumentException if any of the parameters contain illegal characters
      */
     public MediaType(String type, String subtype, double qualityValue) {
-        this(type, subtype, Collections.singletonMap(PARAM_QUALITY_FACTOR, Double.toString(qualityValue)));
+        this(type, subtype, java.util.Collections.singletonMap(PARAM_QUALITY_FACTOR, Double.toString(qualityValue)));
     }
 
     /**
@@ -305,7 +314,7 @@ public class MediaType implements Comparable<MediaType> {
         checkToken(subtype);
         this.type = type.toLowerCase(Locale.ENGLISH);
         this.subtype = subtype.toLowerCase(Locale.ENGLISH);
-        if (!CollectionUtils.isEmpty(parameters)) {
+        if (!Collections.isEmpty(parameters)) {
             Map<String, String> m = new LinkedCaseInsensitiveMap<String>(parameters.size(), Locale.ENGLISH);
             for (Map.Entry<String, String> entry : parameters.entrySet()) {
                 String attribute = entry.getKey();
@@ -313,10 +322,10 @@ public class MediaType implements Comparable<MediaType> {
                 checkParameters(attribute, value);
                 m.put(attribute, unquote(value));
             }
-            this.parameters = Collections.unmodifiableMap(m);
+            this.parameters = java.util.Collections.unmodifiableMap(m);
         }
         else {
-            this.parameters = Collections.emptyMap();
+            this.parameters = java.util.Collections.emptyMap();
         }
     }
 
@@ -608,7 +617,7 @@ public class MediaType implements Comparable<MediaType> {
      */
     public static MediaType parseMediaType(String mediaType) {
         Assert.hasLength(mediaType, "'mediaType' must not be empty");
-        String[] parts = StringUtils.tokenizeToStringArray(mediaType, ";");
+        String[] parts = Strings.tokenizeToStringArray(mediaType, ";");
 
         String fullType = parts[0].trim();
         // java.net.HttpURLConnection returns a *; q=.2 Accept header
@@ -654,8 +663,8 @@ public class MediaType implements Comparable<MediaType> {
      * @throws IllegalArgumentException if the string cannot be parsed
      */
     public static List<MediaType> parseMediaTypes(String mediaTypes) {
-        if (!StringUtils.hasLength(mediaTypes)) {
-            return Collections.emptyList();
+        if (!Strings.hasLength(mediaTypes)) {
+            return java.util.Collections.emptyList();
         }
         String[] tokens = mediaTypes.split(",\\s*");
         List<MediaType> result = new ArrayList<MediaType>(tokens.length);
@@ -713,7 +722,7 @@ public class MediaType implements Comparable<MediaType> {
     public static void sortBySpecificity(List<MediaType> mediaTypes) {
         Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
         if (mediaTypes.size() > 1) {
-            Collections.sort(mediaTypes, SPECIFICITY_COMPARATOR);
+            java.util.Collections.sort(mediaTypes, SPECIFICITY_COMPARATOR);
         }
     }
 
@@ -740,7 +749,7 @@ public class MediaType implements Comparable<MediaType> {
     public static void sortByQualityValue(List<MediaType> mediaTypes) {
         Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
         if (mediaTypes.size() > 1) {
-            Collections.sort(mediaTypes, QUALITY_VALUE_COMPARATOR);
+            java.util.Collections.sort(mediaTypes, QUALITY_VALUE_COMPARATOR);
         }
     }
 

@@ -16,13 +16,22 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.http.HttpMethod;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryStringFactory;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
+import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.StringInputStream;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
@@ -30,7 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @since 0.1
@@ -49,6 +63,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     private String baseUrl;
 
+    private final QueryStringFactory queryStringFactory;
+
     public DefaultDataStore(RequestExecutor requestExecutor) {
         this(requestExecutor, DEFAULT_API_VERSION);
     }
@@ -64,6 +80,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.requestExecutor = requestExecutor;
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
+        this.queryStringFactory = new QueryStringFactory();
     }
 
     @Override
@@ -80,6 +97,28 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         Map<String,?> data = executeRequest(HttpMethod.GET, href);
         return this.resourceFactory.instantiate(clazz, data);
+    }
+
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
+        QueryString qs = queryStringFactory.createQueryString(queryParameters);
+        return getResource(href, clazz, qs);
+    }
+
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
+        Assert.isInstanceOf(DefaultCriteria.class, criteria,
+                "The " + getClass().getName() + " implementation only functions with " +
+                        DefaultCriteria.class.getName() + " instances.");
+
+        DefaultCriteria dc = (DefaultCriteria)criteria;
+        QueryString qs = queryStringFactory.createQueryString(dc);
+        return getResource(href, clazz, qs);
+    }
+
+    private <T extends Resource> T getResource(String href, Class<T> clazz, QueryString qs) {
+        Map<String,?> data = executeRequest(HttpMethod.GET, href, qs);
+        return this.resourceFactory.instantiate(clazz, data, qs);
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +148,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource aResource = (AbstractResource)resource;
 
         String href = aResource.getHref();
-        Assert.isTrue(StringUtils.hasLength(href), "save may only be called on objects that have already been persisted (i.e. they have an existing href).");
+        Assert.isTrue(Strings.hasLength(href), "save may only be called on objects that have already been persisted (i.e. they have an existing href).");
 
         if (needsToBeFullyQualified(href)) {
             href = qualify(href);
@@ -218,15 +257,39 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private Map<String,?> executeRequest(HttpMethod method, String href) {
+        return executeRequest(method, href, null);
+    }
+
+    private Map<String,?> executeRequest(HttpMethod method, String href, Map<String,?> queryParameters) {
         Assert.notNull(href, "href argument cannot be null.");
 
         if (needsToBeFullyQualified(href)) {
             href = qualify(href);
         }
 
-        Request request = new DefaultRequest(method, href);
+        QueryString qs = null;
+        if (!Collections.isEmpty(queryParameters)) {
+            qs = toQueryString(queryParameters);
+        }
+
+        Request request = new DefaultRequest(method, href, qs);
 
         return executeRequest(request);
+    }
+
+    private QueryString toQueryString(Map<String,?> params) {
+        if (params instanceof QueryString) {
+            return (QueryString)params;
+        }
+
+        QueryString qs = new QueryString();
+        for(Map.Entry<String,?> entry : params.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String sValue = String.valueOf(value);
+            qs.put(key, sValue);
+        }
+        return qs;
     }
 
     @SuppressWarnings("unchecked")
