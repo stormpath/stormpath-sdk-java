@@ -15,12 +15,12 @@
  */
 package com.stormpath.sdk.impl.query;
 
+import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.Options;
-import com.stormpath.sdk.resource.Property;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -20,12 +20,20 @@ import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.application.CreateApplicationAndDirectoryRequest;
+import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.application.CreateApplicationRequest;
-import com.stormpath.sdk.application.CreateApplicationRequestVisitor;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
+import com.stormpath.sdk.impl.application.CreateApplicationAndDirectoryRequest;
+import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
+import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.LinkedHashMap;
@@ -36,10 +44,18 @@ import java.util.Map;
  */
 public class DefaultTenant extends AbstractInstanceResource implements Tenant {
 
-    private static final String NAME = "name";
-    private static final String KEY = "key";
-    private static final String APPLICATIONS = "applications";
-    private static final String DIRECTORIES = "directories";
+    // SIMPLE PROPERTIES:
+    static final StringProperty NAME = new StringProperty("name", true);
+    static final StringProperty KEY = new StringProperty("key", true);
+
+    // COLLECTION RESOURCE REFERENCES:
+    static final CollectionReference<ApplicationList, Application> APPLICATIONS =
+            new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, true, Application.class);
+    static final CollectionReference<DirectoryList, Directory> DIRECTORIES =
+            new CollectionReference<DirectoryList, Directory>("directories", DirectoryList.class, true, Directory.class);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+            NAME, KEY, APPLICATIONS, DIRECTORIES);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
@@ -50,31 +66,39 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public String getName() {
-        return getStringProperty(NAME);
+        return getString(NAME);
     }
 
     @Override
     public String getKey() {
-        return getStringProperty(KEY);
+        return getString(KEY);
     }
 
     @Override
     public Application createApplication(Application application) {
-        CreateApplicationRequest request = CreateApplicationRequest.with(application).build();
+        CreateApplicationRequest request = Applications.newCreateRequestFor(application).build();
         return createApplication(request);
     }
 
     @Override
-    public Application createApplication(CreateApplicationRequest request) {
+    public Application createApplication(CreateApplicationRequest ar) {
+        Assert.isInstanceOf(DefaultCreateApplicationRequest.class, ar);
+        DefaultCreateApplicationRequest request = (DefaultCreateApplicationRequest) ar;
 
         final Application application = request.getApplication();
-        final String[] href = new String[]{"/" + APPLICATIONS };
+        final String[] href = new String[]{"/" + APPLICATIONS.getName()};
 
         request.accept(new CreateApplicationRequestVisitor() {
             @Override
-            public void visit(CreateApplicationRequest ignored) {
+            public void visit(DefaultCreateApplicationRequest ignored) {
             }
+
             @Override
             public void visit(CreateApplicationAndDirectoryRequest request) {
                 String name = request.getDirectoryName();
@@ -90,29 +114,36 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
 
     @Override
     public ApplicationList getApplications() {
-        return getResourceProperty(APPLICATIONS, ApplicationList.class);
+        return getCollection(APPLICATIONS);
     }
 
     @Override
-    public ApplicationList getApplications(Map<String,Object> queryParams) {
+    public ApplicationList getApplications(Map<String, Object> queryParams) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
         return getDataStore().getResource(proxy.getHref(), ApplicationList.class, queryParams);
     }
 
     @Override
+    public ApplicationList getApplications(ApplicationCriteria criteria) {
+        ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, criteria);
+    }
+
+    @Override
     public DirectoryList getDirectories() {
-        return getResourceProperty(DIRECTORIES, DirectoryList.class);
+        return getCollection(DIRECTORIES);
     }
 
     @Override
     public DirectoryList getDirectories(Map<String, Object> queryParams) {
-        DirectoryList proxy = getDirectories();
+        DirectoryList proxy = getDirectories(); //just a proxy - does not execute a query until iteration occurs
         return getDataStore().getResource(proxy.getHref(), DirectoryList.class, queryParams);
     }
 
     @Override
-    public ApplicationList list(ApplicationCriteria criteria) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+    public DirectoryList getDirectories(DirectoryCriteria criteria) {
+        DirectoryList proxy = getDirectories(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), DirectoryList.class, criteria);
     }
 
     @Override

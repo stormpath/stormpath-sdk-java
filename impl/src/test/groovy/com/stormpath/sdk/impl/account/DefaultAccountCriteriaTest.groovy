@@ -41,12 +41,12 @@ class DefaultAccountCriteriaTest {
 
         //try an exhaustive query
         def c = Accounts
-                .where(Accounts.EMAIL.eqIgnoreCase('a'))
-                .and(Accounts.USERNAME.startsWithIgnoreCase('b'))
-                .and(Accounts.GIVEN_NAME.endsWithIgnoreCase('c'))
-                .and(Accounts.MIDDLE_NAME.containsIgnoreCase('d'))
-                .and(Accounts.SURNAME.eqIgnoreCase('e'))
-                .and(Accounts.STATUS.eq(Status.ENABLED))
+                .where(Accounts.email().eqIgnoreCase('a'))
+                .and(Accounts.username().startsWithIgnoreCase('b'))
+                .and(Accounts.givenName().endsWithIgnoreCase('c'))
+                .and(Accounts.middleName().containsIgnoreCase('d'))
+                .and(Accounts.surname().eqIgnoreCase('e'))
+                .and(Accounts.status().eq(Status.ENABLED))
                 .orderByEmail()
                 .orderByUsername().descending()
                 .orderByGivenName()

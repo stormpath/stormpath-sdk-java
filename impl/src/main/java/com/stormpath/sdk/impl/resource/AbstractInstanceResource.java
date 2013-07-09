@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class AbstractInstanceResource extends AbstractResource implements Saveable {
+public abstract class AbstractInstanceResource extends AbstractResource implements Saveable {
 
     protected AbstractInstanceResource(InternalDataStore dataStore) {
         super(dataStore);

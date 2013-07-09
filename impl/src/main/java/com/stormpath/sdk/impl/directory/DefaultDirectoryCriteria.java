@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
@@ -31,17 +30,17 @@ public class DefaultDirectoryCriteria extends DefaultCriteria<DirectoryCriteria,
 
     @Override
     public DirectoryCriteria orderByName() {
-        return orderBy(Directories.NAME);
+        return orderBy(DefaultDirectory.NAME);
     }
 
     @Override
     public DirectoryCriteria orderByDescription() {
-        return orderBy(Directories.DESCRIPTION);
+        return orderBy(DefaultDirectory.DESCRIPTION);
     }
 
     @Override
     public DirectoryCriteria orderByStatus() {
-        return orderBy(Directories.STATUS);
+        return orderBy(DefaultDirectory.STATUS);
     }
 
     public DirectoryCriteria expandAccounts() {

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.impl.application;
+
+import com.stormpath.sdk.application.Application;
 
 /**
  * @since 0.8
  */
-public class CreateApplicationAndDirectoryRequest extends CreateApplicationRequest {
+public class CreateApplicationAndDirectoryRequest extends DefaultCreateApplicationRequest {
 
     private final String directoryName;
 

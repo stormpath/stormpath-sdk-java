@@ -20,6 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.CreateApplicationRequest;
+import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -64,22 +65,22 @@ public interface Tenant extends Resource, Saveable {
     Application createApplication(Application application) throws ResourceException;
 
     /**
-     * Creates a new Application resource in the Tenant based on the specified {@code CreateApplicationRequest}.
+     * Creates a new Application resource in the Tenant based on the specified Create{@code CreateApplicationRequest}.
      * <h3>Usage</h3>
      * <pre>
-     * tenant.createApplication(CreateApplica8tionRequest.with(application).build());
+     * tenant.createApplication(Applications.newCreateRequestFor(application).build());
      * </pre>
      * <p/>
      * If you would like to automatically create a Directory for this application's own needs:
      * <pre>
-     * tenant.createApplication(CreateApplicationRequest.with(application).createDirectory(true).build());
+     * tenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build());
      * </pre>
      * The directory's name will be auto-generated to reflect your Application as closely as possible and not conflict
      * with any existing Directories in your tenant.
      * <p/>
      * Or if you prefer to specify the directory name yourself:
      * <pre>
-     * tenant.createApplication(CreateApplicationRequest.with(application).withDirectoryName("My Directory").build());
+     * tenant.createApplication(Applications.newCreateRequestFor(application).createDirectoryNamed("My Directory").build());
      * </pre>
      * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
      * know you must choose another Directory name.
@@ -103,26 +104,6 @@ public interface Tenant extends Resource, Saveable {
     ApplicationList getApplications();
 
     /**
-     * Returns a paginated list of the Tenant's applications that match the specified query criteria.  The
-     * {@link com.stormpath.sdk.application.Applications Applications} utility class is available to help construct
-     * the criteria DSL.  For example:
-     * <pre>
-     * tenant.list(Applications
-     *     .where(Applications.DESCRIPTION.icontains("foo"))
-     *     .and(Applications.NAME.iStartsWith("bar"))
-     *     .orderByName().descending()
-     *     .expandAccounts(10, 10)
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     *
-     * @param criteria the  the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the Tenant's applications that match the specified query criteria.
-     * @since 0.8
-     */
-    ApplicationList list(ApplicationCriteria criteria);
-
-    /**
      * Returns a paginated list of the Tenant's applications that match the specified query criteria.
      * <p/>
      * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
@@ -136,6 +117,26 @@ public interface Tenant extends Resource, Saveable {
      * @since 0.8
      */
     ApplicationList getApplications(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the Tenant's applications that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.application.Applications Applications} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * tenant.getApplications(Applications
+     *     .where(Applications.description().containsIgnoreCase("foo"))
+     *     .and(Applications.name().startsWithIgnoreCase("bar"))
+     *     .orderByName().descending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the  the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's applications that match the specified query criteria.
+     * @since 0.8
+     */
+    ApplicationList getApplications(ApplicationCriteria criteria);
 
     /**
      * Returns a paginated list of all of the Tenant's {@link com.stormpath.sdk.directory.Directory Directory} instances.
@@ -162,6 +163,26 @@ public interface Tenant extends Resource, Saveable {
      * @since 0.8
      */
     DirectoryList getDirectories(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the Tenant's directories that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.directory.Directories Directories} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * tenant.getDirectories(Directories
+     *     .where(Directories.description().containsIgnoreText("foo"))
+     *     .and(Directories.name().startsWithIgnoreCase("bar"))
+     *     .orderByName().descending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the  the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's applications that match the specified query criteria.
+     * @since 0.8
+     */
+    DirectoryList getDirectories(DirectoryCriteria criteria);
 
     /**
      * Verifies an account's email address based on a {@code sptoken} query parameter embedded in a clickable URL

@@ -19,6 +19,8 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
@@ -26,6 +28,10 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultAccountList extends AbstractCollectionResource<Account> implements AccountList {
+
+    private static final ArrayProperty<Account> ITEMS = new ArrayProperty<Account>("items", Account.class, true);
+
+    private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
     public DefaultAccountList(InternalDataStore dataStore) {
         super(dataStore);
@@ -42,5 +48,10 @@ public class DefaultAccountList extends AbstractCollectionResource<Account> impl
     @Override
     protected Class<Account> getItemType() {
         return Account.class;
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
     }
 }

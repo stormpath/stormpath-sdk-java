@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.resource;
+package com.stormpath.sdk.impl.application;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
-public class ReferenceProperty<T extends Resource> extends Property<T> {
+public interface CreateApplicationRequestVisitor {
 
-    private final boolean collection;
+    void visit(DefaultCreateApplicationRequest request);
 
-    public ReferenceProperty(String name, Class<T> type, boolean required, boolean collection) {
-        super(name, type, required);
-        this.collection = collection;
-    }
-
-    public boolean isCollection() {
-        return collection;
-    }
+    void visit(CreateApplicationAndDirectoryRequest request);
 }

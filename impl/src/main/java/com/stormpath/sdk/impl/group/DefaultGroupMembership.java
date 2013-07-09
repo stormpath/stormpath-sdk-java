@@ -20,6 +20,8 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,9 +31,11 @@ import java.util.Map;
  */
 public class DefaultGroupMembership extends AbstractInstanceResource implements GroupMembership {
 
-    private final static String ACCOUNT = "account";
-    private final static String GROUP = "group";
+    // INSTANCE RESOURCE REFERENCES:
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class, true);
+    static final ResourceReference<Group> GROUP = new ResourceReference<Group>("tenant", Group.class, true);
 
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT, GROUP);
 
     public DefaultGroupMembership(InternalDataStore dataStore) {
         super(dataStore);
@@ -42,13 +46,18 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public Account getAccount() {
-        return getResourceProperty(ACCOUNT, Account.class);
+        return getResourceProperty(ACCOUNT);
     }
 
     @Override
     public Group getGroup() {
-        return getResourceProperty(GROUP, Group.class);
+        return getResourceProperty(GROUP);
     }
 
     /**
@@ -56,8 +65,8 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
      * changed at any time.  It has the public modifier only as an implementation technique to be accessible to other
      * {@code Default*} implementations.
      *
-     * @param account the account to associate with the group.
-     * @param group the group which will contain the account.
+     * @param account   the account to associate with the group.
+     * @param group     the group which will contain the account.
      * @param dataStore the datastore used to create the membership
      * @return the created GroupMembership instance.
      */
@@ -74,8 +83,8 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
         Map<String, String> groupProps = new LinkedHashMap<String, String>(1);
         groupProps.put(HREF_PROP_NAME, group.getHref());
 
-        props.put(ACCOUNT, accountProps);
-        props.put(GROUP, groupProps);
+        props.put(ACCOUNT.getName(), accountProps);
+        props.put(GROUP.getName(), groupProps);
 
         GroupMembership groupMembership = dataStore.instantiate(GroupMembership.class, props);
 

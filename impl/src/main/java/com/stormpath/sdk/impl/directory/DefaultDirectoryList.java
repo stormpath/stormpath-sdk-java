@@ -19,6 +19,8 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
@@ -26,6 +28,10 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultDirectoryList extends AbstractCollectionResource<Directory> implements DirectoryList {
+
+    private static final ArrayProperty<Directory> ITEMS = new ArrayProperty<Directory>("items", Directory.class, true);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
     public DefaultDirectoryList(InternalDataStore dataStore) {
         super(dataStore);
@@ -35,12 +41,17 @@ public class DefaultDirectoryList extends AbstractCollectionResource<Directory> 
         super(dataStore, properties);
     }
 
-    public DefaultDirectoryList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+    public DefaultDirectoryList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
     @Override
     protected Class<Directory> getItemType() {
         return Directory.class;
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
     }
 }

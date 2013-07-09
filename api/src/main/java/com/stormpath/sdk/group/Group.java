@@ -83,8 +83,8 @@ public interface Group extends Resource, Saveable, Iterable<Account> {
      * the criteria DSL.  For example:
      * <pre>
      * group.list(Accounts
-     *     .where(Accounts.DESCRIPTION.icontains("foo"))
-     *     .and(Accounts.NAME.iStartsWith("bar"))
+     *     .where(Accounts.description().containsIgnoreCase("foo"))
+     *     .and(Accounts.name().startsWithIgnoreCase("bar"))
      *     .orderBySurname()
      *     .orderByGivenName().descending()
      *     .offsetBy(20)
@@ -95,7 +95,15 @@ public interface Group extends Resource, Saveable, Iterable<Account> {
      * @return a paginated list of accounts in the group that match the specified query criteria.
      * @since 0.8
      */
-    AccountList list(AccountCriteria criteria);
+    AccountList getAccounts(AccountCriteria criteria);
+
+    /**
+     * Returns a paginated list of all of the memberships in which this group participates.
+     *
+     * @return a paginated list of all memberships in which this group participates.
+     * @since 0.8
+     */
+    GroupMembershipList getAccountMemberships();
 
     /**
      * @since 0.4

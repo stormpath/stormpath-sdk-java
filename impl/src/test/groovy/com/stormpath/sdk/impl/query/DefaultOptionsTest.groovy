@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.query
 
-import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.group.DefaultGroup
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
@@ -31,12 +31,12 @@ class DefaultOptionsTest {
     void testWithLimit() {
         DefaultOptions options = new DefaultOptions();
 
-        options.expand(Groups.ACCOUNTS, 10);
+        options.expand(DefaultGroup.ACCOUNTS, 10);
 
         assertEquals 1, options.expansions.size()
         def exp = options.expansions[0]
         assertTrue exp instanceof CollectionExpansion
-        assertEquals exp.name, Groups.ACCOUNTS.name
+        assertEquals exp.name, DefaultGroup.ACCOUNTS.name
         assertEquals exp.limit, 10
         assertEquals exp.offset, 0
     }

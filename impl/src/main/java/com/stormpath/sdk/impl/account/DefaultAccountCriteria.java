@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
@@ -31,32 +30,32 @@ public class DefaultAccountCriteria extends DefaultCriteria<AccountCriteria, Acc
 
     @Override
     public AccountCriteria orderByEmail() {
-        return orderBy(Accounts.EMAIL);
+        return orderBy(DefaultAccount.EMAIL);
     }
 
     @Override
     public AccountCriteria orderByUsername() {
-        return orderBy(Accounts.USERNAME);
+        return orderBy(DefaultAccount.USERNAME);
     }
 
     @Override
     public AccountCriteria orderByGivenName() {
-        return orderBy(Accounts.GIVEN_NAME);
+        return orderBy(DefaultAccount.GIVEN_NAME);
     }
 
     @Override
     public AccountCriteria orderByMiddleName() {
-        return orderBy(Accounts.MIDDLE_NAME);
+        return orderBy(DefaultAccount.MIDDLE_NAME);
     }
 
     @Override
     public AccountCriteria orderBySurname() {
-        return orderBy(Accounts.SURNAME);
+        return orderBy(DefaultAccount.SURNAME);
     }
 
     @Override
     public AccountCriteria orderByStatus() {
-        return orderBy(Accounts.STATUS);
+        return orderBy(DefaultAccount.STATUS);
     }
 
     @Override

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.resource;
+package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.query.Operator;
-import com.stormpath.sdk.query.SimpleExpression;
+import com.stormpath.sdk.impl.query.Operator;
+import com.stormpath.sdk.impl.query.SimpleExpression;
 
 /**
  * @since 0.9

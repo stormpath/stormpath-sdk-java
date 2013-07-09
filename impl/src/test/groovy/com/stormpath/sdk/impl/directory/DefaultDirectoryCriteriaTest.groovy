@@ -41,9 +41,9 @@ class DefaultDirectoryCriteriaTest {
 
         //try an exhaustive query
         def c = Directories
-                .where(Directories.NAME.eqIgnoreCase('a'))
-                .and(Directories.DESCRIPTION.startsWithIgnoreCase('b'))
-                .and(Directories.STATUS.eq(Status.DISABLED))
+                .where(Directories.name().eqIgnoreCase('a'))
+                .and(Directories.description().startsWithIgnoreCase('b'))
+                .and(Directories.status().eq(Status.DISABLED))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()

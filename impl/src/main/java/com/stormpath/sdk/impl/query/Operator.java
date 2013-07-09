@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application
-
-import org.testng.annotations.Test
-
-import static org.easymock.EasyMock.createStrictMock
-import static org.testng.Assert.*
+package com.stormpath.sdk.impl.query;
 
 /**
  * @since 0.9
  */
-class CreateApplicationRequestTest {
+public enum Operator {
 
-    @Test
-    void testBuilder() {
-        def app = createStrictMock(Application)
-        CreateApplicationRequest request = CreateApplicationRequest.with(app).createDirectory(true).withDirectoryName("My Directory").build()
-        assertTrue request instanceof CreateApplicationAndDirectoryRequest
-        assertSame app, request.application
-        assertEquals "My Directory", request.directoryName
+    EQUALS("="),
+    ILIKE("ilike");
+
+    private String symbol;
+
+    private Operator(String symbol) {
+        this.symbol = symbol;
     }
 
-
+    public String getSymbol() {
+        return symbol;
+    }
 }

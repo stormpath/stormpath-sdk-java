@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.group;
 
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupOptions;
-import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
@@ -31,17 +30,17 @@ public class DefaultGroupCriteria extends DefaultCriteria<GroupCriteria, GroupOp
 
     @Override
     public GroupCriteria orderByName() {
-        return orderBy(Groups.NAME);
+        return orderBy(DefaultGroup.NAME);
     }
 
     @Override
     public GroupCriteria orderByDescription() {
-        return orderBy(Groups.DESCRIPTION);
+        return orderBy(DefaultGroup.DESCRIPTION);
     }
 
     @Override
     public GroupCriteria orderByStatus() {
-        return orderBy(Groups.STATUS);
+        return orderBy(DefaultGroup.STATUS);
     }
 
     @Override

@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.DirectoryOptions;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 
@@ -25,30 +24,30 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 public class DefaultDirectoryOptions extends DefaultOptions<DirectoryOptions> implements DirectoryOptions {
 
     public DirectoryOptions expandAccounts() {
-        return expand(Directories.ACCOUNTS);
+        return expand(DefaultDirectory.ACCOUNTS);
     }
 
     public DirectoryOptions expandAccounts(int limit) {
-        return expand(Directories.ACCOUNTS, limit);
+        return expand(DefaultDirectory.ACCOUNTS, limit);
     }
 
     public DirectoryOptions expandAccounts(int limit, int offset) {
-        return expand(Directories.ACCOUNTS, limit, offset);
+        return expand(DefaultDirectory.ACCOUNTS, limit, offset);
     }
 
     public DirectoryOptions expandGroups() {
-        return expand(Directories.GROUPS);
+        return expand(DefaultDirectory.GROUPS);
     }
 
     public DirectoryOptions expandGroups(int limit) {
-        return expand(Directories.GROUPS, limit);
+        return expand(DefaultDirectory.GROUPS, limit);
     }
 
     public DirectoryOptions expandGroups(int limit, int offset) {
-        return expand(Directories.GROUPS, limit, offset);
+        return expand(DefaultDirectory.GROUPS, limit, offset);
     }
 
     public DirectoryOptions expandTenant() {
-        return expand(Directories.TENANT);
+        return expand(DefaultDirectory.TENANT);
     }
 }

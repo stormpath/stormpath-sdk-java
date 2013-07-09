@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationOptions;
-import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
@@ -31,17 +30,17 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
 
     @Override
     public ApplicationCriteria orderByName() {
-        return orderBy(Applications.NAME);
+        return orderBy(DefaultApplication.NAME);
     }
 
     @Override
     public ApplicationCriteria orderByDescription() {
-        return orderBy(Applications.DESCRIPTION);
+        return orderBy(DefaultApplication.DESCRIPTION);
     }
 
     @Override
     public ApplicationCriteria orderByStatus() {
-        return orderBy(Applications.STATUS);
+        return orderBy(DefaultApplication.STATUS);
     }
 
     public ApplicationCriteria expandAccounts() {

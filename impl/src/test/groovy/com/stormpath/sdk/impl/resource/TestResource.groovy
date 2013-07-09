@@ -30,6 +30,11 @@ class TestResource extends AbstractResource {
         super(dataStore, properties)
     }
 
+    @Override
+    Map<String, Property> getPropertyDescriptors() {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
     String getName() {
         return super.getProperty('name')
     }

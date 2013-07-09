@@ -15,9 +15,10 @@
  */
 package com.stormpath.sdk.impl.query;
 
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.query.Options;
-import com.stormpath.sdk.resource.ReferenceProperty;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,19 +35,18 @@ public class DefaultOptions<T extends Options> implements Options, Expandable {
         this.expansions = new ArrayList<Expansion>();
     }
 
-    protected T expand(ReferenceProperty property) {
+    protected T expand(ResourceReference property) {
         Assert.notNull(property, "property argument cannot be null.");
         this.expansions.add(new Expansion(property.getName()));
         return (T) this;
     }
 
-    protected T expand(ReferenceProperty property, int limit) {
+    protected T expand(CollectionReference property, int limit) {
         return expand(property, limit, Pagination.DEFAULT_OFFSET.getValue());
     }
 
-    protected T expand(ReferenceProperty property, int limit, int offset) {
+    protected T expand(CollectionReference property, int limit, int offset) {
         Assert.notNull(property, "property argument cannot be null.");
-        Assert.state(property.isCollection(), "Only Collection properties can be expanded with a limit and/or offset.");
         int sLimit = Pagination.sanitizeLimit(limit);
         int sOffset = Pagination.sanitizeOffset(offset);
         this.expansions.add(new CollectionExpansion(property.getName(), sLimit, sOffset));
