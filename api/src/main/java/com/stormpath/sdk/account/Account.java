@@ -66,12 +66,12 @@ public interface Account extends Resource, Saveable {
      * <p/>
      * Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and
      * practical) to execute a search for one or more of the account's groups using the
-     * {@link #list(com.stormpath.sdk.group.GroupCriteria)} or {@link #listGroups(java.util.Map)} methods instead of
+     * {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} or {@link #getGroups(java.util.Map)} methods instead of
      * this one.
      *
      * @return a paginated list of all groups assigned to the Account.
-     * @see #list(com.stormpath.sdk.group.GroupCriteria)
-     * @see #listGroups(java.util.Map)
+     * @see #getGroups(com.stormpath.sdk.group.GroupCriteria)
+     * @see #getGroups(java.util.Map)
      */
     GroupList getGroups();
 
@@ -79,10 +79,10 @@ public interface Account extends Resource, Saveable {
      * Returns a paginated list of the account's assigned groups that match the specified query criteria.
      * <p/>
      * This method is mostly provided as a non-type-safe alternative to the
-     * {@link #list(com.stormpath.sdk.group.GroupCriteria)} method which might be useful in dynamic languages on the
+     * {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} method which might be useful in dynamic languages on the
      * JVM (for example, with Groovy):
      * <pre>
-     * return account.getGroups([description: '*foo*', orderBy: 'name desc', limit: 50]);
+     * def groups = account.getGroups([description: '*foo*', orderBy: 'name desc', limit: 50])
      * </pre>
      * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
      * <p/>
@@ -92,14 +92,14 @@ public interface Account extends Resource, Saveable {
      * .../accounts/accountId/groups?param1=value1&param2=value2&...
      * </pre>
      * <p/>
-     * If in doubt, use {@link #list(com.stormpath.sdk.group.GroupCriteria)} as all possible query options are available
+     * If in doubt, use {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} as all possible query options are available
      * via type-safe guarantees that can be auto-completed by most IDEs.
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the account's groups that match the specified query criteria.
      * @since 0.8
      */
-    GroupList listGroups(Map<String, Object> queryParams);
+    GroupList getGroups(Map<String, Object> queryParams);
 
     /**
      * Returns a paginated list of the account's groups that match the specified query criteria.  The
@@ -107,11 +107,26 @@ public interface Account extends Resource, Saveable {
      * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
      * query-building experience.  For example:
      * <pre>
-     * account.list(Groups
-     *     .where(Groups.DESCRIPTION.icontains("foo"))
-     *     .and(Groups.NAME.iStartsWith("bar"))
+     * account.getGroups(Groups.where(
+     *     Groups.description().icontains("foo"))
+     *     .and(Groups.name().iStartsWith("bar"))
      *     .orderByName().descending()
-     *     .orderBySurname().ascending()
+     *     .orderByDescription().ascending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.group.Groups.*;
+     *
+     * ...
+     *
+     * account.getGroups(where(
+     *      description().icontains("foo"))
+     *     .and(name().iStartsWith("bar"))
+     *     .orderByName().descending()
+     *     .orderByDescription().ascending()
      *     .expandAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
@@ -121,7 +136,7 @@ public interface Account extends Resource, Saveable {
      * @return a paginated list of the account's groups that match the specified query criteria.
      * @since 0.8
      */
-    GroupList list(GroupCriteria criteria);
+    GroupList getGroups(GroupCriteria criteria);
 
     /**
      * Returns the account's parent Directory (where the account is stored).

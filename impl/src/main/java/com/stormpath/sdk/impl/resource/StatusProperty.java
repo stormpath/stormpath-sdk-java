@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.impl.resource;
+
+import com.stormpath.sdk.resource.Status;
 
 /**
- * @since 0.8
+ * @since 0.9
  */
-public interface CreateApplicationRequestVisitor {
+public class StatusProperty extends NonStringProperty<Status> {
 
-    void visit(CreateApplicationRequest request);
+    public StatusProperty(String name) {
+        this(name, false);
+    }
 
-    void visit(CreateApplicationAndDirectoryRequest request);
+    public StatusProperty(String name, boolean required) {
+        super(name, Status.class, required);
+    }
 }

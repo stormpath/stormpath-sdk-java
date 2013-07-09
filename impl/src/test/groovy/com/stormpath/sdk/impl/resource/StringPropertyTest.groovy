@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.resource;
+package com.stormpath.sdk.impl.resource
+
+import org.testng.annotations.Test
+
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertSame
 
 /**
- * @since 0.9
+ *
+ * @since 0.8
  */
-public class StatusProperty extends NonStringProperty<Status> {
+class StringPropertyTest {
 
-    public StatusProperty(String name) {
-        this(name, false);
-    }
-
-    public StatusProperty(String name, boolean required) {
-        super(name, Status.class, required);
+    @Test
+    void testDefault() {
+        def prop = new StringProperty('foo')
+        assertSame prop.type, String.class
+        assertFalse prop.required
     }
 }

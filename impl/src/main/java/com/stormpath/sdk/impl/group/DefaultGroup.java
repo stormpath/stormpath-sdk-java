@@ -21,8 +21,14 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -34,12 +40,23 @@ import java.util.Map;
  */
 public class DefaultGroup extends AbstractInstanceResource implements Group {
 
-    private static String NAME = "name";
-    private static String DESCRIPTION = "description";
-    private static String STATUS = "status";
-    private static String TENANT = "tenant";
-    private static String DIRECTORY = "directory";
-    private static String ACCOUNTS = "accounts";
+    // SIMPLE PROPERTIES
+    static final StringProperty NAME = new StringProperty("name", true);
+    static final StringProperty DESCRIPTION = new StringProperty("description", true);
+    static final StatusProperty STATUS = new StatusProperty("status");
+
+    // INSTANCE RESOURCE REFERENCES:
+    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class, true);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class, true);
+
+    // COLLECTION RESOURCE REFERENCES:
+    static final CollectionReference<AccountList, Account> ACCOUNTS =
+            new CollectionReference<AccountList, Account>("accounts", AccountList.class, true, Account.class);
+    static final CollectionReference<GroupMembershipList, GroupMembership> ACCOUNT_MEMBERSHIPS =
+            new CollectionReference<GroupMembershipList, GroupMembership>("accountMemberships", GroupMembershipList.class, true, GroupMembership.class);
+
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+            NAME, DESCRIPTION, STATUS, DIRECTORY, TENANT, ACCOUNTS, ACCOUNT_MEMBERSHIPS);
 
     public DefaultGroup(InternalDataStore dataStore) {
         super(dataStore);
@@ -50,8 +67,13 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public String getName() {
-        return getStringProperty(NAME);
+        return getString(NAME);
     }
 
     @Override
@@ -61,7 +83,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public String getDescription() {
-        return getStringProperty(DESCRIPTION);
+        return getString(DESCRIPTION);
     }
 
     @Override
@@ -71,7 +93,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public Status getStatus() {
-        String value = getStringProperty(STATUS);
+        String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
@@ -85,17 +107,17 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public Tenant getTenant() {
-        return getResourceProperty(TENANT, Tenant.class);
+        return getResourceProperty(TENANT);
     }
 
     @Override
-    public AccountList list(AccountCriteria criteria) {
+    public AccountList getAccounts(AccountCriteria criteria) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
     public Directory getDirectory() {
-        return getResourceProperty(DIRECTORY, Directory.class);
+        return getResourceProperty(DIRECTORY);
     }
 
     @Override
@@ -105,13 +127,18 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public AccountList getAccounts() {
-        return getResourceProperty(ACCOUNTS, AccountList.class);
+        return getCollection(ACCOUNTS);
     }
 
     @Override
     public AccountList getAccounts(Map<String, Object> queryParams) {
         AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public GroupMembershipList getAccountMemberships() {
+        return getCollection(ACCOUNT_MEMBERSHIPS);
     }
 
     @Override

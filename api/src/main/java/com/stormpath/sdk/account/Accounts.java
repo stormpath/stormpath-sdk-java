@@ -15,33 +15,15 @@
  */
 package com.stormpath.sdk.account;
 
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
-import com.stormpath.sdk.resource.ReferenceProperty;
-import com.stormpath.sdk.resource.StatusProperty;
-import com.stormpath.sdk.resource.StringProperty;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.query.EqualsExpressionFactory;
+import com.stormpath.sdk.query.StringExpressionFactory;
 
 /**
  * @since 0.8
  */
 public final class Accounts {
-
-    public static final StringProperty EMAIL = new StringProperty("email", true);
-    public static final StringProperty USERNAME = new StringProperty("username", true);
-    //password is a property, but this should never be used for searches, so we leave it out on purpose
-    public static final StringProperty GIVEN_NAME = new StringProperty("givenName", true);
-    public static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
-    public static final StringProperty SURNAME = new StringProperty("surname", true);
-    public static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
-    public static final StatusProperty STATUS = new StatusProperty("status");
-    public static final ReferenceProperty<Directory> DIRECTORY = new ReferenceProperty<Directory>("directory", Directory.class, true, false);
-    public static final ReferenceProperty<Tenant> TENANT = new ReferenceProperty<Tenant>("tenant", Tenant.class, true, false);
-    public static final ReferenceProperty<Group> GROUPS = new ReferenceProperty<Group>("groups", Group.class, true, true);
-    public static final ReferenceProperty<GroupMembership> GROUP_MEMBERSHIPS = new ReferenceProperty<GroupMembership>("groupMemberships", GroupMembership.class, true, true);
 
     public static AccountOptions options() {
         return (AccountOptions) Classes.newInstance("com.stormpath.sdk.impl.account.DefaultAccountOptions");
@@ -53,5 +35,39 @@ public final class Accounts {
 
     public static AccountCriteria where(Criterion criterion) {
         return criteria().add(criterion);
+    }
+
+    public static StringExpressionFactory email() {
+        return newStringExpressionFactory("email");
+    }
+
+    public static StringExpressionFactory username() {
+        return newStringExpressionFactory("username");
+    }
+
+    public static StringExpressionFactory givenName() {
+        return newStringExpressionFactory("givenName");
+    }
+
+    public static StringExpressionFactory middleName() {
+        return newStringExpressionFactory("middleName");
+    }
+
+    public static StringExpressionFactory surname() {
+        return newStringExpressionFactory("surname");
+    }
+
+    public static EqualsExpressionFactory status() {
+        return newEqualsExpressionFactory("status");
+    }
+
+    private static StringExpressionFactory newStringExpressionFactory(String propName) {
+        final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";
+        return (StringExpressionFactory)Classes.newInstance(FQCN, propName);
+    }
+
+    private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {
+        final String FQCN = "com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory";
+        return (EqualsExpressionFactory)Classes.newInstance(FQCN, propName);
     }
 }

@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.query;
+package com.stormpath.sdk.impl.resource;
+
+import com.stormpath.sdk.resource.Resource;
 
 /**
  * @since 0.9
  */
-public enum Operator {
+public class ResourceReference<T extends Resource> extends Property<T> {
 
-    EQUALS("="),
-    ILIKE("ilike");
-
-    private String symbol;
-
-    private Operator(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getSymbol() {
-        return symbol;
+    public ResourceReference(String name, Class<T> type, boolean required) {
+        super(name, type, required);
     }
 }

@@ -19,6 +19,8 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
@@ -26,6 +28,10 @@ import java.util.Map;
  * @since 0.4
  */
 public class DefaultGroupMembershipList extends AbstractCollectionResource<GroupMembership> implements GroupMembershipList {
+
+    private static final ArrayProperty<GroupMembership> ITEMS = new ArrayProperty<GroupMembership>("items", GroupMembership.class, true);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
     public DefaultGroupMembershipList(InternalDataStore dataStore) {
         super(dataStore);
@@ -35,7 +41,7 @@ public class DefaultGroupMembershipList extends AbstractCollectionResource<Group
         super(dataStore, properties);
     }
 
-    public DefaultGroupMembershipList(InternalDataStore dataStore, Map<String, Object> properties, Map<String,Object> queryParams) {
+    public DefaultGroupMembershipList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
@@ -47,5 +53,10 @@ public class DefaultGroupMembershipList extends AbstractCollectionResource<Group
     @Override
     protected GroupMembership toResource(Class<GroupMembership> resourceClass, Map<String, Object> properties) {
         return super.toResource(resourceClass, properties);
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
     }
 }

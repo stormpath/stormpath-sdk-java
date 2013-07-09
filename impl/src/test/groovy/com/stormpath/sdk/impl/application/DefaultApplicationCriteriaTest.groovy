@@ -40,9 +40,9 @@ class DefaultApplicationCriteriaTest {
 
         //try an exhaustive query
         def c = Applications
-                .where(Applications.NAME.eqIgnoreCase('a'))
-                .and(Applications.DESCRIPTION.startsWithIgnoreCase('b'))
-                .and(Applications.STATUS.eq(Status.DISABLED))
+                .where(Applications.name().eqIgnoreCase('a'))
+                .and(Applications.description().startsWithIgnoreCase('b'))
+                .and(Applications.status().eq(Status.DISABLED))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()

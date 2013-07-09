@@ -65,15 +65,51 @@ public class DefaultResourceFactory implements ResourceFactory {
         return Classes.instantiate(ctor, ctorArgs);
     }
 
-    private <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
+    static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
         if (clazz.isInterface()) {
             return convertToImplClass(clazz);
         }
         return clazz;
     }
 
+    static <T extends Resource> Class<T> getInterfaceClass(Class<T> clazz) {
+        if (clazz.isInterface()) {
+            return clazz;
+        }
+        return convertToInterfaceClass(clazz);
+    }
+
+    static <T extends Resource> Class<T> convertToInterfaceClass(Class<T> clazz) {
+        String fqcn = clazz.getName();
+        String afterBase = fqcn.substring(BASE_PACKAGE.length());
+
+        //e.g. if impl is com.stormpath.sdk.impl.account.DefaultAccount, 'afterBase' is impl.account.DefaultAccount
+
+        //split interface simple name and the remainder of the package structure:
+
+        if (afterBase.startsWith(IMPL_PACKAGE_NAME)) {
+            afterBase = afterBase.substring(IMPL_PACKAGE_NAME.length());
+        }
+
+        //now afterBase is account.DefaultAccount
+
+        //now append the intermediate package name to the base package:
+        int index = afterBase.lastIndexOf('.');
+        String beforeSimpleName = afterBase.substring(0, index);
+
+        String simpleName = clazz.getSimpleName();
+
+        //strip off any 'Default' prefix:
+        index = simpleName.indexOf(IMPL_CLASS_PREFIX);
+        simpleName = simpleName.substring(index + IMPL_CLASS_PREFIX.length());
+
+        String ifaceFqcn = BASE_PACKAGE + beforeSimpleName + "." + simpleName;
+
+        return Classes.forName(ifaceFqcn);
+    }
+
     @SuppressWarnings("unchecked")
-    private <T extends Resource> Class<T> convertToImplClass(Class<T> clazz) {
+    static <T extends Resource> Class<T> convertToImplClass(Class<T> clazz) {
         String fqcn = clazz.getName();
 
         String afterBase = fqcn.substring(BASE_PACKAGE.length());

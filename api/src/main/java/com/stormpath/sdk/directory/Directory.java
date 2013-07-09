@@ -16,8 +16,10 @@
 package com.stormpath.sdk.directory;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -146,6 +148,43 @@ public interface Directory extends Resource, Saveable, Deletable {
     AccountList getAccounts(Map<String, Object> queryParams);
 
     /**
+     * Returns a paginated list of the directory's accounts that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * directory.getAccounts(Accounts.where(
+     *     Accounts.username().containsIgnoreCase("foo"))
+     *     .and(Accounts.surname().startsWithIgnoreCase("bar"))
+     *     .orderBySurname().descending()
+     *     .orderByGivenName().ascending()
+     *     .expandGroups(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.account.Accounts.*;
+     *
+     * ...
+     *
+     * directory.getAccounts(where(
+     *     username().containsIgnoreCase("foo"))
+     *     .and(surname().startsWithIgnoreCase("bar"))
+     *     .orderBySurname().descending()
+     *     .orderByGivenName().ascending()
+     *     .expandGroups(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the directory's accounts that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList getAccounts(AccountCriteria criteria);
+
+    /**
      * Returns a paginated list of all groups in the Directory.
      * <p/>
      * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
@@ -170,6 +209,43 @@ public interface Directory extends Resource, Saveable, Deletable {
      * @since 0.8
      */
     GroupList getGroups(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the directory's groups that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.group.Groups Groups} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * directory.getGroups(Groups.where(
+     *     Groups.name().containsIgnoreCase("foo"))
+     *     .and(Groups.description().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByDescription().descending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.account.Accounts.*;
+     *
+     * ...
+     *
+     * directory.getGroups(where(
+     *     name().containsIgnoreCase("foo"))
+     *     .and(description().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByDescription().descending()
+     *     .expandAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's groups that match the specified query criteria.
+     * @since 0.8
+     */
+    GroupList getGroups(GroupCriteria criteria);
 
     /**
      * Returns the Tenant to which this Directory belongs.

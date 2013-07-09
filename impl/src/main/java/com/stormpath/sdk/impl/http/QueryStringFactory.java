@@ -18,12 +18,12 @@ package com.stormpath.sdk.impl.http;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.query.Expansion;
+import com.stormpath.sdk.impl.query.LikeExpression;
 import com.stormpath.sdk.impl.query.Order;
+import com.stormpath.sdk.impl.query.SimpleExpression;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.query.Criterion;
-import com.stormpath.sdk.query.LikeExpression;
-import com.stormpath.sdk.query.SimpleExpression;
 
 import java.util.List;
 import java.util.Map;

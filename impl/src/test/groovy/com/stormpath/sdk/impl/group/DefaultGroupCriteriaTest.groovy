@@ -41,9 +41,9 @@ class DefaultGroupCriteriaTest {
 
         //try an exhaustive query
         def c = Groups
-                .where(Groups.NAME.eqIgnoreCase('a'))
-                .and(Groups.DESCRIPTION.startsWithIgnoreCase('b'))
-                .and(Groups.STATUS.eq(Status.DISABLED))
+                .where(Groups.name().eqIgnoreCase('a'))
+                .and(Groups.description().startsWithIgnoreCase('b'))
+                .and(Groups.status().eq(Status.DISABLED))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()

@@ -29,7 +29,6 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.Resource;
@@ -57,11 +56,12 @@ public class DefaultDataStore implements InternalDataStore {
 
     public static final int DEFAULT_API_VERSION = 1;
 
-    private RequestExecutor requestExecutor;
-    private ResourceFactory resourceFactory;
-    private MapMarshaller mapMarshaller;
+    private final RequestExecutor requestExecutor;
+    private final ResourceFactory resourceFactory;
+    private final MapMarshaller mapMarshaller;
+    private volatile CacheRegionNameResolver cacheRegionNameResolver;
 
-    private String baseUrl;
+    private final String baseUrl;
 
     private final QueryStringFactory queryStringFactory;
 
@@ -81,7 +81,12 @@ public class DefaultDataStore implements InternalDataStore {
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
         this.queryStringFactory = new QueryStringFactory();
+        this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
     }
+
+    /* =====================================================================
+       Resource Instantiation
+       ===================================================================== */
 
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz) {
@@ -93,9 +98,14 @@ public class DefaultDataStore implements InternalDataStore {
         return this.resourceFactory.instantiate(clazz, properties);
     }
 
+    /* =====================================================================
+       Resource Retrieval
+       ===================================================================== */
+
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         Map<String,?> data = executeRequest(HttpMethod.GET, href);
+        //TODO: CACHING: cache(data);
         return this.resourceFactory.instantiate(clazz, data);
     }
 
@@ -117,9 +127,48 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private <T extends Resource> T getResource(String href, Class<T> clazz, QueryString qs) {
+
+        if (!isFullyQualified(href)) {
+            href = qualify(href);
+        }
+
+        /*if (this.cacheManager != null) {
+            Cache cache = this.cacheManager.getCache("resources");
+            DefaultCacheKey key = new DefaultCacheKey(href, qs);
+
+            String url = key.toString();
+            if (!url.contains("?")) {  //TODO: cache resources with query parameters
+                Object value = cache.get(url);
+                if (value != null) {
+                    Assert.state();
+                }
+                Map<String,Object> props = (Map<String,Object>)cache.get(url);
+                if (props != null) {
+
+                }
+
+            }
+
+            Object o = cache.get(key.toString());
+            if (o != null) {
+                Assert.state(clazz.isAssignableFrom(o.getClass()), "The existing cached value for cache entry [" +
+                        key + "] is not an instance of " + clazz.getName() + ".  It is an instance of " +
+                        o.getClass());
+                return clazz.cast(o);
+            }
+        } */
+
+        //not cached - perform a query:
         Map<String,?> data = executeRequest(HttpMethod.GET, href, qs);
+
+        //TODO: CACHING: cache(data);
+
         return this.resourceFactory.instantiate(clazz, data, qs);
     }
+
+    /* =====================================================================
+       Resource Persistence
+       ===================================================================== */
 
     @SuppressWarnings("unchecked")
     @Override
@@ -148,11 +197,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource aResource = (AbstractResource)resource;
 
         String href = aResource.getHref();
-        Assert.isTrue(Strings.hasLength(href), "save may only be called on objects that have already been persisted (i.e. they have an existing href).");
-
-        if (needsToBeFullyQualified(href)) {
-            href = qualify(href);
-        }
+        Assert.isTrue(Strings.hasLength(href), "'save' may only be called on objects that have already been persisted and have an existing href.");
 
         Class<T> clazz = (Class<T>)resource.getClass();
 
@@ -179,7 +224,7 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
 
-        if (needsToBeFullyQualified(href)) {
+        if (!isFullyQualified(href)) {
             href = qualify(href);
         }
 
@@ -200,8 +245,14 @@ public class DefaultDataStore implements InternalDataStore {
             return null;
         }
 
+        //TODO: CACHING: cache(responseBody);
+
         return resourceFactory.instantiate(returnType, responseBody);
     }
+
+    /* =====================================================================
+       Resource Deletion
+       ===================================================================== */
 
     @Override
     public <T extends Resource> void delete(T resource) {
@@ -263,33 +314,15 @@ public class DefaultDataStore implements InternalDataStore {
     private Map<String,?> executeRequest(HttpMethod method, String href, Map<String,?> queryParameters) {
         Assert.notNull(href, "href argument cannot be null.");
 
-        if (needsToBeFullyQualified(href)) {
+        if (!isFullyQualified(href)) {
             href = qualify(href);
         }
 
-        QueryString qs = null;
-        if (!Collections.isEmpty(queryParameters)) {
-            qs = toQueryString(queryParameters);
-        }
+        QueryString qs = queryStringFactory.createQueryString(queryParameters);
 
         Request request = new DefaultRequest(method, href, qs);
 
         return executeRequest(request);
-    }
-
-    private QueryString toQueryString(Map<String,?> params) {
-        if (params instanceof QueryString) {
-            return (QueryString)params;
-        }
-
-        QueryString qs = new QueryString();
-        for(Map.Entry<String,?> entry : params.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            String sValue = String.valueOf(value);
-            qs.put(key, sValue);
-        }
-        return qs;
     }
 
     @SuppressWarnings("unchecked")
@@ -329,7 +362,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
     }
 
-    protected boolean needsToBeFullyQualified(String href) {
+    protected boolean isFullyQualified(String href) {
         return !href.toLowerCase().startsWith("http");
     }
 

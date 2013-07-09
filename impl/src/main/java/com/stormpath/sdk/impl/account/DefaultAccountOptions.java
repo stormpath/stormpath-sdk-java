@@ -16,7 +16,6 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
@@ -26,41 +25,41 @@ public class DefaultAccountOptions extends DefaultOptions<AccountOptions> implem
 
     @Override
     public AccountOptions expandDirectory() {
-        return expand(Accounts.DIRECTORY);
+        return expand(DefaultAccount.DIRECTORY);
     }
 
     @Override
     public AccountOptions expandTenant() {
-        return expand(Accounts.TENANT);
+        return expand(DefaultAccount.TENANT);
     }
 
     @Override
     public AccountOptions expandGroups() {
-        return expand(Accounts.GROUPS);
+        return expand(DefaultAccount.GROUPS);
     }
 
     @Override
     public AccountOptions expandGroups(int limit) {
-        return expand(Accounts.GROUPS, limit);
+        return expand(DefaultAccount.GROUPS, limit);
     }
 
     @Override
     public AccountOptions expandGroups(int limit, int offset) {
-        return expand(Accounts.GROUPS, limit, offset);
+        return expand(DefaultAccount.GROUPS, limit, offset);
     }
 
     @Override
     public AccountOptions expandGroupMemberships() {
-        return expand(Accounts.GROUP_MEMBERSHIPS);
+        return expand(DefaultAccount.GROUP_MEMBERSHIPS);
     }
 
     @Override
     public AccountOptions expandGroupMemberships(int limit) {
-        return expand(Accounts.GROUP_MEMBERSHIPS, limit);
+        return expand(DefaultAccount.GROUP_MEMBERSHIPS, limit);
     }
 
     @Override
     public AccountOptions expandGroupMemberships(int limit, int offset) {
-        return expand(Accounts.GROUP_MEMBERSHIPS, limit, offset);
+        return expand(DefaultAccount.GROUP_MEMBERSHIPS, limit, offset);
     }
 }

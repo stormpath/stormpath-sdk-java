@@ -33,9 +33,9 @@ import java.util.Map;
  */
 public abstract class AbstractCollectionResource<T extends Resource> extends AbstractResource implements CollectionResource<T> {
 
-    private static final String OFFSET = "offset";
-    private static final String LIMIT = "limit";
-    private static final String ITEMS = "items";
+    protected static final IntegerProperty OFFSET = new IntegerProperty("offset", true);
+    protected static final IntegerProperty LIMIT = new IntegerProperty("limit", true);
+    protected static final String ITEMS_PROPERTY_NAME = "items";
 
     private final Map<String, Object> queryParams;
 
@@ -59,11 +59,11 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
     }
 
     public int getOffset() {
-        return getIntProperty(OFFSET);
+        return getInt(OFFSET);
     }
 
     public int getLimit() {
-        return getIntProperty(LIMIT);
+        return getInt(LIMIT);
     }
 
     protected abstract Class<T> getItemType();
@@ -73,7 +73,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
 
         Collection<T> items = Collections.emptyList();
 
-        Object value = getProperty(ITEMS);
+        Object value = getProperty(ITEMS_PROPERTY_NAME);
 
         if (value != null) {
             Collection c = null;
@@ -95,7 +95,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
                     items = toResourceList(c, getItemType());
                     //replace the existing list of links with the newly constructed list of Resources.  Don't dirty
                     //the instance - we're just swapping out a property that already exists for the materialized version.
-                    setProperty(ITEMS, items, false);
+                    setProperty(ITEMS_PROPERTY_NAME, items, false);
                 } else {
                     //the collection has already been converted to Resources - use it directly:
                     items = c;
@@ -165,8 +165,8 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
                 int offset = currentPage.getOffset() + pageLimit;
 
                 Map<String, Object> queryParams = new LinkedHashMap<String, Object>(resource.queryParams);
-                queryParams.put(OFFSET, offset);
-                queryParams.put(LIMIT, pageLimit);
+                queryParams.put(OFFSET.getName(), offset);
+                queryParams.put(LIMIT.getName(), pageLimit);
 
                 AbstractCollectionResource nextResource =
                         getDataStore().getResource(resource.getHref(), resource.getClass(), queryParams);
