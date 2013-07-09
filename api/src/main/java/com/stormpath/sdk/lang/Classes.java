@@ -96,6 +96,11 @@ public class Classes {
         if (clazz == null) {
             String msg = "Unable to load class named [" + fqcn + "] from the thread context, current, or " +
                     "system/application ClassLoaders.  All heuristics have been exhausted.  Class could not be found.";
+
+            if (fqcn != null && fqcn.startsWith("com.stormpath.sdk.impl")) {
+                msg += "  Have you remembered to include the stormpath-sdk-impl .jar in your runtime classpath?";
+            }
+
             throw new UnknownClassException(msg);
         }
 
