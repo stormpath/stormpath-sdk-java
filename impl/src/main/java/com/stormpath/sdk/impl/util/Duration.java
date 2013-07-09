@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.impl.util;
 
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Objects;
+
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -85,13 +88,13 @@ public class Duration implements Comparable<Duration>, Cloneable {
     }
 
     public int hashCode() {
-        return ObjectUtils.hashCode(value) * 37 + ObjectUtils.nullSafeHashCode(timeUnit);
+        return Objects.hashCode(value) * 37 + Objects.nullSafeHashCode(timeUnit);
     }
 
     @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
     public Duration clone() {
         try {
-            return (Duration)super.clone();
+            return (Duration) super.clone();
         } catch (CloneNotSupportedException e) {
             //should never happen since we subclass Object directly:
             throw new InternalError("Unable to clone Object direct subclass! " + e.getMessage());

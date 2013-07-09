@@ -17,10 +17,9 @@ package com.stormpath.sdk.impl.cache;
 
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,7 +63,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * The {@link #setDefaultTimeToLive(com.stormpath.sdk.impl.util.Duration) defaultTimeToLive} setting is only
  * applied to newly created {@code Cache} instances.  It does not affect already existing {@code Cache}s.
- * <h2>Thread Safe</h2>
+ * <h2>Thread Safety</h2>
  * This implementation and the cache instances it creates are thread-safe and usable in concurrent environments.
  *
  * @see #setDefaultTimeToIdle(com.stormpath.sdk.impl.util.Duration)
@@ -171,7 +170,7 @@ public class DefaultCacheManager implements CacheManager {
      * @throws IllegalArgumentException if the {@code name} argument is {@code null} or does not contain text.
      */
     public <K, V> Cache<K, V> getCache(String name) throws IllegalArgumentException {
-        Assert.isTrue(StringUtils.hasText(name), "Cache name cannot be null or empty.");
+        Assert.hasText(name, "Cache name cannot be null or empty.");
 
         Cache cache;
 

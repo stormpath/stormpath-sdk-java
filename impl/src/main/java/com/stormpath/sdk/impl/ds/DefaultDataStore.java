@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.MediaType;
@@ -29,6 +31,7 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.Resource;
@@ -59,6 +62,7 @@ public class DefaultDataStore implements InternalDataStore {
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
+    private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
 
     private final String baseUrl;
@@ -84,6 +88,14 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
     }
 
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    public void setCacheRegionNameResolver(CacheRegionNameResolver cacheRegionNameResolver) {
+        this.cacheRegionNameResolver = cacheRegionNameResolver;
+    }
+
     /* =====================================================================
        Resource Instantiation
        ===================================================================== */
@@ -104,7 +116,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
-        Map<String,?> data = executeRequest(HttpMethod.GET, href);
+        Map<String, ?> data = executeRequest(HttpMethod.GET, href);
         //TODO: CACHING: cache(data);
         return this.resourceFactory.instantiate(clazz, data);
     }
@@ -121,7 +133,7 @@ public class DefaultDataStore implements InternalDataStore {
                 "The " + getClass().getName() + " implementation only functions with " +
                         DefaultCriteria.class.getName() + " instances.");
 
-        DefaultCriteria dc = (DefaultCriteria)criteria;
+        DefaultCriteria dc = (DefaultCriteria) criteria;
         QueryString qs = queryStringFactory.createQueryString(dc);
         return getResource(href, clazz, qs);
     }
@@ -159,7 +171,7 @@ public class DefaultDataStore implements InternalDataStore {
         } */
 
         //not cached - perform a query:
-        Map<String,?> data = executeRequest(HttpMethod.GET, href, qs);
+        Map<String, ?> data = executeRequest(HttpMethod.GET, href, qs);
 
         //TODO: CACHING: cache(data);
 
@@ -174,17 +186,17 @@ public class DefaultDataStore implements InternalDataStore {
     @Override
     public <T extends Resource> T create(String parentHref, T resource) {
 
-        Class<T> clazz = (Class<T>)resource.getClass();
+        Class<T> clazz = (Class<T>) resource.getClass();
 
         T returnValue = create(parentHref, resource, clazz);
 
         //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource in = (AbstractResource)resource;
-        AbstractResource ret = (AbstractResource)returnValue;
-        LinkedHashMap<String,Object> props = toMap(ret);
+        AbstractResource in = (AbstractResource) resource;
+        AbstractResource ret = (AbstractResource) returnValue;
+        LinkedHashMap<String, Object> props = toMap(ret);
         in.setProperties(props);
 
-        return (T)in;
+        return (T) in;
     }
 
     @SuppressWarnings("unchecked")
@@ -194,18 +206,18 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.isInstanceOf(AbstractResource.class, resource);
         Assert.isInstanceOf(Saveable.class, resource);
 
-        AbstractResource aResource = (AbstractResource)resource;
+        AbstractResource aResource = (AbstractResource) resource;
 
         String href = aResource.getHref();
         Assert.isTrue(Strings.hasLength(href), "'save' may only be called on objects that have already been persisted and have an existing href.");
 
-        Class<T> clazz = (Class<T>)resource.getClass();
+        Class<T> clazz = (Class<T>) resource.getClass();
 
         T returnValue = save(href, resource, clazz);
 
         //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource ret = (AbstractResource)returnValue;
-        LinkedHashMap<String,Object> props = toMap(ret);
+        AbstractResource ret = (AbstractResource) returnValue;
+        LinkedHashMap<String, Object> props = toMap(ret);
         aResource.setProperties(props);
     }
 
@@ -228,9 +240,9 @@ public class DefaultDataStore implements InternalDataStore {
             href = qualify(href);
         }
 
-        AbstractResource abstractResource = (AbstractResource)resource;
+        AbstractResource abstractResource = (AbstractResource) resource;
 
-        LinkedHashMap<String,Object> props = toMap(abstractResource);
+        LinkedHashMap<String, Object> props = toMap(abstractResource);
 
         String bodyString = mapMarshaller.marshal(props);
 
@@ -239,7 +251,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         Request request = new DefaultRequest(HttpMethod.POST, href, null, null, body, length);
 
-        Map<String,Object> responseBody = executeRequest(request);
+        Map<String, Object> responseBody = executeRequest(request);
 
         if (responseBody == null || responseBody.isEmpty()) {
             return null;
@@ -258,23 +270,81 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> void delete(T resource) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
-        AbstractResource abstractResource = (AbstractResource)resource;
-        executeRequest(HttpMethod.DELETE, abstractResource.getHref());
+        AbstractResource abstractResource = (AbstractResource) resource;
+        String href = abstractResource.getHref();
+        uncache(abstractResource);
+        executeRequest(HttpMethod.DELETE, href);
+    }
+
+    /* =====================================================================
+       Resource Caching
+       ===================================================================== */
+
+    @SuppressWarnings("unchecked")
+    private void cache(Class<? extends Resource> clazz, Map<String, ?> data) {
+        if (this.cacheManager == null || Collections.isEmpty(data)) {
+            return;
+        }
+
+        String href = null;
+
+        Map<String, Object> toCache = new LinkedHashMap<String, Object>(data.size());
+
+        for (Map.Entry<String, ?> entry : data.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if ("href".equals(key)) {
+                href = (String) value;
+            }
+
+            if (value instanceof Map) {
+                Map<String, ?> nested = (Map<String, ?>) value;
+                //TODO: CACHING: cache(nested);
+
+                String nestedHref = (String) nested.get("href");
+                Map<String, String> replaced = new LinkedHashMap<String, String>();
+                replaced.put("href", nestedHref);
+                value = replaced;
+            }
+
+            toCache.put(key, value);
+        }
+
+        Assert.state(href != null, "href cannot be null.");
+
+        Cache cache = this.cacheManager.getCache("resources");
+        cache.put(href, toCache);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Resource> void uncache(T resource) {
+
+        if (this.cacheManager == null || resource == null) {
+            return;
+        }
+
+        String href = resource.getHref();
+        String regionName = this.cacheRegionNameResolver.getCacheRegionName(resource);
+        Cache cache = this.cacheManager.getCache(regionName);
+        if (cache != null) {
+            cache.remove(href);
+        }
     }
 
     private LinkedHashMap<String, Object> toMap(AbstractResource resource) {
         Set<String> propNames = resource.getPropertyNames();
 
-        LinkedHashMap<String,Object> props = new LinkedHashMap<String,Object>(propNames.size());
+        LinkedHashMap<String, Object> props = new LinkedHashMap<String, Object>(propNames.size());
 
-        for( String propName : propNames) {
+        for (String propName : propNames) {
             Object prop = resource.getProperty(propName);
 
             //if the property is a reference, don't write the entire object - just the href will do:
             if (prop instanceof Map) {
-                prop = toSimpleReference(propName, (Map)prop);
+                prop = toSimpleReference(propName, (Map) prop);
             } else if (prop instanceof Resource) {
-                prop = toSimpleReference(propName, (Resource)prop);
+                prop = toSimpleReference(propName, (Resource) prop);
             }
 
             props.put(propName, prop);
@@ -283,12 +353,12 @@ public class DefaultDataStore implements InternalDataStore {
         return props;
     }
 
-    private Map<String,String> toSimpleReference(String propName, Map map) {
+    private Map<String, String> toSimpleReference(String propName, Map map) {
         Assert.isTrue(!map.isEmpty() && map.containsKey(AbstractResource.HREF_PROP_NAME),
                 "Nested resource '" + propName + "' must have an 'href' property.");
         String href = String.valueOf(map.get(AbstractResource.HREF_PROP_NAME));
 
-        Map<String,String> reference = new HashMap<String,String>(1);
+        Map<String, String> reference = new HashMap<String, String>(1);
         reference.put(AbstractResource.HREF_PROP_NAME, href);
 
         return reference;
@@ -297,21 +367,21 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.6.0
      */
-    private Map<String,String> toSimpleReference(String propName, Resource resource) {
+    private Map<String, String> toSimpleReference(String propName, Resource resource) {
         String href = resource.getHref();
         Assert.hasText(href, "Nested Resource '" + propName + "' must have an 'href' property.");
 
-        Map<String,String> reference = new HashMap<String,String>(1);
+        Map<String, String> reference = new HashMap<String, String>(1);
         reference.put(AbstractResource.HREF_PROP_NAME, href);
 
         return reference;
     }
 
-    private Map<String,?> executeRequest(HttpMethod method, String href) {
+    private Map<String, ?> executeRequest(HttpMethod method, String href) {
         return executeRequest(method, href, null);
     }
 
-    private Map<String,?> executeRequest(HttpMethod method, String href, Map<String,?> queryParameters) {
+    private Map<String, ?> executeRequest(HttpMethod method, String href, Map<String, ?> queryParameters) {
         Assert.notNull(href, "href argument cannot be null.");
 
         if (!isFullyQualified(href)) {
@@ -326,7 +396,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String,Object> executeRequest(Request request) {
+    private Map<String, Object> executeRequest(Request request) {
 
         applyDefaultRequestHeaders(request);
 
@@ -338,7 +408,7 @@ public class DefaultDataStore implements InternalDataStore {
             body = toString(response.getBody());
         }
 
-        Map<String,Object> mapBody = null;
+        Map<String, Object> mapBody = null;
 
         if (body != null) {
             log.trace("Obtained response body: \n{}", body);

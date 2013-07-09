@@ -16,13 +16,14 @@
 package com.stormpath.sdk.impl.cache;
 
 import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
+import com.stormpath.sdk.lang.Assert;
 
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A <code>DefaultCache</code> is a {@link Cache Cache} implementation that uses a backing {@link Map} instance to store
@@ -55,6 +56,10 @@ public class DefaultCache<K, V> implements Cache<K, V> {
      * The name of this cache.
      */
     private final String name;
+
+    private final AtomicLong accessCount;
+    private final AtomicLong hitCount;
+    private final AtomicLong missCount;
 
     /**
      * Creates a new {@code DefaultCache} instance with the specified {@code name}, expected to be unique among all
@@ -126,6 +131,9 @@ public class DefaultCache<K, V> implements Cache<K, V> {
         this.map = backingMap;
         this.timeToLive = timeToLive;
         this.timeToIdle = timeToIdle;
+        this.accessCount = new AtomicLong(0);
+        this.hitCount = new AtomicLong(0);
+        this.missCount = new AtomicLong(0);
     }
 
     protected static void assertTtl(Duration ttl) throws IllegalArgumentException {
@@ -141,9 +149,13 @@ public class DefaultCache<K, V> implements Cache<K, V> {
     }
 
     public V get(K key) {
+
+        this.accessCount.incrementAndGet();
+
         Entry<V> entry = map.get(key);
 
         if (entry == null) {
+            missCount.incrementAndGet();
             return null;
         }
 
@@ -156,6 +168,7 @@ public class DefaultCache<K, V> implements Cache<K, V> {
             Duration sinceCreation = new Duration(nowMillis - entry.getCreationTimeMillis(), TimeUnit.MILLISECONDS);
             if (sinceCreation.isGreaterThan(ttl)) {
                 map.remove(key);
+                missCount.incrementAndGet(); //count an expired TTL as a miss
                 return null;
             }
         }
@@ -164,11 +177,14 @@ public class DefaultCache<K, V> implements Cache<K, V> {
             Duration sinceLastAccess = new Duration(nowMillis - entry.getLastAccessTimeMillis(), TimeUnit.MILLISECONDS);
             if (sinceLastAccess.isGreaterThan(tti)) {
                 map.remove(key);
+                missCount.incrementAndGet(); //count an expired TTI as a miss
                 return null;
             }
         }
 
         entry.lastAccessTimeMillis = nowMillis;
+
+        hitCount.incrementAndGet();
 
         return entry.getValue();
     }
@@ -180,6 +196,19 @@ public class DefaultCache<K, V> implements Cache<K, V> {
             return previous.value;
         }
         return null;
+    }
+
+    @Override
+    public V remove(K key) {
+        accessCount.incrementAndGet();
+        Entry<V> previous = map.remove(key);
+        if (previous != null) {
+            hitCount.incrementAndGet();
+            return previous.value;
+        } else {
+            missCount.incrementAndGet();
+            return null;
+        }
     }
 
     /**
@@ -230,6 +259,18 @@ public class DefaultCache<K, V> implements Cache<K, V> {
     public void setTimeToIdle(Duration timeToIdle) {
         assertTti(timeToIdle);
         this.timeToIdle = timeToIdle;
+    }
+
+    public long getHitCount() {
+        return hitCount.get();
+    }
+
+    public long getMissCount() {
+        return missCount.get();
+    }
+
+    public double getHitRatio() {
+        return hitCount.get() / accessCount.get();
     }
 
     public void clear() {

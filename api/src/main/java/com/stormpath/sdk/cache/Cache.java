@@ -17,15 +17,15 @@ package com.stormpath.sdk.cache;
 
 /**
  * A Cache efficiently stores temporary objects primarily to improve an application's performance.
- *
- * <p>The Stormpath SDK doesn't implement a full Cache mechanism itself, since that is outside the core competency of
+ * <p/>
+ * The Stormpath SDK doesn't implement a full Cache mechanism itself, since that is outside the core competency of
  * the SDK.  Instead, this interface provides an abstraction (wrapper) API on top of an underlying
  * cache framework's cache instance (e.g. JCache, Ehcache, Hazelcast, JCS, OSCache, JBossCache, TerraCotta, Coherence,
  * GigaSpaces, etc, etc), allowing a Stormpath SDK user to configure any cache mechanism they choose.
  *
  * @since 0.8
  */
-public interface Cache<K,V> {
+public interface Cache<K, V> {
 
     /**
      * Returns the cached value stored under the specified {@code key} or
@@ -44,6 +44,14 @@ public interface Cache<K,V> {
      * @param value the value to be stored in the cache.
      * @return the previous value associated with the given {@code key} or {@code null} if there was no previous value
      */
-    public V put(K key, V value);
+    V put(K key, V value);
 
+
+    /**
+     * Removes the cached value stored under the specified {@code key}.
+     *
+     * @param key the key used to identify the object being stored.
+     * @return the removed value or {@code null} if there was no value cached.
+     */
+    V remove(K key);
 }
