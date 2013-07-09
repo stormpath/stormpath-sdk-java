@@ -202,19 +202,31 @@ public class DefaultCacheManager implements CacheManager {
 
     public String toString() {
         Collection<Cache> values = caches.values();
-        StringBuilder sb = new StringBuilder(getClass().getSimpleName())
-                .append(" with ")
-                .append(caches.size())
-                .append(" cache(s)): [");
-        int i = 0;
-        for (Cache cache : values) {
-            if (i > 0) {
-                sb.append(", ");
+        StringBuilder sb = new StringBuilder()
+                .append("{\n")
+                .append("  \"cacheCount\": ").append(caches.size()).append(",\n")
+                .append("  \"defaultTimeToLive\": \"").append(toString(defaultTimeToLive)).append("\",\n")
+                .append("  \"defaultTimeToIdle\": \"").append(toString(defaultTimeToIdle)).append("\",\n")
+                .append("  \"caches\": [");
+
+        if (!caches.isEmpty()) {
+            sb.append("\n");
+            int i = 0;
+            for (Cache cache : values) {
+                if (i > 0) {
+                    sb.append(",\n");
+                }
+                sb.append(cache.toString());
+                i++;
             }
-            sb.append(cache.toString());
-            i++;
+            sb.append("\n  ");
         }
-        sb.append("]");
+
+        sb.append("]\n}");
         return sb.toString();
+    }
+
+    private String toString(Duration d) {
+        return d != null ? d.toString() : "indefinite";
     }
 }

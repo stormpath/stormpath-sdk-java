@@ -16,11 +16,12 @@
 package com.stormpath.sdk.impl.cache
 
 import com.stormpath.sdk.impl.util.Duration
-import org.junit.Test
+import groovy.json.JsonSlurper
+import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.8
@@ -44,17 +45,17 @@ class DefaultCacheTest {
         def cache = new DefaultCache('foo')
         def ttl = new Duration(30, TimeUnit.MILLISECONDS)
         cache.setTimeToLive(ttl)
-        assertSame ttl, cache.timeToLive
+        assertSame cache.timeToLive, ttl
     }
 
-    @Test(expected=IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testSetNegativeTtl() {
         def cache = new DefaultCache('foo')
         def ttl = new Duration(-30, TimeUnit.MILLISECONDS)
         cache.setTimeToLive(ttl)
     }
 
-    @Test(expected=IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testSetZeroTtl() {
         def cache = new DefaultCache('foo')
         def ttl = new Duration(0, TimeUnit.MILLISECONDS)
@@ -66,17 +67,17 @@ class DefaultCacheTest {
         def cache = new DefaultCache('foo')
         def tti = new Duration(30, TimeUnit.MILLISECONDS)
         cache.setTimeToIdle(tti)
-        assertSame tti, cache.timeToIdle
+        assertSame cache.timeToIdle, tti
     }
 
-    @Test(expected=IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testSetNegativeTti() {
         def cache = new DefaultCache('foo')
         def tti = new Duration(-30, TimeUnit.MILLISECONDS)
         cache.setTimeToIdle(tti)
     }
 
-    @Test(expected=IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testSetZeroTti() {
         def cache = new DefaultCache('foo')
         def tti = new Duration(0, TimeUnit.MILLISECONDS)
@@ -84,20 +85,72 @@ class DefaultCacheTest {
     }
 
     @Test
+    void testRemove() {
+        def cache = new DefaultCache('foo')
+        def existing = cache.put('key', 'value')
+        assertNull existing
+
+        existing = cache.remove('key')
+        assertEquals existing, 'value'
+
+        assertEquals cache.accessCount, 1
+        assertEquals cache.hitCount, 1
+        assertEquals cache.missCount, 0
+        assertEquals cache.hitRatio, 1.0d
+
+        def value = cache.get('key')
+        assertNull value
+
+        assertEquals cache.accessCount, 2
+        assertEquals cache.hitCount, 1
+        assertEquals cache.missCount, 1
+        def ratio = cache.hitRatio
+        assertEquals ratio, 0.5d
+
+        value = cache.remove('key')
+        assertNull value
+
+        assertEquals cache.accessCount, 3
+        assertEquals cache.hitCount, 1
+        assertEquals cache.missCount, 2
+        ratio = cache.hitRatio
+        assertEquals ratio, (1d/3d)
+    }
+
+
+    @Test
     void testClear() {
         def cache = new DefaultCache('foo')
         cache.put('key', 'value')
-        assertEquals 1, cache.size()
+        assertEquals cache.size(), 1
         cache.clear()
-        assertEquals 0, cache.size()
+        assertEquals cache.size(), 0
     }
 
     @Test
     void testToString() {
         def cache = new DefaultCache('foo')
-        assertEquals 'DefaultCache \'foo\' (0 entries)', cache.toString()
+        def json = new JsonSlurper().parseText(cache.toString())
+
+        assertEquals json.name, 'foo'
+        assertEquals json.size, 0
+        assertEquals json.accessCount, 0
+        assertEquals json.hitCount, 0
+        assertEquals json.missCount, 0
+        assertEquals json.hitRatio, 0.0
+
         cache.put('key', 'value')
-        assertEquals 'DefaultCache \'foo\' (1 entries)', cache.toString()
+        def value = cache.get('key')
+        assertEquals value, 'value'
+
+        json = new JsonSlurper().parseText(cache.toString())
+
+        assertEquals json.name, 'foo'
+        assertEquals json.size, 1
+        assertEquals json.accessCount, 1
+        assertEquals json.hitCount, 1
+        assertEquals json.missCount, 0
+        assertEquals json.hitRatio, 1.0
     }
 
     @Test

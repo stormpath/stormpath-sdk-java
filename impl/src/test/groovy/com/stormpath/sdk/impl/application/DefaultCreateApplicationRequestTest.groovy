@@ -36,5 +36,4 @@ class DefaultCreateApplicationRequestTest {
         assertEquals "My Directory", request.directoryName
     }
 
-
 }

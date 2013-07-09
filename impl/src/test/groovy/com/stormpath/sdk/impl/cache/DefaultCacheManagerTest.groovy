@@ -17,12 +17,13 @@ package com.stormpath.sdk.impl.cache
 
 import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.impl.util.Duration
-import org.junit.Before
-import org.junit.Test
+import groovy.json.JsonSlurper
+import org.testng.annotations.BeforeMethod
+import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.8
@@ -31,7 +32,7 @@ class DefaultCacheManagerTest {
 
     DefaultCacheManager mgr;
 
-    @Before
+    @BeforeMethod
     void setUp() {
         this.mgr = new DefaultCacheManager();
     }
@@ -73,7 +74,7 @@ class DefaultCacheManagerTest {
         mgr.setDefaultTimeToLive(ttl)
 
         def cache = mgr.getCache('foo')
-        assertEquals ttl, cache.timeToLive
+        assertEquals cache.timeToLive, ttl
     }
 
     @Test
@@ -88,7 +89,7 @@ class DefaultCacheManagerTest {
         mgr.setDefaultTimeToIdle(tti)
 
         def cache = mgr.getCache('foo')
-        assertEquals tti, cache.timeToIdle
+        assertEquals cache.timeToIdle, tti
     }
 
     @Test
@@ -99,11 +100,29 @@ class DefaultCacheManagerTest {
 
     @Test
     void testToString() {
-        assertEquals 'DefaultCacheManager with 0 cache(s)): []', mgr.toString()
-        Cache foo = mgr.getCache('foo')
-        assertEquals "DefaultCacheManager with 1 cache(s)): [$foo]" as String, mgr.toString()
-        Cache bar = mgr.getCache('bar')
-        assertEquals "DefaultCacheManager with 2 cache(s)): [$foo, $bar]" as String, mgr.toString()
+
+        mgr.getCache('foo')
+        mgr.getCache('bar')
+
+        def string = mgr.toString()
+        def json = new JsonSlurper().parseText(string)
+
+        assertEquals json.cacheCount, 2
+        assertEquals json.caches.size(), 2
+        assertEquals json.defaultTimeToLive, 'indefinite'
+        assertEquals json.defaultTimeToIdle, 'indefinite'
+
+        def names = ['foo', 'bar']
+
+        for(int i = 0; i < names.size(); i++) {
+            def cache = json.caches.get(i)
+            assertEquals cache.name, names[i]
+            assertEquals cache.size, 0
+            assertEquals cache.accessCount, 0
+            assertEquals cache.hitCount, 0
+            assertEquals cache.missCount, 0
+            assertEquals cache.hitRatio, 0.0
+        }
     }
 
 }

@@ -261,6 +261,10 @@ public class DefaultCache<K, V> implements Cache<K, V> {
         this.timeToIdle = timeToIdle;
     }
 
+    public long getAccessCount() {
+        return this.accessCount.get();
+    }
+
     public long getHitCount() {
         return hitCount.get();
     }
@@ -270,7 +274,13 @@ public class DefaultCache<K, V> implements Cache<K, V> {
     }
 
     public double getHitRatio() {
-        return hitCount.get() / accessCount.get();
+        double accessCount = (double)getAccessCount();
+        if (accessCount > 0) {
+            double hitCount = (double)getHitCount();
+
+            return hitCount / accessCount;
+        }
+        return 0;
     }
 
     public void clear() {
@@ -291,10 +301,13 @@ public class DefaultCache<K, V> implements Cache<K, V> {
     }
 
     public String toString() {
-        return new StringBuilder("DefaultCache '")
-                .append(name).append("' (")
-                .append(map.size())
-                .append(" entries)")
+        return new StringBuilder("    {\n      \"name\": \"").append(name).append("\",\n")
+                .append("      \"size\": ").append(map.size()).append(",\n")
+                .append("      \"accessCount\": ").append(getAccessCount()).append(",\n")
+                .append("      \"hitCount\": ").append(getHitCount()).append(",\n")
+                .append("      \"missCount\": ").append(getMissCount()).append(",\n")
+                .append("      \"hitRatio\": ").append(getHitRatio()).append("\n")
+                .append("    }")
                 .toString();
     }
 

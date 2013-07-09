@@ -18,8 +18,7 @@ package com.stormpath.sdk.cache;
 /**
  * A Cache efficiently stores temporary objects primarily to improve an application's performance.
  * <p/>
- * The Stormpath SDK doesn't implement a full Cache mechanism itself, since that is outside the core competency of
- * the SDK.  Instead, this interface provides an abstraction (wrapper) API on top of an underlying
+ * This interface provides an abstraction (wrapper) API on top of an underlying
  * cache framework's cache instance (e.g. JCache, Ehcache, Hazelcast, JCS, OSCache, JBossCache, TerraCotta, Coherence,
  * GigaSpaces, etc, etc), allowing a Stormpath SDK user to configure any cache mechanism they choose.
  *
