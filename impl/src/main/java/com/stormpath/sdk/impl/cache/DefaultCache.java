@@ -261,32 +261,70 @@ public class DefaultCache<K, V> implements Cache<K, V> {
         this.timeToIdle = timeToIdle;
     }
 
+    /**
+     * Returns the number of attempts to return a cache entry.  Note that because {@link #remove(Object)} will return
+     * a value, calls to both {@link #get(Object)} and {@link #remove(Object)} will increment this number.
+     *
+     * @return the number of attempts to return a cache entry
+     * @see #getHitCount()
+     * @see #getMissCount()
+     * @see #getHitRatio()
+     */
     public long getAccessCount() {
         return this.accessCount.get();
     }
 
+    /**
+     * Returns the total number of times an access attempt successfully returned a cache entry.
+     *
+     * @return the total number of times an access attempt successfully returned a cache entry.
+     * @see #getMissCount()
+     * @see #getHitRatio()
+     */
     public long getHitCount() {
         return hitCount.get();
     }
 
+    /**
+     * Returns the total number of times an access attempt did not return a cache entry.
+     *
+     * @return the total number of times an access attempt successfully returned a cache entry.
+     * @see #getHitCount()
+     * @see #getHitRatio()
+     */
     public long getMissCount() {
         return missCount.get();
     }
 
+    /**
+     * Returns the ratio of {@link #getHitCount() hitCount} to {@link #getAccessCount() accessCount}.  The closer this
+     * number is to {@code 1.0}, the more effectively the cache is being used.  The closer this number is to
+     * {code 0.0}, the less effectively the cache is being used.
+     *
+     * @return the ratio of {@link #getHitCount() hitCount} to {@link #getAccessCount() accessCount}.
+     */
     public double getHitRatio() {
-        double accessCount = (double)getAccessCount();
+        double accessCount = (double) getAccessCount();
         if (accessCount > 0) {
-            double hitCount = (double)getHitCount();
+            double hitCount = (double) getHitCount();
 
             return hitCount / accessCount;
         }
         return 0;
     }
 
+    /**
+     * Removes all entries from this cache.
+     */
     public void clear() {
         map.clear();
     }
 
+    /**
+     * Returns the total number of cache entries currently available in this cache.
+     *
+     * @return the total number of cache entries currently available in this cache.
+     */
     public int size() {
         return map.size();
     }
