@@ -9,9 +9,8 @@ import com.stormpath.sdk.resource.Resource;
 public class DefaultCacheRegionNameResolver implements CacheRegionNameResolver {
 
     @Override
-    public <T extends Resource> String getCacheRegionName(T resource) {
-        Assert.notNull(resource, "Resource argument cannot be null.");
-        Class clazz = resource.getClass();
+    public <T extends Resource> String getCacheRegionName(Class<T> clazz) {
+        Assert.notNull(clazz, "Class argument cannot be null.");
         Class iface = DefaultResourceFactory.getInterfaceClass(clazz);
         return iface.getName();
     }

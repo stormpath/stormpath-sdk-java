@@ -18,8 +18,8 @@ package com.stormpath.sdk.impl.tenant
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest
 import com.stormpath.sdk.resource.Deletable
+import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.AfterClass
 import org.testng.annotations.Test
 
@@ -48,28 +48,66 @@ class TenantResourceIT extends ClientIT {
     }
 
     @Test
-    void testSearch() {
+    void testCaching() {
 
         //create a bunch of apps:
 
-        def tenant = client.currentTenant
+        //def tenant = client.currentTenant
 
+        Tenant tenant = client.getResource("http://localhost:8080/v1/tenants/5swIpWp9WyHanNPQtuI7m2?expand=applications,directories", Tenant)
+
+        /*
         120.times { i ->
             Application app = client.instantiate(Application)
             app.name = "Testing Application ${i+1} " + UUID.randomUUID().toString()
 
             Application created =
-                tenant.createApplication(DefaultCreateApplicationRequest.with(app).createDirectory(true).build())
+                tenant.createApplication(Applications.newCreateRequestFor(app).createDirectory().build())
 
             resourcesToDelete.add(created);
-        }
+        }*/
 
-        def list = tenant.getApplications([limit: 50])
 
         int count = 0;
+        def hrefs = []
+        def list = tenant.getApplications()
         for( Application app : list) {
+            hrefs << app.href
             count++
         }
         println "Applications seen: $count"
+
+        hrefs.each { href ->
+            client.getResource(href, Application)
+        }
+
+        count = 0
+        hrefs = []
+        list = tenant.getDirectories()
+        for( Directory directory : list) {
+            hrefs << directory.href
+            count++
+        }
+        println "Directories seen: $count"
+
+        hrefs.each { href ->
+            client.getResource(href, Directory)
+        }
+
+        tenant = client.getResource(tenant.getHref(), Tenant)
+
+        list = tenant.getApplications()
+        for(Application app : list) {
+            println "Application $app.name"
+        }
+        list = tenant.getDirectories()
+        for(Directory dir : list) {
+            println "Directory $dir.name"
+        }
+
+        def s = client.dataStore.cacheManager.toString()
+        println '"cacheManager": ' + s;
+
+        Thread.sleep(20)
     }
 }

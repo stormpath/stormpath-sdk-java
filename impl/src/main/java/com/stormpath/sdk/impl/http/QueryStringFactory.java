@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.http;
 
+import com.stormpath.sdk.impl.ds.QuerySanitizer;
+import com.stormpath.sdk.impl.ds.SanitizedQuery;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.query.Expansion;
@@ -32,6 +34,18 @@ import java.util.Map;
  * @since 0.8
  */
 public class QueryStringFactory {
+
+    public QueryString createQueryString(String href, DefaultCriteria criteria) {
+        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
+        QueryString sanitizedQuery = sanitized.getQuery();
+
+        QueryString query = createQueryString(criteria);
+
+        //Query params embedded directly in the href, if any, take precedence. Overwrite any values from the criteria:
+        query.putAll(sanitizedQuery);
+
+        return query;
+    }
 
     @SuppressWarnings("unchecked")
     public QueryString createQueryString(DefaultCriteria criteria) {

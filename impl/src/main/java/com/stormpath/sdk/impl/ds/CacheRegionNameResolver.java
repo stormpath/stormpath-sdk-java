@@ -7,5 +7,5 @@ import com.stormpath.sdk.resource.Resource;
  */
 public interface CacheRegionNameResolver {
 
-    <T extends Resource> String getCacheRegionName(T resource);
+    <T extends Resource> String getCacheRegionName(Class<T> clazz);
 }

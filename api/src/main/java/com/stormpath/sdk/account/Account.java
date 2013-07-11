@@ -29,18 +29,47 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
- * An Account is a unique identity within a {@link Directory}.
+ * An Account is a unique identity within a {@link Directory}.  Accounts within a {@link Directory} or {@link Group}
+ * mapped to an {@link com.stormpath.sdk.application.Application Application} may log in to that Application.
  *
  * @since 0.1
  */
 public interface Account extends Resource, Saveable {
 
+    /**
+     * Returns the account's username, guaranteed to be unique for all accounts within a Directory.  If you do not have
+     * need of a username, it is best to set the username to equal the {@link #getEmail()}.
+     *
+     * @return the account's username, guaranteed to be unique for all accounts within a Directory.
+     */
     String getUsername();
 
+    /**
+     * Sets the account's username, which must be unique among all other accounts within a Directory.  If you do not have
+     * need of a username, it is best to set the username to equal the {@link #getEmail()}.
+     * </p>
+     * An attempt to set a username that is in use when creating or saving the account will result in a
+     * {@link com.stormpath.sdk.error.Error Error}
+     *
+     * @param username the account's username, which must be unique among all other accounts within a Directory.
+     */
     void setUsername(String username);
 
+    /**
+     * Returns the account's email address, guaranteed to be unique for all accounts within a Directory.
+     *
+     * @return the account's email address, guaranteed to be unique for all accounts within a Directory.
+     */
     String getEmail();
 
+    /**
+     * Sets the account's email address, which must be unique among all other accounts within a Directory.
+     * </p>
+     * An attempt to set an email that is in use when creating or saving the account will result in a
+     * {@link com.stormpath.sdk.error.Error Error}
+     *
+     * @param email the account's email address, which must be unique among all other accounts within a Directory.
+     */
     void setEmail(String email);
 
     void setPassword(String password);

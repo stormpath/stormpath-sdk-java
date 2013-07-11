@@ -30,6 +30,13 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
+ * A Directory is a top-level container of {@link Account}s and {@link Group}s.  Accounts and Groups are guaranteed to
+ * be unique within a {@link Directory}, but not across multiple Directories.  A {@code Directory}'s name is guaranteed
+ * to be unique across all of a {@link Tenant}'s directories.
+ * <p/>
+ * You can think of a Directory as an account 'store'.  You can map one or more Directories (or Groups within a
+ * Directory) to an {@link com.stormpath.sdk.application.Application Application}.  This forms the Application's
+ * effective 'user base' of all Accounts that may use the Application.
  * @since 0.2
  */
 public interface Directory extends Resource, Saveable, Deletable {
