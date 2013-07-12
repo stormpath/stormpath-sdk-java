@@ -72,6 +72,15 @@ public interface Account extends Resource, Saveable {
      */
     void setEmail(String email);
 
+    /**
+     * Sets (changes) the account's password to the specified raw (plaintext) password.  ONLY call this method if you
+     * legitimately want to set the account password directly.  It is usually more advisable to use Stormpath's
+     * account password reset email workflow (when possible).
+     * <p/>
+     * After calling this method, you must call {@link #save()} to propagate the change to the Stormpath servers.
+     *
+     * @param password the account's new raw (plaintext) password.
+     */
     void setPassword(String password);
 
     String getGivenName();
