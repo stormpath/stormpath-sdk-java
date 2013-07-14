@@ -16,10 +16,10 @@
 package com.stormpath.sdk.client;
 
 /**
- * An <a href="https://www.stormpath.com/docs/get-api-key">ApiKey</a> represents a Stormpath user account's
+ * An <a href="https://www.stormpath.com/docs/get-api-key">ApiKey</a> represents a Stormpath customer's
  * API-specific ID and secret.  All Stormpath REST invocations must be authenticated with an ApiKey.
  * <p/>
- * <b>API Keys are assigned to individual people.  Never share your API Key with anyone.</b>
+ * <b>API Keys are assigned to individual people.  Never share your API Key with anyone, not even co-workers.</b>
  *
  * @since 0.1
  */

@@ -20,11 +20,26 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 
 /**
+ * A {@code GroupMembership} represents the association of an {@link Account} and a {@link Group}.
+ * <p/>
+ * {@link #delete() Deleting} this resource will only delete the association - it will not delete either the
+ * {@code Account} or {@code Group}.
+ *
  * @since 0.4
  */
 public interface GroupMembership extends Resource, Deletable {
 
+    /**
+     * Returns this membership's {@link Account} resource.
+     *
+     * @return this membership's {@link Account} resource.
+     */
     Account getAccount();
 
+    /**
+     * Returns this membership's {@link Group} resource.
+     *
+     * @return this membership's {@link Group} resource.
+     */
     Group getGroup();
 }

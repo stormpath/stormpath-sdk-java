@@ -1,6 +1,8 @@
 package com.stormpath.sdk.query;
 
 /**
+ * An {@code StringExpressionFactory} creates String conditions (equals, startsWith, etc) for specific resource properties.
+ *
  * @since 0.8
  */
 public interface StringExpressionFactory {

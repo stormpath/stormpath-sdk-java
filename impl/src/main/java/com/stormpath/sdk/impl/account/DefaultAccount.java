@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -31,7 +32,6 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -63,7 +63,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     static final CollectionReference<GroupMembershipList, GroupMembership> GROUP_MEMBERSHIPS =
             new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, true, GroupMembership.class);
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS,
             EMAIL_VERIFICATION_TOKEN, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
 
@@ -141,16 +141,16 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     }
 
     @Override
-    public Status getStatus() {
+    public AccountStatus getStatus() {
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return Status.valueOf(value.toUpperCase());
+        return AccountStatus.valueOf(value.toUpperCase());
     }
 
     @Override
-    public void setStatus(Status status) {
+    public void setStatus(AccountStatus status) {
         setProperty(STATUS, status.name());
     }
 
@@ -194,5 +194,13 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     @Override
     public EmailVerificationToken getEmailVerificationToken() {
         return getResourceProperty(EMAIL_VERIFICATION_TOKEN);
+    }
+
+    /**
+     * @since 0.8
+     */
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
     }
 }

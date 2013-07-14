@@ -60,7 +60,7 @@ public interface Directory extends Resource, Saveable, Deletable {
     /**
      * Returns the description.  This is an optional property and may be null or empty.
      *
-     * @return
+     * @return the description.  This is an optional property and may be null or empty.
      */
     String getDescription();
 

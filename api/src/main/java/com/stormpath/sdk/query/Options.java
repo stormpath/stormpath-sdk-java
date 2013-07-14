@@ -16,9 +16,22 @@
 package com.stormpath.sdk.query;
 
 /**
+ * An {@code Options} instance represents one or more customizations to apply when retrieving
+ * {@link com.stormpath.sdk.resource.Resource Resource}s.
+ *
+ * @see com.stormpath.sdk.account.AccountOptions AccountOptions
+ * @see com.stormpath.sdk.group.GroupOptions GroupOptions
+ * @see com.stormpath.sdk.application.ApplicationOptions ApplicationOptions
+ * @see com.stormpath.sdk.directory.DirectoryOptions DirectoryOptions
+ * @see com.stormpath.sdk.tenant.TenantOptions TenantOptions
  * @since 0.8
  */
 public interface Options {
 
+    /**
+     * Returns {@code true} if this Options instance is empty (does not contain any options), {@code false} otherwise.
+     *
+     * @return {@code true} if this Options instance is empty (does not contain any options), {@code false} otherwise.
+     */
     boolean isEmpty();
 }

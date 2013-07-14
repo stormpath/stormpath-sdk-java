@@ -18,6 +18,8 @@ package com.stormpath.sdk.directory;
 import com.stormpath.sdk.resource.CollectionResource;
 
 /**
+ * A {@link CollectionResource} containing {@link Directory} instances.
+ *
  * @since 0.2
  */
 public interface DirectoryList extends CollectionResource<Directory> {

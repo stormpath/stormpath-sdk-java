@@ -21,9 +21,9 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Account extends Resource, Saveable {
+public interface Account extends Resource, Saveable, Deletable {
 
     /**
      * Returns the account's username, guaranteed to be unique for all accounts within a Directory.  If you do not have
@@ -83,21 +83,63 @@ public interface Account extends Resource, Saveable {
      */
     void setPassword(String password);
 
+    /**
+     * Returns the account's given name (aka 'first name' in Western cultures').
+     *
+     * @return the account's given name (aka 'first name' in Western cultures')
+     */
     String getGivenName();
 
+    /**
+     * Sets the account's given name (aka 'first name' in Western cultures').
+     *
+     * @param givenName the account's given name (aka 'first name' in Western cultures').
+     */
     void setGivenName(String givenName);
 
+    /**
+     * Returns the account's middle name(s).
+     *
+     * @return the account's middle name(s).
+     */
     String getMiddleName();
 
+    /**
+     * Sets the account's middle name(s).
+     *
+     * @param middleName the account's middle name(s).
+     */
     void setMiddleName(String middleName);
 
+    /**
+     * Returns the account's surname (aka 'last name' in Western cultures).
+     *
+     * @return the account's surname (aka 'last name' in Western cultures).
+     */
     String getSurname();
 
+    /**
+     * Sets the account's surname (aka 'last name' in Western cultures).
+     *
+     * @param surname the account's surname (aka 'last name' in Western cultures).
+     */
     void setSurname(String surname);
 
-    Status getStatus();
+    /**
+     * Returns the account's status.  Accounts that are not {@link AccountStatus#ENABLED ENABLED} may not login to
+     * applications.
+     *
+     * @return the account's status.
+     */
+    AccountStatus getStatus();
 
-    void setStatus(Status status);
+    /**
+     * Sets the account's status.  Accounts that are not {@link AccountStatus#ENABLED ENABLED} may not login to
+     * applications.
+     *
+     * @param status the account's status.
+     */
+    void setStatus(AccountStatus status);
 
     /**
      * Returns a paginated list of the account's assigned groups.
@@ -140,16 +182,16 @@ public interface Account extends Resource, Saveable {
     GroupList getGroups(Map<String, Object> queryParams);
 
     /**
-     * Returns a paginated list of the account's groups that match the specified query criteria.  The
+     * Returns a paginated list of the account's assigned groups that match the specified query criteria.  The
      * {@link com.stormpath.sdk.group.Groups Groups} utility class is available to help construct
      * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
      * query-building experience.  For example:
      * <pre>
      * account.getGroups(Groups.where(
-     *     Groups.description().icontains("foo"))
-     *     .and(Groups.name().iStartsWith("bar"))
-     *     .orderByName().descending()
-     *     .orderByDescription().ascending()
+     *     Groups.description().containsIgnoreCase("foo"))
+     *     .and(Groups.name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
      *     .expandAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
@@ -161,10 +203,10 @@ public interface Account extends Resource, Saveable {
      * ...
      *
      * account.getGroups(where(
-     *      description().icontains("foo"))
-     *     .and(name().iStartsWith("bar"))
-     *     .orderByName().descending()
-     *     .orderByDescription().ascending()
+     *      description().containsIgnoreCase("foo"))
+     *     .and(name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
      *     .expandAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
@@ -201,17 +243,37 @@ public interface Account extends Resource, Saveable {
     Directory getDirectory(DirectoryOptions options);
     */
 
+    /**
+     * Returns the Stormpath Tenant that owns this Account resource.
+     *
+     * @return the Stormpath Tenant that owns this Account resource.
+     */
     Tenant getTenant();
 
     /**
+     * Returns all {@link GroupMembership}s that reflect this account.  This method is an alternative to
+     * {@link #getGroups()} that returns the actual association entity representing the account and a group.
+     *
      * @since 0.4
      */
     GroupMembershipList getGroupMemberships();
 
     /**
+     * Assigns this account to the specified Group.
+     * <p/>
+     * <b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()} afterwards.
+     * This method will interact with the server immediately.
+     *
+     * @return the new GroupMembership resource created reflecting the account-to-group association.
      * @since 0.4
      */
     GroupMembership addGroup(Group group);
 
+    /**
+     * Returns the account's email verification token.  This will only be non-null if the Account holder has been asked
+     * to verify their email account by clicking a link in an email.
+     *
+     * @return the account's email verification token.
+     */
     EmailVerificationToken getEmailVerificationToken();
 }

@@ -145,4 +145,12 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     public GroupMembership addAccount(Account account) {
         return DefaultGroupMembership.create(account, this, getDataStore());
     }
+
+    /**
+     * @since 0.8
+     */
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
+    }
 }

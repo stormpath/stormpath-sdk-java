@@ -16,6 +16,8 @@
 package com.stormpath.sdk.directory;
 
 /**
+ * Directory-specific options that may be specified when retrieving {@link Directory} resources.
+ *
  * @since 0.8
  */
 public interface DirectoryOptions<T> extends AccountStoreOptions<T> {

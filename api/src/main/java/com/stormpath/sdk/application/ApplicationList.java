@@ -18,6 +18,8 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.resource.CollectionResource;
 
 /**
+ * A {@link CollectionResource} containing {@link Application} instances.
+ *
  * @since 0.2
  */
 public interface ApplicationList extends CollectionResource<Application> {

@@ -18,14 +18,69 @@ package com.stormpath.sdk.group;
 import com.stormpath.sdk.query.Criteria;
 
 /**
+ * An {@link Group}-specific {@link Criteria} class, enabling a Group-specific
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  GroupCriteria instances can be
+ * constructed by using the {@link Groups} utility class, for example:
+ * <pre>
+ * Groups.where(Groups.name().containsIgnoreCase("admin"))
+ *     .and(Groups.status().eq(Status.ENABLED))
+ *     .orderByName()
+ *     .expandAccounts(10, 10)
+ *     .limitTo(10));
+ * </pre>
+ * <h2>Sort Order</h2>
+ * <p/>
+ * All of the {@code orderBy*} methods append an {@code orderBy} clause to the query, ensuring the query results reflect
+ * a particular sort order.
+ * <p/>
+ * The default sort order is always {@code ascending}, but can be changed to {@code descending} by calling the
+ * {@link #descending()} method <em>immediately</em> after the {@code orderBy} method call.  For example:
+ * <pre>
+ * ...criteria.orderByName()<b>.descending()</b>...
+ * </pre>
+ * <h3>Multiple Order Statements</h3>
+ * You may specify multiple {@code orderBy} clauses and the query results will ordered, reflecting {@code orderBy}
+ * statements <em>in the order they are declared</em>.  For example, to order the results first by name (ascending)
+ * and then further by status (descending), you would chain {@code orderBy} statements:
+ * <pre>
+ * ...criteria
+ *     .orderByName()
+ *     .orderByStatus().descending()
+ *     ...
+ * </pre>
+ *
  * @since 0.8
  */
-public interface GroupCriteria  extends Criteria<GroupCriteria>, GroupOptions<GroupCriteria> {
+public interface GroupCriteria extends Criteria<GroupCriteria>, GroupOptions<GroupCriteria> {
 
+    /**
+     * Ensures that the query results are ordered by group {@link Group#getName() name}.
+     * <p/>
+     * Please see the {@link GroupCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
     GroupCriteria orderByName();
 
+    /**
+     * Ensures that the query results are ordered by group {@link Group#getDescription() description}.
+     * <p/>
+     * Please see the {@link GroupCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
     GroupCriteria orderByDescription();
 
+    /**
+     * Ensures that the query results are ordered by group {@link Group#getStatus() status}.
+     * <p/>
+     * Please see the {@link GroupCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
     GroupCriteria orderByStatus();
 
 }

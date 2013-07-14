@@ -18,6 +18,8 @@ package com.stormpath.sdk.group;
 import com.stormpath.sdk.resource.CollectionResource;
 
 /**
+ * A {@link CollectionResource} containing {@link GroupMembership} instances.
+ *
  * @since 0.4
  */
 public interface GroupMembershipList extends CollectionResource<GroupMembership> {

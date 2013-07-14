@@ -18,23 +18,103 @@ package com.stormpath.sdk.group;
 import com.stormpath.sdk.query.Options;
 
 /**
+ * Group-specific options that may be specified when retrieving {@link Group} resources.
+ *
  * @since 0.8
  */
 public interface GroupOptions<T> extends Options {
 
+    /**
+     * Ensures that when retrieving a Group, the Group's parent {@link Group#getDirectory() directory} is also
+     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T expandDirectory();
 
+    /**
+     * Ensures that when retrieving a Group, the Group's owning {@link Group#getTenant()} tenant} is also
+     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T expandTenant();
 
+    /**
+     * Ensures that when retrieving a Group, the Groups's assigned {@link Group#getAccounts()} accounts}
+     * are also retrieved in the same request (paginated).  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the
+     * returned groups, see the {@link #expandAccounts(int) expandAccounts(limit)} or
+     * {@link #expandAccounts(int, int) expandAccounts(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     */
     T expandAccounts();
 
+    /**
+     * Ensures that when retrieving a Group, the Group's assigned {@link Group#getAccounts()} accounts} are also
+     * retrieved in the same request (paginated), limiting the first page of account results to {@code limit} items.
+     * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
+     * will use.
+     *
+     * @param limit the number of results in the Account collection's first page.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     */
     T expandAccounts(int limit);
 
+    /**
+     * Ensures that when retrieving a Group, the Group's assigned {@link Group#getAccounts()} accounts} are also
+     * retrieved in the same request (paginated) , with the first page of account results starting at the specified
+     * {@code offset} index and limiting the number of results to {@code limit} items.  This enhances performance by
+     * leveraging a single request to retrieve multiple related resources you know you will use.
+     *
+     * @param limit  the number of results in the Account collection's first page.  Min: 1, Max: 100.
+     * @param offset the starting index of the first Account to retrieve in the overall Account collection's result set.
+     * @return this instance for method chaining.
+     */
     T expandAccounts(int limit, int offset);
 
+    /**
+     * Ensures that when retrieving a Group, the Group's associated
+     * {@link Group#getAccountMemberships() accountMemberships} are also retrieved in the same request (paginated).
+     * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
+     * will use.
+     * <p/>
+     * If you wish to control
+     * pagination parameters (offset and limit) for the returned accountMemberships, see the
+     * {@link #expandAccountMemberships(int) expandAccountMemberships(limit)} or
+     * {@link #expandAccountMemberships(int, int) expandAccountMemberships(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     */
     T expandAccountMemberships();
 
+    /**
+     * Ensures that when retrieving a Group, the Group's associated
+     * {@link Group#getAccountMemberships()} accountMemberships} are also retrieved in the same request (paginated),
+     * limiting the first page of results to {@code limit} items.  This enhances performance by
+     * leveraging a single request to retrieve multiple related resources you know you will use.
+     *
+     * @param limit the number of results in the membership collection's first page.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     */
     T expandAccountMemberships(int limit);
 
+    /**
+     * Ensures that when retrieving a Group, the Group's associated
+     * {@link Group#getAccountMemberships()} accountMemberships} are also retrieved in the same request (paginated), with
+     * the first page of results starting at the specified {@code offset} index and limiting the number
+     * of results to {@code limit} items.  This enhances performance by leveraging a single request to retrieve
+     * multiple related resources you know you will use.
+     *
+     * @param limit  the number of results in the membership collection's first page.  Min: 1, Max: 100.
+     * @param offset the starting index of the first membership to retrieve in the overall membership collection's
+     *               result set.
+     * @return this instance for method chaining.
+     */
     T expandAccountMemberships(int limit, int offset);
 }

@@ -48,7 +48,7 @@ public interface Application extends Resource, Saveable, Deletable {
     String getName();
 
     /**
-     * Sets the application's name.  Application names must be unique per Tenant.
+     * Sets the application's name.  Application names must be unique within a Tenant.
      *
      * @param name tenant-unique name of the application.
      */

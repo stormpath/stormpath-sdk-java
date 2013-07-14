@@ -18,10 +18,17 @@ package com.stormpath.sdk.query;
 import java.io.Serializable;
 
 /**
+ * A {@code Criterion} is an individual condition (restriction) to apply to a {@link Criteria} query.
+ *
  * @since 0.8
  */
 public interface Criterion extends Serializable {
 
+    /**
+     * Returns the Criterion's String representation (i.e. a query clause).
+     *
+     * @return the Criterion's String representation (i.e. a query clause).
+     */
     @Override
     String toString();
 }

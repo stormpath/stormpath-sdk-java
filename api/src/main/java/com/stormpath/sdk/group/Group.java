@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Status;
@@ -31,22 +32,69 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Group extends Resource, Saveable, Iterable<Account> {
+public interface Group extends Resource, Saveable, Deletable, Iterable<Account> {
 
+    /**
+     * Returns the group's name, guaranteed to be unique for all groups within a Directory.
+     *
+     * @return the group's name, guaranteed to be unique for all groups within a Directory.
+     */
     String getName();
 
+    /**
+     * Sets the group's name, which must be unique among all other groups within a Directory.
+     * </p>
+     * An attempt to set a name that is in use when creating or saving the group will result in a
+     * {@link com.stormpath.sdk.error.Error Error}
+     *
+     * @param name the group's name, which must be unique among all other groups within a Directory.
+     */
     void setName(String name);
 
+    /**
+     * Returns the group's description.  This is an optional property and may be null or empty.
+     *
+     * @return the group's description.  This is an optional property and may be null or empty.
+     */
     String getDescription();
 
+    /**
+     * Sets the group's description.  This is an optional property and may be null or empty.
+     *
+     * @param description the group's description.  This is an optional property and may be null or empty.
+     */
     void setDescription(String description);
 
+    /**
+     * Returns the Group's status.  If a group is mapped to an Application as an Account Store (for login purposes),
+     * and the Group is disabled, the accounts within that Group cannot login to the application.  Accounts in enabled
+     * Groups mapped to an Application may login to that application.
+     *
+     * @return the Group's status
+     */
     Status getStatus();
 
+    /**
+     * Sets the Group's status.  If a group is mapped to an Application as an Account Store (for login purposes),
+     * and the Group is disabled, the accounts within that Group cannot login to the application.  Accounts in enabled
+     * Groups mapped to an Application may login to that application.
+     *
+     * @param status the Group's status.
+     */
     void setStatus(Status status);
 
+    /**
+     * Returns the Stormpath Tenant that owns this Group resource.
+     *
+     * @return the Stormpath Tenant that owns this Group resource.
+     */
     Tenant getTenant();
 
+    /**
+     * Returns the group's parent Directory (where the group is stored).
+     *
+     * @return the group's parent Directory (where the group is stored)
+     */
     Directory getDirectory();
 
     /**
@@ -77,7 +125,7 @@ public interface Group extends Resource, Saveable, Iterable<Account> {
     AccountList getAccounts(Map<String, Object> queryParams);
 
     /**
-     * Returns a paginated list of accounts in the group that match the specified query criteria.
+     * Returns a paginated list of this group's accounts that match the specified query criteria.
      * <p/>
      * The {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
      * the criteria DSL.  For example:
@@ -106,6 +154,12 @@ public interface Group extends Resource, Saveable, Iterable<Account> {
     GroupMembershipList getAccountMemberships();
 
     /**
+     * Assigns the specified Account to this Group
+     * <p/>
+     * <b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()} afterwards.
+     * This method will interact with the server immediately.
+     *
+     * @return the new GroupMembership resource created reflecting the group-to-account association.
      * @since 0.4
      */
     GroupMembership addAccount(Account account);
