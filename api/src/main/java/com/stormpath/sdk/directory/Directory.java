@@ -24,7 +24,6 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -74,24 +73,24 @@ public interface Directory extends Resource, Saveable, Deletable {
     /**
      * Returns the directory's status.
      * <p/>
-     * An {@link Status#ENABLED} directory may be used by applications to login accounts
-     * found within the directory.  A {@link Status#DISABLED} directory prevents its accounts from being used to login
-     * to applications.
+     * An {@link DirectoryStatus#ENABLED enabled} directory may be used by applications to login accounts found within
+     * the directory.  A {@link DirectoryStatus#DISABLED disabled} directory prevents its accounts from being used to
+     * login to applications.
      *
      * @return the directory's status.
      */
-    Status getStatus();
+    DirectoryStatus getStatus();
 
     /**
      * Sets the directory's status.
      * <p/>
-     * An {@link Status#ENABLED} directory may be used by applications to login accounts
-     * found within the directory.  A {@link Status#DISABLED} directory prevents its accounts from being used to login
-     * to applications.
+     * An {@link DirectoryStatus#ENABLED enabled} directory may be used by applications to login accounts found within
+     * the directory.  A {@link DirectoryStatus#DISABLED disabled} directory prevents its accounts from being used to
+     * login to applications.
      *
      * @param status the status to apply.
      */
-    void setStatus(Status status);
+    void setStatus(DirectoryStatus status);
 
     /**
      * Creates a new account instance in the directory using the Directory's default registration workflow setting.

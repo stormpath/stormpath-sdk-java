@@ -26,7 +26,6 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -69,20 +68,20 @@ public interface Application extends Resource, Saveable, Deletable {
     void setDescription(String description);
 
     /**
-     * Returns the application's Status.  Application users may login to an enabled application.  They may not login
+     * Returns the application's status.  Application users may login to an enabled application.  They may not login
      * to a disabled application.
      *
-     * @return the application's Status.
+     * @return the application's status.
      */
-    Status getStatus();
+    ApplicationStatus getStatus();
 
     /**
-     * Sets the application's Status.  Application users may login to an enabled application.  They may not login
+     * Sets the application's status.  Application users may login to an enabled application.  They may not login
      * to a disabled application.
      *
-     * @param status the application's Status.
+     * @param status the application's status.
      */
-    void setStatus(Status status);
+    void setStatus(ApplicationStatus status);
 
     /**
      * Returns a paginated list of all accounts that may login to the application.

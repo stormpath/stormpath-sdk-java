@@ -28,7 +28,7 @@ import java.lang.reflect.Constructor;
  * Application-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
  * <pre>
  * <b>Applications.where(Applications.name()</b>.containsIgnoreCase("Foo")<b>)</b>
- *     .and(<b>Applications.status()</b>.eq(Status.ENABLED))
+ *     .and(<b>Applications.status()</b>.eq(ApplicationStatus.ENABLED))
  *     .orderByName().descending()
  *     .expandAccounts(10, 10)
  *     .offsetBy(50)
@@ -41,7 +41,7 @@ import java.lang.reflect.Constructor;
  * ...
  *
  * <b>where(name()</b>.containsIgnoreCase("Foo")<b>)</b>
- *     .and(<b>status()</b>.eq(Status.ENABLED))
+ *     .and(<b>status()</b>.eq(ApplicationStatus.ENABLED))
  *     .orderByName().descending()
  *     .expandAccounts(10, 10)
  *     .offsetBy(50)
@@ -150,7 +150,7 @@ public final class Applications {
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the Application {@link Application#getStatus() status}
      * property, to be used to construct a status Criterion when building an {@link ApplicationCriteria} query.  For example:
      * <pre>
-     * Applications.where(<b>Applications.status()</b>.eq(Status.ENABLED);
+     * Applications.where(<b>Applications.status()</b>.eq(ApplicationStatus.ENABLED);
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
@@ -158,7 +158,7 @@ public final class Applications {
      * <pre>
      * ApplicationCriteria criteria = Applications.criteria();
      * StringExpressionFactory statusExpressionFactory = Applications.status();
-     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(Status.ENABLED);
+     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(ApplicationStatus.ENABLED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
      * The first code example is clearly more succinct and readable.

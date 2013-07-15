@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.impl.http.QueryStringFactory
-import com.stormpath.sdk.resource.Status
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -42,7 +42,7 @@ class DefaultApplicationCriteriaTest {
         def c = Applications
                 .where(Applications.name().eqIgnoreCase('a'))
                 .and(Applications.description().startsWithIgnoreCase('b'))
-                .and(Applications.status().eq(Status.DISABLED))
+                .and(Applications.status().eq(ApplicationStatus.DISABLED))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()

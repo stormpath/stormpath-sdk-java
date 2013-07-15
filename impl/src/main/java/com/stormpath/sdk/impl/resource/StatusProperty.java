@@ -15,18 +15,12 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.resource.Status;
-
 /**
  * @since 0.9
  */
-public class StatusProperty extends NonStringProperty<Status> {
+public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
 
-    public StatusProperty(String name) {
-        this(name, false);
-    }
-
-    public StatusProperty(String name, boolean required) {
-        super(name, Status.class, required);
+    public StatusProperty(Class<T> clazz) {
+        super("status", clazz, false);
     }
 }

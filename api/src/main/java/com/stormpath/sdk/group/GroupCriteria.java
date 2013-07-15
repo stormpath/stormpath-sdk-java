@@ -23,7 +23,7 @@ import com.stormpath.sdk.query.Criteria;
  * constructed by using the {@link Groups} utility class, for example:
  * <pre>
  * Groups.where(Groups.name().containsIgnoreCase("admin"))
- *     .and(Groups.status().eq(Status.ENABLED))
+ *     .and(Groups.status().eq(GroupStatus.ENABLED))
  *     .orderByName()
  *     .expandAccounts(10, 10)
  *     .limitTo(10));

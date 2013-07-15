@@ -22,6 +22,7 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.GroupStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -29,7 +30,6 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Iterator;
@@ -43,7 +43,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name", true);
     static final StringProperty DESCRIPTION = new StringProperty("description", true);
-    static final StatusProperty STATUS = new StatusProperty("status");
+    static final StatusProperty<GroupStatus> STATUS = new StatusProperty<GroupStatus>(GroupStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class, true);
@@ -92,16 +92,16 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
-    public Status getStatus() {
+    public GroupStatus getStatus() {
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return Status.valueOf(value.toUpperCase());
+        return GroupStatus.valueOf(value.toUpperCase());
     }
 
     @Override
-    public void setStatus(Status status) {
+    public void setStatus(GroupStatus status) {
         setProperty(STATUS, status.name());
     }
 

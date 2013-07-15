@@ -48,7 +48,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     static final StringProperty GIVEN_NAME = new StringProperty("givenName", true);
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
     static final StringProperty SURNAME = new StringProperty("surname", true);
-    static final StatusProperty STATUS = new StatusProperty("status");
+    static final StatusProperty<AccountStatus> STATUS = new StatusProperty<AccountStatus>(AccountStatus.class);
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
 
     // INSTANCE RESOURCE REFERENCES:

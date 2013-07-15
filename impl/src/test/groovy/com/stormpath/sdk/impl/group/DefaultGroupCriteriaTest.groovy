@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.group
 
+import com.stormpath.sdk.group.GroupStatus
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.http.QueryStringFactory
-import com.stormpath.sdk.resource.Status
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -43,7 +43,7 @@ class DefaultGroupCriteriaTest {
         def c = Groups
                 .where(Groups.name().eqIgnoreCase('a'))
                 .and(Groups.description().startsWithIgnoreCase('b'))
-                .and(Groups.status().eq(Status.DISABLED))
+                .and(Groups.status().eq(GroupStatus.DISABLED))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()

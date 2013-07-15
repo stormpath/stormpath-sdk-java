@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryStatus;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -29,7 +30,6 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -42,7 +42,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name", true);
     static final StringProperty DESCRIPTION = new StringProperty("description");
-    static final StatusProperty STATUS = new StatusProperty("status");
+    static final StatusProperty<DirectoryStatus> STATUS = new StatusProperty<DirectoryStatus>(DirectoryStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class, true);
@@ -90,16 +90,16 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
-    public Status getStatus() {
+    public DirectoryStatus getStatus() {
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return Status.valueOf(value.toUpperCase());
+        return DirectoryStatus.valueOf(value.toUpperCase());
     }
 
     @Override
-    public void setStatus(Status status) {
+    public void setStatus(DirectoryStatus status) {
         setProperty(STATUS, status.name());
     }
 

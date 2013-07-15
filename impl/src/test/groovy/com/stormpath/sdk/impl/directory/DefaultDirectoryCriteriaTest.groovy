@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.directory
 
 import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.DirectoryStatus
 import com.stormpath.sdk.impl.http.QueryStringFactory
-import com.stormpath.sdk.resource.Status
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -43,7 +43,7 @@ class DefaultDirectoryCriteriaTest {
         def c = Directories
                 .where(Directories.name().eqIgnoreCase('a'))
                 .and(Directories.description().startsWithIgnoreCase('b'))
-                .and(Directories.status().eq(Status.DISABLED))
+                .and(Directories.status().eq(DirectoryStatus.DISABLED))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()

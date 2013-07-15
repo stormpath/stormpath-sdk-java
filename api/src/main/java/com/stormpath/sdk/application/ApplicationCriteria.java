@@ -23,7 +23,7 @@ import com.stormpath.sdk.query.Criteria;
  * constructed by using the {@link Applications} utility class, for example:
  * <pre>
  * Applications.where(Applications.name().containsIgnoreCase("CRM"))
- *     .and(Applications.status().eq(Status.ENABLED))
+ *     .and(Applications.status().eq(ApplicationStatus.ENABLED))
  *     .orderByName()
  *     .expandAccounts(10, 10)
  *     .limitTo(10));

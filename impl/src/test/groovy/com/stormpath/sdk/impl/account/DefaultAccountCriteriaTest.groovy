@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.account
 
+import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.impl.http.QueryStringFactory
-import com.stormpath.sdk.resource.Status
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -46,7 +46,7 @@ class DefaultAccountCriteriaTest {
                 .and(Accounts.givenName().endsWithIgnoreCase('c'))
                 .and(Accounts.middleName().containsIgnoreCase('d'))
                 .and(Accounts.surname().eqIgnoreCase('e'))
-                .and(Accounts.status().eq(Status.ENABLED))
+                .and(Accounts.status().eq(AccountStatus.ENABLED))
                 .orderByEmail()
                 .orderByUsername().descending()
                 .orderByGivenName()

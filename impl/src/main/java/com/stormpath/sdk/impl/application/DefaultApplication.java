@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.group.Group;
@@ -33,7 +34,6 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.LinkedHashMap;
@@ -47,7 +47,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     // SIMPLE PROPERTIES:
     static final StringProperty NAME = new StringProperty("name", true);
     static final StringProperty DESCRIPTION = new StringProperty("description");
-    static final StatusProperty STATUS = new StatusProperty("status");
+    static final StatusProperty<ApplicationStatus> STATUS = new StatusProperty<ApplicationStatus>(ApplicationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class, true);
@@ -95,16 +95,16 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public Status getStatus() {
+    public ApplicationStatus getStatus() {
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return Status.valueOf(value.toUpperCase());
+        return ApplicationStatus.valueOf(value.toUpperCase());
     }
 
     @Override
-    public void setStatus(Status status) {
+    public void setStatus(ApplicationStatus status) {
         setProperty(STATUS, status.name());
     }
 

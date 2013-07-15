@@ -23,7 +23,7 @@ import com.stormpath.sdk.query.Criteria;
  * constructed by using the {@link Directories} utility class, for example:
  * <pre>
  * Directories.where(Directories.name().containsIgnoreCase("CRM"))
- *     .and(Directories.status().eq(Status.ENABLED))
+ *     .and(Directories.status().eq(DirectoryStatus.ENABLED))
  *     .orderByName()
  *     .expandAccounts(10, 10)
  *     .limitTo(10));

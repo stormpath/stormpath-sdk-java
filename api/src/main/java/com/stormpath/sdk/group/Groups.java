@@ -26,7 +26,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * Group-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
  * <pre>
  * <b>Groups.where(Groups.name()</b>.containsIgnoreCase("Foo")<b>)</b>
- *     .and(<b>Groups.status()</b>.eq(Status.ENABLED))
+ *     .and(<b>Groups.status()</b>.eq(GroupStatus.ENABLED))
  *     .orderByName().descending()
  *     .expandAccounts(10, 10)
  *     .offsetBy(50)
@@ -39,7 +39,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * ...
  *
  * <b>where(name()</b>.containsIgnoreCase("Foo")<b>)</b>
- *     .and(<b>status()</b>.eq(Status.ENABLED))
+ *     .and(<b>status()</b>.eq(GroupStatus.ENABLED))
  *     .orderByName().descending()
  *     .expandAccounts(10, 10)
  *     .offsetBy(50)
@@ -148,7 +148,7 @@ public final class Groups {
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the Group {@link Group#getStatus() status}
      * property, to be used to construct a status Criterion when building an {@link GroupCriteria} query.  For example:
      * <pre>
-     * Groups.where(<b>Groups.status()</b>.eq(Status.ENABLED);
+     * Groups.where(<b>Groups.status()</b>.eq(GroupStatus.ENABLED);
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
@@ -156,7 +156,7 @@ public final class Groups {
      * <pre>
      * GroupCriteria criteria = Groups.criteria();
      * StringExpressionFactory statusExpressionFactory = Groups.status();
-     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(Status.ENABLED);
+     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(GroupStatus.ENABLED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
      * The first code example is clearly more succinct and readable.

@@ -26,7 +26,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * Directory-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
  * <pre>
  * <b>Directories.where(Directories.name()</b>.containsIgnoreCase("Foo")<b>)</b>
- *     .and(<b>Directories.status()</b>.eq(Status.ENABLED))
+ *     .and(<b>Directories.status()</b>.eq(DirectoryStatus.ENABLED))
  *     .orderByName().descending()
  *     .expandAccounts(10, 10)
  *     .offsetBy(50)
@@ -39,7 +39,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * ...
  *
  * <b>where(name()</b>.containsIgnoreCase("Foo")<b>)</b>
- *     .and(<b>status()</b>.eq(Status.ENABLED))
+ *     .and(<b>status()</b>.eq(DirectoryStatus.ENABLED))
  *     .orderByName().descending()
  *     .expandAccounts(10, 10)
  *     .offsetBy(50)
@@ -144,7 +144,7 @@ public final class Directories {
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the Directory {@link Directory#getStatus() status}
      * property, to be used to construct a status Criterion when building an {@link DirectoryCriteria} query.  For example:
      * <pre>
-     * Directories.where(<b>Directories.status()</b>.eq(Status.ENABLED);
+     * Directories.where(<b>Directories.status()</b>.eq(DirectoryStatus.ENABLED);
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
@@ -152,7 +152,7 @@ public final class Directories {
      * <pre>
      * DirectoryCriteria criteria = Directories.criteria();
      * StringExpressionFactory statusExpressionFactory = Directories.status();
-     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(Status.ENABLED);
+     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(DirectoryStatus.ENABLED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
      * The first code example is clearly more succinct and readable.

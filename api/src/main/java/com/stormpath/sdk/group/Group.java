@@ -22,7 +22,6 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.resource.Status;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -72,7 +71,7 @@ public interface Group extends Resource, Saveable, Deletable, Iterable<Account> 
      *
      * @return the Group's status
      */
-    Status getStatus();
+    GroupStatus getStatus();
 
     /**
      * Sets the Group's status.  If a group is mapped to an Application as an Account Store (for login purposes),
@@ -81,7 +80,7 @@ public interface Group extends Resource, Saveable, Deletable, Iterable<Account> 
      *
      * @param status the Group's status.
      */
-    void setStatus(Status status);
+    void setStatus(GroupStatus status);
 
     /**
      * Returns the Stormpath Tenant that owns this Group resource.
