@@ -43,38 +43,38 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
         return orderBy(DefaultApplication.STATUS);
     }
 
-    public ApplicationCriteria expandAccounts() {
-        getOptions().expandAccounts();
+    public ApplicationCriteria withAccounts() {
+        getOptions().withAccounts();
         return this;
     }
 
-    public ApplicationCriteria expandAccounts(int limit) {
-        getOptions().expandAccounts(limit);
+    public ApplicationCriteria withAccounts(int limit) {
+        getOptions().withAccounts(limit);
         return this;
     }
 
-    public ApplicationCriteria expandAccounts(int limit, int offset) {
-        getOptions().expandAccounts(limit, offset);
+    public ApplicationCriteria withAccounts(int limit, int offset) {
+        getOptions().withAccounts(limit, offset);
         return this;
     }
 
-    public ApplicationCriteria expandGroups() {
-        getOptions().expandGroups();
+    public ApplicationCriteria withGroups() {
+        getOptions().withGroups();
         return this;
     }
 
-    public ApplicationCriteria expandGroups(int limit) {
-        getOptions().expandGroups(limit);
+    public ApplicationCriteria withGroups(int limit) {
+        getOptions().withGroups(limit);
         return this;
     }
 
-    public ApplicationCriteria expandGroups(int limit, int offset) {
-        getOptions().expandGroups(limit, offset);
+    public ApplicationCriteria withGroups(int limit, int offset) {
+        getOptions().withGroups(limit, offset);
         return this;
     }
 
-    public ApplicationCriteria expandTenant() {
-        getOptions().expandTenant();
+    public ApplicationCriteria withTenant() {
+        getOptions().withTenant();
         return this;
     }
 }

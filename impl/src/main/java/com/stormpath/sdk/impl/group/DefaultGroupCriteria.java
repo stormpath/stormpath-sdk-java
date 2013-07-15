@@ -44,50 +44,50 @@ public class DefaultGroupCriteria extends DefaultCriteria<GroupCriteria, GroupOp
     }
 
     @Override
-    public GroupCriteria expandDirectory() {
-        getOptions().expandDirectory();
+    public GroupCriteria withDirectory() {
+        getOptions().withDirectory();
         return this;
     }
 
     @Override
-    public GroupCriteria expandTenant() {
-        getOptions().expandTenant();
+    public GroupCriteria withTenant() {
+        getOptions().withTenant();
         return this;
     }
 
     @Override
-    public GroupCriteria expandAccounts() {
-        getOptions().expandAccounts();
+    public GroupCriteria withAccounts() {
+        getOptions().withAccounts();
         return this;
     }
 
     @Override
-    public GroupCriteria expandAccounts(int limit) {
-        getOptions().expandAccounts(limit);
+    public GroupCriteria withAccounts(int limit) {
+        getOptions().withAccounts(limit);
         return this;
     }
 
     @Override
-    public GroupCriteria expandAccounts(int limit, int offset) {
-        getOptions().expandAccounts(limit, offset);
+    public GroupCriteria withAccounts(int limit, int offset) {
+        getOptions().withAccounts(limit, offset);
         return this;
     }
 
     @Override
-    public GroupCriteria expandAccountMemberships() {
-        getOptions().expandAccountMemberships();
+    public GroupCriteria withAccountMemberships() {
+        getOptions().withAccountMemberships();
         return this;
     }
 
     @Override
-    public GroupCriteria expandAccountMemberships(int limit) {
-        getOptions().expandAccountMemberships(limit);
+    public GroupCriteria withAccountMemberships(int limit) {
+        getOptions().withAccountMemberships(limit);
         return this;
     }
 
     @Override
-    public GroupCriteria expandAccountMemberships(int limit, int offset) {
-        getOptions().expandAccountMemberships(limit, offset);
+    public GroupCriteria withAccountMemberships(int limit, int offset) {
+        getOptions().withAccountMemberships(limit, offset);
         return this;
     }
 }

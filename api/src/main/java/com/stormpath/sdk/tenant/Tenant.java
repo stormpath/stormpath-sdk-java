@@ -127,7 +127,7 @@ public interface Tenant extends Resource, Saveable {
      *     .where(Applications.description().containsIgnoreCase("foo"))
      *     .and(Applications.name().startsWithIgnoreCase("bar"))
      *     .orderByName().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -173,7 +173,7 @@ public interface Tenant extends Resource, Saveable {
      *     .where(Directories.description().containsIgnoreText("foo"))
      *     .and(Directories.name().startsWithIgnoreCase("bar"))
      *     .orderByName().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>

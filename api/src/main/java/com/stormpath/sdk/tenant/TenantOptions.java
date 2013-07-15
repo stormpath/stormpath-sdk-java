@@ -22,15 +22,15 @@ import com.stormpath.sdk.query.Options;
  */
 public interface TenantOptions<T> extends Options {
 
-    T expandApplications();
+    T withApplications();
 
-    T expandApplications(int limit);
+    T withApplications(int limit);
 
-    T expandApplications(int limit, int offset);
+    T withApplications(int limit, int offset);
 
-    T expandDirectories();
+    T withDirectories();
 
-    T expandDirectories(int limit);
+    T withDirectories(int limit);
 
-    T expandDirectories(int limit, int offset);
+    T withDirectories(int limit, int offset);
 }

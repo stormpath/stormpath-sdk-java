@@ -122,7 +122,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *     .where(Accounts.surname().containsIgnoreCase("Smith"))
      *     .and(Accounts.givenName().eqIgnoreCase("John"))
      *     .orderBySurname().descending()
-     *     .expandGroups(10, 10)
+     *     .withGroups(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -136,7 +136,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *     surname().containsIgnoreCase("Smith"))
      *     .and(givenName().eqIgnoreCase("John"))
      *     .orderBySurname().descending()
-     *     .expandGroups(10, 10)
+     *     .withGroups(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -185,7 +185,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *     .where(Groups.description().containsIgnoreCase("foo"))
      *     .and(Groups.name().startsWithIgnoreCase("bar"))
      *     .orderByName().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -199,7 +199,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *     description().containsIgnoreCase("foo"))
      *     .and(name().startsWithIgnoreCase("bar"))
      *     .orderByName().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>

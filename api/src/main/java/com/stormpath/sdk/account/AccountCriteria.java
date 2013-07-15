@@ -25,7 +25,7 @@ import com.stormpath.sdk.query.Criteria;
  * Accounts.where(Accounts.surname().containsIgnoreCase("Smith"))
  *     .and(Accounts.givenName().eqIgnoreCase("John"))
  *     .orderBySurname().descending()
- *     .expandGroups(10, 10)
+ *     .withGroups(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>

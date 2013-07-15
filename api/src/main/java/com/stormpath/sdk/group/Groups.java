@@ -28,7 +28,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * <b>Groups.where(Groups.name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>Groups.status()</b>.eq(GroupStatus.ENABLED))
  *     .orderByName().descending()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
@@ -41,7 +41,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * <b>where(name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>status()</b>.eq(GroupStatus.ENABLED))
  *     .orderByName().descending()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>

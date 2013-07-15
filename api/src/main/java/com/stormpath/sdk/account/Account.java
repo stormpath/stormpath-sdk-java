@@ -192,7 +192,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *     .and(Groups.name().startsWithIgnoreCase("bar"))
      *     .orderByName()
      *     .orderByStatus().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -207,7 +207,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *     .and(name().startsWithIgnoreCase("bar"))
      *     .orderByName()
      *     .orderByStatus().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -233,7 +233,7 @@ public interface Account extends Resource, Saveable, Deletable {
      * The {@link com.stormpath.sdk.directory.Directories Directories} utility class is available to help construct
      * the options DSL.  For example:
      * <pre>
-     * account.getDirectory(Directories.options().expandAccounts(50, 100));
+     * account.getDirectory(Directories.options().withAccounts(50, 100));
      * </pre>
      *
      * @param options the retrieval options to use when performing a request to acquire the Directory.

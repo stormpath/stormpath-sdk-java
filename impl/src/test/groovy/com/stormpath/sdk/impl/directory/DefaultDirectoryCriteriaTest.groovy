@@ -47,9 +47,9 @@ class DefaultDirectoryCriteriaTest {
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()
-                .expandTenant()
-                .expandAccounts(30, 50)
-                .expandGroups(25, 100)
+                .withTenant()
+                .withAccounts(30, 50)
+                .withGroups(25, 100)
                 .offsetBy(120)
                 .limitTo(20)
 

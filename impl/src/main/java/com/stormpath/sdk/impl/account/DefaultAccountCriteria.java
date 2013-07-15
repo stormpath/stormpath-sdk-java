@@ -59,50 +59,50 @@ public class DefaultAccountCriteria extends DefaultCriteria<AccountCriteria, Acc
     }
 
     @Override
-    public AccountCriteria expandDirectory() {
-        getOptions().expandDirectory();
+    public AccountCriteria withDirectory() {
+        getOptions().withDirectory();
         return this;
     }
 
     @Override
-    public AccountCriteria expandTenant() {
-        getOptions().expandTenant();
+    public AccountCriteria withTenant() {
+        getOptions().withTenant();
         return this;
     }
 
     @Override
-    public AccountCriteria expandGroups() {
-        getOptions().expandGroups();
+    public AccountCriteria withGroups() {
+        getOptions().withGroups();
         return this;
     }
 
     @Override
-    public AccountCriteria expandGroups(int limit) {
-        getOptions().expandGroups(limit);
+    public AccountCriteria withGroups(int limit) {
+        getOptions().withGroups(limit);
         return this;
     }
 
     @Override
-    public AccountCriteria expandGroups(int limit, int offset) {
-        getOptions().expandGroups(limit, offset);
+    public AccountCriteria withGroups(int limit, int offset) {
+        getOptions().withGroups(limit, offset);
         return this;
     }
 
     @Override
-    public AccountCriteria expandGroupMemberships() {
-        getOptions().expandGroupMemberships();
+    public AccountCriteria withGroupMemberships() {
+        getOptions().withGroupMemberships();
         return this;
     }
 
     @Override
-    public AccountCriteria expandGroupMemberships(int limit) {
-        getOptions().expandGroupMemberships(limit);
+    public AccountCriteria withGroupMemberships(int limit) {
+        getOptions().withGroupMemberships(limit);
         return this;
     }
 
     @Override
-    public AccountCriteria expandGroupMemberships(int limit, int offset) {
-        getOptions().expandGroupMemberships(limit, offset);
+    public AccountCriteria withGroupMemberships(int limit, int offset) {
+        getOptions().withGroupMemberships(limit, offset);
         return this;
     }
 }

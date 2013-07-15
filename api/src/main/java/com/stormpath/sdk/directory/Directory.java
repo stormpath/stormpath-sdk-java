@@ -164,7 +164,7 @@ public interface Directory extends Resource, Saveable, Deletable {
      *     .and(Accounts.surname().startsWithIgnoreCase("bar"))
      *     .orderBySurname().descending()
      *     .orderByGivenName().ascending()
-     *     .expandGroups(10, 10)
+     *     .withGroups(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -179,7 +179,7 @@ public interface Directory extends Resource, Saveable, Deletable {
      *     .and(surname().startsWithIgnoreCase("bar"))
      *     .orderBySurname().descending()
      *     .orderByGivenName().ascending()
-     *     .expandGroups(10, 10)
+     *     .withGroups(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -227,7 +227,7 @@ public interface Directory extends Resource, Saveable, Deletable {
      *     .and(Groups.description().startsWithIgnoreCase("bar"))
      *     .orderByName()
      *     .orderByDescription().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -242,7 +242,7 @@ public interface Directory extends Resource, Saveable, Deletable {
      *     .and(description().startsWithIgnoreCase("bar"))
      *     .orderByName()
      *     .orderByDescription().descending()
-     *     .expandAccounts(10, 10)
+     *     .withAccounts(10, 10)
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>

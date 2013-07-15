@@ -25,7 +25,7 @@ import com.stormpath.sdk.query.Criteria;
  * Directories.where(Directories.name().containsIgnoreCase("CRM"))
  *     .and(Directories.status().eq(DirectoryStatus.ENABLED))
  *     .orderByName()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .limitTo(10));
  * </pre>
  * <h2>Sort Order</h2>

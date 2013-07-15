@@ -24,32 +24,32 @@ import com.stormpath.sdk.tenant.TenantOptions;
 public class DefaultTenantOptions extends DefaultOptions<TenantOptions> implements TenantOptions<TenantOptions> {
 
     @Override
-    public TenantOptions expandApplications() {
+    public TenantOptions withApplications() {
         return expand(DefaultTenant.APPLICATIONS);
     }
 
     @Override
-    public TenantOptions expandApplications(int limit) {
+    public TenantOptions withApplications(int limit) {
         return expand(DefaultTenant.APPLICATIONS, limit);
     }
 
     @Override
-    public TenantOptions expandApplications(int limit, int offset) {
+    public TenantOptions withApplications(int limit, int offset) {
         return expand(DefaultTenant.APPLICATIONS, limit, offset);
     }
 
     @Override
-    public TenantOptions expandDirectories() {
+    public TenantOptions withDirectories() {
         return expand(DefaultTenant.DIRECTORIES);
     }
 
     @Override
-    public TenantOptions expandDirectories(int limit) {
+    public TenantOptions withDirectories(int limit) {
         return expand(DefaultTenant.DIRECTORIES, limit);
     }
 
     @Override
-    public TenantOptions expandDirectories(int limit, int offset) {
+    public TenantOptions withDirectories(int limit, int offset) {
         return expand(DefaultTenant.DIRECTORIES, limit, offset);
     }
 }

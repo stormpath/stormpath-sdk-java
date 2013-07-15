@@ -36,12 +36,12 @@ public interface AccountStoreOptions<T> extends Options {
      * to retrieve multiple related resources you know you will use.
      * <p/>
      * If you wish to control pagination parameters (offset and limit) for the
-     * returned groups, see the {@link #expandAccounts(int) expandAccounts(limit)} or
-     * {@link #expandAccounts(int, int) expandAccounts(limit,offset)} methods.
+     * returned groups, see the {@link #withAccounts(int) withAccounts(limit)} or
+     * {@link #withAccounts(int, int) withAccounts(limit,offset)} methods.
      *
      * @return this instance for method chaining.
      */
-    T expandAccounts();
+    T withAccounts();
 
     /**
      * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.account.Account accounts} are
@@ -52,7 +52,7 @@ public interface AccountStoreOptions<T> extends Options {
      * @param limit the number of results in the Account collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      */
-    T expandAccounts(int limit);
+    T withAccounts(int limit);
 
     /**
      * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.account.Account accounts} are
@@ -64,7 +64,7 @@ public interface AccountStoreOptions<T> extends Options {
      * @param offset the starting index of the first Account to retrieve in the overall Account collection's result set.
      * @return this instance for method chaining.
      */
-    T expandAccounts(int limit, int offset);
+    T withAccounts(int limit, int offset);
 
     /**
      * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.group.Group groups}
@@ -72,12 +72,12 @@ public interface AccountStoreOptions<T> extends Options {
      * to retrieve multiple related resources you know you will use.
      * <p/>
      * If you wish to control pagination parameters (offset and limit) for the
-     * returned groups, see the {@link #expandGroups(int) expandGroups(limit)} or
-     * {@link #expandGroups(int, int) expandGroups(limit,offset)} methods.
+     * returned groups, see the {@link #withGroups(int) withGroups(limit)} or
+     * {@link #withGroups(int, int) withGroups(limit,offset)} methods.
      *
      * @return this instance for method chaining.
      */
-    T expandGroups();
+    T withGroups();
 
     /**
      * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.group.Group groups} are also
@@ -88,7 +88,7 @@ public interface AccountStoreOptions<T> extends Options {
      * @param limit the number of results in the Group collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      */
-    T expandGroups(int limit);
+    T withGroups(int limit);
 
     /**
      * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.group.Group groups} are also
@@ -100,7 +100,7 @@ public interface AccountStoreOptions<T> extends Options {
      * @param offset the starting index of the first Group to retrieve in the overall Group collection's result set.
      * @return this instance for method chaining.
      */
-    T expandGroups(int limit, int offset);
+    T withGroups(int limit, int offset);
 
     /**
      * Ensures that when retrieving the resource, the owning {@link com.stormpath.sdk.tenant.Tenant Tenant} is also
@@ -109,5 +109,5 @@ public interface AccountStoreOptions<T> extends Options {
      *
      * @return this instance for method chaining.
      */
-    T expandTenant();
+    T withTenant();
 }

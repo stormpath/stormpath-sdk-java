@@ -28,7 +28,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * <b>Directories.where(Directories.name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>Directories.status()</b>.eq(DirectoryStatus.ENABLED))
  *     .orderByName().descending()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
@@ -41,7 +41,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * <b>where(name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>status()</b>.eq(DirectoryStatus.ENABLED))
  *     .orderByName().descending()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>

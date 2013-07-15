@@ -23,31 +23,31 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
  */
 public class DefaultApplicationOptions extends DefaultOptions<ApplicationOptions> implements ApplicationOptions {
 
-    public ApplicationOptions expandAccounts() {
+    public ApplicationOptions withAccounts() {
         return expand(DefaultApplication.ACCOUNTS);
     }
 
-    public ApplicationOptions expandAccounts(int limit) {
+    public ApplicationOptions withAccounts(int limit) {
         return expand(DefaultApplication.ACCOUNTS, limit);
     }
 
-    public ApplicationOptions expandAccounts(int limit, int offset) {
+    public ApplicationOptions withAccounts(int limit, int offset) {
         return expand(DefaultApplication.ACCOUNTS, limit, offset);
     }
 
-    public ApplicationOptions expandGroups() {
+    public ApplicationOptions withGroups() {
         return expand(DefaultApplication.GROUPS);
     }
 
-    public ApplicationOptions expandGroups(int limit) {
+    public ApplicationOptions withGroups(int limit) {
         return expand(DefaultApplication.GROUPS, limit);
     }
 
-    public ApplicationOptions expandGroups(int limit, int offset) {
+    public ApplicationOptions withGroups(int limit, int offset) {
         return expand(DefaultApplication.GROUPS, limit, offset);
     }
 
-    public ApplicationOptions expandTenant() {
+    public ApplicationOptions withTenant() {
         return expand(DefaultApplication.TENANT);
     }
 }

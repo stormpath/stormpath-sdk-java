@@ -30,7 +30,7 @@ import java.lang.reflect.Constructor;
  * <b>Applications.where(Applications.name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>Applications.status()</b>.eq(ApplicationStatus.ENABLED))
  *     .orderByName().descending()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
@@ -43,7 +43,7 @@ import java.lang.reflect.Constructor;
  * <b>where(name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>status()</b>.eq(ApplicationStatus.ENABLED))
  *     .orderByName().descending()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>

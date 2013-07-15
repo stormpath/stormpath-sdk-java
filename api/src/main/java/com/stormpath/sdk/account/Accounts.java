@@ -28,7 +28,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * <b>Accounts.where(Accounts.surname()</b>.containsIgnoreCase("Smith")<b>)</b>
  *     .and(<b>Accounts.givenName()</b>.eqIgnoreCase("John"))
  *     .orderBySurname().descending()
- *     .expandGroups(10, 10)
+ *     .withGroups(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
@@ -41,7 +41,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * <b>where(surname()</b>.containsIgnoreCase("Smith")<b>)</b>
  *     .and(<b>givenName()</b>.eqIgnoreCase("John"))
  *     .orderBySurname().descending()
- *     .expandGroups(10, 10)
+ *     .withGroups(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>

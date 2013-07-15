@@ -31,7 +31,7 @@ public interface AccountOptions<T> extends Options {
      *
      * @return this instance for method chaining.
      */
-    T expandDirectory();
+    T withDirectory();
 
     /**
      * Ensures that when retrieving an Account, the Account's owning {@link Account#getTenant()} tenant} is also
@@ -40,7 +40,7 @@ public interface AccountOptions<T> extends Options {
      *
      * @return this instance for method chaining.
      */
-    T expandTenant();
+    T withTenant();
 
     /**
      * Ensures that when retrieving an Account, the Account's assigned {@link Account#getGroups()} groups}
@@ -48,12 +48,12 @@ public interface AccountOptions<T> extends Options {
      * to retrieve multiple related resources you know you will use.
      * <p/>
      * If you wish to control pagination parameters (offset and limit) for the
-     * returned groups, see the {@link #expandGroups(int) expandGroups(limit)} or
-     * {@link #expandGroups(int, int) expandGroups(limit,offset)} methods.
+     * returned groups, see the {@link #withGroups(int) withGroups(limit)} or
+     * {@link #withGroups(int, int) withGroups(limit,offset)} methods.
      *
      * @return this instance for method chaining.
      */
-    T expandGroups();
+    T withGroups();
 
     /**
      * Ensures that when retrieving an Account, the Account's assigned {@link Account#getGroups()} groups} are also
@@ -64,7 +64,7 @@ public interface AccountOptions<T> extends Options {
      * @param limit the number of results in the Group collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      */
-    T expandGroups(int limit);
+    T withGroups(int limit);
 
     /**
      * Ensures that when retrieving an Account, the Account's assigned {@link Account#getGroups()} groups} are also
@@ -76,7 +76,7 @@ public interface AccountOptions<T> extends Options {
      * @param offset the starting index of the first Group to retrieve in the overall Group collection's result set.
      * @return this instance for method chaining.
      */
-    T expandGroups(int limit, int offset);
+    T withGroups(int limit, int offset);
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
@@ -86,12 +86,12 @@ public interface AccountOptions<T> extends Options {
      * <p/>
      * If you wish to control
      * pagination parameters (offset and limit) for the returned groupMemberships, see the
-     * {@link #expandGroupMemberships(int) expandGroupMemberships(limit)} or
-     * {@link #expandGroupMemberships(int, int) expandGroupMemberships(limit,offset)} methods.
+     * {@link #withGroupMemberships(int) withGroupMemberships(limit)} or
+     * {@link #withGroupMemberships(int, int) withGroupMemberships(limit,offset)} methods.
      *
      * @return this instance for method chaining.
      */
-    T expandGroupMemberships();
+    T withGroupMemberships();
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
@@ -102,7 +102,7 @@ public interface AccountOptions<T> extends Options {
      * @param limit the number of results in the GroupMembership collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      */
-    T expandGroupMemberships(int limit);
+    T withGroupMemberships(int limit);
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
@@ -116,6 +116,6 @@ public interface AccountOptions<T> extends Options {
      *               collection's result set.
      * @return this instance for method chaining.
      */
-    T expandGroupMemberships(int limit, int offset);
+    T withGroupMemberships(int limit, int offset);
 
 }

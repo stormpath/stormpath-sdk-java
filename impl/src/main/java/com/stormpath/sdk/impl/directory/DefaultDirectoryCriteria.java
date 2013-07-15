@@ -43,38 +43,38 @@ public class DefaultDirectoryCriteria extends DefaultCriteria<DirectoryCriteria,
         return orderBy(DefaultDirectory.STATUS);
     }
 
-    public DirectoryCriteria expandAccounts() {
-        getOptions().expandAccounts();
+    public DirectoryCriteria withAccounts() {
+        getOptions().withAccounts();
         return this;
     }
 
-    public DirectoryCriteria expandAccounts(int limit) {
-        getOptions().expandAccounts(limit);
+    public DirectoryCriteria withAccounts(int limit) {
+        getOptions().withAccounts(limit);
         return this;
     }
 
-    public DirectoryCriteria expandAccounts(int limit, int offset) {
-        getOptions().expandAccounts(limit, offset);
+    public DirectoryCriteria withAccounts(int limit, int offset) {
+        getOptions().withAccounts(limit, offset);
         return this;
     }
 
-    public DirectoryCriteria expandGroups() {
-        getOptions().expandGroups();
+    public DirectoryCriteria withGroups() {
+        getOptions().withGroups();
         return this;
     }
 
-    public DirectoryCriteria expandGroups(int limit) {
-        getOptions().expandGroups(limit);
+    public DirectoryCriteria withGroups(int limit) {
+        getOptions().withGroups(limit);
         return this;
     }
 
-    public DirectoryCriteria expandGroups(int limit, int offset) {
-        getOptions().expandGroups(limit, offset);
+    public DirectoryCriteria withGroups(int limit, int offset) {
+        getOptions().withGroups(limit, offset);
         return this;
     }
 
-    public DirectoryCriteria expandTenant() {
-        getOptions().expandTenant();
+    public DirectoryCriteria withTenant() {
+        getOptions().withTenant();
         return this;
     }
 }

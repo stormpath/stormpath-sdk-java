@@ -25,7 +25,7 @@ import com.stormpath.sdk.query.Criteria;
  * Groups.where(Groups.name().containsIgnoreCase("admin"))
  *     .and(Groups.status().eq(GroupStatus.ENABLED))
  *     .orderByName()
- *     .expandAccounts(10, 10)
+ *     .withAccounts(10, 10)
  *     .limitTo(10));
  * </pre>
  * <h2>Sort Order</h2>
