@@ -36,8 +36,8 @@ public interface Tenant extends Resource, Saveable {
     /**
      * Returns the tenant's globally-unique name in Stormpath.
      * <p/>
-     * <b>THIS CAN CHANGE.  Do not rely on it as a permanent identifier.</b>  If you need a permanent ID, use the
-     * {@link #getHref() href} as the permanent ID (this is true for all resources, not just Tenant resources).
+     * <b>THIS CAN CHANGE IN THE FUTURE.  Do not rely on it as a permanent identifier.</b>  If you need a permanent ID,
+     * use the {@link #getHref() href} as the permanent ID (this is true for all resources, not just Tenant resources).
      *
      * @return the tenant's Stormpath globally-unique name. THIS CAN CHANGE. Do not rely on it as a permanent
      *         identifier.
@@ -47,8 +47,8 @@ public interface Tenant extends Resource, Saveable {
     /**
      * Returns the tenant's globally-unique human-readable key in Stormpath.
      * <p/>
-     * <b>THIS CAN CHANGE.  Do not rely on it as a permanent identifier.</b>  If you need a permanent ID, use the
-     * {@link #getHref() href} as the permanent ID (this is true for all resources, not just Tenant resources).
+     * <b>THIS CAN CHANGE IN THE FUTURE.  Do not rely on it as a permanent identifier.</b>  If you need a permanent ID,
+     * use the {@link #getHref() href} as the permanent ID (this is true for all resources, not just Tenant resources).
      *
      * @return the tenant's Stormpath globally-unique human-readable name key. THIS CAN CHANGE. Do not rely on it as a
      *         permanent identifier.
