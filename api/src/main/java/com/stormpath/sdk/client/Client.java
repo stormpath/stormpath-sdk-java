@@ -57,6 +57,8 @@ public class Client implements DataStore {
 
     private final DataStore dataStore;
 
+    private String currentTenantHref;
+
     /**
      * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
      * JavaDoc for a usage example.
@@ -111,7 +113,13 @@ public class Client implements DataStore {
     }
 
     public Tenant getCurrentTenant() {
-        return this.dataStore.getResource("/tenants/current", Tenant.class);
+        String href = currentTenantHref;
+        if (href == null) {
+            href = "/tenants/current";
+        }
+        Tenant current = this.dataStore.getResource(href, Tenant.class);
+        this.currentTenantHref = current.getHref();
+        return current;
     }
 
     public DataStore getDataStore() {

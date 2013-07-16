@@ -22,6 +22,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class, true);
-    static final ResourceReference<Group> GROUP = new ResourceReference<Group>("tenant", Group.class, true);
+    static final ResourceReference<Group> GROUP = new ResourceReference<Group>("group", Group.class, true);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT, GROUP);
 
@@ -71,6 +72,11 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
      * @return the created GroupMembership instance.
      */
     public static GroupMembership create(Account account, Group group, InternalDataStore dataStore) {
+
+        Assert.hasText(account.getHref(), "Account does not yet have an 'href'.  You must first persist the account " +
+                "before assigning it to a Group.");
+        Assert.hasText(group.getHref(), "Group does not yet have an 'href'.  You must first persist the group " +
+                "before assigning accounts to it.");
 
         //TODO: enable auto discovery
         String href = "/groupMemberships";

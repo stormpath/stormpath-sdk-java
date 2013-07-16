@@ -150,7 +150,6 @@ class ClientTestDeeperDive {
                 }
             }
             if (directory.name == "Workflow Testing 3") {
-                //"givenName":"Women", "surname":"InKitchen", "password":"Screwyou1", "email":"wysong@mindless.com"
                 Account account = client.dataStore.instantiate(Account.class)
                 account.setGivenName("SDK name")
                 account.setSurname("SDK last name")

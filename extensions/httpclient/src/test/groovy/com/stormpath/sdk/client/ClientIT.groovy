@@ -31,4 +31,8 @@ class ClientIT {
     Client buildClient() {
         return new ClientBuilder().setBaseUrl(baseUrl).setApiKeyFileLocation(apiKeyFileLocation).build()
     }
+
+    protected static String uniquify(String s) {
+        return s + " " + UUID.randomUUID().toString();
+    }
 }
