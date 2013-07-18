@@ -23,7 +23,7 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 class DefaultCreateApplicationRequestTest {
 

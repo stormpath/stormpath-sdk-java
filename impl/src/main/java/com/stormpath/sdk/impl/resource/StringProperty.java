@@ -21,7 +21,7 @@ import com.stormpath.sdk.impl.query.Operator;
 import com.stormpath.sdk.impl.query.SimpleExpression;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public class StringProperty extends Property<String> {
 

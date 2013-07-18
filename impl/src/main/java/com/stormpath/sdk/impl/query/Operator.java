@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.query;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public enum Operator {
 

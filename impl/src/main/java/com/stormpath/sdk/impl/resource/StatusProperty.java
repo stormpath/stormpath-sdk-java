@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.resource;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
 

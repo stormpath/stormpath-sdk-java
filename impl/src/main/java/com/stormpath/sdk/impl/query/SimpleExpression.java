@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.query.Criterion;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public class SimpleExpression implements Criterion {
 

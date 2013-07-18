@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.cache.Caches
 import org.testng.annotations.BeforeClass
 
 class ClientIT {
@@ -29,7 +30,10 @@ class ClientIT {
     }
 
     Client buildClient() {
-        return new ClientBuilder().setBaseUrl(baseUrl).setApiKeyFileLocation(apiKeyFileLocation).build()
+        return new ClientBuilder().setBaseUrl(baseUrl)
+                .setApiKeyFileLocation(apiKeyFileLocation)
+                .setCacheManager(Caches.newCacheManager().build())
+                .build()
     }
 
     protected static String uniquify(String s) {

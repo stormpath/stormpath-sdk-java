@@ -15,12 +15,15 @@
  */
 package com.stormpath.sdk.client;
 
+import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 /**
  * The {@code Client} is the main entry point to the Stormpath Java SDK.  A Java project wishing to
@@ -48,8 +51,8 @@ import java.lang.reflect.Constructor;
  * the underlying 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
  * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
- * @since 0.1
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
+ * @since 0.1
  */
 public class Client implements DataStore {
 
@@ -100,16 +103,31 @@ public class Client implements DataStore {
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
 
-    //no modifier on purpose: for local development testing only:
-    Client(ApiKey apiKey, Proxy proxy, String baseUrl) {
-        if (apiKey == null) {
-            throw new IllegalArgumentException("apiKey argument cannot be null.");
-        }
-        if (proxy == null) {
-            throw new IllegalArgumentException("proxy argument cannot be null.");
-        }
+    //no modifier on purpose: for package-internal development needs only.  This will eventually be replaced
+    //by Builder usage before releasing 1.0
+    Client(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager) {
+        Assert.notNull(apiKey, "apiKey argument cannot be null.");
         Object requestExecutor = createRequestExecutor(apiKey, proxy);
-        this.dataStore = createDataStore(requestExecutor, baseUrl);
+        DataStore ds = createDataStore(requestExecutor, baseUrl);
+
+        if (cacheManager != null) {
+            // TODO: remove when we have a proper Builder interfaces. See https://github.com/stormpath/stormpath-sdk-java/issues/8
+            applyCacheManager(ds, cacheManager);
+        }
+
+        this.dataStore = ds;
+    }
+
+    private void applyCacheManager(DataStore dataStore, CacheManager cacheManager) {
+        Class<?> clazz = dataStore.getClass();
+        try {
+            Method method = clazz.getDeclaredMethod("setCacheManager", CacheManager.class);
+            method.setAccessible(true);
+            method.invoke(dataStore, cacheManager);
+        } catch (Exception e) {
+            String msg = "Unable to apply cacheManager instance on DataStore implementation " + clazz;
+            throw new RuntimeException(msg);
+        }
     }
 
     public Tenant getCurrentTenant() {
@@ -127,7 +145,7 @@ public class Client implements DataStore {
     }
 
     //since 0.3
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Object createRequestExecutor(ApiKey apiKey, Proxy proxy) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
@@ -151,7 +169,7 @@ public class Client implements DataStore {
     }
 
     //@since 0.3
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private DataStore createDataStore(Object requestExecutor, Object secondCtorArg) {
 
         String requestExecutorInterfaceClassName = "com.stormpath.sdk.impl.http.RequestExecutor";

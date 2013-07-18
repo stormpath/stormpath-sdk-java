@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.query;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public class LikeExpression extends SimpleExpression {
 

@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.resource;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public class ResourceReference<T extends Resource> extends Property<T> {
 

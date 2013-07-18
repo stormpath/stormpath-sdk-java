@@ -24,7 +24,7 @@ import org.testng.annotations.AfterClass
 import org.testng.annotations.Test
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 class TenantResourceIT extends ClientIT {
 

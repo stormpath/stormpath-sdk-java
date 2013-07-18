@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.client;
 
+import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.lang.Classes;
 
 import java.io.FileInputStream;
@@ -58,8 +59,10 @@ public class ClientBuilder {
     private Properties apiKeyProperties;
     private String apiKeyIdPropertyName = "apiKey.id";
     private String apiKeySecretPropertyName = "apiKey.secret";
-    private String baseUrl; //internal/private testing only
+    private String baseUrl = "https://api.stormpath.com/v1";
     private Proxy proxy;
+
+    private CacheManager cacheManager;
 
     /**
      * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
@@ -326,6 +329,56 @@ public class ClientBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing round-trips to the
+     * Stormpath API server and enhancing application performance.
+     * <p/>
+     * <h3>Single JVM Applications</h3>
+     * If your application runs on a single JVM-based applications, the
+     * {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder} should be sufficient for your needs.  You
+     * create a {@code CacheManagerBuilder} by using the {@link com.stormpath.sdk.cache.Caches Caches} utility class,
+     * for example:
+     * <pre>
+     * import static com.stormpath.sdk.cache.Caches.*;
+     *
+     * ...
+     *
+     * Client client = new ClientBuilder()...
+     *     .setCacheManager(
+     *         {@link com.stormpath.sdk.cache.Caches#newCacheManager() newCacheManager()}
+     *         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
+     *         .withDefaultTimeToIdle(2, TimeUnit.HOURS) //general default
+     *         .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Account.class) //Account-specific cache settings
+     *             .withTimeToLive(1, TimeUnit.HOURS)
+     *             .withTimeToIdle(30, TimeUnit.MINUTES))
+     *         .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Group.class) //Group-specific cache settings
+     *             .withTimeToLive(2, TimeUnit.HOURS))
+     *         .build() //build the CacheManager
+     *     )
+     *     .build(); //build the Client
+     * </pre>
+     * <em>The above TTL and TTI times are just examples showing API usage - the times themselves are not
+     * recommendations.  Choose TTL and TTI times based on your application requirements.</em>
+     * <h3>Multi-JVM / Clustered Applications</h3>
+     * The default {@code CacheManager} instances returned by the
+     * {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder} might not be sufficient for a
+     * multi-instance application that runs on multiple JVMs and/or hosts/servers, as there could be cache-coherency
+     * problems across the JVMs.  See the {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder}
+     * JavaDoc for additional information.
+     * <p/>
+     * In these multi-JVM environments, you will likely want to create a simple CacheManager implementation that wraps
+     * your distributed Caching API/product of choice and then plug that implementation in to the Stormpath SDK via
+     * this method.
+     *
+     * @param cacheManager the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing
+     *                     round-trips to the Stormpath API server and enhancing application performance.
+     * @since 0.8
+     */
+    public ClientBuilder setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+        return this;
+    }
+
     //For internal Stormpath testing needs only:
     ClientBuilder setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -345,10 +398,10 @@ public class ClientBuilder {
             apiKey = loadApiKey();
         }
 
-        return createClient(apiKey, this.baseUrl, proxy);
+        return new Client(apiKey, this.baseUrl, proxy, cacheManager);
     }
 
-    //since 0.9
+    //since 0.8
     protected ApiKey loadApiKey() {
 
         Properties properties = loadApiKeyProperties();
@@ -360,7 +413,7 @@ public class ClientBuilder {
         return createApiKey(apiKeyId, apiKeySecret);
     }
 
-    //since 0.9
+    //since 0.8
     protected Properties loadApiKeyProperties() {
 
         Properties properties = this.apiKeyProperties;
@@ -392,28 +445,6 @@ public class ClientBuilder {
     //since 0.5
     protected ApiKey createApiKey(String id, String secret) {
         return new DefaultApiKey(id, secret);
-    }
-
-    //since 0.5
-    protected Client createClient(ApiKey key, String baseUrl) {
-        return createClient(key, baseUrl, proxy);
-    }
-
-    //since 0.8
-    protected Client createClient(ApiKey key, String baseUrl, Proxy proxy) {
-        if (baseUrl == null) {
-            if (proxy == null) {
-                return new Client(key);
-            } else {
-                return new Client(key, proxy);
-            }
-        } else {
-            if (proxy == null) {
-                return new Client(key, baseUrl);
-            } else {
-                return new Client(key, proxy, baseUrl);
-            }
-        }
     }
 
     private String getPropertyValue(Properties properties, String propName) {

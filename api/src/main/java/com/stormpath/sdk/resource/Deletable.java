@@ -16,7 +16,7 @@
 package com.stormpath.sdk.resource;
 
 /**
- * @since 0.9
+ * @since 0.8
  */
 public interface Deletable {
 

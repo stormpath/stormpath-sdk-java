@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.ds;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.impl.account.DefaultAccount;
-import com.stormpath.sdk.impl.cache.DefaultCacheManager;
+import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.MediaType;
@@ -94,7 +94,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
         this.queryStringFactory = new QueryStringFactory();
-        this.cacheManager = new DefaultCacheManager();
+        this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
     }
 
@@ -292,7 +292,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 0.8
      */
     protected boolean isCachingEnabled() {
-        return this.cacheManager != null;// && !(this.cacheManager instanceof DisabledCacheManager);
+        return this.cacheManager != null && !(this.cacheManager instanceof DisabledCacheManager);
     }
 
     /**

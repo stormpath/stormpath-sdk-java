@@ -75,6 +75,11 @@ import java.util.concurrent.TimeUnit;
 public class DefaultCacheManager implements CacheManager {
 
     /**
+     * Retains any region-specific configuration that might be used when creating Cache instances.
+     */
+    protected final ConcurrentMap<String, CacheConfiguration> configs;
+
+    /**
      * Retains all Cache objects maintained by this cache manager.
      */
     protected final ConcurrentMap<String, Cache> caches;
@@ -86,6 +91,7 @@ public class DefaultCacheManager implements CacheManager {
      * Default no-arg constructor that instantiates an internal name-to-cache {@code ConcurrentMap}.
      */
     public DefaultCacheManager() {
+        this.configs = new ConcurrentHashMap<String, CacheConfiguration>();
         this.caches = new ConcurrentHashMap<String, Cache>();
     }
 
@@ -162,6 +168,20 @@ public class DefaultCacheManager implements CacheManager {
     }
 
     /**
+     * Sets cache-specific configuration entries, to be utilized when creating cache instances.
+     *
+     * @param configs cache-specific configuration entries, to be utilized when creating cache instances.
+     */
+    public void setCacheConfigurations(Collection<CacheConfiguration> configs) {
+        Assert.notNull("Argument cannot be null.  To remove all configuration, set an empty collection.");
+        this.configs.clear();
+
+        for (CacheConfiguration config : configs) {
+            this.configs.put(config.getName(), config);
+        }
+    }
+
+    /**
      * Returns the cache with the specified {@code name}.  If the cache instance does not yet exist, it will be lazily
      * created, retained for further access, and then returned.
      *
@@ -197,6 +217,19 @@ public class DefaultCacheManager implements CacheManager {
     protected Cache createCache(String name) {
         Duration ttl = this.defaultTimeToLive != null ? this.defaultTimeToLive.clone() : null;
         Duration tti = this.defaultTimeToIdle != null ? this.defaultTimeToIdle.clone() : null;
+
+        CacheConfiguration config = this.configs.get(name);
+        if (config != null) {
+            Duration d = config.getTimeToLive();
+            if (d != null) {
+                ttl = d;
+            }
+            d = config.getTimeToIdle();
+            if (d != null) {
+                tti = d;
+            }
+        }
+
         return new DefaultCache(name, new SoftHashMap(), ttl, tti);
     }
 
