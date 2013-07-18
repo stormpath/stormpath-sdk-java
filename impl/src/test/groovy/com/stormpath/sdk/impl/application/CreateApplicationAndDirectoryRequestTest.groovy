@@ -19,33 +19,34 @@ import com.stormpath.sdk.application.Application
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
-import static org.testng.Assert.assertSame
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
  * @author ecrisostomo
  * @since 0.8
  */
-class DefaultCreateApplicationRequestTest {
+class CreateApplicationAndDirectoryRequestTest {
 
     @Test
     void testAll() {
 
         def app = createStrictMock(Application)
-        def request = new DefaultCreateApplicationRequest(app)
+        def request = new CreateApplicationAndDirectoryRequest(app, "directoryName")
 
         assertSame(app, request.application)
+        assertEquals("directoryName", request.getDirectoryName())
 
         request.accept(new CreateApplicationRequestVisitor() {
             @Override
             void visit(DefaultCreateApplicationRequest defaultRequest) {
-                assertSame(request, defaultRequest)
+                fail("shouldn't have received a " + defaultRequest.class.name)
             }
 
             @Override
             void visit(CreateApplicationAndDirectoryRequest createApplicationAndDirectoryRequest) {
-                fail("shouldn't have received a " + createApplicationAndDirectoryRequest.class.name)
+                assertSame(request, createApplicationAndDirectoryRequest)
             }
         })
+
     }
 }

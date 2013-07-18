@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,11 @@ class DefaultAccountCriteriaTest {
                 .orderByStatus().descending()
                 .withDirectory()
                 .withGroupMemberships(20,30)
+                .withGroupMemberships()
+                .withGroupMemberships(20) // the REST API will take this last value
                 .withGroups(40, 50)
+                .withGroups(45)
+                .withGroups() // the REST API will take this last value
                 .withTenant()
                 .offsetBy(25)
                 .limitTo(50)
@@ -76,13 +80,18 @@ class DefaultAccountCriteriaTest {
                 'email asc, username desc, givenName asc, middleName desc, surname asc, status desc ' +
                 'offset 25 ' +
                 'limit 50 ' +
-                'expand directory, groupMemberships(offset:30,limit:20), groups(offset:50,limit:40), tenant'
+                'expand directory, groupMemberships(offset:30,limit:20), groupMemberships, groupMemberships(limit:20), ' +
+                'groups(offset:50,limit:40), groups(limit:45), groups, tenant'
 
         def expectedQueryString = 'email=a' + AND +
                 'expand=' +
                     'directory' + COMMA +
                     'groupMemberships' + OPEN_PAREN + 'offset' + COLON + 30 + COMMA + 'limit' + COLON + 20 + CLOSE_PAREN + COMMA +
+                    'groupMemberships' + COMMA +
+                    'groupMemberships' + OPEN_PAREN + 'limit' + COLON + 20 + CLOSE_PAREN + COMMA +
                     'groups' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 40 + CLOSE_PAREN + COMMA +
+                    'groups' + OPEN_PAREN + 'limit' + COLON + 45 + CLOSE_PAREN + COMMA +
+                    'groups' + COMMA +
                     'tenant' + AND +
                 'givenName=*c' + AND +
                 'limit=50' + AND +

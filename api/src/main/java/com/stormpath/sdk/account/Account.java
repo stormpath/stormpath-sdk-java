@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,4 +276,16 @@ public interface Account extends Resource, Saveable, Deletable {
      * @return the account's email verification token.
      */
     EmailVerificationToken getEmailVerificationToken();
+
+    /**
+     *
+     * <p>
+     *     Returns the account's full name. This is a computed value obtained from the combination of given name, middle name and
+     *     surname.
+     * </p>
+     *
+     * @return the account's full name. This is a computed value obtained from the combination of given name, middle name and surname.
+     * @since 0.8
+     */
+    String getFullName();
 }

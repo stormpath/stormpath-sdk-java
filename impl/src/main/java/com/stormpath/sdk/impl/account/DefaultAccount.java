@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
             new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, true, GroupMembership.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS,
+            USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
 
     public DefaultAccount(InternalDataStore dataStore) {
@@ -138,6 +138,11 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     @Override
     public void setSurname(String surname) {
         setProperty(SURNAME, surname);
+    }
+
+    @Override
+    public String getFullName() {
+        return getString(FULL_NAME);
     }
 
     @Override

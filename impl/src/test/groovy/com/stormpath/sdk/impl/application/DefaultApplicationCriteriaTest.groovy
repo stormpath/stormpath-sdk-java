@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,11 @@ class DefaultApplicationCriteriaTest {
                 .orderByStatus()
                 .withTenant()
                 .withAccounts(30, 50)
+                .withAccounts(50)
+                .withAccounts()
                 .withGroups(25, 100)
+                .withGroups()
+                .withGroups(90)
                 .offsetBy(120)
                 .limitTo(20)
 
@@ -65,13 +69,18 @@ class DefaultApplicationCriteriaTest {
                 'name asc, description desc, status asc ' +
                 'offset 120 ' +
                 'limit 20 ' +
-                'expand tenant, accounts(offset:50,limit:30), groups(offset:100,limit:25)'
+                'expand tenant, accounts(offset:50,limit:30), accounts(limit:50), accounts, ' +
+                'groups(offset:100,limit:25), groups, groups(limit:90)'
 
         def expectedQueryString = 'description=b*' + AND +
                 'expand=' +
                 'tenant' + COMMA +
                 'accounts' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 30 + CLOSE_PAREN + COMMA +
-                'groups' + OPEN_PAREN + 'offset' + COLON + 100 + COMMA + 'limit' + COLON + 25 + CLOSE_PAREN + AND +
+                'accounts' + OPEN_PAREN + 'limit' + COLON + 50 + CLOSE_PAREN + COMMA +
+                'accounts' + COMMA +
+                'groups' + OPEN_PAREN + 'offset' + COLON + 100 + COMMA + 'limit' + COLON + 25 + CLOSE_PAREN + COMMA +
+                'groups' + COMMA +
+                'groups' + OPEN_PAREN + 'limit' + COLON + 90 + CLOSE_PAREN + AND +
                 'limit=20' + AND +
                 'name=a' + AND +
                 'offset=120' + AND +
