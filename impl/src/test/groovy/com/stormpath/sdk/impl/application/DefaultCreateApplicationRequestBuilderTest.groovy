@@ -37,7 +37,7 @@ class DefaultCreateApplicationRequestBuilderTest {
 
         request = new DefaultCreateApplicationRequestBuilder(app).createDirectoryNamed("My Directory")
         assertTrue(request.createDirectory)
-        assertEquals("My Directory", request.directoryName)
+        assertEquals(request.directoryName, "My Directory")
         assertTrue(request.build() instanceof DefaultCreateApplicationRequest)
 
         request = new DefaultCreateApplicationRequestBuilder(app).createDirectory()

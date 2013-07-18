@@ -33,8 +33,8 @@ class CreateApplicationAndDirectoryRequestTest {
         def app = createStrictMock(Application)
         def request = new CreateApplicationAndDirectoryRequest(app, "directoryName")
 
-        assertSame(app, request.application)
-        assertEquals("directoryName", request.getDirectoryName())
+        assertSame(request.application, app)
+        assertEquals(request.getDirectoryName(), "directoryName")
 
         request.accept(new CreateApplicationRequestVisitor() {
             @Override
@@ -44,7 +44,7 @@ class CreateApplicationAndDirectoryRequestTest {
 
             @Override
             void visit(CreateApplicationAndDirectoryRequest createApplicationAndDirectoryRequest) {
-                assertSame(request, createApplicationAndDirectoryRequest)
+                assertSame(createApplicationAndDirectoryRequest, request)
             }
         })
 

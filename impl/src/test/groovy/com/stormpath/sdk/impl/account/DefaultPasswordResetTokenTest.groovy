@@ -43,12 +43,12 @@ class DefaultPasswordResetTokenTest {
                  account: [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]])
 
         assertTrue(resourceWithDS instanceof DefaultPasswordResetToken && resourceWithProps instanceof DefaultPasswordResetToken)
-        assertEquals(2, resourceWithProps.getPropertyDescriptors().size())
+        assertEquals(resourceWithProps.getPropertyDescriptors().size(), 2)
         assertTrue(resourceWithProps.getPropertyDescriptors().get("email") instanceof StringProperty && resourceWithProps.getPropertyDescriptors().get("account") instanceof ResourceReference)
-        assertEquals(Account, resourceWithProps.getPropertyDescriptors().get("account").getType())
+        assertEquals(resourceWithProps.getPropertyDescriptors().get("account").getType(), Account)
 
         resourceWithDS.setEmail("some@email.com")
-        assertEquals("some@email.com", resourceWithDS.getEmail())
+        assertEquals(resourceWithDS.getEmail(), "some@email.com")
 
         def innerProperties = [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]
         expect(internalDataStore.instantiate(Account, innerProperties)).andReturn(new DefaultAccount(internalDataStore, innerProperties))

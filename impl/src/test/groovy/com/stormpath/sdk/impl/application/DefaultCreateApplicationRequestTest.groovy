@@ -34,12 +34,12 @@ class DefaultCreateApplicationRequestTest {
         def app = createStrictMock(Application)
         def request = new DefaultCreateApplicationRequest(app)
 
-        assertSame(app, request.application)
+        assertSame(request.application, app)
 
         request.accept(new CreateApplicationRequestVisitor() {
             @Override
             void visit(DefaultCreateApplicationRequest defaultRequest) {
-                assertSame(request, defaultRequest)
+                assertSame(defaultRequest, request)
             }
 
             @Override

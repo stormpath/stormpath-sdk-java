@@ -15,18 +15,30 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.ApplicationStatus
+import com.stormpath.sdk.authc.AuthenticationResult
+import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.impl.account.DefaultAccountList
+import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
+import com.stormpath.sdk.impl.authc.BasicLoginAttempt
+import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
@@ -42,7 +54,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals(7, propertyDescriptors.size())
+        assertEquals( propertyDescriptors.size(), 7)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -56,7 +68,8 @@ class DefaultApplicationTest {
     @Test
     void testMethods() {
 
-        def properties = [tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
                           accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
                           groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
                           passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
@@ -71,8 +84,77 @@ class DefaultApplicationTest {
         defaultApplication.setName("App Name")
         defaultApplication.setDescription("App Description")
 
-        assertEquals(ApplicationStatus.DISABLED, defaultApplication.getStatus())
-        assertEquals("App Name", defaultApplication.getName())
-        assertEquals("App Description", defaultApplication.getDescription())
+        assertEquals(defaultApplication.getStatus(), ApplicationStatus.DISABLED)
+        assertEquals(defaultApplication.getName(), "App Name")
+        assertEquals(defaultApplication.getDescription(), "App Description")
+
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+
+        def groupCriteria = createStrictMock(GroupCriteria)
+        expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteria)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+
+        def groupCriteriaMap = [name: "some+search"]
+        expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
+
+        def accountCriteria = createStrictMock(AccountCriteria)
+        expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteria)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
+
+        def accountCriteriaMap = [surname: "some+search"]
+        expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
+
+        expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
+
+        expect(internalDataStore.delete(defaultApplication))
+
+        def account = createStrictMock(Account)
+        def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
+                               account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+        def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
+        expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
+        expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"]))andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        def authenticationResult = createStrictMock(AuthenticationResult)
+        def defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
+        expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
+        defaultBasicLoginAttempt.setType("basic")
+        defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+        expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
+
+        replay internalDataStore, groupCriteria, accountCriteria, account
+
+        def resource = defaultApplication.getGroups()
+        assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
+
+        resource = defaultApplication.getGroups(groupCriteria)
+        assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
+
+        resource = defaultApplication.getGroups(groupCriteriaMap)
+        assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
+
+        resource = defaultApplication.getAccounts()
+        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
+
+        resource = defaultApplication.getAccounts(accountCriteria)
+        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
+
+        resource = defaultApplication.getAccounts(accountCriteriaMap)
+        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
+
+        resource = defaultApplication.getTenant()
+        assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
+
+        defaultApplication.delete()
+
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
+
+        verify internalDataStore, groupCriteria, accountCriteria, account
     }
 }

@@ -51,7 +51,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(13, propertyDescriptors.size())
+        assertEquals(propertyDescriptors.size(), 13)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -71,39 +71,52 @@ class DefaultAccountTest {
     @Test
     void testMethods() {
 
-        def properties = new HashMap<String, Object>();
-        properties.put("href", "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf")
-        properties.put("fullName", "Mel Ben Smuk")
-        properties.put("emailVerificationToken", [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"])
-        properties.put("directory", [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"])
-        properties.put("tenant", [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"])
-        properties.put("groups", [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"])
-        properties.put("groupMemberships", [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"])
+        def properties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                          fullName: "Mel Ben Smuk",
+                          emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
+                          directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                          groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultAccount = new DefaultAccount(internalDataStore, properties)
 
-        def innerProperties = [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"]
-        expect(internalDataStore.instantiate(EmailVerificationToken, innerProperties)).
-                andReturn(new DefaultEmailVerificationToken(internalDataStore, innerProperties))
+        assertFalse(defaultAccount.isPrintableProperty("password"))
+        assertNull(defaultAccount.getStatus())
 
-        innerProperties = [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"]
-        expect(internalDataStore.instantiate(Directory, innerProperties)).andReturn(new DefaultDirectory(internalDataStore, innerProperties))
+        defaultAccount.setUsername("pacoman")
+        defaultAccount.setEmail("some@email.com")
+        defaultAccount.setSurname("Smuk")
+        defaultAccount.setMiddleName("Ben")
+        defaultAccount.setGivenName("Mel")
+        defaultAccount.setStatus(AccountStatus.DISABLED)
+        defaultAccount.setPassword("superPass0rd")
 
-        innerProperties = [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"]
-        expect(internalDataStore.instantiate(Tenant, innerProperties)).andReturn(new DefaultTenant(internalDataStore, innerProperties))
+        assertEquals(defaultAccount.getUsername(), "pacoman")
+        assertEquals(defaultAccount.getEmail(), "some@email.com")
+        assertEquals(defaultAccount.getSurname(), "Smuk")
+        assertEquals(defaultAccount.getMiddleName(), "Ben")
+        assertEquals(defaultAccount.getGivenName(), "Mel")
+        assertEquals(defaultAccount.getStatus(), AccountStatus.DISABLED)
+        assertEquals(defaultAccount.getFullName(), "Mel Ben Smuk")
 
-        innerProperties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"]
-        expect(internalDataStore.instantiate(GroupList, innerProperties)).andReturn(new DefaultGroupList(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(EmailVerificationToken, properties.emailVerificationToken)).
+                andReturn(new DefaultEmailVerificationToken(internalDataStore, properties.emailVerificationToken))
+
+        expect(internalDataStore.instantiate(Directory, properties.directory)).andReturn(new DefaultDirectory(internalDataStore, properties.directory))
+
+        expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
+
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         def groupCriteria = createStrictMock(GroupCriteria)
-        expect(internalDataStore.getResource(innerProperties.href, GroupList, groupCriteria)).andReturn(new DefaultGroupList(internalDataStore, innerProperties))
+        expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteria)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
-        def groupCriteriaMap = [givenName: "some+search"]
-        expect(internalDataStore.getResource(innerProperties.href, GroupList, groupCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, innerProperties))
+        def groupCriteriaMap = [name: "some+search"]
+        expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
-        innerProperties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"]
-        expect(internalDataStore.instantiate(GroupMembershipList, innerProperties)).andReturn(new DefaultGroupMembershipList(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(GroupMembershipList, properties.groupMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.groupMemberships))
 
         expect(internalDataStore.delete(defaultAccount))
 
@@ -115,46 +128,26 @@ class DefaultAccountTest {
 
         replay internalDataStore, groupCriteria, group
 
-        assertFalse(defaultAccount.isPrintableProperty("password"))
-
-        assertNull(defaultAccount.getStatus())
-
-        defaultAccount.setUsername("pacoman")
-        defaultAccount.setEmail("some@email.com")
-        defaultAccount.setSurname("Smuk")
-        defaultAccount.setMiddleName("Ben")
-        defaultAccount.setGivenName("Mel")
-        defaultAccount.setStatus(AccountStatus.DISABLED)
-        defaultAccount.setPassword("superPass0rd")
-
-        assertEquals("pacoman", defaultAccount.getUsername())
-        assertEquals("some@email.com", defaultAccount.getEmail())
-        assertEquals("Smuk", defaultAccount.getSurname())
-        assertEquals("Ben", defaultAccount.getMiddleName())
-        assertEquals("Mel", defaultAccount.getGivenName())
-        assertEquals(AccountStatus.DISABLED, defaultAccount.getStatus())
-        assertEquals("Mel Ben Smuk", defaultAccount.getFullName())
-
         def resource = defaultAccount.getEmailVerificationToken()
-        assertTrue(resource instanceof DefaultEmailVerificationToken && resource.getHref().endsWith("emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"))
+        assertTrue(resource instanceof DefaultEmailVerificationToken && resource.getHref().equals(properties.emailVerificationToken.href))
 
         resource = defaultAccount.getDirectory()
-        assertTrue(resource instanceof DefaultDirectory && resource.getHref().endsWith("directories/fwerh23948ru2euweouh"))
+        assertTrue(resource instanceof DefaultDirectory && resource.getHref().equals(properties.directory.href))
 
         resource = defaultAccount.getTenant()
-        assertTrue(resource instanceof DefaultTenant && resource.getHref().endsWith("tenants/jdhrgojeorigjj09etiij"))
+        assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
 
         resource = defaultAccount.getGroups()
-        assertTrue(resource instanceof DefaultGroupList && resource.getHref().endsWith("accounts/iouertnw48ufsjnsDFSf/groups"))
+        assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
 
         resource = defaultAccount.getGroups(groupCriteria)
-        assertTrue(resource instanceof DefaultGroupList && resource.getHref().endsWith("accounts/iouertnw48ufsjnsDFSf/groups"))
+        assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
 
         resource = defaultAccount.getGroups(groupCriteriaMap)
-        assertTrue(resource instanceof DefaultGroupList && resource.getHref().endsWith("accounts/iouertnw48ufsjnsDFSf/groups"))
+        assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
 
         resource = defaultAccount.getGroupMemberships()
-        assertTrue(resource instanceof DefaultGroupMembershipList && resource.getHref().endsWith("accounts/iouertnw48ufsjnsDFSf/groupMemberships"))
+        assertTrue(resource instanceof DefaultGroupMembershipList && resource.getHref().equals(properties.groupMemberships.href))
 
         defaultAccount.delete()
 

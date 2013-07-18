@@ -37,7 +37,7 @@ class DefaultEmailVerificationTokenTest {
         def resourceWithProps = new DefaultEmailVerificationToken(internalDataStore, [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/efwer23823ujweouidfj"])
 
         assertTrue(resourceWithDS instanceof DefaultEmailVerificationToken && resourceWithProps instanceof DefaultEmailVerificationToken)
-        assertEquals(0, resourceWithProps.getPropertyDescriptors().size())
+        assertEquals(resourceWithProps.getPropertyDescriptors().size(), 0)
 
     }
 }

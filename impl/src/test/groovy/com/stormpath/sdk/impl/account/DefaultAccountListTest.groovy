@@ -42,13 +42,13 @@ class DefaultAccountListTest {
 
         assertTrue(resourceWithDS instanceof DefaultAccountList && resourceWithProps instanceof DefaultAccountList && resourceWithQueryString instanceof DefaultAccountList)
 
-        assertEquals(Account, resourceWithQueryString.getItemType())
+        assertEquals(resourceWithQueryString.getItemType(), Account)
 
         def propertyDescriptors = resourceWithProps.getPropertyDescriptors()
 
-        assertEquals(3, propertyDescriptors.size())
+        assertEquals(propertyDescriptors.size(), 3)
         assertTrue(propertyDescriptors.get("items") instanceof ArrayProperty && propertyDescriptors.get("offset") instanceof IntegerProperty && propertyDescriptors.get("limit") instanceof IntegerProperty)
-        assertEquals(Account, propertyDescriptors.get("items").getType())
+        assertEquals(propertyDescriptors.get("items").getType(), Account)
 
     }
 }
