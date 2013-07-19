@@ -58,7 +58,6 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)
 
-        assertNull(defaultDirectory.getStatus())
     }
 
 
@@ -70,7 +69,6 @@ class DefaultDirectoryTest {
         def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf",
                 name: "My Directory",
                 description: "My Description",
-                status: DirectoryStatus.ENABLED,
                 accounts: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts"],
                 groups: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups"],
                 tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"]
@@ -78,7 +76,7 @@ class DefaultDirectoryTest {
 
         DefaultDirectory defaultDirectory = new DefaultDirectory(internalDataStore, properties)
 
-        assertEquals(DirectoryStatus.ENABLED, defaultDirectory.getStatus())
+        assertNull(defaultDirectory.getStatus())
 
         defaultDirectory.setName("My new Directory")
         defaultDirectory.setDescription("My new Description")
