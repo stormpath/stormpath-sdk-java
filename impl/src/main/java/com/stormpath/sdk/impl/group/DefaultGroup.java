@@ -111,12 +111,6 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
-    public AccountList getAccounts(AccountCriteria criteria) {
-        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
-    }
-
-    @Override
     public Directory getDirectory() {
         return getResourceProperty(DIRECTORY);
     }
@@ -135,6 +129,12 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     public AccountList getAccounts(Map<String, Object> queryParams) {
         AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        AccountList list = getAccounts(); //safe to get the href; does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
     }
 
     @Override
