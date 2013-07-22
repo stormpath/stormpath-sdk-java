@@ -15,9 +15,7 @@
  */
 package com.stormpath.sdk.impl.group
 
-import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ArrayProperty
 import com.stormpath.sdk.impl.resource.IntegerProperty
@@ -28,7 +26,6 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @author mario
  * @since 0.8
  */
 class DefaultGroupListTest {

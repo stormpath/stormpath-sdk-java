@@ -25,9 +25,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
-
 /**
- * @author ecrisostomo
  * @since 0.8
  */
 class DefaultPasswordResetTokenTest {

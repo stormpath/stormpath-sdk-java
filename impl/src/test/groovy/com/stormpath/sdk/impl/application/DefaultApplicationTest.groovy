@@ -42,7 +42,6 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @author ecrisostomo
  * @since 0.8
  */
 class DefaultApplicationTest {
