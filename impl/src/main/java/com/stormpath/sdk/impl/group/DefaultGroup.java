@@ -112,7 +112,8 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
     }
 
     @Override
