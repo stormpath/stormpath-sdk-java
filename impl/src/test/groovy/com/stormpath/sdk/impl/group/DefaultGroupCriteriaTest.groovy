@@ -15,8 +15,10 @@
  */
 package com.stormpath.sdk.impl.group
 
+import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.group.GroupStatus
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.directory.DefaultDirectoryCriteria
 import com.stormpath.sdk.impl.http.QueryStringFactory
 import org.testng.annotations.Test
 
@@ -82,6 +84,58 @@ class DefaultGroupCriteriaTest {
                 'description+desc' + COMMA +
                 'status+asc' + AND +
                 'status=DISABLED'
+
+        assertEquals c.toString(), expectedToString
+        assertEquals queryString.toString(), expectedQueryString
+    }
+
+    @Test
+    void testWithAccountsAndAccountMemberships() {
+
+        def factory = new QueryStringFactory()
+
+        def c = Groups
+                .where(Groups.name().eqIgnoreCase('a'))
+                .withAccounts()
+                .withAccountMemberships()
+
+        assertNotNull c
+        assertTrue c instanceof DefaultGroupCriteria
+
+        def queryString = factory.createQueryString((DefaultGroupCriteria)c);
+
+        def expectedToString = 'name=a expand accounts, accountMemberships'
+
+        def expectedQueryString = 'expand=' +
+                'accounts' + COMMA +
+                'accountMemberships' + AND +
+                'name=a'
+
+        assertEquals c.toString(), expectedToString
+        assertEquals queryString.toString(), expectedQueryString
+    }
+
+    @Test
+    void testWithLimittedAccountsAndAccountMemberships() {
+
+        def factory = new QueryStringFactory()
+
+        def c = Groups
+                .where(Groups.name().eqIgnoreCase('a'))
+                .withAccounts(10)
+                .withAccountMemberships(20)
+
+        assertNotNull c
+        assertTrue c instanceof DefaultGroupCriteria
+
+        def queryString = factory.createQueryString((DefaultGroupCriteria)c);
+
+        def expectedToString = 'name=a expand accounts(limit:10), accountMemberships(limit:20)'
+
+        def expectedQueryString = 'expand=' +
+                'accounts' + OPEN_PAREN + 'limit' + COLON + 10 + CLOSE_PAREN + COMMA +
+                'accountMemberships' + OPEN_PAREN + 'limit' + COLON + 20 + CLOSE_PAREN + AND +
+                'name=a'
 
         assertEquals c.toString(), expectedToString
         assertEquals queryString.toString(), expectedQueryString

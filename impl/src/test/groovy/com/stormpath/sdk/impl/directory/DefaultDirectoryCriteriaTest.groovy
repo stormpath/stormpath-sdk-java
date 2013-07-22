@@ -84,4 +84,56 @@ class DefaultDirectoryCriteriaTest {
         assertEquals c.toString(), expectedToString
         assertEquals queryString.toString(), expectedQueryString
     }
+
+    @Test
+    void testWithAccountsAndGroups() {
+
+        def factory = new QueryStringFactory()
+
+        def c = Directories
+                .where(Directories.name().eqIgnoreCase('a'))
+                .withAccounts()
+                .withGroups()
+
+        assertNotNull c
+        assertTrue c instanceof DefaultDirectoryCriteria
+
+        def queryString = factory.createQueryString((DefaultDirectoryCriteria)c);
+
+        def expectedToString = 'name=a expand accounts, groups'
+
+        def expectedQueryString = 'expand=' +
+                'accounts' + COMMA +
+                'groups' + AND +
+                'name=a'
+
+        assertEquals c.toString(), expectedToString
+        assertEquals queryString.toString(), expectedQueryString
+    }
+
+    @Test
+    void testWithLimittedAccountsAndGroups() {
+
+        def factory = new QueryStringFactory()
+
+        def c = Directories
+                .where(Directories.name().eqIgnoreCase('a'))
+                .withAccounts(10)
+                .withGroups(20)
+
+        assertNotNull c
+        assertTrue c instanceof DefaultDirectoryCriteria
+
+        def queryString = factory.createQueryString((DefaultDirectoryCriteria)c);
+
+        def expectedToString = 'name=a expand accounts(limit:10), groups(limit:20)'
+
+        def expectedQueryString = 'expand=' +
+                'accounts' + OPEN_PAREN + 'limit' + COLON + 10 + CLOSE_PAREN + COMMA +
+                'groups' + OPEN_PAREN + 'limit' + COLON + 20 + CLOSE_PAREN + AND +
+                'name=a'
+
+        assertEquals c.toString(), expectedToString
+        assertEquals queryString.toString(), expectedQueryString
+    }
 }
