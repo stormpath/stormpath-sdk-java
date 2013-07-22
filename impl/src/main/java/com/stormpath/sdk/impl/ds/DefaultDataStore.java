@@ -33,6 +33,7 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
@@ -50,7 +51,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +73,10 @@ public class DefaultDataStore implements InternalDataStore {
     private final MapMarshaller mapMarshaller;
     private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
+    /**
+     * @since 0.9
+     */
+    private final ReferenceFactory referenceFactory;
 
     private final String baseUrl;
 
@@ -96,6 +100,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.queryStringFactory = new QueryStringFactory();
         this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
+        this.referenceFactory = new ReferenceFactory();
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -364,7 +369,7 @@ public class DefaultDataStore implements InternalDataStore {
                     //an unmaterialized reference (a Map with just the 'href' attribute).
                     //If the a caller attempts to materialize the reference, we will hit the cached version and
                     //use that data instead of issuing a request.
-                    value = toSimpleReference(name, nested);
+                    value = this.referenceFactory.createReference(name, nested);
                 }
             } else if (value instanceof Collection) { //array property, i.e. the 'items' collection resource property
                 Collection c = (Collection) value;
@@ -389,7 +394,7 @@ public class DefaultDataStore implements InternalDataStore {
                         Map referenceData = (Map) o;
                         if (isMaterialized(referenceData)) {
                             cache(itemType, referenceData);
-                            element = toSimpleReference(referenceData);
+                            element = this.referenceFactory.createReference(referenceData);
                         }
                     }
                     list.add(element);
@@ -480,50 +485,15 @@ public class DefaultDataStore implements InternalDataStore {
 
             //if the property is a reference, don't write the entire object - just the href will do:
             if (prop instanceof Map) {
-                prop = toSimpleReference(propName, (Map) prop);
+                prop = this.referenceFactory.createReference(propName, (Map) prop);
             } else if (prop instanceof Resource) {
-                prop = toSimpleReference(propName, (Resource) prop);
+                prop = this.referenceFactory.createReference(propName, (Resource) prop);
             }
 
             props.put(propName, prop);
         }
 
         return props;
-    }
-
-    private Map<String, String> toSimpleReference(Map map) {
-        Assert.isTrue(!map.isEmpty() && map.containsKey(AbstractResource.HREF_PROP_NAME),
-                "Nested resource must have an 'href' property.");
-        String href = String.valueOf(map.get(AbstractResource.HREF_PROP_NAME));
-
-        Map<String, String> reference = new HashMap<String, String>(1);
-        reference.put(AbstractResource.HREF_PROP_NAME, href);
-
-        return reference;
-    }
-
-    private Map<String, String> toSimpleReference(String propName, Map map) {
-        Assert.isTrue(!map.isEmpty() && map.containsKey(AbstractResource.HREF_PROP_NAME),
-                "Nested resource '" + propName + "' must have an 'href' property.");
-        String href = String.valueOf(map.get(AbstractResource.HREF_PROP_NAME));
-
-        Map<String, String> reference = new HashMap<String, String>(1);
-        reference.put(AbstractResource.HREF_PROP_NAME, href);
-
-        return reference;
-    }
-
-    /**
-     * @since 0.6.0
-     */
-    private Map<String, String> toSimpleReference(String propName, Resource resource) {
-        String href = resource.getHref();
-        Assert.hasText(href, "Nested Resource '" + propName + "' must have an 'href' property.");
-
-        Map<String, String> reference = new HashMap<String, String>(1);
-        reference.put(AbstractResource.HREF_PROP_NAME, href);
-
-        return reference;
     }
 
     private Request createRequest(HttpMethod method, String href, Map<String, ?> queryParams) {

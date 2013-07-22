@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryStatus;
 import com.stormpath.sdk.group.Group;
@@ -120,7 +121,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public AccountList getAccounts() {
-        return getCollection(ACCOUNTS);
+        return getResourceProperty(ACCOUNTS);
     }
 
     @Override
@@ -137,7 +138,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public GroupList getGroups() {
-        return getCollection(GROUPS);
+        return getResourceProperty(GROUPS);
     }
 
     @Override
@@ -170,5 +171,13 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public void accept(AccountStoreVisitor visitor) {
+        visitor.visit(this);
     }
 }

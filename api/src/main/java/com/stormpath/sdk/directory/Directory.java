@@ -38,7 +38,7 @@ import java.util.Map;
  * effective 'user base' of all Accounts that may use the Application.
  * @since 0.2
  */
-public interface Directory extends Resource, Saveable, Deletable {
+public interface Directory extends Resource, Saveable, Deletable, AccountStore {
 
     /**
      * Returns this Directory's name.  The name is guaranteed to be non-null and unique among all other Directories in

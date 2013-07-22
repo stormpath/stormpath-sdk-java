@@ -161,7 +161,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public GroupList getGroups() {
-        return getCollection(GROUPS);
+        return getResourceProperty(GROUPS);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public GroupMembershipList getGroupMemberships() {
-        return getCollection(GROUP_MEMBERSHIPS);
+        return getResourceProperty(GROUP_MEMBERSHIPS);
     }
 
     @Override

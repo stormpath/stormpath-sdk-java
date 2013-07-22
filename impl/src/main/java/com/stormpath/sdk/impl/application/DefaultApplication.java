@@ -19,10 +19,12 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -34,6 +36,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.LinkedHashMap;
@@ -110,7 +113,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public AccountList getAccounts() {
-        return getResourceProperty(ACCOUNTS.getName(), AccountList.class);
+        return getResourceProperty(ACCOUNTS);
     }
 
     @Override
@@ -128,7 +131,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     //since 0.8
     public GroupList getGroups() {
-        return getCollection(GROUPS);
+        return getResourceProperty(GROUPS);
     }
 
     @Override
@@ -186,5 +189,59 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public Account createAccount(Account account) throws ResourceException {
+        //TODO: IMPLEMENT
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public Group createGroup(Group group) throws ResourceException {
+        //TODO: IMPLEMENT
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStoreMapping getAccountStoreMappings() {
+        //TODO: IMPLEMENT
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStore getNewAccountStore() {
+        //TODO: IMPLEMENT
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStore getNewGroupStore() {
+        //TODO: IMPLEMENT
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStoreMapping createAccountStoreMapping(AccountStoreMapping mapping) throws ResourceException {
+        //TODO: IMPLEMENT
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

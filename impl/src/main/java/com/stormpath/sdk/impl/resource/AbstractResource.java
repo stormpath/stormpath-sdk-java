@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +48,14 @@ public abstract class AbstractResource implements Resource {
     private volatile boolean materialized;
     private volatile boolean dirty;
 
+    protected final ReferenceFactory referenceFactory;
+
     protected AbstractResource(InternalDataStore dataStore) {
         this(dataStore, null);
     }
 
     protected AbstractResource(InternalDataStore dataStore, Map<String, Object> properties) {
+        this.referenceFactory = new ReferenceFactory();
         ReadWriteLock rwl = new ReentrantReadWriteLock();
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
@@ -249,19 +252,11 @@ public abstract class AbstractResource implements Resource {
     /**
      * @since 0.8
      */
-    protected <T extends Resource> T getResourceProperty(ResourceReference<T> property) {
-        return getResourceProperty(property.getName(), property.getType());
-    }
-
-    /**
-     * @since 0.8
-     */
-    protected <C extends CollectionResource> C getCollection(CollectionReference prop) {
-        return (C)getResourceProperty(prop.getName(), prop.getType());
-    }
-
     @SuppressWarnings("unchecked")
-    protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
+    protected <T extends Resource> T getResourceProperty(ResourceReference<T> property) {
+        String key = property.getName();
+        Class<T> clazz = property.getType();
+
         Object value = getProperty(key);
         if (value == null) {
             return null;
@@ -282,6 +277,20 @@ public abstract class AbstractResource implements Resource {
                 clazz.getName() + ".  Existing type: " + value.getClass().getName();
         msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
         throw new IllegalArgumentException(msg);
+    }
+
+    /**
+     *
+     * @param property
+     * @param value
+     * @param <T>
+     * @since 0.9
+     */
+    protected <T extends Resource> void setResourceProperty(ResourceReference<T> property, Resource value) {
+        Assert.notNull(property, "Property argument cannot be null.");
+        String name = property.getName();
+        Map<String,String> reference = this.referenceFactory.createReference(name, value);
+        setProperty(name, reference);
     }
 
     private int parseInt(String value) {

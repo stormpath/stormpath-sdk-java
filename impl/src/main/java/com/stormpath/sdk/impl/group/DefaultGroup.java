@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.group;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
@@ -111,11 +112,6 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
-    public AccountList getAccounts(AccountCriteria criteria) {
-        throw new UnsupportedOperationException("Not yet implemented.");
-    }
-
-    @Override
     public Directory getDirectory() {
         return getResourceProperty(DIRECTORY);
     }
@@ -127,7 +123,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public AccountList getAccounts() {
-        return getCollection(ACCOUNTS);
+        return getResourceProperty(ACCOUNTS);
     }
 
     @Override
@@ -137,8 +133,14 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        AccountList list = getAccounts(); //safe to get the href; does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+    }
+
+    @Override
     public GroupMembershipList getAccountMemberships() {
-        return getCollection(ACCOUNT_MEMBERSHIPS);
+        return getResourceProperty(ACCOUNT_MEMBERSHIPS);
     }
 
     @Override
@@ -152,5 +154,13 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    /**
+     * @since 0.8
+     */
+    @Override
+    public void accept(AccountStoreVisitor visitor) {
+        visitor.visit(this);
     }
 }

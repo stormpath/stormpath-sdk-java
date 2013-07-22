@@ -18,6 +18,7 @@ package com.stormpath.sdk.group;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -31,7 +32,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Group extends Resource, Saveable, Deletable, Iterable<Account> {
+public interface Group extends Resource, Saveable, Deletable, AccountStore, Iterable<Account> {
 
     /**
      * Returns the group's name, guaranteed to be unique for all groups within a Directory.
@@ -153,7 +154,7 @@ public interface Group extends Resource, Saveable, Deletable, Iterable<Account> 
     GroupMembershipList getAccountMemberships();
 
     /**
-     * Assigns the specified Account to this Group
+     * Assigns the specified Account to this Group.
      * <p/>
      * <b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()} afterwards.
      * This method will interact with the server immediately.
