@@ -126,6 +126,19 @@ public interface Account extends Resource, Saveable, Deletable {
     void setSurname(String surname);
 
     /**
+     * Returns the account's 'full name', per Western cultural conventions.
+     * <p/>
+     * This is <em>NOT</em> a persistent/settable property.  It is a convenience computed property
+     * combining the {@link #getGivenName() givenName} (aka 'first name' in Western cultures) followed by the
+     * {@link #getMiddleName() middleName} (if any) followed by the {@link #getSurname() surname} (aka 'last name' in
+     * Western cultures).
+     *
+     * @return the account's 'full name', per Western cultural conventions.
+     * @since 0.8
+     */
+    String getFullName();
+
+    /**
      * Returns the account's status.  Accounts that are not {@link AccountStatus#ENABLED ENABLED} may not login to
      * applications.
      *
@@ -276,16 +289,4 @@ public interface Account extends Resource, Saveable, Deletable {
      * @return the account's email verification token.
      */
     EmailVerificationToken getEmailVerificationToken();
-
-    /**
-     *
-     * <p>
-     *     Returns the account's full name. This is a computed value obtained from the combination of given name, middle name and
-     *     surname.
-     * </p>
-     *
-     * @return the account's full name. This is a computed value obtained from the combination of given name, middle name and surname.
-     * @since 0.8
-     */
-    String getFullName();
 }
