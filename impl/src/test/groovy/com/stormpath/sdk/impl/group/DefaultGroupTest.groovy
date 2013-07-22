@@ -35,7 +35,6 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @author mario
  * @since 0.8
  */
 class DefaultGroupTest {

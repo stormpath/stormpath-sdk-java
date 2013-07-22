@@ -23,7 +23,6 @@ import static org.testng.Assert.assertSame
 import static org.testng.Assert.fail
 
 /**
- * @author ecrisostomo
  * @since 0.8
  */
 class DefaultCreateApplicationRequestTest {

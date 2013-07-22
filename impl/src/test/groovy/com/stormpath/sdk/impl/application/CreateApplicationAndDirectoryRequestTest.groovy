@@ -22,7 +22,6 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @author ecrisostomo
  * @since 0.8
  */
 class CreateApplicationAndDirectoryRequestTest {

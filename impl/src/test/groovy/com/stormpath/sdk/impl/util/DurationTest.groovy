@@ -16,9 +16,11 @@
 package com.stormpath.sdk.impl.util
 
 import org.junit.Test
-import static org.junit.Assert.*
 
 import java.util.concurrent.TimeUnit
+
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 /**
  * @since 0.8
