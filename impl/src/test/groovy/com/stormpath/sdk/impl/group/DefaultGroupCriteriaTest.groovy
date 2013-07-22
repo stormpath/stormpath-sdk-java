@@ -15,10 +15,8 @@
  */
 package com.stormpath.sdk.impl.group
 
-import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.group.GroupStatus
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.directory.DefaultDirectoryCriteria
 import com.stormpath.sdk.impl.http.QueryStringFactory
 import org.testng.annotations.Test
 
