@@ -48,18 +48,18 @@ import java.util.Map;
 public class DefaultApplication extends AbstractInstanceResource implements Application {
 
     // SIMPLE PROPERTIES:
-    static final StringProperty NAME = new StringProperty("name", true);
+    static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
     static final StatusProperty<ApplicationStatus> STATUS = new StatusProperty<ApplicationStatus>(ApplicationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class, true);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
     // COLLECTION RESOURCE REFERENCES:
-    static final CollectionReference<AccountList, Account> ACCOUNTS = new CollectionReference<AccountList, Account>("accounts", AccountList.class, true, Account.class);
-    static final CollectionReference<GroupList, Group> GROUPS = new CollectionReference<GroupList, Group>("groups", GroupList.class, true, Group.class);
+    static final CollectionReference<AccountList, Account> ACCOUNTS = new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
+    static final CollectionReference<GroupList, Group> GROUPS = new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
     static final CollectionReference<PasswordResetTokenList, PasswordResetToken> PASSWORD_RESET_TOKENS =
-            new CollectionReference<PasswordResetTokenList, PasswordResetToken>("passwordResetTokens", PasswordResetTokenList.class, true, PasswordResetToken.class);
+            new CollectionReference<PasswordResetTokenList, PasswordResetToken>("passwordResetTokens", PasswordResetTokenList.class, PasswordResetToken.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, DESCRIPTION, STATUS, TENANT, ACCOUNTS, GROUPS, PASSWORD_RESET_TOKENS);

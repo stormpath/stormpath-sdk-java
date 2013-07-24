@@ -33,8 +33,8 @@ import java.util.Map;
  */
 public abstract class AbstractCollectionResource<T extends Resource> extends AbstractResource implements CollectionResource<T> {
 
-    protected static final IntegerProperty OFFSET = new IntegerProperty("offset", true);
-    protected static final IntegerProperty LIMIT = new IntegerProperty("limit", true);
+    protected static final IntegerProperty OFFSET = new IntegerProperty("offset");
+    protected static final IntegerProperty LIMIT = new IntegerProperty("limit");
     protected static final String ITEMS_PROPERTY_NAME = "items";
 
     private final Map<String, Object> queryParams;

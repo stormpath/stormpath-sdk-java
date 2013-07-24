@@ -42,26 +42,26 @@ import java.util.Map;
 public class DefaultAccount extends AbstractInstanceResource implements Account {
 
     // SIMPLE PROPERTIES
-    static final StringProperty EMAIL = new StringProperty("email", true);
-    static final StringProperty USERNAME = new StringProperty("username", true);
+    static final StringProperty EMAIL = new StringProperty("email");
+    static final StringProperty USERNAME = new StringProperty("username");
     public static final StringProperty PASSWORD = new StringProperty("password");
-    static final StringProperty GIVEN_NAME = new StringProperty("givenName", true);
+    static final StringProperty GIVEN_NAME = new StringProperty("givenName");
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
-    static final StringProperty SURNAME = new StringProperty("surname", true);
+    static final StringProperty SURNAME = new StringProperty("surname");
     static final StatusProperty<AccountStatus> STATUS = new StatusProperty<AccountStatus>(AccountStatus.class);
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<EmailVerificationToken> EMAIL_VERIFICATION_TOKEN =
-            new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class, false);
-    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class, true);
-    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class, true);
+            new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class);
+    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<GroupList, Group> GROUPS =
-            new CollectionReference<GroupList, Group>("groups", GroupList.class, true, Group.class);
+            new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
     static final CollectionReference<GroupMembershipList, GroupMembership> GROUP_MEMBERSHIPS =
-            new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, true, GroupMembership.class);
+            new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, GroupMembership.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,

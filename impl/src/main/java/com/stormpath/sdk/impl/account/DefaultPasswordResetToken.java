@@ -31,7 +31,7 @@ import java.util.Map;
 public class DefaultPasswordResetToken extends AbstractResource implements PasswordResetToken {
 
     static final StringProperty EMAIL = new StringProperty("email");
-    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class, true);
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT);
 

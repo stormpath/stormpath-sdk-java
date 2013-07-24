@@ -22,7 +22,7 @@ import com.stormpath.sdk.resource.Resource;
  */
 public class ResourceReference<T extends Resource> extends Property<T> {
 
-    public ResourceReference(String name, Class<T> type, boolean required) {
-        super(name, type, required);
+    public ResourceReference(String name, Class<T> type) {
+        super(name, type);
     }
 }

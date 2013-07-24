@@ -33,8 +33,8 @@ import java.util.Map;
 public class DefaultGroupMembership extends AbstractInstanceResource implements GroupMembership {
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class, true);
-    static final ResourceReference<Group> GROUP = new ResourceReference<Group>("group", Group.class, true);
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
+    static final ResourceReference<Group> GROUP = new ResourceReference<Group>("group", Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT, GROUP);
 

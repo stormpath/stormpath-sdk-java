@@ -45,14 +45,14 @@ import java.util.Map;
 public class DefaultTenant extends AbstractInstanceResource implements Tenant {
 
     // SIMPLE PROPERTIES:
-    static final StringProperty NAME = new StringProperty("name", true);
-    static final StringProperty KEY = new StringProperty("key", true);
+    static final StringProperty NAME = new StringProperty("name");
+    static final StringProperty KEY = new StringProperty("key");
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<ApplicationList, Application> APPLICATIONS =
-            new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, true, Application.class);
+            new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
     static final CollectionReference<DirectoryList, Directory> DIRECTORIES =
-            new CollectionReference<DirectoryList, Directory>("directories", DirectoryList.class, true, Directory.class);
+            new CollectionReference<DirectoryList, Directory>("directories", DirectoryList.class, Directory.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, KEY, APPLICATIONS, DIRECTORIES);

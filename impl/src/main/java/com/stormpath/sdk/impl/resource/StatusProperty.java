@@ -21,6 +21,6 @@ package com.stormpath.sdk.impl.resource;
 public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
 
     public StatusProperty(Class<T> clazz) {
-        super("status", clazz, false);
+        super("status", clazz);
     }
 }

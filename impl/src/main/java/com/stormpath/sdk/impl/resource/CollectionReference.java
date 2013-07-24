@@ -26,8 +26,8 @@ public class CollectionReference<C extends CollectionResource<T>, T extends Reso
 
     private final Class<T> instanceType;
 
-    public CollectionReference(String name, Class<C> type, boolean required, Class<T> instanceType) {
-        super(name, type, required);
+    public CollectionReference(String name, Class<C> type, Class<T> instanceType) {
+        super(name, type);
         Assert.notNull(instanceType, "instanceType argument cannot be null.");
         this.instanceType = instanceType;
     }

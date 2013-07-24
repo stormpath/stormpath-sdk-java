@@ -23,8 +23,8 @@ import com.stormpath.sdk.impl.query.SimpleExpression;
  */
 public abstract class NonStringProperty<T> extends Property<T> {
 
-    protected NonStringProperty(String name, Class<T> type, boolean required) {
-        super(name, type, required);
+    protected NonStringProperty(String name, Class<T> type) {
+        super(name, type);
     }
 
     /**
