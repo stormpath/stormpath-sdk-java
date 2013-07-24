@@ -28,11 +28,11 @@ import java.util.Map;
  */
 public class DefaultError extends AbstractResource implements Error {
 
-    static final IntegerProperty STATUS = new IntegerProperty("status", true);
-    static final IntegerProperty CODE = new IntegerProperty("code", true);
-    static final StringProperty MESSAGE = new StringProperty("message", true);
-    static final StringProperty DEV_MESSAGE = new StringProperty("developerMessage", true);
-    static final StringProperty MORE_INFO = new StringProperty("moreInfo", true);
+    static final IntegerProperty STATUS = new IntegerProperty("status");
+    static final IntegerProperty CODE = new IntegerProperty("code");
+    static final StringProperty MESSAGE = new StringProperty("message");
+    static final StringProperty DEV_MESSAGE = new StringProperty("developerMessage");
+    static final StringProperty MORE_INFO = new StringProperty("moreInfo");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             STATUS, CODE, MESSAGE, DEV_MESSAGE, MORE_INFO

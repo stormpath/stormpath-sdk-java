@@ -41,19 +41,19 @@ import java.util.Map;
 public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     // SIMPLE PROPERTIES
-    static final StringProperty NAME = new StringProperty("name", true);
-    static final StringProperty DESCRIPTION = new StringProperty("description", true);
+    static final StringProperty NAME = new StringProperty("name");
+    static final StringProperty DESCRIPTION = new StringProperty("description");
     static final StatusProperty<GroupStatus> STATUS = new StatusProperty<GroupStatus>(GroupStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class, true);
-    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class, true);
+    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =
-            new CollectionReference<AccountList, Account>("accounts", AccountList.class, true, Account.class);
+            new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupMembershipList, GroupMembership> ACCOUNT_MEMBERSHIPS =
-            new CollectionReference<GroupMembershipList, GroupMembership>("accountMemberships", GroupMembershipList.class, true, GroupMembership.class);
+            new CollectionReference<GroupMembershipList, GroupMembership>("accountMemberships", GroupMembershipList.class, GroupMembership.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, DESCRIPTION, STATUS, DIRECTORY, TENANT, ACCOUNTS, ACCOUNT_MEMBERSHIPS);

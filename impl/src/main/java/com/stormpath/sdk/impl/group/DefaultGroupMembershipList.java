@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DefaultGroupMembershipList extends AbstractCollectionResource<GroupMembership> implements GroupMembershipList {
 
-    private static final ArrayProperty<GroupMembership> ITEMS = new ArrayProperty<GroupMembership>("items", GroupMembership.class, true);
+    private static final ArrayProperty<GroupMembership> ITEMS = new ArrayProperty<GroupMembership>("items", GroupMembership.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 

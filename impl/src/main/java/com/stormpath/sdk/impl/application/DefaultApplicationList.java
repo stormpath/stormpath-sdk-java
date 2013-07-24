@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DefaultApplicationList extends AbstractCollectionResource<Application> implements ApplicationList {
 
-    private static final ArrayProperty<Application> ITEMS = new ArrayProperty<Application>("items", Application.class, true);
+    private static final ArrayProperty<Application> ITEMS = new ArrayProperty<Application>("items", Application.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 

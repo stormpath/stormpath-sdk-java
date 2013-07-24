@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DefaultAuthenticationResult extends AbstractResource implements AuthenticationResult {
 
-    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class, true);
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
 
     private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT);
 

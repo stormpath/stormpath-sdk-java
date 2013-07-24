@@ -27,8 +27,8 @@ import java.util.Map;
  */
 public class DefaultBasicLoginAttempt extends AbstractResource implements BasicLoginAttempt {
 
-    static final StringProperty TYPE = new StringProperty("type", true);
-    static final StringProperty VALUE = new StringProperty("value", true);
+    static final StringProperty TYPE = new StringProperty("type");
+    static final StringProperty VALUE = new StringProperty("value");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE);
 

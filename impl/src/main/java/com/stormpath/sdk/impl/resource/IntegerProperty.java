@@ -20,7 +20,7 @@ package com.stormpath.sdk.impl.resource;
  */
 public class IntegerProperty extends NonStringProperty<Integer> {
 
-    public IntegerProperty(String name, boolean required) {
-        super(name, Integer.class, required);
+    public IntegerProperty(String name) {
+        super(name, Integer.class);
     }
 }

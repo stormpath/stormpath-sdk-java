@@ -26,11 +26,7 @@ import com.stormpath.sdk.impl.query.SimpleExpression;
 public class StringProperty extends Property<String> {
 
     public StringProperty(String name) {
-        this(name, false);
-    }
-
-    public StringProperty(String name, boolean required) {
-        super(name, String.class, required);
+        super(name, String.class);
     }
 
     /**

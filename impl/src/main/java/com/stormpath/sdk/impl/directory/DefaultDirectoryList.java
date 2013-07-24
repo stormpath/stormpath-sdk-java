@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DefaultDirectoryList extends AbstractCollectionResource<Directory> implements DirectoryList {
 
-    private static final ArrayProperty<Directory> ITEMS = new ArrayProperty<Directory>("items", Directory.class, true);
+    private static final ArrayProperty<Directory> ITEMS = new ArrayProperty<Directory>("items", Directory.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 

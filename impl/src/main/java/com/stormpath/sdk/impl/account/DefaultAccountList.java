@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DefaultAccountList extends AbstractCollectionResource<Account> implements AccountList {
 
-    private static final ArrayProperty<Account> ITEMS = new ArrayProperty<Account>("items", Account.class, true);
+    private static final ArrayProperty<Account> ITEMS = new ArrayProperty<Account>("items", Account.class);
 
     private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
