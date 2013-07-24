@@ -48,7 +48,7 @@ import static com.stormpath.sdk.cache.Caches.*;
 Client client = new ClientBuilder()
     .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
     .setCacheManager(newCacheManager()
-    .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
+        .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
         .withDefaultTimeToIdle(2, TimeUnit.HOURS) //general default
         .withCache(forResource(Account.class) //Account-specific cache settings
             .withTimeToLive(1, TimeUnit.HOURS)
