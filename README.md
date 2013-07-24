@@ -38,7 +38,7 @@ Collection Resource iteration previously only represented the first page in a co
 
 The SDK now has full caching support, utilizing a CacheManager interface (that produces/manages Cache instances).  If enabled, this improves performance by reducing round-trips to the Stormpath API servers.
 
-An out-of-the-box production-grade CacheManager implementation may be configured for single-JVM applications.  Single-JVM app example config:
+An out-of-the-box production-grade CacheManager implementation - complete with default and per-region TTL/TTI configuration - may be configured for single-JVM applications.  Single-JVM app example config:
 
     import static com.stormpath.sdk.cache.Caches.*;
     ...
@@ -65,28 +65,30 @@ Multi-JVM applications (an application deployed across multiple JVMs) would like
         .setCacheManager(cacheManager);
         .build();
 
+In both cases, the Stormpath Java SDK will store resource data in separate cache regions.  Each region is named after a resource interface for which it caches data, e.g. `"com.stormpath.sdk.account.Account"`, allowing for custom caching rules per resource type.  This gives you finer control of resource caching behavior based on your preferences/needs.
+
 *Query Support*
 
 Two new query mechanisms were introduced - you choose which you want to use based on your preference and/or JVM language.
 
--- [Fluent](http://en.wikipedia.org/wiki/Fluent_interface) and type-safe query DSL: If you're using a type-safe language, you will find this useful.  For example:
+1. [Fluent](http://en.wikipedia.org/wiki/Fluent_interface) and type-safe query DSL: If you're using a type-safe language, you will find this convenient, especially when using an IDE that auto-completes.  You'll find writing valid queries fast!  For example:
 
-    import static com.stormpath.sdk.account.Accounts.*;
-    ...
+        import static com.stormpath.sdk.account.Accounts.*;
+        ...
+         
+        application.getAccounts(where(
+            surname().containsIgnoreCase("Smith"))
+            .and(givenName().eqIgnoreCase("John"))
+            .orderBySurname().descending()
+            .withGroups(10, 10) //resource expansion
+            .offsetBy(20)
+            .limitTo(25));
 
-    application.getAccounts(where(
-        surname().containsIgnoreCase("Smith"))
-        .and(givenName().eqIgnoreCase("John"))
-        .orderBySurname().descending()
-        .withGroups(10, 10) //resource expansion
-        .offsetBy(20)
-        .limitTo(25));
+2. Map-based query methods.  These are not type safe, but might be desirable for some, maybe those using dynamically typed languages.  The map key/value pairs are simply REST API query parameters and values.  For example, the same results of the above fluent query could be achieved as follows in Groovy:
 
--- Map-based query methods.  These are not type safe, but might be desirable for some, maybe those using dynamically typed languages.  The map key/value pairs are simply REST API query parameters and values.  For example, the same results of the above fluent query could be achieved as follows in Groovy:
-
-    application.getAccounts [surname: '*Smith*', givenName: 'John',
-                             orderBy: 'surname desc', expand: 'groups(10,10)'
-                             offset: 20, limit: 25]
+        application.getAccounts [surname: '*Smith*', givenName: 'John',
+                                 orderBy: 'surname desc', expand: 'groups(10,10)'
+                                 offset: 20, limit: 25]
 
 *JavaDoc*
 
