@@ -5,7 +5,7 @@ package com.stormpath.sdk.impl.resource;
  */
 public class BooleanProperty extends Property<Boolean> {
 
-    public BooleanProperty(String name, boolean required) {
-        super(name, Boolean.class, required);
+    public BooleanProperty(String name) {
+        super(name, Boolean.class);
     }
 }

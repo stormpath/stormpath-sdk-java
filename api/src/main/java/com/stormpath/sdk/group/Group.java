@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Group extends Resource, Saveable, Deletable {
+public interface Group extends Resource, Saveable, Deletable, AccountStore {
 
     /**
      * Returns the group's name, guaranteed to be unique for all groups within a Directory.

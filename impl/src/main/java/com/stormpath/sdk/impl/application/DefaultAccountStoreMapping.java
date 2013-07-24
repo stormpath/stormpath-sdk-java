@@ -18,13 +18,13 @@ import java.util.Map;
 public class DefaultAccountStoreMapping extends AbstractInstanceResource implements AccountStoreMapping {
 
     // SIMPLE PROPERTIES:
-    static final IntegerProperty LIST_INDEX = new IntegerProperty("listIndex", false);
-    static final BooleanProperty NEW_ACCOUNT_STORE = new BooleanProperty("isNewAccountStore", false);
-    static final BooleanProperty NEW_GROUP_STORE = new BooleanProperty("isNewGroupStore", false);
+    static final IntegerProperty LIST_INDEX = new IntegerProperty("listIndex");
+    static final BooleanProperty NEW_ACCOUNT_STORE = new BooleanProperty("isNewAccountStore");
+    static final BooleanProperty NEW_GROUP_STORE = new BooleanProperty("isNewGroupStore");
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class, true);
-    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class, true);
+    static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class);
+    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             LIST_INDEX, NEW_ACCOUNT_STORE, NEW_GROUP_STORE, APPLICATION, ACCOUNT_STORE);
