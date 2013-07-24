@@ -20,7 +20,7 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 #### Bug Fixes ####
 
-*Collection Iteration (transparent pagination)*
+##### Collection Iteration (transparent pagination) #####
 
 Collection Resource iteration previously only represented the first page in a collection.  Iteration now transparently iterates over the entire collection, automatically requesting new pages from the server as necessary.  For example:
 
@@ -34,7 +34,7 @@ Collection Resource iteration previously only represented the first page in a co
 
 #### New Features and Improvements ####
 
-*Caching*
+##### Caching #####
 
 The SDK now has full caching support, utilizing a CacheManager interface (that produces/manages Cache instances).  If enabled, this improves performance by reducing round-trips to the Stormpath API servers.
 
@@ -67,7 +67,7 @@ Multi-JVM applications (an application deployed across multiple JVMs) would like
 
 In both cases, the Stormpath Java SDK will store resource data in separate cache regions.  Each region is named after a resource interface for which it caches data, e.g. `"com.stormpath.sdk.account.Account"`, allowing for custom caching rules per resource type.  This gives you finer control of resource caching behavior based on your preferences/needs.
 
-*Query Support*
+##### Query Support #####
 
 Two new query mechanisms were introduced - you choose which you want to use based on your preference and/or JVM language.
 
@@ -90,7 +90,7 @@ Two new query mechanisms were introduced - you choose which you want to use base
                                  orderBy: 'surname desc', expand: 'groups(10,10)'
                                  offset: 20, limit: 25]
 
-*JavaDoc*
+##### JavaDoc Enhancements #####
 
 JavaDoc has been improved significantly.  But please don't hesitate to send us a Pull Request with fixes or enhancements!
 
