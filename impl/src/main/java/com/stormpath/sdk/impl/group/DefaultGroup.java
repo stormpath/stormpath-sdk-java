@@ -32,7 +32,6 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.tenant.Tenant;
 
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -113,11 +112,6 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     @Override
     public Directory getDirectory() {
         return getResourceProperty(DIRECTORY);
-    }
-
-    @Override
-    public Iterator<Account> iterator() {
-        return getAccounts().iterator();
     }
 
     @Override

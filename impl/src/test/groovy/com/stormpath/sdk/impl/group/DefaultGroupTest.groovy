@@ -87,18 +87,12 @@ class DefaultGroupTest {
 
         expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
-//        def accountCriteria = createStrictMock(AccountCriteria)
-//        expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteria)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
-
         def accountCriteriaMap = [name: "some+search"]
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         expect(internalDataStore.instantiate(GroupMembershipList, properties.accountMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.accountMemberships))
 
         expect(internalDataStore.delete(defaultGroup))
-
-        expect(internalDataStore.getResource("https://api.stormpath.com/v1/groups/koaertnw47ufsjngDFSs/accounts", DefaultAccountList))
-                .andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         def groupMembership =  new DefaultGroupMembership(internalDataStore)
         Account account = createStrictMock(Account)
@@ -117,9 +111,6 @@ class DefaultGroupTest {
         resource = defaultGroup.getAccounts()
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
 
-//        resource = defaultGroup.getAccounts(accountCriteria)
-//        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
-
         resource = defaultGroup.getAccounts(accountCriteriaMap)
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
 
@@ -127,8 +118,6 @@ class DefaultGroupTest {
         assertTrue(resource instanceof DefaultGroupMembershipList && resource.getHref().equals(properties.accountMemberships.href))
 
         defaultGroup.delete()
-
-        defaultGroup.iterator()
 
         defaultGroup.addAccount(account)
 
