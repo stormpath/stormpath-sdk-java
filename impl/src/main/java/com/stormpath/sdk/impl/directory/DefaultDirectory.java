@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,20 @@
 package com.stormpath.sdk.impl.directory;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryStatus;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.resource.Status;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -32,13 +39,22 @@ import java.util.Map;
  */
 public class DefaultDirectory extends AbstractInstanceResource implements Directory {
 
-    private static String NAME = "name";
-    private static String DESCRIPTION = "description";
-    private static String STATUS = "status";
-    private static String ACCOUNTS = "accounts";
-    private static String GROUPS = "groups";
-    private static String TENANT = "tenant";
+    // SIMPLE PROPERTIES
+    static final StringProperty NAME = new StringProperty("name");
+    static final StringProperty DESCRIPTION = new StringProperty("description");
+    static final StatusProperty<DirectoryStatus> STATUS = new StatusProperty<DirectoryStatus>(DirectoryStatus.class);
 
+    // INSTANCE RESOURCE REFERENCES:
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+
+    // COLLECTION RESOURCE REFERENCES:
+    static final CollectionReference<AccountList, Account> ACCOUNTS =
+            new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
+    static final CollectionReference<GroupList, Group> GROUPS =
+            new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+            NAME, DESCRIPTION, STATUS, TENANT, ACCOUNTS, GROUPS);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -49,8 +65,13 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public String getName() {
-        return getStringProperty(NAME);
+        return getString(NAME);
     }
 
     @Override
@@ -60,7 +81,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public String getDescription() {
-        return getStringProperty(DESCRIPTION);
+        return getString(DESCRIPTION);
     }
 
     @Override
@@ -69,16 +90,16 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
-    public Status getStatus() {
-        String value = getStringProperty(STATUS);
+    public DirectoryStatus getStatus() {
+        String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return Status.valueOf(value.toUpperCase());
+        return DirectoryStatus.valueOf(value.toUpperCase());
     }
 
     @Override
-    public void setStatus(Status status) {
+    public void setStatus(DirectoryStatus status) {
         setProperty(STATUS, status.name());
     }
 
@@ -99,17 +120,41 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public AccountList getAccounts() {
-        return getResourceProperty(ACCOUNTS, AccountList.class);
+        return getCollection(ACCOUNTS);
+    }
+
+    @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
     }
 
     @Override
     public GroupList getGroups() {
-        return getResourceProperty(GROUPS, GroupList.class);
+        return getCollection(GROUPS);
+    }
+
+    @Override
+    public GroupList getGroups(Map<String, Object> queryParams) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, queryParams);
+    }
+
+    @Override
+    public GroupList getGroups(GroupCriteria criteria) {
+        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), GroupList.class, criteria);
     }
 
     @Override
     public Tenant getTenant() {
-        return getResourceProperty(TENANT, Tenant.class);
+        return getResourceProperty(TENANT);
     }
 
     /**
@@ -120,5 +165,10 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         GroupList groups = getGroups();
         String href = groups.getHref();
         getDataStore().create(href, group);
+    }
+
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
     }
 }

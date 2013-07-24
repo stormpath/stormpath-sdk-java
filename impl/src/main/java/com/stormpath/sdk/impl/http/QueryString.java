@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 package com.stormpath.sdk.impl.http;
 
 import com.stormpath.sdk.impl.util.RequestUtils;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,6 +28,18 @@ import java.util.TreeMap;
 public class QueryString extends TreeMap<String,String> {
 
     public QueryString(){}
+
+    public QueryString(Map<String,?> source) {
+        super();
+        if (!Collections.isEmpty(source)) {
+            for(Map.Entry<String,?> entry : source.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                String sValue = value != null ? String.valueOf(value) : null;
+                put(key, sValue);
+            }
+        }
+    }
 
     public String toString() {
         return toString(false);
@@ -61,13 +74,13 @@ public class QueryString extends TreeMap<String,String> {
     }
 
     public static QueryString create(String query) {
-        if (!StringUtils.hasLength(query)) {
+        if (!Strings.hasLength(query)) {
             return null;
         }
 
         QueryString queryString = new QueryString();
 
-        String[] tokens = StringUtils.tokenizeToStringArray(query, "&", false, false);
+        String[] tokens = Strings.tokenizeToStringArray(query, "&", false, false);
         if (tokens != null) {
             for( String token : tokens) {
                 applyKeyValuePair(queryString, token);
@@ -81,7 +94,7 @@ public class QueryString extends TreeMap<String,String> {
 
     private static void applyKeyValuePair(QueryString qs, String kv) {
 
-        String[] pair = StringUtils.split(kv, "=");
+        String[] pair = Strings.split(kv, "=");
 
         if (pair != null) {
             String key = pair[0];

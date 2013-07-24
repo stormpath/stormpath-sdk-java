@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.util.StringUtils;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,16 @@ public abstract class AbstractResource implements Resource {
         this.dirtyProperties = new LinkedHashMap<String, Object>();
         setProperties(properties);
     }
+
+    protected static Map<String,Property> createPropertyDescriptorMap(Property... props) {
+        Map<String,Property> m = new LinkedHashMap<String, Property>();
+        for(Property prop : props) {
+            m.put(prop.getName(), prop);
+        }
+        return m;
+    }
+
+    public abstract Map<String,Property> getPropertyDescriptors();
 
     public final void setProperties(Map<String, Object> properties) {
         writeLock.lock();
@@ -110,7 +121,7 @@ public abstract class AbstractResource implements Resource {
             return true;
         }
         String href = String.valueOf(prop);
-        return !StringUtils.hasText(href);
+        return !Strings.hasText(href);
     }
 
     protected void materialize() {
@@ -173,6 +184,13 @@ public abstract class AbstractResource implements Resource {
         }
     }
 
+    /**
+     * @since 0.8
+     */
+    protected void setProperty(Property property, Object value) {
+        setProperty(property.getName(), value, true);
+    }
+
     protected void setProperty(String name, Object value) {
         setProperty(name, value, true);
     }
@@ -194,12 +212,26 @@ public abstract class AbstractResource implements Resource {
 
     }
 
+    /**
+     * @since 0.8
+     */
+    protected String getString(StringProperty property) {
+        return getStringProperty(property.getName());
+    }
+
     protected String getStringProperty(String key) {
         Object value = getProperty(key);
         if (value == null) {
             return null;
         }
         return String.valueOf(value);
+    }
+
+    /**
+     * @since 0.8
+     */
+    protected int getInt(IntegerProperty property) {
+        return getIntProperty(property.getName());
     }
 
     protected int getIntProperty(String key) {
@@ -212,6 +244,20 @@ public abstract class AbstractResource implements Resource {
             }
         }
         return -1;
+    }
+
+    /**
+     * @since 0.8
+     */
+    protected <T extends Resource> T getResourceProperty(ResourceReference<T> property) {
+        return getResourceProperty(property.getName(), property.getType());
+    }
+
+    /**
+     * @since 0.8
+     */
+    protected <C extends CollectionResource> C getCollection(CollectionReference prop) {
+        return (C)getResourceProperty(prop.getName(), prop.getType());
     }
 
     @SuppressWarnings("unchecked")

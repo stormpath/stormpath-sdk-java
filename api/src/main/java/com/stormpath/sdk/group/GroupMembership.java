@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,30 @@
 package com.stormpath.sdk.group;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
 
 /**
+ * A {@code GroupMembership} represents the association of an {@link Account} and a {@link Group}.
+ * <p/>
+ * {@link #delete() Deleting} this resource will only delete the association - it will not delete either the
+ * {@code Account} or {@code Group}.
+ *
  * @since 0.4
  */
-public interface GroupMembership extends Resource {
+public interface GroupMembership extends Resource, Deletable {
 
+    /**
+     * Returns this membership's {@link Account} resource.
+     *
+     * @return this membership's {@link Account} resource.
+     */
     Account getAccount();
+
+    /**
+     * Returns this membership's {@link Group} resource.
+     *
+     * @return this membership's {@link Group} resource.
+     */
     Group getGroup();
-    void delete();
 }

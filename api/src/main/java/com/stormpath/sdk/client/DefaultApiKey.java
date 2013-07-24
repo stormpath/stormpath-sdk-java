@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,12 @@ public class DefaultApiKey implements ApiKey {
     private final String secret;
 
     public DefaultApiKey(String id, String secret) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null.");
+        }
+        if (secret == null) {
+            throw new IllegalArgumentException("secret cannot be null.");
+        }
         this.id = id;
         this.secret = secret;
     }

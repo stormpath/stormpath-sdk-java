@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StringProperty;
 
 import java.util.Map;
 
@@ -27,8 +30,10 @@ import java.util.Map;
  */
 public class DefaultPasswordResetToken extends AbstractResource implements PasswordResetToken {
 
-    private final String EMAIL = "email";
-    private final String ACCOUNT = "account";
+    static final StringProperty EMAIL = new StringProperty("email");
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT);
 
     public DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
@@ -39,8 +44,13 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public String getEmail() {
-        return getStringProperty(EMAIL);
+        return getString(EMAIL);
     }
 
     @Override
@@ -50,6 +60,6 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
 
     @Override
     public Account getAccount() {
-        return getResourceProperty(ACCOUNT, Account.class);
+        return getResourceProperty(ACCOUNT);
     }
 }

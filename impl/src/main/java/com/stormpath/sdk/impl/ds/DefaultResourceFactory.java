@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.util.ClassUtils;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Constructor;
@@ -54,23 +54,62 @@ public class DefaultResourceFactory implements ResourceFactory {
         Constructor<T> ctor;
 
         if (ctorArgs.length == 1) {
-            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class);
+            ctor = Classes.getConstructor(implClass, InternalDataStore.class);
+        } else if (ctorArgs.length == 2) {
+            ctor = Classes.getConstructor(implClass, InternalDataStore.class, Map.class);
         } else {
-            ctor = ClassUtils.getConstructor(implClass, InternalDataStore.class, Map.class);
+            //collection resource - we want to retain the query parameters (3rd ctor argument):
+            ctor = Classes.getConstructor(implClass, InternalDataStore.class, Map.class, Map.class);
         }
 
-        return ClassUtils.instantiate(ctor, ctorArgs);
+        return Classes.instantiate(ctor, ctorArgs);
     }
 
-    private <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
+    static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
         if (clazz.isInterface()) {
             return convertToImplClass(clazz);
         }
         return clazz;
     }
 
+    static <T extends Resource> Class<T> getInterfaceClass(Class<T> clazz) {
+        if (clazz.isInterface()) {
+            return clazz;
+        }
+        return convertToInterfaceClass(clazz);
+    }
+
+    static <T extends Resource> Class<T> convertToInterfaceClass(Class<T> clazz) {
+        String fqcn = clazz.getName();
+        String afterBase = fqcn.substring(BASE_PACKAGE.length());
+
+        //e.g. if impl is com.stormpath.sdk.impl.account.DefaultAccount, 'afterBase' is impl.account.DefaultAccount
+
+        //split interface simple name and the remainder of the package structure:
+
+        if (afterBase.startsWith(IMPL_PACKAGE_NAME)) {
+            afterBase = afterBase.substring(IMPL_PACKAGE_NAME.length());
+        }
+
+        //now afterBase is account.DefaultAccount
+
+        //now append the intermediate package name to the base package:
+        int index = afterBase.lastIndexOf('.');
+        String beforeSimpleName = afterBase.substring(0, index);
+
+        String simpleName = clazz.getSimpleName();
+
+        //strip off any 'Default' prefix:
+        index = simpleName.indexOf(IMPL_CLASS_PREFIX);
+        simpleName = simpleName.substring(index + IMPL_CLASS_PREFIX.length());
+
+        String ifaceFqcn = BASE_PACKAGE + beforeSimpleName + "." + simpleName;
+
+        return Classes.forName(ifaceFqcn);
+    }
+
     @SuppressWarnings("unchecked")
-    private <T extends Resource> Class<T> convertToImplClass(Class<T> clazz) {
+    static <T extends Resource> Class<T> convertToImplClass(Class<T> clazz) {
         String fqcn = clazz.getName();
 
         String afterBase = fqcn.substring(BASE_PACKAGE.length());
@@ -89,7 +128,7 @@ public class DefaultResourceFactory implements ResourceFactory {
         String implFqcn = BASE_PACKAGE + IMPL_PACKAGE_NAME_FRAGMENT + "." +
                 beforeImpl + "." + IMPL_CLASS_PREFIX + clazz.getSimpleName();
 
-        return ClassUtils.forName(implFqcn);
+        return Classes.forName(implFqcn);
     }
 
     private Object[] createConstructorArgs(Object[] existing) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import com.stormpath.sdk.impl.http.authc.Signer;
 import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;
-import com.stormpath.sdk.impl.util.Assert;
 import com.stormpath.sdk.impl.util.StringInputStream;
+import com.stormpath.sdk.lang.Assert;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -237,7 +237,12 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                     redirectUri = URI.create(location);
                     httpRequest.setURI(redirectUri);
                 } else {
+
                     Response response = toSdkResponse(httpResponse);
+
+                    if (response.getHttpStatus() == 429) {
+                        throw new RestException("HTTP 429: Too Many Requests.  Exceeded request rate limit in the allotted amount of time.");
+                    }
 
                     if (!response.isServerError() || retryCount > this.numRetries) {
                         return response;
@@ -246,6 +251,10 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 }
             } catch (Throwable t) {
                 log.warn("Unable to execute HTTP request: " + t.getMessage());
+
+                if (t instanceof RestException) {
+                    exception = (RestException)t;
+                }
 
                 if (!shouldRetry(httpRequest, t, retryCount)) {
                     throw new RestException("Unable to execute HTTP request: " + t.getMessage(), t);
@@ -297,7 +306,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             delay = this.backoffStrategy.getDelayMillis(retries);
         } else {
             long scaleFactor = 300;
-            if (isThrottlingException(previousException)) {
+            if (previousException != null && isThrottlingException(previousException)) {
                 scaleFactor = 500 + random.nextInt(100);
             }
             delay = (long) (Math.pow(2, retries) * scaleFactor);
@@ -350,7 +359,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             RestException re = (RestException) t;
 
             /*
-             * Throttling is reported as a 400 error. To try
+             * Throttling is reported as a 429 error. To try
              * and smooth out an occasional throttling error, we'll pause and
              * retry, hoping that the pause is long enough for the request to
              * get through the next time.
@@ -368,14 +377,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
      * @return {@code true} if the exception resulted from a throttling error, {@code false} otherwise.
      */
     private boolean isThrottlingException(RestException re) {
-        return false;
-
-        //TODO: look at response codes and react accordingly
-        /*
-        if (re == null) return false;
-        return "Throttling".equals(re.getErrorCode())
-                || "ThrottlingException".equals(re.getErrorCode())
-                || "ProvisionedThroughputExceededException".equals(re.getErrorCode()); */
+        String msg = re.getMessage();
+        return msg != null && msg.contains("HTTP 429");
     }
 
     protected Response toSdkResponse(HttpResponse httpResponse) throws IOException {

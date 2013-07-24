@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,15 @@
  */
 package com.stormpath.sdk.client;
 
-import java.io.*;
+import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.lang.Classes;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -27,9 +35,10 @@ import java.util.Properties;
  * information loaded from an external {@code .properties} file (or Properties instance) to ensure the API Key secret
  * (password) does not reside in plaintext in code.
  * <p/>
- * Example usage:
+ * Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
+ * client as follows:
  * <pre>
- * String location = "/home/jsmith/.stormpath/apiKey.properties";
+ * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
  *
  * Client = new ClientBuilder().setApiKeyFileLocation(location).build();
  * </pre>
@@ -39,25 +48,133 @@ import java.util.Properties;
  * {@link #setApiKeyFileLocation(String)} for more information.
  *
  * @see #setApiKeyFileLocation(String)
- * @see ClientApplicationBuilder
- *
  * @since 0.3
  */
 public class ClientBuilder {
 
+    private ApiKey apiKey;
     private String apiKeyFileLocation;
     private InputStream apiKeyInputStream;
     private Reader apiKeyReader;
     private Properties apiKeyProperties;
     private String apiKeyIdPropertyName = "apiKey.id";
     private String apiKeySecretPropertyName = "apiKey.secret";
-    private String baseUrl; //internal/private testing only
+    private String baseUrl = "https://api.stormpath.com/v1";
     private Proxy proxy;
+
+    private CacheManager cacheManager;
 
     /**
      * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
      */
     public ClientBuilder() {
+    }
+
+    /**
+     * Allows specifying the client's API Key {@code id} and {@code secret} values directly instead of reading the key
+     * from a stream-based resource (e.g. File, Reader, Properties or InputStream).
+     * <h3>Usage Warning</h3>
+     * It is almost always advisable to NOT use this method and instead use methods that accept a
+     * stream-based resource (File, Reader, Properties or InputStream): these other methods would ideally acquire the
+     * API Key from a secure and private {@code apiKey.properties} file that is readable only by the process that
+     * uses the Stormpath SDK.
+     * <p/>
+     * This builder method is provided however for environments that do not have access to stream resources or files,
+     * such as in certain application hosting providers or Platform-as-a-Service environments like Heroku.
+     * <h4>Environment Variables</h4>
+     * In these restricted environments, the ApiKey {@code id} and {@code secret} would almost always be obtained from
+     * environment variables, for example:
+     * <pre>
+     * String apiKeyId = System.getenv("STORMPATH_API_KEY_ID");
+     * String apiKeySecret = System.getenv("STORMPATH_API_KEY_SECRET");
+     * Client client = new ClientBuilder().setApiKey(apiKeyId, apiKeySecret).build();
+     * </pre>
+     * <h4>System Properties</h4>
+     * It is <em>not</em> recommended to load the ApiKey id and secret from a system property, for example:
+     * <p/>
+     * <span color="red"><b>THIS IS NOT RECOMMENDED. THIS COULD BE A SECURITY RISK:</b></span>
+     * <pre color="red">
+     * String apiKeySecret = System.getProperty("STORMPATH_API_KEY_SECRET");
+     * </pre>
+     * This is not recommended because System properties are visible in process listings, e.g. on Unix/Linux/MacOS:
+     * <pre><code>
+     * $ ps aux
+     * </code></pre>
+     * You do not want your API Key Secret visible by anyone who can do a process listing!
+     * <h4>Hard Coding</h4>
+     * It is <b>NEVER</b> recommended to embed the raw ApiKey values in source code that would be committed to
+     * version control (like Git or Subversion):
+     * <p/>
+     * <span color="red"><b>THIS IS AN ANTI-PATTERN! DO NOT DO THIS! THIS IS A SECURITY RISK!</b></span>
+     * <pre color="red">
+     * String apiKeyId = "myRawApiKeyId";
+     * String apiKeySecret = "secretValueThatAnyoneCouldSeeIfTheyCheckedOutMySourceCode";
+     * Client client = new ClientBuilder().setApiKey(apiKeyId, apiKeySecret).build();
+     * </pre>
+     *
+     * @param apiKeyId     the {@link ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
+     * @param apiKeySecret the {@link ApiKey#getSecret() ApiKey secret} value to use when communicating with Stormpath.
+     * @return the ClientBuilder instance for method chaining.
+     * @see #setApiKey(ApiKey)
+     * @since 0.8
+     */
+    public ClientBuilder setApiKey(String apiKeyId, String apiKeySecret) {
+        ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+        return setApiKey(apiKey);
+    }
+
+    /**
+     * Allows specifying an {@code ApiKey} instance directly instead of reading the key from a stream-based resource
+     * (e.g. File, Reader, Properties or InputStream).
+     * <h3>Usage Warning</h3>
+     * It is almost always advisable to NOT use this method and instead use methods that accept a
+     * stream-based resource (File, Reader, Properties or InputStream): these other methods would ideally acquire the
+     * API Key from a secure and private {@code apiKey.properties} file that is readable only by the process that
+     * uses the Stormpath SDK.
+     * <p/>
+     * This builder method is provided however for environments that do not have access to stream resources or files,
+     * such as in certain application hosting providers or Platform-as-a-Service environments like Heroku.
+     * <h4>Environment Variables</h4>
+     * In these restricted environments, the ApiKey {@code id} and {@code secret} would almost always be obtained from
+     * environment variables, for example:
+     * <pre>
+     * String apiKeyId = System.getenv("STORMPATH_API_KEY_ID");
+     * String apiKeySecret = System.getenv("STORMPATH_API_KEY_SECRET");
+     * ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+     * Client client = new ClientBuilder().setApiKey(anApiKey).build();
+     * </pre>
+     * <h4>System Properties</h4>
+     * It is <em>not</em> recommended to load the ApiKey id and secret from a system property, for example:
+     * <p/>
+     * <span color="red"><b>THIS IS NOT RECOMMENDED. THIS COULD BE A SECURITY RISK:</b></span>
+     * <pre color="red">
+     * String apiKeySecret = System.getProperty("STORMPATH_API_KEY_SECRET");
+     * </pre>
+     * This is not recommended because System properties are visible in process listings, e.g. on Unix/Linux/MacOS:
+     * <pre><code>
+     * $ ps aux
+     * </code></pre>
+     * You do not want your API Key Secret visible by anyone who can do a process listing!
+     * <h4>Hard Coding</h4>
+     * It is <b>NEVER</b> recommended to embed the raw ApiKey values in source code that would be committed to
+     * version control (like Git or Subversion):
+     * <p/>
+     * <span color="red"><b>THIS IS AN ANTI-PATTERN! DO NOT DO THIS! THIS IS A SECURITY RISK!</b></span>
+     * <pre color="red">
+     * String apiKeyId = "myRawApiKeyId";
+     * String apiKeySecret = "secretValueThatAnyoneCouldSeeIfTheyCheckedOutMySourceCode";
+     * ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+     * Client client = new ClientBuilder().setApiKey(anApiKey).build();
+     * </pre>
+     *
+     * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
+     * @return the ClientBuilder instance for method chaining.
+     * @see #setApiKey(String, String)
+     * @since 0.8
+     */
+    public ClientBuilder setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
+        return this;
     }
 
     /**
@@ -81,6 +198,7 @@ public class ClientBuilder {
      * <p/>
      * The constructed {@code Properties} contents and property name overrides function the same as described in the
      * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     *
      * @param reader the reader to use to construct a Properties instance.
      * @return the ClientBuilder instance for method chaining.
      */
@@ -96,6 +214,7 @@ public class ClientBuilder {
      * <p/>
      * The constructed {@code Properties} contents and property name overrides function the same as described in the
      * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     *
      * @param is the InputStream to use to construct a Properties instance.
      * @return the ClientBuilder instance for method chaining.
      */
@@ -115,18 +234,18 @@ public class ClientBuilder {
      * <p/>
      * When the file is loaded, the following name/value pairs are expected to be present by default:
      * <table>
-     *     <tr>
-     *         <th>Key</th>
-     *         <th>Value</th>
-     *     </tr>
-     *     <tr>
-     *         <td>apiKey.id</td>
-     *         <td>An individual account's API Key ID</td>
-     *     </tr>
-     *     <tr>
-     *         <td>apiKey.secret</td>
-     *         <td>The API Key Secret (password) that verifies the paired API Key ID.</td>
-     *     </tr>
+     * <tr>
+     * <th>Key</th>
+     * <th>Value</th>
+     * </tr>
+     * <tr>
+     * <td>apiKey.id</td>
+     * <td>An individual account's API Key ID</td>
+     * </tr>
+     * <tr>
+     * <td>apiKey.secret</td>
+     * <td>The API Key Secret (password) that verifies the paired API Key ID.</td>
+     * </tr>
      * </table>
      * <p/>
      * Assuming you were using these default property names, your {@code ClientBuilder} usage might look like the
@@ -210,6 +329,56 @@ public class ClientBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing round-trips to the
+     * Stormpath API server and enhancing application performance.
+     * <p/>
+     * <h3>Single JVM Applications</h3>
+     * If your application runs on a single JVM-based applications, the
+     * {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder} should be sufficient for your needs.  You
+     * create a {@code CacheManagerBuilder} by using the {@link com.stormpath.sdk.cache.Caches Caches} utility class,
+     * for example:
+     * <pre>
+     * import static com.stormpath.sdk.cache.Caches.*;
+     *
+     * ...
+     *
+     * Client client = new ClientBuilder()...
+     *     .setCacheManager(
+     *         {@link com.stormpath.sdk.cache.Caches#newCacheManager() newCacheManager()}
+     *         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
+     *         .withDefaultTimeToIdle(2, TimeUnit.HOURS) //general default
+     *         .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Account.class) //Account-specific cache settings
+     *             .withTimeToLive(1, TimeUnit.HOURS)
+     *             .withTimeToIdle(30, TimeUnit.MINUTES))
+     *         .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Group.class) //Group-specific cache settings
+     *             .withTimeToLive(2, TimeUnit.HOURS))
+     *         .build() //build the CacheManager
+     *     )
+     *     .build(); //build the Client
+     * </pre>
+     * <em>The above TTL and TTI times are just examples showing API usage - the times themselves are not
+     * recommendations.  Choose TTL and TTI times based on your application requirements.</em>
+     * <h3>Multi-JVM / Clustered Applications</h3>
+     * The default {@code CacheManager} instances returned by the
+     * {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder} might not be sufficient for a
+     * multi-instance application that runs on multiple JVMs and/or hosts/servers, as there could be cache-coherency
+     * problems across the JVMs.  See the {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder}
+     * JavaDoc for additional information.
+     * <p/>
+     * In these multi-JVM environments, you will likely want to create a simple CacheManager implementation that wraps
+     * your distributed Caching API/product of choice and then plug that implementation in to the Stormpath SDK via
+     * this method.
+     *
+     * @param cacheManager the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing
+     *                     round-trips to the Stormpath API server and enhancing application performance.
+     * @since 0.8
+     */
+    public ClientBuilder setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+        return this;
+    }
+
     //For internal Stormpath testing needs only:
     ClientBuilder setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -222,6 +391,30 @@ public class ClientBuilder {
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.
      */
     public Client build() {
+
+        ApiKey apiKey = this.apiKey;
+
+        if (apiKey == null) {
+            apiKey = loadApiKey();
+        }
+
+        return new Client(apiKey, this.baseUrl, proxy, cacheManager);
+    }
+
+    //since 0.8
+    protected ApiKey loadApiKey() {
+
+        Properties properties = loadApiKeyProperties();
+
+        String apiKeyId = getRequiredPropertyValue(properties, this.apiKeyIdPropertyName, "apiKeyId");
+
+        String apiKeySecret = getRequiredPropertyValue(properties, this.apiKeySecretPropertyName, "apiKeySecret");
+
+        return createApiKey(apiKeyId, apiKeySecret);
+    }
+
+    //since 0.8
+    protected Properties loadApiKeyProperties() {
 
         Properties properties = this.apiKeyProperties;
 
@@ -246,43 +439,12 @@ public class ClientBuilder {
             }
         }
 
-        String apiKeyId = getRequiredPropertyValue(properties, this.apiKeyIdPropertyName, "apiKeyId");
-
-        String apiKeySecret = getRequiredPropertyValue(properties, this.apiKeySecretPropertyName, "apiKeySecret");
-
-        assert apiKeyId != null;
-        assert apiKeySecret != null;
-
-        ApiKey apiKey = createApiKey(apiKeyId, apiKeySecret);
-
-        return createClient(apiKey, this.baseUrl, proxy);
+        return properties;
     }
 
     //since 0.5
     protected ApiKey createApiKey(String id, String secret) {
         return new DefaultApiKey(id, secret);
-    }
-
-    //since 0.5
-    protected Client createClient(ApiKey key, String baseUrl) {
-        return createClient(key, baseUrl, proxy);
-    }
-
-    //since 0.8
-    protected Client createClient(ApiKey key, String baseUrl, Proxy proxy) {
-        if (baseUrl == null) {
-            if (proxy == null) {
-                return new Client(key);
-            } else {
-                return new Client(key, proxy);
-            }
-        } else {
-            if (proxy == null) {
-                return new Client(key, baseUrl);
-            } else {
-                return new Client(key, proxy, baseUrl);
-            }
-        }
     }
 
     private String getPropertyValue(Properties properties, String propName) {
@@ -319,7 +481,9 @@ public class ClientBuilder {
             try {
                 is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
             } catch (IOException e) {
-                String msg = "Unable to load InputStream for specified apiKeyFileLocation";
+                String msg = "Unable to load API Key using apiKeyFileLocation '" + this.apiKeyFileLocation + "'.  " +
+                        "Please check and ensure that file exists or use the 'setApiKeyFileLocation' method to specify " +
+                        "a valid location.";
                 throw new IllegalStateException(msg, e);
             }
         }
@@ -370,7 +534,7 @@ public class ClientBuilder {
          * @param resourcePath the resource path to check
          * @return {@code true} if the resource path is not null and starts with one of the recognized
          *         resource prefixes, {@code false} otherwise.
-         * @since 0.9
+         * @since 0.8
          */
         @SuppressWarnings({"UnusedDeclaration"})
         public static boolean hasResourcePrefix(String resourcePath) {
@@ -425,7 +589,7 @@ public class ClientBuilder {
         }
 
         private static InputStream loadFromClassPath(String path) {
-            return Client.ClassUtils.getResourceAsStream(path);
+            return Classes.getResourceAsStream(path);
         }
 
         private static String stripPrefix(String resourcePath) {

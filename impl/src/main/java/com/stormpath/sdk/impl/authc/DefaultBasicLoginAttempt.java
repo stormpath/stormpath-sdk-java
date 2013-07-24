@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.StringProperty;
 
 import java.util.Map;
 
@@ -25,8 +27,10 @@ import java.util.Map;
  */
 public class DefaultBasicLoginAttempt extends AbstractResource implements BasicLoginAttempt {
 
-    private static final String TYPE = "type";
-    private static final String VALUE = "value";
+    static final StringProperty TYPE = new StringProperty("type");
+    static final StringProperty VALUE = new StringProperty("value");
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE);
 
     public DefaultBasicLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -37,8 +41,13 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public String getType() {
-        return getStringProperty(TYPE);
+        return getString(TYPE);
     }
 
     @Override
@@ -48,7 +57,7 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
 
     @Override
     public String getValue() {
-        return getStringProperty(VALUE);
+        return getString(VALUE);
     }
 
     @Override

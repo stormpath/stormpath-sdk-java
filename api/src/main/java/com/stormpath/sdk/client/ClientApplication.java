@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,23 @@ package com.stormpath.sdk.client;
 import com.stormpath.sdk.application.Application;
 
 /**
+ * <h2>Deprecated</h2>
+ * This class has been deprecated as of 0.8 and it will be removed before 1.0 final.  Instead of using this class,
+ * use the {@link ClientBuilder ClientBuilder} and after built, call
+ * <pre>
+ *     client.getResource(appUrl, Application.class);
+ * </pre>
+ * to acquire an application instance resource.
+ * <p/>
+ * <p/>
  * A ClientApplication is a simple wrapper around a {@link Client} and {@link Application} instance, returned from
  * the {@code ClientApplicationBuilder}.{@link com.stormpath.sdk.client.ClientApplicationBuilder#build()}
  * method.
  *
  * @since 0.5
+ * @deprecated in 0.8 and will be removed before 1.0 final.  Use the Client.Builder and then call <code>client.getResource(appUrl, Application.class);</code>
  */
+@Deprecated
 public class ClientApplication {
 
     private final Client client;

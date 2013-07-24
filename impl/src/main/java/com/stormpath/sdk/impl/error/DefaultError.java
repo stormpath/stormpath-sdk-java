@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@ package com.stormpath.sdk.impl.error;
 
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.IntegerProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.StringProperty;
 
 import java.util.Map;
 
@@ -25,38 +28,47 @@ import java.util.Map;
  */
 public class DefaultError extends AbstractResource implements Error {
 
-    private static final String STATUS = "status";
-    private static final String CODE = "code";
-    private static final String MESSAGE = "message";
-    private static final String DEV_MESSAGE = "developerMessage";
-    private static final String MORE_INFO = "moreInfo";
+    static final IntegerProperty STATUS = new IntegerProperty("status");
+    static final IntegerProperty CODE = new IntegerProperty("code");
+    static final StringProperty MESSAGE = new StringProperty("message");
+    static final StringProperty DEV_MESSAGE = new StringProperty("developerMessage");
+    static final StringProperty MORE_INFO = new StringProperty("moreInfo");
 
-    public DefaultError(Map<String,Object> body) {
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+            STATUS, CODE, MESSAGE, DEV_MESSAGE, MORE_INFO
+    );
+
+    public DefaultError(Map<String, Object> body) {
         super(null, body);
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public int getStatus() {
-        return getIntProperty(STATUS);
+        return getInt(STATUS);
     }
 
     @Override
     public int getCode() {
-        return getIntProperty(CODE);
+        return getInt(CODE);
     }
 
     @Override
     public String getMessage() {
-        return getStringProperty(MESSAGE);
+        return getString(MESSAGE);
     }
 
     @Override
     public String getDeveloperMessage() {
-        return getStringProperty(DEV_MESSAGE);
+        return getString(DEV_MESSAGE);
     }
 
     @Override
     public String getMoreInfo() {
-        return getStringProperty(MORE_INFO);
+        return getString(MORE_INFO);
     }
 }

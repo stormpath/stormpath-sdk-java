@@ -14,3 +14,13 @@ DefaultDataStore
 
 - Added toSimpleReference(String propName, Resource resource)
 - Updated toMap method implementation to use new toSimpleReference call (new else if statement on line 186)
+
+0.8.0
+-------------
+- Added fluent criteria query DSL for all resources with static utilities (Applications.*, Accounts.*, etc).
+- Added caching support (com.stormpath.sdk.cache.*)
+- Removed com.strompath.sdk.resource.Status Enum in favor of resource-specific Enums (AccountStatus, ApplicationStatus, etc)
+  This helps ensure backwards compatibility moving forward since Enums cannot be subclassed for resource-specific
+  states.
+
+

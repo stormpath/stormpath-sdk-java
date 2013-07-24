@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class AbstractInstanceResource extends AbstractResource implements Saveable {
+public abstract class AbstractInstanceResource extends AbstractResource implements Saveable {
 
     protected AbstractInstanceResource(InternalDataStore dataStore) {
         super(dataStore);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 
 import java.util.Map;
 
@@ -27,7 +29,9 @@ import java.util.Map;
  */
 public class DefaultAuthenticationResult extends AbstractResource implements AuthenticationResult {
 
-    private static final String ACCOUNT = "account";
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
+
+    private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT);
 
     public DefaultAuthenticationResult(InternalDataStore dataStore) {
         super(dataStore);
@@ -38,7 +42,12 @@ public class DefaultAuthenticationResult extends AbstractResource implements Aut
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public Account getAccount() {
-        return getResourceProperty(ACCOUNT, Account.class);
+        return getResourceProperty(ACCOUNT);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package com.stormpath.sdk.impl.account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.Property;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -32,5 +34,10 @@ public class DefaultEmailVerificationToken extends AbstractInstanceResource impl
 
     public DefaultEmailVerificationToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return Collections.emptyMap();
     }
 }

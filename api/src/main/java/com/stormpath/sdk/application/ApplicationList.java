@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.resource.CollectionResource;
 
 /**
+ * A {@link CollectionResource} containing {@link Application} instances.
+ *
  * @since 0.2
  */
 public interface ApplicationList extends CollectionResource<Application> {

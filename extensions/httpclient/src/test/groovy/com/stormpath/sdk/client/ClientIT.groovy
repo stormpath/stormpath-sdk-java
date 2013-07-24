@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.cache.Caches
 import org.testng.annotations.BeforeClass
 
 class ClientIT {
@@ -29,6 +30,13 @@ class ClientIT {
     }
 
     Client buildClient() {
-        return new ClientBuilder().setBaseUrl(baseUrl).setApiKeyFileLocation(apiKeyFileLocation).build()
+        return new ClientBuilder().setBaseUrl(baseUrl)
+                .setApiKeyFileLocation(apiKeyFileLocation)
+                .setCacheManager(Caches.newCacheManager().build())
+                .build()
+    }
+
+    protected static String uniquify(String s) {
+        return s + " " + UUID.randomUUID().toString();
     }
 }

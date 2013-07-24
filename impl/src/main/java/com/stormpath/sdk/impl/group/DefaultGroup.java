@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,20 @@
 package com.stormpath.sdk.impl.group;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.GroupStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.resource.Status;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -32,12 +39,23 @@ import java.util.Map;
  */
 public class DefaultGroup extends AbstractInstanceResource implements Group {
 
-    private static String NAME = "name";
-    private static String DESCRIPTION = "description";
-    private static String STATUS = "status";
-    private static String TENANT = "tenant";
-    private static String DIRECTORY = "directory";
-    private static String ACCOUNTS = "accounts";
+    // SIMPLE PROPERTIES
+    static final StringProperty NAME = new StringProperty("name");
+    static final StringProperty DESCRIPTION = new StringProperty("description");
+    static final StatusProperty<GroupStatus> STATUS = new StatusProperty<GroupStatus>(GroupStatus.class);
+
+    // INSTANCE RESOURCE REFERENCES:
+    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+
+    // COLLECTION RESOURCE REFERENCES:
+    static final CollectionReference<AccountList, Account> ACCOUNTS =
+            new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
+    static final CollectionReference<GroupMembershipList, GroupMembership> ACCOUNT_MEMBERSHIPS =
+            new CollectionReference<GroupMembershipList, GroupMembership>("accountMemberships", GroupMembershipList.class, GroupMembership.class);
+
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+            NAME, DESCRIPTION, STATUS, DIRECTORY, TENANT, ACCOUNTS, ACCOUNT_MEMBERSHIPS);
 
     public DefaultGroup(InternalDataStore dataStore) {
         super(dataStore);
@@ -48,8 +66,13 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
     public String getName() {
-        return getStringProperty(NAME);
+        return getString(NAME);
     }
 
     @Override
@@ -59,7 +82,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public String getDescription() {
-        return getStringProperty(DESCRIPTION);
+        return getString(DESCRIPTION);
     }
 
     @Override
@@ -68,36 +91,61 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
-    public Status getStatus() {
-        String value = getStringProperty(STATUS);
+    public GroupStatus getStatus() {
+        String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return Status.valueOf(value.toUpperCase());
+        return GroupStatus.valueOf(value.toUpperCase());
     }
 
     @Override
-    public void setStatus(Status status) {
+    public void setStatus(GroupStatus status) {
         setProperty(STATUS, status.name());
     }
 
     @Override
     public Tenant getTenant() {
-        return getResourceProperty(TENANT, Tenant.class);
+        return getResourceProperty(TENANT);
     }
 
     @Override
     public Directory getDirectory() {
-        return getResourceProperty(DIRECTORY, Directory.class);
+        return getResourceProperty(DIRECTORY);
     }
 
     @Override
     public AccountList getAccounts() {
-        return getResourceProperty(ACCOUNTS, AccountList.class);
+        return getCollection(ACCOUNTS);
+    }
+
+    @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        AccountList list = getAccounts(); //safe to get the href; does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+    }
+
+    @Override
+    public GroupMembershipList getAccountMemberships() {
+        return getCollection(ACCOUNT_MEMBERSHIPS);
     }
 
     @Override
     public GroupMembership addAccount(Account account) {
         return DefaultGroupMembership.create(account, this, getDataStore());
+    }
+
+    /**
+     * @since 0.8
+     */
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
     }
 }

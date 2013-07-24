@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
@@ -26,6 +28,11 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultGroupList extends AbstractCollectionResource<Group> implements GroupList {
+
+    private static final ArrayProperty<Group> ITEMS = new ArrayProperty<Group>("items", Group.class);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
+
     public DefaultGroupList(InternalDataStore dataStore) {
         super(dataStore);
     }
@@ -34,8 +41,17 @@ public class DefaultGroupList extends AbstractCollectionResource<Group> implemen
         super(dataStore, properties);
     }
 
+    public DefaultGroupList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
+        super(dataStore, properties, queryParams);
+    }
+
     @Override
     protected Class<Group> getItemType() {
         return Group.class;
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
     }
 }
