@@ -85,7 +85,7 @@ Two new query mechanisms were introduced - you choose which you want to use base
         surname().containsIgnoreCase("Smith"))
         .and(givenName().eqIgnoreCase("John"))
         .orderBySurname().descending()
-        .withGroups(10, 10) //resource expansion
+        .withGroups(10, 10) //eager fetching
         .offsetBy(20)
         .limitTo(25));
     ```
