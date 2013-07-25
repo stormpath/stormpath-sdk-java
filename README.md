@@ -92,7 +92,7 @@ Two new query mechanisms were introduced - you choose which you want to use base
 2. Map-based query methods.  These are not type safe, but might be desirable for some developers, maybe those using dynamically typed languages.  The map key/value pairs are simply REST API query parameters and values.  For example, the same results of the above fluent query could be achieved as follows in Groovy:
     ```groovy
     application.getAccounts [surname: '*Smith*', givenName: 'John',
-                             orderBy: 'surname desc', expand: 'groups(10,10)'
+                             orderBy: 'surname desc', expand: 'groups(offset:10,limit:10)'
                              offset: 20, limit: 25]
     ```
 
