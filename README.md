@@ -81,8 +81,8 @@ Two new query mechanisms were introduced - you choose which you want to use base
     import static com.stormpath.sdk.account.Accounts.*;
     ...
     
-    application.getAccounts(where()
-        .surname().containsIgnoreCase("Smith"))
+    application.getAccounts(where(
+        surname().containsIgnoreCase("Smith"))
         .and(givenName().eqIgnoreCase("John"))
         .orderBySurname().descending()
         .withGroups(10, 10) //eager fetching
