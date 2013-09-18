@@ -20,7 +20,7 @@ import org.testng.annotations.BeforeClass
 
 class ClientIT {
 
-    String apiKeyFileLocation = System.getProperty('user.home') + "/.stormpath/iam/localhost/apiKey.properties"
+    String apiKeyFileLocation = System.getProperty('user.home') + "/.stormpath/apiKey.properties"
     String baseUrl = 'http://localhost:8080/v1'
     Client client
 
@@ -30,7 +30,7 @@ class ClientIT {
     }
 
     Client buildClient() {
-        return new ClientBuilder().setBaseUrl(baseUrl)
+        return new ClientBuilder() /*.setBaseUrl(baseUrl) */
                 .setApiKeyFileLocation(apiKeyFileLocation)
                 .setCacheManager(Caches.newCacheManager().build())
                 .build()

@@ -167,7 +167,7 @@ public class DefaultDataStore implements InternalDataStore {
             Request request = createRequest(HttpMethod.GET, href, qs);
             data = executeRequest(request);
 
-            if (isCacheUpdateEnabled(clazz)) {
+            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
                 //cache for further use:
                 cache(clazz, data);
             }
@@ -259,6 +259,9 @@ public class DefaultDataStore implements InternalDataStore {
             return null;
         }
 
+        //asserts invariant given that we should have returned if the responseBody is null or empty:
+        assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
+
         if (isCacheUpdateEnabled(returnType)) {
             cache(returnType, responseBody);
         }
@@ -315,6 +318,26 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     /**
+     * Quick fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/14">Issue #14</a>.
+     *
+     * @since 0.8.1
+     */
+    private boolean isDirectlyCacheable(Class<? extends Resource> clazz, Map<String, ?> data) {
+
+        return isCachingEnabled() &&
+
+                !Collections.isEmpty(data) &&
+
+                //Authentication results (currently) do not have an 'href' attribute, as it was not expected to support
+                // GET requests.  This will be resolved within Stormpath, but this is a fix for the SDK for now (for
+                // Issue #14).  They are not directly cacheable, but any materialized references they contain are:
+                data.get(AbstractResource.HREF_PROP_NAME) != null &&
+
+                //we don't cache collection resources at the moment (only the instances inside them):
+                !CollectionResource.class.isAssignableFrom(clazz);
+    }
+
+    /**
      * @since 0.8
      */
     @SuppressWarnings("unchecked")
@@ -325,10 +348,13 @@ public class DefaultDataStore implements InternalDataStore {
 
         Assert.notEmpty(data, "Resource data cannot be null or empty.");
         String href = (String) data.get(AbstractResource.HREF_PROP_NAME);
-        Assert.notNull("Resource data must contain an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
-        Assert.isTrue(data.size() > 1,
-                "Resource data must be materialized to be cached (need more than just an '" +
-                        AbstractResource.HREF_PROP_NAME + "' attribute).");
+
+        if (isDirectlyCacheable(clazz, data)) {
+            Assert.notNull(href, "Resource data must contain an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
+            Assert.isTrue(data.size() > 1,
+                    "Resource data must be materialized to be cached (need more than just an '" +
+                            AbstractResource.HREF_PROP_NAME + "' attribute).");
+        }
 
         Map<String, Object> toCache = new LinkedHashMap<String, Object>(data.size());
 
@@ -404,7 +430,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         //we don't cache collection resources at the moment (only the instances inside them):
-        if (!CollectionResource.class.isAssignableFrom(clazz)) {
+        if (isDirectlyCacheable(clazz, toCache)) {
             Cache cache = getCache(clazz);
             cache.put(href, toCache);
         }
