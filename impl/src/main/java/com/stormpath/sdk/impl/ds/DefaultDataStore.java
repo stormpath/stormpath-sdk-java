@@ -318,7 +318,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     /**
-     * Quick fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/14">Issue #14</a>.
+     * Quick fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/17">Issue #17</a>.
      *
      * @since 0.8.1
      */
@@ -330,7 +330,7 @@ public class DefaultDataStore implements InternalDataStore {
 
                 //Authentication results (currently) do not have an 'href' attribute, as it was not expected to support
                 // GET requests.  This will be resolved within Stormpath, but this is a fix for the SDK for now (for
-                // Issue #14).  They are not directly cacheable, but any materialized references they contain are:
+                // Issue #17).  They are not directly cacheable, but any materialized references they contain are:
                 data.get(AbstractResource.HREF_PROP_NAME) != null &&
 
                 //we don't cache collection resources at the moment (only the instances inside them):

@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals
 class SingleApplicationIT extends ClientIT {
 
     /**
-     * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/14">Issue #14</a>
+     * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/17">Issue #17</a>
      */
     @Test
     void testLoginWithCachingEnabled() {
@@ -29,7 +29,7 @@ class SingleApplicationIT extends ClientIT {
         //if we ever turn off caching in the parent class config, we can't let that affect this test:
         def client = new ClientBuilder()
                 .setApiKeyFileLocation(apiKeyFileLocation)
-                .setCacheManager(Caches.newCacheManager().build()) //enable caching - required to test Issue #14
+                .setCacheManager(Caches.newCacheManager().build()) //enable caching - required to test Issue #17
                 .build()
 
         Tenant tenant = client.getCurrentTenant();
