@@ -154,7 +154,7 @@ class HttpClientRequestFactory {
 
     /**
      * Utility function for creating a new BufferedEntity and wrapping any errors
-     * as an AmazonClientException.
+     * as a RestException.
      *
      * @param entity The HTTP entity to wrap with a buffered HTTP entity.
      * @return A new BufferedHttpEntity wrapping the specified entity.
