@@ -16,6 +16,12 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 0.8.1 ###
+
+This is a bugfix point release.  Issues resolved:
+
+- [Issue #12](https://github.com/stormpath/stormpath-sdk-java/issues/14) application.authenticateAccount fails if caching is enabled
+
 ### 0.8.0 ###
 
 #### Bug Fixes ####
