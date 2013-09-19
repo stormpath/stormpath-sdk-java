@@ -213,7 +213,7 @@ class DefaultCacheTest {
         assertEquals(value, found)
         assertEquals 1, cache.size()
 
-        Thread.sleep(200)
+        Thread.sleep(300)
 
         found = cache.get(key)
         assertNull found
