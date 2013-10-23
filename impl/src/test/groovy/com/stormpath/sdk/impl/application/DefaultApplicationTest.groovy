@@ -19,6 +19,8 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.account.PasswordResetToken
+import com.stormpath.sdk.application.AccountStoreMapping
+import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
@@ -53,15 +55,18 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 7)
+        assertEquals( propertyDescriptors.size(), 10)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("status") instanceof StatusProperty && propertyDescriptors.get("status").getType().equals(ApplicationStatus))
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
+        assertTrue(propertyDescriptors.get("defaultAccountStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultAccountStoreMapping").getType().equals(AccountStoreMapping))
+        assertTrue(propertyDescriptors.get("defaultGroupStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultGroupStoreMapping").getType().equals(AccountStoreMapping))
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("passwordResetTokens") instanceof CollectionReference && propertyDescriptors.get("passwordResetTokens").getType().equals(PasswordResetTokenList))
+        assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
     }
 
     @Test
