@@ -153,17 +153,17 @@ public interface Application extends Resource, Saveable, Deletable {
      * Creates a new Account that may login to this application.
      * <p/>
      * This is mostly a convenience method; it delegates creation to the Application's designated
-     * {@link #getNewAccountStore() newAccountStore}, and functions as follows:
+     * {@link #getDefaultAccountStore() defaultAccountStore}, and functions as follows:
      * <ul>
-     * <li>If the {@code newAccountStore} is a Directory: the account is created in the Directory and returned.</li>
-     * <li>If the {@code newAccountStore} is a Group: the account is created in the Group's Directory, assigned to
+     * <li>If the {@code defaultAccountStore} is a Directory: the account is created in the Directory and returned.</li>
+     * <li>If the {@code defaultAccountStore} is a Group: the account is created in the Group's Directory, assigned to
      * the Group, and then returned.</li>
      * </ul>
      *
      * @param account the account to create/persist
      * @return a new Account that may login to this application.
-     * @throws ResourceException if the Application does not have a designated {@link #getNewAccountStore() newAccountStore}
-     *                           or if the designated {@code newAccountStore} does not allow new accounts to be created.
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultAccountStore() defaultAccountStore}
+     *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be created.
      * @since 0.9
      */
     Account createAccount(Account account) throws ResourceException;
@@ -182,7 +182,7 @@ public interface Application extends Resource, Saveable, Deletable {
 
     /**
      * Returns a paginated list of the groups accessible to the application (based on the app's mapped Account stores)
-     * that that also match the specified query criteria.
+     * that also match the specified query criteria.
      * <p/>
      * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
      * the resource URL as query parameters, for example:
@@ -235,12 +235,12 @@ public interface Application extends Resource, Saveable, Deletable {
      * Creates a new Group that may be used by this application.
      * <p/>
      * This is a convenience method.  It merely delegates to the Application's designated
-     * {@link #getNewGroupStore() newGroupStore}.
+     * {@link #getDefaultGroupStore() defaultGroupStore}.
      *
      * @param group the Group to create/persist
      * @return a new Group that may be used by this application.
-     * @throws ResourceException if the Application does not have a designated {@link #getNewGroupStore()}  newGroupStore}
-     *                           or if the designated {@code newGroupStore} does not allow new groups to be created.
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultGroupStore()}  defaultGroupStore}
+     *                           or if the designated {@code defaultGroupStore} does not allow new groups to be created.
      * @since 0.9
      */
     Group createGroup(Group group) throws ResourceException;
@@ -324,11 +324,63 @@ public interface Application extends Resource, Saveable, Deletable {
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
 
     /**
+     * Returns all AccountStoreMappings accessible to the application.
+     * <p/>
+     * Tip: Instead of iterating over all accountStoreMappings, it might be more convenient (and practical) to execute a search
+     * for one or more accountStoreMappings using the {@link #getAccountStoreMappings(java.util.Map)} method or the
+     * {@link #getAccountStoreMappings(AccountStoreMappingCriteria)} instead of this one.
      *
-     * @return
+     * @return all AccountStoreMappings accessible to the application.
+     * @see #getAccountStoreMappings(java.util.Map)
+     * @see #getAccountStoreMappings(AccountStoreMappingCriteria)
      * @since 0.9
      */
-    AccountStoreMapping getAccountStoreMappings();
+    AccountStoreMappingList getAccountStoreMappings();
+
+    /**
+     * Returns a paginated list of the application's mapped Account stores
+     * that also match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../applications/applicationId/accountStoreMappings?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the application's mapped account stores that match the specified query criteria.
+     * @since 0.9
+     */
+    AccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the application's mapped Account stores that also match the specified query
+     * criteria.
+     * The {@link AccountStoreMappings AccountStoreMappings} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * application.getAccountStoreMappings(AccountStoreMappings.criteria()
+     *     .withAccountStore()
+     *     .offsetBy(50)
+     *     .limitTo(25));
+     * </pre>
+     * or, if using static imports:
+     * <pre>
+     * import static com.stormpath.sdk.account.AccountStoreMappings.*;
+     *
+     * ...
+     *
+     * application.getAccountStoreMappings( criteria()
+     *     .withAccountStore()
+     *     .offsetBy(50)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the application's mapped account stores that match the specified query criteria.
+     * @since 0.9
+     */
+    AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria);
 
     /**
      * Returns the {@link AccountStore} (which will be either a Group or Directory) used to persist
@@ -344,7 +396,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * example:
      * <p/>
      * <pre>
-     * AccountStore accountStore = application.getNewAccountStore();
+     * AccountStore accountStore = application.getDefaultAccountStore();
      * accountStore.accept(new {@link com.stormpath.sdk.directory.AccountStoreVisitor AccountStoreVisitor}() {
      *
      *     public void visit(Directory directory) {
@@ -357,16 +409,30 @@ public interface Application extends Resource, Saveable, Deletable {
      * };
      * </pre>
      * <h3>Setting the 'New Account Store'</h3>
-     * You set the newAccountStore by acquiring one of the Application's
+     * You set the defaultAccountStore by acquiring one of the Application's
      * {@link #getAccountStoreMappings() accountStoreMappings} and calling
-     * {@link AccountStoreMapping#setNewAccountStore(boolean) setNewAccountStore}<code>(true)</code>.
+     * {@link AccountStoreMapping#setDefaultAccountStore(boolean) setDefaultAccountStore}<code>(true)</code> or by
+     * calling {@link #setDefaultAccountStore(com.stormpath.sdk.directory.AccountStore)}
      *
      * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *         new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}, or
      *         {@code null} if no accountStore has been designated.
      * @since 0.9
      */
-    AccountStore getNewAccountStore();
+    AccountStore getDefaultAccountStore();
+
+    /**
+     * Sets the {@link AccountStore} (which will be either a Group or a Directory) used to persist
+     * new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}.
+     * <p/>
+     * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
+     * when creating accounts; this method sets the AccountStore to which the Application delegates
+     * new account persistence.
+     *
+     * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
+     *         new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
+     */
+    void setDefaultAccountStore(AccountStore accountStore);
 
     /**
      * Returns the {@link AccountStore} used to persist
@@ -385,7 +451,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * example:
      * <p/>
      * <pre>
-     * AccountStore groupStore = application.getNewGroupStore();
+     * AccountStore groupStore = application.getDefaultGroupStore();
      * groupStore.accept(new {@link com.stormpath.sdk.directory.AccountStoreVisitor AccountStoreVisitor}() {
      *
      *     public void visit(Directory directory) {
@@ -403,18 +469,32 @@ public interface Application extends Resource, Saveable, Deletable {
      * <h3>Setting the 'New Group Store'</h3>
      * You set the newGroupStore by acquiring one of the Application's
      * {@link #getAccountStoreMappings() accountStoreMappings} and calling
-     * {@link AccountStoreMapping#setNewGroupStore(boolean) setNewGroupStore}<code>(true)</code>.
+     * {@link AccountStoreMapping#setDefaultGroupStore(boolean) setDefaultGroupStore}<code>(true)</code> or by
+     * calling {@link #setDefaultGroupStore(com.stormpath.sdk.directory.AccountStore)}.
      *
      * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *         new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}, or
      *         {@code null} if no accountStore has been designated.
      * @since 0.9
      */
-    AccountStore getNewGroupStore();
+    AccountStore getDefaultGroupStore();
+
+    /**
+     * Sets the {@link AccountStore} (which will be either a Group or a Directory) used to persist
+     * new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}.
+     * <p/>
+     * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
+     * when creating groups; this method sets the AccountStore to which the Application delegates
+     * new group persistence.
+     *
+     * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
+     *         new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
+     */
+    void setDefaultGroupStore(AccountStore accountStore);
 
     /**
      * Creates a new {@link AccountStoreMapping} for this Application, allowing the associated
-     * {@link com.stormpath.sdk.application.AccountStoreMapping#getAccountStore() accountStore} to be used as a source
+     * {@link AccountStoreMapping#getAccountStore() accountStore} to be used as a source
      * of accounts that may login to the Application.
      * <p/>
      * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
@@ -430,7 +510,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <p/>
      * When calling this method, you control where the new {@code AccountStoreMapping} will reside in the Application's
      * overall list by setting its (zero-based)
-     * {@link com.stormpath.sdk.application.AccountStoreMapping#setListIndex() listIndex} property before calling this
+     * {@link AccountStoreMapping#setListIndex(int) listIndex} property before calling this
      * method.
      * <h4>{@code listIndex} values</h4>
      * <ul>
@@ -466,4 +546,42 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.9
      */
     AccountStoreMapping createAccountStoreMapping(AccountStoreMapping mapping) throws ResourceException;
+
+    /**
+     * Creates a new {@link AccountStoreMapping} for this Application and appends that
+     * AccountStoreMapping to the end of the Application's AccountStoreMapping list, allowing the associated
+     * {@link AccountStoreMapping#getAccountStore() accountStore} to be used as a source
+     * of accounts that may login to the Application.
+     * <p/>
+     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method will call the server immediately.
+     * <h3>Authentication Process and AccountStoreMapping Order</h3>
+     * During an authentication attempt, an Application consults its mapped account stores in <em>iteration order</em>,
+     * trying to find the first matching account to use for authentication.  The lower the {@code AccountStoreMapping}
+     * index (closer to zero), the earlier that store is consulted during authentication.  If no matching account is
+     * found in an account store, the application will move on to the next {@code AccountStore} (next highest index)
+     * in the list.  This continues either a matching account is found, or until all account stores are exhausted.
+     * When a matching account is found, the process is short-circuited and the discovered account will be used
+     * immediately for authentication.
+     * <p/>
+     * When calling this method, you are setting the new {@code AccountStoreMapping} to the end of the Application's
+     * overall list.
+     * <h4>Example</h4>
+     * <pre>
+     * AccountStore directoryOrGroup = getDirectoryOrGroupYouWantToUseForLogin();
+     * AccountStoreMapping mapping = application.addAccountStore(directoryOrGroup);
+     * </pre>
+     * Then, when {@link #authenticateAccount(com.stormpath.sdk.authc.AuthenticationRequest) authenticating} an
+     * account, this AccountStore (directory or group) will be consulted if no others before it in the list
+     * found a matching account.
+     *
+     * @param accountStore the new AccountStore resource to add to the Application's AccountStoreMapping list.
+     * @return the newly created AccountStoreMapping instance.
+     * @throws ResourceException
+     * @since 0.9
+     */
+    AccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException;
+
+
+
 }

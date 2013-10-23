@@ -20,6 +20,8 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.AccountStoreMapping;
+import com.stormpath.sdk.application.AccountStoreMappingCriteria;
+import com.stormpath.sdk.application.AccountStoreMappingList;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
@@ -38,6 +40,8 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,6 +50,7 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultApplication extends AbstractInstanceResource implements Application {
+    private static final Logger log = LoggerFactory.getLogger(DefaultApplication.class);
 
     // SIMPLE PROPERTIES:
     static final StringProperty NAME = new StringProperty("name");
@@ -54,15 +59,19 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+    static final ResourceReference<AccountStoreMapping> DEFAULT_ACCOUNT_STORE_MAPPING = new ResourceReference<AccountStoreMapping>("defaultAccountStoreMapping", AccountStoreMapping.class);
+    static final ResourceReference<AccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING = new ResourceReference<AccountStoreMapping>("defaultGroupStoreMapping", AccountStoreMapping.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS = new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupList, Group> GROUPS = new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+    static final CollectionReference<AccountStoreMappingList, AccountStoreMapping> ACCOUNT_STORE_MAPPINGS =
+            new CollectionReference<AccountStoreMappingList, AccountStoreMapping>("accountStoreMappings", AccountStoreMappingList.class, AccountStoreMapping.class);
     static final CollectionReference<PasswordResetTokenList, PasswordResetToken> PASSWORD_RESET_TOKENS =
             new CollectionReference<PasswordResetTokenList, PasswordResetToken>("passwordResetTokens", PasswordResetTokenList.class, PasswordResetToken.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, ACCOUNTS, GROUPS, PASSWORD_RESET_TOKENS);
+            NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS, ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -213,27 +222,88 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
      * @since 0.9
      */
     @Override
-    public AccountStoreMapping getAccountStoreMappings() {
-        //TODO: IMPLEMENT
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public AccountStoreMappingList getAccountStoreMappings() {
+        return getResourceProperty(ACCOUNT_STORE_MAPPINGS);
     }
 
     /**
      * @since 0.9
      */
     @Override
-    public AccountStore getNewAccountStore() {
-        //TODO: IMPLEMENT
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public AccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams) {
+        AccountStoreMappingList accountStoreMappings = getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, queryParams);
     }
 
     /**
      * @since 0.9
      */
     @Override
-    public AccountStore getNewGroupStore() {
-        //TODO: IMPLEMENT
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria) {
+        AccountStoreMappingList accountStoreMappings = getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, criteria);
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStore getDefaultAccountStore() {
+        AccountStoreMapping accountStoreMap = getResourceProperty(DEFAULT_ACCOUNT_STORE_MAPPING);
+        return accountStoreMap == null ? null : accountStoreMap.getAccountStore();
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public void setDefaultAccountStore(AccountStore accountStore) {
+        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
+        boolean needToCreateNewStore = true;
+        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+            if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
+                needToCreateNewStore = false;
+                accountStoreMapping.setDefaultAccountStore(true);
+                accountStoreMapping.save();
+                break;
+            }
+        }
+        if (needToCreateNewStore) {
+            AccountStoreMapping mapping = addAccountStore(accountStore);
+            mapping.setDefaultAccountStore(true);
+            mapping.save();
+        }
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStore getDefaultGroupStore() {
+        AccountStoreMapping accountStoreMap = getResourceProperty(DEFAULT_GROUP_STORE_MAPPING);
+        return accountStoreMap == null ? null : accountStoreMap.getAccountStore();
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public void setDefaultGroupStore(AccountStore accountStore) {
+        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
+        boolean needToCreateNewStore = true;
+        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+            if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
+                needToCreateNewStore = false;
+                accountStoreMapping.setDefaultGroupStore(true);
+                accountStoreMapping.save();
+                break;
+            }
+        }
+        if (needToCreateNewStore) {
+            AccountStoreMapping mapping = addAccountStore(accountStore);
+            mapping.setDefaultGroupStore(true);
+            mapping.save();
+        }
     }
 
     /**
@@ -241,7 +311,33 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
      */
     @Override
     public AccountStoreMapping createAccountStoreMapping(AccountStoreMapping mapping) throws ResourceException {
-        //TODO: IMPLEMENT
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        String href = getAccountStoreMappingsHref();
+        return getDataStore().create(href, mapping);
     }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public AccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException {
+        AccountStoreMapping accountStoreMapping = getDataStore().instantiate(AccountStoreMapping.class);
+        accountStoreMapping.setAccountStore(accountStore);
+        accountStoreMapping.setApplication(this);
+        accountStoreMapping.setListIndex(Integer.MAX_VALUE);
+        return createAccountStoreMapping(accountStoreMapping);
+
+    }
+
+    /**
+     * @since 0.9
+     */
+    private String getAccountStoreMappingsHref() {
+        //TODO enable auto discovery via Tenant resource (should be just /accountStoreMappings)
+        String href = "/accountStoreMappings";
+        // TODO: Uncomment out below when application's accountStoreMapping endpoint accepts POST request.
+//        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
+//        return accountStoreMappingList.getHref();
+        return href;
+    }
+
 }

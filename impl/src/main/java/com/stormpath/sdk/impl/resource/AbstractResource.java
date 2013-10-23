@@ -250,6 +250,31 @@ public abstract class AbstractResource implements Resource {
     }
 
     /**
+     * @since 0.9
+     */
+    protected boolean getBoolean(BooleanProperty property) {
+        return getBooleanProperty(property.getName());
+    }
+
+    /**
+     * Returns an actual boolean value instead of a possible null Boolean value since desired usage
+     * is to have either a true or false.
+     *
+     * @since 0.9
+     */
+    protected boolean getBooleanProperty(String key) {
+        Object value = getProperty(key);
+        if (value != null) {
+            if (value instanceof Boolean) {
+                return (Boolean) value;
+            } else if (value instanceof String) {
+                return Boolean.valueOf((String) value);
+            }
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
      * @since 0.8
      */
     @SuppressWarnings("unchecked")
