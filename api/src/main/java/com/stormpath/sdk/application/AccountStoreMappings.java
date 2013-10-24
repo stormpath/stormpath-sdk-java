@@ -24,7 +24,7 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
  * AccountStoreMapping-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. for example:
  * <pre>
- * <b>AccountStoreMappings</b>
+ * <b>AccountStoreMappings.criteria()</b>
  *     .withApplication()
  *     .offsetBy(50)
  *     .limitTo(25));
@@ -39,7 +39,7 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
  * import static com.stormpath.sdk.account.AccountStoreMappings.*;
  *
  * ...
- *
+ *     criteria()
  *     .withApplication()
  *     .offsetBy(50)
  *     .limitTo(25));
