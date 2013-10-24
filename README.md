@@ -16,6 +16,12 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 0.8.1 ###
+
+This is a bugfix point release that resolves [1 issue](https://github.com/stormpath/stormpath-sdk-java/issues?milestone=1&page=1&state=closed):
+
+- [Issue #12](https://github.com/stormpath/stormpath-sdk-java/issues/14) application.authenticateAccount fails if caching is enabled
+
 ### 0.8.0 ###
 
 #### Bug Fixes ####
@@ -86,20 +92,15 @@ Two new query mechanisms were introduced - you choose which you want to use base
         .and(givenName().eqIgnoreCase("John"))
         .orderBySurname().descending()
         .withGroups(10, 10) //eager fetching
-        .offsetBy(20)
-        .limitTo(25));
+        .offsetBy(20).limitTo(25)); //pagination
     ```
 2. Map-based query methods.  These are not type safe, but might be desirable for some developers, maybe those using dynamically typed languages.  The map key/value pairs are simply REST API query parameters and values.  For example, the same results of the above fluent query could be achieved as follows in Groovy:
     ```groovy
     application.getAccounts [surname: '*Smith*', givenName: 'John',
-                             orderBy: 'surname desc', expand: 'groups(10,10)'
+                             orderBy: 'surname desc', expand: 'groups(offset:10,limit:10)'
                              offset: 20, limit: 25]
     ```
 
 ##### JavaDoc Enhancements #####
 
 JavaDoc has been improved significantly.  But please don't hesitate to send us a Pull Request with fixes or enhancements!
-
-
-
-
