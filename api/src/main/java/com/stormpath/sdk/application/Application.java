@@ -482,6 +482,9 @@ public interface Application extends Resource, Saveable, Deletable {
     /**
      * Sets the {@link AccountStore} (which will be either a Group or a Directory) used to persist
      * new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}.
+     * <b>Stormpath's current REST API requires this to be
+     * a Directory. However, this could be a Group in the future, so do not assume it is always a
+     * Directory if you want your code to be function correctly if/when this support is added.</b>
      * <p/>
      * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating groups; this method sets the AccountStore to which the Application delegates
