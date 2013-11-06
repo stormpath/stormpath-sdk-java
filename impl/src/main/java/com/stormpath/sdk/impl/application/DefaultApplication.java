@@ -23,17 +23,21 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.group.DefaultCreateGroupRequest;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.LinkedHashMap;
@@ -181,6 +185,19 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
         return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
+    }
+
+    @Override
+    public Group createGroup(Group group) {
+        CreateGroupRequest request = Groups.newCreateRequestFor(group).build();
+        return createGroup(request);
+    }
+
+    @Override
+    public Group createGroup(CreateGroupRequest createGroupRequest) {
+        Assert.isInstanceOf(DefaultCreateGroupRequest.class, createGroupRequest);
+        DefaultCreateGroupRequest request = (DefaultCreateGroupRequest) createGroupRequest;
+        return getDataStore().create(getGroups().getHref(), request.getGroup());
     }
 
     @Override

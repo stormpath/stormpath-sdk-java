@@ -22,6 +22,8 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.group.CreateGroupRequest
+import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.impl.account.DefaultAccountList
@@ -29,6 +31,7 @@ import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.group.DefaultCreateGroupRequest
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
@@ -36,6 +39,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.tenant.Tenant
+import org.easymock.EasyMock
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -156,4 +160,50 @@ class DefaultApplicationTest {
 
         verify internalDataStore, groupCriteria, accountCriteria, account
     }
+
+    @Test
+    void testCreateGroupWithRequest() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def request = createStrictMock(DefaultCreateGroupRequest)
+        def group = createStrictMock(Group)
+        def groupList = createStrictMock(GroupList)
+        def returnedGroup = createStrictMock(Group)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        expect(request.getGroup()).andReturn(group)
+        expect(internalDataStore.instantiate(GroupList, [href:"https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"])).andReturn(groupList)
+        expect(groupList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups")
+        expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups", group)).andReturn(returnedGroup)
+
+        replay internalDataStore, request, group, groupList, returnedGroup
+
+        assertEquals(defaultApplication.createGroup(request), returnedGroup)
+
+        verify internalDataStore, request, group, groupList, returnedGroup
+    }
+
+    @Test
+    void testCreateGroupWithGroup() {
+
+        def group = createStrictMock(Group)
+        def partiallyMockedDefaultApplication = createMockBuilder(DefaultApplication.class)
+                .addMockedMethod("createGroup", CreateGroupRequest).createMock();
+
+        expect(partiallyMockedDefaultApplication.createGroup((CreateGroupRequest)EasyMock.anyObject())).andReturn(group)
+
+        replay partiallyMockedDefaultApplication, group
+
+        assertEquals(partiallyMockedDefaultApplication.createGroup(group), group)
+
+        verify partiallyMockedDefaultApplication, group
+    }
+
 }

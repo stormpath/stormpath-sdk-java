@@ -20,6 +20,8 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.group.CreateGroupRequest;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Deletable;
@@ -288,4 +290,28 @@ public interface Application extends Resource, Saveable, Deletable {
      * @throws ResourceException if the authentication attempt fails.
      */
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
+
+    /**
+     * Creates a new Group resource in the Application.
+     *
+     * @param group the Group resource to create.
+     * @return the group created.
+     * @throws ResourceException if there was a problem creating the group.
+     * @since 0.8.2
+     */
+    Group createGroup(Group group);
+
+    /**
+     * Creates a new Group resource in the Application based on the specified {@code CreateGroupRequest}.
+     * <h3>Usage</h3>
+     * <pre>
+     * application.createGroup(Groups.newCreateRequestFor(group).build());
+     * </pre>
+     *
+     * @param request the request reflecting how to create the Group.
+     * @return the group created.
+     * @throws ResourceException if there was a problem creating the group.
+     * @since 0.8.2
+     */
+    Group createGroup(CreateGroupRequest request);
 }
