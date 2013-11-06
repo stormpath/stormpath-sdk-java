@@ -18,13 +18,18 @@ package com.stormpath.sdk.impl.application
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.CreateAccountRequest
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.impl.account.CreateAccountRequestVisitor
+import com.stormpath.sdk.impl.account.CreateAccountWithWorkflowValueRequest
+import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.account.DefaultAccountList
+import com.stormpath.sdk.impl.account.DefaultCreateAccountRequest
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
@@ -36,6 +41,8 @@ import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.tenant.Tenant
+import org.easymock.EasyMock
+import org.easymock.IAnswer
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -156,4 +163,94 @@ class DefaultApplicationTest {
 
         verify internalDataStore, groupCriteria, accountCriteria, account
     }
+
+    @Test
+    void testCreateAccountWithDefaultCreateAccountRequest() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def request = createStrictMock(DefaultCreateAccountRequest)
+        def account = createStrictMock(Account)
+        def accountList = createStrictMock(AccountList)
+        def returnedAccount = createStrictMock(Account)
+        def createAccountRequestVisitor = createStrictMock(CreateAccountRequestVisitor)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        expect(request.getAccount()).andReturn(account)
+        expect(internalDataStore.instantiate(AccountList, [href:"https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
+        expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
+        expect(request.accept(EasyMock.isA(CreateAccountRequestVisitor))).andAnswer(new IAnswer<Object>() {
+            @Override
+            public Object answer() throws Throwable {
+                ((CreateAccountRequestVisitor) EasyMock.getCurrentArguments()[0]).visit(request)
+            }
+        });
+        expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts", account)).andReturn(returnedAccount)
+
+        replay internalDataStore, request, account, accountList, returnedAccount, createAccountRequestVisitor
+
+        assertEquals(defaultApplication.createAccount(request), returnedAccount)
+
+        verify internalDataStore, request, account, accountList, returnedAccount, createAccountRequestVisitor
+    }
+
+    @Test
+    void testCreateAccountWithWorkflowFalse() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def request = createStrictMock(CreateAccountWithWorkflowValueRequest)
+        def account = createStrictMock(Account)
+        def accountList = createStrictMock(AccountList)
+        def returnedAccount = createStrictMock(Account)
+        def createAccountRequestVisitor = createStrictMock(CreateAccountRequestVisitor)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        expect(request.getAccount()).andReturn(account)
+        expect(internalDataStore.instantiate(AccountList, [href:"https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
+        expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
+        expect(request.accept(EasyMock.isA((CreateAccountRequestVisitor)))).andAnswer(new IAnswer<Object>() {
+            @Override
+            public Object answer() throws Throwable {
+                ((CreateAccountRequestVisitor) EasyMock.getCurrentArguments()[0]).visit(request)
+            }
+        });
+        expect(request.isRegistrationWorkflowEnabled()).andReturn(false)
+        expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts?registrationWorkflowEnabled=false", account)).andReturn(returnedAccount)
+
+        replay internalDataStore, request, account, accountList, returnedAccount, createAccountRequestVisitor
+
+        assertEquals(defaultApplication.createAccount(request), returnedAccount)
+
+        verify internalDataStore, request, account, accountList, returnedAccount, createAccountRequestVisitor
+    }
+
+    @Test
+    void testCreateAccount() {
+
+        def account = createStrictMock(Account)
+        def partiallyMockedDefaultApplication = createMockBuilder(DefaultApplication.class)
+                .addMockedMethod("createAccount", CreateAccountRequest).createMock();
+
+        expect(partiallyMockedDefaultApplication.createAccount((CreateAccountRequest)EasyMock.anyObject())).andReturn(account)
+
+        replay partiallyMockedDefaultApplication, account
+
+        assertEquals(partiallyMockedDefaultApplication.createAccount(account), account)
+
+        verify partiallyMockedDefaultApplication, account
+    }
+
 }

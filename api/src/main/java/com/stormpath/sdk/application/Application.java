@@ -18,6 +18,7 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -288,4 +289,37 @@ public interface Application extends Resource, Saveable, Deletable {
      * @throws ResourceException if the authentication attempt fails.
      */
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
+
+    /**
+     * Creates a new Account resource in the Application.
+     *
+     * @param account the Account resource to create.
+     * @return the account created.
+     * @throws ResourceException if there was a problem creating the account.
+     * @since 0.8.2
+     */
+    Account createAccount(Account account);
+
+    /**
+     * Creates a new Account resource in the Application based on the specified Create{@code CreateAccountRequest}.
+     * <h3>Usage</h3>
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).build());
+     * </pre>
+     * <p/>
+     * If you would like to disable the registration workflow:
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
+     * </pre>
+     * If you would like to force the execution of the registration workflow, no matter what the Login Source configuration is:
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     * </pre>
+     *
+     * @param request the request reflecting how to create the Account
+     * @return the account created.
+     * @throws ResourceException if there was a problem creating the account.
+     * @since 0.8.2
+     */
+    Account createAccount(CreateAccountRequest request);
 }
