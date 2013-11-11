@@ -291,27 +291,31 @@ public interface Application extends Resource, Saveable, Deletable {
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
 
     /**
-     * Creates a new Account resource in the Application.
+     * Creates a new Account resource in the Application.  If you need to customize the request, such as to override
+     * the default account store's account workflow settings, see the
+     * {@link #createAccount(com.stormpath.sdk.account.CreateAccountRequest) createAccount(request)} method instead.
      *
      * @param account the Account resource to create.
      * @return the account created.
      * @throws ResourceException if there was a problem creating the account.
-     * @since 0.8.2
+     * @see #createAccount(com.stormpath.sdk.account.CreateAccountRequest)
+     * @since 0.9.0
      */
     Account createAccount(Account account);
 
     /**
      * Creates a new Account resource in the Application based on the specified Create{@code CreateAccountRequest}.
-     * <h3>Usage</h3>
+     * <h2>Example</h2>
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).build());
      * </pre>
      * <p/>
-     * If you would like to disable the registration workflow:
+     * If you would like to force disabling the backing directory's account registration workflow:
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
      * </pre>
-     * If you would like to force the execution of the registration workflow, no matter what the Login Source configuration is:
+     * If you would like to force the execution of the registration workflow, no matter what the backing directory
+     * configuration is:
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
      * </pre>
@@ -319,7 +323,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * @param request the request reflecting how to create the Account
      * @return the account created.
      * @throws ResourceException if there was a problem creating the account.
-     * @since 0.8.2
+     * @since 0.9.0
      */
     Account createAccount(CreateAccountRequest request);
 }

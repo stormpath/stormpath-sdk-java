@@ -19,7 +19,7 @@ package com.stormpath.sdk.account;
  * A Builder to construct {@link com.stormpath.sdk.account.CreateAccountRequest}s.
  *
  * @see com.stormpath.sdk.application.Application#createAccount(com.stormpath.sdk.account.CreateAccountRequest)
- * @since 0.8.2
+ * @since 0.9.0
  */
 public interface CreateAccountRequestBuilder {
 

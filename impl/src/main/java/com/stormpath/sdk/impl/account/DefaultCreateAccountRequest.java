@@ -20,23 +20,34 @@ import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 0.8.2
+ * @since 0.9.0
  */
 public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final Account account;
 
-    public DefaultCreateAccountRequest(Account account) {
+    private final Boolean registrationWorkflowEnabled;
+
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled) {
         Assert.notNull(account, "Account argument cannot be null.");
         this.account = account;
+        this.registrationWorkflowEnabled = registrationWorkflowEnabled;
     }
 
     public Account getAccount() {
         return account;
     }
 
-    public void accept(CreateAccountRequestVisitor visitor) {
-        visitor.visit(this);
+    @Override
+    public boolean isRegistrationWorkflowOptionSpecified() {
+        return this.registrationWorkflowEnabled != null;
     }
 
+    @Override
+    public boolean isRegistrationWorkflowEnabled() throws IllegalStateException {
+        if (this.registrationWorkflowEnabled == null) {
+            throw new IllegalStateException("registrationWorkflowEnabled has not been configured. Use the isRegistrationWorkflowOptionSpecified method to check first before invoking this method.");
+        }
+        return this.registrationWorkflowEnabled;
+    }
 }

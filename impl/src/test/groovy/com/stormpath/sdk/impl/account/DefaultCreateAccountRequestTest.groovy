@@ -19,32 +19,47 @@ import com.stormpath.sdk.account.Account
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
-import static org.testng.Assert.assertSame
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
- * @since 0.8.2
+ * @since 0.9.0
  */
 class DefaultCreateAccountRequestTest {
 
     @Test
-    void testAll() {
-
+    void testDefault() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account)
+        def request = new DefaultCreateAccountRequest(account, null)
 
         assertSame(request.account, account)
+        assertFalse request.isRegistrationWorkflowOptionSpecified()
+    }
 
-        request.accept(new CreateAccountRequestVisitor() {
-            @Override
-            void visit(DefaultCreateAccountRequest defaultRequest) {
-                assertSame(defaultRequest, request)
-            }
+    @Test
+    void testWorkflowEnabled() {
+        def account = createStrictMock(Account)
+        def request = new DefaultCreateAccountRequest(account, true)
 
-            @Override
-            void visit(CreateAccountWithWorkflowValueRequest createAccountWithWorkflowValueRequest) {
-                fail("shouldn't have received a " + createAccountWithWorkflowValueRequest.class.name)
-            }
-        })
+        assertSame(request.account, account)
+        assertTrue request.isRegistrationWorkflowOptionSpecified()
+        assertTrue request.isRegistrationWorkflowEnabled()
+    }
+
+    @Test
+    void testWorkflowDisabled() {
+        def account = createStrictMock(Account)
+        def request = new DefaultCreateAccountRequest(account, false)
+
+        assertSame(request.account, account)
+        assertTrue request.isRegistrationWorkflowOptionSpecified()
+        assertFalse request.isRegistrationWorkflowEnabled()
+    }
+
+    @Test(expectedExceptions = IllegalStateException)
+    void testWorkflowNotSpecifiedButAccessed() {
+
+        def account = createStrictMock(Account)
+        def request = new DefaultCreateAccountRequest(account, null)
+        request.isRegistrationWorkflowEnabled()
     }
 }

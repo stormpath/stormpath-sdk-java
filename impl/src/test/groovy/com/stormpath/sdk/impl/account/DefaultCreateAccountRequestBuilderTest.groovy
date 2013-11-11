@@ -19,11 +19,10 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 /**
- * @since 0.8.2
+ * @since 0.9.0
  */
 class DefaultCreateAccountRequestBuilderTest {
 
@@ -31,20 +30,28 @@ class DefaultCreateAccountRequestBuilderTest {
     void testBuilder() {
         def account = new DefaultAccount(createStrictMock(InternalDataStore))
 
-        def request = new DefaultCreateAccountRequestBuilder(account)
-        assertFalse(request.registrationWorkflowSet)
-        assertTrue(request.build() instanceof DefaultCreateAccountRequest)
-        assertFalse(request.build() instanceof CreateAccountWithWorkflowValueRequest)
+        def request = new DefaultCreateAccountRequestBuilder(account).build()
+        assertSame account, request.account
+        assertFalse request.isRegistrationWorkflowOptionSpecified()
 
-        request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(true)
-        assertTrue(request.registrationWorkflowSet)
-        assertTrue(request.registrationWorkflowEnabled)
-        assertTrue(request.build() instanceof CreateAccountWithWorkflowValueRequest)
+        request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(true).build()
+        assertSame account, request.account
+        assertTrue request.isRegistrationWorkflowOptionSpecified()
+        assertTrue request.isRegistrationWorkflowEnabled()
 
-        request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(false)
-        assertTrue(request.registrationWorkflowSet)
-        assertFalse(request.registrationWorkflowEnabled)
-        assertTrue(request.build() instanceof CreateAccountWithWorkflowValueRequest)
+        request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(false).build()
+        assertSame account, request.account
+        assertTrue request.isRegistrationWorkflowOptionSpecified()
+        assertFalse request.isRegistrationWorkflowEnabled()
+    }
+
+    @Test(expectedExceptions = IllegalStateException)
+    void testWorkflowUnspecifiedButAccessed() {
+        def account = new DefaultAccount(createStrictMock(InternalDataStore))
+
+        def request = new DefaultCreateAccountRequestBuilder(account).build()
+        assertSame account, request.account
+        request.isRegistrationWorkflowEnabled()
     }
 
 }

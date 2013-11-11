@@ -20,31 +20,25 @@ import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.CreateAccountRequestBuilder;
 
 /**
- * @since 0.8.2
+ * @since 0.9.0
  */
 public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestBuilder {
 
     private Account account;
-    private boolean registrationWorkflowEnabled;
-    private boolean registrationWorkflowSet;
+    private Boolean registrationWorkflowEnabled;
 
     public DefaultCreateAccountRequestBuilder(Account account) {
         this.account = account;
-        this.registrationWorkflowSet = false;
     }
 
     @Override
     public CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled) {
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
-        this.registrationWorkflowSet = true;
         return this;
     }
 
     @Override
     public CreateAccountRequest build() {
-        if (registrationWorkflowSet) {
-            return new CreateAccountWithWorkflowValueRequest(this.account, this.registrationWorkflowEnabled);
-        }
-        return new DefaultCreateAccountRequest(this.account);
+        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled);
     }
 }

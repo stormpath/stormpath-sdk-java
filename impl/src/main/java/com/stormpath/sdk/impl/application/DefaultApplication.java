@@ -15,7 +15,12 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
@@ -23,9 +28,6 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.impl.account.CreateAccountRequestVisitor;
-import com.stormpath.sdk.impl.account.CreateAccountWithWorkflowValueRequest;
-import com.stormpath.sdk.impl.account.DefaultCreateAccountRequest;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
@@ -34,7 +36,6 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.LinkedHashMap;
@@ -191,25 +192,15 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public Account createAccount(CreateAccountRequest createAccountRequest) {
-        Assert.isInstanceOf(DefaultCreateAccountRequest.class, createAccountRequest);
-        DefaultCreateAccountRequest request = (DefaultCreateAccountRequest) createAccountRequest;
-
+    public Account createAccount(CreateAccountRequest request) {
         final Account account = request.getAccount();
-        final String[] href = new String[]{ getAccounts().getHref() };
+        String href = getAccounts().getHref();
 
-        request.accept(new CreateAccountRequestVisitor() {
-            @Override
-            public void visit(DefaultCreateAccountRequest ignore) {
-            }
+        if (request.isRegistrationWorkflowOptionSpecified()) {
+            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
 
-            @Override
-            public void visit(CreateAccountWithWorkflowValueRequest request) {
-                href[0] += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
-            }
-        });
-
-        return getDataStore().create(href[0], account);
+        return getDataStore().create(href, account);
     }
 
 
