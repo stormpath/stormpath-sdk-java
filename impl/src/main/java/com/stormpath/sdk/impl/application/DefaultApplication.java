@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
@@ -182,6 +184,25 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
         return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
     }
+
+    @Override
+    public Account createAccount(Account account) {
+        CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
+        return createAccount(request);
+    }
+
+    @Override
+    public Account createAccount(CreateAccountRequest request) {
+        final Account account = request.getAccount();
+        String href = getAccounts().getHref();
+
+        if (request.isRegistrationWorkflowOptionSpecified()) {
+            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        return getDataStore().create(href, account);
+    }
+
 
     @Override
     public void delete() {
