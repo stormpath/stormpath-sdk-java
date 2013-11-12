@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.application.AccountStoreMappingCriteria;
@@ -39,6 +41,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +53,7 @@ import java.util.Map;
  * @since 0.2
  */
 public class DefaultApplication extends AbstractInstanceResource implements Application {
+
     private static final Logger log = LoggerFactory.getLogger(DefaultApplication.class);
 
     // SIMPLE PROPERTIES:
@@ -174,12 +178,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     private String getPasswordResetTokensHref() {
-        Map<String, String> passwordResetTokensRef = (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
-        if (passwordResetTokensRef != null && !passwordResetTokensRef.isEmpty()) {
-            return passwordResetTokensRef.get(HREF_PROP_NAME);
-        }
-
-        return null;
+        Map<String, String> passwordResetTokensLink = (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
+        return passwordResetTokensLink.get(HREF_PROP_NAME);
     }
 
     public Account verifyPasswordResetToken(String token) {
@@ -196,26 +196,33 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
+    public Group createGroup(Group group) {
+        Assert.notNull(group, "Group instance cannot be null.");
+        return getDataStore().create(getGroups().getHref(), group);
+    }
+
+    public Account createAccount(Account account) {
+        Assert.notNull(account, "Account instance cannot be null.");
+        CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
+        return createAccount(request);
+    }
+
+    @Override
+    public Account createAccount(CreateAccountRequest request) {
+        Assert.notNull("Request cannot be null.");
+        final Account account = request.getAccount();
+        String href = getAccounts().getHref();
+
+        if (request.isRegistrationWorkflowOptionSpecified()) {
+            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        return getDataStore().create(href, account);
+    }
+
+    @Override
     public void delete() {
         getDataStore().delete(this);
-    }
-
-    /**
-     * @since 0.9
-     */
-    @Override
-    public Account createAccount(Account account) throws ResourceException {
-        //TODO: IMPLEMENT
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     * @since 0.9
-     */
-    @Override
-    public Group createGroup(Group group) throws ResourceException {
-        //TODO: IMPLEMENT
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**

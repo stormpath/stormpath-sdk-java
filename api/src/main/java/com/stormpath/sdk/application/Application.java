@@ -18,6 +18,7 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -169,6 +170,39 @@ public interface Application extends Resource, Saveable, Deletable {
     Account createAccount(Account account) throws ResourceException;
 
     /**
+     * Creates a new Account that may login to this application according to the request criteria.
+     * <p/>
+     * This is mostly a convenience method; it delegates creation to the Application's designated
+     * {@link #getDefaultAccountStore() defaultAccountStore}, and functions as follows:
+     * <ul>
+     * <li>If the {@code defaultAccountStore} is a Directory: the account is created in the Directory and returned.</li>
+     * <li>If the {@code defaultAccountStore} is a Group: the account is created in the Group's Directory, assigned to
+     * the Group, and then returned.</li>
+     * </ul>
+     * <h2>Example</h2>
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).build());
+     * </pre>
+     * <p/>
+     * If you would like to force disabling the backing directory's account registration workflow:
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
+     * </pre>
+     * If you would like to force the execution of the registration workflow, no matter what the backing directory
+     * configuration is:
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     * </pre>
+     *
+     * @param request the account creation request
+     * @return a new Account that may login to this application.
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultAccountStore() defaultAccountStore}
+     *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be created.
+     * @since 0.9
+     */
+    Account createAccount(CreateAccountRequest request) throws ResourceException;
+
+    /**
      * Returns all Groups accessible to the application (based on the Application's associated Account stores).
      * <p/>
      * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
@@ -232,14 +266,15 @@ public interface Application extends Resource, Saveable, Deletable {
     GroupList getGroups(GroupCriteria criteria);
 
     /**
-     * Creates a new Group that may be used by this application.
+     * Creates a new Group that may be used by this application in the application's
+     * {@link #getDefaultGroupStore() defaultGroupStore}
      * <p/>
      * This is a convenience method.  It merely delegates to the Application's designated
      * {@link #getDefaultGroupStore() defaultGroupStore}.
      *
      * @param group the Group to create/persist
      * @return a new Group that may be used by this application.
-     * @throws ResourceException if the Application does not have a designated {@link #getDefaultGroupStore()}  defaultGroupStore}
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultGroupStore() defaultGroupStore}
      *                           or if the designated {@code defaultGroupStore} does not allow new groups to be created.
      * @since 0.9
      */
@@ -324,6 +359,7 @@ public interface Application extends Resource, Saveable, Deletable {
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
 
     /**
+     * <<<<<<< HEAD
      * Returns all AccountStoreMappings accessible to the application.
      * <p/>
      * Tip: Instead of iterating over all accountStoreMappings, it might be more convenient (and practical) to execute a search
@@ -430,7 +466,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * new account persistence.
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
-     *         new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
+     *                     new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
      */
     void setDefaultAccountStore(AccountStore accountStore);
 
@@ -491,7 +527,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * new group persistence.
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
-     *         new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
+     *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
      */
     void setDefaultGroupStore(AccountStore accountStore);
 
@@ -584,7 +620,4 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.9
      */
     AccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException;
-
-
-
 }
