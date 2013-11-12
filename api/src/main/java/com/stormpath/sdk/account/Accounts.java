@@ -20,6 +20,8 @@ import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
+import java.lang.reflect.Constructor;
+
 /**
  * Static utility/helper methods for working with {@link Account} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
@@ -49,6 +51,10 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * @since 0.8
  */
 public final class Accounts {
+
+    @SuppressWarnings("unchecked")
+    private static final Class<CreateAccountRequestBuilder> BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.account.DefaultCreateAccountRequestBuilder");
 
     /**
      * Returns a new {@link AccountOptions} instance, used to customize how one or more {@link Account}s are retrieved.
@@ -234,6 +240,22 @@ public final class Accounts {
      */
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
+    }
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.account.CreateAccountRequestBuilder CreateAccountRequestBuilder}
+     * instance reflecting the specified {@link Account} instance.  The builder can be used to customize any
+     * creation request options as necessary.
+     *
+     * @param account the account to create a new record for within Stormpath
+     * @return a new {@link com.stormpath.sdk.account.CreateAccountRequestBuilder CreateAccountRequestBuilder}
+     *         instance reflecting the specified {@link Account} instance.
+     * @see com.stormpath.sdk.application.Application#createAccount(CreateAccountRequest) Application#createAccount(CreateAccountRequest)
+     * @since 0.9.0
+     */
+    public static CreateAccountRequestBuilder newCreateRequestFor(Account account) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Account.class);
+        return (CreateAccountRequestBuilder) Classes.instantiate(ctor, account);
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {

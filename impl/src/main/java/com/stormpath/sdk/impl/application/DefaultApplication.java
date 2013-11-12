@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
@@ -189,15 +191,39 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public Group createGroup(Group group) {
-        CreateGroupRequest request = Groups.newCreateRequestFor(group).build();
-        return createGroup(request);
+        Assert.notNull(group, "Group instance cannot be null.");
+        //CreateGroupRequest request = Groups.newCreateRequestFor(group).build();
+        //return createGroup(request);
+        return getDataStore().create(getGroups().getHref(), group);
     }
+
+    /* HIDING UNTIL WE SUPPORT GROUP CREATION OPTIONS:
 
     @Override
     public Group createGroup(CreateGroupRequest createGroupRequest) {
         Assert.isInstanceOf(DefaultCreateGroupRequest.class, createGroupRequest);
         DefaultCreateGroupRequest request = (DefaultCreateGroupRequest) createGroupRequest;
         return getDataStore().create(getGroups().getHref(), request.getGroup());
+    }
+    */
+
+    public Account createAccount(Account account) {
+        Assert.notNull(account, "Account instance cannot be null.");
+        CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
+        return createAccount(request);
+    }
+
+    @Override
+    public Account createAccount(CreateAccountRequest request) {
+        Assert.notNull("Request cannot be null.");
+        final Account account = request.getAccount();
+        String href = getAccounts().getHref();
+
+        if (request.isRegistrationWorkflowOptionSpecified()) {
+            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        return getDataStore().create(href, account);
     }
 
     @Override
