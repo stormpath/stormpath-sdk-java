@@ -21,6 +21,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Deletable;
@@ -291,8 +292,18 @@ public interface Application extends Resource, Saveable, Deletable {
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
 
     /**
-     * Creates a new Account resource in the Application.  If you need to customize the request, such as to override
-     * the default account store's account workflow settings, see the
+     * Creates a new Group resource in the Application's default group store.
+     *
+     * @param group the Group resource to create.
+     * @return the group created.
+     * @throws ResourceException if there was a problem creating the group.
+     * @since 0.9.0
+     */
+    Group createGroup(Group group);
+
+    /**
+     * Creates a new Account resource in the Application's default account store.  If you need to customize the request,
+     * such as to override the default account store's account workflow settings, see the
      * {@link #createAccount(com.stormpath.sdk.account.CreateAccountRequest) createAccount(request)} method instead.
      *
      * @param account the Account resource to create.
@@ -304,7 +315,8 @@ public interface Application extends Resource, Saveable, Deletable {
     Account createAccount(Account account);
 
     /**
-     * Creates a new Account resource in the Application based on the specified Create{@code CreateAccountRequest}.
+     * Creates a new Account resource in the Application's default account store based on the specified
+     * {@code CreateAccountRequest}.
      * <h2>Example</h2>
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).build());

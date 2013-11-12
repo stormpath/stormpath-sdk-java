@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.*
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.impl.account.DefaultAccountList
@@ -51,7 +52,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 7)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -66,10 +67,10 @@ class DefaultApplicationTest {
     void testMethods() {
 
         def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
-                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
-                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
-                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
-                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
 
@@ -107,13 +108,13 @@ class DefaultApplicationTest {
 
         def account = createStrictMock(Account)
         def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
-                               account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+                account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
         def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
         expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
         expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
         expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
 
-        expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"]))andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"])) andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
         expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
 
         def authenticationResult = createStrictMock(AuthenticationResult)
@@ -165,6 +166,7 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
+
         def request = createStrictMock(CreateAccountRequest)
         def account = createStrictMock(Account)
         def accountList = createStrictMock(AccountList)
@@ -174,7 +176,7 @@ class DefaultApplicationTest {
 
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(false)
-        expect(internalDataStore.instantiate(AccountList, [href:"https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
+        expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
 
         expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts", account)).andReturn(returnedAccount)
@@ -206,7 +208,7 @@ class DefaultApplicationTest {
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(true)
         expect(request.isRegistrationWorkflowEnabled()).andReturn(false)
-        expect(internalDataStore.instantiate(AccountList, [href:"https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
+        expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
 
         expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts?registrationWorkflowEnabled=false", account)).andReturn(returnedAccount)
@@ -225,13 +227,48 @@ class DefaultApplicationTest {
         def partiallyMockedDefaultApplication = createMockBuilder(DefaultApplication.class)
                 .addMockedMethod("createAccount", CreateAccountRequest).createMock();
 
-        expect(partiallyMockedDefaultApplication.createAccount((CreateAccountRequest)EasyMock.anyObject())).andReturn(account)
+        expect(partiallyMockedDefaultApplication.createAccount((CreateAccountRequest) EasyMock.anyObject())).andReturn(account)
 
         replay partiallyMockedDefaultApplication, account
 
         assertEquals(partiallyMockedDefaultApplication.createAccount(account), account)
 
         verify partiallyMockedDefaultApplication, account
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testCreateGroupWithNullArgument() {
+        def app = new DefaultApplication(createStrictMock(InternalDataStore))
+        app.createGroup(null)
+    }
+
+    @Test
+    void testCreateGroup() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def dataStore = createStrictMock(InternalDataStore)
+        def groupList = createStrictMock(GroupList)
+        def group = createStrictMock(Group)
+
+        def app = new DefaultApplication(dataStore, properties)
+
+        expect(dataStore.instantiate(eq(GroupList.class), eq([href:properties.groups.href]))).andReturn(groupList)
+        expect(groupList.getHref()).andReturn(properties.groups.href)
+
+        expect(dataStore.create(eq(properties.groups.href), same(group))).andReturn(group)
+
+        replay dataStore, group, groupList
+
+        def returnedGroup = app.createGroup(group)
+
+        assertSame returnedGroup, group
+
+        verify dataStore, group, groupList
     }
 
 }

@@ -29,7 +29,7 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
     private final Boolean registrationWorkflowEnabled;
 
     public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled) {
-        Assert.notNull(account, "Account argument cannot be null.");
+        Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
     }

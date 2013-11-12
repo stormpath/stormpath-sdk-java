@@ -36,6 +36,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.LinkedHashMap;
@@ -164,12 +165,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     private String getPasswordResetTokensHref() {
-        Map<String, String> passwordResetTokensRef = (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
-        if (passwordResetTokensRef != null && !passwordResetTokensRef.isEmpty()) {
-            return passwordResetTokensRef.get(HREF_PROP_NAME);
-        }
-
-        return null;
+        Map<String, String> passwordResetTokensLink = (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
+        return passwordResetTokensLink.get(HREF_PROP_NAME);
     }
 
     public Account verifyPasswordResetToken(String token) {
@@ -186,13 +183,20 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
+    public Group createGroup(Group group) {
+        Assert.notNull(group, "Group instance cannot be null.");
+        return getDataStore().create(getGroups().getHref(), group);
+    }
+
     public Account createAccount(Account account) {
+        Assert.notNull(account, "Account instance cannot be null.");
         CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
         return createAccount(request);
     }
 
     @Override
     public Account createAccount(CreateAccountRequest request) {
+        Assert.notNull("Request cannot be null.");
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 
@@ -202,7 +206,6 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
         return getDataStore().create(href, account);
     }
-
 
     @Override
     public void delete() {
