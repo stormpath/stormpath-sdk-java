@@ -301,24 +301,6 @@ public interface Application extends Resource, Saveable, Deletable {
      */
     Group createGroup(Group group);
 
-    /* HIDING UNTIL WE HAVE GROUP OPTIONS TO SUPPORT:
-
-    /**
-     * Creates a new Group resource in the Application's default group store based on the specified
-     * {@code CreateGroupRequest}.
-     * <h3>Usage</h3>
-     * <pre>
-     * application.createGroup(Groups.newCreateRequestFor(group).build());
-     * </pre>
-     *
-     * @param request the request reflecting how to create the Group.
-     * @return the group created.
-     * @throws ResourceException if there was a problem creating the group.
-     * @since TODO: SPECIFY THE VERSION RIGHT BEFORE WE RELEASE
-
-    Group createGroup(CreateGroupRequest request);
-    */
-
     /**
      * Creates a new Account resource in the Application's default account store.  If you need to customize the request,
      * such as to override the default account store's account workflow settings, see the

@@ -185,20 +185,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public Group createGroup(Group group) {
         Assert.notNull(group, "Group instance cannot be null.");
-        //CreateGroupRequest request = Groups.newCreateRequestFor(group).build();
-        //return createGroup(request);
         return getDataStore().create(getGroups().getHref(), group);
     }
-
-    /* HIDING UNTIL WE SUPPORT GROUP CREATION OPTIONS:
-
-    @Override
-    public Group createGroup(CreateGroupRequest createGroupRequest) {
-        Assert.isInstanceOf(DefaultCreateGroupRequest.class, createGroupRequest);
-        DefaultCreateGroupRequest request = (DefaultCreateGroupRequest) createGroupRequest;
-        return getDataStore().create(getGroups().getHref(), request.getGroup());
-    }
-    */
 
     public Account createAccount(Account account) {
         Assert.notNull(account, "Account instance cannot be null.");
