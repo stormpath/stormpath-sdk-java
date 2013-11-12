@@ -25,14 +25,11 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.group.DefaultCreateGroupRequest;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
@@ -168,12 +165,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     private String getPasswordResetTokensHref() {
-        Map<String, String> passwordResetTokensRef = (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
-        if (passwordResetTokensRef != null && !passwordResetTokensRef.isEmpty()) {
-            return passwordResetTokensRef.get(HREF_PROP_NAME);
-        }
-
-        return null;
+        Map<String, String> passwordResetTokensLink = (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
+        return passwordResetTokensLink.get(HREF_PROP_NAME);
     }
 
     public Account verifyPasswordResetToken(String token) {

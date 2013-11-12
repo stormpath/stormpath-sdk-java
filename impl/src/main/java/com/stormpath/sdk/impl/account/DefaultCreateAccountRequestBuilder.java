@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.CreateAccountRequestBuilder;
+import com.stormpath.sdk.lang.Assert;
 
 /**
  * @since 0.9.0
@@ -28,6 +29,7 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
     private Boolean registrationWorkflowEnabled;
 
     public DefaultCreateAccountRequestBuilder(Account account) {
+        Assert.notNull(account, "Account cannot be null.");
         this.account = account;
     }
 

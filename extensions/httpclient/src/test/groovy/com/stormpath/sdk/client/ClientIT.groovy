@@ -16,17 +16,48 @@
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.cache.Caches
+import com.stormpath.sdk.resource.Deletable
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
+import org.testng.annotations.BeforeTest
 
 class ClientIT {
+
+    private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
     String apiKeyFileLocation = System.getProperty('user.home') + "/.stormpath/apiKey.properties"
     String baseUrl = 'http://localhost:8080/v1'
     Client client
 
+    List<Deletable> resourcesToDelete;
+
     @BeforeClass
     void setupClient() {
         client = buildClient();
+    }
+
+    @BeforeTest
+    public void setUp() {
+        resourcesToDelete = []
+    }
+
+    @AfterTest
+    public void tearDown() {
+        def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
+
+        for (def r : reversed) {
+            try {
+                r.delete()
+            } catch (Throwable t) {
+                log.error('Unable to delete resource ' + r, t)
+            }
+        }
+    }
+
+    protected void deleteOnTeardown(Deletable d) {
+        this.resourcesToDelete.add(d)
     }
 
     Client buildClient() {
