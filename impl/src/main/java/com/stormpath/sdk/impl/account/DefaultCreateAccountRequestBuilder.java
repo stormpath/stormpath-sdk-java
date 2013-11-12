@@ -21,7 +21,7 @@ import com.stormpath.sdk.account.CreateAccountRequestBuilder;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 0.9.0
+ * @since 0.9
  */
 public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestBuilder {
 

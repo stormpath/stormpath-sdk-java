@@ -19,7 +19,7 @@ package com.stormpath.sdk.account;
  * Represents an attempt to create a new {@link com.stormpath.sdk.account.Account} record in Stormpath.
  *
  * @see com.stormpath.sdk.application.Application#createAccount(com.stormpath.sdk.account.CreateAccountRequest)
- * @since 0.9.0
+ * @since 0.9
  */
 public interface CreateAccountRequest {
 

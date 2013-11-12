@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 0.9.0
+ * @since 0.9
  */
 public class DefaultCreateAccountRequest implements CreateAccountRequest {
 

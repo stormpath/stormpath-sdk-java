@@ -22,7 +22,7 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @since 0.9.0
+ * @since 0.9
  */
 class DefaultCreateAccountRequestTest {
 

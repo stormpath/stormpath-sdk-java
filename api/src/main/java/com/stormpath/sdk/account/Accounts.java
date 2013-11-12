@@ -251,7 +251,7 @@ public final class Accounts {
      * @return a new {@link com.stormpath.sdk.account.CreateAccountRequestBuilder CreateAccountRequestBuilder}
      *         instance reflecting the specified {@link Account} instance.
      * @see com.stormpath.sdk.application.Application#createAccount(CreateAccountRequest) Application#createAccount(CreateAccountRequest)
-     * @since 0.9.0
+     * @since 0.9
      */
     public static CreateAccountRequestBuilder newCreateRequestFor(Account account) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Account.class);
