@@ -20,6 +20,8 @@ import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
+import java.lang.reflect.Constructor;
+
 /**
  * Static utility/helper methods for working with {@link Group} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
@@ -49,6 +51,9 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * @since 0.8
  */
 public final class Groups {
+
+    private static final Class<CreateGroupRequestBuilder> BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.group.DefaultCreateGroupRequestBuilder");
 
     //prevent instantiation
     private Groups() {
@@ -167,6 +172,23 @@ public final class Groups {
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
     }
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.group.CreateGroupRequestBuilder CreateGroupRequestBuilder}
+     * instance reflecting the specified {@link com.stormpath.sdk.group.Group} instance.  The builder can be used to customize any
+     * creation request options as necessary.
+     *
+     * @param group the group to create a new record for within Stormpath
+     * @return a new {@link com.stormpath.sdk.group.CreateGroupRequestBuilder CreateGroupRequestBuilder}
+     *         instance reflecting the specified {@link com.stormpath.sdk.group.Group} instance.
+     * @see com.stormpath.sdk.application.Application#createGroup(CreateGroupRequest)
+     * @since 0.9
+     */
+    public static CreateGroupRequestBuilder newCreateRequestFor(Group group) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Group.class);
+        return (CreateGroupRequestBuilder) Classes.instantiate(ctor, group);
+    }
+
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";

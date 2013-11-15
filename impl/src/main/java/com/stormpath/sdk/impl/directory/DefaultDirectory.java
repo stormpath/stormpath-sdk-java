@@ -18,12 +18,16 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryStatus;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -31,6 +35,8 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -120,6 +126,24 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
+    public void createAccount(CreateAccountRequest request) {
+        Assert.notNull("Request cannot be null.");
+        final Account account = request.getAccount();
+        String href = getAccounts().getHref();
+
+        if (request.isRegistrationWorkflowOptionSpecified()) {
+            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        if (request.isAccountCriteriaSpecified()) {
+            getDataStore().create(href, account, request.getAccountCriteria());
+            return;
+        }
+
+        getDataStore().create(href, account);
+    }
+
+    @Override
     public AccountList getAccounts() {
         return getResourceProperty(ACCOUNTS);
     }
@@ -165,6 +189,21 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     public void createGroup(Group group) {
         GroupList groups = getGroups();
         String href = groups.getHref();
+        getDataStore().create(href, group);
+    }
+
+    @Override
+    public void createGroup(CreateGroupRequest request) {
+        Assert.notNull("Request cannot be null.");
+
+        final Group group = request.getGroup();
+        String href = getGroups().getHref();
+
+        if (request.isGroupCriteriaSpecified()) {
+            getDataStore().create(href, group, request.getGroupCriteria());
+            return;
+        }
+
         getDataStore().create(href, group);
     }
 

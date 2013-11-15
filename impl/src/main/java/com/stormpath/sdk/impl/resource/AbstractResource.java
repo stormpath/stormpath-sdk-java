@@ -17,11 +17,18 @@ package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.Resource;
+import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -37,10 +44,13 @@ public abstract class AbstractResource implements Resource {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractResource.class);
 
+    private static final DateFormat dateFormatter = new ISO8601DateFormat();
+
     public static final String HREF_PROP_NAME = "href";
 
     private final Map<String, Object> properties;       //Protected by read/write lock
     private final Map<String, Object> dirtyProperties;  //Protected by read/write lock
+    private final Set<String> deletedPropertyNames;     //Protected by read/write lock
     private final InternalDataStore dataStore;
     protected final Lock readLock;
     protected final Lock writeLock;
@@ -62,18 +72,19 @@ public abstract class AbstractResource implements Resource {
         this.dataStore = dataStore;
         this.properties = new LinkedHashMap<String, Object>();
         this.dirtyProperties = new LinkedHashMap<String, Object>();
+        this.deletedPropertyNames = new HashSet<String>();
         setProperties(properties);
     }
 
-    protected static Map<String,Property> createPropertyDescriptorMap(Property... props) {
-        Map<String,Property> m = new LinkedHashMap<String, Property>();
-        for(Property prop : props) {
+    protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {
+        Map<String, Property> m = new LinkedHashMap<String, Property>();
+        for (Property prop : props) {
             m.put(prop.getName(), prop);
         }
         return m;
     }
 
-    public abstract Map<String,Property> getPropertyDescriptors();
+    public abstract Map<String, Property> getPropertyDescriptors();
 
     public final void setProperties(Map<String, Object> properties) {
         writeLock.lock();
@@ -107,7 +118,7 @@ public abstract class AbstractResource implements Resource {
         return this.materialized;
     }
 
-    protected final boolean isDirty() {
+    public final boolean isDirty() {
         return this.dirty;
     }
 
@@ -148,6 +159,25 @@ public abstract class AbstractResource implements Resource {
         try {
             Set<String> keys = this.properties.keySet();
             return new LinkedHashSet<String>(keys);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public Set<String> getUpdatedPropertyNames() {
+        readLock.lock();
+        try {
+            Set<String> keys = this.dirtyProperties.keySet();
+            return new LinkedHashSet<String>(keys);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    protected Set<String> getDeletedPropertyNames() {
+        readLock.lock();
+        try {
+            return new LinkedHashSet<String>(this.deletedPropertyNames);
         } finally {
             readLock.unlock();
         }
@@ -209,6 +239,9 @@ public abstract class AbstractResource implements Resource {
                 this.dirtyProperties.put(name, value);
                 this.dirty = true;
             }
+            if (this.deletedPropertyNames.contains(name)) {
+                this.deletedPropertyNames.remove(name);
+            }
         } finally {
             writeLock.unlock();
         }
@@ -228,6 +261,23 @@ public abstract class AbstractResource implements Resource {
             return null;
         }
         return String.valueOf(value);
+    }
+
+    protected Date getDateProperty(DateProperty key) {
+        Object value = getProperty(key.getName());
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            return dateFormatter.parse(String.valueOf(value));
+        } catch (ParseException e) {
+            if (log.isErrorEnabled()) {
+                String msg = "Unabled to parse string '{}' into an date value.  Defaulting to null.";
+                log.error(msg, e);
+            }
+        }
+        return null;
     }
 
     /**
@@ -287,7 +337,7 @@ public abstract class AbstractResource implements Resource {
             return null;
         }
         if (clazz.isInstance(value)) {
-            return (T)value;
+            return (T) value;
         }
         if (value instanceof Map && !((Map) value).isEmpty()) {
             T resource = dataStore.instantiate(clazz, (Map<String, Object>) value);
@@ -305,7 +355,6 @@ public abstract class AbstractResource implements Resource {
     }
 
     /**
-     *
      * @param property
      * @param value
      * @param <T>
@@ -314,7 +363,7 @@ public abstract class AbstractResource implements Resource {
     protected <T extends Resource> void setResourceProperty(ResourceReference<T> property, Resource value) {
         Assert.notNull(property, "Property argument cannot be null.");
         String name = property.getName();
-        Map<String,String> reference = this.referenceFactory.createReference(name, value);
+        Map<String, String> reference = this.referenceFactory.createReference(name, value);
         setProperty(name, reference);
     }
 
@@ -391,6 +440,141 @@ public abstract class AbstractResource implements Resource {
             } finally {
                 other.readLock.unlock();
             }
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    /*
+     * This section is to provide Map functionality to Implementations that need it
+     * e.g. CustomData.
+     *
+     * All methods must be protected either by Read or Write lock.
+     */
+    protected final int propertiesSize() {
+        readLock.lock();
+        try {
+            return properties.size();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    protected final boolean isPropertiesEmpty() {
+        readLock.lock();
+        try {
+            return properties.isEmpty();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    protected final boolean containsPropertyKey(String key) {
+        readLock.lock();
+        try {
+            return properties.containsKey(key);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    protected final boolean containsPropertyValue(Object value) {
+        readLock.lock();
+        try {
+            return properties.containsValue(value);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    protected final Object putProperty(String key, Object value) {
+        writeLock.lock();
+        try {
+            this.deletedPropertyNames.remove(key);
+
+            Object toReturn = this.properties.put(key, value);
+
+            this.dirtyProperties.put(key, value);
+            this.dirty = true;
+
+            return toReturn;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    protected final Object removeProperty(String key) {
+        if (!containsPropertyKey(key)) {
+            return null;
+        }
+        writeLock.lock();
+        try {
+            Object object = this.properties.remove(key);
+            this.dirtyProperties.remove(key);
+            if (isDirty() && this.dirtyProperties.isEmpty()) {
+                this.dirty = false;
+            }
+            this.deletedPropertyNames.add(key.toString());
+            return object;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    protected final void putAllProperties(Map<? extends String, ?> m) {
+        if (Collections.isEmpty(m)) {
+            return;
+        }
+        Set<? extends Map.Entry<? extends String, ?>> entrySet = m.entrySet();
+        writeLock.lock();
+        try {
+            for (Map.Entry<? extends String, ?> entry : entrySet) {
+                setProperty(entry.getKey(), entry.getValue());
+            }
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    protected final Collection<Object> getPropertyValues() {
+        readLock.lock();
+        try {
+            return properties.values();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public void clearProperties() {
+        writeLock.lock();
+        try {
+
+            Set<String> propertiesToFilter = new HashSet<String>();
+            propertiesToFilter.add(HREF_PROP_NAME);
+            propertiesToFilter.addAll(getPropertyDescriptors().keySet());
+
+            for (String propertyName : getPropertyNames()) {
+
+                if(propertiesToFilter.contains(propertyName)){
+                    continue;
+                }
+
+                this.properties.remove(propertyName);
+                this.dirtyProperties.remove(propertyName);
+                this.deletedPropertyNames.add(propertyName);
+            }
+
+            this.dirty = false;
+
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public Set<Map.Entry<String, Object>> propertiesEntrySet() {
+        readLock.lock();
+        try {
+            return this.properties.entrySet();
         } finally {
             readLock.unlock();
         }

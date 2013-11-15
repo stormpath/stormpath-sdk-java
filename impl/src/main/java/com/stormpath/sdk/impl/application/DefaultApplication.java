@@ -29,6 +29,7 @@ import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -201,6 +202,20 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         return getDataStore().create(getGroups().getHref(), group);
     }
 
+    @Override
+    public Group createGroup(CreateGroupRequest request) {
+        Assert.notNull("Request cannot be null.");
+
+        final Group group = request.getGroup();
+        String href = getGroups().getHref();
+
+        if (request.isGroupCriteriaSpecified()) {
+            return getDataStore().create(href, group, request.getGroupCriteria());
+        }
+
+        return getDataStore().create(href, group);
+    }
+
     public Account createAccount(Account account) {
         Assert.notNull(account, "Account instance cannot be null.");
         CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
@@ -215,6 +230,10 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
         if (request.isRegistrationWorkflowOptionSpecified()) {
             href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        if (request.isAccountCriteriaSpecified()) {
+            return getDataStore().create(href, account, request.getAccountCriteria());
         }
 
         return getDataStore().create(href, account);

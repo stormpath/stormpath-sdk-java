@@ -43,6 +43,12 @@ public interface CreateAccountRequestBuilder {
     CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled);
 
     /**
+     *
+     * @return the builder instance for method chaining.
+     */
+    CreateAccountRequestBuilder withCustomData();
+
+    /**
      * Creates a new {@code CreateAccountRequest} instance based on the current builder state.
      *
      * @return a new {@code CreateAccountRequest} instance based on the current builder state.

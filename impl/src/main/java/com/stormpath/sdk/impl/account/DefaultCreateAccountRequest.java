@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.lang.Assert;
 
@@ -28,10 +29,13 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final Boolean registrationWorkflowEnabled;
 
-    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled) {
+    private final AccountCriteria criteria;
+
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountCriteria criteria) {
         Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
+        this.criteria = criteria;
     }
 
     public Account getAccount() {
@@ -49,5 +53,18 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
             throw new IllegalStateException("registrationWorkflowEnabled has not been configured. Use the isRegistrationWorkflowOptionSpecified method to check first before invoking this method.");
         }
         return this.registrationWorkflowEnabled;
+    }
+
+    @Override
+    public boolean isAccountCriteriaSpecified() {
+        return this.criteria != null;
+    }
+
+    @Override
+    public AccountCriteria getAccountCriteria() {
+        if (this.criteria == null) {
+            throw new IllegalStateException("accountCriteria has not been configured. Use the isAccountCriteriaSpecified method to check first before invoking this method.");
+        }
+        return this.criteria;
     }
 }

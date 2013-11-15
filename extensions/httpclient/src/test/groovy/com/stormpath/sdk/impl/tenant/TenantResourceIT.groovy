@@ -54,7 +54,7 @@ class TenantResourceIT extends ClientIT {
 
         //def tenant = client.currentTenant
 
-        Tenant tenant = client.getResource("http://localhost:8080/v1/tenants/5swIpWp9WyHanNPQtuI7m2?expand=applications,directories", Tenant)
+        Tenant tenant = client.getResource("http://localhost:8080/v1/tenants/HDGPpLzIzYkOO68I9i4dx?expand=applications,directories", Tenant)
 
         /*
         120.times { i ->

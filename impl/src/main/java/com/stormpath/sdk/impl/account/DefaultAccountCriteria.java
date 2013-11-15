@@ -59,6 +59,12 @@ public class DefaultAccountCriteria extends DefaultCriteria<AccountCriteria, Acc
     }
 
     @Override
+    public AccountCriteria withCustomData() {
+        getOptions().withCustomData();
+        return this;
+    }
+
+    @Override
     public AccountCriteria withDirectory() {
         getOptions().withDirectory();
         return this;

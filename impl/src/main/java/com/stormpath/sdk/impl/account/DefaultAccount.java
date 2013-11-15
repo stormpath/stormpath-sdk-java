@@ -17,7 +17,9 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -32,6 +34,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -54,6 +57,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<EmailVerificationToken> EMAIL_VERIFICATION_TOKEN =
             new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class);
+    static final ResourceReference<CustomData> CUSTOM_DATA = new ResourceReference<CustomData>("customData", CustomData.class);
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
@@ -65,14 +69,22 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
+            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
     }
 
     public DefaultAccount(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+        super(dataStore);
+
+        if (properties != null && properties.containsKey(CUSTOM_DATA.getName())) {
+            Object object = properties.get(CUSTOM_DATA.getName());
+            Assert.isInstanceOf(Map.class, object);
+            CustomData customData = getDataStore().instantiate(CustomData.class, (Map<String, Object>) properties.get(CUSTOM_DATA.getName()));
+            properties.put(CUSTOM_DATA.getName(), customData);
+        }
+        setProperties(properties);
     }
 
     @Override
@@ -201,11 +213,45 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
         return getResourceProperty(EMAIL_VERIFICATION_TOKEN);
     }
 
+    @Override
+    public CustomData getCustomData() {
+        if (isNew() && getResourceProperty(CUSTOM_DATA) == null) {
+            setProperty(CUSTOM_DATA, getDataStore().instantiate(CustomData.class));
+        }
+        return getResourceProperty(CUSTOM_DATA);
+    }
+
     /**
      * @since 0.8
      */
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    @Override
+    public void save(){
+        checkIfCustomDataNeedsUpdate();
+        super.save();
+    }
+
+    @Override
+    public void save(boolean expandCustomData) {
+        if (!expandCustomData) {
+            this.save();
+            return;
+        }
+        checkIfCustomDataNeedsUpdate();
+        getDataStore().save(this, Accounts.criteria().withCustomData());
+    }
+
+    private void checkIfCustomDataNeedsUpdate(){
+        CustomData customData = getCustomData();
+
+        Assert.isInstanceOf(AbstractInstanceResource.class, customData);
+
+        if(((AbstractInstanceResource) customData).isDirty()){
+            setProperty(CUSTOM_DATA, customData);
+        }
     }
 }

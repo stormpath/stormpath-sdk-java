@@ -25,6 +25,15 @@ import com.stormpath.sdk.query.Options;
 public interface AccountOptions<T> extends Options {
 
     /**
+     * Ensures that when retrieving an Account, the Account's {@link Account#getCustomData() customData} is also
+     * retrieved in the same request. This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
+    T withCustomData();
+
+    /**
      * Ensures that when retrieving an Account, the Account's parent {@link Account#getDirectory() directory} is also
      * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
      * related resources you know you will use.

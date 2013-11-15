@@ -61,7 +61,7 @@ class ClientIT {
     }
 
     Client buildClient() {
-        return new ClientBuilder() /*.setBaseUrl(baseUrl) */
+        return new ClientBuilder().setBaseUrl(baseUrl)
                 .setApiKeyFileLocation(apiKeyFileLocation)
                 .setCacheManager(Caches.newCacheManager().build())
                 .build()

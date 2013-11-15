@@ -22,6 +22,7 @@ import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -193,7 +194,10 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
      * </pre>
-     *
+     * If you would like to retrieve the account's custom data in the
+     *  <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     * </pre>
      * @param request the account creation request
      * @return a new Account that may login to this application.
      * @throws ResourceException if the Application does not have a designated {@link #getDefaultAccountStore() defaultAccountStore}
@@ -279,6 +283,8 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.9
      */
     Group createGroup(Group group) throws ResourceException;
+
+    Group createGroup(CreateGroupRequest request);
 
     /**
      * Returns the application's parent (owning) Tenant.

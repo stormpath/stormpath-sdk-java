@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -82,6 +83,15 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore {
      * @param status the Group's status.
      */
     void setStatus(GroupStatus status);
+
+    /**
+     * Returns the Stormpath CustomData owned by this Group resource.
+     *
+     * @return the Stormpath CustomData owned by owns this Group resource.
+     *
+     * @since 0.9
+     */
+    CustomData getCustomData();
 
     /**
      * Returns the Stormpath Tenant that owns this Group resource.
@@ -163,4 +173,14 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore {
      * @since 0.4
      */
     GroupMembership addAccount(Account account);
+
+    /**
+     * Saves an account and gives the option to retrieve from the server the {@link CustomData} associated to
+     * the account.
+     *
+     * @param expandCustomData If true, the customData associated to the account will be retrieved in the
+     *                         response of the update request.
+     * @since 0.9
+     */
+    void save(boolean expandCustomData);
 }

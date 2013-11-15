@@ -44,6 +44,12 @@ public class DefaultGroupCriteria extends DefaultCriteria<GroupCriteria, GroupOp
     }
 
     @Override
+    public GroupCriteria withCustomData() {
+        getOptions().withCustomData();
+        return this;
+    }
+
+    @Override
     public GroupCriteria withDirectory() {
         getOptions().withDirectory();
         return this;

@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.error.DefaultError;
@@ -201,7 +202,29 @@ public class DefaultDataStore implements InternalDataStore {
         //ensure the caller's argument is updated with what is returned from the server:
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret);
+        LinkedHashMap<String, Object> props = toMap(ret, false);
+        in.setProperties(props);
+
+        return (T) in;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Resource> T create(String parentHref, T resource, Criteria criteria) {
+        Assert.isInstanceOf(DefaultCriteria.class, criteria,
+                "The " + getClass().getName() + " implementation only functions with " +
+                        DefaultCriteria.class.getName() + " instances.");
+
+        DefaultCriteria dc = (DefaultCriteria) criteria;
+        QueryString qs = queryStringFactory.createQueryString(parentHref, dc);
+
+        Class<T> clazz = (Class<T>) resource.getClass();
+
+        T returnValue = save(parentHref, resource, clazz, qs);
+
+        //ensure the caller's argument is updated with what is returned from the server:
+        AbstractResource in = (AbstractResource) resource;
+        AbstractResource ret = (AbstractResource) returnValue;
+        LinkedHashMap<String, Object> props = toMap(ret, false);
         in.setProperties(props);
 
         return (T) in;
@@ -226,7 +249,36 @@ public class DefaultDataStore implements InternalDataStore {
 
         //ensure the caller's argument is updated with what is returned from the server:
         AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret);
+        LinkedHashMap<String, Object> props = toMap(ret, false);
+        aResource.setProperties(props);
+    }
+
+    @Override
+    public <T extends Resource & Saveable> void save(T resource, Criteria criteria) {
+        Assert.notNull(resource, "resource argument cannot be null.");
+        Assert.isInstanceOf(AbstractResource.class, resource);
+        Assert.isInstanceOf(Saveable.class, resource);
+
+        Assert.isInstanceOf(DefaultCriteria.class, criteria,
+                "The " + getClass().getName() + " implementation only functions with " +
+                        DefaultCriteria.class.getName() + " instances.");
+
+        AbstractResource aResource = (AbstractResource) resource;
+
+        String href = aResource.getHref();
+        Assert.hasLength(href, "'save' may only be called on objects that have already been " +
+                "persisted and have an existing " + AbstractResource.HREF_PROP_NAME + " attribute.");
+
+        DefaultCriteria dc = (DefaultCriteria) criteria;
+        QueryString qs = queryStringFactory.createQueryString(href, dc);
+
+        Class<T> clazz = (Class<T>) resource.getClass();
+
+        T returnValue = save(href, resource, clazz, qs);
+
+        //ensure the caller's argument is updated with what is returned from the server:
+        AbstractResource ret = (AbstractResource) returnValue;
+        LinkedHashMap<String, Object> props = toMap(ret, false);
         aResource.setProperties(props);
     }
 
@@ -241,6 +293,10 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType) {
+        return save(href, resource, returnType, null);
+    }
+
+    private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType, QueryString queryString) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
@@ -249,14 +305,14 @@ public class DefaultDataStore implements InternalDataStore {
 
         AbstractResource abstractResource = (AbstractResource) resource;
 
-        LinkedHashMap<String, Object> props = toMap(abstractResource);
+        LinkedHashMap<String, Object> props = toMap(abstractResource, true);
 
         String bodyString = mapMarshaller.marshal(props);
 
         StringInputStream body = new StringInputStream(bodyString);
         long length = body.available();
 
-        Request request = new DefaultRequest(HttpMethod.POST, href, null, null, body, length);
+        Request request = new DefaultRequest(HttpMethod.POST, href, queryString, null, body, length);
 
         Map<String, Object> responseBody = executeRequest(request);
 
@@ -285,6 +341,22 @@ public class DefaultDataStore implements InternalDataStore {
 
         AbstractResource abstractResource = (AbstractResource) resource;
         String href = abstractResource.getHref();
+
+        uncache(abstractResource);
+
+        Request request = createRequest(HttpMethod.DELETE, href, null);
+        executeRequest(request);
+    }
+
+    @Override
+    public <T extends Resource> void deleteResourceProperty(T resource, String propertyName) {
+        Assert.notNull(resource, "resource argument cannot be null.");
+        Assert.isInstanceOf(AbstractResource.class, resource);
+        Assert.hasText(propertyName, "propertyName cannot be null or empty.");
+
+        AbstractResource abstractResource = (AbstractResource) resource;
+        String href = abstractResource.getHref();
+        href = href + "/" + propertyName;
 
         uncache(abstractResource);
 
@@ -362,6 +434,13 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         Map<String, Object> toCache = new LinkedHashMap<String, Object>(data.size());
+
+        if (CustomData.class.isAssignableFrom(clazz)) {
+            toCache.putAll(data);
+            Cache cache = getCache(clazz);
+            cache.put(href, toCache);
+            return;
+        }
 
         for (Map.Entry<String, ?> entry : data.entrySet()) {
             String name = entry.getKey();
@@ -501,21 +580,50 @@ public class DefaultDataStore implements InternalDataStore {
         return this.cacheManager.getCache(cacheRegionName);
     }
 
-    private LinkedHashMap<String, Object> toMap(AbstractResource resource) {
-        Set<String> propNames = resource.getPropertyNames();
+    private LinkedHashMap<String, Object> toMap(AbstractResource resource, boolean isUpdateMap) {
+
+        Set<String> propNames;
+
+        if (isUpdateMap) {
+            propNames = resource.getUpdatedPropertyNames();
+        } else {
+            propNames = resource.getPropertyNames();
+        }
 
         LinkedHashMap<String, Object> props = new LinkedHashMap<String, Object>(propNames.size());
 
         for (String propName : propNames) {
             Object prop = resource.getProperty(propName);
 
+            //if the property is CustomData will be written in its entirety.
+            if (resource instanceof CustomData) {
+                props.put(propName, prop);
+                continue;
+            }
+            if (prop instanceof CustomData) {
+                if (isUpdateMap) {
+                    Assert.isInstanceOf(AbstractResource.class, prop);
+
+                    AbstractResource customDataAbstractResource = (AbstractResource) prop;
+                    LinkedHashMap<String, Object> customDataProperties = new LinkedHashMap<String, Object>(propNames.size());
+
+                    for (String updatedCustomPropertyName : customDataAbstractResource.getUpdatedPropertyNames()) {
+                        Object object = customDataAbstractResource.getProperty(updatedCustomPropertyName);
+                        customDataProperties.put(updatedCustomPropertyName, object);
+                    }
+                    props.put(propName, customDataProperties);
+
+                } else {
+                    props.put(propName, prop);
+                }
+                continue;
+            }
             //if the property is a reference, don't write the entire object - just the href will do:
             if (prop instanceof Map) {
                 prop = this.referenceFactory.createReference(propName, (Map) prop);
             } else if (prop instanceof Resource) {
                 prop = this.referenceFactory.createReference(propName, (Resource) prop);
             }
-
             props.put(propName, prop);
         }
 

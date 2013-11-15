@@ -18,6 +18,8 @@ package com.stormpath.sdk.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -113,7 +115,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * <p/>
      * If {@code registrationWorkflowEnabled} is {@code false}, the account registration workflow will <b>NOT</b>
      * be triggered, no matter what the Directory configuration is.
-     * </p>
+     * <p/>
      * If you want to ensure the registration workflow behavior matches the Directory default, call the
      * {@link #createAccount(com.stormpath.sdk.account.Account)} method instead.
      * <p/>
@@ -126,6 +128,38 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      *                                    what the Directory configuration is.
      */
     void createAccount(Account account, boolean registrationWorkflowEnabled);
+
+    /**
+     * Creates a new account instance in the directory with an option to set explicitly the registration workflow
+     * directive. Also, an option to expand the account's {@link CustomData} in the body response upon account
+     * creation.
+     *
+     * <p/>
+     * If {@code registrationWorkflowEnabled} is {@code true}, the account registration workflow will be triggered
+     * no matter what the Directory configuration is.
+     * <p/>
+     * If {@code registrationWorkflowEnabled} is {@code false}, the account registration workflow will <b>NOT</b>
+     * be triggered, no matter what the Directory configuration is.
+     * <p/>
+     * If {@code registrationWorkflowEnabled} is {@code null}, the registration workflow behavior will match the Directory
+     * default.
+     * <p/>
+     *
+     * If {@code expandCustomData} is {@code true}, the account customData will be expanded in the body response.
+     * <p/>
+     * If {@code expandCustomData} is {@code null} or {@code false}, the account customData won't be retrieved in the
+     * body response.
+     * <p/>
+     *
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the directory's
+     * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} and
+     * {@code expandCustomData} arguments.
+     *
+     * @param request
+     * @since 0.9
+     */
+    void createAccount(CreateAccountRequest request);
 
     /**
      * Returns a paginated list of all accounts in the Directory.
@@ -271,4 +305,12 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * @since 0.6
      */
     void createGroup(Group group);
+
+    /**
+     * Creates a new group instance in the directory.
+     *
+     * @param request
+     * @since 0.9
+     */
+    void createGroup(CreateGroupRequest request);
 }

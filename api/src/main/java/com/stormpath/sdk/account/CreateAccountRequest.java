@@ -59,4 +59,17 @@ public interface CreateAccountRequest {
      */
     boolean isRegistrationWorkflowEnabled() throws IllegalStateException;
 
+
+    /**
+     *
+     * @return
+     */
+    boolean isAccountCriteriaSpecified();
+
+    /**
+     *
+     * @return
+     */
+    AccountCriteria getAccountCriteria();
+
 }
