@@ -43,6 +43,9 @@ public interface CreateAccountRequestBuilder {
     CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled);
 
     /**
+     * Ensures that after a Account is created, the Account's {@link Account#getCustomData() customData} is also
+     * retrieved in the same successful creation response. This enhances performance by leveraging a single
+     * request to retrieve multiple related resources you know you will use.
      *
      * @return the builder instance for method chaining.
      */

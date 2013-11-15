@@ -59,17 +59,33 @@ public interface CreateAccountRequest {
      */
     boolean isRegistrationWorkflowEnabled() throws IllegalStateException;
 
-
     /**
+     * Returns {@code true} if the the request reflects that the CreateAccount (POST) message will be send with
+     * URL query parameters to retrieve the account's references as part of Stormpath's response upon successful
+     * account creation.
+     * <p/>
+     * You should always invoke this method to see if it is safe to invoke the
+     * {@link #getAccountCriteria()} method.
      *
-     * @return
+     * @return {@code true} if the the request reflects that the CreateAccount (POST) message will be send with
+     *         URL query parameters to retrieve the expanded references in the Stormpath's response upon successful
+     *         account creation.
      */
     boolean isAccountCriteriaSpecified();
 
     /**
+     * Returns the {@code AccountCriteria} to be used in the CreateAccountRequest s to retrieve the account's
+     * references as part of Stormpath's response upon successful account creation.
+     * <p/>
+     * Always call the {@link #isAccountCriteriaSpecified()} method first to see if this value has been
+     * configured.  Attempting to call this method when it has not been configured will result in an
+     * {@link IllegalStateException}
      *
-     * @return
+     * @return {@link AccountCriteria} to be used in the CreateAccountRequest s to retrieve the account's
+     *         references as part of Stormpath's response upon successful account creation.
+     *
+     * @throws IllegalStateException if this method is called but {@link #isAccountCriteriaSpecified()} is {@code false}.
      */
-    AccountCriteria getAccountCriteria();
+    AccountCriteria getAccountCriteria() throws IllegalStateException;
 
 }

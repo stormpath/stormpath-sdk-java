@@ -204,7 +204,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public Group createGroup(CreateGroupRequest request) {
-        Assert.notNull("Request cannot be null.");
+        Assert.notNull(request, "Request cannot be null.");
 
         final Group group = request.getGroup();
         String href = getGroups().getHref();
@@ -224,7 +224,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public Account createAccount(CreateAccountRequest request) {
-        Assert.notNull("Request cannot be null.");
+        Assert.notNull(request, "Request cannot be null.");
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 

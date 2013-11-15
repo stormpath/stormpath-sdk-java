@@ -68,6 +68,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
     /**
      * Sets the description.  This is an optional property and may be null or empty.
      *
+     *
      * @param description the description to apply.
      */
     void setDescription(String description);

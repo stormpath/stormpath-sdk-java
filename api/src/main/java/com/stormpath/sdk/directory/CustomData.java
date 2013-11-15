@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.Map;
 
 /**
+ * A CustomData is a Map resource within an {@link com.stormpath.sdk.account.Account} or a
+ * {@link com.stormpath.sdk.group.Group}, that allows you to specify whatever name/value pairs
+ * you wish.
+ *
  * @since 0.9
  */
 public interface CustomData extends Resource, Saveable, Deletable, Map<String, Object> {

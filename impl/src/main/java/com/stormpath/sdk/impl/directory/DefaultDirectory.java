@@ -127,7 +127,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public void createAccount(CreateAccountRequest request) {
-        Assert.notNull("Request cannot be null.");
+        Assert.notNull(request, "Request cannot be null.");
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 
@@ -194,7 +194,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public void createGroup(CreateGroupRequest request) {
-        Assert.notNull("Request cannot be null.");
+        Assert.notNull(request, "Request cannot be null.");
 
         final Group group = request.getGroup();
         String href = getGroups().getHref();
