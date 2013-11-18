@@ -20,6 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.CreateApplicationRequest;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.resource.Resource;
@@ -137,6 +138,16 @@ public interface Tenant extends Resource, Saveable {
      * @since 0.8
      */
     ApplicationList getApplications(ApplicationCriteria criteria);
+
+    /**
+     * Creates a new Directory resource in the Tenant.
+     *
+     * @param directory the Directory resource to create.
+     * @return the directory created.
+     * @throws ResourceException if there was a problem creating the directory.
+     * @since 0.9.0
+     */
+    Directory createDirectory(Directory directory);
 
     /**
      * Returns a paginated list of all of the Tenant's {@link com.stormpath.sdk.directory.Directory Directory} instances.
