@@ -32,10 +32,10 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
     @Test
     void testApplicationCustomData() {
 
-        def app = createApplication();
-        def directory = retrieveAppDirectory(app);
+        application = createApplication();
+        def directory = retrieveAppDirectory(application);
         deleteOnTeardown(directory);
-        deleteOnTeardown(app)
+        deleteOnTeardown(application)
 
         //TEST Accounts
         def postedCustomData = createComplexData()

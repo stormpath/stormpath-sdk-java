@@ -15,13 +15,7 @@
  */
 package com.stormpath.sdk.client
 
-import com.stormpath.sdk.application.AccountStoreMapping
-import com.stormpath.sdk.application.AccountStoreMappingList
-import com.stormpath.sdk.application.AccountStoreMappings
-import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.application.ApplicationList
-import com.stormpath.sdk.application.ApplicationStatus
-import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.application.*
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.AccountStoreVisitor
 import com.stormpath.sdk.directory.Directories
@@ -47,7 +41,7 @@ class AccountStoreMappingIT extends ClientIT {
     Application app
 
     @BeforeClass
-    void setUp() {
+    void setUpClass() {
         applications = new ArrayList<Application>()
         directories = new ArrayList<Directory>()
 

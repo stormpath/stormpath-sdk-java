@@ -25,8 +25,8 @@ import com.stormpath.sdk.tenant.Tenant
 
 import static com.stormpath.sdk.directory.Directories.name
 import static com.stormpath.sdk.directory.Directories.where
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertNotNull
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
 
 /**
  * @since 0.9
@@ -119,7 +119,7 @@ class AbstractCustomDataIT extends ClientIT {
 
         if (isResponseExpanded) {
             //when saved, we add 3 properties: href, createdAt and modifiedAt.  Verify the server did this:
-            assertEquals submittedProperties.size() + 3, responseData.size()
+            assertEquals  responseData.size(), submittedProperties.size() + 3
             assertNotNull responseData.getCreatedAt()
             assertNotNull responseData.getModifiedAt()
 
