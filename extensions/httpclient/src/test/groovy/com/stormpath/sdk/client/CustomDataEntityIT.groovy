@@ -26,7 +26,6 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
 
     Application application
 
-
     @Test
     void testCustomDataOperations() {
 

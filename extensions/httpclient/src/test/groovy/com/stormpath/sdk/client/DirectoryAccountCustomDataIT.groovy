@@ -20,8 +20,6 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directory
 import org.testng.annotations.Test
 
-import static org.junit.Assert.assertEquals
-
 /**
  * @since 0.9
  */
@@ -32,9 +30,10 @@ class DirectoryAccountCustomDataIT extends AbstractCustomDataIT {
     @Test
     void testCreateAccountWithCustomData() {
 
-        directory = retrieveDirectory()
-
-        assertEquals(directoryHref, directory.href)
+        def app = createApplication();
+        directory = retrieveAppDirectory(app);
+        deleteOnTeardown(directory);
+        deleteOnTeardown(app)
 
         def postedCustomData = createComplexData()
         def account1 = createAccount(postedCustomData, false)

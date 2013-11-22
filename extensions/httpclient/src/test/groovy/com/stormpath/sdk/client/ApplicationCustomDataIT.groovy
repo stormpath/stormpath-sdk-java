@@ -32,10 +32,10 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
     @Test
     void testApplicationCustomData() {
 
-        /**
-         * application will be deleted at the end of the test.
-         */
-        application = createApplication()
+        def app = createApplication();
+        def directory = retrieveAppDirectory(app);
+        deleteOnTeardown(directory);
+        deleteOnTeardown(app)
 
         //TEST Accounts
         def postedCustomData = createComplexData()
@@ -80,13 +80,6 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
         def group4 = createGroup(postedCustomData, true)
         updateGroup(group4, postedCustomData, [:], true)
         updateGroup(group4, postedCustomData, createDataForUpdate(), true)
-
-        def directory = account1.directory
-
-        deleteOnTeardown(directory)
-
-        deleteOnTeardown(application)
-
     }
 
     def Account createAccount(Map postedCustomData, boolean expand) {

@@ -20,8 +20,6 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import org.testng.annotations.Test
 
-import static org.junit.Assert.assertEquals
-
 /**
  * @since 0.9
  */
@@ -32,9 +30,10 @@ class DirectoryGroupCustomDataIT extends AbstractCustomDataIT {
     @Test
     void testCreateGroupWithCustomData() {
 
-        directory = retrieveDirectory()
-
-        assertEquals(directoryHref, directory.href)
+        def app = createApplication();
+        directory = retrieveAppDirectory(app);
+        deleteOnTeardown(directory);
+        deleteOnTeardown(app)
 
         def postedCustomData = createComplexData()
         def group1 = createGroup(directory, postedCustomData, false)

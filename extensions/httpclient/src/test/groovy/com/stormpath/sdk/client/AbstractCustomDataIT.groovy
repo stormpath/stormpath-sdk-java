@@ -23,6 +23,8 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.tenant.Tenant
 
+import static com.stormpath.sdk.directory.Directories.name
+import static com.stormpath.sdk.directory.Directories.where
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotNull
 
@@ -31,11 +33,12 @@ import static org.junit.Assert.assertNotNull
  */
 class AbstractCustomDataIT extends ClientIT {
 
-    protected directoryHref = 'http://localhost:8080/v1/directories/4CN5pUg01G3yDWgumAbqcn'
-
-    protected Directory retrieveDirectory() {
-
-        return client.getResource(directoryHref, Directory)
+    //assumes an app that was created with an auto-created, auto-named directory:
+    protected Directory retrieveAppDirectory(Application app) {
+        client.getCurrentTenant().getDirectories(
+                where(name().startsWithIgnoreCase(app.getName()))
+        )
+        .iterator().next()
     }
 
     protected Application createApplication() {
@@ -53,9 +56,9 @@ class AbstractCustomDataIT extends ClientIT {
 
         def m = [
                 nullProperty: null,
-
                 emptyStringProperty: "",
                 whitespaceOnlyStringProperty: "     ",
+                simpleStringProperty: "Hello, world!",
                 japaneseCharacters: "アナリストは「Apacheの史郎は、今日日本のソフトウェアエンジニアのた",
                 spanishCharacters: "El niño está usando Stormpath para su aplicación.",
                 trueProperty: true,
@@ -86,8 +89,6 @@ class AbstractCustomDataIT extends ClientIT {
 
                 negativeBigDecimalProperty: new BigDecimal("-3141589999999999882600524314492941834005200524314492940902709960937.999999999988261839294090270996093754005243144929409027099609375"),
                 positiveBigDecimalProperty: new BigDecimal("3141589999999999882600524314492941834005200524314492940902709960937.999999999988261839294090270996093754005243144929409027099609375"),
-
-
         ]
         m.listProperty = m.values().toList()
         m.mapProperty = m.clone()
