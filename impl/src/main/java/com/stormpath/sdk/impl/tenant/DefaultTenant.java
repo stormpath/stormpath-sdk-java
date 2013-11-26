@@ -130,6 +130,12 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     }
 
     @Override
+    public Directory createDirectory(Directory directory) {
+        Assert.notNull(directory, "Directory instance cannot be null.");
+        return getDataStore().create("/" + DIRECTORIES.getName(), directory);
+    }
+
+    @Override
     public DirectoryList getDirectories() {
         return getCollection(DIRECTORIES);
     }
