@@ -62,6 +62,7 @@ public interface Tenant extends Resource, Saveable {
      * @param application the Application resource to create.
      * @return the created Application
      * @throws ResourceException if there was a problem creating the application.
+     * @see #createApplication(com.stormpath.sdk.application.CreateApplicationRequest)
      */
     Application createApplication(Application application) throws ResourceException;
 
@@ -140,7 +141,12 @@ public interface Tenant extends Resource, Saveable {
     ApplicationList getApplications(ApplicationCriteria criteria);
 
     /**
-     * Creates a new Directory resource in the Tenant.
+     * Creates a new <b>Cloud</b> Directory resource in the Tenant.
+     * <p/>
+     * <b>Mirrored (LDAP or Active Directory) Directories cannot be created via the REST API or SDKs.</b>
+     * <p/>
+     * This method creates a natively hosted directory in Stormpath.  Please use the Stormpath Admin UI if you need to
+     * create an LDAP/AD mirrored directory.
      *
      * @param directory the Directory resource to create.
      * @return the directory created.
