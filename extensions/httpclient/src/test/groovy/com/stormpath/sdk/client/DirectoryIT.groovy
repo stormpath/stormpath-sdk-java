@@ -20,14 +20,30 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directory
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
+import static org.testng.Assert.*
 
 /**
  *
  * @since 0.8.1
  */
 class DirectoryIT extends ClientIT {
+
+    /**
+     * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/pull/22">Pull Request 22</a>.
+     */
+    @Test
+    void testCreateAndDeleteDirectory() {
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+
+        dir = client.currentTenant.createDirectory(dir);
+        assertNotNull dir.href
+
+        //cleanup the test - don't pollute the Stormpath tenant:
+        dir.delete()
+    }
+
 
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/12">Issue #12</a>
