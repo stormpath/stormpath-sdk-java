@@ -301,12 +301,14 @@ public interface Account extends Resource, Saveable, Deletable {
     CustomData getCustomData();
 
     /**
-     * Saves this Account resource with accountsOptions to retrieve in the response.  This enhances performance by
-     * leveraging a single request to retrieve multiple related resources you know you will use.
+     * Saves this Account resource and ensures the returned Account response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the account.
      *
-     * @param responseOptions The {@code AccountOptions} to retrieve in the save response.
+     * @param responseOptions The {@code AccountOptions} to use to customize the Account resource returned in the save
+     *                        response.
      *
      * @since 0.9
      */
-    void save(AccountOptions responseOptions);
+    void saveWithResponseOptions(AccountOptions responseOptions);
 }

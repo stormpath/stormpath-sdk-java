@@ -224,7 +224,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void save(AccountOptions accountOptions) {
+    public void saveWithResponseOptions(AccountOptions accountOptions) {
         Assert.notNull(accountOptions, "accountOptions can't be null.");
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, accountOptions);

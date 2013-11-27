@@ -186,7 +186,7 @@ class AbstractCustomDataIT extends ClientIT {
 
         account.customData.putAll(newCustomData)
 
-        expand ? account.save(Accounts.options().withCustomData()) : account.save()
+        expand ? account.saveWithResponseOptions(Accounts.options().withCustomData()) : account.save()
 
         initialCustomData.putAll(newCustomData)
 
@@ -211,7 +211,7 @@ class AbstractCustomDataIT extends ClientIT {
 
         group.customData.putAll(newCustomData)
 
-        expand ? group.save(Groups.options().withCustomData()) : group.save()
+        expand ? group.saveWithResponseOptions(Groups.options().withCustomData()) : group.save()
 
         initialCustomData.putAll(newCustomData)
 

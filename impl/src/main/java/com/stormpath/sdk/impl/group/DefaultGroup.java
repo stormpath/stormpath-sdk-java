@@ -173,7 +173,7 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void save(GroupOptions groupOptions) {
+    public void saveWithResponseOptions(GroupOptions groupOptions) {
         Assert.notNull(groupOptions, "accountOptions can't be null.");
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, groupOptions);
