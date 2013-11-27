@@ -50,4 +50,19 @@ public class DefaultApplicationOptions extends DefaultOptions<ApplicationOptions
     public ApplicationOptions withTenant() {
         return expand(DefaultApplication.TENANT);
     }
+
+    @Override
+    public Object withAccountStoreMappings() {
+        return expand(DefaultApplication.ACCOUNT_STORE_MAPPINGS);
+    }
+
+    @Override
+    public Object withAccountStoreMappings(int limit) {
+        return expand(DefaultApplication.ACCOUNT_STORE_MAPPINGS, limit);
+    }
+
+    @Override
+    public Object withAccountStoreMappings(int limit, int offset) {
+        return expand(DefaultApplication.ACCOUNT_STORE_MAPPINGS, limit, offset);
+    }
 }

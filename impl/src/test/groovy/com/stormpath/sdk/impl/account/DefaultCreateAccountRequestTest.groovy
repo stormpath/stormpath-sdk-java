@@ -13,32 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @since 0.9.0
+ * @since 0.9
  */
 class DefaultCreateAccountRequestTest {
 
     @Test
     void testDefault() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, null)
+        def request = new DefaultCreateAccountRequest(account, null, null)
 
         assertSame(request.account, account)
         assertFalse request.isRegistrationWorkflowOptionSpecified()
+        assertFalse request.isAccountOptionsSpecified()
     }
 
     @Test
     void testWorkflowEnabled() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, true)
+        def request = new DefaultCreateAccountRequest(account, true, null)
 
         assertSame(request.account, account)
         assertTrue request.isRegistrationWorkflowOptionSpecified()
@@ -48,7 +52,7 @@ class DefaultCreateAccountRequestTest {
     @Test
     void testWorkflowDisabled() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, false)
+        def request = new DefaultCreateAccountRequest(account, false, null)
 
         assertSame(request.account, account)
         assertTrue request.isRegistrationWorkflowOptionSpecified()
@@ -59,7 +63,27 @@ class DefaultCreateAccountRequestTest {
     void testWorkflowNotSpecifiedButAccessed() {
 
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, null)
+        def request = new DefaultCreateAccountRequest(account, null, null)
         request.isRegistrationWorkflowEnabled()
+    }
+
+    @Test
+    void testAccountCriteria() {
+        def account = createStrictMock(Account)
+        def criteria = createStrictMock(AccountCriteria)
+        def request = new DefaultCreateAccountRequest(account, null, criteria)
+
+        assertSame(request.account, account)
+        assertFalse request.isRegistrationWorkflowOptionSpecified()
+        assertTrue request.isAccountOptionsSpecified()
+        assertSame(request.accountOptions, criteria)
+    }
+
+    @Test(expectedExceptions = IllegalStateException)
+    void testAccountCriteriaNotSpecifiedButAccessed() {
+        def account = createStrictMock(Account)
+        def request = new DefaultCreateAccountRequest(account, null, null)
+
+        request.getAccountOptions()
     }
 }

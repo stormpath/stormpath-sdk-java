@@ -77,4 +77,22 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
         getOptions().withTenant();
         return this;
     }
+
+    @Override
+    public ApplicationCriteria withAccountStoreMappings() {
+        getOptions().withAccountStoreMappings();
+        return this;
+    }
+
+    @Override
+    public ApplicationCriteria withAccountStoreMappings(int limit) {
+        getOptions().withAccountStoreMappings(limit);
+        return this;
+    }
+
+    @Override
+    public ApplicationCriteria withAccountStoreMappings(int limit, int offset) {
+        getOptions().withAccountStoreMappings(limit, offset);
+        return this;
+    }
 }

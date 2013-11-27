@@ -18,18 +18,22 @@ package com.stormpath.sdk.impl.group;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.GroupOptions;
 import com.stormpath.sdk.group.GroupStatus;
+import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -37,7 +41,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class DefaultGroup extends AbstractInstanceResource implements Group {
+public class DefaultGroup extends AbstractDirectoryEntity implements Group {
 
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name");
@@ -55,7 +59,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
             new CollectionReference<GroupMembershipList, GroupMembership>("accountMemberships", GroupMembershipList.class, GroupMembership.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, DIRECTORY, TENANT, ACCOUNTS, ACCOUNT_MEMBERSHIPS);
+            NAME, DESCRIPTION, STATUS, CUSTOM_DATA, DIRECTORY, TENANT, ACCOUNTS, ACCOUNT_MEMBERSHIPS);
 
     public DefaultGroup(InternalDataStore dataStore) {
         super(dataStore);
@@ -105,6 +109,11 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
+    public CustomData getCustomData() {
+        return super.getCustomData();
+    }
+
+    @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT);
     }
@@ -116,7 +125,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public AccountList getAccounts() {
-        return getCollection(ACCOUNTS);
+        return getResourceProperty(ACCOUNTS);
     }
 
     @Override
@@ -133,7 +142,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public GroupMembershipList getAccountMemberships() {
-        return getCollection(ACCOUNT_MEMBERSHIPS);
+        return getResourceProperty(ACCOUNT_MEMBERSHIPS);
     }
 
     @Override
@@ -147,5 +156,26 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    /**
+     * @since 0.8
+     */
+    @Override
+    public void accept(AccountStoreVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public void save() {
+        applyCustomDataUpdatesIfNecessary();
+        super.save();
+    }
+
+    @Override
+    public void saveWithResponseOptions(GroupOptions groupOptions) {
+        Assert.notNull(groupOptions, "accountOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, groupOptions);
     }
 }

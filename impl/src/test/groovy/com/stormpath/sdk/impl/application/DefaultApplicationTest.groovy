@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.*
+import com.stormpath.sdk.application.AccountStoreMapping
+import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupCriteria
-import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
@@ -52,15 +54,18 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals( propertyDescriptors.size(), 10)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("status") instanceof StatusProperty && propertyDescriptors.get("status").getType().equals(ApplicationStatus))
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
+        assertTrue(propertyDescriptors.get("defaultAccountStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultAccountStoreMapping").getType().equals(AccountStoreMapping))
+        assertTrue(propertyDescriptors.get("defaultGroupStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultGroupStoreMapping").getType().equals(AccountStoreMapping))
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("passwordResetTokens") instanceof CollectionReference && propertyDescriptors.get("passwordResetTokens").getType().equals(PasswordResetTokenList))
+        assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
     }
 
     @Test
@@ -176,6 +181,7 @@ class DefaultApplicationTest {
 
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(false)
+        expect(request.isAccountOptionsSpecified()).andReturn(false)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
 
@@ -199,6 +205,7 @@ class DefaultApplicationTest {
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def request = createStrictMock(CreateAccountRequest)
+        def accountCriteria = createStrictMock(AccountCriteria)
         def account = createStrictMock(Account)
         def accountList = createStrictMock(AccountList)
         def returnedAccount = createStrictMock(Account)
@@ -208,10 +215,12 @@ class DefaultApplicationTest {
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(true)
         expect(request.isRegistrationWorkflowEnabled()).andReturn(false)
+        expect(request.isAccountOptionsSpecified()).andReturn(true)
+        expect(request.getAccountOptions()).andReturn(accountCriteria)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
 
-        expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts?registrationWorkflowEnabled=false", account)).andReturn(returnedAccount)
+        expect(internalDataStore.create("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts?registrationWorkflowEnabled=false", account, accountCriteria)).andReturn(returnedAccount)
 
         replay internalDataStore, request, account, accountList, returnedAccount
 
@@ -239,7 +248,9 @@ class DefaultApplicationTest {
     @Test(expectedExceptions = IllegalArgumentException)
     void testCreateGroupWithNullArgument() {
         def app = new DefaultApplication(createStrictMock(InternalDataStore))
-        app.createGroup(null)
+
+        Group group = null
+        app.createGroup(group)
     }
 
     @Test
@@ -269,6 +280,74 @@ class DefaultApplicationTest {
         assertSame returnedGroup, group
 
         verify dataStore, group, groupList
+    }
+
+    @Test
+    void testCreateGroupWithGroupCriteria() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def dataStore = createStrictMock(InternalDataStore)
+        def request = createStrictMock(CreateGroupRequest)
+        def groupList = createStrictMock(GroupList)
+        def group = createStrictMock(Group)
+        def groupOptions = createStrictMock(GroupOptions)
+
+        def app = new DefaultApplication(dataStore, properties)
+
+        expect(dataStore.instantiate(eq(GroupList.class), eq([href:properties.groups.href]))).andReturn(groupList)
+        expect(groupList.getHref()).andReturn(properties.groups.href)
+
+        expect(request.getGroup()).andReturn(group)
+        expect(request.isGroupOptionsSpecified()).andReturn(true)
+        expect(request.getGroupOptions()).andReturn(groupOptions)
+
+        expect(dataStore.create(eq(properties.groups.href), same(group), same(groupOptions))).andReturn(group)
+
+        replay dataStore, group, groupList, request
+
+        def returnedGroup = app.createGroup(request)
+
+        assertSame returnedGroup, group
+
+        verify dataStore, group, groupList, request
+    }
+
+    @Test
+    void testCreateGroupWithoutGroupCriteria() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def dataStore = createStrictMock(InternalDataStore)
+        def request = createStrictMock(CreateGroupRequest)
+        def groupList = createStrictMock(GroupList)
+        def group = createStrictMock(Group)
+
+        def app = new DefaultApplication(dataStore, properties)
+
+        expect(dataStore.instantiate(eq(GroupList.class), eq([href:properties.groups.href]))).andReturn(groupList)
+        expect(groupList.getHref()).andReturn(properties.groups.href)
+
+        expect(request.getGroup()).andReturn(group)
+        expect(request.isGroupOptionsSpecified()).andReturn(false)
+
+        expect(dataStore.create(eq(properties.groups.href), same(group))).andReturn(group)
+
+        replay dataStore, group, groupList, request
+
+        def returnedGroup = app.createGroup(request)
+
+        assertSame returnedGroup, group
+
+        verify dataStore, group, groupList, request
     }
 
 }

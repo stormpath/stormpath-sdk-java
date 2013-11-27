@@ -16,22 +16,25 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -39,7 +42,7 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-public class DefaultAccount extends AbstractInstanceResource implements Account {
+public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
@@ -65,7 +68,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
+            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -161,7 +164,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public GroupList getGroups() {
-        return getCollection(GROUPS);
+        return getResourceProperty(GROUPS);
     }
 
     @Override
@@ -188,7 +191,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public GroupMembershipList getGroupMemberships() {
-        return getCollection(GROUP_MEMBERSHIPS);
+        return getResourceProperty(GROUP_MEMBERSHIPS);
     }
 
     @Override
@@ -201,11 +204,29 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
         return getResourceProperty(EMAIL_VERIFICATION_TOKEN);
     }
 
+    @Override
+    public CustomData getCustomData() {
+        return super.getCustomData();
+    }
+
     /**
      * @since 0.8
      */
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    @Override
+    public void save(){
+        applyCustomDataUpdatesIfNecessary();
+        super.save();
+    }
+
+    @Override
+    public void saveWithResponseOptions(AccountOptions accountOptions) {
+        Assert.notNull(accountOptions, "accountOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, accountOptions);
     }
 }

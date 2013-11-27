@@ -19,7 +19,7 @@ package com.stormpath.sdk.account;
  * Represents an attempt to create a new {@link com.stormpath.sdk.account.Account} record in Stormpath.
  *
  * @see com.stormpath.sdk.application.Application#createAccount(com.stormpath.sdk.account.CreateAccountRequest)
- * @since 0.9.0
+ * @since 0.9
  */
 public interface CreateAccountRequest {
 
@@ -58,5 +58,34 @@ public interface CreateAccountRequest {
      * @throws IllegalStateException if this method is called but {@link #isRegistrationWorkflowOptionSpecified()} is {@code false}.
      */
     boolean isRegistrationWorkflowEnabled() throws IllegalStateException;
+
+    /**
+     * Returns {@code true} if the the request reflects that the CreateAccount (POST) message will be send with
+     * URL query parameters to retrieve the account's references as part of Stormpath's response upon successful
+     * account creation.
+     * <p/>
+     * You should always invoke this method to see if it is safe to invoke the
+     * {@link #getAccountOptions()} method.
+     *
+     * @return {@code true} if the the request reflects that the CreateAccount (POST) message will be send with
+     *         URL query parameters to retrieve the expanded references in the Stormpath's response upon successful
+     *         account creation.
+     */
+    boolean isAccountOptionsSpecified();
+
+    /**
+     * Returns the {@code AccountOptions} to be used in the CreateAccountRequest s to retrieve the account's
+     * references as part of Stormpath's response upon successful account creation.
+     * <p/>
+     * Always call the {@link #isAccountOptionsSpecified()} method first to see if this value has been
+     * configured.  Attempting to call this method when it has not been configured will result in an
+     * {@link IllegalStateException}
+     *
+     * @return {@link AccountOptions} to be used in the CreateAccountRequest s to retrieve the account's
+     *         references as part of Stormpath's response upon successful account creation.
+     *
+     * @throws IllegalStateException if this method is called but {@link #isAccountOptionsSpecified()} is {@code false}.
+     */
+    AccountOptions getAccountOptions() throws IllegalStateException;
 
 }

@@ -61,6 +61,7 @@ class DefaultAccountCriteriaTest {
                 .withGroups(45)
                 .withGroups() // the REST API will take this last value
                 .withTenant()
+                .withCustomData()
                 .offsetBy(25)
                 .limitTo(50)
 
@@ -81,7 +82,7 @@ class DefaultAccountCriteriaTest {
                 'offset 25 ' +
                 'limit 50 ' +
                 'expand directory, groupMemberships(offset:30,limit:20), groupMemberships, groupMemberships(limit:20), ' +
-                'groups(offset:50,limit:40), groups(limit:45), groups, tenant'
+                'groups(offset:50,limit:40), groups(limit:45), groups, tenant, customData'
 
         def expectedQueryString = 'email=a' + AND +
                 'expand=' +
@@ -92,7 +93,8 @@ class DefaultAccountCriteriaTest {
                     'groups' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 40 + CLOSE_PAREN + COMMA +
                     'groups' + OPEN_PAREN + 'limit' + COLON + 45 + CLOSE_PAREN + COMMA +
                     'groups' + COMMA +
-                    'tenant' + AND +
+                    'tenant' + COMMA +
+                    'customData' + AND +
                 'givenName=*c' + AND +
                 'limit=50' + AND +
                 'middleName=*d*' + AND +

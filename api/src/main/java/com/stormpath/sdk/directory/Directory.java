@@ -18,6 +18,8 @@ package com.stormpath.sdk.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -36,9 +38,10 @@ import java.util.Map;
  * You can think of a Directory as an account 'store'.  You can map one or more Directories (or Groups within a
  * Directory) to an {@link com.stormpath.sdk.application.Application Application}.  This forms the Application's
  * effective 'user base' of all Accounts that may use the Application.
+ *
  * @since 0.2
  */
-public interface Directory extends Resource, Saveable, Deletable {
+public interface Directory extends Resource, Saveable, Deletable, AccountStore {
 
     /**
      * Returns this Directory's name.  The name is guaranteed to be non-null and unique among all other Directories in
@@ -113,7 +116,7 @@ public interface Directory extends Resource, Saveable, Deletable {
      * <p/>
      * If {@code registrationWorkflowEnabled} is {@code false}, the account registration workflow will <b>NOT</b>
      * be triggered, no matter what the Directory configuration is.
-     * </p>
+     * <p/>
      * If you want to ensure the registration workflow behavior matches the Directory default, call the
      * {@link #createAccount(com.stormpath.sdk.account.Account)} method instead.
      * <p/>
@@ -126,6 +129,38 @@ public interface Directory extends Resource, Saveable, Deletable {
      *                                    what the Directory configuration is.
      */
     void createAccount(Account account, boolean registrationWorkflowEnabled);
+
+    /**
+     * Creates a new account instance in the directory with options to override the registration workflow directive
+     * and retrieve account's references in the creation response.
+     * <p/>
+     * <h2>Example</h2>
+     * <pre>
+     * directory.createAccount(Accounts.newCreateRequestFor(account).build());
+     * </pre>
+     * <p/>
+     * If you would like to force disabling the backing directory's account registration workflow:
+     * <pre>
+     * directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
+     * </pre>
+     * If you would like to force the execution of the registration workflow, no matter what the backing directory
+     * configuration is:
+     * <pre>
+     * directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     * </pre>
+     * If you would like to retrieve the account's custom data in the response of the account creation.
+     * <pre>
+     * directory.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
+     * </pre>
+     * <p/>
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the directory's
+     * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} argument.
+     *
+     * @param request
+     * @since 0.9
+     */
+    void createAccount(CreateAccountRequest request);
 
     /**
      * Returns a paginated list of all accounts in the Directory.
@@ -271,4 +306,27 @@ public interface Directory extends Resource, Saveable, Deletable {
      * @since 0.6
      */
     void createGroup(Group group);
+
+    /**
+     * Creates a new group instance in the directory, with the option to retrieve groups references in the group
+     * creation response.
+     * <h2>Example</h2>
+     * <pre>
+     * directory.createGroup(Groups.newCreateRequestFor(group).build());
+     * </pre>
+     * <p/>
+     * If you would like to retrieve the group's custom data in the response of the groups creation.
+     * <pre>
+     * directory.createGroup(Groups.newCreateRequestFor(group).withResponseOptions(Groups.options().withCustomData()).build());
+     * </pre>
+     *
+     * <p/>
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the directory's
+     * {@link #getGroups() group collection}.
+     *
+     * @param request the group creation request
+     * @since 0.9
+     */
+    void createGroup(CreateGroupRequest request);
 }

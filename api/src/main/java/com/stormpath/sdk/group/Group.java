@@ -18,6 +18,8 @@ package com.stormpath.sdk.group;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -31,7 +33,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Group extends Resource, Saveable, Deletable {
+public interface Group extends Resource, Saveable, Deletable, AccountStore {
 
     /**
      * Returns the group's name, guaranteed to be unique for all groups within a Directory.
@@ -81,6 +83,14 @@ public interface Group extends Resource, Saveable, Deletable {
      * @param status the Group's status.
      */
     void setStatus(GroupStatus status);
+
+    /**
+     * Returns the Stormpath CustomData owned by this Group resource.
+     *
+     * @return the Stormpath CustomData owned by owns this Group resource.
+     * @since 0.9
+     */
+    CustomData getCustomData();
 
     /**
      * Returns the Stormpath Tenant that owns this Group resource.
@@ -153,7 +163,7 @@ public interface Group extends Resource, Saveable, Deletable {
     GroupMembershipList getAccountMemberships();
 
     /**
-     * Assigns the specified Account to this Group
+     * Assigns the specified Account to this Group.
      * <p/>
      * <b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()} afterwards.
      * This method will interact with the server immediately.
@@ -162,4 +172,15 @@ public interface Group extends Resource, Saveable, Deletable {
      * @since 0.4
      */
     GroupMembership addAccount(Account account);
+
+    /**
+     * Saves this Group resource and ensures the returned Group response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the group.
+     *
+     * @param responseOptions The {@code GroupOptions} to use to customize the Group resource returned in the save
+     *                        response.
+     * @since 0.9
+     */
+    void saveWithResponseOptions(GroupOptions responseOptions);
 }

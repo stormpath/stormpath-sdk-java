@@ -195,7 +195,7 @@ class DefaultCacheTest {
     @Test
     void testTimeToIdle() {
 
-        def cache = new DefaultCache('foo', [:], null, new Duration(20, TimeUnit.MILLISECONDS))
+        def cache = new DefaultCache('foo', [:], null, new Duration(50, TimeUnit.MILLISECONDS))
 
         def key = 'key'
         def value = 'value'
@@ -207,7 +207,7 @@ class DefaultCacheTest {
         assertEquals found, value
         assertEquals cache.size(), 1
 
-        Thread.sleep(10)
+        Thread.sleep(5)
 
         found = cache.get(key)
         assertEquals found, value

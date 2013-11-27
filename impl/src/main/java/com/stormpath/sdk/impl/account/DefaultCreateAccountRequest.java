@@ -16,11 +16,12 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 0.9.0
+ * @since 0.9
  */
 public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
@@ -28,10 +29,13 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final Boolean registrationWorkflowEnabled;
 
-    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled) {
+    private final AccountOptions options;
+
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options) {
         Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
+        this.options = options;
     }
 
     public Account getAccount() {
@@ -49,5 +53,18 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
             throw new IllegalStateException("registrationWorkflowEnabled has not been configured. Use the isRegistrationWorkflowOptionSpecified method to check first before invoking this method.");
         }
         return this.registrationWorkflowEnabled;
+    }
+
+    @Override
+    public boolean isAccountOptionsSpecified() {
+        return this.options != null;
+    }
+
+    @Override
+    public AccountOptions getAccountOptions() {
+        if (this.options == null) {
+            throw new IllegalStateException("accountOptions has not been configured. Use the isAccountOptionsSpecified method to check first before invoking this method.");
+        }
+        return this.options;
     }
 }

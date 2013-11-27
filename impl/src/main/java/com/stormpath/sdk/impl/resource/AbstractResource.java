@@ -16,12 +16,17 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
+import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -37,40 +42,47 @@ public abstract class AbstractResource implements Resource {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractResource.class);
 
+    private static final DateFormat dateFormatter = new ISO8601DateFormat();
+
     public static final String HREF_PROP_NAME = "href";
 
-    private final Map<String, Object> properties;       //Protected by read/write lock
-    private final Map<String, Object> dirtyProperties;  //Protected by read/write lock
+    protected final Map<String, Object> properties;       //Protected by read/write lock
+    protected final Map<String, Object> dirtyProperties;  //Protected by read/write lock
+    protected final Set<String> deletedPropertyNames;     //Protected by read/write lock
     private final InternalDataStore dataStore;
     protected final Lock readLock;
     protected final Lock writeLock;
 
     private volatile boolean materialized;
-    private volatile boolean dirty;
+    protected volatile boolean dirty;
+
+    protected final ReferenceFactory referenceFactory;
 
     protected AbstractResource(InternalDataStore dataStore) {
         this(dataStore, null);
     }
 
     protected AbstractResource(InternalDataStore dataStore, Map<String, Object> properties) {
+        this.referenceFactory = new ReferenceFactory();
         ReadWriteLock rwl = new ReentrantReadWriteLock();
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
         this.dataStore = dataStore;
         this.properties = new LinkedHashMap<String, Object>();
         this.dirtyProperties = new LinkedHashMap<String, Object>();
+        this.deletedPropertyNames = new HashSet<String>();
         setProperties(properties);
     }
 
-    protected static Map<String,Property> createPropertyDescriptorMap(Property... props) {
-        Map<String,Property> m = new LinkedHashMap<String, Property>();
-        for(Property prop : props) {
+    protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {
+        Map<String, Property> m = new LinkedHashMap<String, Property>();
+        for (Property prop : props) {
             m.put(prop.getName(), prop);
         }
         return m;
     }
 
-    public abstract Map<String,Property> getPropertyDescriptors();
+    public abstract Map<String, Property> getPropertyDescriptors();
 
     public final void setProperties(Map<String, Object> properties) {
         writeLock.lock();
@@ -104,7 +116,14 @@ public abstract class AbstractResource implements Resource {
         return this.materialized;
     }
 
-    protected final boolean isDirty() {
+    /**
+     * Returns {@code true} if the resource's properties have been modified in anyway since the resource instance was
+     * created.
+     *
+     * @return {@code true} {@code true} if the resource's properties have been modified in anyway since the resource
+     * instance was created
+     */
+    public final boolean isDirty() {
         return this.dirty;
     }
 
@@ -145,6 +164,25 @@ public abstract class AbstractResource implements Resource {
         try {
             Set<String> keys = this.properties.keySet();
             return new LinkedHashSet<String>(keys);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public Set<String> getUpdatedPropertyNames() {
+        readLock.lock();
+        try {
+            Set<String> keys = this.dirtyProperties.keySet();
+            return new LinkedHashSet<String>(keys);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    protected Set<String> getDeletedPropertyNames() {
+        readLock.lock();
+        try {
+            return new LinkedHashSet<String>(this.deletedPropertyNames);
         } finally {
             readLock.unlock();
         }
@@ -198,18 +236,22 @@ public abstract class AbstractResource implements Resource {
     /**
      * @since 0.6.0
      */
-    protected void setProperty(String name, Object value, final boolean dirty) {
+    protected Object setProperty(String name, Object value, final boolean dirty) {
         writeLock.lock();
+        Object previous ;
         try {
-            this.properties.put(name, value);
+            previous = this.properties.put(name, value);
             if (dirty) {
                 this.dirtyProperties.put(name, value);
                 this.dirty = true;
             }
+            if (this.deletedPropertyNames.contains(name)) {
+                this.deletedPropertyNames.remove(name);
+            }
         } finally {
             writeLock.unlock();
         }
-
+        return previous;
     }
 
     /**
@@ -225,6 +267,23 @@ public abstract class AbstractResource implements Resource {
             return null;
         }
         return String.valueOf(value);
+    }
+
+    protected Date getDateProperty(DateProperty key) {
+        Object value = getProperty(key.getName());
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            return dateFormatter.parse(String.valueOf(value));
+        } catch (ParseException e) {
+            if (log.isErrorEnabled()) {
+                String msg = "Unabled to parse string '{}' into an date value.  Defaulting to null.";
+                log.error(msg, e);
+            }
+        }
+        return null;
     }
 
     /**
@@ -247,27 +306,44 @@ public abstract class AbstractResource implements Resource {
     }
 
     /**
-     * @since 0.8
+     * @since 0.9
      */
-    protected <T extends Resource> T getResourceProperty(ResourceReference<T> property) {
-        return getResourceProperty(property.getName(), property.getType());
+    protected boolean getBoolean(BooleanProperty property) {
+        return getBooleanProperty(property.getName());
+    }
+
+    /**
+     * Returns an actual boolean value instead of a possible null Boolean value since desired usage
+     * is to have either a true or false.
+     *
+     * @since 0.9
+     */
+    protected boolean getBooleanProperty(String key) {
+        Object value = getProperty(key);
+        if (value != null) {
+            if (value instanceof Boolean) {
+                return (Boolean) value;
+            } else if (value instanceof String) {
+                return Boolean.valueOf((String) value);
+            }
+        }
+        return Boolean.FALSE;
     }
 
     /**
      * @since 0.8
      */
-    protected <C extends CollectionResource> C getCollection(CollectionReference prop) {
-        return (C)getResourceProperty(prop.getName(), prop.getType());
-    }
-
     @SuppressWarnings("unchecked")
-    protected <T extends Resource> T getResourceProperty(String key, Class<T> clazz) {
+    protected <T extends Resource> T getResourceProperty(ResourceReference<T> property) {
+        String key = property.getName();
+        Class<T> clazz = property.getType();
+
         Object value = getProperty(key);
         if (value == null) {
             return null;
         }
         if (clazz.isInstance(value)) {
-            return (T)value;
+            return (T) value;
         }
         if (value instanceof Map && !((Map) value).isEmpty()) {
             T resource = dataStore.instantiate(clazz, (Map<String, Object>) value);
@@ -282,6 +358,19 @@ public abstract class AbstractResource implements Resource {
                 clazz.getName() + ".  Existing type: " + value.getClass().getName();
         msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
         throw new IllegalArgumentException(msg);
+    }
+
+    /**
+     * @param property
+     * @param value
+     * @param <T>
+     * @since 0.9
+     */
+    protected <T extends Resource> void setResourceProperty(ResourceReference<T> property, Resource value) {
+        Assert.notNull(property, "Property argument cannot be null.");
+        String name = property.getName();
+        Map<String, String> reference = this.referenceFactory.createReference(name, value);
+        setProperty(name, reference);
     }
 
     private int parseInt(String value) {

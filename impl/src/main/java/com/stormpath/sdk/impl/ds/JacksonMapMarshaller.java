@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.TypeReference;
@@ -34,6 +35,7 @@ public class JacksonMapMarshaller implements MapMarshaller {
 
     public JacksonMapMarshaller() {
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(DeserializationConfig.Feature.USE_BIG_DECIMAL_FOR_FLOATS, true);
     }
 
     public ObjectMapper getObjectMapper() {

@@ -24,6 +24,11 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 public class DefaultGroupOptions extends DefaultOptions<GroupOptions> implements GroupOptions<GroupOptions> {
 
     @Override
+    public GroupOptions withCustomData() {
+        return expand(DefaultGroup.CUSTOM_DATA);
+    }
+
+    @Override
     public GroupOptions withDirectory() {
         return expand(DefaultGroup.DIRECTORY);
     }

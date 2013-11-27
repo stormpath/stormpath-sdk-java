@@ -23,7 +23,7 @@ import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
-import static org.junit.Assert.assertEquals
+import static org.testng.Assert.assertEquals
 
 /**
  * @since 0.8.1

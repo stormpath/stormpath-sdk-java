@@ -16,17 +16,19 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.CreateAccountRequestBuilder;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 0.9.0
+ * @since 0.9
  */
 public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestBuilder {
 
     private Account account;
     private Boolean registrationWorkflowEnabled;
+    private AccountOptions options;
 
     public DefaultCreateAccountRequestBuilder(Account account) {
         Assert.notNull(account, "Account cannot be null.");
@@ -40,7 +42,14 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
     }
 
     @Override
+    public CreateAccountRequestBuilder withResponseOptions(AccountOptions options) {
+        Assert.notNull(options);
+        this.options = options;
+        return this;
+    }
+
+    @Override
     public CreateAccountRequest build() {
-        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled);
+        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options);
     }
 }

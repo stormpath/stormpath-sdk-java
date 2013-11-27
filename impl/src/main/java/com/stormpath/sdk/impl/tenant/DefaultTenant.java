@@ -114,7 +114,7 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
 
     @Override
     public ApplicationList getApplications() {
-        return getCollection(APPLICATIONS);
+        return getResourceProperty(APPLICATIONS);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
 
     @Override
     public DirectoryList getDirectories() {
-        return getCollection(DIRECTORIES);
+        return getResourceProperty(DIRECTORIES);
     }
 
     @Override

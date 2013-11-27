@@ -18,11 +18,16 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryStatus;
+import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -30,6 +35,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -105,22 +111,37 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public void createAccount(Account account) {
-        AccountList accounts = getAccounts();
-        String href = accounts.getHref();
-        getDataStore().create(href, account);
+        Assert.notNull(account, "account cannot be null.");
+        createAccount(Accounts.newCreateRequestFor(account).build());
     }
 
     @Override
     public void createAccount(Account account, boolean registrationWorkflowEnabled) {
-        AccountList accounts = getAccounts();
-        String href = accounts.getHref();
-        href += "?registrationWorkflowEnabled=" + registrationWorkflowEnabled;
+        Assert.notNull(account, "account cannot be null.");
+        createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build());
+    }
+
+    @Override
+    public void createAccount(CreateAccountRequest request) {
+        Assert.notNull(request, "Request cannot be null.");
+        final Account account = request.getAccount();
+        String href = getAccounts().getHref();
+
+        if (request.isRegistrationWorkflowOptionSpecified()) {
+            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        if (request.isAccountOptionsSpecified()) {
+            getDataStore().create(href, account, request.getAccountOptions());
+            return;
+        }
+
         getDataStore().create(href, account);
     }
 
     @Override
     public AccountList getAccounts() {
-        return getCollection(ACCOUNTS);
+        return getResourceProperty(ACCOUNTS);
     }
 
     @Override
@@ -137,7 +158,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public GroupList getGroups() {
-        return getCollection(GROUPS);
+        return getResourceProperty(GROUPS);
     }
 
     @Override
@@ -162,13 +183,32 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
      */
     @Override
     public void createGroup(Group group) {
-        GroupList groups = getGroups();
-        String href = groups.getHref();
+        Assert.notNull(group, "Group cannot be null.");
+        createGroup(Groups.newCreateRequestFor(group).build());
+    }
+
+    @Override
+    public void createGroup(CreateGroupRequest request) {
+        Assert.notNull(request, "Request cannot be null.");
+        final Group group = request.getGroup();
+        String href = getGroups().getHref();
+        if (request.isGroupOptionsSpecified()) {
+            getDataStore().create(href, group, request.getGroupOptions());
+            return;
+        }
         getDataStore().create(href, group);
     }
 
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    /**
+     * @since 0.9
+     */
+    @Override
+    public void accept(AccountStoreVisitor visitor) {
+        visitor.visit(this);
     }
 }

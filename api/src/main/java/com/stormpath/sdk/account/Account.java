@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.account;
 
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -289,4 +290,25 @@ public interface Account extends Resource, Saveable, Deletable {
      * @return the account's email verification token.
      */
     EmailVerificationToken getEmailVerificationToken();
+
+    /**
+     * Returns the Stormpath CustomData owned by this Account resource.
+     *
+     * @return the Stormpath CustomData owned by  this Account resource.
+     *
+     * @since 0.9
+     */
+    CustomData getCustomData();
+
+    /**
+     * Saves this Account resource and ensures the returned Account response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the account.
+     *
+     * @param responseOptions The {@code AccountOptions} to use to customize the Account resource returned in the save
+     *                        response.
+     *
+     * @since 0.9
+     */
+    void saveWithResponseOptions(AccountOptions responseOptions);
 }

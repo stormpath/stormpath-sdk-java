@@ -52,9 +52,7 @@ class TenantResourceIT extends ClientIT {
 
         //create a bunch of apps:
 
-        //def tenant = client.currentTenant
-
-        Tenant tenant = client.getResource("http://localhost:8080/v1/tenants/5swIpWp9WyHanNPQtuI7m2?expand=applications,directories", Tenant)
+        def tenant = client.currentTenant
 
         /*
         120.times { i ->
@@ -66,7 +64,6 @@ class TenantResourceIT extends ClientIT {
 
             resourcesToDelete.add(created);
         }*/
-
 
         int count = 0;
         def hrefs = []

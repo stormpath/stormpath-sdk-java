@@ -24,6 +24,11 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 public class DefaultAccountOptions extends DefaultOptions<AccountOptions> implements AccountOptions<AccountOptions> {
 
     @Override
+    public AccountOptions withCustomData() {
+        return expand(DefaultAccount.CUSTOM_DATA);
+    }
+
+    @Override
     public AccountOptions withDirectory() {
         return expand(DefaultAccount.DIRECTORY);
     }

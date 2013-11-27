@@ -25,7 +25,7 @@ import java.lang.reflect.Constructor;
 /**
  * Static utility/helper methods for working with {@link Account} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * Account-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
+ * Account-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. for example:
  * <pre>
  * <b>Accounts.where(Accounts.surname()</b>.containsIgnoreCase("Smith")<b>)</b>
  *     .and(<b>Accounts.givenName()</b>.eqIgnoreCase("John"))
@@ -61,7 +61,7 @@ public final class Accounts {
      *
      * @return a new {@link AccountOptions} instance, used to customize how one or more {@link Account}s are retrieved.
      */
-    public static AccountOptions options() {
+    public static AccountOptions<AccountOptions> options() {
         return (AccountOptions) Classes.newInstance("com.stormpath.sdk.impl.account.DefaultAccountOptions");
     }
 
@@ -229,13 +229,13 @@ public final class Accounts {
      * {@link #where(com.stormpath.sdk.query.Criterion) where} method).  For example, the following code is equivalent:
      * <pre>
      * AccountCriteria criteria = Accounts.criteria();
-     * StringExpressionFactory statusExpressionFactory = Accounts.status();
+     * EqualsExpressionFactory statusExpressionFactory = Accounts.status();
      * Criterion statusEqualsEnabled = statusExpressionFactory.eq(AccountStatus.ENABLED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
      * The first code example is clearly more succinct and readable.
      *
-     * @return a new {@link Account#getStatus() status}-specific {@link StringExpressionFactory} instance, to be
+     * @return a new {@link Account#getStatus() status}-specific {@link EqualsExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link AccountCriteria} query.
      */
     public static EqualsExpressionFactory status() {
@@ -251,7 +251,7 @@ public final class Accounts {
      * @return a new {@link com.stormpath.sdk.account.CreateAccountRequestBuilder CreateAccountRequestBuilder}
      *         instance reflecting the specified {@link Account} instance.
      * @see com.stormpath.sdk.application.Application#createAccount(CreateAccountRequest) Application#createAccount(CreateAccountRequest)
-     * @since 0.9.0
+     * @since 0.9
      */
     public static CreateAccountRequestBuilder newCreateRequestFor(Account account) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Account.class);

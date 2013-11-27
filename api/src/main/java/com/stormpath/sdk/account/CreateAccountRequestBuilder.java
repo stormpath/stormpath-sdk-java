@@ -19,7 +19,7 @@ package com.stormpath.sdk.account;
  * A Builder to construct {@link com.stormpath.sdk.account.CreateAccountRequest}s.
  *
  * @see com.stormpath.sdk.application.Application#createAccount(com.stormpath.sdk.account.CreateAccountRequest)
- * @since 0.9.0
+ * @since 0.9
  */
 public interface CreateAccountRequestBuilder {
 
@@ -41,6 +41,16 @@ public interface CreateAccountRequestBuilder {
      * @return the builder instance for method chaining.
      */
     CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled);
+
+    /**
+     * Ensures that after a Account is created, the creation response is retrieved with the specified account's
+     * options. This enhances performance by leveraging a single request to retrieve multiple related
+     * resources you know you will use.
+     *
+     * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if {@code options} is null.
+     */
+    CreateAccountRequestBuilder withResponseOptions(AccountOptions options) throws IllegalArgumentException;
 
     /**
      * Creates a new {@code CreateAccountRequest} instance based on the current builder state.

@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.group
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.group.GroupStatus
@@ -46,11 +47,12 @@ class DefaultGroupTest {
 
         def propertyDescriptors = defaultGroup.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 8)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("status") instanceof StatusProperty && propertyDescriptors.get("status").getType().equals(GroupStatus))
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         assertTrue(propertyDescriptors.get("directory") instanceof ResourceReference && propertyDescriptors.get("directory").getType().equals(Directory))
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))

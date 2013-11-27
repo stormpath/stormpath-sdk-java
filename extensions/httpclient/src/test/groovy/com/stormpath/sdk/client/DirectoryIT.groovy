@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directory
 import org.testng.annotations.Test
 
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  *
