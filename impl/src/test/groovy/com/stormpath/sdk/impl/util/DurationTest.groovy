@@ -15,12 +15,12 @@
  */
 package com.stormpath.sdk.impl.util
 
-import org.junit.Test
+import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertTrue
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 0.8
@@ -34,7 +34,7 @@ class DurationTest {
         def duration = new Duration(1800001, TimeUnit.MILLISECONDS);
         def thirtyMin = new Duration(30, TimeUnit.MINUTES);
 
-        assertEquals(1, duration.compareTo(thirtyMin))
+        assertEquals duration.compareTo(thirtyMin), 1
         assertTrue duration.isGreaterThan(thirtyMin)
     }
 
@@ -45,7 +45,7 @@ class DurationTest {
         def duration = new Duration(1799999, TimeUnit.MILLISECONDS);
         def thirtyMin = new Duration(30, TimeUnit.MINUTES);
 
-        assertEquals(-1, duration.compareTo(thirtyMin))
+        assertEquals duration.compareTo(thirtyMin), -1
         assertTrue duration.isLessThan(thirtyMin);
     }
 
@@ -56,9 +56,8 @@ class DurationTest {
         def duration = new Duration(1800000, TimeUnit.MILLISECONDS);
         def thirtyMin = new Duration(30, TimeUnit.MINUTES);
 
-        assertEquals(0, duration.compareTo(thirtyMin))
+        assertEquals duration.compareTo(thirtyMin), 0
         assertTrue duration.isEquivalentTo(thirtyMin)
     }
-
 
 }
