@@ -61,7 +61,7 @@ public final class Accounts {
      *
      * @return a new {@link AccountOptions} instance, used to customize how one or more {@link Account}s are retrieved.
      */
-    public static AccountOptions options() {
+    public static AccountOptions<AccountOptions> options() {
         return (AccountOptions) Classes.newInstance("com.stormpath.sdk.impl.account.DefaultAccountOptions");
     }
 

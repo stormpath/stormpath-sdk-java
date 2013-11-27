@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.group
 
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
@@ -32,12 +35,12 @@ class DefaultCreateGroupRequestBuilderTest {
 
         def request = new DefaultCreateGroupRequestBuilder(group).build()
         assertSame group, request.group
-        assertFalse request.isGroupCriteriaSpecified()
+        assertFalse request.isGroupOptionsSpecified()
 
-        request = new DefaultCreateGroupRequestBuilder(group).withCustomData().build()
+        request = new DefaultCreateGroupRequestBuilder(group).withResponseOptions(Groups.options().withCustomData()).build()
         assertSame group, request.group
-        assertTrue request.isGroupCriteriaSpecified()
-        assertNotNull request.getGroupCriteria()
+        assertTrue request.isGroupOptionsSpecified()
+        assertNotNull request.getGroupOptions()
     }
 
     @Test(expectedExceptions = IllegalStateException)
@@ -46,6 +49,6 @@ class DefaultCreateGroupRequestBuilderTest {
 
         def request = new DefaultCreateGroupRequestBuilder(group).build()
         assertSame group, request.group
-        request.getGroupCriteria()
+        request.getGroupOptions()
     }
 }

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.application.Application
@@ -96,10 +98,34 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
 
         customData.save()
 
+        //TEST DELETE SINGLE PROPERTIES & UPDATE OTHERS
+
         customData = client.getResource(customDataHref, CustomData)
 
-        assertValidCustomData(customData.getHref(), postedProperties, customData)
+        propertiesToDelete = createSetOfPropertiesToDelete();
 
+        for (String propertyName : propertiesToDelete) {
+
+            customData.remove(propertyName)
+
+            postedProperties.remove(propertyName)
+
+        }
+
+        updateCustomDataProperties = createDataForUpdate()
+
+        for (Map.Entry objectEntry : updateCustomDataProperties.entrySet()) {
+
+            Object object = updateCustomDataProperties.get(objectEntry.key)
+
+            customData.put(objectEntry.key, object)
+        }
+
+        postedProperties.putAll(updateCustomDataProperties)
+
+        customData.save()
+
+        assertValidCustomData(customData.getHref(), postedProperties, customData)
 
         //TEST DELETE ALL PROPERTIES
 

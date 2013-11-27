@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.group
 
 import com.stormpath.sdk.group.Group
@@ -33,7 +35,7 @@ class DefaultCreateGroupRequestTest {
         def request = new DefaultCreateGroupRequest(group, null)
 
         assertSame(request.group, group)
-        assertFalse request.isGroupCriteriaSpecified()
+        assertFalse request.isGroupOptionsSpecified()
     }
 
     @Test
@@ -43,8 +45,8 @@ class DefaultCreateGroupRequestTest {
         def request = new DefaultCreateGroupRequest(group, criteria)
 
         assertSame(request.group, group)
-        assertTrue request.isGroupCriteriaSpecified()
-        assertSame(request.groupCriteria, criteria)
+        assertTrue request.isGroupOptionsSpecified()
+        assertSame(request.groupOptions, criteria)
     }
 
     @Test(expectedExceptions = IllegalStateException)
@@ -52,6 +54,6 @@ class DefaultCreateGroupRequestTest {
         def group = createStrictMock(Group)
         def request = new DefaultCreateGroupRequest(group, null)
 
-        request.getGroupCriteria()
+        request.getGroupOptions()
     }
 }

@@ -43,13 +43,14 @@ public interface CreateAccountRequestBuilder {
     CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled);
 
     /**
-     * Ensures that after a Account is created, the Account's {@link Account#getCustomData() customData} is also
-     * retrieved in the same successful creation response. This enhances performance by leveraging a single
-     * request to retrieve multiple related resources you know you will use.
+     * Ensures that after a Account is created, the creation response is retrieved with the specified account's
+     * options. This enhances performance by leveraging a single request to retrieve multiple related
+     * resources you know you will use.
      *
      * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if {@code options} is null.
      */
-    CreateAccountRequestBuilder withCustomData();
+    CreateAccountRequestBuilder withResponseOptions(AccountOptions options) throws IllegalArgumentException;
 
     /**
      * Creates a new {@code CreateAccountRequest} instance based on the current builder state.

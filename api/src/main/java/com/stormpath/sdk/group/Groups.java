@@ -64,7 +64,7 @@ public final class Groups {
      *
      * @return a new {@link GroupOptions} instance, used to customize how one or more {@link Group}s are retrieved.
      */
-    public static GroupOptions options() {
+    public static GroupOptions<GroupOptions> options() {
         return (GroupOptions) Classes.newInstance("com.stormpath.sdk.impl.group.DefaultGroupOptions");
     }
 

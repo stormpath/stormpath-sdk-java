@@ -36,26 +36,25 @@ public interface CreateGroupRequest {
      * group creation.
      * <p/>
      * You should always invoke this method to see if it is safe to invoke the
-     * {@link #getGroupCriteria()} method.
+     * {@link #getGroupOptions()} method.
      *
      * @return {@code true} if the the request reflects that the CreateGroupRequest (POST) message will be send with
      *         URL query parameters to retrieve the expanded references in the Stormpath's response upon successful
      *         group creation.
      */
-    boolean isGroupCriteriaSpecified();
+    boolean isGroupOptionsSpecified();
 
     /**
-     * Returns the {@code GroupCriteria} to be used in the CreateGroupRequest s to retrieve the group's
+     * Returns the {@code GroupOptions} to be used in the CreateGroupRequest s to retrieve the group's
      * references as part of Stormpath's response upon successful group creation.
      * <p/>
-     * Always call the {@link #isGroupCriteriaSpecified()} method first to see if this value has been
+     * Always call the {@link #isGroupOptionsSpecified()} method first to see if this value has been
      * configured.  Attempting to call this method when it has not been configured will result in an
      * {@link IllegalStateException}
      *
-     * @return {@link GroupCriteria} to be used in the CreateGroupRequest s to retrieve the group's
+     * @return {@link GroupOptions} to be used in the CreateGroupRequest s to retrieve the group's
      *         references as part of Stormpath's response upon successful group creation.
-     *
-     * @throws IllegalStateException if this method is called but {@link #isGroupCriteriaSpecified()} is {@code false}.
+     * @throws IllegalStateException if this method is called but {@link #isGroupOptionsSpecified()} is {@code false}.
      */
-    GroupCriteria getGroupCriteria() throws IllegalStateException;
+    GroupOptions getGroupOptions() throws IllegalStateException;
 }

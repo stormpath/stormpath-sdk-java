@@ -24,10 +24,10 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.GroupOptions;
 import com.stormpath.sdk.group.GroupStatus;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class DefaultGroup extends AbstractInstanceResource implements Group {
+public class DefaultGroup extends AbstractDirectoryEntity implements Group {
 
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name");
@@ -49,7 +49,6 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     static final StatusProperty<GroupStatus> STATUS = new StatusProperty<GroupStatus>(GroupStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<CustomData> CUSTOM_DATA = new ResourceReference<CustomData>("customData", CustomData.class);
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
@@ -67,15 +66,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     public DefaultGroup(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore);
-
-        if (properties != null && properties.containsKey(CUSTOM_DATA.getName())) {
-            Object object = properties.get(CUSTOM_DATA.getName());
-            Assert.isInstanceOf(Map.class, object);
-            CustomData customData = getDataStore().instantiate(CustomData.class, (Map<String, Object>) properties.get(CUSTOM_DATA.getName()));
-            properties.put(CUSTOM_DATA.getName(), customData);
-        }
-        setProperties(properties);
+        super(dataStore, properties);
     }
 
     @Override
@@ -119,10 +110,7 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
 
     @Override
     public CustomData getCustomData() {
-        if (isNew() && getResourceProperty(CUSTOM_DATA) == null) {
-            setProperty(CUSTOM_DATA, getDataStore().instantiate(CustomData.class));
-        }
-        return getResourceProperty(CUSTOM_DATA);
+        return super.getCustomData();
     }
 
     @Override
@@ -179,28 +167,15 @@ public class DefaultGroup extends AbstractInstanceResource implements Group {
     }
 
     @Override
-    public void save(){
-        checkIfCustomDataNeedsUpdate();
+    public void save() {
+        applyCustomDataUpdatesIfNecessary();
         super.save();
     }
 
     @Override
-    public void save(boolean expandCustomData) {
-        if (!expandCustomData) {
-            this.save();
-            return;
-        }
-        checkIfCustomDataNeedsUpdate();
-        getDataStore().save(this, Groups.criteria().withCustomData());
-    }
-
-    private void checkIfCustomDataNeedsUpdate(){
-        CustomData customData = getCustomData();
-
-        Assert.isInstanceOf(AbstractInstanceResource.class, customData);
-
-        if(((AbstractInstanceResource) customData).isDirty()){
-            setProperty(CUSTOM_DATA, customData);
-        }
+    public void save(GroupOptions groupOptions) {
+        Assert.notNull(groupOptions, "accountOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, groupOptions);
     }
 }

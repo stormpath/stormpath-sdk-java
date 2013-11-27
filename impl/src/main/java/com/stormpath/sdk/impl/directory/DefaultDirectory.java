@@ -36,7 +36,6 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -112,17 +111,14 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     @Override
     public void createAccount(Account account) {
-        AccountList accounts = getAccounts();
-        String href = accounts.getHref();
-        getDataStore().create(href, account);
+        Assert.notNull(account, "account cannot be null.");
+        createAccount(Accounts.newCreateRequestFor(account).build());
     }
 
     @Override
     public void createAccount(Account account, boolean registrationWorkflowEnabled) {
-        AccountList accounts = getAccounts();
-        String href = accounts.getHref();
-        href += "?registrationWorkflowEnabled=" + registrationWorkflowEnabled;
-        getDataStore().create(href, account);
+        Assert.notNull(account, "account cannot be null.");
+        createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build());
     }
 
     @Override
@@ -135,8 +131,8 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
             href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
         }
 
-        if (request.isAccountCriteriaSpecified()) {
-            getDataStore().create(href, account, request.getAccountCriteria());
+        if (request.isAccountOptionsSpecified()) {
+            getDataStore().create(href, account, request.getAccountOptions());
             return;
         }
 
@@ -187,23 +183,19 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
      */
     @Override
     public void createGroup(Group group) {
-        GroupList groups = getGroups();
-        String href = groups.getHref();
-        getDataStore().create(href, group);
+        Assert.notNull(group, "Group cannot be null.");
+        createGroup(Groups.newCreateRequestFor(group).build());
     }
 
     @Override
     public void createGroup(CreateGroupRequest request) {
         Assert.notNull(request, "Request cannot be null.");
-
         final Group group = request.getGroup();
         String href = getGroups().getHref();
-
-        if (request.isGroupCriteriaSpecified()) {
-            getDataStore().create(href, group, request.getGroupCriteria());
+        if (request.isGroupOptionsSpecified()) {
+            getDataStore().create(href, group, request.getGroupOptions());
             return;
         }
-
         getDataStore().create(href, group);
     }
 

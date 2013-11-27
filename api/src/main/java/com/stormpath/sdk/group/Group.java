@@ -175,12 +175,11 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore {
     GroupMembership addAccount(Account account);
 
     /**
-     * Saves an account and gives the option to retrieve from the server the {@link CustomData} associated to
-     * the account.
+     * Saves this Group resource with groupOptions to retrieve in the response.  This enhances performance by
+     * leveraging a single request to retrieve multiple related resources you know you will use.
      *
-     * @param expandCustomData If true, the customData associated to the account will be retrieved in the
-     *                         response of the update request.
+     * @param responseOptions The {@code GroupOptions} to retrieve in the save response.
      * @since 0.9
      */
-    void save(boolean expandCustomData);
+    void save(GroupOptions responseOptions);
 }

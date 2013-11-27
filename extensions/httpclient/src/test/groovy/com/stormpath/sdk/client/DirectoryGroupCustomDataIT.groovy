@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.directory.Directory
@@ -65,7 +67,7 @@ class DirectoryGroupCustomDataIT extends AbstractCustomDataIT {
 
         def builder = Groups.newCreateRequestFor(group)
 
-        builder = expand ? builder.withCustomData() : builder
+        builder = expand ? builder.withResponseOptions(Groups.options().withCustomData()) : builder
 
         directory.createGroup(builder.build());
 

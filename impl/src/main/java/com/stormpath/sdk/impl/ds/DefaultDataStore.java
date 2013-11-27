@@ -31,6 +31,7 @@ import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
+import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
@@ -40,6 +41,7 @@ import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -209,13 +211,13 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Resource> T create(String parentHref, T resource, Criteria criteria) {
-        Assert.isInstanceOf(DefaultCriteria.class, criteria,
+    public <T extends Resource> T create(String parentHref, T resource, Options options) {
+        Assert.isInstanceOf(DefaultOptions.class, options,
                 "The " + getClass().getName() + " implementation only functions with " +
-                        DefaultCriteria.class.getName() + " instances.");
+                        DefaultOptions.class.getName() + " instances.");
 
-        DefaultCriteria dc = (DefaultCriteria) criteria;
-        QueryString qs = queryStringFactory.createQueryString(parentHref, dc);
+        DefaultOptions defaultOptions = (DefaultOptions) options;
+        QueryString qs = queryStringFactory.createQueryString(parentHref, defaultOptions);
 
         Class<T> clazz = (Class<T>) resource.getClass();
 
@@ -254,14 +256,14 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @Override
-    public <T extends Resource & Saveable> void save(T resource, Criteria criteria) {
+    public <T extends Resource & Saveable> void save(T resource, Options options) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
         Assert.isInstanceOf(Saveable.class, resource);
 
-        Assert.isInstanceOf(DefaultCriteria.class, criteria,
+        Assert.isInstanceOf(DefaultOptions.class, options,
                 "The " + getClass().getName() + " implementation only functions with " +
-                        DefaultCriteria.class.getName() + " instances.");
+                        DefaultOptions.class.getName() + " instances.");
 
         AbstractResource aResource = (AbstractResource) resource;
 
@@ -269,8 +271,8 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.hasLength(href, "'save' may only be called on objects that have already been " +
                 "persisted and have an existing " + AbstractResource.HREF_PROP_NAME + " attribute.");
 
-        DefaultCriteria dc = (DefaultCriteria) criteria;
-        QueryString qs = queryStringFactory.createQueryString(href, dc);
+        DefaultOptions defaultOptions = (DefaultOptions) options;
+        QueryString qs = queryStringFactory.createQueryString(href, defaultOptions);
 
         Class<T> clazz = (Class<T>) resource.getClass();
 

@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.group;
 
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupOptions;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -27,12 +27,12 @@ public class DefaultCreateGroupRequest implements CreateGroupRequest {
 
     private final Group group;
 
-    private final GroupCriteria criteria;
+    private final GroupOptions options;
 
-    public DefaultCreateGroupRequest(Group group, GroupCriteria criteria) {
+    public DefaultCreateGroupRequest(Group group, GroupOptions options) {
         Assert.notNull(group, "Group cannot be null.");
         this.group = group;
-        this.criteria = criteria;
+        this.options = options;
     }
 
     @Override
@@ -41,15 +41,15 @@ public class DefaultCreateGroupRequest implements CreateGroupRequest {
     }
 
     @Override
-    public boolean isGroupCriteriaSpecified() {
-        return this.criteria != null;
+    public boolean isGroupOptionsSpecified() {
+        return this.options != null;
     }
 
     @Override
-    public GroupCriteria getGroupCriteria() {
-        if(this.criteria == null){
-            throw new IllegalStateException("GroupCriteria has not been configured. Use the isGroupCriteriaSpecified method to check first before invoking this method.");
+    public GroupOptions getGroupOptions() {
+        if(this.options == null){
+            throw new IllegalStateException("GroupOptions has not been configured. Use the isGroupOptionsSpecified method to check first before invoking this method.");
         }
-        return this.criteria;
+        return this.options;
     }
 }

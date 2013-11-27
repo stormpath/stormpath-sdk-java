@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.lang.Assert;
 
@@ -29,13 +29,13 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final Boolean registrationWorkflowEnabled;
 
-    private final AccountCriteria criteria;
+    private final AccountOptions options;
 
-    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountCriteria criteria) {
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options) {
         Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
-        this.criteria = criteria;
+        this.options = options;
     }
 
     public Account getAccount() {
@@ -56,15 +56,15 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
     }
 
     @Override
-    public boolean isAccountCriteriaSpecified() {
-        return this.criteria != null;
+    public boolean isAccountOptionsSpecified() {
+        return this.options != null;
     }
 
     @Override
-    public AccountCriteria getAccountCriteria() {
-        if (this.criteria == null) {
-            throw new IllegalStateException("accountCriteria has not been configured. Use the isAccountCriteriaSpecified method to check first before invoking this method.");
+    public AccountOptions getAccountOptions() {
+        if (this.options == null) {
+            throw new IllegalStateException("accountOptions has not been configured. Use the isAccountOptionsSpecified method to check first before invoking this method.");
         }
-        return this.criteria;
+        return this.options;
     }
 }

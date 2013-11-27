@@ -24,13 +24,14 @@ package com.stormpath.sdk.group;
 public interface CreateGroupRequestBuilder {
 
     /**
-     * Ensures that after a Group is created, the Group's {@link Group#getCustomData() customData} is also
-     * retrieved in the same successful creation response. This enhances performance by leveraging a single
-     * request to retrieve multiple related resources you know you will use.
+     * Ensures that after a Group is created, the creation response is retrieved with the specified group's
+     * options. This enhances performance by leveraging a single request to retrieve multiple related
+     * resources you know you will use.
      *
      * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if {@code options} is null.
      */
-    CreateGroupRequestBuilder withCustomData();
+    CreateGroupRequestBuilder withResponseOptions(GroupOptions options) throws IllegalArgumentException;
 
     /**
      * Creates a new {@code CreateGroupRequest} instance based on the current builder state.

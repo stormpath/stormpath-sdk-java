@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.Account
@@ -34,7 +36,7 @@ class DefaultCreateAccountRequestTest {
 
         assertSame(request.account, account)
         assertFalse request.isRegistrationWorkflowOptionSpecified()
-        assertFalse request.isAccountCriteriaSpecified()
+        assertFalse request.isAccountOptionsSpecified()
     }
 
     @Test
@@ -73,8 +75,8 @@ class DefaultCreateAccountRequestTest {
 
         assertSame(request.account, account)
         assertFalse request.isRegistrationWorkflowOptionSpecified()
-        assertTrue request.isAccountCriteriaSpecified()
-        assertSame(request.accountCriteria, criteria)
+        assertTrue request.isAccountOptionsSpecified()
+        assertSame(request.accountOptions, criteria)
     }
 
     @Test(expectedExceptions = IllegalStateException)
@@ -82,6 +84,6 @@ class DefaultCreateAccountRequestTest {
         def account = createStrictMock(Account)
         def request = new DefaultCreateAccountRequest(account, null, null)
 
-        request.getAccountCriteria()
+        request.getAccountOptions()
     }
 }

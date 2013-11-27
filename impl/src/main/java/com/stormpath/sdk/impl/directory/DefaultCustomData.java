@@ -21,9 +21,11 @@ import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,23 +70,43 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public int size() {
-        return super.propertiesSize();
+        readLock.lock();
+        try {
+            return properties.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean isEmpty() {
-        return super.isPropertiesEmpty();
+        readLock.lock();
+        try {
+            return properties.isEmpty();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean containsKey(Object key) {
         Assert.isInstanceOf(String.class, key);
-        return super.containsPropertyKey(key.toString());
+        readLock.lock();
+        try {
+            return properties.containsKey(key);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean containsValue(Object value) {
-        return super.containsPropertyValue(value);
+        readLock.lock();
+        try {
+            return properties.containsValue(value);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -95,23 +117,59 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public Object put(String key, Object value) {
-        return super.putProperty(key, value);
+        return super.setProperty(key, value, true);
     }
 
     @Override
     public Object remove(Object key) {
         Assert.isInstanceOf(String.class, key);
-        return super.removeProperty(key.toString());
+        writeLock.lock();
+        try {
+            Object object = this.properties.remove(key);
+            this.dirtyProperties.remove(key);
+            this.deletedPropertyNames.add(key.toString());
+            this.dirty = true;
+            return object;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public void putAll(Map<? extends String, ?> m) {
-        super.putAllProperties(m);
+        if (Collections.isEmpty(m)) {
+            return;
+        }
+        Set<? extends Map.Entry<? extends String, ?>> entrySet = m.entrySet();
+        writeLock.lock();
+        try {
+            for (Map.Entry<? extends String, ?> entry : entrySet) {
+                setProperty(entry.getKey(), entry.getValue());
+            }
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public void clear() {
-        super.clearProperties();
+        writeLock.lock();
+        try {
+            Set<String> propertiesToFilter = new HashSet<String>();
+            propertiesToFilter.add(HREF_PROP_NAME);
+            propertiesToFilter.addAll(getPropertyDescriptors().keySet());
+
+            for (String propertyName : getPropertyNames()) {
+                if (propertiesToFilter.contains(propertyName)) {
+                    continue;
+                }
+                this.properties.remove(propertyName);
+                this.dirtyProperties.remove(propertyName);
+                this.deletedPropertyNames.add(propertyName);
+            }
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
@@ -121,21 +179,59 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public Collection<Object> values() {
-        return super.getPropertyValues();
+        readLock.lock();
+        try {
+            return properties.values();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        return super.propertiesEntrySet();
+        readLock.lock();
+        try {
+            return this.properties.entrySet();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
-    public void save(){
-        for(String deletedPropertyName : this.getDeletedPropertyNames()){
-            getDataStore().deleteResourceProperty(this, deletedPropertyName);
-        }
-        if(isDirty()){
-            super.save();
+    public void save() {
+        if (isDirty()) {
+            if (hasRemovedProperties()) {
+                deleteRemovedProperties();
+            }
+            if (hasNewProperties()) {
+                super.save();
+            }
         }
     }
+
+    public void deleteRemovedProperties() {
+        Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
+        for (String deletedPropertyName : deletedPropertyNames) {
+            getDataStore().deleteResourceProperty(this, deletedPropertyName);
+        }
+    }
+
+    public boolean hasRemovedProperties() {
+        readLock.lock();
+        try {
+            return !deletedPropertyNames.isEmpty();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public boolean hasNewProperties() {
+        readLock.lock();
+        try {
+            return !dirtyProperties.isEmpty();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
 }

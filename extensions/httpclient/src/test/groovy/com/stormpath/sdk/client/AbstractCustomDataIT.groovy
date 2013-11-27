@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.tenant.Tenant
 
 import static com.stormpath.sdk.directory.Directories.name
@@ -38,7 +42,7 @@ class AbstractCustomDataIT extends ClientIT {
         client.getCurrentTenant().getDirectories(
                 where(name().startsWithIgnoreCase(app.getName()))
         )
-        .iterator().next()
+                .iterator().next()
     }
 
     protected Application createApplication() {
@@ -110,6 +114,13 @@ class AbstractCustomDataIT extends ClientIT {
         return m
     }
 
+    Set createSetOfPropertiesToDelete() {
+
+        def set = ["minFloatProperty", "zeroFloatProperty", "floatProperty", "maxFloatProperty"] as Set
+
+        return set
+    }
+
     protected void assertValidCustomData(String expectedHref, Map submittedProperties, CustomData responseData) {
         assertValidCustomData(expectedHref, submittedProperties, responseData, true)
     }
@@ -119,7 +130,7 @@ class AbstractCustomDataIT extends ClientIT {
 
         if (isResponseExpanded) {
             //when saved, we add 3 properties: href, createdAt and modifiedAt.  Verify the server did this:
-            assertEquals  responseData.size(), submittedProperties.size() + 3
+            assertEquals responseData.size(), submittedProperties.size() + 3
             assertNotNull responseData.getCreatedAt()
             assertNotNull responseData.getModifiedAt()
 
@@ -163,9 +174,19 @@ class AbstractCustomDataIT extends ClientIT {
 
         account.setMiddleName(uniquify("Middle"))
 
+        //Delete properties if contained.
+        def propertiesToDelete = createSetOfPropertiesToDelete()
+
+        for (String propertyToDelete : propertiesToDelete) {
+            if(initialCustomData.containsKey(propertyToDelete)){
+                account.customData.remove(propertyToDelete)
+                initialCustomData.remove(propertyToDelete)
+            }
+        }
+
         account.customData.putAll(newCustomData)
 
-        account.save(expand)
+        expand ? account.save(Accounts.options().withCustomData()) : account.save()
 
         initialCustomData.putAll(newCustomData)
 
@@ -178,9 +199,19 @@ class AbstractCustomDataIT extends ClientIT {
 
         group.setDescription(uniquify("this is a unique description."))
 
+        //Delete properties if contained.
+        def propertiesToDelete = createSetOfPropertiesToDelete()
+
+        for (String propertyToDelete : propertiesToDelete) {
+            if(initialCustomData.containsKey(propertyToDelete)){
+                group.customData.remove(propertyToDelete)
+                initialCustomData.remove(propertyToDelete)
+            }
+        }
+
         group.customData.putAll(newCustomData)
 
-        group.save(expand)
+        expand ? group.save(Groups.options().withCustomData()) : group.save()
 
         initialCustomData.putAll(newCustomData)
 

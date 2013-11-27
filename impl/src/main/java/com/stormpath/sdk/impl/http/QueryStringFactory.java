@@ -85,6 +85,18 @@ public class QueryStringFactory {
         return qs;
     }
 
+    public QueryString createQueryString(String href, DefaultOptions defaultOptions) {
+        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
+        QueryString sanitizedQuery = sanitized.getQuery();
+
+        QueryString query = createQueryString(defaultOptions);
+
+        //Query params embedded directly in the href, if any, take precedence. Overwrite any values from the criteria:
+        query.putAll(sanitizedQuery);
+
+        return query;
+    }
+
     public QueryString createQueryString(DefaultOptions options) {
         QueryString qs = new QueryString();
         List<Expansion> expansions = options.getExpansions();

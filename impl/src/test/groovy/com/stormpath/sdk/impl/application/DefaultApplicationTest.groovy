@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.*
@@ -21,10 +23,7 @@ import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.group.CreateGroupRequest
-import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupCriteria
-import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
@@ -182,7 +181,7 @@ class DefaultApplicationTest {
 
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(false)
-        expect(request.isAccountCriteriaSpecified()).andReturn(false)
+        expect(request.isAccountOptionsSpecified()).andReturn(false)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
 
@@ -216,8 +215,8 @@ class DefaultApplicationTest {
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(true)
         expect(request.isRegistrationWorkflowEnabled()).andReturn(false)
-        expect(request.isAccountCriteriaSpecified()).andReturn(true)
-        expect(request.getAccountCriteria()).andReturn(accountCriteria)
+        expect(request.isAccountOptionsSpecified()).andReturn(true)
+        expect(request.getAccountOptions()).andReturn(accountCriteria)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
 
@@ -296,7 +295,7 @@ class DefaultApplicationTest {
         def request = createStrictMock(CreateGroupRequest)
         def groupList = createStrictMock(GroupList)
         def group = createStrictMock(Group)
-        def groupCriteria = createStrictMock(GroupCriteria)
+        def groupOptions = createStrictMock(GroupOptions)
 
         def app = new DefaultApplication(dataStore, properties)
 
@@ -304,10 +303,10 @@ class DefaultApplicationTest {
         expect(groupList.getHref()).andReturn(properties.groups.href)
 
         expect(request.getGroup()).andReturn(group)
-        expect(request.isGroupCriteriaSpecified()).andReturn(true)
-        expect(request.getGroupCriteria()).andReturn(groupCriteria)
+        expect(request.isGroupOptionsSpecified()).andReturn(true)
+        expect(request.getGroupOptions()).andReturn(groupOptions)
 
-        expect(dataStore.create(eq(properties.groups.href), same(group), same(groupCriteria))).andReturn(group)
+        expect(dataStore.create(eq(properties.groups.href), same(group), same(groupOptions))).andReturn(group)
 
         replay dataStore, group, groupList, request
 
@@ -338,7 +337,7 @@ class DefaultApplicationTest {
         expect(groupList.getHref()).andReturn(properties.groups.href)
 
         expect(request.getGroup()).andReturn(group)
-        expect(request.isGroupCriteriaSpecified()).andReturn(false)
+        expect(request.isGroupOptionsSpecified()).andReturn(false)
 
         expect(dataStore.create(eq(properties.groups.href), same(group))).andReturn(group)
 

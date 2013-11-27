@@ -18,8 +18,7 @@ package com.stormpath.sdk.impl.group;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.CreateGroupRequestBuilder;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.GroupOptions;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -28,7 +27,7 @@ import com.stormpath.sdk.lang.Assert;
 public class DefaultCreateGroupRequestBuilder implements CreateGroupRequestBuilder {
 
     private final Group group;
-    private GroupCriteria criteria;
+    private GroupOptions options;
 
     public DefaultCreateGroupRequestBuilder(Group group) {
         Assert.notNull(group, "Group can't be null.");
@@ -36,13 +35,14 @@ public class DefaultCreateGroupRequestBuilder implements CreateGroupRequestBuild
     }
 
     @Override
-    public CreateGroupRequestBuilder withCustomData() {
-        criteria = Groups.criteria().withCustomData();
+    public CreateGroupRequestBuilder withResponseOptions(GroupOptions options) {
+        Assert.notNull(options, "options can't be null.");
+        this.options = options;
         return this;
     }
 
     @Override
     public CreateGroupRequest build() {
-        return new DefaultCreateGroupRequest(group, criteria);
+        return new DefaultCreateGroupRequest(group, options);
     }
 }

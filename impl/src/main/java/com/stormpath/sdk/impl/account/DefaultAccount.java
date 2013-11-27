@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
@@ -26,9 +26,9 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-public class DefaultAccount extends AbstractInstanceResource implements Account {
+public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
@@ -57,7 +57,6 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<EmailVerificationToken> EMAIL_VERIFICATION_TOKEN =
             new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class);
-    static final ResourceReference<CustomData> CUSTOM_DATA = new ResourceReference<CustomData>("customData", CustomData.class);
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
@@ -76,15 +75,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
     }
 
     public DefaultAccount(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore);
-
-        if (properties != null && properties.containsKey(CUSTOM_DATA.getName())) {
-            Object object = properties.get(CUSTOM_DATA.getName());
-            Assert.isInstanceOf(Map.class, object);
-            CustomData customData = getDataStore().instantiate(CustomData.class, (Map<String, Object>) properties.get(CUSTOM_DATA.getName()));
-            properties.put(CUSTOM_DATA.getName(), customData);
-        }
-        setProperties(properties);
+        super(dataStore, properties);
     }
 
     @Override
@@ -215,10 +206,7 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public CustomData getCustomData() {
-        if (isNew() && getResourceProperty(CUSTOM_DATA) == null) {
-            setProperty(CUSTOM_DATA, getDataStore().instantiate(CustomData.class));
-        }
-        return getResourceProperty(CUSTOM_DATA);
+        return super.getCustomData();
     }
 
     /**
@@ -231,27 +219,14 @@ public class DefaultAccount extends AbstractInstanceResource implements Account 
 
     @Override
     public void save(){
-        checkIfCustomDataNeedsUpdate();
+        applyCustomDataUpdatesIfNecessary();
         super.save();
     }
 
     @Override
-    public void save(boolean expandCustomData) {
-        if (!expandCustomData) {
-            this.save();
-            return;
-        }
-        checkIfCustomDataNeedsUpdate();
-        getDataStore().save(this, Accounts.criteria().withCustomData());
-    }
-
-    private void checkIfCustomDataNeedsUpdate(){
-        CustomData customData = getCustomData();
-
-        Assert.isInstanceOf(AbstractInstanceResource.class, customData);
-
-        if(((AbstractInstanceResource) customData).isDirty()){
-            setProperty(CUSTOM_DATA, customData);
-        }
+    public void save(AccountOptions accountOptions) {
+        Assert.notNull(accountOptions, "accountOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, accountOptions);
     }
 }

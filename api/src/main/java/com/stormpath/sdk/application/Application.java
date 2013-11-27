@@ -194,9 +194,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
      * </pre>
-     * If you would like to retrieve the account's custom data in the
-     *  <pre>
-     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     * If you would like to retrieve the account's custom data in the response of the account creation.
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
      * </pre>
      * @param request the account creation request
      * @return a new Account that may login to this application.
@@ -284,6 +284,27 @@ public interface Application extends Resource, Saveable, Deletable {
      */
     Group createGroup(Group group) throws ResourceException;
 
+    /**
+     * Creates a new Group that may be used by this application in the application's
+     * {@link #getDefaultGroupStore() defaultGroupStore}
+     * <p/>
+     *This is a convenience method. It merely delegates to the Application's designated
+     * {@link #getDefaultGroupStore() defaultGroupStore}.
+     * <h2>Example</h2>
+     * <pre>
+     * application.createGroup(Groups.newCreateRequestFor(group).build());
+     * </pre>
+     * <p/>
+     * If you would like to retrieve the group's custom data in the response of the groups creation.
+     * <pre>
+     * application.createGroup(Groups.newCreateRequestFor(group).withResponseOptions(Groups.options().withCustomData()).build());
+     * </pre>
+     * @param request the group creation request
+     * @return a new Group that may be used by this application.
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultGroupStore() defaultGroupsStore}
+     *                           or if the designated {@code defaultGroupsStore} does not allow new groups to be created.
+     * @since 0.9
+     */
     Group createGroup(CreateGroupRequest request);
 
     /**

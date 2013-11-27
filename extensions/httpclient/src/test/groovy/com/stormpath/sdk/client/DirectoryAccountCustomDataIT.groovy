@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
@@ -64,7 +66,7 @@ class DirectoryAccountCustomDataIT extends AbstractCustomDataIT {
 
         def builder = Accounts.newCreateRequestFor(account)
 
-        builder = expand ? builder.withCustomData() : builder
+        builder = expand ? builder.withResponseOptions(Accounts.options().withCustomData()) : builder
 
         directory.createAccount(builder.build());
 
@@ -74,5 +76,4 @@ class DirectoryAccountCustomDataIT extends AbstractCustomDataIT {
 
         return account
     }
-
 }
