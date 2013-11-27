@@ -204,20 +204,20 @@ class DefaultCacheTest {
         assertNull prev
 
         def found = cache.get(key)
-        assertEquals value, found
-        assertEquals 1, cache.size()
+        assertEquals found, value
+        assertEquals cache.size(), 1
 
         Thread.sleep(10)
 
         found = cache.get(key)
-        assertEquals(value, found)
-        assertEquals 1, cache.size()
+        assertEquals found, value
+        assertEquals cache.size(), 1
 
-        Thread.sleep(20000)
+        Thread.sleep(300)
 
         found = cache.get(key)
         assertNull found
-        assertEquals 0, cache.size()
+        assertEquals cache.size(), 0
     }
 
     @Test
