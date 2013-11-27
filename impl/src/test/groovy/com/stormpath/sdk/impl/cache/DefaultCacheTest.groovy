@@ -165,8 +165,8 @@ class DefaultCacheTest {
 
         def prev = cache.put(key, value2)
 
-        assertEquals value1, prev
-        assertEquals value2, cache.get(key)
+        assertEquals prev, value1
+        assertEquals cache.get(key), value2
     }
 
     @Test
@@ -182,14 +182,14 @@ class DefaultCacheTest {
 
         def found = cache.get(key)
         assertEquals value, found
-        assertEquals 1, cache.size()
+        assertEquals cache.size(), 1
 
         Thread.sleep(15)
 
         found = cache.get(key)
 
         assertNull found
-        assertEquals 0, cache.size()
+        assertEquals cache.size(), 0
     }
 
     @Test
@@ -204,20 +204,20 @@ class DefaultCacheTest {
         assertNull prev
 
         def found = cache.get(key)
-        assertEquals value, found
-        assertEquals 1, cache.size()
+        assertEquals found, value
+        assertEquals cache.size(), 1
 
         Thread.sleep(10)
 
         found = cache.get(key)
-        assertEquals(value, found)
-        assertEquals 1, cache.size()
+        assertEquals found, value
+        assertEquals cache.size(), 1
 
         Thread.sleep(300)
 
         found = cache.get(key)
         assertNull found
-        assertEquals 0, cache.size()
+        assertEquals cache.size(), 0
     }
 
     @Test
