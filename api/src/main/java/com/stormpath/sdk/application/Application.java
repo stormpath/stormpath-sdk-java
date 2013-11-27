@@ -386,7 +386,6 @@ public interface Application extends Resource, Saveable, Deletable {
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
 
     /**
-     * <<<<<<< HEAD
      * Returns all AccountStoreMappings accessible to the application.
      * <p/>
      * Tip: Instead of iterating over all accountStoreMappings, it might be more convenient (and practical) to execute a search
@@ -409,10 +408,16 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * .../applications/applicationId/accountStoreMappings?param1=value1&param2=value2&...
      * </pre>
+     * <p/>
+     * This is a type-unsafe alternative to the
+     * {@link #getAccountStoreMappings(AccountStoreMappingCriteria) getAccountStoreMappings(accountStoreMappingCriteria)}
+     * method, and might be useful when using dynamic languages like Groovy or JRuby.  Users of compiled languages,
+     * or those that like IDE-completion, might favor the type-safe method instead.
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the application's mapped account stores that match the specified query criteria.
      * @since 0.9
+     * @see #getAccountStoreMappings(AccountStoreMappingCriteria)
      */
     AccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
 
@@ -424,8 +429,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * application.getAccountStoreMappings(AccountStoreMappings.criteria()
      *     .withAccountStore()
-     *     .offsetBy(50)
-     *     .limitTo(25));
+     *     .orderByListIndex();
      * </pre>
      * or, if using static imports:
      * <pre>
@@ -433,10 +437,9 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * ...
      *
-     * application.getAccountStoreMappings( criteria()
+     * application.getAccountStoreMappings(criteria()
      *     .withAccountStore()
-     *     .offsetBy(50)
-     *     .limitTo(25));
+     *     .orderByListIndex();
      * </pre>
      *
      * @param criteria the criteria to use when performing a request to the collection.
@@ -446,7 +449,8 @@ public interface Application extends Resource, Saveable, Deletable {
     AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria);
 
     /**
-     * Returns the {@link AccountStore} (which will be either a Group or Directory) used to persist
+     * Returns the {@link AccountStore} (either a {@link Group} or a
+     * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
      * new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}, or
      * {@code null} if no accountStore has been designated.
      * <p/>
@@ -472,7 +476,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * };
      * </pre>
      * <h3>Setting the 'New Account Store'</h3>
-     * You set the defaultAccountStore by acquiring one of the Application's
+     * You may set the defaultAccountStore by acquiring one of the Application's
      * {@link #getAccountStoreMappings() accountStoreMappings} and calling
      * {@link AccountStoreMapping#setDefaultAccountStore(boolean) setDefaultAccountStore}<code>(true)</code> or by
      * calling {@link #setDefaultAccountStore(com.stormpath.sdk.directory.AccountStore)}
@@ -485,7 +489,8 @@ public interface Application extends Resource, Saveable, Deletable {
     AccountStore getDefaultAccountStore();
 
     /**
-     * Sets the {@link AccountStore} (which will be either a Group or a Directory) used to persist
+     * Sets the {@link AccountStore} (either a {@link Group} or a
+     * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
      * new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}.
      * <p/>
      * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
@@ -543,8 +548,8 @@ public interface Application extends Resource, Saveable, Deletable {
     AccountStore getDefaultGroupStore();
 
     /**
-     * Sets the {@link AccountStore} (which will be either a Group or a Directory) used to persist
-     * new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}.
+     * Sets the {@link AccountStore} (a {@link com.stormpath.sdk.directory.Directory Directory}) that will be used to
+     * persist new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}.
      * <b>Stormpath's current REST API requires this to be
      * a Directory. However, this could be a Group in the future, so do not assume it is always a
      * Directory if you want your code to be function correctly if/when this support is added.</b>

@@ -59,7 +59,6 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
  */
 public final class AccountStoreMappings {
 
-
     /**
      * Returns a new {@link AccountStoreMappingOptions} instance, used to customize how one or more {@link AccountStoreMapping}s are retrieved.
      *
@@ -101,7 +100,6 @@ public final class AccountStoreMappings {
     public static AccountStoreMappingCriteria where(Criterion criterion) {
         return criteria().add(criterion);
     }
-
 
     /**
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the AccountStoreMapping {@link AccountStoreMapping#getListIndex() listIndex}
