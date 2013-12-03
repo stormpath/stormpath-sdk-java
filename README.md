@@ -18,6 +18,8 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 0.9.0 ###
 
+This is a [milestone](https://github.com/stormpath/stormpath-sdk-java/issues?milestone=2&page=1&state=closed) / new feature release.
+
 #### Custom Data! ####
 
 Our most requested feature is now available via the Stormpath Java SDK!
