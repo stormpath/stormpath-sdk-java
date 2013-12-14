@@ -32,8 +32,8 @@ import static org.testng.Assert.assertEquals
  *
  * @since 0.4
  */
-@Test(enabled=false)
-class PasswordResetIT extends ClientIT {
+@Test
+class PasswordResetManualIT extends ClientIT {
 
     def email = 'changeme@somewhere.com' //change for your own testing needs.
     def spToken = 'changeMeToSomeResetKeyValue' //update based on your locally stored value

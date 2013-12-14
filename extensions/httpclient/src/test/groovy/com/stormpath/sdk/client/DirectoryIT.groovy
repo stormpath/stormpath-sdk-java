@@ -36,12 +36,10 @@ class DirectoryIT extends ClientIT {
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
-
         dir = client.currentTenant.createDirectory(dir);
-        assertNotNull dir.href
+        deleteOnTeardown(dir)
 
-        //cleanup the test - don't pollute the Stormpath tenant:
-        dir.delete()
+        assertNotNull dir.href
     }
 
 
@@ -51,9 +49,10 @@ class DirectoryIT extends ClientIT {
     @Test
     void testDeleteAccount() {
 
-        def dirHref = 'https://api.stormpath.com/v1/directories/S2HZc7gXTumV_8UtkaOWyQ'
-
-        Directory dir = client.getResource(dirHref, Directory)
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDeleteAccount")
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
 
         def email = 'johndeleteme@nowhere.com'
 
@@ -61,14 +60,13 @@ class DirectoryIT extends ClientIT {
         account.givenName = 'John'
         account.surname = 'DELETEME'
         account.email =  email
-        account.password = 'changeme'
+        account.password = 'Changeme1!'
 
         dir.createAccount(account)
 
         String href = account.href
 
         //verify it was created:
-
         Account retrieved = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(email))).iterator().next()
         assertEquals(href, retrieved.href)
 

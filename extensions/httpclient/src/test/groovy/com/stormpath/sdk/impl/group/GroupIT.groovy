@@ -2,14 +2,11 @@ package com.stormpath.sdk.impl.group
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
-import com.stormpath.sdk.resource.Deletable
 import org.testng.annotations.Test
 
-import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 
@@ -19,12 +16,7 @@ class GroupIT extends ClientIT {
     @Test
     void testAddAccount() {
 
-        //create a test app:
-        def app = client.instantiate(Application)
-        app.name = uniquify('Stormpath-SDK-Test-App')
-        app = client.currentTenant.createApplication(newCreateRequestFor(app).createDirectory().build())
-        deleteOnTeardown(app.getDefaultAccountStore() as Deletable)
-        deleteOnTeardown(app)
+        def app = createTempApp()
 
         //create a user group:
         def group = client.instantiate(Group)

@@ -27,9 +27,13 @@ import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
 /**
+ * ManualIT - will not run during the build or on CI as the result set size could be very large.
+ * Must be manually executed (e.g. in an IDE).
+ *
  * @since 0.1
  */
-class ListingClientIT extends ClientIT {
+@Test
+class ListingManualIT extends ClientIT {
 
     @Test
     void testListing() {

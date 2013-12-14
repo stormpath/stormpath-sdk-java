@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.group.Group
@@ -28,25 +29,43 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertFalse
 
-
 class ApplicationIT extends ClientIT {
+
+    /**
+     * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/17">Issue #17</a>
+     */
+    @Test
+    void testLoginWithCachingEnabled() {
+
+        def username = uniquify('lonestarr')
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+
+        def request = new UsernamePasswordRequest(username, password)
+        def result = app.authenticateAccount(request)
+
+        def cachedAccount = result.getAccount()
+
+        assertEquals cachedAccount.username, acct.username
+    }
 
     @Test
     void testCreateAppAccount() {
 
-        def tenant = client.currentTenant
-
-        def app = client.instantiate(Application)
-
-        app.name = uniquify("DELETEME")
-
-        def dirName = uniquify("DELETEME")
-
-        app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
-        def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
-
-        deleteOnTeardown(dir)
-        deleteOnTeardown(app)
+        def app = createTempApp()
 
         def email = 'deleteme@nowhere.com'
 

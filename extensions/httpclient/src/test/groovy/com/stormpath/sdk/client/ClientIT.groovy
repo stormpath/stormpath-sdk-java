@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.resource.Deletable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +25,9 @@ import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeTest
 
-class ClientIT {
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
+
+abstract class ClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
@@ -60,14 +64,47 @@ class ClientIT {
         this.resourcesToDelete.add(d)
     }
 
-    Client buildClient() {
-        return new ClientBuilder().setBaseUrl(baseUrl)
-                .setApiKeyFileLocation(apiKeyFileLocation)
-                .setCacheManager(Caches.newCacheManager().build())
-                .build()
+    //NOTE ABOUT THE STORMPATH_API_KEY_ID and STORMPATH_API_KEY_SECRET env vars below:
+    // you can either set them in the OS, or, if you're on the Stormpath dev team, set it in IntelliJ's defaults:
+    // Run/Debug Configurations -> Edit Configurations -> Defaults -> TestNG (add the two env vars).  All new tests
+    // created in IntelliJ after that point will pick up these vars.
+    Client buildClient(boolean enableCaching=true) {
+
+        def builder = new ClientBuilder().setBaseUrl(baseUrl)
+
+        //see if the api key file exists first - if so, use it:
+        def file = new File(apiKeyFileLocation)
+        if (file.exists() && file.isFile() && file.canRead()) {
+            builder.setApiKeyFileLocation(apiKeyFileLocation)
+        } else {
+            //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
+            String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
+            String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
+            builder.setApiKey(apiKeyId, apiKeySecret)
+        }
+
+        if (enableCaching) {
+            builder.setCacheManager(Caches.newCacheManager().build())
+        }
+
+        return builder.build()
     }
 
     protected static String uniquify(String s) {
         return s + "-" + UUID.randomUUID().toString().replace('-', '');
+    }
+
+    //Creates a new Application with an auto-created directory
+    protected Application createApplication() {
+        Application application = client.instantiate(Application)
+        application.setName(uniquify("Java SDK IT App"))
+        return client.currentTenant.createApplication(newCreateRequestFor(application).createDirectory().build())
+    }
+
+    protected Application createTempApp() {
+        def app = createApplication();
+        deleteOnTeardown(app.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(app)
+        return app
     }
 }

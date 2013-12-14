@@ -44,9 +44,7 @@ class AccountStoreMappingIT extends ClientIT {
     void setUpClass() {
         applications = new ArrayList<Application>()
         directories = new ArrayList<Directory>()
-
         tenant = client.getCurrentTenant();
-
     }
 
     @BeforeMethod
@@ -66,7 +64,6 @@ class AccountStoreMappingIT extends ClientIT {
         Directory dir = iterator.next()
         directories.add(dir)
         assertFalse iterator.hasNext() //should only be the one matching dir
-
     }
 
     @AfterClass
@@ -87,7 +84,7 @@ class AccountStoreMappingIT extends ClientIT {
     void testAccountStoreMappings() {
 
         AccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings()
-        println(accountStoreMappings)
+        //println(accountStoreMappings)
 
         6.times{
             app.addAccountStore(createDirectory())  //testing AccountStoreMapping Create
@@ -107,7 +104,7 @@ class AccountStoreMappingIT extends ClientIT {
         counter = 0;
         for(AccountStoreMapping mapping : mappings2) {
             counter++;
-            println(mapping)
+            //println(mapping)
         }
         assertEquals(counter, 0) //making sure the previous mappings were deleted.
 
@@ -164,7 +161,7 @@ class AccountStoreMappingIT extends ClientIT {
         counter = 0;
         for(AccountStoreMapping mapping : mappings2) {
             counter++;
-            println(mapping)
+            //println(mapping)
         }
         assertEquals(counter, 0) //should be zero because they all should have been deleted.
         AccountStore defaultGroupStore = appRefresh.getDefaultGroupStore()

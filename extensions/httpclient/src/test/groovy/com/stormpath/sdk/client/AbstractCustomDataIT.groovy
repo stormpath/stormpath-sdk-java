@@ -25,35 +25,24 @@ import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.tenant.Tenant
 
-import static com.stormpath.sdk.directory.Directories.name
-import static com.stormpath.sdk.directory.Directories.where
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 
 /**
  * @since 0.9
  */
-class AbstractCustomDataIT extends ClientIT {
+abstract class AbstractCustomDataIT extends ClientIT {
 
     //assumes an app that was created with an auto-created, auto-named directory:
     protected Directory retrieveAppDirectory(Application app) {
-        client.getCurrentTenant().getDirectories(
-                where(name().startsWithIgnoreCase(app.getName()))
-        )
-                .iterator().next()
+        return app.getDefaultAccountStore() as Directory
     }
 
     protected Application createApplication() {
-        //Setup an application
-        Tenant tenant = client.getCurrentTenant()
-
         Application application = client.instantiate(Application)
-
         application.setName(uniquify("My CustomData app"))
-
-        return tenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
+        return client.currentTenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
     }
 
     Map createComplexData() {

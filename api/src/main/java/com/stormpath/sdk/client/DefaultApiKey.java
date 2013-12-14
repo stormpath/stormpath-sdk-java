@@ -28,10 +28,10 @@ public class DefaultApiKey implements ApiKey {
 
     public DefaultApiKey(String id, String secret) {
         if (id == null) {
-            throw new IllegalArgumentException("id cannot be null.");
+            throw new IllegalArgumentException("API key id cannot be null.");
         }
         if (secret == null) {
-            throw new IllegalArgumentException("secret cannot be null.");
+            throw new IllegalArgumentException("API key secret cannot be null.");
         }
         this.id = id;
         this.secret = secret;
