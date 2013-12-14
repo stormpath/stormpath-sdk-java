@@ -16,6 +16,12 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 0.9.1 ###
+
+This is a bugfix point release that resolves [1 issue](https://github.com/stormpath/stormpath-sdk-java/issues?milestone=3):
+
+- [Issue 25](https://github.com/stormpath/stormpath-sdk-java/issues/25): account.addGroup and group.addAccount do not work
+
 ### 0.9.0 ###
 
 This is a [milestone](https://github.com/stormpath/stormpath-sdk-java/issues?milestone=2&page=1&state=closed) / new feature release.
