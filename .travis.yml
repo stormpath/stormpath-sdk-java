@@ -6,7 +6,8 @@ jdk:
   - openjdk7
   - oraclejdk7
 
-install: mvn install
+install: echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
+script: mvn install
 
 # Stormpath API Key configuration.
 #
