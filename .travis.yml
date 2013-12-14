@@ -6,6 +6,8 @@ jdk:
   - openjdk7
   - oraclejdk7
 
+install: mvn install
+
 # Stormpath API Key configuration.
 #
 # If you want to use your own API Key:
