@@ -5,3 +5,27 @@ jdk:
   - openjdk6
   - openjdk7
   - oraclejdk7
+
+install: echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
+script: mvn install
+
+# Stormpath API Key configuration.
+#
+# If you want to use your own API Key:
+#
+# 1. Ensure you have the travis gem installed:
+#
+#     gem install travis
+#
+# 2. change the value of STORMPATH_API_KEY_ID below to match your own API Key ID
+#
+# 3. Change the 'secure' value to be the output of the following command:
+#
+#     travis encrypt STORMPATH_API_KEY_SECRET=YOUR_API_KEY_SECRET
+#
+# where YOUR_API_KEY_SECRET is your actual API Key secret value.  Once the above command finishes, replace the secure
+# value below with the output of that command.
+env:
+  global:
+    - STORMPATH_API_KEY_ID=CN5D6CEHMI7M1HVSBW74N626X
+    - secure: "oucE3h/zBYoRfmKXeiG6PTYPWzQCTCpEb3hz2OaE18fC3YbaPS+b/YQGno+gKPMByss4fPytuo9/yFdGPjznwpb5fAQlM/i98lfQtD2ComDTH9a/D9TM3rFrh74EZ7SwvlxRhVOodlx8X5h43oPjloVdB8ZHVFMvkwKR/bMtUeA="

@@ -36,7 +36,7 @@ import com.stormpath.sdk.tenant.Tenant
  *
  * @since 0.4
  */
-class PasswordResetAndAuthenticationTest {
+class PasswordResetAndAuthenticationManualIT {
 
 //     1 - I create a password reset token
 //     2 - I get the PasswordResetToken from the emailed token

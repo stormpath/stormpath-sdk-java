@@ -18,40 +18,20 @@ package com.stormpath.sdk.impl.tenant
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.tenant.Tenant
-import org.testng.annotations.AfterClass
 import org.testng.annotations.Test
 
 /**
  * @since 0.8
  */
-class TenantResourceIT extends ClientIT {
+class TenantIT extends ClientIT {
 
-    private static List<Deletable> resourcesToDelete = new ArrayList<Deletable>();
-
-    @AfterClass
-    void delete() {
-        resourcesToDelete.reverse().each { Deletable resource ->
-            resource.delete()
-        }
-    }
-
-    @Test
-    void testDelete() {
-        def list = client.currentTenant.directories
-        list.each { Directory dir ->
-            if (!dir.name.equals('Stormpath Administrators')) {
-                resourcesToDelete.add(dir);
-            }
-        }
-    }
-
-    @Test
+    //TODO - enable this test after assertions are made with the Cache statistics API.
+    // This currently just prints output and isn't a valid test for asserting caching.
+    @Test(enabled = false)
     void testCaching() {
 
         //create a bunch of apps:
-
         def tenant = client.currentTenant
 
         /*

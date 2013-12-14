@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.group.GroupStatus
 import com.stormpath.sdk.impl.account.DefaultAccountList
@@ -99,8 +100,8 @@ class DefaultGroupTest {
         def groupMembership =  new DefaultGroupMembership(internalDataStore)
         Account account = createStrictMock(Account)
         expect(account.getHref()).andReturn("https://api.stormpath.com/v1/accounts/abrqtwar0j23ur1ejfW").times(2)
-        expect(internalDataStore.instantiate(isA(Class), isA(Map))).andReturn(groupMembership)
-        expect(internalDataStore.create("/groupMemberships", groupMembership)).andReturn(groupMembership)
+        expect(internalDataStore.instantiate(eq(GroupMembership.class))).andReturn(groupMembership)
+        expect(internalDataStore.create(eq("/groupMemberships"), same(groupMembership))).andReturn(groupMembership)
 
         replay internalDataStore, account
 
