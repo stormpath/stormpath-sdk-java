@@ -68,6 +68,6 @@ class ClientIT {
     }
 
     protected static String uniquify(String s) {
-        return s + " " + UUID.randomUUID().toString();
+        return s + "-" + UUID.randomUUID().toString().replace('-', '');
     }
 }

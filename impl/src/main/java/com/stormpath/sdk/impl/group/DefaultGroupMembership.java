@@ -24,7 +24,6 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -78,21 +77,18 @@ public class DefaultGroupMembership extends AbstractInstanceResource implements 
         Assert.hasText(group.getHref(), "Group does not yet have an 'href'.  You must first persist the group " +
                 "before assigning accounts to it.");
 
+        GroupMembership groupMembership = dataStore.instantiate(GroupMembership.class);
+
+        Assert.isInstanceOf(DefaultGroupMembership.class, groupMembership, "GroupMembership instance is not an expected " +
+                DefaultGroupMembership.class.getName() + " instance.");
+
+        DefaultGroupMembership dgm = (DefaultGroupMembership)groupMembership;
+
+        dgm.setResourceProperty(GROUP, group);
+        dgm.setResourceProperty(ACCOUNT, account);
+
         //TODO: enable auto discovery
         String href = "/groupMemberships";
-
-        Map<String, Object> props = new LinkedHashMap<String, Object>(2);
-
-        Map<String, String> accountProps = new LinkedHashMap<String, String>(1);
-        accountProps.put(HREF_PROP_NAME, account.getHref());
-
-        Map<String, String> groupProps = new LinkedHashMap<String, String>(1);
-        groupProps.put(HREF_PROP_NAME, group.getHref());
-
-        props.put(ACCOUNT.getName(), accountProps);
-        props.put(GROUP.getName(), groupProps);
-
-        GroupMembership groupMembership = dataStore.instantiate(GroupMembership.class, props);
 
         return dataStore.create(href, groupMembership);
     }
