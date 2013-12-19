@@ -28,4 +28,5 @@ script: mvn install
 env:
   global:
     - STORMPATH_API_KEY_ID=CN5D6CEHMI7M1HVSBW74N626X
-    - secure: "oucE3h/zBYoRfmKXeiG6PTYPWzQCTCpEb3hz2OaE18fC3YbaPS+b/YQGno+gKPMByss4fPytuo9/yFdGPjznwpb5fAQlM/i98lfQtD2ComDTH9a/D9TM3rFrh74EZ7SwvlxRhVOodlx8X5h43oPjloVdB8ZHVFMvkwKR/bMtUeA="
+    - secure: "W7X8AjOaQRmrzfZ3G2wn5rxld1aw5osYLKWY98U6hU5jy148HLzJ1s+v/RdydAAB2d4xuYvr5WrUEaF/eHJ4AF0zBNDwst84VHUxT3yTzBFVHgnd/rbn8AMpITQtwIiXEr+hMK3cAVXwZtZ+mLmkllyf48Myk75QDxwwJnKS2UA="
+
