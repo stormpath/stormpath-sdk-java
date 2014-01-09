@@ -17,9 +17,13 @@
 
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.directory.CustomData
 import org.testng.annotations.Test
+
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNull
 
 /**
  * @since 0.9
@@ -148,5 +152,87 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
 
         assertValidCustomData(customData.getHref(), [:], customData)
     }
+
+    /**
+     * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/30">Issue #30</a>
+     */
+    @Test
+    void testCustomDataCacheUpdated() {
+
+        //create temp account:
+        def app = createTempApp()
+        def account = app.createAccount(newAccountData())
+        def href = account.href
+
+        //for the purposes of this test, we want a new client, using caching, completely separate from anything else:
+        Client client2 = buildClient(true);
+
+        //1. Get the account's custom data:
+        account = client2.getResource(href, Account)
+        def customData = account.getCustomData()
+
+        assertNull customData.hobby //no data yet
+
+        //2. Update the custom data value:
+        customData.hobby = 'Reading'
+        customData.save()
+
+        //3. Get the custom data again and assert that the value is there:
+        customData = client2.getResource(customData.getHref(), CustomData)
+        assertEquals customData.hobby, 'Reading'
+
+        //4. Get the account again and assert that the value is there:
+        account = client2.getResource(href, Account)
+        customData = account.customData
+        assertEquals customData.hobby, 'Reading'
+
+        //5. Change the value:
+        customData.hobby = 'Kendo'
+        customData.save()
+
+        //6. Get the custom data again and assert that the value is there:
+        customData = client2.getResource(customData.getHref(), CustomData)
+        assertEquals customData.hobby, 'Kendo'
+
+        //7. Get the account again and assert that the value is there:
+        account = client2.getResource(account.getHref(), Account)
+        assertEquals account.customData.hobby, 'Kendo'
+    }
+
+    /**
+     * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/30">Issue #30</a>
+     */
+    @Test
+    void testCustomDataCacheUpdatedViaParentSave() {
+
+        //create temp account:
+        def app = createTempApp()
+        def account = app.createAccount(newAccountData())
+        def href = account.href
+
+        //for the purposes of this test, we want a new client, using caching, completely separate from anything else:
+        Client client2 = buildClient(true);
+
+        //1. Get the account
+        account = client2.getResource(href, Account)
+        assertNull account.getCustomData().hobby //no data yet
+
+        //2. Update the custom data value:
+        account.customData.hobby = 'Reading'
+        account.save()
+
+        //3. Get the account again and assert that the value is there:
+        account = client2.getResource(href, Account)
+        assertEquals account.customData.hobby, 'Reading'
+
+        //4. Change the value:
+        account.customData.hobby = 'Kendo'
+        account.save()
+
+        //5. Get the account again and assert that the value is there:
+        account = client2.getResource(href, Account)
+        assertEquals account.customData.hobby, 'Kendo'
+    }
+
 
 }

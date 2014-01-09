@@ -20,6 +20,7 @@ import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
+import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.HttpMethod;
 import com.stormpath.sdk.impl.http.MediaType;
@@ -329,7 +330,65 @@ public class DefaultDataStore implements InternalDataStore {
             cache(returnType, responseBody);
         }
 
+        //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
+        //If the resource saved has nested custom data, and any custom data was specified when saving the resource,
+        //we need to ensure that the custom data is cached properly since it won't be returned by the server by
+        //default.  There is probably a much cleaner OO way of doing this, but it wasn't worth it at impl time to
+        //find a smoother way.  Helper methods have been marked as private to indicate that this shouldn't be used as
+        //a dependency in case we choose to implement a cleaner way later.
+        if (resource instanceof AbstractDirectoryEntity && isCacheUpdateEnabled(CustomData.class)) {
+            cacheNestedCustomData(href, props);
+        }
+
         return resourceFactory.instantiate(returnType, responseBody);
+    }
+
+    /**
+     * Helps fix <a href="https://github.com/stormpath/stormpath-sdk-java/issues/30">Issue #30</a>.
+     * <p/>
+     * This implementation ensures that if custom data is nested inside an AbstractDirectoryEntity (either an
+     * Account or Group) and that AbstractDirectoryEntity is saved, that the nested custom data submitted and saved to
+     * the server is also updated in any local cache.
+     * <p/>
+     * Ordinarily, only the object returned from the server response (The AbstractDirectoryEntity) is cached.
+     * When updating objects, any nested objects are not returned from the server, so we have to do this preemptively
+     * ourselves.
+     * <p/>
+     * The preemtive insert on save is more efficient than, say, adding an expand=customData query parameter to the
+     * href when issuing the request: the returned customData might be huge (up to 10 Megabytes), so by pre-emptively
+     * caching upon a successful parent save, we avoid pulling across custom data across the wire for only caching
+     * purposes.
+     *
+     * @param directoryEntityHref the href of the directory entity is being was saved
+     * @param props               the directory entity's properties being saved
+     * @since 0.9.2
+     */
+    @SuppressWarnings("unchecked")
+    private void cacheNestedCustomData(String directoryEntityHref, Map<String, Object> props) {
+        Map<String, Object> customData = (Map<String, Object>) props.get(AbstractDirectoryEntity.CUSTOM_DATA.getName());
+
+        if (customData != null) {
+            customData.remove(AbstractResource.HREF_PROP_NAME); //we remove it here for ordering reasons (see below)
+        }
+
+        if (Collections.isEmpty(customData)) {
+            return;
+        }
+
+        assert customData != null;
+
+        Map<String, Object> customDataToCache = new LinkedHashMap<String, Object>();
+        String customDataHref = directoryEntityHref + "/customData";
+        customDataToCache.put(AbstractResource.HREF_PROP_NAME, customDataHref); //ensure first in order
+
+        Map<String, ?> existingCustomData = getCachedValue(customDataHref, CustomData.class);
+        if (!Collections.isEmpty(existingCustomData)) {
+            existingCustomData.remove(AbstractResource.HREF_PROP_NAME);
+            customDataToCache.putAll(existingCustomData); //put what already exists first
+        }
+        customDataToCache.putAll(customData); //overwrite or add what was specified during the save operation
+
+        cache(CustomData.class, customDataToCache);
     }
 
     /* =====================================================================
@@ -582,11 +641,11 @@ public class DefaultDataStore implements InternalDataStore {
         return this.cacheManager.getCache(cacheRegionName);
     }
 
-    private LinkedHashMap<String, Object> toMap(AbstractResource resource, boolean isUpdateMap) {
+    private LinkedHashMap<String, Object> toMap(final AbstractResource resource, boolean partialUpdate) {
 
         Set<String> propNames;
 
-        if (isUpdateMap) {
+        if (partialUpdate) {
             propNames = resource.getUpdatedPropertyNames();
         } else {
             propNames = resource.getPropertyNames();
@@ -595,41 +654,51 @@ public class DefaultDataStore implements InternalDataStore {
         LinkedHashMap<String, Object> props = new LinkedHashMap<String, Object>(propNames.size());
 
         for (String propName : propNames) {
-            Object prop = resource.getProperty(propName);
-
-            //if the property is CustomData will be written in its entirety.
-            if (resource instanceof CustomData) {
-                props.put(propName, prop);
-                continue;
-            }
-            if (prop instanceof CustomData) {
-                if (isUpdateMap) {
-                    Assert.isInstanceOf(AbstractResource.class, prop);
-
-                    AbstractResource customDataAbstractResource = (AbstractResource) prop;
-                    LinkedHashMap<String, Object> customDataProperties = new LinkedHashMap<String, Object>(propNames.size());
-
-                    for (String updatedCustomPropertyName : customDataAbstractResource.getUpdatedPropertyNames()) {
-                        Object object = customDataAbstractResource.getProperty(updatedCustomPropertyName);
-                        customDataProperties.put(updatedCustomPropertyName, object);
-                    }
-                    props.put(propName, customDataProperties);
-
-                } else {
-                    props.put(propName, prop);
-                }
-                continue;
-            }
-            //if the property is a reference, don't write the entire object - just the href will do:
-            if (prop instanceof Map) {
-                prop = this.referenceFactory.createReference(propName, (Map) prop);
-            } else if (prop instanceof Resource) {
-                prop = this.referenceFactory.createReference(propName, (Resource) prop);
-            }
-            props.put(propName, prop);
+            Object value = resource.getProperty(propName);
+            value = toMapValue(resource, propName, value, partialUpdate);
+            props.put(propName, value);
         }
 
         return props;
+    }
+
+    //since 0.9.2
+    private Object toMapValue(final AbstractResource resource, final String propName, Object value, boolean partialUpdate) {
+        if (resource instanceof CustomData) {
+            //no sanitization: CustomData resources retain their values as-is:
+            return value;
+        }
+
+        if (value instanceof CustomData) {
+            if (partialUpdate) {
+                Assert.isInstanceOf(AbstractResource.class, value);
+
+                AbstractResource customDataAbstractResource = (AbstractResource) value;
+                Set<String> updatedCustomDataPropertyNames = customDataAbstractResource.getUpdatedPropertyNames();
+
+                LinkedHashMap<String, Object> customDataProperties =
+                        new LinkedHashMap<String, Object>(Collections.size(updatedCustomDataPropertyNames));
+
+                for (String updatedCustomPropertyName : updatedCustomDataPropertyNames) {
+                    Object object = customDataAbstractResource.getProperty(updatedCustomPropertyName);
+                    customDataProperties.put(updatedCustomPropertyName, object);
+                }
+
+                value = customDataProperties;
+            }
+
+            return value;
+        }
+
+        if (value instanceof Map) { //if the property is a reference, don't write the entire object - just the href will do:
+            return this.referenceFactory.createReference(propName, (Map) value);
+        }
+
+        if (value instanceof Resource) {
+            return this.referenceFactory.createReference(propName, (Resource) value);
+        }
+
+        return value;
     }
 
     private Request createRequest(HttpMethod method, String href, Map<String, ?> queryParams) {

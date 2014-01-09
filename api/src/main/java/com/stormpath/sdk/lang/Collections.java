@@ -37,6 +37,28 @@ public abstract class Collections {
     }
 
     /**
+     * Returns the collection's size or {@code 0} if the collection is {@code null}.
+     *
+     * @param collection the collection to check.
+     * @return the collection's size or {@code 0} if the collection is {@code null}.
+     * @since 0.9.2
+     */
+    public static int size(Collection collection) {
+        return collection == null ? 0 : collection.size();
+    }
+
+    /**
+     * Returns the map's size or {@code 0} if the map is {@code null}.
+     *
+     * @param map the map to check
+     * @return the map's size or {@code 0} if the map is {@code null}.
+     * @since 0.9.2
+     */
+    public static int size(Map map) {
+        return map == null ? 0 : map.size();
+    }
+
+    /**
      * Return <code>true</code> if the supplied Map is <code>null</code>
      * or empty. Otherwise, return <code>false</code>.
      * @param map the Map to check
