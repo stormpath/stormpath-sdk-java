@@ -58,7 +58,7 @@ class ResourceExceptionTest {
         assertEquals ex.message, 'HTTP 400, Stormpath 2000 (someUrl): bar'
         assertEquals ex.developerMessage, 'bar'
         assertEquals ex.moreInfo, 'someUrl'
-        //Re-enable for Issue
+        //Re-enable for Issue #32:
         //assertSame ex.error, error
         //assertSame ex.error.message, error.message
     }
