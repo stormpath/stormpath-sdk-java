@@ -31,7 +31,7 @@ public class ResourceException extends RuntimeException implements Error {
      * at applicadtion end-users that could very likely be non-technical.  Since an exception should be helpful to
      * developers, it is better to show a more technical message.
      * <p/>
-     * Added as a fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/28">Issue #28</a>
+     * Added as a fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/28">Issue #28</a>.
      *
      * @param error the response Error. Cannot be null.
      * @return {@code error.getDeveloperMessage()}
