@@ -71,33 +71,4 @@ public class ResourceException extends RuntimeException implements Error {
     public String getMoreInfo() {
         return error.getMoreInfo();
     }
-
-    /**
-     * Returns the underlying REST {@link Error} returned from the Stormpath API server.
-     * <p/>
-     * Because this class's {@link #getMessage() getMessage()} value returns a developer-friendly message to help you
-     * debug when you see stack traces, you might want to acquire the underlying {@code Error} to show an end-user
-     * the simpler end-user appropriate error message.  The end-user error message is non-technical in nature - as a
-     * convenience, you can show this message directly to your application end-users.
-     * <p/>
-     * For example:
-     * <pre>
-     * try {
-     *
-     *     //something that causes a ResourceException
-     *
-     * } catch (ResourceException re) {
-     *
-     *     String endUserMessage = re.getError().getMessage();
-     *
-     *     warningDialog.setText(endUserMessage);
-     * }
-     * </pre>
-     *
-     * @return the underlying REST {@link Error} resource representation returned from the Stormpath API server.
-     * @since 0.10
-     */
-    public Error getError() {
-        return this.error;
-    }
 }
