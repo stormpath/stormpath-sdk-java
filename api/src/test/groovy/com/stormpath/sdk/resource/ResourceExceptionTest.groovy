@@ -17,7 +17,7 @@ package com.stormpath.sdk.resource
 
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
+import static org.testng.Assert.*
 
 /**
  *
@@ -43,7 +43,7 @@ class ResourceExceptionTest {
             }
 
             String getDeveloperMessage() {
-                return 'foo bar'
+                return 'bar'
             }
 
             String getMoreInfo() {
@@ -55,9 +55,11 @@ class ResourceExceptionTest {
 
         assertEquals ex.status, 400
         assertEquals ex.code, 2000
-        assertEquals ex.message, 'foo'
-        assertEquals ex.developerMessage, 'foo bar'
+        assertEquals ex.message, 'HTTP 400, Stormpath 2000 (someUrl): bar'
+        assertEquals ex.developerMessage, 'bar'
         assertEquals ex.moreInfo, 'someUrl'
+        assertSame ex.error, error
+        assertEquals ex.error.message, 'foo'
     }
 
 
