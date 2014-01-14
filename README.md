@@ -16,6 +16,14 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 0.9.2 ###
+
+This is a bugfix point release that resolves [3 issues](https://github.com/stormpath/stormpath-sdk-java/issues?milestone=4&state=closed):
+
+- [Issue 30](https://github.com/stormpath/stormpath-sdk-java/issues/30): Custom data updates are not cached when calling account/group save()
+- [Issue 28](https://github.com/stormpath/stormpath-sdk-java/issues/28): ResourceException getMessage() should return a more descriptive message
+- [Issue 31](https://github.com/stormpath/stormpath-sdk-java/issues/31): Provide more detailed ResourceException messages (duplicate of Issue #28).
+
 ### 0.9.1 ###
 
 This is a bugfix point release that resolves [1 issue](https://github.com/stormpath/stormpath-sdk-java/issues?milestone=3):
