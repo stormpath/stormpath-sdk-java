@@ -73,8 +73,31 @@ public class Client implements DataStore {
         if (apiKey == null) {
             throw new IllegalArgumentException("apiKey argument cannot be null.");
         }
-        Object requestExecutor = createRequestExecutor(apiKey, null);
+        Object requestExecutor = createRequestExecutor(apiKey, null, null);
         this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
+    }
+
+    /**
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
+     * JavaDoc for a usage example.
+     *
+     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with Stormpath's API server
+     * @param baseUrl the Stormpath base URL
+     * @param proxy the HTTP proxy to be used when communicating with the Stormpath API server (can be null)
+     * @param cacheManager the {@link CacheManager} that should be used to cache Stormpath REST resources (can be null)
+     * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server (can be null)
+     */
+    public Client(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
+        Assert.notNull(apiKey, "apiKey argument cannot be null.");
+        Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme);
+        DataStore ds = createDataStore(requestExecutor, baseUrl);
+
+        if (cacheManager != null) {
+            // TODO: remove when we have a proper Builder interfaces. See https://github.com/stormpath/stormpath-sdk-java/issues/8
+            applyCacheManager(ds, cacheManager);
+        }
+
+        this.dataStore = ds;
     }
 
     /**
@@ -90,7 +113,7 @@ public class Client implements DataStore {
         if (proxy == null) {
             throw new IllegalArgumentException("proxy argument cannot be null.");
         }
-        Object requestExecutor = createRequestExecutor(apiKey, proxy);
+        Object requestExecutor = createRequestExecutor(apiKey, proxy, null);
         this.dataStore = createDataStore(requestExecutor, DEFAULT_API_VERSION);
     }
 
@@ -99,24 +122,17 @@ public class Client implements DataStore {
         if (apiKey == null) {
             throw new IllegalArgumentException("apiKey argument cannot be null.");
         }
-        Object requestExecutor = createRequestExecutor(apiKey, null);
+        Object requestExecutor = createRequestExecutor(apiKey, null, null);
         this.dataStore = createDataStore(requestExecutor, baseUrl);
     }
 
     //no modifier on purpose: for package-internal development needs only.  This will eventually be replaced
     //by Builder usage before releasing 1.0
     Client(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager) {
-        Assert.notNull(apiKey, "apiKey argument cannot be null.");
-        Object requestExecutor = createRequestExecutor(apiKey, proxy);
-        DataStore ds = createDataStore(requestExecutor, baseUrl);
-
-        if (cacheManager != null) {
-            // TODO: remove when we have a proper Builder interfaces. See https://github.com/stormpath/stormpath-sdk-java/issues/8
-            applyCacheManager(ds, cacheManager);
-        }
-
-        this.dataStore = ds;
+        this(apiKey, baseUrl, proxy, cacheManager, null);
     }
+
+
 
     private void applyCacheManager(DataStore dataStore, CacheManager cacheManager) {
         Class<?> clazz = dataStore.getClass();
@@ -146,7 +162,7 @@ public class Client implements DataStore {
 
     //since 0.3
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy) {
+    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme requestAuthenticator) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -163,9 +179,9 @@ public class Client implements DataStore {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class);
+        Constructor ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class, AuthenticationScheme.class);
 
-        return Classes.instantiate(ctor, apiKey, proxy);
+        return Classes.instantiate(ctor, apiKey, proxy, requestAuthenticator);
     }
 
     //@since 0.3
