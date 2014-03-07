@@ -17,6 +17,9 @@ package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
@@ -24,8 +27,7 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.RestException;
-import com.stormpath.sdk.impl.http.authc.Sauthc1Signer;
-import com.stormpath.sdk.impl.http.authc.Signer;
+import com.stormpath.sdk.impl.http.authc.*;
 import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;
@@ -84,7 +86,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private final ApiKey apiKey;
 
-    private final Signer signer;
+    private final RequestAuthenticator requestAuthenticator;
 
     private DefaultHttpClient httpClient;
 
@@ -92,22 +94,25 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private HttpClientRequestFactory httpClientRequestFactory;
 
+    private final RequestAuthenticatorFactory requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
+
     //doesn't need to be SecureRandom: only used in backoff strategy, not for crypto:
     private final Random random = new Random();
 
     /**
      * Creates a new {@code HttpClientRequestExecutor} using the specified {@code ApiKey} and optional {@code Proxy}
      * configuration.
-     *
-     * @param apiKey the ApiKey
-     * @param proxy
+     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
+     * @param proxy the HTTP proxy to be used when communicating with the Stormpath API server (can be null)
+     * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server.
+     *                             If null, then Sauthc1 will be used.
      */
-    public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy) {
+    public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme) {
         Assert.notNull(apiKey, "apiKey argument is required.");
 
         this.apiKey = apiKey;
 
-        this.signer = new Sauthc1Signer();
+        this.requestAuthenticator = requestAuthenticatorFactory.create(authenticationScheme);
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
@@ -199,8 +204,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             }
 
             // Sign the request
-            if (this.signer != null && this.apiKey != null) {
-                this.signer.sign(request, this.apiKey);
+            if (this.apiKey != null) {
+                this.requestAuthenticator.authenticate(request, this.apiKey);
             }
 
             HttpRequestBase httpRequest = this.httpClientRequestFactory.createHttpClientRequest(request, entity);

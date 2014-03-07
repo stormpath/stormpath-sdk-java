@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,19 @@ package com.stormpath.sdk.impl.http.support;
 import com.stormpath.sdk.impl.http.RestException;
 
 /**
- * @since 0.1
+ * @since 0.9.3
  */
-public class SignatureException extends RestException {
+public class RequestAuthenticationException extends RestException {
 
-    public SignatureException(String s) {
+    public RequestAuthenticationException (String s) {
         super(s);
     }
 
-    public SignatureException(Throwable cause) {
+    public RequestAuthenticationException (Throwable cause) {
         super(cause);
     }
 
-    public SignatureException(String s, Throwable cause) {
+    public RequestAuthenticationException (String s, Throwable cause) {
         super(s, cause);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.http.authc;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.support.SignatureException;
+import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ import java.util.UUID;
 /**
  * @since 0.1
  */
-public class Sauthc1Signer implements Signer {
+public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String HOST_HEADER = "Host";
@@ -62,16 +62,16 @@ public class Sauthc1Signer implements Signer {
 
     private static final String NL = "\n";
 
-    private static final Logger log = LoggerFactory.getLogger(Sauthc1Signer.class);
+    private static final Logger log = LoggerFactory.getLogger(SAuthc1RequestAuthenticator.class);
 
     @Override
-    public void sign(Request request, ApiKey apiKey) throws SignatureException {
+    public void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException {
         Date date = new Date();
         String nonce = UUID.randomUUID().toString();
-        sign(request, apiKey, date, nonce);
+        authenticate(request, apiKey, date, nonce);
     }
 
-    public void sign(final Request request, final ApiKey apiKey, final Date date, final String nonce) {
+    public void authenticate(final Request request, final ApiKey apiKey, final Date date, final String nonce) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         dateFormat.setTimeZone(new SimpleTimeZone(0, TIME_ZONE));
 
@@ -102,11 +102,11 @@ public class Sauthc1Signer implements Signer {
 
         String canonicalRequest =
                 method + NL +
-                canonicalResourcePath + NL +
-                canonicalQueryString + NL +
-                canonicalHeadersString + NL +
-                signedHeadersString + NL +
-                requestPayloadHashHex;
+                        canonicalResourcePath + NL +
+                        canonicalQueryString + NL +
+                        canonicalHeadersString + NL +
+                        signedHeadersString + NL +
+                        requestPayloadHashHex;
 
         log.debug("{} Canonical Request: {}", AUTHENTICATION_SCHEME, canonicalRequest);
 
@@ -185,34 +185,34 @@ public class Sauthc1Signer implements Signer {
      *
      * @param text The string to hash.
      * @return The hashed bytes from the specified string.
-     * @throws SignatureException If the hash cannot be computed.
+     * @throws RequestAuthenticationException If the hash cannot be computed.
      */
-    protected byte[] hash(String text) throws SignatureException {
+    protected byte[] hash(String text) throws RequestAuthenticationException {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(text.getBytes(DEFAULT_ENCODING));
             return md.digest();
         } catch (Exception e) {
-            throw new SignatureException("Unable to compute hash while signing request.", e);
+            throw new RequestAuthenticationException("Unable to compute hash while signing request.", e);
         }
     }
 
-    protected byte[] sign(String stringData, byte[] key, MacAlgorithm algorithm) throws SignatureException {
+    protected byte[] sign(String stringData, byte[] key, MacAlgorithm algorithm) throws RequestAuthenticationException {
         try {
             byte[] data = stringData.getBytes(DEFAULT_ENCODING);
             return sign(data, key, algorithm);
         } catch (Exception e) {
-            throw new SignatureException("Unable to calculate a request signature: " + e.getMessage(), e);
+            throw new RequestAuthenticationException("Unable to calculate a request signature: " + e.getMessage(), e);
         }
     }
 
-    protected byte[] sign(byte[] data, byte[] key, MacAlgorithm algorithm) throws SignatureException {
+    protected byte[] sign(byte[] data, byte[] key, MacAlgorithm algorithm) throws RequestAuthenticationException {
         try {
             Mac mac = Mac.getInstance(algorithm.toString());
             mac.init(new SecretKeySpec(key, algorithm.toString()));
             return mac.doFinal(data);
         } catch (Exception e) {
-            throw new SignatureException("Unable to calculate a request signature: " + e.getMessage(), e);
+            throw new RequestAuthenticationException("Unable to calculate a request signature: " + e.getMessage(), e);
         }
     }
 
@@ -230,7 +230,7 @@ public class Sauthc1Signer implements Signer {
             }
 
             if (!content.markSupported()) {
-                throw new SignatureException("Unable to read request payload to sign request (mark not supported).");
+                throw new RequestAuthenticationException("Unable to read request payload to authenticate request (mark not supported).");
             }
 
             content.mark(-1);
@@ -249,7 +249,7 @@ public class Sauthc1Signer implements Signer {
             return string;
 
         } catch (Exception e) {
-            throw new SignatureException("Unable to read request payload to sign request: " + e.getMessage(), e);
+            throw new RequestAuthenticationException("Unable to read request payload to authenticate request: " + e.getMessage(), e);
         }
     }
 

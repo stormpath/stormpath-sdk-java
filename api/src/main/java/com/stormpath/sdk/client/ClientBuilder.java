@@ -61,6 +61,7 @@ public class ClientBuilder {
     private String apiKeySecretPropertyName = "apiKey.secret";
     private String baseUrl = "https://api.stormpath.com/v1";
     private Proxy proxy;
+    private AuthenticationScheme authenticationScheme;
 
     private CacheManager cacheManager;
 
@@ -379,6 +380,33 @@ public class ClientBuilder {
         return this;
     }
 
+    /**
+     * Sets the HTTP authentication scheme to be used when communicating with the Stormpath API server.
+     * </pre>
+     * This setting is helpful in cases where the code is run in a platform where the header information for
+     * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
+     * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
+     * </pre>
+     * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
+     * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>.
+     * When no authentication scheme is explicitly defined, {@link AuthenticationScheme#SAUTHC1} is used by default.
+     * </pre>
+     * For example, the basic authentication scheme is defined this way:
+     * </pre>
+     * Client client = new ClientBuilder()...
+     *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
+     *    .build(); //build the Client
+     * </pre>
+     *
+     * @param authenticationScheme the type of authentication to be used for communication with the Stormpath API server.
+     * @return the ClientBuilder instance for method chaining
+     * @since 0.9.3
+     */
+    public ClientBuilder setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
+        this.authenticationScheme = authenticationScheme;
+        return this;
+    }
+
     //For internal Stormpath testing needs only:
     ClientBuilder setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -398,7 +426,7 @@ public class ClientBuilder {
             apiKey = loadApiKey();
         }
 
-        return new Client(apiKey, this.baseUrl, proxy, cacheManager);
+        return new Client(apiKey, this.baseUrl, proxy, cacheManager, authenticationScheme);
     }
 
     //since 0.8
