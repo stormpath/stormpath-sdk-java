@@ -18,8 +18,6 @@ package com.stormpath.sdk.impl.http.authc
 import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.impl.http.HttpHeaders
 import com.stormpath.sdk.impl.http.Request
-import com.stormpath.sdk.impl.http.support.RequestAuthenticationException
-import com.sun.org.apache.xml.internal.security.utils.Base64
 
 import static org.testng.Assert.*
 import static org.easymock.EasyMock.*
@@ -30,7 +28,7 @@ import java.text.SimpleDateFormat
 /**
  * @since 0.9.3
  */
-class BasicAuthenticationRequestAuthenticatorTest {
+class BasicRequestAuthenticatorTest {
 
     private static final String TIMESTAMP_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -57,7 +55,7 @@ class BasicAuthenticationRequestAuthenticatorTest {
 
         replay(request, apiKey)
 
-        def requestAuthenticator = new BasicAuthenticationRequestAuthenticator();
+        def requestAuthenticator = new BasicRequestAuthenticator();
         requestAuthenticator.authenticate(request, apiKey)
 
         assertEquals(headers.get(AUTHORIZATION_HEADER).size(), 1)

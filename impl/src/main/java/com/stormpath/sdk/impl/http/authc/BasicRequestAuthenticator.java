@@ -35,8 +35,8 @@ import java.util.*;
  *
  * @since 0.9.3
  */
-public class BasicAuthenticationRequestAuthenticator implements RequestAuthenticator {
-    private static final Logger log = LoggerFactory.getLogger(BasicAuthenticationRequestAuthenticator.class);
+public class BasicRequestAuthenticator implements RequestAuthenticator {
+    private static final Logger log = LoggerFactory.getLogger(BasicRequestAuthenticator.class);
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String STORMPATH_DATE_HEADER = "X-Stormpath-Date";

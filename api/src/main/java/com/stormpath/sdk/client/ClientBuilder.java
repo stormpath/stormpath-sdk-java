@@ -385,16 +385,16 @@ public class ClientBuilder {
      * </pre>
      * This setting is helpful in cases where the code is run in a platform where the header information for
      * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
-     * need to set {@link AuthenticationScheme#Basic} in order for your code to properly communicate with Stormpath API server.
+     * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
      * </pre>
      * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
      * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>.
-     * When no authentication scheme is explicitly defined, {@link AuthenticationScheme#SAuthc1} is used by default.
+     * When no authentication scheme is explicitly defined, {@link AuthenticationScheme#SAUTHC1} is used by default.
      * </pre>
      * For example, the basic authentication scheme is defined this way:
      * </pre>
      * Client client = new ClientBuilder()...
-     *    .setAuthenticationScheme(AuthenticationScheme.Basic) //set the basic authentication scheme
+     *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
      *    .build(); //build the Client
      * </pre>
      *

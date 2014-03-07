@@ -19,14 +19,12 @@ import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 
-import java.security.SignatureException;
-
 /**
  * Interface to be implemented by HTTP authentication schemes. Such scheme defines the way the communication with
  * the Stormpath API server will be authenticated.
  *
- * @see BasicAuthenticationRequestAuthenticator
- * @see Sauthc1RequestAuthenticator
+ * @see BasicRequestAuthenticator
+ * @see SAuthc1RequestAuthenticator
  * @see com.stormpath.sdk.client.AuthenticationScheme
  * @since 0.9.3
  */

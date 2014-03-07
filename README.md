@@ -18,7 +18,8 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 0.9.3 ###
 
-- [Issue 63](https://stormpath.atlassian.net/browse/JSDK-63): Allow client to use basic authentication
+- [Issue 16](https://github.com/stormpath/stormpath-sdk-java/issues/16): Allow client to use basic authentication
+- Backwards-incompatible change: com.stormpath.sdk.impl.http.support.SignatureException has been replaced by com.stormpath.sdk.impl.http.support.RequestAuthenticationException
 
 ### 0.9.2 ###
 

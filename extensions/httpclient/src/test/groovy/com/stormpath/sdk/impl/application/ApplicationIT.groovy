@@ -25,8 +25,8 @@ import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.http.authc.BasicAuthenticationRequestAuthenticator
-import com.stormpath.sdk.impl.http.authc.Sauthc1RequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
@@ -102,8 +102,8 @@ class ApplicationIT extends ClientIT {
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        //When no authenticationScheme is explicitly defined, Sauthc1RequestAuthenticator is used by default
-        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
+        //When no authenticationScheme is explicitly defined, SAuthc1RequestAuthenticator is used by default
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
         app.name = uniquify("DELETEME")
 
@@ -137,7 +137,7 @@ class ApplicationIT extends ClientIT {
     void testCreateAppGroupWithBasicAuthentication() {
 
         //We are creating a new client with BasicAuthentication
-        def client = buildClient(AuthenticationScheme.Basic)
+        def client = buildClient(AuthenticationScheme.BASIC)
 
         def tenant = client.currentTenant
 
@@ -145,7 +145,7 @@ class ApplicationIT extends ClientIT {
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof BasicAuthenticationRequestAuthenticator
+        assertTrue authenticationScheme instanceof BasicRequestAuthenticator
 
         app.name = uniquify("DELETEME")
 
@@ -179,7 +179,7 @@ class ApplicationIT extends ClientIT {
     void testCreateAppGroupWithSauthc1RequestAuthenticator() {
 
         //We are creating a new client with Digest Authentication
-        def client = buildClient(AuthenticationScheme.SAuthc1)
+        def client = buildClient(AuthenticationScheme.SAUTHC1)
 
         def tenant = client.currentTenant
 
@@ -187,7 +187,7 @@ class ApplicationIT extends ClientIT {
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
         app.name = uniquify("DELETEME")
 

@@ -20,8 +20,8 @@ import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
-import com.stormpath.sdk.impl.http.authc.BasicAuthenticationRequestAuthenticator
-import com.stormpath.sdk.impl.http.authc.Sauthc1RequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertSame
@@ -82,7 +82,7 @@ class ClientBuilderTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof Sauthc1RequestAuthenticator
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
     }
 
     @Test
@@ -95,7 +95,7 @@ class ClientBuilderTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof Sauthc1RequestAuthenticator
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
     }
 
     @Test
@@ -103,20 +103,20 @@ class ClientBuilderTest {
 
         Client client = new ClientBuilder()
                 .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
-                .setAuthenticationScheme(AuthenticationScheme.Basic)
+                .setAuthenticationScheme(AuthenticationScheme.BASIC)
                 .build()
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof BasicAuthenticationRequestAuthenticator
+        assertTrue authenticationScheme instanceof BasicRequestAuthenticator
 
         client = new ClientBuilder()
                 .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
-                .setAuthenticationScheme(AuthenticationScheme.SAuthc1)
+                .setAuthenticationScheme(AuthenticationScheme.SAUTHC1)
                 .build()
 
         authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
     }
 }

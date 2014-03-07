@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 package com.stormpath.sdk.client;
 
+import com.stormpath.sdk.lang.Assert;
+
 /**
  * Enumeration that defines the available HTTP authentication schemes to be used when communicating with the Stormpath API server.
  * </pre>
  * The Authentication Scheme setting is helpful in cases where the code is run in a platform where the header information for
  * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
- * need to set {@link AuthenticationScheme#Basic} in order for your code to properly communicate with Stormpath API server.
+ * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
  * </pre>
  * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
  * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>
@@ -29,7 +31,17 @@ package com.stormpath.sdk.client;
  */
 public enum AuthenticationScheme {
 
-    Basic, //HTTP Basic Authentication
-    SAuthc1 //Digest Authentication
+    BASIC("com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator"), //HTTP Basic Authentication
+    SAUTHC1("com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator"); //Digest Authentication
 
+    private final String requestAuthenticatorClassName;
+
+    private AuthenticationScheme(String requestAuthenticatorClassName) {
+        Assert.notNull(requestAuthenticatorClassName, "requestAuthenticatorClassName cannot be null");
+        this.requestAuthenticatorClassName = requestAuthenticatorClassName;
+    }
+
+    public String getRequestAuthenticatorClassName() {
+        return this.requestAuthenticatorClassName;
+    }
 }

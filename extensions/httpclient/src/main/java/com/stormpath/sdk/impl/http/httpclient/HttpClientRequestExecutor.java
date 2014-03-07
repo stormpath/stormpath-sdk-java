@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.http.httpclient;
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
@@ -25,9 +27,7 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.RestException;
-import com.stormpath.sdk.impl.http.authc.BasicAuthenticationRequestAuthenticator;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
-import com.stormpath.sdk.impl.http.authc.Sauthc1RequestAuthenticator;
+import com.stormpath.sdk.impl.http.authc.*;
 import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;
@@ -94,6 +94,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private HttpClientRequestFactory httpClientRequestFactory;
 
+    private final RequestAuthenticatorFactory requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
+
     //doesn't need to be SecureRandom: only used in backoff strategy, not for crypto:
     private final Random random = new Random();
 
@@ -110,22 +112,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         this.apiKey = apiKey;
 
-        ////When no authenticationScheme is explicitly defined, Sauthc1RequestAuthenticator is used by default
-        if(authenticationScheme != null) {
-            switch (authenticationScheme) {
-                case Basic:
-                    this.requestAuthenticator = new BasicAuthenticationRequestAuthenticator();
-                    break;
-                case SAuthc1:
-                    this.requestAuthenticator = new Sauthc1RequestAuthenticator();
-                    break;
-                default:
-                    this.requestAuthenticator = new Sauthc1RequestAuthenticator();
-                    break;
-            }
-        } else{
-            this.requestAuthenticator = new Sauthc1RequestAuthenticator();
-        }
+        this.requestAuthenticator = requestAuthenticatorFactory.create(authenticationScheme);
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
@@ -217,7 +204,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             }
 
             // Sign the request
-            if (this.requestAuthenticator != null && this.apiKey != null) {
+            if (this.apiKey != null) {
                 this.requestAuthenticator.authenticate(request, this.apiKey);
             }
 

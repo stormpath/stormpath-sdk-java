@@ -162,7 +162,7 @@ public class Client implements DataStore {
 
     //since 0.3
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme requestAuthenticator) {
+    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -181,7 +181,7 @@ public class Client implements DataStore {
 
         Constructor ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class, AuthenticationScheme.class);
 
-        return Classes.instantiate(ctor, apiKey, proxy, requestAuthenticator);
+        return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme);
     }
 
     //@since 0.3
