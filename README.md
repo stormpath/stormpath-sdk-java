@@ -79,7 +79,7 @@ CustomData data = account.getCustomData();
 data.put("rank", "Captain");
 data.put("birthDate", "2305-07-13");
 data.put("birthPlace", "La Barre, France");
-data.put("favoriteDrink", "Earl Grey tea (hot)"
+data.put("favoriteDrink", "Earl Grey tea (hot)");
 
 application.createAccount(account);
 ```
@@ -156,7 +156,7 @@ dir = client.getCurrentTenant().createDirectory(dir);
 
 ...
 //delete it when no longer useful
-dir.delete()
+dir.delete();
 ```
 
 #### Manage Account Store Mappings ####
