@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
  * the Stormpath API server will be authenticated.
  *
  * @see BasicRequestAuthenticator
- * @see SAuthc1RequestAuthenticator
+ * @see Sauthc1RequestAuthenticator
  * @see com.stormpath.sdk.client.AuthenticationScheme
  * @since 0.9.3
  */

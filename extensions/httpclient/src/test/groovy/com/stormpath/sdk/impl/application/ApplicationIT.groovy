@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,10 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
-import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.Sauthc1RequestAuthenticator
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
 
@@ -102,8 +100,8 @@ class ApplicationIT extends ClientIT {
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        //When no authenticationScheme is explicitly defined, SAuthc1RequestAuthenticator is used by default
-        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
+        //When no authenticationScheme is explicitly defined, Sauthc1RequestAuthenticator is used by default
+        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
 
         app.name = uniquify("DELETEME")
 
@@ -187,7 +185,7 @@ class ApplicationIT extends ClientIT {
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
+        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
 
         app.name = uniquify("DELETEME")
 

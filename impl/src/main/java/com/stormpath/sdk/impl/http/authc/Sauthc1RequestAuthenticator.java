@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import java.util.UUID;
 /**
  * @since 0.1
  */
-public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
+public class Sauthc1RequestAuthenticator implements RequestAuthenticator {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String HOST_HEADER = "Host";
@@ -62,7 +62,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     private static final String NL = "\n";
 
-    private static final Logger log = LoggerFactory.getLogger(SAuthc1RequestAuthenticator.class);
+    private static final Logger log = LoggerFactory.getLogger(Sauthc1RequestAuthenticator.class);
 
     @Override
     public void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
-import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.Sauthc1RequestAuthenticator
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertSame
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 /**
  *
@@ -82,7 +81,7 @@ class ClientBuilderTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
+        assertTrue requestAuthenticator instanceof Sauthc1RequestAuthenticator
     }
 
     @Test
@@ -95,7 +94,7 @@ class ClientBuilderTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
+        assertTrue requestAuthenticator instanceof Sauthc1RequestAuthenticator
     }
 
     @Test
@@ -117,6 +116,6 @@ class ClientBuilderTest {
 
         authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
+        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
     }
 }
