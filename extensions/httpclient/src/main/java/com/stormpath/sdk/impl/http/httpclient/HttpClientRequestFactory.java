@@ -115,7 +115,7 @@ class HttpClientRequestFactory {
          * in use. To ensure that we use the same Host header in the request and
          * in the calculated string to sign (even if Apache HttpClient changed
          * and started honoring our explicit host with endpoint), we follow this
-         * same behavior here and in the Signer.
+         * same behavior here and in the RequestAuthenticator.
          */
         URI endpoint = request.getResourceUrl();
         String hostHeader = endpoint.getHost();
