@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
  * the Stormpath API server will be authenticated.
  *
  * @see BasicRequestAuthenticator
- * @see Sauthc1RequestAuthenticator
+ * @see SAuthc1RequestAuthenticator
  * @see com.stormpath.sdk.client.AuthenticationScheme
  * @since 0.9.3
  */

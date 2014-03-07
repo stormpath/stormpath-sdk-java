@@ -21,7 +21,7 @@ import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
-import com.stormpath.sdk.impl.http.authc.Sauthc1RequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -81,7 +81,7 @@ class ClientBuilderTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof Sauthc1RequestAuthenticator
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
     }
 
     @Test
@@ -94,7 +94,7 @@ class ClientBuilderTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof Sauthc1RequestAuthenticator
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
     }
 
     @Test
@@ -116,6 +116,6 @@ class ClientBuilderTest {
 
         authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue authenticationScheme instanceof Sauthc1RequestAuthenticator
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
     }
 }

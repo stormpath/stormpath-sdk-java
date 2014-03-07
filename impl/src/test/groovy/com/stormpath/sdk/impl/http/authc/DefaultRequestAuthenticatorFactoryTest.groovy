@@ -33,8 +33,8 @@ class DefaultRequestAuthenticatorFactoryTest {
         def requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
 
         assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.BASIC) instanceof BasicRequestAuthenticator)
-        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.SAUTHC1) instanceof Sauthc1RequestAuthenticator)
-        assertTrue(requestAuthenticatorFactory.create(null) instanceof Sauthc1RequestAuthenticator)
+        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.SAUTHC1) instanceof SAuthc1RequestAuthenticator)
+        assertTrue(requestAuthenticatorFactory.create(null) instanceof SAuthc1RequestAuthenticator)
     }
 
     @Test
