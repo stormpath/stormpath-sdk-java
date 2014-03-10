@@ -313,11 +313,10 @@ public interface Account extends Resource, Saveable, Deletable {
     void saveWithResponseOptions(AccountOptions responseOptions);
 
     /**
-     * Checks if this account belongs to a group whose name or href is equal to `hrefOrName` value. No wildcard
-     * substitution, just a literal case-insensitive comparison will be executed.
+     * Returns true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.
      *
      * @param hrefOrName the href or name of the group being sought.
-     * @return true if the account is member of a group whose name or href is equal (case-insensitive) to the given parameter; false otherwise.
+     * @return true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.
      * @since 0.9.3
      */
     boolean isMemberOfGroup(String hrefOrName);
