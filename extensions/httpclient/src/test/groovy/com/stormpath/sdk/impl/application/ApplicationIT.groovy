@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,16 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
+import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
 
@@ -95,6 +97,95 @@ class ApplicationIT extends ClientIT {
         def tenant = client.currentTenant
 
         def app = client.instantiate(Application)
+
+        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+
+        //When no authenticationScheme is explicitly defined, SAuthc1RequestAuthenticator is used by default
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
+
+        app.name = uniquify("DELETEME")
+
+        def dirName = uniquify("DELETEME")
+
+        app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
+        def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
+
+        deleteOnTeardown(dir)
+        deleteOnTeardown(app)
+
+        Group group = client.instantiate(Group)
+        group.name = uniquify('DELETEME')
+
+        def created = app.createGroup(group)
+
+        //verify it was created:
+
+        def found = app.getGroups(Groups.where(Groups.name().eqIgnoreCase(group.name))).iterator().next()
+
+        assertEquals(created.href, found.href)
+
+        //test delete:
+        found.delete()
+
+        def list = app.getGroups(Groups.where(Groups.name().eqIgnoreCase(group.name)))
+        assertFalse list.iterator().hasNext() //no results
+    }
+
+    @Test
+    void testCreateAppGroupWithBasicAuthentication() {
+
+        //We are creating a new client with BasicAuthentication
+        def client = buildClient(AuthenticationScheme.BASIC)
+
+        def tenant = client.currentTenant
+
+        def app = client.instantiate(Application)
+
+        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+
+        assertTrue authenticationScheme instanceof BasicRequestAuthenticator
+
+        app.name = uniquify("DELETEME")
+
+        def dirName = uniquify("DELETEME")
+
+        app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
+        def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
+
+        deleteOnTeardown(dir)
+        deleteOnTeardown(app)
+
+        Group group = client.instantiate(Group)
+        group.name = uniquify('DELETEME')
+
+        def created = app.createGroup(group)
+
+        //verify it was created:
+
+        def found = app.getGroups(Groups.where(Groups.name().eqIgnoreCase(group.name))).iterator().next()
+
+        assertEquals(created.href, found.href)
+
+        //test delete:
+        found.delete()
+
+        def list = app.getGroups(Groups.where(Groups.name().eqIgnoreCase(group.name)))
+        assertFalse list.iterator().hasNext() //no results
+    }
+
+    @Test
+    void testCreateAppGroupWithSauthc1RequestAuthenticator() {
+
+        //We are creating a new client with Digest Authentication
+        def client = buildClient(AuthenticationScheme.SAUTHC1)
+
+        def tenant = client.currentTenant
+
+        def app = client.instantiate(Application)
+
+        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
         app.name = uniquify("DELETEME")
 

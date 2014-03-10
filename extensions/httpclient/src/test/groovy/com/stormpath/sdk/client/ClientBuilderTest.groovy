@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc. and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@ import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
+import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertSame
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 /**
  *
@@ -69,5 +70,52 @@ class ClientBuilderTest {
         def cm = client.dataStore.cacheManager
 
         assertTrue cm instanceof DefaultCacheManager
+    }
+
+    @Test
+    void testRequestAuthenticatorNotSet() {
+
+        Client client = new ClientBuilder()
+                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .build()
+
+        def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
+
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
+    }
+
+    @Test
+    void testAuthenticationSchemeNull() {
+
+        Client client = new ClientBuilder()
+                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setAuthenticationScheme(null)
+                .build()
+
+        def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
+
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
+    }
+
+    @Test
+    void testAuthenticationScheme() {
+
+        Client client = new ClientBuilder()
+                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setAuthenticationScheme(AuthenticationScheme.BASIC)
+                .build()
+
+        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+
+        assertTrue authenticationScheme instanceof BasicRequestAuthenticator
+
+        client = new ClientBuilder()
+                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setAuthenticationScheme(AuthenticationScheme.SAUTHC1)
+                .build()
+
+        authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+
+        assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
     }
 }
