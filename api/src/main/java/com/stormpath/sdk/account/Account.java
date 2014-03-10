@@ -313,7 +313,7 @@ public interface Account extends Resource, Saveable, Deletable {
     void saveWithResponseOptions(AccountOptions responseOptions);
 
     /**
-     * Checks if this account belongs to a group whose mane or href is equal to `hrefOrName` value. No wildcard
+     * Checks if this account belongs to a group whose name or href is equal to `hrefOrName` value. No wildcard
      * substitution, just a literal case-insensitive comparison will be executed.
      *
      * @param hrefOrName the href or name of the group being sought.
