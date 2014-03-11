@@ -311,4 +311,14 @@ public interface Account extends Resource, Saveable, Deletable {
      * @since 0.9
      */
     void saveWithResponseOptions(AccountOptions responseOptions);
+
+    /**
+     * Returns true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.
+     *
+     * @param hrefOrName the href or name of the group being sought.
+     * @return true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.
+     * @since 0.9.3
+     */
+    boolean isMemberOfGroup(String hrefOrName);
+
 }
