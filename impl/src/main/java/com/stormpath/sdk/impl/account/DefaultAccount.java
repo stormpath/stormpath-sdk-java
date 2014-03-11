@@ -21,11 +21,7 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
@@ -35,8 +31,8 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.tenant.Tenant;
-
 import java.util.Map;
 
 /**
@@ -229,4 +225,22 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, accountOptions);
     }
+
+    /**
+     * @since 0.9.3
+     */
+    @Override
+    public boolean isMemberOfGroup(String hrefOrName) {
+        if(!Strings.hasText(hrefOrName)) {
+            return false;
+        }
+        for (Group aGroup : getGroups()) {
+            if (aGroup.getName().equalsIgnoreCase(hrefOrName) || aGroup.getHref().equalsIgnoreCase(hrefOrName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

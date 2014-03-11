@@ -153,4 +153,82 @@ class DefaultAccountTest {
 
         verify internalDataStore, groupCriteria, group
     }
+
+    @Test
+    void testIsMemberOfGroup() {
+
+        def groupName = "fooName"
+        def groupHref = "https://api.stormpath.com/v1/groups/7frJxiVEfZB9NaXw5vLvCA"
+        def groupValues = [href: groupHref, name: groupName]
+
+        def properties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                groups: [
+                        href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups",
+                        items: [
+                                groupValues
+                        ],
+                        limit: 25,
+                        offset: 0
+                ],
+        ]
+
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def defaultAccount = new DefaultAccount(internalDataStore, properties)
+        def mockGroup = createStrictMock(Group)
+
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+
+        expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        replay internalDataStore, mockGroup
+
+        assertFalse(defaultAccount.isMemberOfGroup(groupName.substring(0, groupName.length()-2) + "*")) //fooNa*
+        assertFalse(defaultAccount.isMemberOfGroup("*" + groupName.toUpperCase() + "*")) //*FOONAME*
+        assertFalse(defaultAccount.isMemberOfGroup("*" + groupName.substring(2, groupName.length()).toLowerCase())) //*oname
+        assertTrue(defaultAccount.isMemberOfGroup(groupName)) //fooName
+        assertTrue(defaultAccount.isMemberOfGroup(groupName.toUpperCase())) //FOONAME
+        assertTrue(defaultAccount.isMemberOfGroup(groupName.toLowerCase())) //fooname
+        assertFalse(defaultAccount.isMemberOfGroup(null))
+        assertFalse(defaultAccount.isMemberOfGroup(""))
+        assertFalse(defaultAccount.isMemberOfGroup("foo"))
+        assertFalse(defaultAccount.isMemberOfGroup("*Poo*"))
+        assertTrue(defaultAccount.isMemberOfGroup(groupHref.toLowerCase()))
+        assertFalse(defaultAccount.isMemberOfGroup(groupHref.substring(0, groupHref.length() - 1) + "*")) //href having last character replaced by wildcard
+        assertFalse(defaultAccount.isMemberOfGroup(groupHref.substring(1, groupHref.length()))) //href having first character removed
+
+        verify internalDataStore, mockGroup
+    }
+
+
+
+
+
 }
