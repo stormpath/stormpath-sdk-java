@@ -633,7 +633,10 @@ public interface Application extends Resource, Saveable, Deletable {
      * found in an account store, the application will move on to the next {@code AccountStore} (next highest index)
      * in the list.  This continues either a matching account is found, or until all account stores are exhausted.
      * When a matching account is found, the process is short-circuited and the discovered account will be used
-     * immediately for authentication.
+     * immediately for authentication. NOTE: If you already know the account store where the account resides, you can
+     * specify it at the time the authentication request is created using the
+     * {@link com.stormpath.sdk.authc.UsernamePasswordRequest#setAccountStore(com.stormpath.sdk.directory.AccountStore)} method.
+     * This way you will be avoiding the authentication attempt to cycle through the Application's account stores.
      * <p/>
      * When calling this method, you are setting the new {@code AccountStoreMapping} to the end of the Application's
      * overall list.
