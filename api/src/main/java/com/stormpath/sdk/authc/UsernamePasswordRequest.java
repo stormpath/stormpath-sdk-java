@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.authc;
 
+import com.stormpath.sdk.directory.AccountStore;
+
 /**
  * @since 0.2
  */
@@ -23,6 +25,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     private String username;
     private char[] password;
     private String host;
+    private AccountStore accountStore = null;
 
     public UsernamePasswordRequest(String username, String password) {
         this(username, password, null);
@@ -76,4 +79,18 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
         }
 
     }
+
+    /**
+     * Sets the specific account store this authentication request will be targeted to.
+     * @since 0.9.4
+     */
+    public void setAccountStore(AccountStore accountStore){
+        this.accountStore = accountStore;
+    }
+
+    @Override
+    public AccountStore getAccountStore() {
+        return this.accountStore;
+    }
+
 }

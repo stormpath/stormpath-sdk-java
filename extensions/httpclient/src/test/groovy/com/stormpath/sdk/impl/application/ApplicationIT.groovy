@@ -17,15 +17,19 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.application.AccountStoreMapping
+import com.stormpath.sdk.application.AccountStoreMappings
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import org.testng.Assert
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -171,5 +175,71 @@ class ApplicationIT extends ClientIT {
         def list = app.getGroups(Groups.where(Groups.name().eqIgnoreCase(group.name)))
         assertFalse list.iterator().hasNext() //no results
     }
+
+    @Test
+    void testLoginWithAccountStore() {
+
+        def username = uniquify('lonestarr')
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+
+        Directory dir1 = client.instantiate(Directory)
+        dir1.name = uniquify("Java SDK: ApplicationIT.testLoginWithAccountStore")
+        dir1 = client.currentTenant.createDirectory(dir1);
+        deleteOnTeardown(dir1)
+
+        Directory dir2 = client.instantiate(Directory)
+        dir2.name = uniquify("Java SDK: ApplicationIT.testLoginWithAccountStore")
+        dir2 = client.currentTenant.createDirectory(dir2);
+        deleteOnTeardown(dir2)
+
+        AccountStoreMapping accountStoreMapping1 = client.instantiate(AccountStoreMapping)
+        accountStoreMapping1.setAccountStore(dir1)
+        accountStoreMapping1.setApplication(app)
+        accountStoreMapping1 = app.createAccountStoreMapping(accountStoreMapping1)
+
+        AccountStoreMapping accountStoreMapping2 = client.instantiate(AccountStoreMapping)
+        accountStoreMapping2.setAccountStore(dir2)
+        accountStoreMapping2.setApplication(app)
+        accountStoreMapping2 = app.createAccountStoreMapping(accountStoreMapping2)
+
+        dir1.createAccount(acct)
+        deleteOnTeardown(acct)
+
+        //Account belongs to dir1, therefore login must succeed
+        def request = new UsernamePasswordRequest(username, password)
+        request.setAccountStore(accountStoreMapping1.getAccountStore())
+        def result = app.authenticateAccount(request)
+        Assert.assertEquals(result.getAccount().getUsername(), acct.username)
+
+        try {
+            //Account does not belong to dir2, therefore login must fail
+            request = new UsernamePasswordRequest(username, password)
+            request.setAccountStore(accountStoreMapping2.getAccountStore())
+            app.authenticateAccount(request)
+            Assert.fail("Should have thrown due to invalid username/password");
+        } catch (Exception e) {
+            Assert.assertEquals(e.getMessage(), "HTTP 400, Stormpath 400 (mailto:support@stormpath.com): Invalid username or password.")
+        }
+
+        //No account store has been defined, therefore login must succeed
+        request = new UsernamePasswordRequest(username, password)
+        result = app.authenticateAccount(request)
+        Assert.assertEquals(result.getAccount().getUsername(), acct.username)
+    }
+
+
 
 }

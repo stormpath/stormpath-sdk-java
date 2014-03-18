@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.authc;
 
+import com.stormpath.sdk.directory.AccountStore;
+
 /**
  * @since 0.1
  */
@@ -27,4 +29,12 @@ public interface AuthenticationRequest<P,C> {
     String getHost();
 
     void clear();
+
+    /**
+     * Returns the specific account store this authentication request will be targeted to.
+     * @return the specific account store this authentication request will be targeted to.
+     * @since 0.9.4
+     */
+    AccountStore getAccountStore();
+
 }

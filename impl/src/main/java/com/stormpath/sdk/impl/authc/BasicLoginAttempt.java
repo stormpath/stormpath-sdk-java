@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.directory.AccountStore;
+
 /**
  * @since 0.2
  */
@@ -23,4 +25,22 @@ public interface BasicLoginAttempt extends LoginAttempt {
     String getValue();
 
     void setValue(String value);
+
+    /**
+     * Returns the specific account store this authentication request will be targeted to.
+     *
+     * @return the specific account store this authentication request will be targeted to.
+     * @since 0.9.4
+     */
+    AccountStore getAccountStore();
+
+    /**
+     * Sets the `AccountStore` where the login attempt will be targeted to bypassing the standard
+     * cycle-through-all-app-account-stores.
+     *
+     * @param accountStore the specific `AccountStore` where the authentication request will be targeted.
+     * @since 0.9.4
+     */
+    void setAccountStore(AccountStore accountStore);
+
 }

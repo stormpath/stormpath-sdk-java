@@ -15,10 +15,13 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.Map;
 
@@ -30,7 +33,10 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     static final StringProperty TYPE = new StringProperty("type");
     static final StringProperty VALUE = new StringProperty("value");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE);
+    // INSTANCE RESOURCE REFERENCES:
+    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
+
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE, ACCOUNT_STORE);
 
     public DefaultBasicLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -64,4 +70,17 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     public void setValue(String value) {
         setProperty(VALUE, value);
     }
+
+    @Override
+    public AccountStore getAccountStore() {
+        return getResourceProperty(ACCOUNT_STORE);
+    }
+
+    @Override
+    public void setAccountStore(AccountStore accountStore) {
+        Assert.notNull(accountStore, "accountStore cannot be null.");
+        setProperty(ACCOUNT_STORE, accountStore);
+    }
+
+
 }
