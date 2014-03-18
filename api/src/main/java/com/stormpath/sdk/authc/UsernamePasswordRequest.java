@@ -88,6 +88,11 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
         this.accountStore = accountStore;
     }
 
+    /**
+     * Returns the specific account store this authentication request will be targeted to.
+     * @return the specific account store this authentication request will be targeted to.
+     * @since 0.9.4
+     */
     @Override
     public AccountStore getAccountStore() {
         return this.accountStore;

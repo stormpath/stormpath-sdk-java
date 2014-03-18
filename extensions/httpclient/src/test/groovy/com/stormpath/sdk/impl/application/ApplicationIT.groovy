@@ -18,7 +18,6 @@ package com.stormpath.sdk.impl.application
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.AccountStoreMapping
-import com.stormpath.sdk.application.AccountStoreMappings
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
