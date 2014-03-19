@@ -82,6 +82,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
 
     /**
      * Sets the specific account store this authentication request will be targeted to.
+     * @param accountStore the specific account store this authentication request will be targeted to.
      * @since 0.9.4
      */
     public void setAccountStore(AccountStore accountStore){

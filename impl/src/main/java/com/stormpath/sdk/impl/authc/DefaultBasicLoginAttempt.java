@@ -78,7 +78,6 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
 
     @Override
     public void setAccountStore(AccountStore accountStore) {
-        Assert.notNull(accountStore, "accountStore cannot be null.");
         setProperty(ACCOUNT_STORE, accountStore);
     }
 

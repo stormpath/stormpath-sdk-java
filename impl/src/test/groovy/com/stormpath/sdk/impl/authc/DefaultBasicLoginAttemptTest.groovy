@@ -17,12 +17,8 @@ class DefaultBasicLoginAttemptTest {
         def internalDataStore = createMock(InternalDataStore)
 
         DefaultBasicLoginAttempt attempt = new DefaultBasicLoginAttempt(internalDataStore);
-        try{
-            attempt.setAccountStore(null)
-            fail("Should have thrown.")
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "accountStore cannot be null.")
-        }
+        attempt.setAccountStore(null)
+        assertEquals(attempt.getAccountStore(), null)
     }
 
     @Test
