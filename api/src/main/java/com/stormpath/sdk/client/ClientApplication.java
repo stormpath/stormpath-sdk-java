@@ -20,7 +20,7 @@ import com.stormpath.sdk.application.Application;
 /**
  * <h2>Deprecated</h2>
  * This class has been deprecated as of 0.8 and it will be removed before 1.0 final.  Instead of using this class,
- * use the {@link ClientBuilder ClientBuilder} and after built, call
+ * use the {@link Clients#builder()} method and after built, call
  * <pre>
  *     client.getResource(appUrl, Application.class);
  * </pre>

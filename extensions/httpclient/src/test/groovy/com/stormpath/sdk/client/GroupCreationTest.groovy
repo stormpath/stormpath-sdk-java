@@ -27,7 +27,9 @@ class GroupCreationTest {
 
         DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
 
-        Client client = new Client(apiKey, args[2]);
+        def builder = Clients.builder().setApiKey(apiKey)
+        builder.baseUrl = args[2]
+        Client client = builder.build()
 
         String directoryHref = args[3];
 

@@ -36,7 +36,9 @@ class ClientTestDeeperDive {
     public static void main(String[] args) {
         DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
 
-        Client client = new Client(apiKey, "http://localhost:8080/v1")
+        def builder = Clients.builder().setApiKey(apiKey)
+        builder.baseUrl = "http://localhost:8080/v1"
+        Client client = builder.build()
 
         long start = System.currentTimeMillis();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,13 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.lang.Classes;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
+import java.io.*;
 import java.util.Properties;
 
 /**
- * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> implementation used to
- * construct {@link Client} instances.
+ * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> used to
+ * construct {@link com.stormpath.sdk.client.Client} instances.
  * <p/>
  * The {@code ClientBuilder} is especially useful for constructing Client instances with Stormpath API Key
  * information loaded from an external {@code .properties} file (or Properties instance) to ensure the API Key secret
@@ -40,7 +33,7 @@ import java.util.Properties;
  * <pre>
  * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
  *
- * Client = new ClientBuilder().setApiKeyFileLocation(location).build();
+ * Client client = {@link Clients Clients}.builder().setApiKeyFileLocation(location).build();
  * </pre>
  * <p/>
  * You may load files from the filesystem, classpath, or URLs by prefixing the path with
@@ -48,28 +41,9 @@ import java.util.Properties;
  * {@link #setApiKeyFileLocation(String)} for more information.
  *
  * @see #setApiKeyFileLocation(String)
- * @since 0.3
+ * @since 0.9.4
  */
-public class ClientBuilder {
-
-    private ApiKey apiKey;
-    private String apiKeyFileLocation;
-    private InputStream apiKeyInputStream;
-    private Reader apiKeyReader;
-    private Properties apiKeyProperties;
-    private String apiKeyIdPropertyName = "apiKey.id";
-    private String apiKeySecretPropertyName = "apiKey.secret";
-    private String baseUrl = "https://api.stormpath.com/v1";
-    private Proxy proxy;
-    private AuthenticationScheme authenticationScheme;
-
-    private CacheManager cacheManager;
-
-    /**
-     * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
-     */
-    public ClientBuilder() {
-    }
+public interface ClientBuilder {
 
     /**
      * Allows specifying the client's API Key {@code id} and {@code secret} values directly instead of reading the key
@@ -88,7 +62,7 @@ public class ClientBuilder {
      * <pre>
      * String apiKeyId = System.getenv("STORMPATH_API_KEY_ID");
      * String apiKeySecret = System.getenv("STORMPATH_API_KEY_SECRET");
-     * Client client = new ClientBuilder().setApiKey(apiKeyId, apiKeySecret).build();
+     * Client client = {@link Clients Clients}.builder().setApiKey(apiKeyId, apiKeySecret).build();
      * </pre>
      * <h4>System Properties</h4>
      * It is <em>not</em> recommended to load the ApiKey id and secret from a system property, for example:
@@ -110,19 +84,15 @@ public class ClientBuilder {
      * <pre color="red">
      * String apiKeyId = "myRawApiKeyId";
      * String apiKeySecret = "secretValueThatAnyoneCouldSeeIfTheyCheckedOutMySourceCode";
-     * Client client = new ClientBuilder().setApiKey(apiKeyId, apiKeySecret).build();
+     * Client client = Clients.builder().setApiKey(apiKeyId, apiKeySecret).build();
      * </pre>
      *
      * @param apiKeyId     the {@link ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @param apiKeySecret the {@link ApiKey#getSecret() ApiKey secret} value to use when communicating with Stormpath.
      * @return the ClientBuilder instance for method chaining.
      * @see #setApiKey(ApiKey)
-     * @since 0.8
      */
-    public ClientBuilder setApiKey(String apiKeyId, String apiKeySecret) {
-        ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
-        return setApiKey(apiKey);
-    }
+    ClientBuilder setApiKey(String apiKeyId, String apiKeySecret);
 
     /**
      * Allows specifying an {@code ApiKey} instance directly instead of reading the key from a stream-based resource
@@ -142,7 +112,7 @@ public class ClientBuilder {
      * String apiKeyId = System.getenv("STORMPATH_API_KEY_ID");
      * String apiKeySecret = System.getenv("STORMPATH_API_KEY_SECRET");
      * ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
-     * Client client = new ClientBuilder().setApiKey(anApiKey).build();
+     * Client client = {@link Clients Clients}.builder().setApiKey(anApiKey).build();
      * </pre>
      * <h4>System Properties</h4>
      * It is <em>not</em> recommended to load the ApiKey id and secret from a system property, for example:
@@ -165,18 +135,14 @@ public class ClientBuilder {
      * String apiKeyId = "myRawApiKeyId";
      * String apiKeySecret = "secretValueThatAnyoneCouldSeeIfTheyCheckedOutMySourceCode";
      * ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
-     * Client client = new ClientBuilder().setApiKey(anApiKey).build();
+     * Client client = Clients.builder().setApiKey(anApiKey).build();
      * </pre>
      *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
      * @see #setApiKey(String, String)
-     * @since 0.8
      */
-    public ClientBuilder setApiKey(ApiKey apiKey) {
-        this.apiKey = apiKey;
-        return this;
-    }
+    ClientBuilder setApiKey(ApiKey apiKey);
 
     /**
      * Allows usage of a Properties instance instead of loading a {@code .properties} file via
@@ -188,10 +154,7 @@ public class ClientBuilder {
      * @param properties the properties instance to use to load the API Key ID and Secret.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setApiKeyProperties(Properties properties) {
-        this.apiKeyProperties = properties;
-        return this;
-    }
+    ClientBuilder setApiKeyProperties(Properties properties);
 
     /**
      * Creates an API Key Properties instance based on the specified Reader instead of loading a {@code .properties}
@@ -203,10 +166,7 @@ public class ClientBuilder {
      * @param reader the reader to use to construct a Properties instance.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setApiKeyReader(Reader reader) {
-        this.apiKeyReader = reader;
-        return this;
-    }
+    ClientBuilder setApiKeyReader(Reader reader);
 
     /**
      * Creates an API Key Properties instance based on the specified InputStream
@@ -219,10 +179,7 @@ public class ClientBuilder {
      * @param is the InputStream to use to construct a Properties instance.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setApiKeyInputStream(InputStream is) {
-        this.apiKeyInputStream = is;
-        return this;
-    }
+    ClientBuilder setApiKeyInputStream(InputStream is);
 
     /**
      * Sets the location of the {@code .properties} file to load containing the API Key (Id and secret) used by the
@@ -254,7 +211,7 @@ public class ClientBuilder {
      * <pre>
      * String location = "/home/jsmith/.stormpath/apiKey.properties";
      *
-     * Client = new ClientBuilder().setApiKeyFileLocation(location).build();
+     * Client client = Clients.builder().setApiKeyFileLocation(location).build();
      * </pre>
      * <h3>Custom Property Names</h3>
      * If you want to control the property names used in the file, you may configure them via
@@ -272,7 +229,7 @@ public class ClientBuilder {
      * String location = "/home/jsmith/.stormpath/apiKey.properties";
      *
      * Client client =
-     *     new ClientBuilder()
+     *     Clients.builder()
      *     .setApiKeyFileLocation(location)
      *     .setApiKeyIdPropertyName("myStormpathApiKeyId")
      *     .setApiKeySecretPropertyName("myStormpathApiKeySecret")
@@ -283,10 +240,7 @@ public class ClientBuilder {
      *                 constructing the API Key to use for communicating with the Stormpath REST API.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setApiKeyFileLocation(String location) {
-        this.apiKeyFileLocation = location;
-        return this;
-    }
+    ClientBuilder setApiKeyFileLocation(String location);
 
     /**
      * Sets the name used to query for the API Key ID from a Properties instance.  That is:
@@ -297,10 +251,7 @@ public class ClientBuilder {
      * @param apiKeyIdPropertyName the name used to query for the API Key ID from a Properties instance.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName) {
-        this.apiKeyIdPropertyName = apiKeyIdPropertyName;
-        return this;
-    }
+    ClientBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName);
 
     /**
      * Sets the name used to query for the API Key Secret from a Properties instance.  That is:
@@ -311,10 +262,7 @@ public class ClientBuilder {
      * @param apiKeySecretPropertyName the name used to query for the API Key Secret from a Properties instance.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName) {
-        this.apiKeySecretPropertyName = apiKeySecretPropertyName;
-        return this;
-    }
+    ClientBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName);
 
     /**
      * Sets the HTTP proxy to be used when communicating with the Stormpath API server.
@@ -322,13 +270,7 @@ public class ClientBuilder {
      * @param proxy the {@code Proxy} you need to use.
      * @return the ClientBuilder instance for method chaining.
      */
-    public ClientBuilder setProxy(Proxy proxy) {
-        if (proxy == null) {
-            throw new IllegalArgumentException("proxy argument cannot be null.");
-        }
-        this.proxy = proxy;
-        return this;
-    }
+    ClientBuilder setProxy(Proxy proxy);
 
     /**
      * Sets the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing round-trips to the
@@ -336,7 +278,7 @@ public class ClientBuilder {
      * <p/>
      * <h3>Single JVM Applications</h3>
      * If your application runs on a single JVM-based applications, the
-     * {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder} should be sufficient for your needs.  You
+     * {@link com.stormpath.sdk.cache.CacheManagerBuilder CacheManagerBuilder} should be sufficient for your needs. You
      * create a {@code CacheManagerBuilder} by using the {@link com.stormpath.sdk.cache.Caches Caches} utility class,
      * for example:
      * <pre>
@@ -344,7 +286,7 @@ public class ClientBuilder {
      *
      * ...
      *
-     * Client client = new ClientBuilder()...
+     * Client client = Clients.builder()...
      *     .setCacheManager(
      *         {@link com.stormpath.sdk.cache.Caches#newCacheManager() newCacheManager()}
      *         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
@@ -373,12 +315,8 @@ public class ClientBuilder {
      *
      * @param cacheManager the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing
      *                     round-trips to the Stormpath API server and enhancing application performance.
-     * @since 0.8
      */
-    public ClientBuilder setCacheManager(CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
-        return this;
-    }
+    ClientBuilder setCacheManager(CacheManager cacheManager);
 
     /**
      * Overrides the default (very secure)
@@ -394,7 +332,7 @@ public class ClientBuilder {
      * Basic Authentication</a>.  You can enable Basic Authentication as follows (again, only do this if your
      * application runtime environment forces you to use it, like Google App Engine):
      * </pre>
-     * Client client = new ClientBuilder()...
+     * Client client = Clients.builder()...
      *    // setApiKey, etc...
      *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
      *    .build(); //build the Client
@@ -402,228 +340,14 @@ public class ClientBuilder {
      *
      * @param authenticationScheme the type of authentication to be used for communication with the Stormpath API server.
      * @return the ClientBuilder instance for method chaining
-     * @since 0.9.3
      */
-    public ClientBuilder setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
-        this.authenticationScheme = authenticationScheme;
-        return this;
-    }
-
-    //For internal Stormpath testing needs only:
-    ClientBuilder setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-        return this;
-    }
+    ClientBuilder setAuthenticationScheme(AuthenticationScheme authenticationScheme);
 
     /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.
      */
-    public Client build() {
+    Client build();
 
-        ApiKey apiKey = this.apiKey;
-
-        if (apiKey == null) {
-            apiKey = loadApiKey();
-        }
-
-        return new Client(apiKey, this.baseUrl, proxy, cacheManager, authenticationScheme);
-    }
-
-    //since 0.8
-    protected ApiKey loadApiKey() {
-
-        Properties properties = loadApiKeyProperties();
-
-        String apiKeyId = getRequiredPropertyValue(properties, this.apiKeyIdPropertyName, "apiKeyId");
-
-        String apiKeySecret = getRequiredPropertyValue(properties, this.apiKeySecretPropertyName, "apiKeySecret");
-
-        return createApiKey(apiKeyId, apiKeySecret);
-    }
-
-    //since 0.8
-    protected Properties loadApiKeyProperties() {
-
-        Properties properties = this.apiKeyProperties;
-
-        if (properties == null || properties.isEmpty()) {
-
-            //need to load the properties file:
-
-            Reader reader = getAvailableReader();
-
-            if (reader == null) {
-                String msg = "No API Key properties could be found or loaded from a file location.  Please " +
-                        "configure the 'apiKeyFileLocation' property or alternatively configure a " +
-                        "Properties, Reader or InputStream instance.";
-                throw new IllegalArgumentException(msg);
-            }
-
-            properties = new Properties();
-            try {
-                properties.load(reader);
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Unable to load apiKey properties file.", e);
-            }
-        }
-
-        return properties;
-    }
-
-    //since 0.5
-    protected ApiKey createApiKey(String id, String secret) {
-        return new DefaultApiKey(id, secret);
-    }
-
-    private String getPropertyValue(Properties properties, String propName) {
-        String value = properties.getProperty(propName);
-        if (value != null) {
-            value = value.trim();
-            if ("".equals(value)) {
-                value = null;
-            }
-        }
-        return value;
-    }
-
-    private String getRequiredPropertyValue(Properties props, String propName, String masterName) {
-        String value = getPropertyValue(props, propName);
-        if (value == null) {
-            String msg = "There is no '" + propName + "' property in the " +
-                    "configured apiKey properties.  You can either specify that property or " +
-                    "configure the " + masterName + "PropertyName value on the ClientBuilder to specify a " +
-                    "custom property name.";
-            throw new IllegalArgumentException(msg);
-        }
-        return value;
-    }
-
-    private Reader getAvailableReader() {
-        if (this.apiKeyReader != null) {
-            return this.apiKeyReader;
-        }
-
-        InputStream is = this.apiKeyInputStream;
-
-        if (is == null && this.apiKeyFileLocation != null) {
-            try {
-                is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
-            } catch (IOException e) {
-                String msg = "Unable to load API Key using apiKeyFileLocation '" + this.apiKeyFileLocation + "'.  " +
-                        "Please check and ensure that file exists or use the 'setApiKeyFileLocation' method to specify " +
-                        "a valid location.";
-                throw new IllegalStateException(msg, e);
-            }
-        }
-
-        if (is != null) {
-            return toReader(is);
-        }
-
-        //no configured input, just return null to indicate this:
-        return null;
-    }
-
-    private Reader toReader(InputStream is) {
-        try {
-            return new InputStreamReader(is, "ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("ISO-8859-1 character set is not available on the current JVM.  " +
-                    "This is required to read a Java-compatible Properties file. ", e);
-        }
-    }
-
-    private static class ResourceUtils {
-
-        /**
-         * Resource path prefix that specifies to load from a classpath location, value is <b>{@code classpath:}</b>
-         */
-        public static final String CLASSPATH_PREFIX = "classpath:";
-        /**
-         * Resource path prefix that specifies to load from a url location, value is <b>{@code url:}</b>
-         */
-        public static final String URL_PREFIX = "url:";
-        /**
-         * Resource path prefix that specifies to load from a file location, value is <b>{@code file:}</b>
-         */
-        public static final String FILE_PREFIX = "file:";
-
-        /**
-         * Prevent instantiation.
-         */
-        private ResourceUtils() {
-        }
-
-        /**
-         * Returns {@code true} if the resource path is not null and starts with one of the recognized
-         * resource prefixes ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
-         * {@link #URL_PREFIX URL_PREFIX}, or {@link #FILE_PREFIX FILE_PREFIX}), {@code false} otherwise.
-         *
-         * @param resourcePath the resource path to check
-         * @return {@code true} if the resource path is not null and starts with one of the recognized
-         *         resource prefixes, {@code false} otherwise.
-         * @since 0.8
-         */
-        @SuppressWarnings({"UnusedDeclaration"})
-        public static boolean hasResourcePrefix(String resourcePath) {
-            return resourcePath != null &&
-                    (resourcePath.startsWith(CLASSPATH_PREFIX) ||
-                            resourcePath.startsWith(URL_PREFIX) ||
-                            resourcePath.startsWith(FILE_PREFIX));
-        }
-
-        /**
-         * Returns the InputStream for the resource represented by the specified path, supporting scheme
-         * prefixes that direct how to acquire the input stream
-         * ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
-         * {@link #URL_PREFIX URL_PREFIX}, or {@link #FILE_PREFIX FILE_PREFIX}).  If the path is not prefixed by one
-         * of these schemes, the path is assumed to be a file-based path that can be loaded with a
-         * {@link FileInputStream FileInputStream}.
-         *
-         * @param resourcePath the String path representing the resource to obtain.
-         * @return the InputStraem for the specified resource.
-         * @throws IOException if there is a problem acquiring the resource at the specified path.
-         */
-        public static InputStream getInputStreamForPath(String resourcePath) throws IOException {
-
-            InputStream is;
-            if (resourcePath.startsWith(CLASSPATH_PREFIX)) {
-                is = loadFromClassPath(stripPrefix(resourcePath));
-
-            } else if (resourcePath.startsWith(URL_PREFIX)) {
-                is = loadFromUrl(stripPrefix(resourcePath));
-
-            } else if (resourcePath.startsWith(FILE_PREFIX)) {
-                is = loadFromFile(stripPrefix(resourcePath));
-
-            } else {
-                is = loadFromFile(resourcePath);
-            }
-
-            if (is == null) {
-                throw new IOException("Resource [" + resourcePath + "] could not be found.");
-            }
-
-            return is;
-        }
-
-        private static InputStream loadFromFile(String path) throws IOException {
-            return new FileInputStream(path);
-        }
-
-        private static InputStream loadFromUrl(String urlPath) throws IOException {
-            URL url = new URL(urlPath);
-            return url.openStream();
-        }
-
-        private static InputStream loadFromClassPath(String path) {
-            return Classes.getResourceAsStream(path);
-        }
-
-        private static String stripPrefix(String resourcePath) {
-            return resourcePath.substring(resourcePath.indexOf(":") + 1);
-        }
-    }
 }

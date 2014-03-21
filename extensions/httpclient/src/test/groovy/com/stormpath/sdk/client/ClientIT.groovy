@@ -70,7 +70,8 @@ abstract class ClientIT {
     // created in IntelliJ after that point will pick up these vars.
     Client buildClient(boolean enableCaching=true) {
 
-        def builder = new ClientBuilder().setBaseUrl(baseUrl)
+        def builder = Clients.builder()
+        builder.baseUrl = baseUrl
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
@@ -92,7 +93,8 @@ abstract class ClientIT {
 
     Client buildClient(AuthenticationScheme authenticationScheme) {
 
-        def builder = new ClientBuilder().setBaseUrl(baseUrl)
+        def builder = Clients.builder()
+        builder.baseUrl = baseUrl
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)

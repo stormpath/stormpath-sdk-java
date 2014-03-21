@@ -126,21 +126,6 @@ class ClientApplicationBuilderTest {
     }
 
     @Test
-    void testSetBaseUrl() {
-        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
-        def arg = 'test'
-        builder = new ClientApplicationBuilder(clientBuilder);
-
-        expect(clientBuilder.setBaseUrl(eq(arg))).andReturn clientBuilder
-
-        replay clientBuilder
-
-        builder.setBaseUrl arg
-
-        verify clientBuilder
-    }
-
-    @Test
     void testBuildClient() {
         Client client = createStrictMock(Client)
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)

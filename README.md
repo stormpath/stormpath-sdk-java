@@ -16,6 +16,10 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 0.9.4 ###
+
+- Refactored: Client and ClientBuilder are interfaces now. Added a Clients utility class.
+
 ### 0.9.3 ###
 
 - [Issue 16](https://github.com/stormpath/stormpath-sdk-java/issues/16): Allow client to use basic authentication
@@ -213,7 +217,7 @@ An out-of-the-box production-grade CacheManager implementation - complete with d
 import static com.stormpath.sdk.cache.Caches.*;
 ...
 
-Client client = new ClientBuilder()
+Client client = Clients.builder()
     .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
     .setCacheManager(newCacheManager()
         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
@@ -232,7 +236,7 @@ Multi-JVM applications (an application deployed across multiple JVMs) would like
 
 ```java
 CacheManager cacheManager = new CacheManagerImplementationThatUsesMyPreferredCachingProduct();
-Client client = new ClientBuilder()
+Client client = Clients.builder()
     .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
     .setCacheManager(cacheManager);
     .build();

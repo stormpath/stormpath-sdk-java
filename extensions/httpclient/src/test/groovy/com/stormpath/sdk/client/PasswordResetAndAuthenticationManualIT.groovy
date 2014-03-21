@@ -50,7 +50,9 @@ class PasswordResetAndAuthenticationManualIT {
         String oldPassword = args[2];
         String newPassword = args[3];
 
-        Client client = new Client(apiKey, "http://localhost:8080/v1")
+        def builder = Clients.builder().setApiKey(apiKey)
+        builder.baseUrl = "http://localhost:8080/v1"
+        Client client = builder.build()
 
         long start = System.currentTimeMillis();
 
