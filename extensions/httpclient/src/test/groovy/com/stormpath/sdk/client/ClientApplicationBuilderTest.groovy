@@ -38,106 +38,117 @@ class ClientApplicationBuilderTest {
     @Test
     void testSetApiKeyProperties() {
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
         def arg = createStrictMock(Properties);
-        builder = new ClientApplicationBuilder(clientBuilder);
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(clientBuilder.setApiKeyProperties(same(arg))).andReturn clientBuilder
+        expect(apiKeyBuilder.setApiKeyProperties(same(arg))).andReturn apiKeyBuilder
 
-        replay clientBuilder, arg
+        replay clientBuilder, arg, apiKeyBuilder
 
         builder.setApiKeyProperties(arg)
 
-        verify clientBuilder, arg
+        verify clientBuilder, arg, apiKeyBuilder
     }
 
     @Test
     void testSetApiKeyReader() {
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
         def arg = createStrictMock(Reader)
-        builder = new ClientApplicationBuilder(clientBuilder);
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(clientBuilder.setApiKeyReader(same(arg))).andReturn clientBuilder
+        expect(apiKeyBuilder.setApiKeyReader(same(arg))).andReturn apiKeyBuilder
 
-        replay clientBuilder, arg
+        replay clientBuilder, arg, apiKeyBuilder
 
         builder.setApiKeyReader arg
 
-        verify clientBuilder, arg
+        verify clientBuilder, arg, apiKeyBuilder
     }
 
     @Test
     void testSetApiKeyInputStream() {
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
         def arg = createStrictMock(InputStream)
-        builder = new ClientApplicationBuilder(clientBuilder);
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(clientBuilder.setApiKeyInputStream(same(arg))).andReturn clientBuilder
+        expect(apiKeyBuilder.setApiKeyInputStream(same(arg))).andReturn apiKeyBuilder
 
-        replay clientBuilder, arg
+        replay clientBuilder, arg, apiKeyBuilder
 
         builder.setApiKeyInputStream arg
 
-        verify clientBuilder, arg
+        verify clientBuilder, arg, apiKeyBuilder
     }
 
     @Test
     void testSetApiKeyFileLocation() {
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
         def arg = 'test'
-        builder = new ClientApplicationBuilder(clientBuilder);
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(clientBuilder.setApiKeyFileLocation(eq(arg))).andReturn clientBuilder
+        expect(apiKeyBuilder.setApiKeyFileLocation(eq(arg))).andReturn apiKeyBuilder
 
-        replay clientBuilder
+        replay clientBuilder, apiKeyBuilder
 
         builder.setApiKeyFileLocation arg
 
-        verify clientBuilder
+        verify clientBuilder, apiKeyBuilder
     }
 
     @Test
     void testSetApiKeyIdPropertyName() {
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
         def arg = 'test'
-        builder = new ClientApplicationBuilder(clientBuilder);
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(clientBuilder.setApiKeyIdPropertyName(eq(arg))).andReturn clientBuilder
+        expect(apiKeyBuilder.setApiKeyIdPropertyName(eq(arg))).andReturn apiKeyBuilder
 
-        replay clientBuilder
+        replay clientBuilder, apiKeyBuilder
 
         builder.setApiKeyIdPropertyName arg
 
-        verify clientBuilder
+        verify clientBuilder, apiKeyBuilder
     }
 
     @Test
     void testSetApiKeySecretPropertyName() {
         ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
         def arg = 'test'
-        builder = new ClientApplicationBuilder(clientBuilder);
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(clientBuilder.setApiKeySecretPropertyName(eq(arg))).andReturn clientBuilder
+        expect(apiKeyBuilder.setApiKeySecretPropertyName(eq(arg))).andReturn apiKeyBuilder
 
-        replay clientBuilder
+        replay clientBuilder, apiKeyBuilder
 
         builder.setApiKeySecretPropertyName arg
 
-        verify clientBuilder
+        verify clientBuilder, apiKeyBuilder
     }
 
     @Test
     void testBuildClient() {
         Client client = createStrictMock(Client)
-        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
-        builder = new ClientApplicationBuilder(clientBuilder);
+        ApiKey apiKey = createStrictMock(ApiKey)
 
+        ClientBuilder clientBuilder = createStrictMock(ClientBuilder)
+        ApiKeyBuilder apiKeyBuilder = createStrictMock(ApiKeyBuilder)
+        builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
+
+        expect(apiKeyBuilder.build()).andReturn apiKey
+        expect(clientBuilder.setApiKey(apiKey)).andReturn clientBuilder
         expect(clientBuilder.build()).andReturn client
 
-        replay clientBuilder, client
+        replay clientBuilder, client, apiKeyBuilder, apiKey
 
         assertSame builder.buildClient(), client
 
-        verify clientBuilder, client
+        verify clientBuilder, client, apiKeyBuilder, apiKey
     }
 
     @Test

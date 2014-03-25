@@ -17,6 +17,7 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.impl.client.DefaultApiKey
 
 /**
  * @since 0.6

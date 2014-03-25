@@ -71,12 +71,13 @@ abstract class ClientIT {
     Client buildClient(boolean enableCaching=true) {
 
         def builder = Clients.builder()
+        def apiKeyBuilder = ApiKeys.builder()
         builder.baseUrl = baseUrl
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
         if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKeyFileLocation(apiKeyFileLocation)
+            builder.setApiKey(apiKeyBuilder.setApiKeyFileLocation(apiKeyFileLocation).build())
         } else {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
@@ -94,12 +95,13 @@ abstract class ClientIT {
     Client buildClient(AuthenticationScheme authenticationScheme) {
 
         def builder = Clients.builder()
+        def apiKeyBuilder = ApiKeys.builder()
         builder.baseUrl = baseUrl
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
         if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKeyFileLocation(apiKeyFileLocation)
+            builder.setApiKey(apiKeyBuilder.setApiKeyFileLocation(apiKeyFileLocation).build())
         } else {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')

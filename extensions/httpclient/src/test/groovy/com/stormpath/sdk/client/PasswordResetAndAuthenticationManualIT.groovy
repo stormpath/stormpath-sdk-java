@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.impl.client.DefaultApiKey
 import com.stormpath.sdk.tenant.Tenant
 
 /**

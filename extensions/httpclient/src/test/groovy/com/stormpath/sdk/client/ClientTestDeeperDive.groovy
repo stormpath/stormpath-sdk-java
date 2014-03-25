@@ -26,6 +26,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.GroupMembershipList
+import com.stormpath.sdk.impl.client.DefaultApiKey
 import com.stormpath.sdk.tenant.Tenant
 
 /**

@@ -98,13 +98,16 @@ public class ClientApplicationBuilder {
 
     private String applicationHref;
     private final ClientBuilder clientBuilder; //internal delegate object
+    private final ApiKeyBuilder apiKeyBuilder; //internal delegate object
 
     public ClientApplicationBuilder() {
         this.clientBuilder = Clients.builder();
+        this.apiKeyBuilder = ApiKeys.builder();
     }
 
-    protected ClientApplicationBuilder(ClientBuilder builder) {
-        this.clientBuilder = builder;
+    protected ClientApplicationBuilder(ClientBuilder clientBuilder, ApiKeyBuilder apiKeyBuilder) {
+        this.clientBuilder = clientBuilder;
+        this.apiKeyBuilder = apiKeyBuilder;
     }
 
     /**
@@ -118,7 +121,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyProperties(Properties properties) {
-        this.clientBuilder.setApiKeyProperties(properties);
+        this.apiKeyBuilder.setApiKeyProperties(properties);
         return this;
     }
 
@@ -132,7 +135,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyReader(Reader reader) {
-        this.clientBuilder.setApiKeyReader(reader);
+        this.apiKeyBuilder.setApiKeyReader(reader);
         return this;
     }
 
@@ -147,7 +150,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyInputStream(InputStream is) {
-        this.clientBuilder.setApiKeyInputStream(is);
+        this.apiKeyBuilder.setApiKeyInputStream(is);
         return this;
     }
 
@@ -210,7 +213,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyFileLocation(String location) {
-        this.clientBuilder.setApiKeyFileLocation(location);
+        this.apiKeyBuilder.setApiKeyFileLocation(location);
         return this;
     }
 
@@ -224,7 +227,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName) {
-        this.clientBuilder.setApiKeyIdPropertyName(apiKeyIdPropertyName);
+        this.apiKeyBuilder.setApiKeyIdPropertyName(apiKeyIdPropertyName);
         return this;
     }
 
@@ -238,7 +241,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName) {
-        this.clientBuilder.setApiKeySecretPropertyName(apiKeySecretPropertyName);
+        this.apiKeyBuilder.setApiKeySecretPropertyName(apiKeySecretPropertyName);
         return this;
     }
 
@@ -295,6 +298,7 @@ public class ClientApplicationBuilder {
     }
 
     protected Client buildClient() {
+        this.clientBuilder.setApiKey(this.apiKeyBuilder.build());
         return this.clientBuilder.build();
     }
 
