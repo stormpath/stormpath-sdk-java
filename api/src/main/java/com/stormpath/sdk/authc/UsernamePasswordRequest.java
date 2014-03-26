@@ -25,24 +25,41 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     private String username;
     private char[] password;
     private String host;
-    private AccountStore accountStore = null;
+    private AccountStore accountStore;
 
     public UsernamePasswordRequest(String username, String password) {
-        this(username, password, null);
+        this(username, password, null, null);
     }
 
     public UsernamePasswordRequest(String username, char[] password) {
-        this(username, password, null);
+        this(username, password, null, null);
     }
 
     public UsernamePasswordRequest(String username, String password, String host) {
-        this(username, password != null ? password.toCharArray() : "".toCharArray(), host);
+        this(username, password, host, null);
     }
 
     public UsernamePasswordRequest(String username, char[] password, String host) {
+        this(username, password, host, null);
+    }
+
+    public UsernamePasswordRequest(String username, String password, AccountStore accountStore) {
+        this(username, password, null, accountStore);
+    }
+
+    public UsernamePasswordRequest(String username, char[] password, AccountStore accountStore) {
+        this(username, password, null, accountStore);
+    }
+
+    public UsernamePasswordRequest(String username, String password, String host, AccountStore accountStore) {
+        this(username, password != null ? password.toCharArray() : "".toCharArray(), host, accountStore);
+    }
+
+    public UsernamePasswordRequest(String username, char[] password, String host, AccountStore accountStore) {
         this.username = username;
         this.password = password;
         this.host = host;
+        this.accountStore = accountStore;
     }
 
     @Override
@@ -61,6 +78,16 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     }
 
     /**
+     * Returns the specific account store this authentication request will be targeted to.
+     * @return the specific account store this authentication request will be targeted to.
+     * @since 0.9.4
+     */
+    @Override
+    public AccountStore getAccountStore() {
+        return this.accountStore;
+    }
+
+    /**
      * Clears out (nulls) the username, password, and host.  The password bytes are explicitly set to
      * <tt>0x00</tt> to eliminate the possibility of memory access at a later time.
      */
@@ -68,6 +95,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     public void clear() {
         this.username = null;
         this.host = null;
+        this.accountStore = null;
 
         char[] password = this.password;
         this.password = null;
@@ -78,25 +106,6 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
             }
         }
 
-    }
-
-    /**
-     * Sets the specific account store this authentication request will be targeted to.
-     * @param accountStore the specific account store this authentication request will be targeted to.
-     * @since 0.9.4
-     */
-    public void setAccountStore(AccountStore accountStore){
-        this.accountStore = accountStore;
-    }
-
-    /**
-     * Returns the specific account store this authentication request will be targeted to.
-     * @return the specific account store this authentication request will be targeted to.
-     * @since 0.9.4
-     */
-    @Override
-    public AccountStore getAccountStore() {
-        return this.accountStore;
     }
 
 }

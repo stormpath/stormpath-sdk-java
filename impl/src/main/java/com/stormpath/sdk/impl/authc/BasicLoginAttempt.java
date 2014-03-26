@@ -26,22 +26,4 @@ public interface BasicLoginAttempt extends LoginAttempt {
 
     void setValue(String value);
 
-    /**
-     * Returns the specific account store this authentication request will be targeted to.
-     *
-     * @return the specific account store this authentication request will be targeted to.
-     * @since 0.9.4
-     */
-    AccountStore getAccountStore();
-
-    /**
-     * Sets the account store where the login attempt will be targeted to bypassing the standard
-     * cycle-through-all-app-account-stores.
-     *
-     * @param accountStore the specific `AccountStore` where the authentication request will be targeted. In the case
-     *                     where it is null, the default login logic that cycles through account stores will be executed.
-     * @since 0.9.4
-     */
-    void setAccountStore(AccountStore accountStore);
-
 }

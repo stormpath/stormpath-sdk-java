@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.authc
 
-import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.junit.Test
 
@@ -28,24 +27,38 @@ import static org.easymock.EasyMock.*
 class DefaultBasicLoginAttemptTest {
 
     @Test
-    void testSetAccountStoreNull() {
+    void testSetValue() {
+        String value = "fmxwtWNhcNQ6Q2hhbmdlbWDx"
         def internalDataStore = createMock(InternalDataStore)
+        def properties = new HashMap<String, Object>()
 
-        DefaultBasicLoginAttempt attempt = new DefaultBasicLoginAttempt(internalDataStore);
-        attempt.setAccountStore(null)
-        assertEquals(attempt.getAccountStore(), null)
+        def attempt = new DefaultBasicLoginAttempt(internalDataStore, properties)
+        attempt.setValue(value)
+        assertEquals(attempt.getValue(), value)
     }
 
     @Test
-    void testSetAccountStore() {
-        def accountStore = createMock(AccountStore)
+    void testSetAccountStoreNull() {
         def internalDataStore = createMock(InternalDataStore)
 
-        DefaultBasicLoginAttempt attempt = new DefaultBasicLoginAttempt(internalDataStore);
-        attempt.setAccountStore(accountStore)
+        def attempt = new DefaultBasicLoginAttempt(internalDataStore)
 
-        assertEquals(attempt.getAccountStore(), accountStore)
+        attempt.setValue(null)
+        assertEquals(attempt.getValue(), null)
     }
 
+    @Test
+    void testGetPropertyDescriptors() {
+        def internalDataStore = createMock(InternalDataStore)
+
+        def attempt = new DefaultBasicLoginAttempt(internalDataStore)
+
+        def map = attempt.getPropertyDescriptors()
+        assertEquals(map.size(), 3)
+        assertTrue(map.get("type").getType().getName().equals("java.lang.String"))
+        assertTrue(map.get("value").getType().getName().equals("java.lang.String"))
+        assertTrue(map.get("accountStore").getType().getName().equals("com.stormpath.sdk.directory.AccountStore"))
+
+    }
 
 }

@@ -15,26 +15,18 @@
  */
 package com.stormpath.sdk.impl.authc;
 
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.lang.Assert;
 
 import java.util.Map;
 
 /**
- * @since 0.2
+ * @since 0.9.4
  */
-public class DefaultBasicLoginAttempt extends AbstractResource implements BasicLoginAttempt {
+public class DefaultBasicLoginAttempt extends AbstractLoginAttempt implements BasicLoginAttempt {
 
-    static final StringProperty TYPE = new StringProperty("type");
     static final StringProperty VALUE = new StringProperty("value");
-
-    // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE, ACCOUNT_STORE);
 
@@ -52,16 +44,6 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     }
 
     @Override
-    public String getType() {
-        return getString(TYPE);
-    }
-
-    @Override
-    public void setType(String type) {
-        setProperty(TYPE, type);
-    }
-
-    @Override
     public String getValue() {
         return getString(VALUE);
     }
@@ -70,16 +52,5 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     public void setValue(String value) {
         setProperty(VALUE, value);
     }
-
-    @Override
-    public AccountStore getAccountStore() {
-        return getResourceProperty(ACCOUNT_STORE);
-    }
-
-    @Override
-    public void setAccountStore(AccountStore accountStore) {
-        setProperty(ACCOUNT_STORE, accountStore);
-    }
-
 
 }

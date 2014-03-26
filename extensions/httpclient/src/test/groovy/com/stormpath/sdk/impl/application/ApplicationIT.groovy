@@ -28,7 +28,6 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
-import org.testng.Assert
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -218,25 +217,23 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(acct)
 
         //Account belongs to dir1, therefore login must succeed
-        def request = new UsernamePasswordRequest(username, password)
-        request.setAccountStore(accountStoreMapping1.getAccountStore())
+        def request = new UsernamePasswordRequest(username, password, accountStoreMapping1.getAccountStore())
         def result = app.authenticateAccount(request)
-        Assert.assertEquals(result.getAccount().getUsername(), acct.username)
+        assertEquals(result.getAccount().getUsername(), acct.username)
 
         try {
             //Account does not belong to dir2, therefore login must fail
-            request = new UsernamePasswordRequest(username, password)
-            request.setAccountStore(accountStoreMapping2.getAccountStore())
+            request = new UsernamePasswordRequest(username, password, accountStoreMapping2.getAccountStore())
             app.authenticateAccount(request)
-            Assert.fail("Should have thrown due to invalid username/password");
+            fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            Assert.assertEquals(e.getMessage(), "HTTP 400, Stormpath 400 (mailto:support@stormpath.com): Invalid username or password.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 400 (mailto:support@stormpath.com): Invalid username or password.")
         }
 
         //No account store has been defined, therefore login must succeed
         request = new UsernamePasswordRequest(username, password)
         result = app.authenticateAccount(request)
-        Assert.assertEquals(result.getAccount().getUsername(), acct.username)
+        assertEquals(result.getAccount().getUsername(), acct.username)
     }
 
 

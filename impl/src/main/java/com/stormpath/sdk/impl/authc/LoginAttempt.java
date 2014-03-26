@@ -27,6 +27,12 @@ public interface LoginAttempt extends Resource {
 
     void setType(String type);
 
+    /**
+     * Returns the specific account store this authentication request will be targeted to.
+     *
+     * @return the specific account store this authentication request will be targeted to.
+     * @since 0.9.4
+     */
     AccountStore getAccountStore();
 
     /**

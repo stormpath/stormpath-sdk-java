@@ -16,9 +16,10 @@
 package com.stormpath.sdk.authc
 
 import com.stormpath.sdk.directory.AccountStore
-import org.easymock.EasyMock
 import org.junit.Test
-import org.testng.Assert
+
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.9.4
@@ -26,15 +27,46 @@ import org.testng.Assert
 class UsernamePasswordRequestTest {
 
     @Test
-    void testSetAccountStore() {
+    void testAccountStore() {
+        def accountStore = createMock(AccountStore)
+
+        //Password String
         UsernamePasswordRequest request = new UsernamePasswordRequest("username", "passwd");
-        Assert.assertEquals(request.getAccountStore(), null)
+        assertEquals(request.getAccountStore(), null)
 
-        def accountStore = EasyMock.createMock(AccountStore)
-        request.setAccountStore(accountStore)
+        request = new UsernamePasswordRequest("username", "passwd", "someHost");
+        assertEquals(request.getAccountStore(), null)
 
-        Assert.assertEquals(request.getAccountStore(), accountStore)
+        request = new UsernamePasswordRequest("username", "passwd", accountStore);
+        assertSame(request.getAccountStore(), accountStore)
+
+        request = new UsernamePasswordRequest("username", "passwd", null, accountStore);
+        assertSame(request.getAccountStore(), accountStore)
+
+        //Password char[]
+        request = new UsernamePasswordRequest("username", "passwd".toCharArray());
+        assertEquals(request.getAccountStore(), null)
+
+        request = new UsernamePasswordRequest("username", "passwd".toCharArray(), "someHost");
+        assertSame(request.getAccountStore(), null)
+
+        request = new UsernamePasswordRequest("username", "passwd".toCharArray(), accountStore);
+        assertSame(request.getAccountStore(), accountStore)
+
+        request = new UsernamePasswordRequest("username", "passwd".toCharArray(), null, accountStore);
+        assertSame(request.getAccountStore(), accountStore)
     }
 
+    @Test
+    void testClear() {
+        def accountStore = createMock(AccountStore)
+
+        UsernamePasswordRequest request = new UsernamePasswordRequest("username", "passwd", accountStore);
+        assertEquals(request.getAccountStore(), accountStore)
+
+        request.clear()
+
+        assertEquals(request.getAccountStore(), null)
+    }
 
 }
