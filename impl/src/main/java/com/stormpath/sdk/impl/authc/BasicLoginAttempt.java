@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.impl.authc;
 
-import com.stormpath.sdk.directory.AccountStore;
-
 /**
  * @since 0.2
  */

@@ -22,9 +22,8 @@ import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.junit.Test
 
-import static org.testng.Assert.*
 import static org.easymock.EasyMock.*
-
+import static org.testng.Assert.*
 
 /**
  * @since 0.9.4
@@ -99,8 +98,7 @@ class BasicAuthenticatorTest {
         def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
         def authenticationResult = createStrictMock(AuthenticationResult)
 
-        def request = new UsernamePasswordRequest(username, password)
-        request.setAccountStore(null)
+        def request = new UsernamePasswordRequest(username, password, (AccountStore) null)
 
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
@@ -128,8 +126,7 @@ class BasicAuthenticatorTest {
         def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
         def authenticationResult = createStrictMock(AuthenticationResult)
 
-        def request = new UsernamePasswordRequest(username, password)
-        request.setAccountStore(accountStore)
+        def request = new UsernamePasswordRequest(username, password, accountStore)
 
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
