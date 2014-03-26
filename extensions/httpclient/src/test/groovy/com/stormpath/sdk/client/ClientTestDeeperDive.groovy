@@ -26,6 +26,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.GroupMembershipList
+import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
 
 /**
@@ -37,7 +38,7 @@ class ClientTestDeeperDive {
         DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
 
         def builder = Clients.builder().setApiKey(apiKey)
-        builder.baseUrl = "http://localhost:8080/v1"
+        ((DefaultClientBuilder)builder).setBaseUrl("http://localhost:8080/v1")
         Client client = builder.build()
 
         long start = System.currentTimeMillis();
@@ -171,8 +172,7 @@ class ClientTestDeeperDive {
                     println "prt = $prt"
 
                     String[] splits2 = prt.getHref().split("/")
-                    PasswordResetToken passwordResetToken = applicationForPasswordResetSmut.verifyPasswordResetToken(splits2.last())
-                    passwordResetToken.getAccount()
+                    def passwordResetToken = applicationForPasswordResetSmut.verifyPasswordResetToken(splits2.last())
                     println "passwordResetToken = $passwordResetToken"
                 }
 

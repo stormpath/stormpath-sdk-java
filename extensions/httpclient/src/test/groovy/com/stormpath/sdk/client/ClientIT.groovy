@@ -18,6 +18,7 @@ package com.stormpath.sdk.client
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.resource.Deletable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -71,7 +72,7 @@ abstract class ClientIT {
     Client buildClient(boolean enableCaching=true) {
 
         def builder = Clients.builder()
-        builder.baseUrl = baseUrl
+        ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
@@ -94,7 +95,7 @@ abstract class ClientIT {
     Client buildClient(AuthenticationScheme authenticationScheme) {
 
         def builder = Clients.builder()
-        builder.baseUrl = baseUrl
+        ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)

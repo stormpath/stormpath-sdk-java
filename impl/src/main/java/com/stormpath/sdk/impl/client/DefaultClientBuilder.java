@@ -26,7 +26,7 @@ import java.util.Properties;
 /**
  * The default {@link ClientBuilder} implementation.
  *
- * @si
+ * @since 0.9.4
  */
 public class DefaultClientBuilder implements ClientBuilder {
 
@@ -42,12 +42,6 @@ public class DefaultClientBuilder implements ClientBuilder {
     private AuthenticationScheme authenticationScheme;
 
     private CacheManager cacheManager;
-
-    /**
-     * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
-     */
-    public DefaultClientBuilder() {
-    }
 
     @Override
     public ClientBuilder setApiKey(String apiKeyId, String apiKeySecret) {
@@ -130,7 +124,15 @@ public class DefaultClientBuilder implements ClientBuilder {
         return new DefaultClient(apiKey, this.baseUrl, proxy, cacheManager, authenticationScheme);
     }
 
-    //since 0.8
+    //For internal Stormpath needs only and not intended for public consumption
+    public ClientBuilder setBaseUrl(String baseUrl) {
+        if (baseUrl == null) {
+            throw new IllegalArgumentException("baseUrl argument cannot be null.");
+        }
+        this.baseUrl = baseUrl;
+        return this;
+    }
+
     protected ApiKey loadApiKey() {
 
         Properties properties = loadApiKeyProperties();
@@ -142,7 +144,6 @@ public class DefaultClientBuilder implements ClientBuilder {
         return createApiKey(apiKeyId, apiKeySecret);
     }
 
-    //since 0.8
     protected Properties loadApiKeyProperties() {
 
         Properties properties = this.apiKeyProperties;
@@ -171,7 +172,6 @@ public class DefaultClientBuilder implements ClientBuilder {
         return properties;
     }
 
-    //since 0.5
     protected ApiKey createApiKey(String id, String secret) {
         return new DefaultApiKey(id, secret);
     }
@@ -263,7 +263,6 @@ public class DefaultClientBuilder implements ClientBuilder {
          * @param resourcePath the resource path to check
          * @return {@code true} if the resource path is not null and starts with one of the recognized
          *         resource prefixes, {@code false} otherwise.
-         * @since 0.8
          */
         @SuppressWarnings({"UnusedDeclaration"})
         public static boolean hasResourcePrefix(String resourcePath) {

@@ -18,7 +18,7 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 0.9.4 ###
 
-- Refactored: Client and ClientBuilder are interfaces now. Added a Clients utility class.
+- Backwards-incompatible change: Client and ClientBuilder are interfaces now. Added a Clients utility class.
 
 ### 0.9.3 ###
 

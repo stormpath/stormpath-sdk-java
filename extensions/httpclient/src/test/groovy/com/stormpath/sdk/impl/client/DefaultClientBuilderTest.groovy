@@ -27,7 +27,6 @@ import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.util.StringInputStream
-import org.testng.Assert
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -130,8 +129,8 @@ class DefaultClientBuilderTest {
         def apiKeyId = "fooId"
         def apiKeySecret = "barSecret"
         def builder = Clients.builder().setApiKey(apiKeyId, apiKeySecret)
-        Assert.assertEquals(builder.apiKey.getId(), apiKeyId)
-        Assert.assertEquals(builder.apiKey.getSecret(), apiKeySecret)
+        assertEquals(builder.apiKey.getId(), apiKeyId)
+        assertEquals(builder.apiKey.getSecret(), apiKeySecret)
     }
 
     @Test
@@ -260,4 +259,20 @@ class DefaultClientBuilderTest {
         }
     }
 
+    @Test
+    void testSetBaseUrl() {
+        def baseUrl = "http://localhost:8080/v1"
+        def builder = ((DefaultClientBuilder)Clients.builder()).setBaseUrl(baseUrl)
+        assertSame(builder.baseUrl, baseUrl)
+    }
+
+    @Test
+    void testSetNullBaseUrl() {
+        try {
+            ((DefaultClientBuilder)Clients.builder()).setBaseUrl(null)
+            fail("Should have thrown due to null baseUrl.")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "baseUrl argument cannot be null.")
+        }
+    }
 }
