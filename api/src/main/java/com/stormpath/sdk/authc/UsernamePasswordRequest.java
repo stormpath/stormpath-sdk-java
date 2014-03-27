@@ -16,8 +16,14 @@
 package com.stormpath.sdk.authc;
 
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.lang.Assert;
 
 /**
+ * A {@code UsernamePasswordRequest} is an {@code AuthenticationRequest} that represents a username (or email) +
+ * password pair.  It optionally supports
+ * {@link #setAccountStore(com.stormpath.sdk.directory.AccountStore) targeting an specific account store} as well for
+ * customized authentication behavior.
+ *
  * @since 0.2
  */
 public class UsernamePasswordRequest implements AuthenticationRequest<String, char[]> {
@@ -27,36 +33,152 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     private String host;
     private AccountStore accountStore;
 
-    public UsernamePasswordRequest(String username, String password) {
-        this(username, password, null, null);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @see #UsernamePasswordRequest(String, String, AccountStore)
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, String password) {
+        this(usernameOrEmail, password, null, null);
     }
 
-    public UsernamePasswordRequest(String username, char[] password) {
-        this(username, password, null, null);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @see #UsernamePasswordRequest(String, String, AccountStore)
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, char[] password) {
+        this(usernameOrEmail, password, null, null);
     }
 
-    public UsernamePasswordRequest(String username, String password, String host) {
-        this(username, password, host, null);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}
+     * for an end-user accessing the application from the specified {@code host}.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @param host            the host from where the end-user is accessing your application
+     * @see #UsernamePasswordRequest(String, String, String, AccountStore)
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, String password, String host) {
+        this(usernameOrEmail, password, host, null);
     }
 
-    public UsernamePasswordRequest(String username, char[] password, String host) {
-        this(username, password, host, null);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}
+     * for an end-user accessing the application from the specified {@code host}.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @param host            the host from where the end-user is accessing your application
+     * @see #UsernamePasswordRequest(String, char[], String, AccountStore)
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host) {
+        this(usernameOrEmail, password, host, null);
     }
 
-    public UsernamePasswordRequest(String username, String password, AccountStore accountStore) {
-        this(username, password, null, accountStore);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified username (or email) and password, ensuring the
+     * authentication request will be directly targeted at the application's specified {@link AccountStore} (thereby
+     * bypassing the application's default
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication
+     * flow</a>).  The {@code AccountStore} must be assigned to the application sending the request.
+     * <h4>Usage</h4>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @param accountStore    an application's specific AccountStore that should process the authentication request,
+     *                        thereby bypassing the application's default
+     *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, String password, AccountStore accountStore) {
+        this(usernameOrEmail, password, null, accountStore);
     }
 
-    public UsernamePasswordRequest(String username, char[] password, AccountStore accountStore) {
-        this(username, password, null, accountStore);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified username (or email) and password, ensuring the
+     * authentication request will be directly targeted at the application's specified {@link AccountStore} (thereby
+     * bypassing the application's default
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication
+     * flow</a>).  The {@code AccountStore} must be assigned to the application sending the request.
+     * <h4>Usage</h4>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @param accountStore    an application's specific AccountStore that should process the authentication request,
+     *                        thereby bypassing the application's default
+     *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, char[] password, AccountStore accountStore) {
+        this(usernameOrEmail, password, null, accountStore);
     }
 
-    public UsernamePasswordRequest(String username, String password, String host, AccountStore accountStore) {
-        this(username, password != null ? password.toCharArray() : "".toCharArray(), host, accountStore);
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}
+     * for an end-user accessing the application from the specified {@code host}, also ensuring the
+     * authentication request will be directly targeted at the application's specified {@link AccountStore} (thereby
+     * bypassing the application's default
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication
+     * flow</a>).  The {@code AccountStore} must be assigned to the application sending the request.
+     * <h4>Usage</h4>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @param host            the host from where the end-user is accessing your application
+     * @param accountStore    an application's specific AccountStore that should process the authentication request,
+     *                        thereby bypassing the application's default
+     *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, String password, String host, AccountStore accountStore) {
+        this(usernameOrEmail, password != null ? password.toCharArray() : "".toCharArray(), host, accountStore);
     }
 
-    public UsernamePasswordRequest(String username, char[] password, String host, AccountStore accountStore) {
-        this.username = username;
+    /**
+     * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}
+     * for an end-user accessing the application from the specified {@code host}, also ensuring the
+     * authentication request will be directly targeted at the application's specified {@link AccountStore} (thereby
+     * bypassing the application's default
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication
+     * flow</a>).  The {@code AccountStore} must be assigned to the application sending the request.
+     * <h4>Usage</h4>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @param usernameOrEmail the account's username or email address
+     * @param password        the account's raw password
+     * @param host            the host from where the end-user is accessing your application
+     * @param accountStore    an application's specific AccountStore that should process the authentication request,
+     *                        thereby bypassing the application's default
+     *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     */
+    public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host, AccountStore accountStore) {
+        this.username = usernameOrEmail;
         this.password = password;
         this.host = host;
         this.accountStore = accountStore;
@@ -78,13 +200,58 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     }
 
     /**
-     * Returns the specific account store this authentication request will be targeted to.
-     * @return the specific account store this authentication request will be targeted to.
+     * Returns a specific {@code AccountStore} that should process this authentication request, or {@code null} if the
+     * application's default <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store
+     * authentication flow</a> should execute.  If non-null, the account store must be assigned to the application
+     * sending the request.
+     * <p/>
+     * This is an optional property, so the default is {@code null}, reflecting an application's default authentication
+     * flow.
+     * <h3>Usage</h3>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @return a specific {@code AccountStore} that should process this authentication request, or {@code null} if the
+     *         application's default <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">
+     *         account store authentication flow</a> should execute.  If non-null, the account store must be assigned
+     *         to the application sending the request.
      * @since 1.0.alpha
      */
     @Override
     public AccountStore getAccountStore() {
         return this.accountStore;
+    }
+
+    /**
+     * Sets a specific {@code AccountStore} that should process this authentication request, or {@code null} if the
+     * application's default <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store
+     * authentication flow</a> should execute.  If non-null, the account store must be assigned to the application
+     * sending the request.
+     * <p/>
+     * This is an optional property, so the default is {@code null}, reflecting an application's default authentication
+     * flow.
+     * <h3>Usage</h3>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @param accountStore a specific {@code AccountStore} that should process this authentication request, or
+     *                     {@code null} if the application's default
+     *                     <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store
+     *                     authentication flow</a> should execute.  If non-null, the account store must be assigned
+     *                     to the application sending the request.
+     * @since 1.0.alpha
+     */
+    public void setAccountStore(AccountStore accountStore) {
+        Assert.notNull(accountStore, "accountStore cannot be null.");
+        this.accountStore = accountStore;
     }
 
     /**
