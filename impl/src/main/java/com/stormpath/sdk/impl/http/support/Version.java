@@ -40,7 +40,7 @@ public class Version {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             return reader.readLine();
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to obtain version from ["+ filePath + "].");
+            throw new RuntimeException("Unable to obtain version from ["+ filePath + "].");
         }
     }
 
