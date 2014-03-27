@@ -16,6 +16,10 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 1.0.alpha ###
+
+- [Issue 36](https://github.com/stormpath/stormpath-sdk-java/issues/36): Client version is now being obtained from version.properties file
+
 ### 0.9.3 ###
 
 - [Issue 16](https://github.com/stormpath/stormpath-sdk-java/issues/16): Allow client to use basic authentication
