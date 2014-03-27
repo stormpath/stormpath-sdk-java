@@ -26,7 +26,6 @@ import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
-import org.testng.Assert
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -34,7 +33,7 @@ import static org.testng.Assert.*
 
 /**
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class DefaultClientBuilderTest {
 
@@ -44,7 +43,7 @@ class DefaultClientBuilderTest {
             Clients.builder().build()
             fail("Should have thrown because of missing ApiKey.")
         } catch (IllegalStateException e) {
-            Assert.assertEquals(e.getMessage(), "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.")
+            assertEquals(e.getMessage(), "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.")
         }
     }
 
@@ -153,7 +152,7 @@ class DefaultClientBuilderTest {
 
         def builder = Clients.builder().setApiKey(apiKey)
 
-        Assert.assertEquals(builder.apiKey, apiKey)
+        assertEquals(builder.apiKey, apiKey)
     }
 
     @Test
@@ -162,7 +161,7 @@ class DefaultClientBuilderTest {
             Clients.builder().setApiKey(null)
             fail("Should have thrown because of null ApiKey.")
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals(e.getMessage(), "apiKey cannot be null.")
+            assertEquals(e.getMessage(), "apiKey cannot be null.")
         }
     }
 
@@ -184,5 +183,4 @@ class DefaultClientBuilderTest {
             assertEquals(e.getMessage(), "proxy argument cannot be null.")
         }
     }
-
 }

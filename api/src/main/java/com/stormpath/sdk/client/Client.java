@@ -45,7 +45,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public interface Client extends DataStore {
 

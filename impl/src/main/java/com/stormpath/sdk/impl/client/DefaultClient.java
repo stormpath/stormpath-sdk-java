@@ -38,11 +38,9 @@ import java.lang.reflect.Method;
  * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class DefaultClient implements Client {
-
-    public static final int DEFAULT_API_VERSION = 1;
 
     private final DataStore dataStore;
 
@@ -100,7 +98,6 @@ public class DefaultClient implements Client {
         return this.dataStore;
     }
 
-    //since 0.3
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme) {
 
@@ -124,7 +121,6 @@ public class DefaultClient implements Client {
         return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme);
     }
 
-    //@since 0.3
     @SuppressWarnings({"unchecked", "rawtypes"})
     private DataStore createDataStore(Object requestExecutor, Object secondCtorArg) {
 
@@ -174,7 +170,6 @@ public class DefaultClient implements Client {
      * @param clazz the Resource class to instantiate.
      * @param <T>   the Resource sub-type
      * @return a new instance of the specified Resource.
-     * @since 0.8
      */
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz) {
@@ -189,7 +184,6 @@ public class DefaultClient implements Client {
      * @param clazz the {@link Resource} sub-interface to instantiate
      * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
      * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
-     * @since 0.8
      */
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {

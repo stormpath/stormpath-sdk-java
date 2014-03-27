@@ -26,7 +26,7 @@ import com.stormpath.sdk.lang.Classes;
  *     .build();
  * </pre>
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public final class Clients {
 

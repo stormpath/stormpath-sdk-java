@@ -34,7 +34,7 @@ import com.stormpath.sdk.cache.CacheManager;
  * </pre>
  * <p/>
  * @see ApiKeyBuilder
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public interface ClientBuilder {
 

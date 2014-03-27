@@ -27,7 +27,7 @@ import java.util.Properties;
 /**
  * The default {@link ClientBuilder} implementation.
  *
- * @si
+ * @since 1.0.alpha
  */
 public class DefaultClientBuilder implements ClientBuilder {
 
@@ -36,12 +36,6 @@ public class DefaultClientBuilder implements ClientBuilder {
     private Proxy proxy;
     private AuthenticationScheme authenticationScheme;
     private CacheManager cacheManager;
-
-    /**
-     * Constructs a new {@code ClientBuilder} instance, ready to be configured via various {@code set}ter methods.
-     */
-    public DefaultClientBuilder() {
-    }
 
     @Override
     public ClientBuilder setApiKey(ApiKey apiKey) {
@@ -76,6 +70,15 @@ public class DefaultClientBuilder implements ClientBuilder {
         Assert.state(this.apiKey != null, "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
 
         return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme);
+    }
+
+    //For internal Stormpath needs only and not intended for public consumption
+    public ClientBuilder setBaseUrl(String baseUrl) {
+        if (baseUrl == null) {
+            throw new IllegalArgumentException("baseUrl argument cannot be null.");
+        }
+        this.baseUrl = baseUrl;
+        return this;
     }
 
 }

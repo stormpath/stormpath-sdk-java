@@ -16,18 +16,20 @@
 
 package com.stormpath.sdk.client
 
-import junit.framework.Assert
+import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import org.testng.annotations.Test
 
+import static junit.framework.Assert.assertTrue
+
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class ClientsTest {
 
     @Test
     void testBuilder() {
         def builder = Clients.builder();
-        Assert.assertNotNull(builder)
+        assertTrue(builder instanceof DefaultClientBuilder)
     }
 
 
