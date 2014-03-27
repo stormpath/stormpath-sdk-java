@@ -22,7 +22,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import java.util.Map;
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class DefaultBasicLoginAttempt extends AbstractLoginAttempt implements BasicLoginAttempt {
 

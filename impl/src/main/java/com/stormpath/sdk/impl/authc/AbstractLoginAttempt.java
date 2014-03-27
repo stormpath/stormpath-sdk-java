@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import java.util.Map;
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public abstract class AbstractLoginAttempt extends AbstractResource implements LoginAttempt {
 

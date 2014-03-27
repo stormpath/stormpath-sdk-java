@@ -19,11 +19,13 @@ import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.junit.Test
 
-import static org.easymock.EasyMock.*
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createMock
+import static org.easymock.EasyMock.createMockBuilder
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertSame
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class AbstractLoginAttemptTest {
 

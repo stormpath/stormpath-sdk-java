@@ -18,11 +18,12 @@ package com.stormpath.sdk.impl.authc
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.junit.Test
 
-import static org.testng.Assert.*
-import static org.easymock.EasyMock.*
+import static org.easymock.EasyMock.createMock
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class DefaultBasicLoginAttemptTest {
 

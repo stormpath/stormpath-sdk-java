@@ -80,7 +80,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     /**
      * Returns the specific account store this authentication request will be targeted to.
      * @return the specific account store this authentication request will be targeted to.
-     * @since 0.9.4
+     * @since 1.0.alpha
      */
     @Override
     public AccountStore getAccountStore() {

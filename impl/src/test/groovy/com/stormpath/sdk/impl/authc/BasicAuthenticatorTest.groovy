@@ -26,7 +26,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class BasicAuthenticatorTest {
 
