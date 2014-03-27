@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.application.Application
@@ -83,7 +85,7 @@ abstract class ClientIT {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyId, apiKeySecret)
+            builder.setApiKey(apiKeyBuilder.setApiKey(apiKeyId, apiKeySecret).build())
         }
 
         if (enableCaching) {
@@ -107,7 +109,7 @@ abstract class ClientIT {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyId, apiKeySecret)
+            builder.setApiKey(apiKeyBuilder.setApiKey(apiKeyId, apiKeySecret).build())
         }
 
         builder.setAuthenticationScheme(authenticationScheme)

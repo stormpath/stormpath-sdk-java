@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc. and contributors.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@ package com.stormpath.sdk.impl.client
 
 import com.stormpath.sdk.client.ApiKeys
 import com.stormpath.sdk.impl.util.StringInputStream
-import org.testng.Assert
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.fail
 
 /**
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class DefaultApiKeyBuilderTest {
 
@@ -33,8 +33,8 @@ class DefaultApiKeyBuilderTest {
         def apiKeyId = "fooId"
         def apiKeySecret = "barSecret"
         def builder = ApiKeys.builder().setApiKey(apiKeyId, apiKeySecret)
-        Assert.assertEquals(builder.apiKey.getId(), apiKeyId)
-        Assert.assertEquals(builder.apiKey.getSecret(), apiKeySecret)
+        assertEquals(builder.apiKey.getId(), apiKeyId)
+        assertEquals(builder.apiKey.getSecret(), apiKeySecret)
     }
 
     @Test
