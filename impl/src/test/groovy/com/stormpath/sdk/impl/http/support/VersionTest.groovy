@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert
 import org.testng.annotations.Test
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class VersionTest {
 

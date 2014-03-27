@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class Version {
 
