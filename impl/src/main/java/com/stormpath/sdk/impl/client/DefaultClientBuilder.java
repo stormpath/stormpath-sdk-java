@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-
-import java.io.*;
-import java.net.URL;
-import java.util.Properties;
 
 /**
  * The default {@link ClientBuilder} implementation.
