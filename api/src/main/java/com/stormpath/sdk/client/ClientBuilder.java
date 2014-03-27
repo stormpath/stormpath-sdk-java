@@ -381,19 +381,21 @@ public class ClientBuilder {
     }
 
     /**
-     * Sets the HTTP authentication scheme to be used when communicating with the Stormpath API server.
-     * </pre>
-     * This setting is helpful in cases where the code is run in a platform where the header information for
-     * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
-     * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
-     * </pre>
-     * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
-     * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>.
-     * When no authentication scheme is explicitly defined, {@link AuthenticationScheme#SAUTHC1} is used by default.
-     * </pre>
-     * For example, the basic authentication scheme is defined this way:
+     * Overrides the default (very secure)
+     * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Stormpath SAuthc1 Digest Authentication Scheme</a>
+     * used to authenticate every request sent to the Stormpath API server.
+     * <p/>
+     * It is not recommended that you override this setting <em>unless</em> your application is deployed in an
+     * environment that - outside of the application's control - manipulates request headers on outgoing HTTP requests.
+     * Google App Engine is one such environment, for example.
+     * <p/>
+     * As such, in these environments only, an alternative authentication mechanism is necessary, such as
+     * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
+     * Basic Authentication</a>.  You can enable Basic Authentication as follows (again, only do this if your
+     * application runtime environment forces you to use it, like Google App Engine):
      * </pre>
      * Client client = new ClientBuilder()...
+     *    // setApiKey, etc...
      *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
      *    .build(); //build the Client
      * </pre>
