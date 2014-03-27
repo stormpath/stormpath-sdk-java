@@ -22,7 +22,7 @@ import org.testng.annotations.Test
 import static junit.framework.Assert.assertTrue
 
 /**
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class ClientsTest {
 

@@ -16,10 +16,9 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
-### 0.9.4 ###
+### 1.0.alpha ###
 
 - Backwards-incompatible change: Client and ClientBuilder are interfaces now. Added a Clients utility class.
-- Added the possibility to specify AccountStore during authentication.
 
 ### 0.9.3 ###
 

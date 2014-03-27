@@ -17,7 +17,8 @@ package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.cache.CacheManager;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.Properties;
 
 /**
@@ -41,7 +42,7 @@ import java.util.Properties;
  * {@link #setApiKeyFileLocation(String)} for more information.
  *
  * @see #setApiKeyFileLocation(String)
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public interface ClientBuilder {
 

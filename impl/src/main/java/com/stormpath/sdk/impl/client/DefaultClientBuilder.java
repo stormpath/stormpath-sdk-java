@@ -26,7 +26,7 @@ import java.util.Properties;
 /**
  * The default {@link ClientBuilder} implementation.
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class DefaultClientBuilder implements ClientBuilder {
 

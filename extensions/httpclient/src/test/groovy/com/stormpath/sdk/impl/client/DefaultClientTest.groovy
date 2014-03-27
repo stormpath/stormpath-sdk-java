@@ -20,14 +20,14 @@ import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
-import org.testng.annotations.Test
 
 /**
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 class DefaultClientTest {
 
