@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.client
 
 import com.stormpath.sdk.client.ApiKeys
 import com.stormpath.sdk.impl.util.StringInputStream
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
  *
@@ -33,8 +34,8 @@ class DefaultApiKeyBuilderTest {
         def apiKeyId = "fooId"
         def apiKeySecret = "barSecret"
         def builder = ApiKeys.builder().setApiKey(apiKeyId, apiKeySecret)
-        assertEquals(builder.apiKey.getId(), apiKeyId)
-        assertEquals(builder.apiKey.getSecret(), apiKeySecret)
+        assertSame(builder.apiKey.getId(), apiKeyId)
+        assertSame(builder.apiKey.getSecret(), apiKeySecret)
     }
 
     @Test
@@ -58,8 +59,8 @@ class DefaultApiKeyBuilderTest {
 
         def apiKey = builder.build()
 
-        assertEquals(apiKey.getId(), apiKeyId)
-        assertEquals(apiKey.getSecret(), apiKeySecret)
+        assertSame(apiKey.getId(), apiKeyId)
+        assertSame(apiKey.getSecret(), apiKeySecret)
     }
 
     @Test
@@ -106,7 +107,6 @@ class DefaultApiKeyBuilderTest {
 
         def is = new StringInputStream(apiKeyIdPropertyName + "=" + apiKeyId + "\n" +
                 apiKeySecretPropertyName + "=" + apiKeySecret)
-
 
         try {
             ApiKeys.builder()

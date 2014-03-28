@@ -15,11 +15,12 @@
  */
 
 
-
 package com.stormpath.sdk.client
 
-import junit.framework.Assert
+import com.stormpath.sdk.impl.client.DefaultApiKeyBuilder
 import org.testng.annotations.Test
+
+import static junit.framework.Assert.assertTrue
 
 /**
  * @since 1.0.alpha
@@ -29,7 +30,7 @@ public class ApiKeysTest {
     @Test
     void testBuilder() {
         def builder = ApiKeys.builder();
-        Assert.assertNotNull(builder)
+        assertTrue(builder instanceof DefaultApiKeyBuilder)
     }
 
 
