@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.lang.Classes;
@@ -25,7 +26,7 @@ import com.stormpath.sdk.lang.Classes;
  *     .build();
  * </pre>
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class ApiKeys {
 

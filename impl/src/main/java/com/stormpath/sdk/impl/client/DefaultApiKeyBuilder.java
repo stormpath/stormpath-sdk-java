@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.stormpath.sdk.impl.client;
 
-import com.stormpath.sdk.client.*;
+import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.client.ApiKeyBuilder;
 import com.stormpath.sdk.lang.Classes;
 
 import java.io.*;
@@ -25,7 +27,7 @@ import java.util.Properties;
 /**
  * The default {@link com.stormpath.sdk.client.ApiKeyBuilder} implementation.
  *
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 public class DefaultApiKeyBuilder implements ApiKeyBuilder {
 
@@ -37,16 +39,9 @@ public class DefaultApiKeyBuilder implements ApiKeyBuilder {
     private String apiKeyIdPropertyName = "apiKey.id";
     private String apiKeySecretPropertyName = "apiKey.secret";
 
-    /**
-     * Constructs a new {@code ApiKeyBuilder} instance, ready to be configured via various {@code set}ter methods.
-     */
-    public DefaultApiKeyBuilder() {
-    }
-
     @Override
     public ApiKeyBuilder setApiKey(String apiKeyId, String apiKeySecret) {
-        ApiKey apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
-        this.apiKey = apiKey;
+        this.apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
         return this;
     }
 

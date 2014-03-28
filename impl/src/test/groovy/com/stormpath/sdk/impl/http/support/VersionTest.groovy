@@ -15,23 +15,20 @@
  */
 
 
-package com.stormpath.sdk.client
 
-import com.stormpath.sdk.impl.client.DefaultApiKeyBuilder
+
+package com.stormpath.sdk.impl.http.support
+
+import com.stormpath.sdk.lang.Assert
 import org.testng.annotations.Test
-
-import static junit.framework.Assert.assertTrue
 
 /**
  * @since 1.0.alpha
  */
-public class ApiKeysTest {
+class VersionTest {
 
     @Test
-    void testBuilder() {
-        def builder = ApiKeys.builder();
-        assertTrue(builder instanceof DefaultApiKeyBuilder)
+    void testGetClientVersion() {
+       Assert.hasText(Version.clientVersion)
     }
-
-
 }

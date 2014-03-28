@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.stormpath.sdk.client;
 
 import java.io.InputStream;
@@ -45,7 +46,7 @@ import java.util.Properties;
  *
  * @see #setApiKeyFileLocation(String)
  * @see ClientBuilder#setApiKey(ApiKey)
- * @since 0.9.4
+ * @since 1.0.alpha
  */
 
 public interface ApiKeyBuilder {
