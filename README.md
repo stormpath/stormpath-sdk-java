@@ -19,6 +19,7 @@ This project requires Maven 3.0.3 to build.  Run the following:
 ### 1.0.alpha ###
 
 - Added the possibility to specify AccountStore during authentication.
+- [Issue 36](https://github.com/stormpath/stormpath-sdk-java/issues/36): Client version is now being obtained from version.properties file
 
 ### 0.9.3 ###
 
