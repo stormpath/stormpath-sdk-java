@@ -16,10 +16,20 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.*;
+import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.ClientBuilder;
+import com.stormpath.sdk.client.DefaultApiKey;
+import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.lang.Classes;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
 
