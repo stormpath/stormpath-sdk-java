@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
 
 /**
@@ -50,7 +51,9 @@ class PasswordResetAndAuthenticationManualIT {
         String oldPassword = args[2];
         String newPassword = args[3];
 
-        Client client = new Client(apiKey, "http://localhost:8080/v1")
+        def builder = Clients.builder().setApiKey(apiKey)
+        ((DefaultClientBuilder)builder).setBaseUrl("http://localhost:8080/v1")
+        Client client = builder.build()
 
         long start = System.currentTimeMillis();
 

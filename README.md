@@ -21,6 +21,12 @@ This project requires Maven 3.0.3 to build.  Run the following:
 - Added the possibility to specify AccountStore during authentication.
 - [Issue 36](https://github.com/stormpath/stormpath-sdk-java/issues/36): Client version is now being obtained from version.properties file
 
+#### Backwards Incompatible Changes ####
+
+This is a prep release for the 1.0 final release, and we are finalizing the 1.0 API.  As a result, this alpha release contains a few backwards-incompatible changes, but we have tried to keep them a minimum.  As we have tried very hard to do during 0.x, 1.x will continue to enforce [semantic versioning](http://semver.org) practices so there are little surprises.
+
+- Client and ClientBuilder were previously concrete classes - they are now interfaces.  A `com.stormpath.sdk.client.Clients` utility class has been added with utility methods for creating clients, providing a nice fluent builder API.  This retains a creation/builder pattern in use across the rest of the client API.
+
 ### 0.9.3 ###
 
 - [Issue 16](https://github.com/stormpath/stormpath-sdk-java/issues/16): Allow client to use basic authentication
@@ -218,7 +224,7 @@ An out-of-the-box production-grade CacheManager implementation - complete with d
 import static com.stormpath.sdk.cache.Caches.*;
 ...
 
-Client client = new ClientBuilder()
+Client client = Clients.builder()
     .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
     .setCacheManager(newCacheManager()
         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
@@ -237,7 +243,7 @@ Multi-JVM applications (an application deployed across multiple JVMs) would like
 
 ```java
 CacheManager cacheManager = new CacheManagerImplementationThatUsesMyPreferredCachingProduct();
-Client client = new ClientBuilder()
+Client client = Clients.builder()
     .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
     .setCacheManager(cacheManager);
     .build();
