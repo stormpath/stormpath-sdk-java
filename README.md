@@ -18,7 +18,11 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 1.0.alpha ###
 
-- Backwards-incompatible change: Client and ClientBuilder are interfaces now. Added a Clients utility class.
+This is a prep release for the 1.0 final release, and we are finalizing the 1.0 API.  As a result, this alpha release contains a few backwards-incompatible changes, but we have tried to keep them a minimum.  As we have tried very hard to do during 0.x, 1.x will continue to enforce [semantic versioning](http://semver.org) practices so there are little surprises.
+
+#### Backwards Incompatible Changes
+
+- Client and ClientBuilder were previously concrete classes - they are now interfaces.  A `com.stormpath.sdk.client.Clients` utility class has been added with utility methods for creating clients, providing a nice fluent builder API.  This retains a creation/builder pattern in use across the rest of the client API.
 
 ### 0.9.3 ###
 
