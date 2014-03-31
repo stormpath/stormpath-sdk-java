@@ -100,6 +100,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param accountStore    an application's specific AccountStore that should process the authentication request,
      *                        thereby bypassing the application's default
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     * @since 1.0.alpha
      */
     public UsernamePasswordRequest(String usernameOrEmail, String password, AccountStore accountStore) {
         this(usernameOrEmail, password, null, accountStore);
@@ -124,6 +125,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param accountStore    an application's specific AccountStore that should process the authentication request,
      *                        thereby bypassing the application's default
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     * @since 1.0.alpha
      */
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, AccountStore accountStore) {
         this(usernameOrEmail, password, null, accountStore);
@@ -150,6 +152,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param accountStore    an application's specific AccountStore that should process the authentication request,
      *                        thereby bypassing the application's default
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     * @since 1.0.alpha
      */
     public UsernamePasswordRequest(String usernameOrEmail, String password, String host, AccountStore accountStore) {
         this(usernameOrEmail, password != null ? password.toCharArray() : "".toCharArray(), host, accountStore);
@@ -176,6 +179,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param accountStore    an application's specific AccountStore that should process the authentication request,
      *                        thereby bypassing the application's default
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
+     * @since 1.0.alpha
      */
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host, AccountStore accountStore) {
         this.username = usernameOrEmail;
