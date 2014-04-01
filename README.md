@@ -18,8 +18,15 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 1.0.alpha ###
 
-- Backwards-incompatible change: Client and ClientBuilder are interfaces now. Added a Clients utility class.
+- Added the possibility to specify AccountStore during authentication.
 - [Issue 36](https://github.com/stormpath/stormpath-sdk-java/issues/36): Client version is now being obtained from version.properties file
+
+#### Backwards Incompatible Changes ####
+
+This is a prep release for the 1.0 final release, and we are finalizing the 1.0 API.  As a result, this alpha release contains a few backwards-incompatible changes, but we have tried to keep them a minimum.  As we have tried very hard to do during 0.x, 1.x will continue to enforce [semantic versioning](http://semver.org) practices so there are little surprises.
+
+- Client and ClientBuilder were previously concrete classes - they are now interfaces.  A `com.stormpath.sdk.client.Clients` utility class has been added with utility methods for creating clients, providing a nice fluent builder API.  This retains a creation/builder pattern in use across the rest of the client API.
+- ClientBuilder was previously in charge of constructing the ApiKey. Now, the ApiKey is built through a new ApiKeyBuilder interface which can be instantiated via the new `com.stormpath.sdk.client.ApiKeys` utility class. ApiKeyBuilder provides a nice fluent builder API. Once the ApiKey is built, it can be set to the Client by means of the ClientBuilder instance.
 
 ### 0.9.3 ###
 

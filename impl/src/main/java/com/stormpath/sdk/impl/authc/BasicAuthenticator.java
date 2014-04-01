@@ -60,6 +60,10 @@ public class BasicAuthenticator {
         attempt.setType("basic");
         attempt.setValue(value);
 
+        if(request.getAccountStore() != null) {
+            attempt.setAccountStore(request.getAccountStore());
+        }
+
         String href = parentHref + "/loginAttempts";
 
         return this.dataStore.create(href, attempt, AuthenticationResult.class);

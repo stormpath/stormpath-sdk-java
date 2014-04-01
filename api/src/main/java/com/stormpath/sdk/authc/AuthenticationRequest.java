@@ -15,10 +15,12 @@
  */
 package com.stormpath.sdk.authc;
 
+import com.stormpath.sdk.directory.AccountStore;
+
 /**
  * @since 0.1
  */
-public interface AuthenticationRequest<P,C> {
+public interface AuthenticationRequest<P, C> {
 
     P getPrincipals();
 
@@ -26,5 +28,34 @@ public interface AuthenticationRequest<P,C> {
 
     String getHost();
 
+    /**
+     * Clears out (nulls) any identifying state, such as password bytes ({@code 0x00}), keys, etc, to eliminate the
+     * possibility of memory access at a later time.
+     */
     void clear();
+
+    /**
+     * Returns a specific {@code AccountStore} that should process this authentication
+     * request, or {@code null} if the application's default
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>
+     * should execute.  If non-null, the account store must be assigned to the application sending the request.
+     * <p/>
+     * This is an optional property, so the default is {@code null}, reflecting an application's default authentication
+     * flow.
+     * <h3>Usage</h3>
+     * Most applications will not need to specify an {@code AccountStore} during an authentication attempt, but
+     * specifying one can be useful in some cases, such as when an Application has many (dozens or hundreds) of
+     * assigned account stores: in this case specifying an account store will result in a direct (targeted)
+     * authentication which would be faster because
+     * Stormpath does not need to iteratively try each assigned account store
+     * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     *
+     * @return a specific {@code AccountStore} assigned to the Application that should process this authentication
+     *         request (thereby bypassing the application's default
+     *         <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication
+     *         flow</a>), or {@code null} if the application's default account store authentication flow should execute.
+     * @since 1.0.alpha
+     */
+    AccountStore getAccountStore();
+
 }
