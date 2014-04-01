@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,10 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.group.GroupOptions;
-import com.stormpath.sdk.group.GroupStatus;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -80,8 +72,9 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void setName(String name) {
+    public Group setName(String name) {
         setProperty(NAME, name);
+        return this;
     }
 
     @Override
@@ -90,8 +83,9 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void setDescription(String description) {
+    public Group setDescription(String description) {
         setProperty(DESCRIPTION, description);
+        return this;
     }
 
     @Override
@@ -104,8 +98,9 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void setStatus(GroupStatus status) {
+    public Group setStatus(GroupStatus status) {
         setProperty(STATUS, status.name());
+        return this;
     }
 
     @Override

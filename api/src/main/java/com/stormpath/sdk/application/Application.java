@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sets the application's name.  Application names must be unique within a Tenant.
      *
      * @param name tenant-unique name of the application.
+     * @return this instance for method chaining.
      */
-    void setName(String name);
+    Application setName(String name);
 
     /**
      * Returns the application description.
@@ -68,8 +69,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sets the application description.
      *
      * @param description the application description.
+     * @return this instance for method chaining.
      */
-    void setDescription(String description);
+    Application setDescription(String description);
 
     /**
      * Returns the application's status.  Application users may login to an enabled application.  They may not login
@@ -84,8 +86,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * to a disabled application.
      *
      * @param status the application's status.
+     * @return this instance for method chaining.
      */
-    void setStatus(ApplicationStatus status);
+    Application setStatus(ApplicationStatus status);
 
     /**
      * Returns a paginated list of all accounts that may login to the application.
@@ -499,8 +502,9 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
+     * @return this instance for method chaining.
      */
-    void setDefaultAccountStore(AccountStore accountStore);
+    Application setDefaultAccountStore(AccountStore accountStore);
 
     /**
      * Returns the {@link AccountStore} used to persist
@@ -560,8 +564,9 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
+     * @return this instance for method chaining.
      */
-    void setDefaultGroupStore(AccountStore accountStore);
+    Application setDefaultGroupStore(AccountStore accountStore);
 
     /**
      * Creates a new {@link AccountStoreMapping} for this Application, allowing the associated
@@ -612,7 +617,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * If {@link #createAccount }
      *
      * @param mapping the new AccountStoreMapping resource to add to the Application's AccountStoreMapping list.
-     * @return the newly created
+     * @return the newly created AccountStoreMapping instance.
      * @throws ResourceException
      * @since 0.9
      */

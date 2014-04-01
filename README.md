@@ -20,6 +20,7 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 - Backwards-incompatible change: Client and ClientBuilder are interfaces now. Added a Clients utility class.
 - [Issue 36](https://github.com/stormpath/stormpath-sdk-java/issues/36): Client version is now being obtained from version.properties file
+- Method chaining for Resources
 
 ### 0.9.3 ###
 

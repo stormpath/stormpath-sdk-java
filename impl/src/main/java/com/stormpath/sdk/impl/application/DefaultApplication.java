@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,15 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
@@ -98,8 +80,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public void setName(String name) {
+    public Application setName(String name) {
         setProperty(NAME, name);
+        return this;
     }
 
     @Override
@@ -108,8 +91,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public void setDescription(String description) {
+    public Application setDescription(String description) {
         setProperty(DESCRIPTION, description);
+        return this;
     }
 
     @Override
@@ -122,8 +106,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public void setStatus(ApplicationStatus status) {
+    public Application setStatus(ApplicationStatus status) {
         setProperty(STATUS, status.name());
+        return this;
     }
 
     @Override
@@ -284,7 +269,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
      * @since 0.9
      */
     @Override
-    public void setDefaultAccountStore(AccountStore accountStore) {
+    public Application setDefaultAccountStore(AccountStore accountStore) {
         AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
         boolean needToCreateNewStore = true;
         for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
@@ -300,6 +285,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             mapping.setDefaultAccountStore(true);
             mapping.save();
         }
+        return this;
     }
 
     /**
@@ -315,7 +301,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
      * @since 0.9
      */
     @Override
-    public void setDefaultGroupStore(AccountStore accountStore) {
+    public Application setDefaultGroupStore(AccountStore accountStore) {
         AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
         boolean needToCreateNewStore = true;
         for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
@@ -331,6 +317,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             mapping.setDefaultGroupStore(true);
             mapping.save();
         }
+        return this;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,9 +83,9 @@ class DefaultApplicationTest {
 
         assertNull(defaultApplication.getStatus())
 
-        defaultApplication.setStatus(ApplicationStatus.DISABLED)
-        defaultApplication.setName("App Name")
-        defaultApplication.setDescription("App Description")
+        defaultApplication = defaultApplication.setStatus(ApplicationStatus.DISABLED)
+            .setName("App Name")
+            .setDescription("App Description")
 
         assertEquals(defaultApplication.getStatus(), ApplicationStatus.DISABLED)
         assertEquals(defaultApplication.getName(), "App Name")

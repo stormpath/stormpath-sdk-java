@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,11 @@ import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.tenant.Tenant;
+
 import java.util.Map;
 
 /**
@@ -90,8 +87,9 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void setUsername(String username) {
+    public Account setUsername(String username) {
         setProperty(USERNAME, username);
+        return this;
     }
 
     @Override
@@ -100,13 +98,15 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void setEmail(String email) {
+    public Account setEmail(String email) {
         setProperty(EMAIL, email);
+        return this;
     }
 
     @Override
-    public void setPassword(String password) {
+    public Account setPassword(String password) {
         setProperty(PASSWORD, password);
+        return this;
     }
 
     @Override
@@ -115,8 +115,9 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void setGivenName(String givenName) {
+    public Account setGivenName(String givenName) {
         setProperty(GIVEN_NAME, givenName);
+        return this;
     }
 
     @Override
@@ -125,8 +126,9 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void setMiddleName(String middleName) {
+    public Account setMiddleName(String middleName) {
         setProperty(MIDDLE_NAME, middleName);
+        return this;
     }
 
     @Override
@@ -135,8 +137,9 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void setSurname(String surname) {
+    public Account setSurname(String surname) {
         setProperty(SURNAME, surname);
+        return this;
     }
 
     @Override
@@ -154,8 +157,9 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void setStatus(AccountStatus status) {
+    public Account setStatus(AccountStatus status) {
         setProperty(STATUS, status.name());
+        return this;
     }
 
     @Override
@@ -220,10 +224,11 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     @Override
-    public void saveWithResponseOptions(AccountOptions accountOptions) {
+    public Account saveWithResponseOptions(AccountOptions accountOptions) {
         Assert.notNull(accountOptions, "accountOptions can't be null.");
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, accountOptions);
+        return this;
     }
 
     /**

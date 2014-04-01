@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,10 @@ class DirectoryIT extends ClientIT {
         def email = 'johndeleteme@nowhere.com'
 
         Account account = client.instantiate(Account)
-        account.givenName = 'John'
-        account.surname = 'DELETEME'
-        account.email =  email
-        account.password = 'Changeme1!'
+        account = account.setGivenName('John')
+            .setSurname('DELETEME')
+            .setEmail(email)
+            .setPassword('Changeme1!')
 
         dir.createAccount(account)
 

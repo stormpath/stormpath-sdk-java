@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,9 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      * Sets the Application represented by this {@code AccountStoreMapping} resource.
      *
      * @param application the Application represented by this {@code AccountStoreMapping} resource.
+     * @return this instance for method chaining.
      */
-    void setApplication(Application application);
+    AccountStoreMapping setApplication(Application application);
 
     /**
      * Returns this mapping's {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
@@ -74,9 +75,10 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      * Sets this mapping's {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
      * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application.
      *
-     * @param accountStore
+     * @param accountStore the AccountStore to be assigned to the application.
+     * @return this instance for method chaining.
      */
-    void setAccountStore(AccountStore accountStore);
+    AccountStoreMapping setAccountStore(AccountStore accountStore);
 
     /**
      * Returns the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
@@ -129,8 +131,9 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      * the new fourth item will be at index 3).
      *
      * @param listIndex the zero based index
+     * @return this instance for method chaining.
      */
-    void setListIndex(int listIndex);
+    AccountStoreMapping setListIndex(int listIndex);
 
     /**
      * Returns {@code true} if the associated {@link #getAccountStore() accountStore} is designated as the
@@ -158,8 +161,9 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      *
      * @param defaultAccountStore whether or not the associated {@link #getAccountStore() accountStore} is designated
      *                            as the {@link #getApplication() application}'s default account store.
+     * @return this instance for method chaining.
      */
-    void setDefaultAccountStore(boolean defaultAccountStore);
+    AccountStoreMapping setDefaultAccountStore(boolean defaultAccountStore);
 
     /**
      * Returns {@code true} if the associated {@link #getAccountStore() accountStore} is designated as the
@@ -192,6 +196,7 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      *
      * @param defaultGroupStore {@code true} if the associated {@link #getAccountStore() accountStore} is designated as
      *                          the {@link #getApplication() application}'s default group store, {@code false} otherwise.
+     * @return this instance for method chaining.
      */
-    void setDefaultGroupStore(boolean defaultGroupStore);
+    AccountStoreMapping setDefaultGroupStore(boolean defaultGroupStore);
 }

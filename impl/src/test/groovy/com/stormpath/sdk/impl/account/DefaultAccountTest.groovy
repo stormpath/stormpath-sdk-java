@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,13 +83,13 @@ class DefaultAccountTest {
         assertFalse(defaultAccount.isPrintableProperty("password"))
         assertNull(defaultAccount.getStatus())
 
-        defaultAccount.setUsername("pacoman")
-        defaultAccount.setEmail("some@email.com")
-        defaultAccount.setSurname("Smuk")
-        defaultAccount.setMiddleName("Ben")
-        defaultAccount.setGivenName("Mel")
-        defaultAccount.setStatus(AccountStatus.DISABLED)
-        defaultAccount.setPassword("superPass0rd")
+        defaultAccount = defaultAccount.setUsername("pacoman")
+            .setEmail("some@email.com")
+            .setSurname("Smuk")
+            .setMiddleName("Ben")
+            .setGivenName("Mel")
+            .setStatus(AccountStatus.DISABLED)
+            .setPassword("superPass0rd")
 
         assertEquals(defaultAccount.getUsername(), "pacoman")
         assertEquals(defaultAccount.getEmail(), "some@email.com")

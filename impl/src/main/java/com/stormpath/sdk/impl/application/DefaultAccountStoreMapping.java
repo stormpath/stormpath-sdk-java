@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.BooleanProperty;
-import com.stormpath.sdk.impl.resource.IntegerProperty;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.*;
 
 import java.util.Map;
 
@@ -65,8 +61,9 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
     }
 
     @Override
-    public void setApplication(Application application) {
+    public AccountStoreMapping setApplication(Application application) {
         setResourceProperty(APPLICATION, application);
+        return this;
     }
 
     @Override
@@ -93,8 +90,9 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
     }
 
     @Override
-    public void setAccountStore(AccountStore accountStore) {
+    public AccountStoreMapping setAccountStore(AccountStore accountStore) {
         setResourceProperty(ACCOUNT_STORE, accountStore);
+        return this;
     }
 
     @Override
@@ -103,8 +101,9 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
     }
 
     @Override
-    public void setListIndex(int listIndex) {
+    public AccountStoreMapping setListIndex(int listIndex) {
         setProperty(LIST_INDEX, listIndex);
+        return this;
     }
 
     @Override
@@ -113,13 +112,15 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
     }
 
     @Override
-    public void setDefaultAccountStore(boolean defaultAccountStore) {
+    public AccountStoreMapping setDefaultAccountStore(boolean defaultAccountStore) {
         setProperty(DEFAULT_ACCOUNT_STORE, defaultAccountStore);
+        return this;
     }
 
     @Override
-    public void setDefaultGroupStore(boolean defaultGroupStore) {
+    public AccountStoreMapping setDefaultGroupStore(boolean defaultGroupStore) {
         setProperty(DEFAULT_GROUP_STORE, defaultGroupStore);
+        return this;
     }
 
     @Override
