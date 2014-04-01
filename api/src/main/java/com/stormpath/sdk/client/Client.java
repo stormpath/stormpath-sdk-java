@@ -41,12 +41,12 @@ import com.stormpath.sdk.tenant.Tenant;
  * }
  * </pre>
  * <h3>DataStore API</h3>
- * As of 0.8, this interface extends the {@link DataStore} interface, but the actual class implementation will merely act as a
+ * As of 0.8, this interface extends {@link DataStore}, but the actual class implementation will merely act as a
  * wrapper to its internal 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
  * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
- * @since 1.0.alpha
+ * @since 0.1
  */
 public interface Client extends DataStore {
 

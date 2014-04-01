@@ -17,8 +17,13 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.ClientBuilder;
+import com.stormpath.sdk.client.Proxy;
+
 
 /**
  * The default {@link ClientBuilder} implementation.

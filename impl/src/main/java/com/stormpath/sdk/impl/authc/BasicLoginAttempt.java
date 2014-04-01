@@ -23,4 +23,5 @@ public interface BasicLoginAttempt extends LoginAttempt {
     String getValue();
 
     void setValue(String value);
+
 }

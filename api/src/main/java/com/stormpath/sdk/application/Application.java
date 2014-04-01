@@ -642,6 +642,12 @@ public interface Application extends Resource, Saveable, Deletable {
      * <p/>
      * When calling this method, you are setting the new {@code AccountStoreMapping} to the end of the Application's
      * overall list.
+     * <p/>
+     * NOTE: If you already know the account store where the account resides, you can
+     * specify it at the time the authentication request is created (for example,
+     * {@link com.stormpath.sdk.authc.UsernamePasswordRequest#UsernamePasswordRequest(String, char[], com.stormpath.sdk.directory.AccountStore)}).
+     * This way you will be avoiding the authentication attempt to cycle through the Application's account stores.
+     * <p/>
      * <h4>Example</h4>
      * <pre>
      * AccountStore directoryOrGroup = getDirectoryOrGroupYouWantToUseForLogin();
