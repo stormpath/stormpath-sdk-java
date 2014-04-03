@@ -16,21 +16,19 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 
 import java.util.Map;
 
 /**
- * @since 0.2
+ * @since 1.0.alpha
  */
-public class DefaultBasicLoginAttempt extends AbstractResource implements BasicLoginAttempt {
+public class DefaultBasicLoginAttempt extends AbstractLoginAttempt implements BasicLoginAttempt {
 
-    static final StringProperty TYPE = new StringProperty("type");
     static final StringProperty VALUE = new StringProperty("value");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, VALUE, ACCOUNT_STORE);
 
     public DefaultBasicLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -46,16 +44,6 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     }
 
     @Override
-    public String getType() {
-        return getString(TYPE);
-    }
-
-    @Override
-    public void setType(String type) {
-        setProperty(TYPE, type);
-    }
-
-    @Override
     public String getValue() {
         return getString(VALUE);
     }
@@ -64,4 +52,5 @@ public class DefaultBasicLoginAttempt extends AbstractResource implements BasicL
     public void setValue(String value) {
         setProperty(VALUE, value);
     }
+
 }

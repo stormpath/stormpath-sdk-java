@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.authc;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
@@ -59,6 +60,10 @@ public class BasicAuthenticator {
 
         attempt.setType("basic");
         attempt.setValue(value);
+
+        if(request.getAccountStore() != null) {
+            attempt.setAccountStore(request.getAccountStore());
+        }
 
         String href = parentHref + "/loginAttempts";
 

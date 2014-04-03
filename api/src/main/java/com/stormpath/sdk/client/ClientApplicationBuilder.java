@@ -100,7 +100,7 @@ public class ClientApplicationBuilder {
     private final ClientBuilder clientBuilder; //internal delegate object
 
     public ClientApplicationBuilder() {
-        this.clientBuilder = new ClientBuilder();
+        this.clientBuilder = Clients.builder();
     }
 
     protected ClientApplicationBuilder(ClientBuilder builder) {
@@ -241,13 +241,6 @@ public class ClientApplicationBuilder {
         this.clientBuilder.setApiKeySecretPropertyName(apiKeySecretPropertyName);
         return this;
     }
-
-    //For internal Stormpath testing needs only:
-    ClientApplicationBuilder setBaseUrl(String baseUrl) {
-        this.clientBuilder.setBaseUrl(baseUrl);
-        return this;
-    }
-
 
     /**
      * Sets the fully qualified Stormpath Application HREF (a URL) to use to acquire the Application instance when
