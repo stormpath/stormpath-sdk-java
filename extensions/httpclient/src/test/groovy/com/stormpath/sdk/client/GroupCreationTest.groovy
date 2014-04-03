@@ -17,6 +17,7 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.impl.client.DefaultClientBuilder
 
 /**
  * @since 0.6
@@ -27,7 +28,9 @@ class GroupCreationTest {
 
         DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
 
-        Client client = new Client(apiKey, args[2]);
+        def builder = Clients.builder().setApiKey(apiKey)
+        ((DefaultClientBuilder)builder).setBaseUrl(args[2])
+        Client client = builder.build()
 
         String directoryHref = args[3];
 

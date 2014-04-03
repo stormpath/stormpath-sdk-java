@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -25,4 +26,21 @@ public interface LoginAttempt extends Resource {
     String getType();
 
     void setType(String type);
+
+    /**
+     * Returns the specific account store this authentication request will be targeted to.
+     *
+     * @return the specific account store this authentication request will be targeted to.
+     * @since 1.0.alpha
+     */
+    AccountStore getAccountStore();
+
+    /**
+     * Sets the `AccountStore` where the login attempt will be targeted to, bypassing the standard
+     * cycle-through-all-app-account-stores.
+     *
+     * @param accountStore the specific `AccountStore` where the authentication request will be targeted.
+     * @since 1.0.alpha
+     */
+    void setAccountStore(AccountStore accountStore);
 }
