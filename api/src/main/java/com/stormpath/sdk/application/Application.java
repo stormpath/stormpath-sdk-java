@@ -21,6 +21,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.social.SocialLoginRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
@@ -384,6 +385,8 @@ public interface Application extends Resource, Saveable, Deletable {
      * @throws ResourceException if the authentication attempt fails.
      */
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
+
+    AuthenticationResult authenticateSocialAccount(SocialLoginRequest request) throws ResourceException;
 
     /**
      * Returns all AccountStoreMappings accessible to the application.

@@ -28,6 +28,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.social.SocialLoginRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
@@ -195,6 +196,11 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
         return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
+    }
+
+    @Override
+    public AuthenticationResult authenticateSocialAccount(SocialLoginRequest request) throws ResourceException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
