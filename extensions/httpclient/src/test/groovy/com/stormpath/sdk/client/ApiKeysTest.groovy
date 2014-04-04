@@ -21,7 +21,7 @@ import org.testng.annotations.Test
 import static junit.framework.Assert.assertTrue
 
 /**
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 public class ApiKeysTest {
 

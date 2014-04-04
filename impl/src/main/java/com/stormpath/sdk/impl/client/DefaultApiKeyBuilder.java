@@ -27,7 +27,7 @@ import java.util.Properties;
 /**
  * The default {@link com.stormpath.sdk.client.ApiKeyBuilder} implementation.
  *
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 public class DefaultApiKeyBuilder implements ApiKeyBuilder {
 

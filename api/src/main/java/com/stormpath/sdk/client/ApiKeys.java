@@ -25,7 +25,7 @@ import com.stormpath.sdk.lang.Classes;
  *     .build();
  * </pre>
  *
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 public class ApiKeys {
 

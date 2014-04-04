@@ -45,7 +45,7 @@ import java.util.Properties;
  *
  * @see #setFileLocation(String)
  * @see ClientBuilder#setApiKey(ApiKey)
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 public interface ApiKeyBuilder {
 

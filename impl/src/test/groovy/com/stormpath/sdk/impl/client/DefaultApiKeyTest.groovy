@@ -20,7 +20,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 class DefaultApiKeyTest {
 
