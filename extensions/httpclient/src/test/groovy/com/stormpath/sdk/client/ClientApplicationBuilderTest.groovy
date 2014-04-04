@@ -42,7 +42,7 @@ class ClientApplicationBuilderTest {
         def arg = createStrictMock(Properties);
         builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(apiKeyBuilder.setApiKeyProperties(same(arg))).andReturn apiKeyBuilder
+        expect(apiKeyBuilder.setProperties(same(arg))).andReturn apiKeyBuilder
 
         replay clientBuilder, arg, apiKeyBuilder
 
@@ -58,7 +58,7 @@ class ClientApplicationBuilderTest {
         def arg = createStrictMock(Reader)
         builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(apiKeyBuilder.setApiKeyReader(same(arg))).andReturn apiKeyBuilder
+        expect(apiKeyBuilder.setReader(same(arg))).andReturn apiKeyBuilder
 
         replay clientBuilder, arg, apiKeyBuilder
 
@@ -74,7 +74,7 @@ class ClientApplicationBuilderTest {
         def arg = createStrictMock(InputStream)
         builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(apiKeyBuilder.setApiKeyInputStream(same(arg))).andReturn apiKeyBuilder
+        expect(apiKeyBuilder.setInputStream(same(arg))).andReturn apiKeyBuilder
 
         replay clientBuilder, arg, apiKeyBuilder
 
@@ -90,7 +90,7 @@ class ClientApplicationBuilderTest {
         def arg = 'test'
         builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(apiKeyBuilder.setApiKeyFileLocation(eq(arg))).andReturn apiKeyBuilder
+        expect(apiKeyBuilder.setFileLocation(eq(arg))).andReturn apiKeyBuilder
 
         replay clientBuilder, apiKeyBuilder
 
@@ -106,7 +106,7 @@ class ClientApplicationBuilderTest {
         def arg = 'test'
         builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(apiKeyBuilder.setApiKeyIdPropertyName(eq(arg))).andReturn apiKeyBuilder
+        expect(apiKeyBuilder.setIdPropertyName(eq(arg))).andReturn apiKeyBuilder
 
         replay clientBuilder, apiKeyBuilder
 
@@ -122,7 +122,7 @@ class ClientApplicationBuilderTest {
         def arg = 'test'
         builder = new ClientApplicationBuilder(clientBuilder, apiKeyBuilder);
 
-        expect(apiKeyBuilder.setApiKeySecretPropertyName(eq(arg))).andReturn apiKeyBuilder
+        expect(apiKeyBuilder.setSecretPropertyName(eq(arg))).andReturn apiKeyBuilder
 
         replay clientBuilder, apiKeyBuilder
 

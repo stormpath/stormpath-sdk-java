@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.cache.CacheManager;
@@ -30,7 +29,7 @@ import com.stormpath.sdk.cache.CacheManager;
  * <pre>
  * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
  *
- * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setApiKeyFileLocation(location).build();
+ * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
  * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
  * </pre>
  * <p/>
@@ -48,13 +47,13 @@ public interface ClientBuilder {
      * <pre>
      * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
      *
-     * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setApiKeyFileLocation(location).build();
+     * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
      * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
      * </pre>
      *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
-     * @see ApiKeyBuilder#setApiKey(String, String)
+     * @see ApiKeyBuilder#setId(String)
      */
     ClientBuilder setApiKey(ApiKey apiKey);
 

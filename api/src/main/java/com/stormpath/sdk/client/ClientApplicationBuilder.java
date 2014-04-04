@@ -121,7 +121,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyProperties(Properties properties) {
-        this.apiKeyBuilder.setApiKeyProperties(properties);
+        this.apiKeyBuilder.setProperties(properties);
         return this;
     }
 
@@ -135,7 +135,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyReader(Reader reader) {
-        this.apiKeyBuilder.setApiKeyReader(reader);
+        this.apiKeyBuilder.setReader(reader);
         return this;
     }
 
@@ -150,7 +150,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyInputStream(InputStream is) {
-        this.apiKeyBuilder.setApiKeyInputStream(is);
+        this.apiKeyBuilder.setInputStream(is);
         return this;
     }
 
@@ -213,7 +213,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyFileLocation(String location) {
-        this.apiKeyBuilder.setApiKeyFileLocation(location);
+        this.apiKeyBuilder.setFileLocation(location);
         return this;
     }
 
@@ -227,7 +227,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName) {
-        this.apiKeyBuilder.setApiKeyIdPropertyName(apiKeyIdPropertyName);
+        this.apiKeyBuilder.setIdPropertyName(apiKeyIdPropertyName);
         return this;
     }
 
@@ -241,7 +241,7 @@ public class ClientApplicationBuilder {
      * @return this ClientApplicationBuilder instance for method chaining.
      */
     public ClientApplicationBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName) {
-        this.apiKeyBuilder.setApiKeySecretPropertyName(apiKeySecretPropertyName);
+        this.apiKeyBuilder.setSecretPropertyName(apiKeySecretPropertyName);
         return this;
     }
 

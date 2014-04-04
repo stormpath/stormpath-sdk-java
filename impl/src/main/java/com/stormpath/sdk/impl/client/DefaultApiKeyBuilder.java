@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.client.ApiKeyBuilder;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.lang.Strings;
 
 import java.io.*;
 import java.net.URL;
@@ -31,7 +31,9 @@ import java.util.Properties;
  */
 public class DefaultApiKeyBuilder implements ApiKeyBuilder {
 
-    private ApiKey apiKey;
+    //private ApiKey apiKey;
+    private String apiKeyId;
+    private String apiKeySecret;
     private String apiKeyFileLocation;
     private InputStream apiKeyInputStream;
     private Reader apiKeyReader;
@@ -40,53 +42,61 @@ public class DefaultApiKeyBuilder implements ApiKeyBuilder {
     private String apiKeySecretPropertyName = "apiKey.secret";
 
     @Override
-    public ApiKeyBuilder setApiKey(String apiKeyId, String apiKeySecret) {
-        this.apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+    public ApiKeyBuilder setId(String id) {
+        this.apiKeyId = id;
         return this;
     }
 
     @Override
-    public ApiKeyBuilder setApiKeyProperties(Properties properties) {
+    public ApiKeyBuilder setSecret(String secret) {
+        this.apiKeySecret = secret;
+        return this;
+    }
+
+    @Override
+    public ApiKeyBuilder setProperties(Properties properties) {
         this.apiKeyProperties = properties;
         return this;
     }
 
     @Override
-    public ApiKeyBuilder setApiKeyReader(Reader reader) {
+    public ApiKeyBuilder setReader(Reader reader) {
         this.apiKeyReader = reader;
         return this;
     }
 
     @Override
-    public ApiKeyBuilder setApiKeyInputStream(InputStream is) {
+    public ApiKeyBuilder setInputStream(InputStream is) {
         this.apiKeyInputStream = is;
         return this;
     }
 
     @Override
-    public ApiKeyBuilder setApiKeyFileLocation(String location) {
+    public ApiKeyBuilder setFileLocation(String location) {
         this.apiKeyFileLocation = location;
         return this;
     }
 
     @Override
-    public ApiKeyBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName) {
-        this.apiKeyIdPropertyName = apiKeyIdPropertyName;
+    public ApiKeyBuilder setIdPropertyName(String idPropertyName) {
+        this.apiKeyIdPropertyName = idPropertyName;
         return this;
     }
 
     @Override
-    public ApiKeyBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName) {
-        this.apiKeySecretPropertyName = apiKeySecretPropertyName;
+    public ApiKeyBuilder setSecretPropertyName(String secretPropertyName) {
+        this.apiKeySecretPropertyName = secretPropertyName;
         return this;
     }
 
     @Override
     public ApiKey build() {
 
-        ApiKey apiKey = this.apiKey;
+        ApiKey apiKey;
 
-        if (apiKey == null) {
+        if (Strings.hasText(apiKeyId) && Strings.hasText(apiKeySecret)) {
+            apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+        } else {
             apiKey = loadApiKey();
         }
 
@@ -174,7 +184,7 @@ public class DefaultApiKeyBuilder implements ApiKeyBuilder {
                 is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
             } catch (IOException e) {
                 String msg = "Unable to load API Key using apiKeyFileLocation '" + this.apiKeyFileLocation + "'.  " +
-                        "Please check and ensure that file exists or use the 'setApiKeyFileLocation' method to specify " +
+                        "Please check and ensure that file exists or use the 'setFileLocation' method to specify " +
                         "a valid location.";
                 throw new IllegalStateException(msg, e);
             }

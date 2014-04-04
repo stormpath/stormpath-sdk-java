@@ -226,7 +226,10 @@ import static com.stormpath.sdk.cache.Caches.*;
 ...
 
 Client client = Clients.builder()
-    .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+    .setApiKey(ApiKeys.builder()
+        .setFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+        .build()
+    )
     .setCacheManager(newCacheManager()
         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
         .withDefaultTimeToIdle(2, TimeUnit.HOURS) //general default
@@ -245,7 +248,10 @@ Multi-JVM applications (an application deployed across multiple JVMs) would like
 ```java
 CacheManager cacheManager = new CacheManagerImplementationThatUsesMyPreferredCachingProduct();
 Client client = Clients.builder()
-    .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+    .setApiKey(ApiKeys.builder()
+        .setFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+        .build()
+    )
     .setCacheManager(cacheManager);
     .build();
 ```
