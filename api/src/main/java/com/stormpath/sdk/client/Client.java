@@ -27,7 +27,12 @@ import com.stormpath.sdk.tenant.Tenant;
  * For example:
  * <pre>
  * String path = System.getProperty("user.home") + "/.stormpath/<a href="http://www.stormpath.com/docs/get-api-key">apiKey.properties</a>";
- * Client client = {@link Clients Clients}.builder().setFileLocation(path).build();
+ * Client client = {@link Clients Clients}.builder()
+ *      .setApiKey(ApiKeys.builder()
+ *          .setFileLocation(path)
+ *          .build()
+ *      )
+ *      .build();
  *
  * //interact with the REST API resources as desired:
  * Tenant myTenant = client.getCurrentTenant();
