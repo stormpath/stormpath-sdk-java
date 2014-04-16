@@ -36,7 +36,7 @@ import java.util.Properties;
  * </pre>
  * Then, you will create your {@link Client} instance as follows:
  * <pre>
- * Client client = {@link Clients Clients}.builder().setFileLocation(apiKey).build();
+ * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
  * </pre>
  * <p/>
  * You may load files from the filesystem, classpath, or URLs by prefixing the path with
@@ -103,7 +103,7 @@ public interface ApiKeyBuilder {
      * Allows specifying the client's API Key {@code secret} value directly instead of reading it
      * from a stream-based resource (e.g. File, Reader, Properties or InputStream).
      * <p/>
-     * For usage instructions see {@link #setId(String)}
+     * For usage instructions and security precautions see {@link #setId(String)}
      *
      * @param secret the {@link com.stormpath.sdk.client.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @return the ApiKeyBuilder instance for method chaining.
