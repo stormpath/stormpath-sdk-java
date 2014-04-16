@@ -18,12 +18,12 @@ package com.stormpath.sdk.impl.http.authc
 import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.impl.http.HttpHeaders
 import com.stormpath.sdk.impl.http.Request
-
-import static org.testng.Assert.*
-import static org.easymock.EasyMock.*
 import org.junit.Test
 
 import java.text.SimpleDateFormat
+
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.9.3
