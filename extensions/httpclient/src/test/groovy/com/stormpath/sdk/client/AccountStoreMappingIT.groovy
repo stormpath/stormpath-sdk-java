@@ -358,12 +358,10 @@ class AccountStoreMappingIT extends ClientIT {
         dir.createGroup(group)
         assertNotEquals(app.getDefaultAccountStore().getHref(), group.getHref())
         app.setDefaultAccountStore(group)
-        app.save()
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
 
         def newDir = createDirectory()
         app.setDefaultGroupStore(newDir)
-        app.save()
         assertEquals(app.getDefaultGroupStore().getHref(), newDir.getHref())
     }
 

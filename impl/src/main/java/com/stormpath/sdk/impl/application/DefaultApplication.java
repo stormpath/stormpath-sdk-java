@@ -291,6 +291,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultAccountStore(true);
+                setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, accountStoreMapping);
                 accountStoreMapping.save();
                 break;
             }
@@ -298,6 +299,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         if (needToCreateNewStore) {
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultAccountStore(true);
+            setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
             mapping.save();
         }
     }
@@ -322,6 +324,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultGroupStore(true);
+                setProperty(DEFAULT_GROUP_STORE_MAPPING, accountStoreMapping);
                 accountStoreMapping.save();
                 break;
             }
@@ -329,6 +332,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         if (needToCreateNewStore) {
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultGroupStore(true);
+            setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
             mapping.save();
         }
     }
