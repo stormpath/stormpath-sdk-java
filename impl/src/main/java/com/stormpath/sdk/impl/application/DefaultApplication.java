@@ -302,6 +302,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
             mapping.save();
         }
+        this.save();
     }
 
     /**
@@ -335,6 +336,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
             mapping.save();
         }
+        this.save();
     }
 
     /**

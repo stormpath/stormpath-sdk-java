@@ -247,7 +247,6 @@ class AccountStoreMappingIT extends ClientIT {
 
         app.setDefaultAccountStore(newDefaultAccountStore)
         app.setDefaultGroupStore(newDefaultAccountStore)
-        app.save()
 
         assertEquals(newDefaultAccountStore, app.getDefaultAccountStore())
         assertEquals(newDefaultAccountStore, app.getDefaultGroupStore())
