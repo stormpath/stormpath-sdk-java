@@ -359,10 +359,14 @@ class AccountStoreMappingIT extends ClientIT {
         assertNotEquals(app.getDefaultAccountStore().getHref(), group.getHref())
         app.setDefaultAccountStore(group)
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
+        app.setDefaultAccountStore(dir)
+        assertEquals(app.getDefaultAccountStore().getHref(), dir.getHref())
 
         def newDir = createDirectory()
         app.setDefaultGroupStore(newDir)
         assertEquals(app.getDefaultGroupStore().getHref(), newDir.getHref())
+        app.setDefaultGroupStore(dir)
+        assertEquals(app.getDefaultAccountStore().getHref(), dir.getHref())
     }
 
     private Directory createDirectory() {
