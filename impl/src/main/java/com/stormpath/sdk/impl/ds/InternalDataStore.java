@@ -56,5 +56,4 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> stringClassMap);
 
-    //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
 }

@@ -15,21 +15,27 @@
  */
 package com.stormpath.sdk.impl.oauth;
 
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.oauth.ProviderData;
 
-@Deprecated
-public interface GoogleData extends ProviderData, ProviderDataVisitor {
+import java.util.Map;
 
-    String getAccessToken();
+public class DefaultProviderData extends AbstractProviderData implements ProviderData {
 
-    //void setAccessToken(String accessToken);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);
 
-    String getCode();
+    public DefaultProviderData(InternalDataStore dataStore) {
+        super(dataStore);
+    }
 
-    //void setCode(String code);
+    public DefaultProviderData(InternalDataStore dataStore, Map<String, Object> properties) {
+        super(dataStore, properties);
+    }
 
-    String getRefreshToken();
-
-    //void setCode(String code);
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
 
 }

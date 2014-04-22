@@ -23,7 +23,6 @@ import com.stormpath.sdk.oauth.ProviderData;
 
 import java.util.Map;
 
-//public class DefaultProviderAccountAccess<T extends ProviderData> extends AbstractResource implements ProviderAccountAccessAsMario<T> {
 public class DefaultProviderAccountAccess<T extends ProviderData> extends AbstractResource implements ProviderAccountAccess<T> {
 
     static final ResourceReference<? extends ProviderData> PROVIDER_DATA = new ResourceReference("providerData", ProviderData.class);

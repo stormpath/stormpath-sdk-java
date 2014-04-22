@@ -216,37 +216,11 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     public Provider getProvider() {
-        //Provider provider = ;
-        //provider = getDataStore().getResource(provider.getHref(), Provider.class);
-
-        //Provider provider = getDataStore().getResource(getResourceProperty(PROVIDER).getHref(), Provider.class, "providerId", ProviderClassMapping.providerClassMap);
         return getDataStore().getResource(getResourceProperty(PROVIDER).getHref(), Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
-
-
-//        //ProviderFactory.instantiateProvider(getDataStore(), provider.ge);
-        //Provider provider1 = getDataStore().getResource("", Provider.class, "providerId", new HashMap<String, Class<? extends Provider>>());
-//        if (provider.getProviderId().equals(GoogleProviderRequest.PROVIDER_ID)) {
-//            Google google = getDataStore().instantiate(Google.class);
-//            ((DefaultProvider)provider).accept(google);
-//            return google;
-
-//        provider = getDataStore().getResource(provider.getHref(), Provider.class);
-//        if (provider.getProviderId().equals(GoogleProviderRequest.PROVIDER_ID)) {
-//            return getDataStore().getResource(providerData.getHref(), GoogleData.class);
-//        } else if (providerData.getProviderId().equals(FacebookProviderRequest.PROVIDER_ID)) {
-//            return getDataStore().getResource(providerData.getHref(), FacebookData.class);
-//        }
-//
-//        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
-//        return getDataStore().getResource(list.getHref(), GroupList.class, criteria);
-        //return getResourceProperty(PROVIDER);
-    //}
-        //return provider;
     }
 
     @Override
     public Directory setProvider(Provider provider) {
-        String href = provider.getHref();
         setProperty(PROVIDER, provider);
         return this;
     }

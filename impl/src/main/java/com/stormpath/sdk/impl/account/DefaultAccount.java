@@ -247,21 +247,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     @Override
     public ProviderData getProviderData() {
-        //ProviderData providerData = getResourceProperty(PROVIDER_DATA);
-
         return getDataStore().getResource(getResourceProperty(PROVIDER_DATA).getHref(), ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP);
-
-//        providerData = getDataStore().getResource(providerData.getHref(), ProviderData.class);
-//        if (providerData.getProviderId().equals(GoogleProviderRequest.PROVIDER_ID)) {
-//            GoogleData googleData = getDataStore().instantiate(GoogleData.class);
-//            ((DefaultProviderData)providerData).accept(googleData);
-//            return googleData;
-//        } else if (providerData.getProviderId().equals(FacebookProviderRequest.PROVIDER_ID)) {
-//            FacebookData facebookData = getDataStore().instantiate(FacebookData.class);
-//            ((DefaultProviderData)providerData).accept(facebookData);
-//            return facebookData;
-//        }
-        //return providerData;
     }
 
 }

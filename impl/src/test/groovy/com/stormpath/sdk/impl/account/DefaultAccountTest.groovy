@@ -25,11 +25,14 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.group.DefaultGroupMembership
 import com.stormpath.sdk.impl.group.DefaultGroupMembershipList
+import com.stormpath.sdk.impl.oauth.DefaultGoogleProviderData
+import com.stormpath.sdk.impl.oauth.DefaultProviderData
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.oauth.IdentityProviderType
 import com.stormpath.sdk.oauth.ProviderData
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -77,7 +80,8 @@ class DefaultAccountTest {
                           directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
                           tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
                           groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
-                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"]]
+                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultAccount = new DefaultAccount(internalDataStore, properties)
@@ -118,6 +122,10 @@ class DefaultAccountTest {
 
         expect(internalDataStore.instantiate(GroupMembershipList, properties.groupMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.groupMemberships))
 
+        expect(internalDataStore.instantiate(ProviderData, properties.providerData)).andReturn(new DefaultProviderData(internalDataStore, properties.providerData))
+
+        expect(internalDataStore.getResource(properties.providerData.href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP)).andReturn(new DefaultGoogleProviderData(internalDataStore, properties.providerData))
+
         expect(internalDataStore.delete(defaultAccount))
 
         def groupMembership =  new DefaultGroupMembership(internalDataStore)
@@ -148,6 +156,9 @@ class DefaultAccountTest {
 
         resource = defaultAccount.getGroupMemberships()
         assertTrue(resource instanceof DefaultGroupMembershipList && resource.getHref().equals(properties.groupMemberships.href))
+
+        resource = defaultAccount.getProviderData()
+        assertTrue(resource instanceof ProviderData && resource.getHref().equals(properties.providerData.href))
 
         defaultAccount.delete()
 
@@ -228,6 +239,8 @@ class DefaultAccountTest {
 
         verify internalDataStore, mockGroup
     }
+
+
 
 
 

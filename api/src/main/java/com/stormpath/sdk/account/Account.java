@@ -322,6 +322,13 @@ public interface Account extends Resource, Saveable, Deletable {
      */
     boolean isMemberOfGroup(String hrefOrName);
 
+    /**
+     * Returns the ProviderData Resource belonging to the account.
+     *
+     * @return the ProviderData Resource belonging to the account.
+     *
+     * @since 1.0.beta
+     */
     ProviderData getProviderData();
 
 }

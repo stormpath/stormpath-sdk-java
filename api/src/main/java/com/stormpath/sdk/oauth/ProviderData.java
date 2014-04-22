@@ -22,7 +22,4 @@ public interface ProviderData extends Resource {
 
     String getProviderId();
 
-    //void setProviderId(String providerId);
-
-
 }

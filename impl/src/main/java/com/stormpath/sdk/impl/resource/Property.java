@@ -32,8 +32,6 @@ public abstract class Property<T> {
         this.type = type;
     }
 
-
-
     public String getName() {
         return this.name;
     }
