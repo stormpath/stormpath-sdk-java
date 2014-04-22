@@ -31,6 +31,8 @@ import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
+import com.stormpath.sdk.oauth.Provider;
+import com.stormpath.sdk.oauth.ProviderData;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -41,6 +43,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.oauth.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.CollectionResource;
@@ -190,6 +193,66 @@ public class DefaultDataStore implements InternalDataStore {
         return this.resourceFactory.instantiate(clazz, data);
     }
 
+    @Override
+    public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> stringClassMap) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(parent, "Resource class argument cannot be null.");
+        Assert.hasText(childIdProperty, "childIdProperty cannot be null or empty.");
+        Assert.notEmpty(stringClassMap, "stringClassMap cannot be null or empty.");
+
+        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
+
+        return getResource(sanitized.getHrefWithoutQuery(), parent, sanitized.getQuery(), childIdProperty, stringClassMap);
+    }
+
+    private <T extends Resource, R extends T> R getResource(String href, Class<T> parent, QueryString qs, String childIdProperty, Map<String, Class<? extends R>> stringClassMap) {
+
+        //need to qualify the href it to ensure our cache lookups work as expected
+        //(cache key = fully qualified href):
+        href = ensureFullyQualified(href);
+
+        Map<String, ?> data = null;
+
+        //check if cached:
+        if (isCacheRetrievalEnabled(parent)) {
+            data = getCachedValue(href, parent);
+        }
+
+        if (Collections.isEmpty(data)) {
+            //not cached - execute a request:
+            Request request = createRequest(HttpMethod.GET, href, qs);
+            data = executeRequest(request);
+
+            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(parent)) {
+                //cache for further use:
+                cache(parent, data);
+            }
+        }
+
+        Object childClassObject = data.get(childIdProperty);
+
+//        if(! (childClassObject instanceof String)) {
+//            throw new IllegalStateException("Resource does not contain a property named " + childIdProperty + ".");
+//        }
+
+//        String childClassString = (String) childClassObject;
+//        Class<R> childClass = Classes.forName(Character.toUpperCase(childClassString.charAt(0)) + childClassString.substring(1));
+
+        Class<? extends R> childClass = stringClassMap.get(childClassObject);
+
+        if(childClass == null) {
+            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + " in stringClassMap argument.");
+        }
+
+        if (CollectionResource.class.isAssignableFrom(childClass)) {
+            //only collections can support a query string constructor argument:
+            return this.resourceFactory.instantiate(childClass, data, qs);
+        }
+        //otherwise it must be an instance resource, so use the two-arg constructor:
+        return this.resourceFactory.instantiate(childClass, data);
+    }
+
+
     /* =====================================================================
        Resource Persistence
        ===================================================================== */
@@ -317,7 +380,10 @@ public class DefaultDataStore implements InternalDataStore {
 
         Request request = new DefaultRequest(HttpMethod.POST, href, queryString, null, body, length);
 
-        Map<String, Object> responseBody = executeRequest(request);
+        //Map<String, Object> responseBody = executeRequest(request);
+
+        Response response = executeRequestGetFullResponse(request);
+        Map<String, Object> responseBody = getBodyFromResponse(response);
 
         if (Collections.isEmpty(responseBody)) {
             return null;
@@ -338,6 +404,19 @@ public class DefaultDataStore implements InternalDataStore {
         //a dependency in case we choose to implement a cleaner way later.
         if (resource instanceof AbstractDirectoryEntity && isCacheUpdateEnabled(CustomData.class)) {
             cacheNestedCustomData(href, props);
+        }
+
+        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
+        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
+        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
+        //"is new" status
+        int responseStatus = response.getHttpStatus();
+        if (ProviderAccountResult.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
+            if(response.getHttpStatus() == 200) { //is not a new account
+                responseBody.put("isNewAccount", false);
+            } else {
+                responseBody.put("isNewAccount", true);
+            }
         }
 
         return resourceFactory.instantiate(returnType, responseBody);
@@ -669,22 +748,22 @@ public class DefaultDataStore implements InternalDataStore {
             return value;
         }
 
-        if (value instanceof CustomData) {
+        if (value instanceof CustomData || value instanceof ProviderData || value instanceof Provider) {
             if (partialUpdate) {
                 Assert.isInstanceOf(AbstractResource.class, value);
 
-                AbstractResource customDataAbstractResource = (AbstractResource) value;
-                Set<String> updatedCustomDataPropertyNames = customDataAbstractResource.getUpdatedPropertyNames();
+                AbstractResource abstractResource = (AbstractResource) value;
+                Set<String> updatedPropertyNames = abstractResource.getUpdatedPropertyNames();
 
-                LinkedHashMap<String, Object> customDataProperties =
-                        new LinkedHashMap<String, Object>(Collections.size(updatedCustomDataPropertyNames));
+                LinkedHashMap<String, Object> properties =
+                        new LinkedHashMap<String, Object>(Collections.size(updatedPropertyNames));
 
-                for (String updatedCustomPropertyName : updatedCustomDataPropertyNames) {
-                    Object object = customDataAbstractResource.getProperty(updatedCustomPropertyName);
-                    customDataProperties.put(updatedCustomPropertyName, object);
+                for (String updatedCustomPropertyName : updatedPropertyNames) {
+                    Object object = abstractResource.getProperty(updatedCustomPropertyName);
+                    properties.put(updatedCustomPropertyName, object);
                 }
 
-                value = customDataProperties;
+                value = properties;
             }
 
             return value;
@@ -708,14 +787,44 @@ public class DefaultDataStore implements InternalDataStore {
         return new DefaultRequest(method, href, qs);
     }
 
+//    @SuppressWarnings("unchecked")
+//    private Map<String, Object> executeRequest(Request request) {
+//
+//        applyDefaultRequestHeaders(request);
+//
+//        Response response = this.requestExecutor.executeRequest(request);
+//        log.trace("Executed HTTP request.");
+//
+//        String body = null;
+//
+//        if (response.hasBody()) {
+//            body = toString(response.getBody());
+//        }
+//
+//        Map<String, Object> mapBody = null;
+//
+//        if (body != null) {
+//            log.trace("Obtained response body: \n{}", body);
+//            mapBody = mapMarshaller.unmarshal(body);
+//        }
+//
+//        if (response.isError()) {
+//            DefaultError error = new DefaultError(mapBody);
+//            throw new ResourceException(error);
+//        }
+//
+//        return mapBody;
+//    }
+
+    //since 1.0.beta
     @SuppressWarnings("unchecked")
     private Map<String, Object> executeRequest(Request request) {
+        Response response = executeRequestGetFullResponse(request);
+        return getBodyFromResponse(response);
+    }
 
-        applyDefaultRequestHeaders(request);
-
-        Response response = this.requestExecutor.executeRequest(request);
-        log.trace("Executed HTTP request.");
-
+    //since 1.0.beta
+    private Map<String, Object> getBodyFromResponse(Response response) {
         String body = null;
 
         if (response.hasBody()) {
@@ -736,6 +845,29 @@ public class DefaultDataStore implements InternalDataStore {
 
         return mapBody;
     }
+
+    //since 1.0.beta
+    private Response executeRequestGetFullResponse(Request request) {
+        applyDefaultRequestHeaders(request);
+
+        Response response = this.requestExecutor.executeRequest(request);
+        log.trace("Executed HTTP request.");
+
+        if (response.isError()) {
+            String body;
+            Map<String, Object> mapBody = null;
+            if (response.hasBody()) {
+                body = toString(response.getBody());
+                log.trace("Obtained response body: \n{}", body);
+                mapBody = mapMarshaller.unmarshal(body);
+            }
+            DefaultError error = new DefaultError(mapBody);
+            throw new ResourceException(error);
+        }
+
+        return response;
+    }
+
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));

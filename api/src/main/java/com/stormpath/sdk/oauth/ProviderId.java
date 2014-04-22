@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.resource;
+package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.lang.Assert;
 
-/**
- * @since 0.8
- */
-public abstract class Property<T> {
+@Deprecated
+public enum ProviderId {
 
-    protected final String name;
-    protected final Class<T> type;
+    GOOGLE("google"),
+    FACEBOOK("facebook");
 
-    protected Property(String name, Class<T> type) {
-        Assert.notNull(name, "name is required.");
-        Assert.notNull(type, "type is required.");
+    private final String name;
+
+    private ProviderId(String name) {
+        Assert.notNull(name, "name cannot be null");
         this.name = name;
-        this.type = type;
     }
-
-
 
     public String getName() {
         return this.name;
     }
 
-    public Class<T> getType() {
-        return type;
-    }
 }

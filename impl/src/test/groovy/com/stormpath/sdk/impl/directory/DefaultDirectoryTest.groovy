@@ -30,6 +30,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.oauth.Provider
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
@@ -48,7 +49,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 6)
+        assertEquals(propertyDescriptors.size(), 7)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -56,6 +57,7 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference)
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)
+        assertTrue(propertyDescriptors.get("provider") instanceof ResourceReference && propertyDescriptors.get("provider").getType().equals(Provider))
 
     }
 

@@ -28,7 +28,8 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.social.SocialLoginRequest;
+import com.stormpath.sdk.impl.oauth.*;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
@@ -199,8 +200,40 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public AuthenticationResult authenticateSocialAccount(SocialLoginRequest request) throws ResourceException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    //public ProviderAccountResult getAccount(ProviderAccountRequest request) throws ResourceException {
+    public ProviderAccountResult getAccount(ProviderAccountRequest request) throws ResourceException {
+
+        //Class<? extends ProviderAccountAccessAsMario> providerAccountAccessAsMario = IdentityProviderType.fromNameKey((String) request.getProviderData().get("providerId")).getProviderAccountAccess();
+        //ProviderAccountAccessAsMario providerAccountAccessAsMario1 = getDataStore().instantiate(providerAccountAccessAsMario, request.getProviderData());
+
+        //Class<? extends ProviderData> providerData = IdentityProviderType.fromNameKey((String) request.getProviderData().get("providerId")).getProviderDataClass();
+        //Class<? extends ProviderAccountAccessAsMario> providerAccountAccess = IdentityProviderType.fromNameKey((String) request.getProviderData().get("providerId")).getProviderAccountAccess();
+
+        //Class<ProviderAccountAccess> providerAccountAccess = IdentityProviderType.fromNameKey((String) request.getProviderData().get("providerId")).getProviderAccountAccess();
+
+        //ProviderAccountAccess providerAccountAccess = getDataStore().instantiate(ProviderAccountAccess.class, request.getProviderData());
+
+        //ProviderAccountAccess providerAccountAccess = getDataStore().instantiate(provider, request.getProviderData());
+
+        //return new ProviderAccountAccessRequester<providerData> (getDataStore()).requestAccess(getHref(), request);
+
+        //ProviderData providerData = getDataStore().instantiate(providerAccountAccessAsMario, request.getProviderData());
+
+        //return getDataStore().getResource(getHref(), ProviderAccountAccessAsMario.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
+
+        //return getDataStore().create(href, providerAccountAccessAsMario1, ProviderAccountResult.class);
+
+        String href = getHref() + "/accounts";
+
+        //Accounts accounts = getDataStore().instantiate(Accounts.class);
+
+        //getAccounts()
+
+        //return getDataStore().create(href, providerData1, ProviderAccountResult.class);
+        return new ProviderAccountAccessRequester(getDataStore()).requestAccess(getHref(), request);
+        //return new ProviderAccountAccessRequester(getDataStore()).requestAccess(getHref(), providerAccountAccess);
+
+        //return new ProviderAccountAccessRequester(getDataStore()).requestAccess(getHref(), request);
     }
 
     @Override

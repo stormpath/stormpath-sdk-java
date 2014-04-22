@@ -22,6 +22,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.oauth.ProviderData;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -320,5 +321,7 @@ public interface Account extends Resource, Saveable, Deletable {
      * @since 0.9.3
      */
     boolean isMemberOfGroup(String hrefOrName);
+
+    ProviderData getProviderData();
 
 }

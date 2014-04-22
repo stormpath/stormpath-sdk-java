@@ -25,6 +25,8 @@ import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
+import com.stormpath.sdk.oauth.IdentityProviderType;
+import com.stormpath.sdk.oauth.ProviderData;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -55,6 +57,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
             new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class);
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+    static final ResourceReference<ProviderData> PROVIDER_DATA = new ResourceReference<ProviderData>("providerData", ProviderData.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<GroupList, Group> GROUPS =
@@ -64,7 +67,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
+            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, PROVIDER_DATA, GROUPS, GROUP_MEMBERSHIPS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -242,5 +245,23 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         return false;
     }
 
+    @Override
+    public ProviderData getProviderData() {
+        //ProviderData providerData = getResourceProperty(PROVIDER_DATA);
+
+        return getDataStore().getResource(getResourceProperty(PROVIDER_DATA).getHref(), ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP);
+
+//        providerData = getDataStore().getResource(providerData.getHref(), ProviderData.class);
+//        if (providerData.getProviderId().equals(GoogleProviderRequest.PROVIDER_ID)) {
+//            GoogleData googleData = getDataStore().instantiate(GoogleData.class);
+//            ((DefaultProviderData)providerData).accept(googleData);
+//            return googleData;
+//        } else if (providerData.getProviderId().equals(FacebookProviderRequest.PROVIDER_ID)) {
+//            FacebookData facebookData = getDataStore().instantiate(FacebookData.class);
+//            ((DefaultProviderData)providerData).accept(facebookData);
+//            return facebookData;
+//        }
+        //return providerData;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.resource;
+package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.ProviderData;
 
-/**
- * @since 0.8
- */
-public abstract class Property<T> {
+@Deprecated
+public interface GoogleData extends ProviderData, ProviderDataVisitor {
 
-    protected final String name;
-    protected final Class<T> type;
+    String getAccessToken();
 
-    protected Property(String name, Class<T> type) {
-        Assert.notNull(name, "name is required.");
-        Assert.notNull(type, "type is required.");
-        this.name = name;
-        this.type = type;
-    }
+    //void setAccessToken(String accessToken);
 
+    String getCode();
 
+    //void setCode(String code);
 
-    public String getName() {
-        return this.name;
-    }
+    String getRefreshToken();
 
-    public Class<T> getType() {
-        return type;
-    }
+    //void setCode(String code);
+
 }

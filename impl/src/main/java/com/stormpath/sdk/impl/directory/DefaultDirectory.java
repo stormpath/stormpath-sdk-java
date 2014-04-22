@@ -36,6 +36,8 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.IdentityProviderType;
+import com.stormpath.sdk.oauth.Provider;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -52,6 +54,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+    static final ResourceReference<Provider> PROVIDER = new ResourceReference<Provider>("provider", Provider.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =
@@ -60,7 +63,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, ACCOUNTS, GROUPS);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -211,4 +214,41 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     public void accept(AccountStoreVisitor visitor) {
         visitor.visit(this);
     }
+
+    public Provider getProvider() {
+        //Provider provider = ;
+        //provider = getDataStore().getResource(provider.getHref(), Provider.class);
+
+        //Provider provider = getDataStore().getResource(getResourceProperty(PROVIDER).getHref(), Provider.class, "providerId", ProviderClassMapping.providerClassMap);
+        return getDataStore().getResource(getResourceProperty(PROVIDER).getHref(), Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
+
+
+//        //ProviderFactory.instantiateProvider(getDataStore(), provider.ge);
+        //Provider provider1 = getDataStore().getResource("", Provider.class, "providerId", new HashMap<String, Class<? extends Provider>>());
+//        if (provider.getProviderId().equals(GoogleProviderRequest.PROVIDER_ID)) {
+//            Google google = getDataStore().instantiate(Google.class);
+//            ((DefaultProvider)provider).accept(google);
+//            return google;
+
+//        provider = getDataStore().getResource(provider.getHref(), Provider.class);
+//        if (provider.getProviderId().equals(GoogleProviderRequest.PROVIDER_ID)) {
+//            return getDataStore().getResource(providerData.getHref(), GoogleData.class);
+//        } else if (providerData.getProviderId().equals(FacebookProviderRequest.PROVIDER_ID)) {
+//            return getDataStore().getResource(providerData.getHref(), FacebookData.class);
+//        }
+//
+//        GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
+//        return getDataStore().getResource(list.getHref(), GroupList.class, criteria);
+        //return getResourceProperty(PROVIDER);
+    //}
+        //return provider;
+    }
+
+    @Override
+    public Directory setProvider(Provider provider) {
+        String href = provider.getHref();
+        setProperty(PROVIDER, provider);
+        return this;
+    }
+
 }

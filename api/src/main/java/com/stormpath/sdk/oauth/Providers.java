@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.resource;
+package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.lang.Assert;
+public final class Providers {
 
-/**
- * @since 0.8
- */
-public abstract class Property<T> {
+    public static final GoogleProviderRequest GOOGLE = googleProvider();
+    public static final FacebookProviderRequest FACEBOOK = facebookProvider();
 
-    protected final String name;
-    protected final Class<T> type;
-
-    protected Property(String name, Class<T> type) {
-        Assert.notNull(name, "name is required.");
-        Assert.notNull(type, "type is required.");
-        this.name = name;
-        this.type = type;
+    private static GoogleProviderRequest googleProvider() {
+        return new GoogleProviderRequest();
     }
 
-
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Class<T> getType() {
-        return type;
+    private static FacebookProviderRequest facebookProvider() {
+        return new FacebookProviderRequest();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.resource;
+package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.ProviderAccountRequest;
+import com.stormpath.sdk.oauth.ProviderData;
 
-/**
- * @since 0.8
- */
-public abstract class Property<T> {
+public class DefaultProviderAccountRequest implements ProviderAccountRequest {
 
-    protected final String name;
-    protected final Class<T> type;
+    private final ProviderData providerData;
 
-    protected Property(String name, Class<T> type) {
-        Assert.notNull(name, "name is required.");
-        Assert.notNull(type, "type is required.");
-        this.name = name;
-        this.type = type;
+    public DefaultProviderAccountRequest(ProviderData providerData) {
+        this.providerData = providerData;
+    }
+
+    public ProviderData getProviderData() {
+        return this.providerData;
     }
 
 
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Class<T> getType() {
-        return type;
-    }
 }
