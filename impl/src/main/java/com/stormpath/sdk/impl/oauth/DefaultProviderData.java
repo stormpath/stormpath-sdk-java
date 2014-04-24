@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.oauth.IdentityProviderType;
 import com.stormpath.sdk.oauth.ProviderData;
 
 import java.util.Map;
@@ -38,4 +39,8 @@ public class DefaultProviderData extends AbstractProviderData implements Provide
         return PROPERTY_DESCRIPTORS;
     }
 
+    @Override
+    protected String getConcreteProviderId() {
+        return IdentityProviderType.STORMPATH.getNameKey();
+    }
 }

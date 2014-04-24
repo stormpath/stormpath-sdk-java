@@ -15,6 +15,13 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public interface ProviderAccountRequest {
 
     ProviderData getProviderData();
@@ -27,6 +34,20 @@ public interface ProviderAccountRequest {
             this.accessToken = accessToken;
             return (T) this;
         }
+
+        public ProviderAccountRequest build() {
+            final String providerId = getProviderId();
+            Assert.state(Strings.hasText(providerId), "The providerId property is missing.");
+
+            Map<String, Object> properties = new LinkedHashMap<String, Object>();
+            properties.put("providerId", providerId);
+
+            return doBuild(Collections.unmodifiableMap(properties));
+        }
+
+        protected abstract String getProviderId();
+        protected abstract ProviderAccountRequest doBuild(Map<String, Object> map);
+
 
     }
 

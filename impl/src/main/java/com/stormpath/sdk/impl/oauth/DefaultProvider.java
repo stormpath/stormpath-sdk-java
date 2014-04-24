@@ -17,24 +17,19 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.oauth.FacebookProviderData;
 import com.stormpath.sdk.oauth.IdentityProviderType;
 
 import java.util.Map;
 
-public class DefaultFacebookProviderData extends AbstractProviderData implements FacebookProviderData {
+public final class DefaultProvider extends AbstractProvider {
 
-    // SIMPLE PROPERTIES
-    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN);
-
-    public DefaultFacebookProviderData(InternalDataStore dataStore) {
+    public DefaultProvider(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultFacebookProviderData(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultProvider(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -44,19 +39,8 @@ public class DefaultFacebookProviderData extends AbstractProviderData implements
     }
 
     @Override
-    public String getAccessToken() {
-        return getString(ACCESS_TOKEN);
-    }
-
-    public FacebookProviderData setAccessToken(String accessToken) {
-        setProperty(ACCESS_TOKEN, accessToken);
-        return this;
-    }
-
-    @Override
     protected String getConcreteProviderId() {
-        return IdentityProviderType.FACEBOOK.getNameKey();
+        return IdentityProviderType.STORMPATH.getNameKey();
     }
-
 
 }

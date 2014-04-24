@@ -8,6 +8,7 @@ import java.util.Map;
 
 public enum IdentityProviderType {
 
+    STORMPATH("stormpath", Provider.class, ProviderData.class),
     FACEBOOK("facebook", FacebookProvider.class, FacebookProviderData.class),
     GOOGLE("google", GoogleProvider.class, GoogleProviderData.class);
 

@@ -80,30 +80,7 @@ public class DefaultGoogleProvider extends AbstractProvider implements GooglePro
 
     @Override
     protected String getConcreteProviderId() {
-        return IdentityProviderType.FACEBOOK.getNameKey();
+        return IdentityProviderType.GOOGLE.getNameKey();
     }
-
-
-//    @Override
-//    public void visit(DefaultProvider defaultProvider) {
-//        for (String property : this.getPropertyDescriptors().keySet()) {
-//            copyPropertyValue(property, defaultProvider);
-//        }
-//        this.setProperty(HREF_PROP_NAME, defaultProvider.getHref());
-//    }
-//
-//    private void copyPropertyValue(String property, DefaultProvider from) {
-//        Object propertyValue = from.getProperty(property);
-//        if(property != null) {
-//            this.setProperty(property, propertyValue);
-//        }
-//    }
-
-
-
-//    @Override
-//    public void setCode(String code) {
-//        setProperty(CODE, code);
-//    }
 
 }

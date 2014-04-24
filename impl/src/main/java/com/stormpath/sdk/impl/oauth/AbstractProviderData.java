@@ -32,20 +32,17 @@ public abstract class AbstractProviderData extends AbstractResource implements P
     static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
     public AbstractProviderData(InternalDataStore dataStore) {
-        super(dataStore);
+        this(dataStore, null);
     }
 
     public AbstractProviderData(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+        setProperty(PROVIDER_ID, getConcreteProviderId());
     }
 
     @Override
     public String getProviderId() {
         return getString(PROVIDER_ID);
-    }
-
-    public void setProviderId(String providerId) {
-        setProperty(PROVIDER_ID, providerId);
     }
 
     @Override
@@ -58,14 +55,6 @@ public abstract class AbstractProviderData extends AbstractResource implements P
         return getDateProperty(MODIFIED_AT);
     }
 
-//    @Override
-//    public void setProviderId(String providerId) {
-//        setProperty(PROVIDER_ID, providerId);
-//    }
-
-//    @Override
-//    public String getHref() {
-//        return getStringProperty(HREF_PROP_NAME);
-//    }
+    protected abstract String getConcreteProviderId();
 
 }

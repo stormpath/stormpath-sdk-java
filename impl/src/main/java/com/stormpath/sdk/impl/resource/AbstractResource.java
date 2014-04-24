@@ -25,12 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -359,6 +354,38 @@ public abstract class AbstractResource implements Resource {
         msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
         throw new IllegalArgumentException(msg);
     }
+
+
+//    /**
+//     * @since 0.8
+//     */
+//    @SuppressWarnings("unchecked")
+//    protected <T extends Resource, R extends T> R getSpecificResourceProperty(ResourceReference<T> property, Class<>) {
+//        String key = property.getName();
+//        Class<T> clazz = property.getType();
+//
+//        Object value = getProperty(key);
+//        if (value == null) {
+//            return null;
+//        }
+//        if (clazz.isInstance(value)) {
+//            return (R) value;
+//        }
+//        if (value instanceof Map && !((Map) value).isEmpty()) {
+//            T resource = dataStore.instantiate(clazz, (Map<String, Object>) value);
+//
+//
+//            //replace the existing link object (map with an href) with the newly constructed Resource instance.
+//            //Don't dirty the instance - we're just swapping out a property that already exists for the materialized version.
+//            setProperty(key, resource, false);
+//            return resource;
+//        }
+//
+//        String msg = "'" + key + "' property value type does not match the specified type.  Specified type: " +
+//                clazz.getName() + ".  Existing type: " + value.getClass().getName();
+//        msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
+//        throw new IllegalArgumentException(msg);
+//    }
 
     /**
      * @param property

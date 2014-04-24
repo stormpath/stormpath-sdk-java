@@ -19,6 +19,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.*;
 
+import java.util.Map;
+
 public class DefaultGoogleAccountRequest extends AbstractProviderAccountRequest {
 
     private DefaultGoogleAccountRequest(ProviderData providerData) {
@@ -36,18 +38,21 @@ public class DefaultGoogleAccountRequest extends AbstractProviderAccountRequest 
         }
 
         @Override
-        public ProviderAccountRequest build() {
-            Assert.state(!(Strings.hasText(this.code) && Strings.hasText(this.accessToken)), "Either 'code' or 'accessToken' properties must exist in a Google account request, but not both.");
-            Assert.state(Strings.hasText(this.code) || Strings.hasText(this.accessToken), "Either 'code' or 'accessToken' properties must exist in a Google account request.");
+        protected String getProviderId() {
+            return IdentityProviderType.GOOGLE.getNameKey();
+        }
 
-            DefaultGoogleProviderData providerData = new DefaultGoogleProviderData(null);
+        @Override
+        protected ProviderAccountRequest doBuild(Map<String, Object> map) {
+            Assert.state(Strings.hasText(this.code) ^ Strings.hasText(this.accessToken), "Either 'code' or 'accessToken' properties must exist in a Google account request.");
+
+            DefaultGoogleProviderData providerData = new DefaultGoogleProviderData(null, map);
 
             if(this.accessToken != null) {
                 providerData.setAccessToken(this.accessToken);
             } else {
                 providerData.setCode(this.code);
             }
-            providerData.setProviderId(IdentityProviderType.GOOGLE.getNameKey());
 
             return new DefaultGoogleAccountRequest(providerData);
         }

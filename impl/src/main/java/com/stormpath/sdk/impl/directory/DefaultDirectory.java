@@ -15,26 +15,13 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryStatus;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.IdentityProviderType;
 import com.stormpath.sdk.oauth.Provider;
@@ -215,10 +202,36 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         visitor.visit(this);
     }
 
+    /**
+     * @since 1.0.alpha
+     */
+    @Override
     public Provider getProvider() {
-        return getDataStore().getResource(getResourceProperty(PROVIDER).getHref(), Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
+        Object value = getProperty(PROVIDER.getName());
+
+        if (Provider.class.isInstance(value) || value == null) {
+            return (Provider) value;
+        }
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            String href = (String) ((Map) value).get(HREF_PROP_NAME);
+
+            if (href == null) {
+                throw new IllegalStateException("provider resource does not contain its required href property.");
+            }
+
+            Provider provider = getDataStore().getResource(href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
+            setProvider(provider);
+            return provider;
+        }
+
+        String msg = "'" + PROVIDER.getName() + "' property value type does not match the specified type. Specified type: " +
+                PROVIDER.getType() + ".  Existing type: " + value.getClass().getName() + ".  Value: " + value;
+        throw new IllegalStateException(msg);
     }
 
+    /**
+     * @since 1.0.alpha
+     */
     @Override
     public Directory setProvider(Provider provider) {
         setProperty(PROVIDER, provider);

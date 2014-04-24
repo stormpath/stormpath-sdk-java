@@ -16,6 +16,10 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ## Change Log ##
 
+### 1.0.beta ###
+
+- Added OAuth provider integration: Google and Facebook are supported.
+
 ### 1.0.alpha ###
 
 - Added the possibility to specify AccountStore during authentication.

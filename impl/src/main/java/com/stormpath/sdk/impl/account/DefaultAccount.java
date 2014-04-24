@@ -25,16 +25,13 @@ import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.oauth.IdentityProviderType;
-import com.stormpath.sdk.oauth.ProviderData;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.oauth.IdentityProviderType;
+import com.stormpath.sdk.oauth.ProviderData;
 import com.stormpath.sdk.tenant.Tenant;
+
 import java.util.Map;
 
 /**
@@ -247,7 +244,26 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     @Override
     public ProviderData getProviderData() {
-        return getDataStore().getResource(getResourceProperty(PROVIDER_DATA).getHref(), ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP);
+        Object value = getProperty(PROVIDER_DATA.getName());
+
+        if (ProviderData.class.isInstance(value) || value == null) {
+            return (ProviderData) value;
+        }
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            String href = (String) ((Map) value).get(HREF_PROP_NAME);
+
+            if (href == null) {
+                throw new IllegalStateException("providerData resource does not contain its required href property.");
+            }
+
+            ProviderData providerData = getDataStore().getResource(href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP);
+            setProperty(PROVIDER_DATA, providerData);
+            return providerData;
+        }
+
+        String msg = "'" + PROVIDER_DATA.getName() + "' property value type does not match the specified type. Specified type: " +
+                PROVIDER_DATA.getType() + ".  Existing type: " + value.getClass().getName() + ".  Value: " + value;
+        throw new IllegalStateException(msg);
     }
 
 }

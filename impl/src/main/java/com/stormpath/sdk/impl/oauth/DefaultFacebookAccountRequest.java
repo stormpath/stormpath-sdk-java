@@ -16,7 +16,10 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.*;
+
+import java.util.Map;
 
 public class DefaultFacebookAccountRequest extends AbstractProviderAccountRequest {
 
@@ -27,13 +30,17 @@ public class DefaultFacebookAccountRequest extends AbstractProviderAccountReques
     public static final class Builder extends ProviderAccountRequest.Builder<FacebookAccountRequestBuilder> implements FacebookAccountRequestBuilder {
 
         @Override
-        public ProviderAccountRequest build() {
-            Assert.hasText(this.accessToken, "accessToken is a required property. It must be provided before building.");
+        protected String getProviderId() {
+            return IdentityProviderType.FACEBOOK.getNameKey();
+        }
 
-            DefaultFacebookProviderData providerData = new DefaultFacebookProviderData(null);
+        @Override
+        protected ProviderAccountRequest doBuild(Map<String, Object> map) {
+            Assert.state(Strings.hasText(this.accessToken), "accessToken is a required property. It must be provided before building.");
+
+            DefaultFacebookProviderData providerData = new DefaultFacebookProviderData(null, map);
 
             providerData.setAccessToken(this.accessToken);
-            providerData.setProviderId(IdentityProviderType.FACEBOOK.getNameKey());
 
             return new DefaultFacebookAccountRequest(providerData);
         }

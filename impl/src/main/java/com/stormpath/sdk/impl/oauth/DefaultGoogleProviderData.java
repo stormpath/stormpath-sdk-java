@@ -19,6 +19,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.oauth.GoogleProviderData;
+import com.stormpath.sdk.oauth.IdentityProviderType;
 
 import java.util.Map;
 
@@ -67,28 +68,10 @@ public class DefaultGoogleProviderData extends AbstractProviderData implements G
         return getString(REFRESH_TOKEN);
     }
 
-    public void setRefreshToken(String refreshToken) {
-        setProperty(REFRESH_TOKEN, refreshToken);
+    @Override
+    protected String getConcreteProviderId() {
+        return IdentityProviderType.GOOGLE.getNameKey();
     }
 
-//    @Override
-//    public void visit(DefaultProviderData defaultProviderData) {
-//        for (String property : this.getPropertyDescriptors().keySet()) {
-//            copyPropertyValue(property, defaultProviderData);
-//        }
-//        this.setProperty(HREF_PROP_NAME, defaultProviderData.getHref());
-//    }
-//
-//    private void copyPropertyValue(String property, DefaultProviderData from) {
-//        Object propertyValue = from.getProperty(property);
-//        if(property != null) {
-//            this.setProperty(property, propertyValue);
-//        }
-//    }
-
-//    @Override
-//    public void setCode(String code) {
-//        setProperty(CODE, code);
-//    }
 
 }

@@ -22,28 +22,18 @@ import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.HttpMethod;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.QueryStringFactory;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.impl.http.*;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
-import com.stormpath.sdk.oauth.Provider;
-import com.stormpath.sdk.oauth.ProviderData;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.resource.ArrayProperty;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ReferenceFactory;
-import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.oauth.Provider;
 import com.stormpath.sdk.oauth.ProviderAccountResult;
+import com.stormpath.sdk.oauth.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.CollectionResource;
@@ -55,14 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @since 0.1
@@ -230,13 +213,6 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         Object childClassObject = data.get(childIdProperty);
-
-//        if(! (childClassObject instanceof String)) {
-//            throw new IllegalStateException("Resource does not contain a property named " + childIdProperty + ".");
-//        }
-
-//        String childClassString = (String) childClassObject;
-//        Class<R> childClass = Classes.forName(Character.toUpperCase(childClassString.charAt(0)) + childClassString.substring(1));
 
         Class<? extends R> childClass = stringClassMap.get(childClassObject);
 
