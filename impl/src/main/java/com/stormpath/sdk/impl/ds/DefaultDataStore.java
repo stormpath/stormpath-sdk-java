@@ -177,19 +177,18 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @Override
-    public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> stringClassMap) {
+    public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
         Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(parent, "Resource class argument cannot be null.");
+        Assert.notNull(parent, "parent class argument cannot be null.");
         Assert.hasText(childIdProperty, "childIdProperty cannot be null or empty.");
-        Assert.notEmpty(stringClassMap, "stringClassMap cannot be null or empty.");
+        Assert.notEmpty(idClassMap, "idClassMap cannot be null or empty.");
 
         SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
 
-        return getResource(sanitized.getHrefWithoutQuery(), parent, sanitized.getQuery(), childIdProperty, stringClassMap);
+        return getResource(sanitized.getHrefWithoutQuery(), parent, sanitized.getQuery(), childIdProperty, idClassMap);
     }
 
-    private <T extends Resource, R extends T> R getResource(String href, Class<T> parent, QueryString qs, String childIdProperty, Map<String, Class<? extends R>> stringClassMap) {
-
+    private <T extends Resource, R extends T> R getResource(String href, Class<T> parent, QueryString qs, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
         //need to qualify the href it to ensure our cache lookups work as expected
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
@@ -212,12 +211,15 @@ public class DefaultDataStore implements InternalDataStore {
             }
         }
 
-        Object childClassObject = data.get(childIdProperty);
+        if (Collections.isEmpty(data)) {
+            throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
+        }
 
-        Class<? extends R> childClass = stringClassMap.get(childClassObject);
+        Object childClassName = data.get(childIdProperty);
+        Class<? extends R> childClass = idClassMap.get(childClassName);
 
         if(childClass == null) {
-            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + " in stringClassMap argument.");
+            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
         }
 
         if (CollectionResource.class.isAssignableFrom(childClass)) {
@@ -359,7 +361,7 @@ public class DefaultDataStore implements InternalDataStore {
         //Map<String, Object> responseBody = executeRequest(request);
 
         Response response = executeRequestGetFullResponse(request);
-        Map<String, Object> responseBody = getBodyFromResponse(response);
+        Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
 
         if (Collections.isEmpty(responseBody)) {
             return null;
@@ -796,30 +798,7 @@ public class DefaultDataStore implements InternalDataStore {
     @SuppressWarnings("unchecked")
     private Map<String, Object> executeRequest(Request request) {
         Response response = executeRequestGetFullResponse(request);
-        return getBodyFromResponse(response);
-    }
-
-    //since 1.0.beta
-    private Map<String, Object> getBodyFromResponse(Response response) {
-        String body = null;
-
-        if (response.hasBody()) {
-            body = toString(response.getBody());
-        }
-
-        Map<String, Object> mapBody = null;
-
-        if (body != null) {
-            log.trace("Obtained response body: \n{}", body);
-            mapBody = mapMarshaller.unmarshal(body);
-        }
-
-        if (response.isError()) {
-            DefaultError error = new DefaultError(mapBody);
-            throw new ResourceException(error);
-        }
-
-        return mapBody;
+        return getBodyFromSuccessfulResponse(response);
     }
 
     //since 1.0.beta
@@ -842,6 +821,24 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         return response;
+    }
+
+    //since 1.0.beta
+    private Map<String, Object> getBodyFromSuccessfulResponse(Response response) {
+        String body = null;
+
+        if (response.hasBody()) {
+            body = toString(response.getBody());
+        }
+
+        Map<String, Object> mapBody = null;
+
+        if (body != null) {
+            log.trace("Obtained response body: \n{}", body);
+            mapBody = mapMarshaller.unmarshal(body);
+        }
+
+        return mapBody;
     }
 
 

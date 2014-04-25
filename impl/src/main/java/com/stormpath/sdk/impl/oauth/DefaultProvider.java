@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.oauth.IdentityProviderType;
 
 import java.util.Map;
 

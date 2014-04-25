@@ -17,13 +17,15 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.ProviderAccountRequest;
+import com.stormpath.sdk.oauth.ProviderAccountResult;
 
 public class ProviderAccountAccessRequester {
 
     private InternalDataStore dataStore;
 
     public ProviderAccountAccessRequester(InternalDataStore dataStore) {
+        Assert.notNull(dataStore, "dataStore cannot be null");
         this.dataStore = dataStore;
     }
 

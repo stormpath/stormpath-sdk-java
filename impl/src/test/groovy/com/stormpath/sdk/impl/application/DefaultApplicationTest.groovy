@@ -30,13 +30,22 @@ import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.oauth.DefaultProviderAccountAccess
+import com.stormpath.sdk.impl.oauth.ProviderAccountAccess
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.lang.Objects
+import com.stormpath.sdk.oauth.FacebookProviderData
+import com.stormpath.sdk.oauth.ProviderAccountRequest
+import com.stormpath.sdk.oauth.ProviderAccountResult
+import com.stormpath.sdk.oauth.Providers
+import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
+import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -348,6 +357,54 @@ class DefaultApplicationTest {
         assertSame returnedGroup, group
 
         verify dataStore, group, groupList, request
+    }
+
+    @Test
+    void testGetAccount() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def providerAccountResult = createStrictMock(ProviderAccountResult)
+        ProviderAccountRequest request = Providers.FACEBOOK.accountRequest().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
+
+        def providerAccountAccess = new DefaultProviderAccountAccess<FacebookProviderData>(internalDataStore);
+        providerAccountAccess.setProviderData(request.getProviderData())
+
+        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
+
+        replay(internalDataStore, providerAccountResult)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        ProviderAccountResult accountResult = defaultApplication.getAccount(request)
+        assertNotNull(accountResult)
+
+        verify(internalDataStore, providerAccountResult)
+    }
+
+    static class ProviderAccountAccessEquals implements IArgumentMatcher {
+
+        private ProviderAccountAccess expected
+
+        ProviderAccountAccessEquals(ProviderAccountAccess providerAccountAccess) {
+            expected = providerAccountAccess;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! ProviderAccountAccess.isInstance(o)) {
+                return false;
+            }
+            ProviderAccountAccess actual = (ProviderAccountAccess) o
+            return (Objects.nullSafeEquals(expected.providerData, actual.providerData))
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append("providerData: " + expected.providerData.toString())
+        }
     }
 
 }

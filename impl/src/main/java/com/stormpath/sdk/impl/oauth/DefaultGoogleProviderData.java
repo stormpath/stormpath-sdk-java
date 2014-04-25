@@ -19,7 +19,6 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.oauth.GoogleProviderData;
-import com.stormpath.sdk.oauth.IdentityProviderType;
 
 import java.util.Map;
 

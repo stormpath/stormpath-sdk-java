@@ -7,7 +7,7 @@ public abstract class AbstractProviderAccountRequest implements ProviderAccountR
     ProviderData providerData;
 
     protected AbstractProviderAccountRequest(ProviderData providerData) {
-        Assert.notNull(providerData, "provider data cannot be null");
+        Assert.notNull(providerData, "providerData cannot be null");
         Assert.hasText(providerData.getProviderId(), "providerId within ProviderData instance must be specified");
         this.providerData = providerData;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package com.stormpath.sdk.impl.oauth
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.StringProperty
-import org.testng.annotations.Test
+import com.stormpath.sdk.oauth.Provider
+import org.junit.Test
 
 import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 class DefaultProviderTest {
 
@@ -41,6 +42,7 @@ class DefaultProviderTest {
         assertTrue(propertyDescriptors.get("providerId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("modifiedAt") instanceof DateProperty)
+        assertTrue(Provider.isInstance(provider))
     }
 
     @Test

@@ -1,6 +1,7 @@
-package com.stormpath.sdk.oauth;
+package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.*;
 
 import java.util.Collections;
 import java.util.HashMap;

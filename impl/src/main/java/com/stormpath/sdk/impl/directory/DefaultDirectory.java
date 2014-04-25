@@ -21,9 +21,9 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryStatus;
 import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.oauth.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.IdentityProviderType;
 import com.stormpath.sdk.oauth.Provider;
 import com.stormpath.sdk.tenant.Tenant;
 

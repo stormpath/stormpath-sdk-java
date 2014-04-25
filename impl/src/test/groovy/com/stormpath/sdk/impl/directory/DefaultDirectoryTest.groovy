@@ -26,12 +26,12 @@ import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.oauth.DefaultProvider
+import com.stormpath.sdk.impl.oauth.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
-import com.stormpath.sdk.oauth.IdentityProviderType
 import com.stormpath.sdk.oauth.Provider
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test

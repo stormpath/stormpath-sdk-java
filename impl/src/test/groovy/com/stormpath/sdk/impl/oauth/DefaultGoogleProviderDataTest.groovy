@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,15 @@ package com.stormpath.sdk.impl.oauth
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.StringProperty
-import org.testng.annotations.Test
+import com.stormpath.sdk.oauth.GoogleProviderData
+import com.stormpath.sdk.oauth.ProviderData
+import org.junit.Test
 
 import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 class DefaultGoogleProviderDataTest {
 
@@ -43,6 +45,8 @@ class DefaultGoogleProviderDataTest {
         assertTrue(propertyDescriptors.get("accessToken") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("code") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("refreshToken") instanceof StringProperty)
+        assertTrue(ProviderData.isInstance(providerData))
+        assertTrue(GoogleProviderData.isInstance(providerData))
     }
 
     @Test
@@ -87,6 +91,15 @@ class DefaultGoogleProviderDataTest {
         assertEquals(providerData.getHref(), "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData")
         assertEquals(providerData.getProviderId(), "google")
         assertEquals(providerData.getCode(), "4/2Dz0r7r9oNBE9dFD-_JUb.suCu7uj8TEnp6UAPm0")
+    }
+
+    @Test
+    void testConstructor() {
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def providerData = new DefaultGoogleProviderData(internalDataStore)
+
+        assertEquals(providerData.getProviderId(), "google")
     }
 
 }
