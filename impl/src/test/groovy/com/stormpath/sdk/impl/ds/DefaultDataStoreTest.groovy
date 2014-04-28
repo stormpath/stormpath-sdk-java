@@ -18,9 +18,11 @@ package com.stormpath.sdk.impl.ds
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
+import com.stormpath.sdk.impl.oauth.DefaultFacebookProviderData
 import com.stormpath.sdk.impl.oauth.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.oauth.IdentityProviderType
 import com.stormpath.sdk.oauth.FacebookProvider
+import com.stormpath.sdk.oauth.FacebookProviderData
 import com.stormpath.sdk.oauth.GoogleProviderData
 import com.stormpath.sdk.oauth.Provider
 import com.stormpath.sdk.oauth.ProviderData
@@ -106,9 +108,7 @@ class DefaultDataStoreTest {
     @Test
     void getSpecificResourceFacebookProvider() {
         def requestExecutor = createStrictMock(RequestExecutor)
-        def resourceFactory = createStrictMock(ResourceFactory)
         def response = createStrictMock(Response)
-        def facebookProvider = createStrictMock(FacebookProvider)
         def responseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
                         createdAt: "2014-04-01T22:05:25.661Z",
                         modifiedAt: "2014-04-01T22:05:53.177Z",
@@ -127,16 +127,20 @@ class DefaultDataStoreTest {
         expect(response.isError()).andReturn(false)
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(is)
-        expect(resourceFactory.instantiate(FacebookProvider, responseMap)).andReturn(facebookProvider)
 
-        replay(requestExecutor, resourceFactory, response, facebookProvider)
+        replay(requestExecutor, response)
 
         def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1")
-        setNewValue(defaultDataStore, "resourceFactory", resourceFactory)
         def returnedResource = defaultDataStore.getResource(responseMap.href, Provider, childIdProperty, map)
-        assertEquals(returnedResource, facebookProvider)
+        assertEquals(returnedResource.getHref(), responseMap.href)
+        assertTrue(returnedResource instanceof FacebookProvider)
+        assertEquals(((FacebookProvider) returnedResource).getProviderId(), responseMap.providerId)
+        assertEquals(((FacebookProvider) returnedResource).getClientId(), responseMap.clientId)
+        assertEquals(((FacebookProvider) returnedResource).getClientSecret(), responseMap.clientSecret)
+        assertNotNull(((FacebookProvider)returnedResource).getCreatedAt())
+        assertNotNull(((FacebookProvider)returnedResource).getModifiedAt())
 
-        verify(requestExecutor, resourceFactory, response, facebookProvider)
+        verify(requestExecutor, response)
     }
 
     @Test
@@ -239,18 +243,6 @@ class DefaultDataStoreTest {
         }
 
         verify(requestExecutor, response, facebookProvider)
-    }
-
-    //Set new value to final field
-    private void setNewValue(Object object, String fieldName, Object value){
-        Field field = object.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        int modifiers = field.getModifiers();
-        Field modifierField = field.getClass().getDeclaredField("modifiers");
-        modifiers = modifiers & ~Modifier.FINAL;
-        modifierField.setAccessible(true);
-        modifierField.setInt(field, modifiers);
-        field.set(object, value);
     }
 
 }
