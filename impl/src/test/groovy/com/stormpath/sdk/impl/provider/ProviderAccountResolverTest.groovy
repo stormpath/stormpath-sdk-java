@@ -32,12 +32,12 @@ import static org.testng.Assert.fail
 /**
  * since 1.0.beta
  */
-class ProviderAccountAccessRequesterTest {
+class ProviderAccountResolverTest {
 
     @Test
     void testNullDataStore() {
         try {
-            new ProviderAccountAccessRequester(null)
+            new ProviderAccountResolver(null)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "dataStore cannot be null")
@@ -51,14 +51,14 @@ class ProviderAccountAccessRequesterTest {
         def request = createStrictMock(ProviderAccountRequest)
 
         try {
-            new ProviderAccountAccessRequester(internalDataStore).requestAccess(null, request)
+            new ProviderAccountResolver(internalDataStore).resolveProviderAccount(null, request)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "parentHref argument must be specified")
         }
 
         try {
-            new ProviderAccountAccessRequester(internalDataStore).requestAccess(accountHref, null)
+            new ProviderAccountResolver(internalDataStore).resolveProviderAccount(accountHref, null)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "request argument cannot be null")
@@ -67,7 +67,7 @@ class ProviderAccountAccessRequesterTest {
         expect(request.getProviderData()).andReturn(null)
 
         try {
-            new ProviderAccountAccessRequester(internalDataStore).requestAccess(accountHref, request)
+            new ProviderAccountResolver(internalDataStore).resolveProviderAccount(accountHref, request)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "request's providerData must be specified")
@@ -91,7 +91,7 @@ class ProviderAccountAccessRequesterTest {
 
         replay(internalDataStore, request, providerData, providerAccountResult)
 
-        new ProviderAccountAccessRequester(internalDataStore).requestAccess(href, request)
+        new ProviderAccountResolver(internalDataStore).resolveProviderAccount(href, request)
 
         verify(internalDataStore, request, providerData, providerAccountResult)
     }

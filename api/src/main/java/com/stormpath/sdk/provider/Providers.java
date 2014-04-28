@@ -19,8 +19,8 @@ import com.stormpath.sdk.lang.Classes;
 
 public final class Providers {
 
-    public static final ProviderRequestFactory GOOGLE = (ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.GoogleRequestFactory");
-    public static final ProviderRequestFactory FACEBOOK = (ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.FacebookRequestFactory");
+    public static final GoogleRequestFactory GOOGLE = (GoogleRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleRequestFactory");
+    public static final FacebookRequestFactory FACEBOOK = (FacebookRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookRequestFactory");
 
 }
 

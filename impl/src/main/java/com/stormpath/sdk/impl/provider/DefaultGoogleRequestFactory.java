@@ -15,16 +15,14 @@
  */
 package com.stormpath.sdk.impl.provider;
 
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.provider.FacebookAccountRequestBuilder;
-import com.stormpath.sdk.provider.ProviderRequestFactory;
+import com.stormpath.sdk.provider.GoogleAccountRequestBuilder;
+import com.stormpath.sdk.provider.GoogleRequestFactory;
 
-public class FacebookRequestFactory implements ProviderRequestFactory {
+public class DefaultGoogleRequestFactory implements GoogleRequestFactory {
 
     @Override
-    public FacebookAccountRequestBuilder accountRequest() {
-        return (FacebookAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequest$Builder");
+    public GoogleAccountRequestBuilder accountRequest() {
+        return new DefaultGoogleAccountRequest.Builder();
     }
-
 
 }

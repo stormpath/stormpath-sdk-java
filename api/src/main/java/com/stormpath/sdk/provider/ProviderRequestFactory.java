@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.provider;
 
-public interface ProviderRequestFactory {
+public interface ProviderRequestFactory<ARB extends ProviderAccountRequestBuilder> {
 
-    <T extends ProviderAccountRequestBuilder> T accountRequest();
+    ARB accountRequest();
 
 }

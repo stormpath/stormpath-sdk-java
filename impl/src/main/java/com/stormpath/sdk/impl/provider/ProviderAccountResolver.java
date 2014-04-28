@@ -20,16 +20,16 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 
-public class ProviderAccountAccessRequester {
+public class ProviderAccountResolver {
 
     private InternalDataStore dataStore;
 
-    public ProviderAccountAccessRequester(InternalDataStore dataStore) {
+    public ProviderAccountResolver(InternalDataStore dataStore) {
         Assert.notNull(dataStore, "dataStore cannot be null");
         this.dataStore = dataStore;
     }
 
-    public ProviderAccountResult requestAccess(String parentHref, ProviderAccountRequest request) {
+    public ProviderAccountResult resolveProviderAccount(String parentHref, ProviderAccountRequest request) {
         Assert.notNull(parentHref, "parentHref argument must be specified");
         Assert.notNull(request, "request argument cannot be null");
         Assert.notNull(request.getProviderData(), "request's providerData must be specified");
