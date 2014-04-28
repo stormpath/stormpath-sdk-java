@@ -15,16 +15,12 @@
  */
 package com.stormpath.sdk.provider;
 
+import com.stormpath.sdk.lang.Classes;
+
 public final class Providers {
 
-    public static final GoogleProviderRequest GOOGLE = googleProvider();
-    public static final FacebookProviderRequest FACEBOOK = facebookProvider();
+    public static final ProviderRequestFactory GOOGLE = (ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.GoogleRequestFactory");
+    public static final ProviderRequestFactory FACEBOOK = (ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.FacebookRequestFactory");
 
-    private static GoogleProviderRequest googleProvider() {
-        return new GoogleProviderRequest();
-    }
-
-    private static FacebookProviderRequest facebookProvider() {
-        return new FacebookProviderRequest();
-    }
 }
+

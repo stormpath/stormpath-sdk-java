@@ -23,7 +23,7 @@ import com.stormpath.sdk.provider.ProviderAccountResult
 import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.resource.Resource
 import org.easymock.IArgumentMatcher
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals

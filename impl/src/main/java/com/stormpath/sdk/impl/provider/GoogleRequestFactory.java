@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider
+package com.stormpath.sdk.impl.provider;
 
-import org.junit.Test
+import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.provider.GoogleAccountRequestBuilder;
+import com.stormpath.sdk.provider.ProviderRequestFactory;
 
-import static org.testng.Assert.assertTrue
+public class GoogleRequestFactory implements ProviderRequestFactory {
 
-/**
- * @since 1.0.beta
- */
-class ProvidersTest {
-
-    @Test
-    void test() {
-        def providerRequest = Providers.FACEBOOK;
-        assertTrue(providerRequest instanceof FacebookProviderRequest)
-        assertTrue(ProviderRequest.isInstance(providerRequest))
-
-        providerRequest = Providers.GOOGLE;
-        assertTrue(providerRequest instanceof GoogleProviderRequest)
-        assertTrue(ProviderRequest.isInstance(providerRequest))
+    @Override
+    public GoogleAccountRequestBuilder accountRequest() {
+        return (GoogleAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleAccountRequest$Builder");
     }
+
 }

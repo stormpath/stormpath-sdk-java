@@ -19,7 +19,7 @@ import com.stormpath.sdk.provider.FacebookAccountRequestBuilder
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 

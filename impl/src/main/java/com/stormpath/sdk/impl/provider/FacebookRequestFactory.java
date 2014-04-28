@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.impl.provider;
 
-//public interface ProviderRequest<T extends ProviderAccountRequest.Builder<T>, S extends CreateProviderRequest.Builder<S>> {
-//public interface ProviderRequest<T extends ProviderAccountRequest.Builder<T>> {
-public interface ProviderRequest<T extends ProviderAccountRequestBuilder> {
+import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.provider.FacebookAccountRequestBuilder;
+import com.stormpath.sdk.provider.ProviderRequestFactory;
 
-    T accountRequest();
+public class FacebookRequestFactory implements ProviderRequestFactory {
 
-    //S createProviderRequest();
+    @Override
+    public FacebookAccountRequestBuilder accountRequest() {
+        return (FacebookAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequest$Builder");
+    }
 
-    //String getProviderId();
 
 }

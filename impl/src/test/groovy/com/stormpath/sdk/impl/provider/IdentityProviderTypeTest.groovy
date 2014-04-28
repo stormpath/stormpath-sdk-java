@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.provider.*
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 

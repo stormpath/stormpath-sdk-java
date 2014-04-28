@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
 import static org.easymock.EasyMock.createMockBuilder

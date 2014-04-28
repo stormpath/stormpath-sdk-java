@@ -19,7 +19,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.provider.GoogleProviderData
 import com.stormpath.sdk.provider.ProviderData
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
 import static org.easymock.EasyMock.createStrictMock

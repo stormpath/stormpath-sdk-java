@@ -15,13 +15,8 @@
  */
 package com.stormpath.sdk.provider;
 
-import com.stormpath.sdk.lang.Classes;
+public interface ProviderRequestFactory {
 
-public class GoogleProviderRequest implements ProviderRequest<GoogleAccountRequestBuilder> {
-
-    @Override
-    public GoogleAccountRequestBuilder accountRequest() {
-        return (GoogleAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleAccountRequest$Builder");
-    }
+    <T extends ProviderAccountRequestBuilder> T accountRequest();
 
 }

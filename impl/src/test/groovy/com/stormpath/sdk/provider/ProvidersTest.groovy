@@ -15,25 +15,25 @@
  */
 package com.stormpath.sdk.provider
 
-import com.stormpath.sdk.lang.UnknownClassException
-import org.junit.Test
+import com.stormpath.sdk.impl.provider.FacebookRequestFactory
+import com.stormpath.sdk.impl.provider.GoogleRequestFactory
+import org.testng.annotations.Test
 
 import static org.testng.Assert.assertTrue
-import static org.testng.Assert.fail
 
 /**
  * @since 1.0.beta
  */
-class FacebookAccountRequestBuilderTest {
+class ProvidersTest {
 
     @Test
     void test() {
-        def providerRequest = Providers.FACEBOOK;
-        try{
-            providerRequest.accountRequest();
-            fail("should have thrown since the implementation is in the impl package")
-        } catch (UnknownClassException e) {
-            assertTrue(e.getMessage().contains("Unable to load class named [com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequest\$Builder]"))
-        }
+        def providerRequestFactory = Providers.FACEBOOK;
+        assertTrue providerRequestFactory instanceof FacebookRequestFactory
+        assertTrue(ProviderRequestFactory.isInstance(providerRequestFactory))
+
+        providerRequestFactory = Providers.GOOGLE;
+        assertTrue providerRequestFactory instanceof GoogleRequestFactory
+        assertTrue(ProviderRequestFactory.isInstance(providerRequestFactory))
     }
 }
