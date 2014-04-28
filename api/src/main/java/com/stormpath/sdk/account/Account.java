@@ -22,7 +22,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.oauth.ProviderData;
+import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;

@@ -16,8 +16,8 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.oauth.FacebookProvider
-import com.stormpath.sdk.oauth.GoogleProvider
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GoogleProvider
 import org.testng.annotations.Test
 import static org.testng.Assert.*
 

@@ -28,9 +28,9 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
-import com.stormpath.sdk.oauth.GoogleProvider
-import com.stormpath.sdk.oauth.ProviderAccountRequest
-import com.stormpath.sdk.oauth.Providers
+import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.ProviderAccountRequest
+import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*

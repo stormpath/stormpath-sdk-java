@@ -18,18 +18,13 @@ package com.stormpath.sdk.impl.ds
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
-import com.stormpath.sdk.impl.oauth.DefaultFacebookProviderData
-import com.stormpath.sdk.impl.oauth.DefaultGoogleProviderData
-import com.stormpath.sdk.impl.oauth.IdentityProviderType
-import com.stormpath.sdk.oauth.FacebookProvider
-import com.stormpath.sdk.oauth.FacebookProviderData
-import com.stormpath.sdk.oauth.GoogleProviderData
-import com.stormpath.sdk.oauth.Provider
-import com.stormpath.sdk.oauth.ProviderData
+import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
+import com.stormpath.sdk.impl.provider.IdentityProviderType
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GoogleProviderData
+import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.provider.ProviderData
 import org.junit.Test
-
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 import static org.easymock.EasyMock.anyObject
 import static org.easymock.EasyMock.createStrictMock

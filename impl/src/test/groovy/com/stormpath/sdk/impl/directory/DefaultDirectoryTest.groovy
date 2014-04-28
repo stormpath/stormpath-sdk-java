@@ -25,14 +25,14 @@ import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
-import com.stormpath.sdk.impl.oauth.DefaultProvider
-import com.stormpath.sdk.impl.oauth.IdentityProviderType
+import com.stormpath.sdk.impl.provider.DefaultProvider
+import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
-import com.stormpath.sdk.oauth.Provider
+import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
@@ -215,7 +215,7 @@ class DefaultDirectoryTest {
             defaultDirectory.getProvider()
             fail("Should have thrown")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "'provider' property value type does not match the specified type. Specified type: interface com.stormpath.sdk.oauth.Provider.  Existing type: java.util.ArrayList.  Value: []")
+            assertEquals(e.getMessage(), "'provider' property value type does not match the specified type. Specified type: interface com.stormpath.sdk.provider.Provider.  Existing type: java.util.ArrayList.  Value: []")
         }
     }
 

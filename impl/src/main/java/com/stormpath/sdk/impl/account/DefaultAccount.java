@@ -25,11 +25,11 @@ import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.impl.oauth.IdentityProviderType;
+import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.ProviderData;
+import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
