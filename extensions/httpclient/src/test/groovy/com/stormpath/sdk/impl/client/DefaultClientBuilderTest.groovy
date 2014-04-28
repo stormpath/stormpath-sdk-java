@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc. and contributors.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,17 @@ package com.stormpath.sdk.impl.client
 import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.cache.Caches
+import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.Clients
-import com.stormpath.sdk.client.DefaultApiKey
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
-import com.stormpath.sdk.impl.util.StringInputStream
 import org.testng.annotations.Test
 
+import static org.easymock.EasyMock.createMock
 import static org.testng.Assert.*
 
 /**
@@ -38,9 +38,21 @@ import static org.testng.Assert.*
 class DefaultClientBuilderTest {
 
     @Test
+    void testIllegalBuildState() {
+        try {
+            Clients.builder().build()
+            fail("Should have thrown because of missing ApiKey.")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.")
+        }
+    }
+
+    @Test
     void testDefault() {
 
-        Client client = Clients.builder().setApiKey(new DefaultApiKey("fakeId", "fakeSecret")).build()
+        ApiKey apiKey = createMock(ApiKey)
+
+        Client client = Clients.builder().setApiKey(apiKey).build()
 
         //caching disabled by default (end-user must explicilty enable it based on their caching preferences):
         assertTrue client.dataStore.cacheManager instanceof DisabledCacheManager
@@ -48,6 +60,8 @@ class DefaultClientBuilderTest {
 
     @Test
     void testSetCustomCacheManager() {
+
+        ApiKey apiKey = createMock(ApiKey)
 
         //dummy implementation:
         def cacheManager = new CacheManager() {
@@ -57,7 +71,7 @@ class DefaultClientBuilderTest {
         }
 
         Client client = Clients.builder()
-                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setApiKey(apiKey)
                 .setCacheManager(cacheManager)
                 .build()
 
@@ -67,8 +81,10 @@ class DefaultClientBuilderTest {
     @Test
     void testDefaultCacheManager() {
 
+        ApiKey apiKey = createMock(ApiKey)
+
         Client client = Clients.builder()
-            .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+            .setApiKey(apiKey)
             .setCacheManager(Caches.newCacheManager().build())
             .build()
 
@@ -80,8 +96,10 @@ class DefaultClientBuilderTest {
     @Test
     void testRequestAuthenticatorNotSet() {
 
+        ApiKey apiKey = createMock(ApiKey)
+
         Client client = Clients.builder()
-                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setApiKey(apiKey)
                 .build()
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
@@ -92,8 +110,10 @@ class DefaultClientBuilderTest {
     @Test
     void testAuthenticationSchemeNull() {
 
+        ApiKey apiKey = createMock(ApiKey)
+
         Client client = Clients.builder()
-                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setApiKey(apiKey)
                 .setAuthenticationScheme(null)
                 .build()
 
@@ -105,8 +125,10 @@ class DefaultClientBuilderTest {
     @Test
     void testAuthenticationScheme() {
 
+        ApiKey apiKey = createMock(ApiKey)
+
         Client client = Clients.builder()
-                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setApiKey(apiKey)
                 .setAuthenticationScheme(AuthenticationScheme.BASIC)
                 .build()
 
@@ -115,7 +137,7 @@ class DefaultClientBuilderTest {
         assertTrue authenticationScheme instanceof BasicRequestAuthenticator
 
         client = Clients.builder()
-                .setApiKey(new DefaultApiKey("fakeId", "fakeSecret"))
+                .setApiKey(apiKey)
                 .setAuthenticationScheme(AuthenticationScheme.SAUTHC1)
                 .build()
 
@@ -126,153 +148,39 @@ class DefaultClientBuilderTest {
 
     @Test
     void testSetApiKey() {
-        def apiKeyId = "fooId"
-        def apiKeySecret = "barSecret"
-        def builder = Clients.builder().setApiKey(apiKeyId, apiKeySecret)
-        assertEquals(builder.apiKey.getId(), apiKeyId)
-        assertEquals(builder.apiKey.getSecret(), apiKeySecret)
+        ApiKey apiKey = createMock(ApiKey)
+
+        def builder = Clients.builder().setApiKey(apiKey)
+
+        assertEquals(builder.apiKey, apiKey)
     }
 
     @Test
-    void testApiKeyProperties() {
-        def apiKeyIdPropertyName = "myPropertyId"
-        def apiKeySecretPropertyName = "myPropertySecret"
-        def apiKeyId = "fooId"
-        def apiKeySecret = "barSecret"
-        def properties = new Properties()
-
-        properties.setProperty(apiKeyIdPropertyName, apiKeyId)
-        properties.setProperty(apiKeySecretPropertyName, apiKeySecret)
-
-        def builder = Clients.builder()
-                .setApiKeyIdPropertyName(apiKeyIdPropertyName)
-                .setApiKeySecretPropertyName(apiKeySecretPropertyName)
-                .setApiKeyProperties(properties)
-
-        assertEquals(builder.apiKeyProperties.get(apiKeyIdPropertyName), apiKeyId)
-        assertEquals(builder.apiKeyProperties.get(apiKeySecretPropertyName), apiKeySecret)
-
-        def requestExecutor = builder.build().dataStore.requestExecutor
-
-        assertEquals(requestExecutor.apiKey.getId(), apiKeyId)
-        assertEquals(requestExecutor.apiKey.getSecret(), apiKeySecret)
-    }
-
-    @Test
-    void testApiKeyReader() {
-
-        def apiKeyIdPropertyName = "apiKey.id"
-        def apiKeySecretPropertyName = "apiKey.secret"
-
-        def apiKeyId = "fooId"
-        def apiKeySecret = "barSecret"
-
-        def reader = new StringReader(apiKeyIdPropertyName + "=" + apiKeyId + "\n" +
-                apiKeySecretPropertyName + "=" + apiKeySecret)
-
-        def builder = Clients.builder().setApiKeyReader(reader)
-
-        def requestExecutor = builder.build().dataStore.requestExecutor
-
-        assertEquals(requestExecutor.apiKey.getId(), apiKeyId)
-        assertEquals(requestExecutor.apiKey.getSecret(), apiKeySecret)
-    }
-
-    @Test
-    void testApiKeyReaderNull() {
-
-        def builder = Clients.builder().setApiKeyReader(null)
-
+    void testApiKeyNull() {
         try {
-            builder.build()
-            fail("Should have thrown because of null Reader.")
+            Clients.builder().setApiKey(null)
+            fail("Should have thrown because of null ApiKey.")
         } catch (IllegalArgumentException e) {
-            //Expected exception
-        }
-    }
-
-    @Test
-    void testEmptyPropertyValue() {
-
-        def apiKeyIdPropertyName = "apiKey.id"
-        def apiKeySecretPropertyName = "apiKey.secret"
-
-        def apiKeyId = ""
-        def apiKeySecret = "barSecret"
-
-        def is = new StringInputStream(apiKeyIdPropertyName + "=" + apiKeyId + "\n" +
-                apiKeySecretPropertyName + "=" + apiKeySecret)
-
-
-        try {
-            Clients.builder()
-                    .setApiKeyInputStream(is)
-                    .build()
-            fail("Should have thrown due to empty apiKey.id value.")
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "There is no 'apiKey.id' property in the configured apiKey properties.  " +
-                    "You can either specify that property or configure the apiKeyIdPropertyName value on the ClientBuilder " +
-                    "to specify a custom property name.")
-        }
-
-    }
-
-    @Test
-    void testInvalidApiKeyFileLocation() {
-        try {
-            Clients.builder()
-                    .setApiKeyFileLocation("/tmp/someUnexistentApiKeyPropertiesFile.properties")
-                    .setApiKeyInputStream(null)
-                    .build()
-            fail("Should have thrown due to invalid ApiKeyFileLocation.")
-        } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "Unable to load API Key using apiKeyFileLocation '/tmp/someUnexistentApiKeyPropertiesFile.properties'.  " +
-                    "Please check and ensure that file exists or use the 'setApiKeyFileLocation' method to specify a valid location.")
-        }
-    }
-
-    @Test
-    void testEmptyBuilder() {
-        try {
-            Clients.builder().build()
-            fail("Should have thrown due to invalid builder state.")
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "No API Key properties could be found or loaded from a file location.  " +
-                    "Please configure the 'apiKeyFileLocation' property or alternatively configure a Properties, Reader or InputStream instance.")
+            assertEquals(e.getMessage(), "apiKey cannot be null.")
         }
     }
 
     @Test
     void testSetProxy() {
+        ApiKey apiKey = createMock(ApiKey)
         def proxy = new com.stormpath.sdk.client.Proxy("localhost", 8900)
-        def builder = Clients.builder().setProxy(proxy)
+        def builder = Clients.builder().setApiKey(apiKey).setProxy(proxy)
         assertEquals(builder.proxy, proxy)
     }
 
     @Test
     void testSetNullProxy() {
+        ApiKey apiKey = createMock(ApiKey)
         try {
-            Clients.builder().setProxy(null)
+            Clients.builder().setApiKey(apiKey).setProxy(null)
             fail("Should have thrown due to null proxy.")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "proxy argument cannot be null.")
-        }
-    }
-
-    @Test
-    void testSetBaseUrl() {
-        def baseUrl = "http://localhost:8080/v1"
-        def builder = ((DefaultClientBuilder)Clients.builder()).setBaseUrl(baseUrl)
-        assertSame(builder.baseUrl, baseUrl)
-    }
-
-    @Test
-    void testSetNullBaseUrl() {
-        try {
-            ((DefaultClientBuilder)Clients.builder()).setBaseUrl(null)
-            fail("Should have thrown due to null baseUrl.")
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "baseUrl argument cannot be null.")
         }
     }
 }

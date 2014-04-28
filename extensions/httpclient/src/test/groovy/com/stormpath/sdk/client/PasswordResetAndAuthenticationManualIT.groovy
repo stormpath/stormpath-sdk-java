@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.impl.client.DefaultApiKey
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
 

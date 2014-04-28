@@ -18,25 +18,24 @@ package com.stormpath.sdk.client;
 import com.stormpath.sdk.lang.Classes;
 
 /**
- * Static utility/helper class for working with {@link Client} resources. For example:
+ * Static utility/helper class for working with {@link ApiKey} resources. For example:
  * <pre>
- * <b>Clients.builder()</b>
+ * <b>ApiKeys.builder()</b>
  *     .setFileLocation(path)
- *     .setProxy(new Proxy("192.168.2.120", 9001))
  *     .build();
  * </pre>
  *
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
-public final class Clients {
+public class ApiKeys {
 
     /**
-     * Returns a new {@link ClientBuilder} instance, used to construct {@link Client} instances.
+     * Returns a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances.
      *
-     * @return a a new {@link ClientBuilder} instance, used to construct {@link Client} instances.
+     * @return a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances.
      */
-    public static ClientBuilder builder() {
-        return (ClientBuilder) Classes.newInstance("com.stormpath.sdk.impl.client.DefaultClientBuilder");
+    public static ApiKeyBuilder builder() {
+        return (ApiKeyBuilder) Classes.newInstance("com.stormpath.sdk.impl.client.DefaultApiKeyBuilder");
     }
 
 }
