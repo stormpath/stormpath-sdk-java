@@ -21,7 +21,7 @@ public class GoogleProviderRequest implements ProviderRequest<GoogleAccountReque
 
     @Override
     public GoogleAccountRequestBuilder accountRequest() {
-        return (GoogleAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleAccountRequest$Builder");
+        return (GoogleAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleAccountRequestBuilder");
     }
 
 }

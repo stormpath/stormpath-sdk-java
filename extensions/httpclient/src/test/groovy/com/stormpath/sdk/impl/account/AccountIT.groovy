@@ -4,9 +4,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupMembership
-import com.stormpath.sdk.group.Groups
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -51,6 +49,7 @@ class AccountIT extends ClientIT {
 
     }
 
+    //@since 1.0.beta
     @Test
     void testGetProviderData() {
 

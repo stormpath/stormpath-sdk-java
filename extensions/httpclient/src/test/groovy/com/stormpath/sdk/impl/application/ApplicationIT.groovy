@@ -239,6 +239,7 @@ class ApplicationIT extends ClientIT {
         assertEquals(result.getAccount().getUsername(), acct.username)
     }
 
+    //@since 1.0.beta
     @Test
     void testGetNonexistentGoogleAccount() {
         Directory dir = client.instantiate(Directory)

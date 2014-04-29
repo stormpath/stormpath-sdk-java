@@ -21,7 +21,7 @@ public class FacebookProviderRequest implements ProviderRequest<FacebookAccountR
 
     @Override
     public FacebookAccountRequestBuilder accountRequest() {
-        return (FacebookAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequest$Builder");
+        return (FacebookAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequestBuilder");
     }
 
 

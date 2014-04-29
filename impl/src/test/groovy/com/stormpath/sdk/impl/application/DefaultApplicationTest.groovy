@@ -359,6 +359,7 @@ class DefaultApplicationTest {
         verify dataStore, group, groupList, request
     }
 
+    //@since 1.0.beta
     @Test
     void testGetAccount() {
 
@@ -386,6 +387,7 @@ class DefaultApplicationTest {
         verify(internalDataStore, providerAccountResult)
     }
 
+    //@since 1.0.beta
     static class ProviderAccountAccessEquals implements IArgumentMatcher {
 
         private ProviderAccountAccess expected

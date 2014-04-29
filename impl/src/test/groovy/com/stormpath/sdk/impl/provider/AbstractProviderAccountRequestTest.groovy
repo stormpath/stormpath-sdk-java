@@ -1,5 +1,6 @@
-package com.stormpath.sdk.provider
+package com.stormpath.sdk.impl.provider
 
+import com.stormpath.sdk.provider.ProviderData
 import org.junit.Test
 
 import static org.easymock.EasyMock.*
@@ -15,7 +16,7 @@ class AbstractProviderAccountRequestTest {
     @Test
     void testNullProviderData() {
         try {
-            new AbstractProviderAccountRequest(null) {}
+            new DefaultProviderAccountRequest(null) {}
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "providerData cannot be null")
@@ -31,7 +32,7 @@ class AbstractProviderAccountRequestTest {
         replay(providerData)
 
         try {
-            new AbstractProviderAccountRequest(providerData) {}
+            new DefaultProviderAccountRequest(providerData) {}
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "providerId within ProviderData instance must be specified")
@@ -48,7 +49,7 @@ class AbstractProviderAccountRequestTest {
 
         replay(providerData)
 
-        def abstractProviderAccountRequest = new AbstractProviderAccountRequest(providerData) {}
+        def abstractProviderAccountRequest = new DefaultProviderAccountRequest(providerData) {}
         assertEquals(abstractProviderAccountRequest.getProviderData(), providerData)
 
         verify(providerData)
