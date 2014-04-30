@@ -48,6 +48,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -291,18 +292,21 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultAccountStore(true);
-                setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, accountStoreMapping);
+                //TODO: re-write in a way that this does not call the server since this is a setter. This could be somehow done by overwriting the save() method.
                 accountStoreMapping.save();
+                setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, accountStoreMapping);
                 break;
             }
         }
         if (needToCreateNewStore) {
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultAccountStore(true);
-            setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
+            //TODO: re-write in a way that this does not call the server since this is a setter. This could be somehow done by overwriting the save() method.
             mapping.save();
+            setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
         }
-        this.save();
+        //We need to force the accountStoreMappingList to be re-retrieved from the server since it has changed
+        resetAccountStoreMappings();
     }
 
     /**
@@ -325,18 +329,21 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultGroupStore(true);
-                setProperty(DEFAULT_GROUP_STORE_MAPPING, accountStoreMapping);
+                //TODO: re-write in a way that this does not call the server since this is a setter. This could be somehow done by overwriting the save() method.
                 accountStoreMapping.save();
+                setProperty(DEFAULT_GROUP_STORE_MAPPING, accountStoreMapping);
                 break;
             }
         }
         if (needToCreateNewStore) {
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultGroupStore(true);
-            setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
+            //TODO: re-write in a way that this does not call the server since this is a setter. This could be somehow done by overwriting the save() method.
             mapping.save();
+            setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
         }
-        this.save();
+        //We need to force the accountStoreMappingList to be re-retrieved from the server since it has changed
+        resetAccountStoreMappings();
     }
 
     /**
@@ -371,6 +378,18 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 //        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
 //        return accountStoreMappingList.getHref();
         return href;
+    }
+
+    /**
+     * @since 1.0.beta
+     */
+    private void resetAccountStoreMappings() {
+        //Only reset the AccountStoreMappings if it has already being materialized
+        if(AccountStoreMappingList.class.isInstance(getProperty(ACCOUNT_STORE_MAPPINGS.getName()))) {
+            Map<String, Object> resetAccountStoreMappings = new HashMap<String, Object>();
+            resetAccountStoreMappings.put(HREF_PROP_NAME, getAccountStoreMappings().getHref());
+            setProperty(ACCOUNT_STORE_MAPPINGS, resetAccountStoreMappings);
+        }
     }
 
 }
