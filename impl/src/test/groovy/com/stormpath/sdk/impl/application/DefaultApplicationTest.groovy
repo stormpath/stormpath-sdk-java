@@ -32,6 +32,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
+import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
@@ -370,21 +371,23 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
+        def providerAccountResultHelper = createStrictMock(ProviderAccountResultHelper)
         def providerAccountResult = createStrictMock(ProviderAccountResult)
         ProviderAccountRequest request = Providers.FACEBOOK.accountRequest().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
 
         def providerAccountAccess = new DefaultProviderAccountAccess<FacebookProviderData>(internalDataStore);
         providerAccountAccess.setProviderData(request.getProviderData())
 
-        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
+        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResultHelper))).andReturn(providerAccountResultHelper)
+        expect(providerAccountResultHelper.getProviderAccountResult()).andReturn(providerAccountResult)
 
-        replay(internalDataStore, providerAccountResult)
+        replay(internalDataStore, providerAccountResultHelper, providerAccountResult)
 
         def defaultApplication = new DefaultApplication(internalDataStore, properties)
         ProviderAccountResult accountResult = defaultApplication.getAccount(request)
         assertNotNull(accountResult)
 
-        verify(internalDataStore, providerAccountResult)
+        verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
     }
 
     //@since 1.0.beta

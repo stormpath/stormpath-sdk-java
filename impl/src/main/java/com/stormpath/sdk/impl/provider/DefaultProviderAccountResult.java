@@ -17,11 +17,13 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.BooleanProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 
 import java.util.Map;
-
 
 public class DefaultProviderAccountResult extends AbstractResource implements ProviderAccountResult {
 
@@ -38,14 +40,7 @@ public class DefaultProviderAccountResult extends AbstractResource implements Pr
     }
 
     public DefaultProviderAccountResult(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore);
-
-        if (properties != null) {
-            setProperty(NEW_ACCOUNT, properties.get(NEW_ACCOUNT.getName()));
-            properties.remove(NEW_ACCOUNT.getName());
-            Account account = getDataStore().instantiate(Account.class, properties);
-            setProperty(ACCOUNT, account);
-        }
+        super(dataStore, properties);
     }
 
     @Override

@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.impl.provider;
 
-import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.resource.Resource;
 
-public interface ProviderAccountResult {
+public interface ProviderAccountResultHelper extends Resource {
 
-    Account getAccount();
-
-    boolean isNewAccount();
+    ProviderAccountResult getProviderAccountResult();
 
 }

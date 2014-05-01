@@ -25,6 +25,7 @@ import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.*;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
+import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.*;
@@ -32,7 +33,6 @@ import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.provider.Provider;
-import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
@@ -389,7 +389,7 @@ public class DefaultDataStore implements InternalDataStore {
         //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
         //"is new" status
         int responseStatus = response.getHttpStatus();
-        if (ProviderAccountResult.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
+        if (ProviderAccountResultHelper.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
             if(response.getHttpStatus() == 200) { //is not a new account
                 responseBody.put("isNewAccount", false);
             } else {
@@ -764,35 +764,6 @@ public class DefaultDataStore implements InternalDataStore {
         QueryString qs = queryStringFactory.createQueryString(queryParams);
         return new DefaultRequest(method, href, qs);
     }
-
-//    @SuppressWarnings("unchecked")
-//    private Map<String, Object> executeRequest(Request request) {
-//
-//        applyDefaultRequestHeaders(request);
-//
-//        Response response = this.requestExecutor.executeRequest(request);
-//        log.trace("Executed HTTP request.");
-//
-//        String body = null;
-//
-//        if (response.hasBody()) {
-//            body = toString(response.getBody());
-//        }
-//
-//        Map<String, Object> mapBody = null;
-//
-//        if (body != null) {
-//            log.trace("Obtained response body: \n{}", body);
-//            mapBody = mapMarshaller.unmarshal(body);
-//        }
-//
-//        if (response.isError()) {
-//            DefaultError error = new DefaultError(mapBody);
-//            throw new ResourceException(error);
-//        }
-//
-//        return mapBody;
-//    }
 
     //since 1.0.beta
     @SuppressWarnings("unchecked")

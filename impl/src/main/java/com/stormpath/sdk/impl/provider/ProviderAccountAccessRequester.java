@@ -35,11 +35,12 @@ public class ProviderAccountAccessRequester {
         Assert.notNull(request.getProviderData(), "request's providerData must be specified");
 
         ProviderAccountAccess providerAccountAccess = new DefaultProviderAccountAccess(this.dataStore);
-
         providerAccountAccess.setProviderData(request.getProviderData());
         String href = parentHref + "/accounts";
 
-        return this.dataStore.create(href, providerAccountAccess, ProviderAccountResult.class);
+        ProviderAccountResultHelper providerAccountResultHelper = this.dataStore.create(href, providerAccountAccess, ProviderAccountResultHelper.class);
+
+        return providerAccountResultHelper.getProviderAccountResult();
     }
 
 }
