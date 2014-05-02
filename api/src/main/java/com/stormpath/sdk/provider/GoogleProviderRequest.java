@@ -17,11 +17,16 @@ package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.lang.Classes;
 
-public class GoogleProviderRequest implements ProviderRequest<GoogleAccountRequestBuilder> {
+public class GoogleProviderRequest implements ProviderRequest<GoogleAccountRequestBuilder, GoogleCreateProviderRequestBuilder> {
 
     @Override
     public GoogleAccountRequestBuilder accountRequest() {
         return (GoogleAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleAccountRequestBuilder");
+    }
+
+    @Override
+    public GoogleCreateProviderRequestBuilder createProviderRequest() {
+        return (GoogleCreateProviderRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleCreateProviderRequestBuilder");
     }
 
 }

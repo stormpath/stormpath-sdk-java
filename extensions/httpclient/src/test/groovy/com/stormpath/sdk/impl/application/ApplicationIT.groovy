@@ -243,13 +243,20 @@ class ApplicationIT extends ClientIT {
     @Test
     void testGetNonexistentGoogleAccount() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryWithProviderIT.testCreateDirWithGoogleProvider")
+        dir.name = uniquify("Java SDK: ApplicationIT.testGetNonexistentGoogleAccount")
         GoogleProvider provider = client.instantiate(GoogleProvider.class);
         def clientId = uniquify("999999911111111")
         def clientSecret = uniquify("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0")
         provider.setClientId(clientId).setClientSecret(clientSecret).setRedirectUri("https://www.myAppURL:8090/index.jsp");
-        dir.setProvider(provider)
-        dir = client.currentTenant.createDirectory(dir)
+
+        def createDirRequest = Directories.newCreateRequestFor(dir).
+                forProvider(Providers.GOOGLE.createProviderRequest()
+                        .setClientId(clientId)
+                        .setClientSecret(clientSecret)
+                        .setRedirectUri("https://www.myAppURL:8090/index.jsp"))
+                .build();
+
+        dir = client.currentTenant.createDirectory(createDirRequest)
         deleteOnTeardown(dir)
 
         def app = createTempApp()

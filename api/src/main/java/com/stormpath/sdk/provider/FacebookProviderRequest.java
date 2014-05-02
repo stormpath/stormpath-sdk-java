@@ -17,12 +17,16 @@ package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.lang.Classes;
 
-public class FacebookProviderRequest implements ProviderRequest<FacebookAccountRequestBuilder> {
+public class FacebookProviderRequest implements ProviderRequest<FacebookAccountRequestBuilder, FacebookCreateProviderRequestBuilder> {
 
     @Override
     public FacebookAccountRequestBuilder accountRequest() {
         return (FacebookAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequestBuilder");
     }
 
+    @Override
+    public FacebookCreateProviderRequestBuilder createProviderRequest() {
+        return (FacebookCreateProviderRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookCreateProviderRequestBuilder");
+    }
 
 }

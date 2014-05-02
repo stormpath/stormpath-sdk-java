@@ -19,14 +19,14 @@ import com.stormpath.sdk.provider.FacebookAccountRequestBuilder
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 
 /**
  * @since 1.0.beta
  */
-class FacebookAccountRequestBuilderTest {
+class DefaultFacebookAccountRequestBuilderTest {
 
     @Test
     void test() {
@@ -34,10 +34,10 @@ class FacebookAccountRequestBuilderTest {
         def requestBuilder = providerRequest.accountRequest();
         assertTrue(requestBuilder instanceof FacebookAccountRequestBuilder)
         assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
-        def providerAccountRequest = requestBuilder.setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
-        assertTrue(providerAccountRequest instanceof ProviderAccountRequest)
-        assertEquals(providerAccountRequest.getProviderData().getProviderId(), "facebook")
-        def providerData = providerAccountRequest.getProviderData()
+        def request = requestBuilder.setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
+        assertTrue(request instanceof ProviderAccountRequest)
+        assertEquals(request.getProviderData().getProviderId(), "facebook")
+        def providerData = request.getProviderData()
         assertTrue(providerData instanceof DefaultFacebookProviderData)
         providerData = (DefaultFacebookProviderData) providerData
         assertEquals(providerData.getAccessToken(), "CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD")

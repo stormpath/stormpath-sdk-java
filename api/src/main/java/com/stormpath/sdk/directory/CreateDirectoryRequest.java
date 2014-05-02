@@ -13,27 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.provider.Provider;
 
-import java.util.Date;
+public interface CreateDirectoryRequest {
 
-public interface Provider extends Resource {
+    Directory getDirectory();
 
-    /**
-     * Returns the customData's created date.
-     *
-     * @return the customData's created date.
-     */
-    Date getCreatedAt();
+    Provider getProvider();
 
-    /**
-     * Returns the customData's last modification date
-     *
-     * @return the customData's last modification date
-     */
-    Date getModifiedAt();
-
-    String getProviderId();
 }

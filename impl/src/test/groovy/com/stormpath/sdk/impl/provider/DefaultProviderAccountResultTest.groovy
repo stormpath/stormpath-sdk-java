@@ -19,7 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.BooleanProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
 import static org.easymock.EasyMock.createStrictMock

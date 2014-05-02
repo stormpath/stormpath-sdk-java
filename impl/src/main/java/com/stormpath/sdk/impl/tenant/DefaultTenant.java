@@ -17,17 +17,15 @@ package com.stormpath.sdk.impl.tenant;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationCriteria;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.application.Applications;
-import com.stormpath.sdk.application.CreateApplicationRequest;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.impl.application.CreateApplicationAndDirectoryRequest;
 import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
+import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -132,6 +130,21 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
     @Override
     public Directory createDirectory(Directory directory) {
         Assert.notNull(directory, "Directory instance cannot be null.");
+        return getDataStore().create("/" + DIRECTORIES.getName(), directory);
+    }
+
+    @Override
+    public Directory createDirectory(CreateDirectoryRequest createDirectoryRequest) {
+        Assert.notNull(createDirectoryRequest, "createDirectoryRequest cannot be null.");
+        Assert.notNull(createDirectoryRequest.getDirectory(), "the specified directory cannot be null.");
+
+        Directory directory = createDirectoryRequest.getDirectory();
+        if(createDirectoryRequest.getProvider() != null) {
+            Assert.isAssignable(DefaultDirectory.class, directory.getClass(), "the directory instance is of " +
+                    "an unidentified type. The specified provider cannot be set to it: " + createDirectoryRequest.getDirectory());
+            ((DefaultDirectory)directory).setProvider(createDirectoryRequest.getProvider());
+        }
+
         return getDataStore().create("/" + DIRECTORIES.getName(), directory);
     }
 

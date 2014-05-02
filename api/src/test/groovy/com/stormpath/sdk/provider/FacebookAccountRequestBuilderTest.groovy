@@ -16,7 +16,7 @@
 package com.stormpath.sdk.provider
 
 import com.stormpath.sdk.lang.UnknownClassException
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
@@ -27,13 +27,24 @@ import static org.testng.Assert.fail
 class FacebookAccountRequestBuilderTest {
 
     @Test
-    void test() {
+    void testAccountRequest() {
         def providerRequest = Providers.FACEBOOK;
         try{
             providerRequest.accountRequest();
             fail("should have thrown since the implementation is in the impl package")
         } catch (UnknownClassException e) {
-            assertTrue(e.getMessage().contains("Unable to load class named [com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequest\$Builder]"))
+            assertTrue(e.getMessage().contains("Unable to load class named [com.stormpath.sdk.impl.provider.DefaultFacebookAccountRequestBuilder]"))
+        }
+    }
+
+    @Test
+    void testCreateProviderRequest() {
+        def providerRequest = Providers.FACEBOOK;
+        try{
+            providerRequest.createProviderRequest();
+            fail("should have thrown since the implementation is in the impl package")
+        } catch (UnknownClassException e) {
+            assertTrue(e.getMessage().contains("Unable to load class named [com.stormpath.sdk.impl.provider.DefaultFacebookCreateProviderRequestBuilder]"))
         }
     }
 }

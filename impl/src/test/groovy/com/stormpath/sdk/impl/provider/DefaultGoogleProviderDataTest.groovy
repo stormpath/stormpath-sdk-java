@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.GoogleProviderData
 import com.stormpath.sdk.provider.ProviderData
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*

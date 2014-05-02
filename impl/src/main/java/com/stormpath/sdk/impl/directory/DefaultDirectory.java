@@ -220,7 +220,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
             }
 
             Provider provider = getDataStore().getResource(href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
-            setProvider(provider);
+            setProperty(PROVIDER, provider);
             return provider;
         }
 
@@ -230,10 +230,16 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     /**
+     * This method has not been exposed in the API since this operation is only 'legal' if you're going to create a brand new
+     * directory. It is here, publicly visible, to allow the Tenant to add the provider information during Directory creation.
+     *
+     * @see {@link Tenant#createDirectory(com.stormpath.sdk.directory.CreateDirectoryRequest)}
      * @since 1.0.alpha
      */
-    @Override
     public Directory setProvider(Provider provider) {
+        //This exception should never be thrown to a developer unless he/she explicitly casts a Directory instance and then
+        //tries to set the provider of an existing Directory.
+        Assert.state(getHref() == null, "cannot change the provider of an existing Directory.");
         setProperty(PROVIDER, provider);
         return this;
     }

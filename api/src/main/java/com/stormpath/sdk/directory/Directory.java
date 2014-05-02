@@ -333,6 +333,4 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
 
     Provider getProvider();
 
-    Directory setProvider(Provider provider);
-
 }

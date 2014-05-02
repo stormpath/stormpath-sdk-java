@@ -16,22 +16,22 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.provider.CreateProviderRequest;
+import com.stormpath.sdk.provider.Provider;
 
-public class DefaultProviderAccountRequest implements ProviderAccountRequest {
+public class DefaultCreateProviderRequest implements CreateProviderRequest {
 
-    ProviderData providerData;
+    Provider provider;
 
-    protected DefaultProviderAccountRequest(ProviderData providerData) {
-        Assert.notNull(providerData, "providerData cannot be null.");
-        Assert.hasText(providerData.getProviderId(), "providerId within ProviderData instance must be specified.");
-        this.providerData = providerData;
+    protected DefaultCreateProviderRequest(Provider provider) {
+        Assert.notNull(provider, "provider cannot be null.");
+        Assert.hasText(provider.getProviderId(), "providerId within Provider instance must be specified.");
+        this.provider = provider;
     }
 
     @Override
-    public ProviderData getProviderData() {
-        return this.providerData;
+    public Provider getProvider() {
+        return this.provider;
     }
 
 }

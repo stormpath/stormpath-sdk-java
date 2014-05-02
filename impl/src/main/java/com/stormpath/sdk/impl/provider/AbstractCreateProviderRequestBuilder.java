@@ -17,25 +17,34 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.ProviderAccountRequestBuilder;
+import com.stormpath.sdk.provider.CreateProviderRequest;
+import com.stormpath.sdk.provider.CreateProviderRequestBuilder;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-abstract class AbstractProviderAccountRequestBuilder<T extends ProviderAccountRequestBuilder<T>> implements ProviderAccountRequestBuilder<T> {
+abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequestBuilder<T>> implements CreateProviderRequestBuilder<T> {
 
-    protected String accessToken;
+    protected String clientId;
+    protected String clientSecret;
 
     @Override
-    public T setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public T setClientId(String clientId) {
+        this.clientId = clientId;
         return (T) this;
     }
 
     @Override
-    public ProviderAccountRequest build() {
+    public T setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+        return (T) this;
+    }
+
+    public CreateProviderRequest build() {
+        Assert.state(Strings.hasText(this.clientId), "clientId is a required property. It must be provided before building.");
+        Assert.state(Strings.hasText(this.clientSecret), "clientSecret is a required property. It must be provided before building.");
+
         final String providerId = getProviderId();
         Assert.state(Strings.hasText(providerId), "The providerId property is missing.");
 
@@ -46,6 +55,6 @@ abstract class AbstractProviderAccountRequestBuilder<T extends ProviderAccountRe
     }
 
     protected abstract String getProviderId();
-    protected abstract ProviderAccountRequest doBuild(Map<String, Object> map);
+    protected abstract CreateProviderRequest doBuild(Map<String, Object> map);
 
 }

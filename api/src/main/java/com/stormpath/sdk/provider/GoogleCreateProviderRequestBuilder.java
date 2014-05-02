@@ -15,25 +15,8 @@
  */
 package com.stormpath.sdk.provider;
 
-import com.stormpath.sdk.resource.Resource;
+public interface GoogleCreateProviderRequestBuilder extends CreateProviderRequestBuilder<GoogleCreateProviderRequestBuilder> {
 
-import java.util.Date;
+    GoogleCreateProviderRequestBuilder setRedirectUri(String redirectUri);
 
-public interface Provider extends Resource {
-
-    /**
-     * Returns the customData's created date.
-     *
-     * @return the customData's created date.
-     */
-    Date getCreatedAt();
-
-    /**
-     * Returns the customData's last modification date
-     *
-     * @return the customData's last modification date
-     */
-    Date getModifiedAt();
-
-    String getProviderId();
 }

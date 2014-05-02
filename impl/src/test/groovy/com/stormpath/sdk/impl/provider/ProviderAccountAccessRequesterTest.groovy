@@ -23,14 +23,14 @@ import com.stormpath.sdk.provider.ProviderAccountResult
 import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.resource.Resource
 import org.easymock.IArgumentMatcher
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
 /**
- * since 1.0.beta
+ * @since 1.0.beta
  */
 class ProviderAccountAccessRequesterTest {
 
@@ -79,6 +79,7 @@ class ProviderAccountAccessRequesterTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def request = createStrictMock(ProviderAccountRequest)
         def providerData = createStrictMock(ProviderData)
+        def providerAccountResultHelper = createStrictMock(ProviderAccountResultHelper)
         def providerAccountResult = createStrictMock(ProviderAccountResult)
 
         def href = "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj"
@@ -87,13 +88,15 @@ class ProviderAccountAccessRequesterTest {
         providerAccountAccess.setProviderData(providerData)
 
         expect(request.getProviderData()).andReturn(providerData) times 2
-        expect(internalDataStore.create(eq(href + "/accounts"), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
+        expect(internalDataStore.create(eq(href + "/accounts"), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResultHelper))).andReturn(providerAccountResultHelper)
+        expect(providerAccountResultHelper.getProviderAccountResult()).andReturn(providerAccountResult)
 
-        replay(internalDataStore, request, providerData, providerAccountResult)
+        replay(internalDataStore, request, providerData, providerAccountResultHelper, providerAccountResult)
 
-        new ProviderAccountAccessRequester(internalDataStore).requestAccess(href, request)
+        def returnedProviderAccountResult = new ProviderAccountAccessRequester(internalDataStore).requestAccess(href, request)
+        assertEquals(returnedProviderAccountResult, providerAccountResult)
 
-        verify(internalDataStore, request, providerData, providerAccountResult)
+        verify(internalDataStore, request, providerData, providerAccountResultHelper, providerAccountResult)
     }
 
     static class ProviderAccountAccessEquals implements IArgumentMatcher {

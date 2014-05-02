@@ -60,7 +60,6 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("provider") instanceof ResourceReference && propertyDescriptors.get("provider").getType().equals(Provider))
-
     }
 
 
@@ -156,9 +155,6 @@ class DefaultDirectoryTest {
         assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
         resource = defaultDirectory.getProvider() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
         assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
-        defaultDirectory.setProvider(null)
-        resource = defaultDirectory.getProvider()
-        assertNull(resource)
 
         defaultDirectory.delete()
 
@@ -216,6 +212,43 @@ class DefaultDirectoryTest {
             fail("Should have thrown")
         } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "'provider' property value type does not match the specified type. Specified type: interface com.stormpath.sdk.provider.Provider.  Existing type: java.util.ArrayList.  Value: []")
+        }
+    }
+
+    @Test
+    void testSetProvider() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def provider = createStrictMock(Provider)
+
+        def directory = new DefaultDirectory(internalDataStore)
+        directory.setName("Dir Name");
+        directory.setDescription("Dir Description");
+        directory.setProvider(provider)
+
+        assertEquals(directory.getProvider(), provider)
+    }
+
+    @Test
+    void testSetProviderNotAllowed() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def provider = createStrictMock(Provider)
+
+        def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf",
+                name: "My Directory",
+                description: "My Description",
+                accounts: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups"],
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                provider: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider"]
+        ]
+
+        DefaultDirectory defaultDirectory = new DefaultDirectory(internalDataStore, properties)
+
+        try {
+            defaultDirectory.setProvider(provider)
+            fail("Should have thrown")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "cannot change the provider of an existing Directory.")
         }
     }
 
