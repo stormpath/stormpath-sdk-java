@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.provider.GoogleAccountRequestBuilder;
+import com.stormpath.sdk.provider.GoogleCreateProviderRequestBuilder;
+import com.stormpath.sdk.provider.GoogleRequestFactory;
 
-public class GoogleProviderRequest implements ProviderRequest<GoogleAccountRequestBuilder, GoogleCreateProviderRequestBuilder> {
+public class DefaultGoogleRequestFactory implements GoogleRequestFactory {
 
     @Override
     public GoogleAccountRequestBuilder accountRequest() {

@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.provider
 
+import com.stormpath.sdk.impl.provider.DefaultFacebookRequestFactory
+import com.stormpath.sdk.impl.provider.DefaultGoogleRequestFactory
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertTrue
@@ -26,12 +28,12 @@ class ProvidersTest {
 
     @Test
     void test() {
-        def providerRequest = Providers.FACEBOOK;
-        assertTrue(providerRequest instanceof FacebookProviderRequest)
-        assertTrue(ProviderRequest.isInstance(providerRequest))
+        def providerRequestFactory = Providers.FACEBOOK;
+        assertTrue providerRequestFactory instanceof DefaultFacebookRequestFactory
+        assertTrue(ProviderRequestFactory.isInstance(providerRequestFactory))
 
-        providerRequest = Providers.GOOGLE;
-        assertTrue(providerRequest instanceof GoogleProviderRequest)
-        assertTrue(ProviderRequest.isInstance(providerRequest))
+        providerRequestFactory = Providers.GOOGLE;
+        assertTrue providerRequestFactory instanceof DefaultGoogleRequestFactory
+        assertTrue(ProviderRequestFactory.isInstance(providerRequestFactory))
     }
 }
