@@ -1,17 +1,19 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.account;
 
@@ -19,9 +21,17 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.CreateApiKeyRequest;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
@@ -33,6 +43,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.tenant.Tenant;
+
 import java.util.Map;
 
 /**
@@ -61,6 +72,8 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
     static final CollectionReference<GroupMembershipList, GroupMembership> GROUP_MEMBERSHIPS =
             new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, GroupMembership.class);
+    static final CollectionReference<ApiKeyList, ApiKey> API_KEYS =
+            new CollectionReference<ApiKeyList, ApiKey>("apiKeys", ApiKeyList.class, ApiKey.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
@@ -242,5 +255,30 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         return false;
     }
 
+    @Override
+    public ApiKeyList getApiKeys() {
+        return getResourceProperty(API_KEYS);
+    }
 
+    @Override
+    public ApiKeyList getApiKeys(Map<String, Object> queryParams) {
+        ApiKeyList list = getApiKeys(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ApiKeyList.class, queryParams);
+    }
+
+    @Override
+    public ApiKeyList getApiKeys(ApiKeyCriteria criteria) {
+        ApiKeyList list = getApiKeys(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ApiKeyList.class, criteria);
+    }
+
+    @Override
+    public ApiKey createApiKey() {
+        return null;  //TODO Implement
+    }
+
+    @Override
+    public ApiKey createApiKey(CreateApiKeyRequest request) {
+        return null;  //TODO Implement
+    }
 }

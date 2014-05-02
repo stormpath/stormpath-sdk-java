@@ -1,20 +1,26 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.account;
 
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.CreateApiKeyRequest;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -320,5 +326,95 @@ public interface Account extends Resource, Saveable, Deletable {
      * @since 0.9.3
      */
     boolean isMemberOfGroup(String hrefOrName);
+
+    /**
+     * Returns all {@link ApiKey}s that belong to this account.
+     *
+     * @return all {@link ApiKey}s that belong to this account.
+     *
+     * @since 1.1.beta
+     */
+    ApiKeyList getApiKeys();
+
+    /**
+     * Returns a paginated list of the account's api keys that match the specified query criteria.
+     * <p/>
+     * This method is mostly provided as a non-type-safe alternative to the
+     * {@link #getApiKeys(com.stormpath.sdk.api.ApiKeyCriteria)} method which might be useful in dynamic languages on the
+     * JVM (for example, with Groovy):
+     * <pre>
+     * def apiKeys = account.getApiKeys([id: 'efjweoifjweiofj'])
+     * </pre>
+     * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/apiKeys?param1=value1&param2=value2&...
+     * </pre>
+     * <p/>
+     * If in doubt, use {@link #getApiKeys(com.stormpath.sdk.api.ApiKeyCriteria)} as all possible query options are available
+     * via type-safe guarantees that can be auto-completed by most IDEs.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the account's api keys that match the specified query criteria.
+     * @since 1.1.beta
+     */
+    ApiKeyList getApiKeys(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's api keys that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.api.ApiKeys ApiKeys} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getApiKeys(ApiKeys.where(ApiKeys.id()).eq("Sffwef345348nernfgierR"));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.api.ApiKeys.*;
+     *
+     * ...
+     *
+     * account.getApiKeys(where(id()).eq("Sffwef345348nernfgierR"));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's api keys that match the specified query criteria.
+     * @since 1.1.beta
+     */
+    ApiKeyList getApiKeys(ApiKeyCriteria criteria);
+
+    /**
+     * Creates an {@link ApiKey} for this account and returns it.
+     *
+     * @return the created {@link ApiKey}.
+     * @since 1.1.beta
+     */
+    ApiKey createApiKey();
+
+
+    /**
+     * Creates a new api key instance in the account, with the option to retrieve api key references in the
+     * creation response.
+     * <h2>Example</h2>
+     * <pre>
+     * account.createApiKey(Accounts.newCreateRequest().build());
+     * </pre>
+     * <p/>
+     * If you would like to retrieve the api key's tenant and account in the response of the api key's creation.
+     * <pre>
+     * account.createApiKey(Accounts.newCreateRequest().withAccount().withTenant().build());
+     * </pre>
+     *
+     * <p/>
+     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
+     * Therefore, this method is a convenience: it automatically issues a create with the account's
+     * {@link #getApiKeys() api key collection}.
+     *
+     * @param request the api key creation request
+     * @since 1.1.beta
+     */
+    ApiKey createApiKey(CreateApiKeyRequest request);
 
 }
