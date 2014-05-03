@@ -24,13 +24,33 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
 import java.lang.reflect.Constructor;
 
 /**
+ * Static utility/helper methods for working with {@link ApiKey} resources.  Most methods are
+ * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
+ * ApiKey-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. for example:
+ * <pre>
+ * <b>ApiKeys.where(<b>ApiKeys.id()</b>.eq("Sffwef345348nernfgierR"))</b>
+ *     .and(<b>ApiKeys.encryptSecret()</b>.eq(Boolean.TRUE))
+ *     .offsetBy(50)
+ *     .limitTo(25));
+ * </pre>
+ * or, if using static imports:
+ * <pre>
+ * import static com.stormpath.sdk.api.ApiKeys.*;
+ *
+ * ...
+ *
+ * <b>where(<b>id()</b>.eq("Sffwef345348nernfgierR"))</b>
+ *     .and(<b>encryptSecret()</b>.eq(Boolean.TRUE))
+ *     .offsetBy(50)
+ *     .limitTo(25));
+ * </pre>
  * @since 1.1.beta
  */
 public final class ApiKeys {
 
     @SuppressWarnings("unchecked")
     private static final Class<CreateApiKeyRequestBuilder> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.account.DefaultCreateApiKeyRequestBuilder");
+            Classes.forName("com.stormpath.sdk.impl.api.DefaultCreateApiKeyRequestBuilder");
 
     /**
      * Returns a new {@link ApiKeyOptions} instance, used to customize how one or more {@link ApiKey}s are retrieved.
@@ -38,7 +58,7 @@ public final class ApiKeys {
      * @return a new {@link ApiKeyOptions} instance, used to customize how one or more {@link ApiKey}s are retrieved.
      */
     public static ApiKeyOptions<ApiKeyOptions> options() {
-        return (ApiKeyOptions) Classes.newInstance("com.stormpath.sdk.impl.account.DefaultApiKeyOptions");
+        return (ApiKeyOptions) Classes.newInstance("com.stormpath.sdk.impl.api.DefaultApiKeyOptions");
     }
 
     /**
@@ -55,7 +75,7 @@ public final class ApiKeys {
      * @return a new {@link ApiKeyCriteria} instance to use to formulate an ApiKey query.
      */
     public static ApiKeyCriteria criteria() {
-        return (ApiKeyCriteria) Classes.newInstance("com.stormpath.sdk.impl.account.DefaultApiKeyCriteria");
+        return (ApiKeyCriteria) Classes.newInstance("com.stormpath.sdk.impl.api.DefaultApiKeyCriteria");
     }
 
     /**
@@ -71,7 +91,7 @@ public final class ApiKeys {
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the ApiKey {@link ApiKey#getId() id}
      * property, to be used to construct an id Criterion when building an {@link ApiKeyCriteria} query.  For example:
      * <pre>
-     * ApiKeys.where(<b>ApiKeys.id()</b>.eq("Sffwef345348nernfgierR");
+     * ApiKeys.where(<b>ApiKeys.id()</b>.eq("Sffwef345348nernfgierR"));
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
@@ -92,13 +112,108 @@ public final class ApiKeys {
     }
 
     /**
+     * Creates a new {@link EqualsExpressionFactory} instance reflecting the encryptSecret
+     * query parameter, to be used to construct an encryptSecret Criterion when building an {@link ApiKeyCriteria} query.  For example:
+     * <pre>
+     * ApiKeys.where(<b>ApiKeys.encryptSecret()</b>.eq(Boolean.TRUE));
+     * </pre>
+     * The above example invokes the returned factory's <code>eq()</code> method.  This
+     * produces a status-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(com.stormpath.sdk.query.Criterion) where} method).  For example, the following code is equivalent:
+     * <pre>
+     * ApiKeyCriteria criteria = ApiKeys.criteria();
+     * EqualsExpressionFactory encryptSecretExpressionFactory = ApiKeys.encryptSecret();
+     * Criterion encryptSecretEquals = encryptSecretExpressionFactory.eq(Boolean.TRUE);
+     * criteria.add(encryptSecretEquals);
+     * </pre>
+     * The first code example is clearly more succinct and readable.
+     *
+     * @return a new {@code encrypt secret}-specific {@link EqualsExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link ApiKeyCriteria} query.
+     */
+    public static EqualsExpressionFactory encryptSecret() {
+        return newEqualsExpressionFactory("encryptSecret");
+    }
+
+    /**
+     * Creates a new {@link EqualsExpressionFactory} instance reflecting the encryptionKeySize
+     * query parameter, to be used to construct an encryptionKeySize Criterion when building an {@link ApiKeyCriteria} query.  For example:
+     * <pre>
+     * ApiKeys.where(<b>ApiKeys.encryptionKeySize()</b>.eq(Integer.valueOf(256)));
+     * </pre>
+     * The above example invokes the returned factory's <code>eq()</code> method.  This
+     * produces a status-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(com.stormpath.sdk.query.Criterion) where} method).  For example, the following code is equivalent:
+     * <pre>
+     * ApiKeyCriteria criteria = ApiKeys.criteria();
+     * EqualsExpressionFactory encryptionKeySizeExpressionFactory = ApiKeys.encryptionKeySize();
+     * Criterion encryptionKeySizeEquals = encryptionKeySizeExpressionFactory.eq(Integer.valueOf(256));
+     * criteria.add(encryptionKeySizeEquals);
+     * </pre>
+     * The first code example is clearly more succinct and readable.
+     *
+     * @return a new {@code encryption key size}-specific {@link EqualsExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link ApiKeyCriteria} query.
+     */
+    public static EqualsExpressionFactory encryptionKeySize() {
+        return newEqualsExpressionFactory("encryptionKeySize");
+    }
+
+    /**
+     * Creates a new {@link EqualsExpressionFactory} instance reflecting the encryptionKeyIterations
+     * query parameter, to be used to construct an encryptionKeyIterations Criterion when building an {@link ApiKeyCriteria} query.  For example:
+     * <pre>
+     * ApiKeys.where(<b>ApiKeys.encryptionKeyIterations()</b>.eq(Integer.valueOf(2048)));
+     * </pre>
+     * The above example invokes the returned factory's <code>eq()</code> method.  This
+     * produces a status-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(com.stormpath.sdk.query.Criterion) where} method).  For example, the following code is equivalent:
+     * <pre>
+     * ApiKeyCriteria criteria = ApiKeys.criteria();
+     * EqualsExpressionFactory encryptionKeyIterationsExpressionFactory = ApiKeys.encryptionKeyIterations();
+     * Criterion encryptionKeyIterationsEquals = encryptionKeyIterationsExpressionFactory.eq(Integer.valueOf(2048));
+     * criteria.add(encryptionKeyIterationsEquals);
+     * </pre>
+     * The first code example is clearly more succinct and readable.
+     *
+     * @return a new {@code encryption key iterations}-specific {@link EqualsExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link ApiKeyCriteria} query.
+     */
+    public static EqualsExpressionFactory encryptionKeyIterations() {
+        return newEqualsExpressionFactory("encryptionKeyIterations");
+    }
+
+    /**
+     * Creates a new {@link EqualsExpressionFactory} instance reflecting the encryptionKeySalt
+     * query parameter, to be used to construct an encryptionKeySalt Criterion when building an {@link ApiKeyCriteria} query.  For example:
+     * <pre>
+     * ApiKeys.where(<b>ApiKeys.encryptionKeySalt()</b>.eq("MyAwesomeSaltValue"));
+     * </pre>
+     * The above example invokes the returned factory's <code>eq()</code> method.  This
+     * produces a status-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(com.stormpath.sdk.query.Criterion) where} method).  For example, the following code is equivalent:
+     * <pre>
+     * ApiKeyCriteria criteria = ApiKeys.criteria();
+     * EqualsExpressionFactory encryptionKeySaltExpressionFactory = ApiKeys.encryptionKeySalt();
+     * Criterion encryptionKeySaltEquals = encryptionKeySaltExpressionFactory.eq("MyAwesomeSaltValue");
+     * criteria.add(encryptionKeySaltEquals);
+     * </pre>
+     * The first code example is clearly more succinct and readable.
+     *
+     * @return a new {@code encryption key salt}-specific {@link EqualsExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link ApiKeyCriteria} query.
+     */
+    public static EqualsExpressionFactory encryptionKeySalt() {
+        return newEqualsExpressionFactory("encryptionKeySalt");
+    }
+
+    /**
      * Creates a new {@link CreateApiKeyRequestBuilder CreateApiKeyRequestBuilder}. The builder can be used to customize any
      * creation response options as necessary.
      *
      * @return a new {@link CreateApiKeyRequestBuilder CreateApiKeyRequestBuilder}.
      *
      * @see com.stormpath.sdk.account.Account#createApiKey(CreateApiKeyRequest) Account#createApiKey(CreateApiKeyRequest)
-     * @since 1.1.beta
      */
     public static CreateApiKeyRequestBuilder newCreateRequest() {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS);

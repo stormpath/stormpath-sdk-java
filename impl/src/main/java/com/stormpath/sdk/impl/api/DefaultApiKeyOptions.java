@@ -15,18 +15,23 @@
  *  * limitations under the License.
  *
  */
-package com.stormpath.sdk.api;
+package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
- * An {@link ApiKey}-specific {@link Criteria} class, enabling an ApiKey-specific
- * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  ApiKeyCriteria instances can be
- * constructed by using the {@link ApiKeys} utility class, for example:
- * <pre>
- * ApiKeys.where(<b>ApiKeys.id()</b>.eq("Sffwef345348nernfgierR"));
- * </pre>
  * @since 1.1.beta
  */
-public interface ApiKeyCriteria extends Criteria<ApiKeyCriteria>, ApiKeyOptions<ApiKeyCriteria> {
+public class DefaultApiKeyOptions extends DefaultOptions<ApiKeyOptions> implements ApiKeyOptions<ApiKeyOptions>  {
+
+    @Override
+    public ApiKeyOptions withTenant() {
+        return expand(DefaultApiKey.ACCOUNT);
+    }
+
+    @Override
+    public ApiKeyOptions withAccount() {
+        return expand(DefaultApiKey.TENANT);
+    }
 }

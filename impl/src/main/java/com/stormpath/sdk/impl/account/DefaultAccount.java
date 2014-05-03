@@ -24,6 +24,7 @@ import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.api.CreateApiKeyRequest;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
@@ -32,6 +33,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
@@ -77,7 +79,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS);
+            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, API_KEYS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -272,13 +274,52 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         return getDataStore().getResource(list.getHref(), ApiKeyList.class, criteria);
     }
 
+    /**
+     * @since 1.1.beta
+     */
     @Override
     public ApiKey createApiKey() {
-        return null;  //TODO Implement
+        CreateApiKeyRequest request = ApiKeys.newCreateRequest().build();
+        return createApiKey(request);
     }
 
+    /**
+     * @since 1.1.beta
+     */
     @Override
     public ApiKey createApiKey(CreateApiKeyRequest request) {
-        return null;  //TODO Implement
+        Assert.notNull(request, "Request argument cannot be null.");
+
+        String href = getApiKeys().getHref();
+        StringBuilder hrefBuilder = new StringBuilder(href);
+
+        boolean parameterSet = false;
+        if (request.isEncryptSecretOptionSpecified()) {
+            hrefBuilder.append(String.format("?encryptSecret=%s", request.isEncryptSecret()));
+            parameterSet = true;
+        }
+
+        if (request.isEncryptionKeySizeOptionSpecified()) {
+            hrefBuilder.append(parameterSet ? "&" : "?");
+            hrefBuilder.append(String.format("encryptionKeySize=%s", request.getEncryptionKeySize()));
+            parameterSet = true;
+        }
+
+        if (request.isEncryptionKeyIterationsOptionSpecified()) {
+            hrefBuilder.append(parameterSet ? "&" : "?");
+            hrefBuilder.append(String.format("encryptionKeyIterations=%s", request.getEncryptionKeyIterations()));
+            parameterSet = true;
+        }
+
+        if (request.isEncryptionKeySaltOptionSpecified()) {
+            hrefBuilder.append(parameterSet ? "&" : "?");
+            hrefBuilder.append(String.format("encryptionKeySalt=%s", request.getEncryptionKeySalt()));
+        }
+
+        if (request.isApiKeyOptionsSpecified()) {
+            return getDataStore().create(hrefBuilder.toString(), new DefaultApiKey(getDataStore()), request.getApiKeyOptions());
+        }
+
+        return getDataStore().create(href, new DefaultApiKey(getDataStore()));
     }
 }

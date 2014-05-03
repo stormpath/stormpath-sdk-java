@@ -1,17 +1,19 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.application;
 
@@ -21,6 +23,10 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.application.AccountStoreMappingCriteria;
 import com.stormpath.sdk.application.AccountStoreMappingList;
@@ -353,6 +359,37 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         accountStoreMapping.setListIndex(Integer.MAX_VALUE);
         return createAccountStoreMapping(accountStoreMapping);
 
+    }
+
+    /**
+     * @since 1.1.beta
+     */
+    @Override
+    public ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException {
+        Assert.hasText(id, "The argument 'id' cannot be null or empty to get an api key.");
+        ApiKeyCriteria criteria = ApiKeys.where(ApiKeys.id().eq(id));
+        return getApiKey(criteria);
+    }
+
+    /**
+     * @since 1.1.beta
+     */
+    @Override
+    public ApiKey getApiKey(ApiKeyCriteria criteria) throws ResourceException, IllegalArgumentException {
+
+        Assert.notNull(criteria, "The 'criteria' argument cannot be null to get an api key.");
+        Assert.notNull(getHref(), "The application must have an href to get an api key.");
+
+        String href = getHref() + "/apiKeys";
+        ApiKeyList apiKeys =  getDataStore().getResource(href, ApiKeyList.class, criteria);
+
+        ApiKey apiKey = null;
+        for(ApiKey aKey : apiKeys) {
+            apiKey = aKey;
+            break; // we only expect to receive one api key from this request
+        }
+
+        return apiKey;
     }
 
     /**

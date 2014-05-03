@@ -1,17 +1,19 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.application;
 
@@ -19,6 +21,8 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -658,4 +662,38 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.9
      */
     AccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException;
+
+    /**
+     * Gets an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
+     *<p/>
+     * @param id the id of the {@link ApiKey} to be retrieved.
+     * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
+     * @throws ResourceException
+     * @throws IllegalArgumentException if the {@code id} argument is null or empty.
+     * @since 1.1.beta
+     */
+    ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException;
+
+    /**
+     *
+     * Gets an {@link ApiKey}, by the specified criteria, that belongs to an {@link Account} that has access to this application by a mapped account store.
+     * <p/>
+     * <h4>Example</h4>
+     * <pre>
+     * ApiKey apiKey = application.getApiKey(ApiKeys.where(ApiKeys.id().eq("Sffwef345348nernfgierR")).withTenant().withAccount());
+     * </pre>
+     * The api key will return with the tenant and the account resources expanded so you don't have to make another call to the server
+     * to retrieve those properties.
+     * NOTE: if the api key id is not specified in the criteria, a {@link ResourceException} will be returned with a message saying that
+     * the 'id' query parameter is required to retrieve an api key from Stormpath.
+     * <p/>
+     *
+     * @param criteria the {@link ApiKeyCriteria} for the {@link ApiKey} to be retrieved.
+     * @return an {@link ApiKey}, by the specified {@link ApiKeyCriteria}, that belongs to an {@link Account} that has access to this application
+     *          by a mapped account store.
+     * @throws ResourceException
+     * @throws IllegalArgumentException if the {@code criteria} argument is null or if trying to get an api key from an application with no href.
+     * @since 1.1.beta
+     */
+    ApiKey getApiKey(ApiKeyCriteria criteria) throws ResourceException, IllegalArgumentException;
 }
