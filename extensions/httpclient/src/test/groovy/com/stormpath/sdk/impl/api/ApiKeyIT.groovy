@@ -40,8 +40,6 @@ class ApiKeyIT extends ClientIT {
 
         def apiKey = getTestApiKey()
 
-        assertEquals apiKey.status, ApiKeyStatus.ENABLED
-
         apiKey.status = ApiKeyStatus.DISABLED
         apiKey.save()
         assertEquals apiKey.status, ApiKeyStatus.DISABLED
@@ -54,8 +52,6 @@ class ApiKeyIT extends ClientIT {
     void testSaveWithRequest() {
 
         def apiKey = getTestApiKey()
-
-        assertEquals apiKey.status, ApiKeyStatus.ENABLED
 
         apiKey.status = ApiKeyStatus.DISABLED
         apiKey.save(ApiKeys.newSaveRequest()
