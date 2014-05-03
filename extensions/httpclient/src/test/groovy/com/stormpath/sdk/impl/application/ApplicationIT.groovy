@@ -1,22 +1,25 @@
 /*
- * Copyright 2014 Stormpath, Inc. and contributors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
@@ -236,6 +239,62 @@ class ApplicationIT extends ClientIT {
         assertEquals(result.getAccount().getUsername(), acct.username)
     }
 
+    @Test
+    void testGetApiKeyById() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def appApiKey = app.getApiKey(apiKey.id)
+
+        assertNotNull appApiKey
+        assertEquals appApiKey, apiKey
+
+    }
+
+    @Test
+    void testGetApiKeyByCriteria() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def appApiKey = app.getApiKey(ApiKeys.where(ApiKeys.id().eq(apiKey.id)).and(ApiKeys.encryptSecret().eq(true))
+                                              .and(ApiKeys.encryptionKeySize().eq(128))
+                                              .and(ApiKeys.encryptionKeyIterations().eq(10))
+                                              .and(ApiKeys.encryptionKeySalt().eq("YAKpZIKRAUJ0-1pf57Bs_A"))
+                                      .withTenant()
+                                      .withAccount());
+
+        assertNotNull appApiKey
+        assertNotEquals apiKey.secret, appApiKey.secret
+
+        // testing the expansion where the expanded resources must have more than just the 'href' property
+        assertTrue appApiKey.account.getPropertyNames().size() > 1
+        assertTrue appApiKey.tenant.getPropertyNames().size() > 1
+
+    }
+
+    def Account createTestAccount(Application app) {
+
+        def email = 'deleteme@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email =  email
+        account.password = 'Changeme1!'
+
+        app.createAccount(account)
+        deleteOnTeardown(account)
+
+        return  account
+    }
 
 
 }

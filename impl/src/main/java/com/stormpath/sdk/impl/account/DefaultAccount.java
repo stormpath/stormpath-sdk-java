@@ -301,13 +301,13 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
         if (request.isEncryptionKeySizeOptionSpecified()) {
             hrefBuilder.append(parameterSet ? "&" : "?");
-            hrefBuilder.append(String.format("encryptionKeySize=%s", request.getEncryptionKeySize()));
+            hrefBuilder.append(String.format("encryptionKeySize=%d", request.getEncryptionKeySize()));
             parameterSet = true;
         }
 
         if (request.isEncryptionKeyIterationsOptionSpecified()) {
             hrefBuilder.append(parameterSet ? "&" : "?");
-            hrefBuilder.append(String.format("encryptionKeyIterations=%s", request.getEncryptionKeyIterations()));
+            hrefBuilder.append(String.format("encryptionKeyIterations=%d", request.getEncryptionKeyIterations()));
             parameterSet = true;
         }
 

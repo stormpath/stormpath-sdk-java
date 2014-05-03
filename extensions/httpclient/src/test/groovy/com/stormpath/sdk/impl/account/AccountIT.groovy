@@ -19,12 +19,14 @@ package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
 import org.testng.annotations.Test
 
+import static com.stormpath.sdk.api.ApiKeys.*
 import static org.testng.Assert.*
 
 /**
@@ -59,6 +61,9 @@ class AccountIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.1.beta
+     */
     @Test
     void testCreateAndDeleteApiKey() {
 
@@ -81,6 +86,46 @@ class AccountIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.1.beta
+     */
+    @Test
+    void testCreateApiKeyWithCriteria() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = createTestAccount(app)
+
+        def apiKey = acct.createApiKey(newCreateRequest()
+                                        .setEncryptSecret(true)
+                                        .setEncryptionKeySize(128)
+                                        .setEncryptionKeyIterations(10)
+                                        .setEncryptionKeySalt("YAKpZIKRAUJ0-1pf57Bs_A")
+                                        .withResponseOptions(options().withAccount().withTenant())
+                                        .build())
+
+
+        assertNotNull apiKey
+        assertFalse apiKey.href.isEmpty()
+        assertEquals apiKey.status, ApiKeyStatus.ENABLED
+        assertNotNull apiKey.account
+        assertEquals apiKey.account.href, acct.href
+        assertNotNull apiKey.tenant
+        assertEquals apiKey.tenant.href, acct.tenant.href
+
+        // need to create another client to call the server because the api key is cached with the encrypted values
+        // TODO define cache keys that include the query parameters
+        def client = buildClient()
+        def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
+        assertNotEquals apiKey.secret, retrievedApiKey.secret
+
+        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
+    }
+
+    /**
+     * @since 1.1.beta
+     */
     Account createTestAccount(def application) {
 
         //create a test account:

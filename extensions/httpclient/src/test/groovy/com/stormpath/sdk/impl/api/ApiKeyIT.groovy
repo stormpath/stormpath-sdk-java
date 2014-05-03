@@ -21,29 +21,78 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.client.ClientIT
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
+import static com.stormpath.sdk.api.ApiKeys.options
+import static org.testng.Assert.*
 
 /**
  * @since 1.1.beta
  */
 class ApiKeyIT extends ClientIT {
 
+    ApiKey apiKey;
+
     @Test
     void testUpdateStatus() {
 
-        def apiKey = createTestApiKey()
+        def apiKey = getTestApiKey()
 
         assertEquals apiKey.status, ApiKeyStatus.ENABLED
 
         apiKey.status = ApiKeyStatus.DISABLED
         apiKey.save()
         assertEquals apiKey.status, ApiKeyStatus.DISABLED
+
+        apiKey.status = ApiKeyStatus.ENABLED
+        apiKey.save()
     }
 
-    ApiKey createTestApiKey() {
+    @Test
+    void testSaveWithRequest() {
+
+        def apiKey = getTestApiKey()
+
+        assertEquals apiKey.status, ApiKeyStatus.ENABLED
+
+        apiKey.status = ApiKeyStatus.DISABLED
+        apiKey.save(ApiKeys.newSaveRequest()
+                    .setEncryptSecret(true)
+                    .setEncryptionKeySize(128)
+                    .setEncryptionKeyIterations(10)
+                    .setEncryptionKeySalt("YAKpZIKRAUJ0-1pf57Bs_A")
+                    .withResponseOptions(options().withAccount().withTenant())
+                    .build())
+
+        assertEquals apiKey.status, ApiKeyStatus.DISABLED
+
+        // need to create another client to call the server because the api key is cached with the encrypted values
+        // TODO define cache keys that include the query parameters
+        def client = buildClient()
+        def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
+        assertNotEquals apiKey.secret, retrievedApiKey.secret
+
+        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
+    }
+
+    @Test
+    void testGetByHref() {
+
+        def apiKey = getTestApiKey()
+
+        def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
+
+        assertNotNull retrievedApiKey
+        assertEquals apiKey, retrievedApiKey
+    }
+
+    ApiKey getTestApiKey() {
+
+        if (apiKey != null) {
+            return apiKey
+        }
 
         def application = createTempApp()
 
@@ -57,7 +106,7 @@ class ApiKeyIT extends ClientIT {
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(acct)
 
-        def apiKey = acct.createApiKey()
+        apiKey = acct.createApiKey()
         deleteOnTeardown(apiKey)
 
         return apiKey

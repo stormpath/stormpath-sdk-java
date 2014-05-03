@@ -74,4 +74,12 @@ public interface ApiKey extends Resource, Saveable, Deletable {
      * @return the Stormpath {@link Tenant} that owns this ApiKey resource.
      */
     Tenant getTenant();
+
+    /**
+     * Saves this ApiKey resource and ensures the returned ApiKey response reflects the specified saveApiKeyRequest.
+     *
+     * @param request The {@link SaveApiKeyRequest} to use to customize the ApiKey resource returned in the save
+     *                        response.
+     */
+    void save(SaveApiKeyRequest request);
 }

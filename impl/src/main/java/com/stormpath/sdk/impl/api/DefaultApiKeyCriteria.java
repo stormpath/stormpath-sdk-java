@@ -26,7 +26,7 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
  */
 public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKeyOptions> implements ApiKeyCriteria  {
 
-    public DefaultApiKeyCriteria(ApiKeyOptions options) {
+    public DefaultApiKeyCriteria() {
         super(new DefaultApiKeyOptions());
     }
 

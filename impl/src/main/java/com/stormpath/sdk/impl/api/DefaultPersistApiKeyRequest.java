@@ -23,7 +23,7 @@ import com.stormpath.sdk.api.CreateApiKeyRequest;
 /**
  * @since 1.1.beta
  */
-public class DefaultCreateApiKeyRequest implements CreateApiKeyRequest {
+public class DefaultPersistApiKeyRequest implements CreateApiKeyRequest {
 
     private final ApiKeyOptions options;
     private final Boolean encryptSecret;
@@ -31,7 +31,7 @@ public class DefaultCreateApiKeyRequest implements CreateApiKeyRequest {
     private final Integer encryptionKeyIterations;
     private final String encryptionKeySalt;
 
-    public DefaultCreateApiKeyRequest(ApiKeyOptions options, Boolean encryptSecret, Integer encryptionKeySize, Integer encryptionKeyIterations, String encryptionKeySalt) {
+    public DefaultPersistApiKeyRequest(ApiKeyOptions options, Boolean encryptSecret, Integer encryptionKeySize, Integer encryptionKeyIterations, String encryptionKeySalt) {
         this.options = options;
         this.encryptSecret = encryptSecret;
         this.encryptionKeySize = encryptionKeySize;

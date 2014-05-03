@@ -1,25 +1,32 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.EmailVerificationToken
+import com.stormpath.sdk.api.ApiKeyList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -48,7 +55,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 14)
+        assertEquals(propertyDescriptors.size(), 15)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -64,6 +71,7 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("groupMemberships") instanceof CollectionReference && propertyDescriptors.get("groupMemberships").getType().equals(GroupMembershipList))
+        assertTrue(propertyDescriptors.get("apiKeys") instanceof CollectionReference && propertyDescriptors.get("apiKeys").getType().equals(ApiKeyList))
     }
 
     @Test

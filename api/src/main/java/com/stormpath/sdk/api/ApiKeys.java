@@ -50,7 +50,7 @@ public final class ApiKeys {
 
     @SuppressWarnings("unchecked")
     private static final Class<CreateApiKeyRequestBuilder> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.api.DefaultCreateApiKeyRequestBuilder");
+            Classes.forName("com.stormpath.sdk.impl.api.DefaultPersistApiKeyRequestBuilder");
 
     /**
      * Returns a new {@link ApiKeyOptions} instance, used to customize how one or more {@link ApiKey}s are retrieved.
@@ -218,6 +218,19 @@ public final class ApiKeys {
     public static CreateApiKeyRequestBuilder newCreateRequest() {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS);
         return (CreateApiKeyRequestBuilder) Classes.instantiate(ctor);
+    }
+
+    /**
+     * Creates a new {@link SaveApiKeyRequestBuilder SaveApiKeyRequestBuilder}. The builder can be used to customize any
+     * update response options as necessary.
+     *
+     * @return a new {@link SaveApiKeyRequestBuilder SaveApiKeyRequestBuilder}.
+     *
+     * @see com.stormpath.sdk.api.ApiKey#save(SaveApiKeyRequest) ApiKey#save(SaveApiKeyRequest)
+     */
+    public static SaveApiKeyRequestBuilder newSaveRequest() {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS);
+        return (SaveApiKeyRequestBuilder) Classes.instantiate(ctor);
     }
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {

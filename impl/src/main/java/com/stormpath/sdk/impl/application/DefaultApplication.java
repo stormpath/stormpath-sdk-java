@@ -384,9 +384,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         ApiKeyList apiKeys =  getDataStore().getResource(href, ApiKeyList.class, criteria);
 
         ApiKey apiKey = null;
-        for(ApiKey aKey : apiKeys) {
-            apiKey = aKey;
-            break; // we only expect to receive one api key from this request
+
+        if (apiKeys != null && apiKeys.iterator().hasNext()) {
+            apiKey = apiKeys.iterator().next(); // we expect only one api key to be in the collection
         }
 
         return apiKey;

@@ -25,7 +25,7 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.1.beta
  */
-public class DefaultCreateApiKeyRequestBuilder implements CreateApiKeyRequestBuilder {
+public class DefaultPersistApiKeyRequestBuilder implements CreateApiKeyRequestBuilder {
 
     private ApiKeyOptions options;
     private Boolean encryptSecret;
@@ -66,6 +66,6 @@ public class DefaultCreateApiKeyRequestBuilder implements CreateApiKeyRequestBui
 
     @Override
     public CreateApiKeyRequest build() {
-        return new DefaultCreateApiKeyRequest(options, encryptSecret, encryptionKeySize, encryptionKeyIterations, encryptionKeySalt);
+        return new DefaultPersistApiKeyRequest(options, encryptSecret, encryptionKeySize, encryptionKeyIterations, encryptionKeySalt);
     }
 }
