@@ -35,7 +35,7 @@ abstract class ClientIT {
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
     String apiKeyFileLocation = System.getProperty('user.home') + "/.stormpath/apiKey.properties"
-    String baseUrl = 'http://localhost:8080/v1'
+    String baseUrl = 'https://api.stormpath.com/v1'
     Client client
 
     List<Deletable> resourcesToDelete;
