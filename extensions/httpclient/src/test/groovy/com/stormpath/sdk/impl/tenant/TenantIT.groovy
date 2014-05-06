@@ -122,8 +122,9 @@ class TenantIT extends ClientIT {
                 forProvider(Providers.GOOGLE.createProviderRequest()
                         .setClientId(clientId)
                         .setClientSecret(clientSecret)
-                        .setRedirectUri("https://www.myAppURL:8090/index.jsp"))
-                .build();
+                        .setRedirectUri("https://www.myAppURL:8090/index.jsp")
+                        .build()
+                ).build()
 
         dir = client.currentTenant.createDirectory(request)
         deleteOnTeardown(dir)
@@ -151,8 +152,9 @@ class TenantIT extends ClientIT {
         def request = Directories.newCreateRequestFor(dir).
                 forProvider(Providers.FACEBOOK.createProviderRequest()
                         .setClientId(clientId)
-                        .setClientSecret(clientSecret))
-                .build()
+                        .setClientSecret(clientSecret)
+                        .build()
+                ).build()
 
         dir = client.currentTenant.createDirectory(request)
         deleteOnTeardown(dir)

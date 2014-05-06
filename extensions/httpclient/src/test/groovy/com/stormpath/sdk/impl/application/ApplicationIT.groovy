@@ -253,8 +253,9 @@ class ApplicationIT extends ClientIT {
                 forProvider(Providers.GOOGLE.createProviderRequest()
                         .setClientId(clientId)
                         .setClientSecret(clientSecret)
-                        .setRedirectUri("https://www.myAppURL:8090/index.jsp"))
-                .build();
+                        .setRedirectUri("https://www.myAppURL:8090/index.jsp")
+                        .build()
+                ).build()
 
         dir = client.currentTenant.createDirectory(createDirRequest)
         deleteOnTeardown(dir)

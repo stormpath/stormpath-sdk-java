@@ -87,8 +87,9 @@ class DefaultTenantTest {
                 forProvider(Providers.GOOGLE.createProviderRequest()
                         .setClientId("aClientId999")
                         .setClientSecret("aClientSecret111")
-                        .setRedirectUri("http://someUrl:99999"))
-                .build();
+                        .setRedirectUri("http://someUrl:99999")
+                        .build()
+                ).build();
 
         assertEquals(defaultTenant.createDirectory(request), returnedDirectory)
 
@@ -111,8 +112,9 @@ class DefaultTenantTest {
                 forProvider(Providers.GOOGLE.createProviderRequest()
                         .setClientId("aClientId999")
                         .setClientSecret("aClientSecret111")
-                        .setRedirectUri("http://someUrl:99999"))
-                .build();
+                        .setRedirectUri("http://someUrl:99999")
+                        .build()
+                ).build()
 
         try {
             defaultTenant.createDirectory(request)
