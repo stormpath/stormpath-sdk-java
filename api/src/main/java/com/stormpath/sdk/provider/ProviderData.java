@@ -19,6 +19,12 @@ import com.stormpath.sdk.resource.Resource;
 
 import java.util.Date;
 
+/**
+ * Resource containing Provider-specific data for the {@link com.stormpath.sdk.account.Account}. For example, for Google, it
+ * contains <code>refreshToken</code> and <code>accessToken</code>.
+ *
+ * @since 1.0.beta
+ */
 public interface ProviderData extends Resource {
 
     /**
@@ -29,12 +35,17 @@ public interface ProviderData extends Resource {
     Date getCreatedAt();
 
     /**
-     * Returns the ProviderData's last modification date
+     * Returns the ProviderData's last modification date.
      *
-     * @return the ProviderData's last modification date
+     * @return the ProviderData's last modification date.
      */
     Date getModifiedAt();
 
+    /**
+     * Getter for the Stormapth ID of the Provider (e.g. "stormpath", "facebook" or "google").
+     *
+     * @return the Stormapth ID of the Provider (e.g. "stormpath", "facebook" or "google").
+     */
     String getProviderId();
 
 }

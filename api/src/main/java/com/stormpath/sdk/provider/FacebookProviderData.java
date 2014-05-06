@@ -15,8 +15,18 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Facebook-specific {@link ProviderData} Resource.
+ *
+ * @since 1.0.beta
+ */
 public interface FacebookProviderData extends ProviderData {
 
+    /**
+     * Getter for the Facebook authorization code.
+     *
+     * @return the Facebook authorization code.
+     */
     String getAccessToken();
 
 }

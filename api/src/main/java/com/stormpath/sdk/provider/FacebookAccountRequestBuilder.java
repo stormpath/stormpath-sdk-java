@@ -15,6 +15,11 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Facebook's specific {@link ProviderAccountRequestBuilder} interface.
+ *
+ * @since 1.0.beta
+ */
 public interface FacebookAccountRequestBuilder extends ProviderAccountRequestBuilder<FacebookAccountRequestBuilder> {
 
 }

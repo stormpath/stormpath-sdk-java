@@ -15,10 +15,31 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Interface describing the builder capabilities that Providers implement in Stormpath.
+ *
+ * @param <ARB> A reification of {@link ProviderAccountRequestBuilder}
+ * @param <PRB> A reification of {@link CreateProviderRequestBuilder}
+ * @since 1.0.beta
+ */
 public interface ProviderRequestFactory<ARB extends ProviderAccountRequestBuilder, PRB extends CreateProviderRequestBuilder> {
 
+    /**
+     * Returns a builder to generate an attempt to create or retrieve a Provider {@link com.stormpath.sdk.account.Account}
+     * from Stormpath.
+     *
+     * @return a builder to generate an attempt to create or retrieve a Provider {@link com.stormpath.sdk.account.Account}
+     * from Stormpath.
+     */
     ARB accountRequest();
 
+    /**
+     * Returns a builder to generate an attempt to create a Provider-based {@link com.stormpath.sdk.directory.Directory}
+     * in Stormpath.
+     *
+     * @return a builder to generate an attempt to create a Provider-based {@link com.stormpath.sdk.directory.Directory}
+     * in Stormpath.
+     */
     PRB createProviderRequest();
 
 }

@@ -17,10 +17,30 @@ package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.account.Account;
 
+/**
+ * Represents the result of the attempt to access the Provider's account. Stormpath maps common fields of the
+ * Provider user to the {@link Account} Resource.
+ * <p/>
+ * If the user retrieved from the Provider did not previously exist in Stormapth as an Account, common Provider user fields
+ * will be used to create a new {@link Account} in Stormpath.
+ *
+ * @see com.stormpath.sdk.application.Application#getAccount(ProviderAccountRequest)
+ * @since 1.0.beta
+ */
 public interface ProviderAccountResult {
 
+    /**
+     * Getter for the {@link Account} Resource containing common fields of the Provider user in Stormpath.
+     *
+     * @return the {@link Account} Resource containing common fields of the Provider user in Stormpath.
+     */
     Account getAccount();
 
+    /**
+     * If this request generated a new Account in Stormpath, this method will return `true`.
+     *
+     * @return <code>true</code> if a new {@link Account} was generated in Stormpath as result of the request; <code>false</code> otherwise.
+     */
     boolean isNewAccount();
 
 }

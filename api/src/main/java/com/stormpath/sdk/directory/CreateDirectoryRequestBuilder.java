@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.provider.CreateProviderRequestBuilder;
+import com.stormpath.sdk.provider.CreateProviderRequest;
 
 public interface CreateDirectoryRequestBuilder {
 
-    <T extends CreateProviderRequestBuilder> CreateDirectoryRequestBuilder forProvider(T createProviderRequest);
+    <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T createProviderRequest);
 
     CreateDirectoryRequest build();
 }

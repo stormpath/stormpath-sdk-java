@@ -15,8 +15,19 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Google's specific {@link ProviderAccountRequestBuilder} interface.
+ *
+ * @since 1.0.beta
+ */
 public interface GoogleCreateProviderRequestBuilder extends CreateProviderRequestBuilder<GoogleCreateProviderRequestBuilder> {
 
+    /**
+     * Setter for the redirection Uri for your Google Application.
+     *
+     * @param redirectUri the redirection Uri for your Google Application.
+     * @return the builder instance for method chaining.
+     */
     GoogleCreateProviderRequestBuilder setRedirectUri(String redirectUri);
 
 }

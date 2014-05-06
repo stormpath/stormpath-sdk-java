@@ -15,12 +15,32 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Google-specific {@link ProviderData} Resource.
+ *
+ * @since 1.0.beta
+ */
 public interface GoogleProviderData extends ProviderData {
 
+    /**
+     * Getter for the Google access token.
+     *
+     * @return the Google access token.
+     */
     String getAccessToken();
 
+    /**
+     * Getter for the Google authorization code.
+     *
+     * @return the Google authorization code
+     */
     String getCode();
 
+    /**
+     * Getter for the Google refresh token.
+     *
+     * @return the Google refresh token.
+     */
     String getRefreshToken();
 
 }

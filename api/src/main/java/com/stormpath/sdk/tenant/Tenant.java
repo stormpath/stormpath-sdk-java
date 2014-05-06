@@ -156,6 +156,30 @@ public interface Tenant extends Resource, Saveable {
      */
     Directory createDirectory(Directory directory);
 
+    /**
+     * Creates a new <b>Provider-based</b> Directory resource in the Tenant based on the specified {@code CreateDirectoryRequest}.
+     * <h3>Usage</h3>
+     * <pre>
+     * Directory directory = client.instantiate(Directory.class);
+     * directory.setName("My Facebook Directory");
+     * ...
+     * CreateDirectoryRequest request = Directories.newCreateRequestFor(directory)
+     *      .forProvider(
+     *          <b>Providers.FACEBOOK.createProviderRequest()</b>
+     *                  .setClientId("624508218317020")
+     *                  .setClientSecret("d0ad961d45fgc0210c0c7d67e8f1w800")
+     *                  .build()
+     *      ).build();
+     * directory = tenant.createDirectory(request);
+     * </pre>
+     * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
+     * know you must choose another Directory name.
+     *
+     * @param createDirectoryRequest the request reflecting how to create the Directory
+     * @return the directory created.
+     * @throws ResourceException if there was a problem creating the directory.
+     * @since 1.0.beta
+     */
     Directory createDirectory(CreateDirectoryRequest createDirectoryRequest);
 
     /**

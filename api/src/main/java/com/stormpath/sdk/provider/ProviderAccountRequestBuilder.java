@@ -15,10 +15,28 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * A Builder to construct {@link ProviderAccountRequest}s.
+ *
+ * @param <T> the specific builder class (e.g {@link FacebookAccountRequestBuilder} or {@link GoogleAccountRequestBuilder}.
+ *
+ * @since 1.0.beta
+ */
 public interface ProviderAccountRequestBuilder<T extends ProviderAccountRequestBuilder<T>> {
 
+    /**
+     * Setter for the Provider App authorization code.
+     *
+     * @param accessToken the Provider App authorization code.
+     * @return the builder instance for method chaining.
+     */
     T setAccessToken(String accessToken);
 
+    /**
+     * Creates a new {@code ProviderAccountRequest} instance based on the current builder state.
+     *
+     * @return a new {@code ProviderAccountRequest} instance based on the current builder state.
+     */
     ProviderAccountRequest build();
 
 }

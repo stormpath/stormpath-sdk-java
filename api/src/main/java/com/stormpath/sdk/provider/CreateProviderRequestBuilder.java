@@ -15,11 +15,34 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * A Builder to construct {@link CreateProviderRequest}s.
+ *
+ * @see com.stormpath.sdk.directory.CreateDirectoryRequestBuilder#forProvider(CreateProviderRequest)
+ * @since 1.0.beta
+ */
 public interface CreateProviderRequestBuilder<T extends CreateProviderRequestBuilder> {
 
+    /**
+     * Setter for the the App ID of your Provider application (e.g. for "google" it looks similar to "143482128708.apps.googleusercontent.com").
+     *
+     * @param clientId the App ID for your Provider application.
+     * @return the builder instance for method chaining.
+     */
     T setClientId(String clientId);
 
+    /**
+     * Setter for the the App Secret of your Provider application (e.g. for "google" it looks similar to "U-IdloztzwLn2_2M4QjpulPq").
+     *
+     * @param clientSecret the App Secret for your Provider application.
+     * @return the current builder instance for method chaining.
+     */
     T setClientSecret(String clientSecret);
 
+    /**
+     * Creates a new {@code CreateProviderRequest} instance based on the current builder state.
+     *
+     * @return a new {@code CreateProviderRequest} instance based on the current builder state.
+     */
     CreateProviderRequest build();
 }

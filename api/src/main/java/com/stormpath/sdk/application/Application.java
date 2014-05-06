@@ -387,6 +387,28 @@ public interface Application extends Resource, Saveable, Deletable {
      */
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
 
+    /**
+     * Retrieves a Provider-based {@link Account}. The account must exist in one of the Provider-based {@link com.stormpath.sdk.directory.Directory Directories}
+     * assigned to the Application as an {@link #getAccountStoreMappings() account store}, the Directory must also be Enabled. If not
+     * in an assigned account store, the retrieval attempt will fail.
+     * <h2>Example</h2>
+     * Consider the following  example:
+     * <p/>
+     * <pre>
+     * ProviderAccountRequest request = Providers.GOOGLE.accountRequest()
+     *                  .setCode("4/mV9k80PpUB7XK_2RvOqOkNrI7I8C.krFm0WYFM_sY3pEBd8D1tNHT8u6jiwI")
+     *                  .build();
+     * ProviderAccountResult result = application.getAccount(request);
+     * Account account = result.getAccount();
+     * </pre>
+     *
+     * @param request the {@link ProviderAccountRequest} representing the Provider-specific access data (e.g.
+     *                <code>accessToken</code>) used to verify the identity.
+     * @return the result of the access request. The {@link Account} can be obtained from
+     *         {@code result.}{@link com.stormpath.sdk.provider.ProviderAccountResult#getAccount() getAccount()}.
+     * @throws ResourceException if the access attempt fails.
+     * @since 1.0.beta
+     */
     ProviderAccountResult getAccount(ProviderAccountRequest request);
 
     /**

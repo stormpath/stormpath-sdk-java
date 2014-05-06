@@ -15,18 +15,56 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Google-specific {@link Provider} Resource.
+ *
+ * @since 1.0.beta
+ */
 public interface GoogleProvider extends Provider {
 
+    /**
+     * Getter for the App ID of the Google application.
+     *
+     * @return the App ID for of Google application.
+     */
     String getClientId();
 
+    /**
+     * Setter for the App ID of the Google application.
+     *
+     * @param clientId the App ID of the Google application.
+     * @return this instance for method chaining.
+     */
     GoogleProvider setClientId(String clientId);
 
+    /**
+     * Getter for the App Secret of the Google application.
+     *
+     * @return the App Secret of the Google application.
+     */
     String getClientSecret();
 
+    /**
+     * Setter for the App Secret of the Google application.
+     *
+     * @param clientSecret the App Secret of the Google application.
+     * @return this instance for method chaining.
+     */
     GoogleProvider setClientSecret(String clientSecret);
 
+    /**
+     * Getter for the Redirect Uri of the Google application.
+     *
+     * @return the Redirect Uri of the Google application.
+     */
     String getRedirectUri();
 
+    /**
+     * Setter for the Redirect Uri of the Google application.
+     *
+     * @param redirectUri the Redirect Uri of the Google application.
+     * @return this instance for method chaining.
+     */
     GoogleProvider setRedirectUri(String redirectUri);
 
 }

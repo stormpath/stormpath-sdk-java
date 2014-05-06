@@ -17,9 +17,50 @@ package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.lang.Classes;
 
+/**
+ * Static utility/helper methods serving Provider-specific {@link ProviderRequestFactory}s. For example, to
+ * construct an account request:
+ * <pre>
+ * <b>ProviderAccountRequest request = Providers.GOOGLE.accountRequest()</b>
+ *     .setAccessToken("ya29.1.AADtN_VdFRceSUrSpQWlh4m38igAjOLxCsTx1B7HRWzWoD4RsphiTheV66_56Mhi")
+ *     .build();
+ * ProviderAccountResult result = application.getAccount(request);
+ * </pre>
+ * or, to create a new Provider-based {@link com.stormpath.sdk.directory.Directory}:
+ * <pre>
+ * Directory directory = client.instantiate(Directory.class);
+ * directory.setName("My Facebook Directory");
+ * ...
+ * CreateDirectoryRequest request = Directories.newCreateRequestFor(directory)
+ *      .forProvider(
+ *          <b>Providers.FACEBOOK.createProviderRequest()</b>
+ *                  .setClientId("624508218317020")
+ *                  .setClientSecret("d0ad961d45fgc0210c0c7d67e8f1w800")
+ *                  .build()
+ *      ).build();
+ * directory = tenant.createDirectory(request);
+ * </pre>
+ *
+ * @since 1.0.beta
+ */
 public final class Providers {
 
+    //prevent instantiation
+    private Providers() {
+    }
+
+    /**
+     * Returns a new {@link GoogleRequestFactory} instance, used to construct Google requests, like Google Directory creation.
+     *
+     * @return a new {@link GoogleRequestFactory} instance, used to construct Google requests, like Google Directory creation.
+     */
     public static final GoogleRequestFactory GOOGLE = (GoogleRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleRequestFactory");
+
+    /**
+     * Returns a new {@link FacebookRequestFactory} instance, used to construct Facebook requests, like Facebook Account creation and retrieval.
+     *
+     * @return a new {@link FacebookRequestFactory} instance, used to construct Facebook requests, like Facebook Account creation and retrieval.
+     */
     public static final FacebookRequestFactory FACEBOOK = (FacebookRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookRequestFactory");
 
 }

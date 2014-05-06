@@ -15,8 +15,20 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Placeholder for all the information pertaining to a Provider when attempting to create a new Provider-based {@link com.stormpath.sdk.directory.Directory} in Stormpath.
+ *
+ * @see CreateProviderRequestBuilder
+ * @see com.stormpath.sdk.directory.CreateDirectoryRequestBuilder#forProvider(CreateProviderRequest)
+ * @since 1.0.beta
+ */
 public interface CreateProviderRequest {
 
+    /**
+     * Returns the Provider instance containing all the Provider information to be used when creating a Provider-based directory in Stormpath.
+     *
+     * @return the Provider instance containing all the Provider information to be used when creating a Provider-based directory in Stormpath.
+     */
     Provider getProvider();
 
 }

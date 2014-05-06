@@ -19,7 +19,7 @@ import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.CreateDirectoryRequestBuilder;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.provider.CreateProviderRequestBuilder;
+import com.stormpath.sdk.provider.CreateProviderRequest;
 import com.stormpath.sdk.provider.Provider;
 
 /**
@@ -36,8 +36,8 @@ public class DefaultCreateDirectoryRequestBuilder implements CreateDirectoryRequ
     }
 
     @Override
-    public <T extends CreateProviderRequestBuilder> CreateDirectoryRequestBuilder forProvider(T createProviderRequest) {
-        this.provider = createProviderRequest.build().getProvider();
+    public <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T createProviderRequest) {
+        this.provider = createProviderRequest.getProvider();
         return this;
     }
 

@@ -15,7 +15,21 @@
  */
 package com.stormpath.sdk.provider;
 
+/**
+ * Represents an attempt to get or create a Provider-based {@link com.stormpath.sdk.account.Account} record in Stormpath.
+ * <p/>
+ * NOTE: A Provider-specific {@link com.stormpath.sdk.directory.Directory} must previously exist in Stormpath and it must also
+ * be an Enabled Account Store within the Application.
+ *
+ * @see {@link com.stormpath.sdk.directory.CreateDirectoryRequestBuilder}
+ * @since 1.0.beta
+ */
 public interface ProviderAccountRequest {
 
+    /**
+     * Getter for the {@link ProviderData} Resource containing the data required to access to the account.
+     *
+     * @return the {@link ProviderData} Resource containing the data required to access to the account.
+     */
     ProviderData getProviderData();
 }

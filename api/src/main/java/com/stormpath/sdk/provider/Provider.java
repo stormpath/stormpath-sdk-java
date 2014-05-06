@@ -19,6 +19,13 @@ import com.stormpath.sdk.resource.Resource;
 
 import java.util.Date;
 
+/**
+ * A provider resource holds specific information needed to work with Provider-based Directories (e.g, Google and Facebook).
+ *
+ * @see GoogleProvider
+ * @see FacebookProvider
+ * @since 1.0.beta
+ */
 public interface Provider extends Resource {
 
     /**
@@ -35,5 +42,10 @@ public interface Provider extends Resource {
      */
     Date getModifiedAt();
 
+    /**
+     * Getter for the Stormpath ID of the Provider (e.g. "facebook" or "google").
+     *
+     * @return the Stormpath ID of the Provider.
+     */
     String getProviderId();
 }
