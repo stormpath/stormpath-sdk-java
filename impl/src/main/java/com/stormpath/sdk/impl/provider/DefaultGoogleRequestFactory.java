@@ -20,6 +20,9 @@ import com.stormpath.sdk.provider.GoogleAccountRequestBuilder;
 import com.stormpath.sdk.provider.GoogleCreateProviderRequestBuilder;
 import com.stormpath.sdk.provider.GoogleRequestFactory;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultGoogleRequestFactory implements GoogleRequestFactory {
 
     @Override

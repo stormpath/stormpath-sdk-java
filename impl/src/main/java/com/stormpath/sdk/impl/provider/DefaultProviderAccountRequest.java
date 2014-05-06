@@ -19,6 +19,9 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderData;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultProviderAccountRequest implements ProviderAccountRequest {
 
     ProviderData providerData;

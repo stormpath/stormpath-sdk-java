@@ -22,6 +22,9 @@ import com.stormpath.sdk.provider.GoogleProvider;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultGoogleProvider extends AbstractProvider implements GoogleProvider {
 
     // SIMPLE PROPERTIES

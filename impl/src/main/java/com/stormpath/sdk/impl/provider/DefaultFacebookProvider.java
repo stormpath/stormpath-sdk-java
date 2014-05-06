@@ -22,6 +22,9 @@ import com.stormpath.sdk.provider.FacebookProvider;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultFacebookProvider extends AbstractProvider implements FacebookProvider {
 
     // SIMPLE PROPERTIES

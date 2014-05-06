@@ -22,6 +22,9 @@ import com.stormpath.sdk.provider.GoogleCreateProviderRequestBuilder;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultGoogleCreateProviderRequestBuilder extends AbstractCreateProviderRequestBuilder<GoogleCreateProviderRequestBuilder> implements GoogleCreateProviderRequestBuilder {
 
     private String redirectUri;
@@ -33,7 +36,7 @@ public class DefaultGoogleCreateProviderRequestBuilder extends AbstractCreatePro
     }
 
     @Override
-    protected String getProviderId() {
+    protected String getConcreteProviderId() {
         return IdentityProviderType.GOOGLE.getNameKey();
     }
 

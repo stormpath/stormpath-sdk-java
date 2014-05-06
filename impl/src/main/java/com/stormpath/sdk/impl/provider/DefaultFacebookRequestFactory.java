@@ -20,6 +20,9 @@ import com.stormpath.sdk.provider.FacebookAccountRequestBuilder;
 import com.stormpath.sdk.provider.FacebookCreateProviderRequestBuilder;
 import com.stormpath.sdk.provider.FacebookRequestFactory;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultFacebookRequestFactory implements FacebookRequestFactory {
 
     @Override

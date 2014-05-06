@@ -21,6 +21,11 @@ import com.stormpath.sdk.provider.ProviderData;
 
 import java.util.Map;
 
+/**
+ * This DefaultProviderData represents Stormpath as a Provider of Stormpath-owned Accounts.
+ *
+ * @since 1.0.beta
+ */
 public class DefaultProviderData extends AbstractProviderData implements ProviderData {
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);

@@ -19,6 +19,9 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.CreateProviderRequest;
 import com.stormpath.sdk.provider.Provider;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultCreateProviderRequest implements CreateProviderRequest {
 
     Provider provider;

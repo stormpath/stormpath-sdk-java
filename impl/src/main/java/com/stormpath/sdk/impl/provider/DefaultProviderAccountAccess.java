@@ -23,6 +23,9 @@ import com.stormpath.sdk.provider.ProviderData;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultProviderAccountAccess<T extends ProviderData> extends AbstractResource implements ProviderAccountAccess<T> {
 
     static final ResourceReference<? extends ProviderData> PROVIDER_DATA = new ResourceReference("providerData", ProviderData.class);

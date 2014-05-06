@@ -24,6 +24,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Abstract class that each Provider-specific {@link CreateProviderRequestBuilder} can extend to facilitate its work.
+ *
+ * @since 1.0.beta
+ */
 abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequestBuilder<T>> implements CreateProviderRequestBuilder<T> {
 
     protected String clientId;
@@ -45,7 +50,7 @@ abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequ
         Assert.state(Strings.hasText(this.clientId), "clientId is a required property. It must be provided before building.");
         Assert.state(Strings.hasText(this.clientSecret), "clientSecret is a required property. It must be provided before building.");
 
-        final String providerId = getProviderId();
+        final String providerId = getConcreteProviderId();
         Assert.state(Strings.hasText(providerId), "The providerId property is missing.");
 
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
@@ -54,7 +59,20 @@ abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequ
         return doBuild(Collections.unmodifiableMap(properties));
     }
 
-    protected abstract String getProviderId();
+    /**
+     * Abstract method to force subclass not to forget to provide the Stormpath ID for the provider.
+     *
+     * @return the Stormpath ID for the specific Provider the subclass represents.
+     */
+    protected abstract String getConcreteProviderId();
+
+    /**
+     * Hook method to give Provider-specific subclasses the responsibility to construct the {@link CreateProviderRequest} with
+     * their own properties.
+     *
+     * @param map Provider-wide properties that each Provider will need in order to construct the {@link CreateProviderRequest}
+     * @return the actual request each Provider-specific Builder constructs based on the set properties.
+     */
     protected abstract CreateProviderRequest doBuild(Map<String, Object> map);
 
 }

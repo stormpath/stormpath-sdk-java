@@ -203,7 +203,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     /**
-     * @since 1.0.alpha
+     * @since 1.0.beta
      */
     @Override
     public Provider getProvider() {
@@ -234,7 +234,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
      * directory. It is here, publicly visible, to allow the Tenant to add the provider information during Directory creation.
      *
      * @see {@link Tenant#createDirectory(com.stormpath.sdk.directory.CreateDirectoryRequest)}
-     * @since 1.0.alpha
+     * @since 1.0.beta
      */
     public Directory setProvider(Provider provider) {
         //This exception should never be thrown to a developer unless he/she explicitly casts a Directory instance and then

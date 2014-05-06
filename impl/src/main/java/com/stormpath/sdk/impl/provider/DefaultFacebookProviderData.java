@@ -22,6 +22,9 @@ import com.stormpath.sdk.provider.FacebookProviderData;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultFacebookProviderData extends AbstractProviderData implements FacebookProviderData {
 
     // SIMPLE PROPERTIES

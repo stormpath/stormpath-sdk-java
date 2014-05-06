@@ -22,6 +22,9 @@ import com.stormpath.sdk.provider.ProviderAccountRequest;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultGoogleAccountRequestBuilder extends AbstractProviderAccountRequestBuilder<GoogleAccountRequestBuilder> implements GoogleAccountRequestBuilder {
 
     private String code;
@@ -33,7 +36,7 @@ public class DefaultGoogleAccountRequestBuilder extends AbstractProviderAccountR
     }
 
     @Override
-    protected String getProviderId() {
+    protected String getConcreteProviderId() {
         return IdentityProviderType.GOOGLE.getNameKey();
     }
 

@@ -24,6 +24,12 @@ import com.stormpath.sdk.provider.Provider;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * AbstractProvider is an abstract representation for Provider-specific resources like {@link DefaultGoogleProvider} or
+ * {@link DefaultFacebookProvider}.
+ *
+ * @since 1.0.beta
+ */
 public abstract class AbstractProvider extends AbstractResource implements Provider {
 
     // SIMPLE PROPERTIES
@@ -55,6 +61,10 @@ public abstract class AbstractProvider extends AbstractResource implements Provi
         return getDateProperty(MODIFIED_AT);
     }
 
+    /**
+     * Each Provider-specific reification of this class must provide the concrete Stormpath ID it represents
+     * @return the concrete Stormpath ID the concrete class represents.
+     */
     protected abstract String getConcreteProviderId();
 
 }

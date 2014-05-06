@@ -18,10 +18,25 @@ package com.stormpath.sdk.impl.provider;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Resource;
 
+/**
+ * Holds the information required to execute a Provider-based Account access attempt.
+ *
+ * @since 1.0.beta
+ */
 public interface ProviderAccountAccess<T extends ProviderData> extends Resource {
 
+    /**
+     * Returns the Provider-specific {@link ProviderData} containing the information required to execute an access attempt.
+     *
+     * @return the Provider-specific {@link ProviderData} containing the information required to execute an access attempt.
+     */
     T getProviderData();
 
+    /**
+     * Sets the Provider-specific {@link ProviderData} containing the information required to execute an access attempt.
+     *
+     * @param providerData the Provider-specific {@link ProviderData} containing the information required to execute an access attempt.
+     */
     void setProviderData(T providerData);
 
 }

@@ -176,6 +176,20 @@ public class DefaultDataStore implements InternalDataStore {
         return this.resourceFactory.instantiate(clazz, data);
     }
 
+    /**
+     * This method provides the ability to instruct the DataStore how to decide which class of a resource hierarchy
+     * will be instantiated. For example, nowadays three {@link ProviderData} resources exists (ProviderData, FacebookProviderData and
+     * GoogleProviderData). The <code>childIdProperty</code> is the property that will be used in the response as the ID to seek
+     * for the proper concrete ProviderData class in the <code>idClassMap</>.
+     *
+     * @param href the endpoint where the request will be targetted to.
+     * @param parent the root class of the Resource hierarchy (helps to validate that the idClassMap contains subclasses of it).
+     * @param childIdProperty the property whose value will be used to identify the specific class in the hierarchy that we need to instantiate.
+     * @param idClassMap a mapping to be able to know which class corresponds to each <code>childIdProperty</code> value.
+     * @param <T> the root of the hierarchy of the Resource we want to instantiate.
+     * @param <R> the sub-class of the root Resource.
+     * @return
+     */
     @Override
     public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
         Assert.hasText(href, "href argument cannot be null or empty.");
@@ -765,14 +779,18 @@ public class DefaultDataStore implements InternalDataStore {
         return new DefaultRequest(method, href, qs);
     }
 
-    //since 1.0.beta
+    /**
+     * @since 1.0.beta
+     */
     @SuppressWarnings("unchecked")
     private Map<String, Object> executeRequest(Request request) {
         Response response = executeRequestGetFullResponse(request);
         return getBodyFromSuccessfulResponse(response);
     }
 
-    //since 1.0.beta
+    /**
+     * @since 1.0.beta
+     */
     private Response executeRequestGetFullResponse(Request request) {
         applyDefaultRequestHeaders(request);
 
@@ -794,7 +812,9 @@ public class DefaultDataStore implements InternalDataStore {
         return response;
     }
 
-    //since 1.0.beta
+    /**
+     * @since 1.0.beta
+     */
     private Map<String, Object> getBodyFromSuccessfulResponse(Response response) {
         String body = null;
 

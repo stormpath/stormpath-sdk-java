@@ -24,6 +24,12 @@ import com.stormpath.sdk.provider.ProviderData;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * AbstractProviderData is an abstract representation for Provider-specific resources like {@link DefaultGoogleProviderData} or
+ * {@link DefaultFacebookProviderData}.
+ *
+ * @since 1.0.beta
+ */
 public abstract class AbstractProviderData extends AbstractResource implements ProviderData {
 
     // SIMPLE PROPERTIES
@@ -55,6 +61,10 @@ public abstract class AbstractProviderData extends AbstractResource implements P
         return getDateProperty(MODIFIED_AT);
     }
 
+    /**
+     * Each Provider-specific reification of this class must provide the concrete Stormpath ID it represents
+     * @return the concrete Stormpath ID the concrete class represents.
+     */
     protected abstract String getConcreteProviderId();
 
 }

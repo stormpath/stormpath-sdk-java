@@ -20,6 +20,12 @@ import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
+/**
+ * This DefaultProvider represents Stormpath as a Provider. For example, the provider of a Stormpath-owned directory is
+ * "stormpath".
+ *
+ * @since 1.0.beta
+ */
 public final class DefaultProvider extends AbstractProvider {
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);

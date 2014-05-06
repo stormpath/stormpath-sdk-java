@@ -20,10 +20,13 @@ import com.stormpath.sdk.provider.FacebookCreateProviderRequestBuilder;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultFacebookCreateProviderRequestBuilder extends AbstractCreateProviderRequestBuilder<FacebookCreateProviderRequestBuilder> implements FacebookCreateProviderRequestBuilder {
 
     @Override
-    protected String getProviderId() {
+    protected String getConcreteProviderId() {
         return IdentityProviderType.FACEBOOK.getNameKey();
     }
 

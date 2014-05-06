@@ -20,6 +20,11 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 
+/**
+ * Executes the actual attempt to access a Provider-based Account.
+ *
+ * @since 1.0.beta
+ */
 public class ProviderAccountResolver {
 
     private InternalDataStore dataStore;

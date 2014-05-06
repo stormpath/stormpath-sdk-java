@@ -18,6 +18,13 @@ package com.stormpath.sdk.impl.provider;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.Resource;
 
+/**
+ * Since {@link ProviderAccountResult} is not a resource per-se we use this helper class which is in charge of
+ * instantiating the result of an (e.g. {@link com.stormpath.sdk.application.Application#getAccount(com.stormpath.sdk.provider.ProviderAccountRequest)
+ * account access request} obtained from Stormpath.
+ *
+ * @since 1.0.beta
+ */
 public interface ProviderAccountResultHelper extends Resource {
 
     ProviderAccountResult getProviderAccountResult();

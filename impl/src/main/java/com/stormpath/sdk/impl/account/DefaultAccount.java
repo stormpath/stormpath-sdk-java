@@ -242,6 +242,12 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         return false;
     }
 
+    /**
+     * Returns the {@link ProviderData} instance associated with this Account.
+     *
+     * @return the {@link ProviderData} instance associated with this Account.
+     * @since 1.0.beta
+     */
     @Override
     public ProviderData getProviderData() {
         Object value = getProperty(PROVIDER_DATA.getName());
@@ -256,6 +262,8 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
                 throw new IllegalStateException("providerData resource does not contain its required href property.");
             }
 
+            //Since the specific ProviderData instance that we need to create varies depending on the actual Provider
+            //owning the account then we need to instruct the DataStore on how to instantiate it
             ProviderData providerData = getDataStore().getResource(href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP);
             setProperty(PROVIDER_DATA, providerData);
             return providerData;

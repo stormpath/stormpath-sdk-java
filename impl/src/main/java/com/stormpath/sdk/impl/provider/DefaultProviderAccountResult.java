@@ -25,6 +25,9 @@ import com.stormpath.sdk.provider.ProviderAccountResult;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.beta
+ */
 public class DefaultProviderAccountResult extends AbstractResource implements ProviderAccountResult {
 
     // SIMPLE PROPERTIES

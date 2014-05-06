@@ -24,7 +24,9 @@ import com.stormpath.sdk.provider.ProviderAccountResult;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
+/**
+ * @since 1.0.beta
+ */
 public class DefaultProviderAccountResultHelper extends AbstractResource implements ProviderAccountResultHelper {
 
     private static final String PROVIDER_ACCOUNT_RESULT = "providerAccountResult";
@@ -35,6 +37,8 @@ public class DefaultProviderAccountResultHelper extends AbstractResource impleme
         super(dataStore);
     }
 
+    //The information about whether the account was created during the request or not is mixed with Account-specific information.
+    //This helper class is in charge of extracting that information from the map and setting the correct properties.
     public DefaultProviderAccountResultHelper(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore);
         if (properties != null && properties.size() > 0) {
