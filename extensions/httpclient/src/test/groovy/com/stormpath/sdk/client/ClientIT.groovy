@@ -83,7 +83,7 @@ abstract class ClientIT {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).build())
+            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).setSecret(apiKeySecret).build())
         }
 
         if (enableCaching) {
@@ -107,7 +107,7 @@ abstract class ClientIT {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).build())
+            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).setSecret(apiKeySecret).build())
         }
 
         builder.setAuthenticationScheme(authenticationScheme)
