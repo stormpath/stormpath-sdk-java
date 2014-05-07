@@ -328,6 +328,8 @@ public interface Application extends Resource, Saveable, Deletable {
      */
     Account sendPasswordResetEmail(String accountUsernameOrEmail);
 
+    Account sendPasswordResetEmail(String accountUsernameOrEmail, AccountStore accountStore);
+
     /**
      * Verifies a password reset token in a user-clicked link within an email.
      * <p/>
@@ -364,6 +366,8 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.4
      */
     Account verifyPasswordResetToken(String token);
+
+    Account resetPassword(String passwordResetToken, String newPassword);
 
     /**
      * Authenticates an account's submitted principals and credentials (e.g. username and password).  The account must
