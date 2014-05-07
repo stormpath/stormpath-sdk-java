@@ -54,8 +54,9 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     }
 
     @Override
-    public void setEmail(String email) {
+    public PasswordResetToken setEmail(String email) {
         setProperty(EMAIL, email);
+        return this;
     }
 
     @Override
