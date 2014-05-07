@@ -395,14 +395,14 @@ public interface Application extends Resource, Saveable, Deletable {
      * Consider the following  example:
      * <p/>
      * <pre>
-     * ProviderAccountRequest request = Providers.GOOGLE.accountRequest()
+     * ProviderAccountRequest request = Providers.GOOGLE.account()
      *                  .setCode("4/mV9k80PpUB7XK_2RvOqOkNrI7I8C.krFm0WYFM_sY3pEBd8D1tNHT8u6jiwI")
      *                  .build();
      * ProviderAccountResult result = application.getAccount(request);
      * Account account = result.getAccount();
      * </pre>
      *
-     * @param request the {@link ProviderAccountRequest} representing the Provider-specific access data (e.g.
+     * @param request the {@link ProviderAccountRequest} representing the Provider-specific account access data (e.g.
      *                <code>accessToken</code>) used to verify the identity.
      * @return the result of the access request. The {@link Account} can be obtained from
      *         {@code result.}{@link com.stormpath.sdk.provider.ProviderAccountResult#getAccount() getAccount()}.

@@ -31,7 +31,7 @@ public interface ProviderRequestFactory<ARB extends ProviderAccountRequestBuilde
      * @return a builder to generate an attempt to create or retrieve a Provider {@link com.stormpath.sdk.account.Account}
      * from Stormpath.
      */
-    ARB accountRequest();
+    ARB account();
 
     /**
      * Returns a builder to generate an attempt to create a Provider-based {@link com.stormpath.sdk.directory.Directory}
@@ -40,6 +40,6 @@ public interface ProviderRequestFactory<ARB extends ProviderAccountRequestBuilde
      * @return a builder to generate an attempt to create a Provider-based {@link com.stormpath.sdk.directory.Directory}
      * in Stormpath.
      */
-    PRB createProviderRequest();
+    PRB builder();
 
 }

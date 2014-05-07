@@ -31,7 +31,7 @@ class DefaultFacebookCreateProviderRequestBuilderTest {
     @Test
     void test() {
         def providerRequest = Providers.FACEBOOK;
-        def requestBuilder = providerRequest.createProviderRequest();
+        def requestBuilder = providerRequest.builder();
         assertTrue(requestBuilder instanceof FacebookCreateProviderRequestBuilder)
         assertTrue(CreateProviderRequestBuilder.isInstance(requestBuilder))
         def request = requestBuilder
@@ -48,7 +48,7 @@ class DefaultFacebookCreateProviderRequestBuilderTest {
 
     @Test
     void testMissingAllProperties() {
-        def requestBuilder = Providers.FACEBOOK.createProviderRequest();
+        def requestBuilder = Providers.FACEBOOK.builder();
 
         try {
             requestBuilder.build();
@@ -60,7 +60,7 @@ class DefaultFacebookCreateProviderRequestBuilderTest {
 
     @Test
     void testMissingClientSecret() {
-        def requestBuilder = Providers.FACEBOOK.createProviderRequest();
+        def requestBuilder = Providers.FACEBOOK.builder();
 
         try {
             requestBuilder
@@ -74,7 +74,7 @@ class DefaultFacebookCreateProviderRequestBuilderTest {
 
     @Test
     void testMissingClientId() {
-        def requestBuilder = Providers.FACEBOOK.createProviderRequest();
+        def requestBuilder = Providers.FACEBOOK.builder();
 
         try {
             requestBuilder

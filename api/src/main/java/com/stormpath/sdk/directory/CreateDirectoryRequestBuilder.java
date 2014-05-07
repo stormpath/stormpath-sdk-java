@@ -19,7 +19,7 @@ import com.stormpath.sdk.provider.CreateProviderRequest;
 
 public interface CreateDirectoryRequestBuilder {
 
-    <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T createProviderRequest);
+    <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T request);
 
     CreateDirectoryRequest build();
 }

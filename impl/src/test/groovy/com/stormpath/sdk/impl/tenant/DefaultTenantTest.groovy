@@ -84,7 +84,7 @@ class DefaultTenantTest {
         replay internalDataStore, defaultDirectory, returnedDirectory
 
         def request = Directories.newCreateRequestFor(defaultDirectory).
-                forProvider(Providers.GOOGLE.createProviderRequest()
+                forProvider(Providers.GOOGLE.builder()
                         .setClientId("aClientId999")
                         .setClientSecret("aClientSecret111")
                         .setRedirectUri("http://someUrl:99999")
@@ -109,7 +109,7 @@ class DefaultTenantTest {
         def defaultTenant = new DefaultTenant(internalDataStore, properties)
 
         def request = Directories.newCreateRequestFor(defaultDirectory).
-                forProvider(Providers.GOOGLE.createProviderRequest()
+                forProvider(Providers.GOOGLE.builder()
                         .setClientId("aClientId999")
                         .setClientSecret("aClientSecret111")
                         .setRedirectUri("http://someUrl:99999")

@@ -31,7 +31,7 @@ class DefaultGoogleCreateProviderRequestBuilderTest {
     @Test
     void test() {
         def providerRequest = Providers.GOOGLE;
-        def requestBuilder = providerRequest.createProviderRequest();
+        def requestBuilder = providerRequest.builder();
         assertTrue(requestBuilder instanceof GoogleCreateProviderRequestBuilder)
         assertTrue(CreateProviderRequestBuilder.isInstance(requestBuilder))
         def request = requestBuilder
@@ -51,7 +51,7 @@ class DefaultGoogleCreateProviderRequestBuilderTest {
 
     @Test
     void testMissingAllProperties() {
-        def requestBuilder = Providers.GOOGLE.createProviderRequest();
+        def requestBuilder = Providers.GOOGLE.builder();
 
         try {
             requestBuilder.build();
@@ -63,7 +63,7 @@ class DefaultGoogleCreateProviderRequestBuilderTest {
 
     @Test
     void testOnlyClientIdSecret() {
-        def requestBuilder = Providers.GOOGLE.createProviderRequest();
+        def requestBuilder = Providers.GOOGLE.builder();
 
         try {
             requestBuilder
@@ -77,7 +77,7 @@ class DefaultGoogleCreateProviderRequestBuilderTest {
 
     @Test
     void testOnlyClientSecret() {
-        def requestBuilder = Providers.GOOGLE.createProviderRequest();
+        def requestBuilder = Providers.GOOGLE.builder();
 
         try {
             requestBuilder
@@ -91,7 +91,7 @@ class DefaultGoogleCreateProviderRequestBuilderTest {
 
     @Test
     void testMissingRedirectUri() {
-        def requestBuilder = Providers.GOOGLE.createProviderRequest();
+        def requestBuilder = Providers.GOOGLE.builder();
 
         try {
             requestBuilder

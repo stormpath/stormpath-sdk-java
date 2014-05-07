@@ -21,24 +21,21 @@ import com.stormpath.sdk.lang.Classes;
  * Static utility/helper methods serving Provider-specific {@link ProviderRequestFactory}s. For example, to
  * construct an account request:
  * <pre>
- * <b>ProviderAccountRequest request = Providers.GOOGLE.accountRequest()</b>
+ * ProviderAccountResult result = application.getAccount(<b>Providers.GOOGLE.account()
  *     .setAccessToken("ya29.1.AADtN_VdFRceSUrSpQWlh4m38igAjOLxCsTx1B7HRWzWoD4RsphiTheV66_56Mhi")
- *     .build();
- * ProviderAccountResult result = application.getAccount(request);
+ *     .build()</b>);</b>
  * </pre>
  * or, to create a new Provider-based {@link com.stormpath.sdk.directory.Directory}:
  * <pre>
  * Directory directory = client.instantiate(Directory.class);
  * directory.setName("My Facebook Directory");
  * ...
- * CreateDirectoryRequest request = Directories.newCreateRequestFor(directory)
- *      .forProvider(
- *          <b>Providers.FACEBOOK.createProviderRequest()</b>
+ * directory = tenant.createDirectory(Directories.newCreateRequestFor(directory)
+ *     .forProvider(<b>Providers.FACEBOOK.builder()
  *                  .setClientId("624508218317020")
  *                  .setClientSecret("d0ad961d45fgc0210c0c7d67e8f1w800")
- *                  .build()
- *      ).build();
- * directory = tenant.createDirectory(request);
+ *                  .build()</b>)
+ *     .build());
  * </pre>
  *
  * @since 1.0.beta

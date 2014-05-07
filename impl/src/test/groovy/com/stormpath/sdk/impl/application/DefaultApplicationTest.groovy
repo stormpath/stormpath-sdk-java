@@ -373,7 +373,7 @@ class DefaultApplicationTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def providerAccountResultHelper = createStrictMock(ProviderAccountResultHelper)
         def providerAccountResult = createStrictMock(ProviderAccountResult)
-        ProviderAccountRequest request = Providers.FACEBOOK.accountRequest().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
+        ProviderAccountRequest request = Providers.FACEBOOK.account().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
 
         def providerAccountAccess = new DefaultProviderAccountAccess<FacebookProviderData>(internalDataStore);
         providerAccountAccess.setProviderData(request.getProviderData())

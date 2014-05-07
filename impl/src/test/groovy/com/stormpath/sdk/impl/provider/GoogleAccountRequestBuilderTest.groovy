@@ -31,7 +31,7 @@ class GoogleAccountRequestBuilderTest {
     @Test
     void testWithAccessToken() {
         def providerRequest = Providers.GOOGLE;
-        def requestBuilder = providerRequest.accountRequest();
+        def requestBuilder = providerRequest.account();
         assertTrue(requestBuilder instanceof GoogleAccountRequestBuilder)
         assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
         def providerAccountRequest = requestBuilder.setAccessToken("y29.1.AADN_Xo2hxQflWwsgCSK-WjSw1mNfZiv4").build();
@@ -47,7 +47,7 @@ class GoogleAccountRequestBuilderTest {
     @Test
     void testWithCode() {
         def providerRequest = Providers.GOOGLE;
-        def requestBuilder = providerRequest.accountRequest();
+        def requestBuilder = providerRequest.account();
         assertTrue(requestBuilder instanceof GoogleAccountRequestBuilder)
         assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
         def providerAccountRequest = requestBuilder.setCode("4/2Dz0r7r9oNBE9dFD-_JUb.suCu7uj8TEnp6UAPm0").build();
@@ -62,7 +62,7 @@ class GoogleAccountRequestBuilderTest {
 
     @Test
     void testInvalidStateProperties() {
-        def requestBuilder = Providers.GOOGLE.accountRequest();
+        def requestBuilder = Providers.GOOGLE.account();
 
         try {
             requestBuilder.build();

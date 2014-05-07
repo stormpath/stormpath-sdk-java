@@ -119,7 +119,7 @@ class TenantIT extends ClientIT {
         def clientSecret = uniquify("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0")
 
         def request = Directories.newCreateRequestFor(dir).
-                forProvider(Providers.GOOGLE.createProviderRequest()
+                forProvider(Providers.GOOGLE.builder()
                         .setClientId(clientId)
                         .setClientSecret(clientSecret)
                         .setRedirectUri("https://www.myAppURL:8090/index.jsp")
@@ -150,7 +150,7 @@ class TenantIT extends ClientIT {
         def clientSecret = uniquify("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0")
 
         def request = Directories.newCreateRequestFor(dir).
-                forProvider(Providers.FACEBOOK.createProviderRequest()
+                forProvider(Providers.FACEBOOK.builder()
                         .setClientId(clientId)
                         .setClientSecret(clientSecret)
                         .build()

@@ -165,7 +165,7 @@ public interface Tenant extends Resource, Saveable {
      * ...
      * CreateDirectoryRequest request = Directories.newCreateRequestFor(directory)
      *      .forProvider(
-     *          <b>Providers.FACEBOOK.createProviderRequest()</b>
+     *          <b>Providers.FACEBOOK.builder()</b>
      *                  .setClientId("624508218317020")
      *                  .setClientSecret("d0ad961d45fgc0210c0c7d67e8f1w800")
      *                  .build()

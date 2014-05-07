@@ -250,7 +250,7 @@ class ApplicationIT extends ClientIT {
         provider.setClientId(clientId).setClientSecret(clientSecret).setRedirectUri("https://www.myAppURL:8090/index.jsp");
 
         def createDirRequest = Directories.newCreateRequestFor(dir).
-                forProvider(Providers.GOOGLE.createProviderRequest()
+                forProvider(Providers.GOOGLE.builder()
                         .setClientId(clientId)
                         .setClientSecret(clientSecret)
                         .setRedirectUri("https://www.myAppURL:8090/index.jsp")
@@ -263,7 +263,7 @@ class ApplicationIT extends ClientIT {
         def app = createTempApp()
         app.addAccountStore(dir)
 
-        ProviderAccountRequest request = Providers.GOOGLE.accountRequest().setCode("4/MZ-Z4Xr-V6K61-Y0CE-ifJlyIVwY.EqwqoikzZTUSaDn_5y0ZQNiQIAI2iwI").build();
+        ProviderAccountRequest request = Providers.GOOGLE.account().setCode("4/MZ-Z4Xr-V6K61-Y0CE-ifJlyIVwY.EqwqoikzZTUSaDn_5y0ZQNiQIAI2iwI").build();
 
         try {
             app.getAccount(request)

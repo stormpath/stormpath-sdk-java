@@ -36,8 +36,8 @@ public class DefaultCreateDirectoryRequestBuilder implements CreateDirectoryRequ
     }
 
     @Override
-    public <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T createProviderRequest) {
-        this.provider = createProviderRequest.getProvider();
+    public <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T request) {
+        this.provider = request.getProvider();
         return this;
     }
 

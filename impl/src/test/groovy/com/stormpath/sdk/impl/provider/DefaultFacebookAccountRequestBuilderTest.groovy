@@ -31,7 +31,7 @@ class DefaultFacebookAccountRequestBuilderTest {
     @Test
     void test() {
         def providerRequest = Providers.FACEBOOK;
-        def requestBuilder = providerRequest.accountRequest();
+        def requestBuilder = providerRequest.account();
         assertTrue(requestBuilder instanceof FacebookAccountRequestBuilder)
         assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
         def request = requestBuilder.setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
@@ -45,7 +45,7 @@ class DefaultFacebookAccountRequestBuilderTest {
 
     @Test
     void testMissingAccessToken() {
-        def requestBuilder = Providers.FACEBOOK.accountRequest();
+        def requestBuilder = Providers.FACEBOOK.account();
 
         try {
             requestBuilder.build();
