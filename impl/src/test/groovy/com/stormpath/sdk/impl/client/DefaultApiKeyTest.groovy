@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.client
 
 import org.testng.annotations.Test
@@ -22,7 +20,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 class DefaultApiKeyTest {
 

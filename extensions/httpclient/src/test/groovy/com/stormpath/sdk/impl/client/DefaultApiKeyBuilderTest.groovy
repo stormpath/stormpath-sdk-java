@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.client
 
 import com.stormpath.sdk.client.ApiKeys
@@ -25,17 +23,20 @@ import static org.testng.Assert.*
 
 /**
  *
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 class DefaultApiKeyBuilderTest {
 
     @Test
-    void testSetApiKey() {
+    void testSetApiKeyIdAndSecret() {
         def apiKeyId = "fooId"
         def apiKeySecret = "barSecret"
-        def builder = ApiKeys.builder().setApiKey(apiKeyId, apiKeySecret)
-        assertSame(builder.apiKey.getId(), apiKeyId)
-        assertSame(builder.apiKey.getSecret(), apiKeySecret)
+        def builder = ApiKeys.builder().setId(apiKeyId).setSecret(apiKeySecret)
+        assertSame(builder.apiKeyId, apiKeyId)
+        assertSame(builder.apiKeySecret, apiKeySecret)
+        def apiKey = builder.build()
+        assertSame(apiKey.getId(), apiKeyId)
+        assertSame(apiKey.getSecret(), apiKeySecret)
     }
 
     @Test
@@ -50,9 +51,9 @@ class DefaultApiKeyBuilderTest {
         properties.setProperty(apiKeySecretPropertyName, apiKeySecret)
 
         def builder = ApiKeys.builder()
-                .setApiKeyIdPropertyName(apiKeyIdPropertyName)
-                .setApiKeySecretPropertyName(apiKeySecretPropertyName)
-                .setApiKeyProperties(properties)
+                .setIdPropertyName(apiKeyIdPropertyName)
+                .setSecretPropertyName(apiKeySecretPropertyName)
+                .setProperties(properties)
 
         assertEquals(builder.apiKeyProperties.get(apiKeyIdPropertyName), apiKeyId)
         assertEquals(builder.apiKeyProperties.get(apiKeySecretPropertyName), apiKeySecret)
@@ -75,7 +76,7 @@ class DefaultApiKeyBuilderTest {
         def reader = new StringReader(apiKeyIdPropertyName + "=" + apiKeyId + "\n" +
                 apiKeySecretPropertyName + "=" + apiKeySecret)
 
-        def builder = ApiKeys.builder().setApiKeyReader(reader)
+        def builder = ApiKeys.builder().setReader(reader)
 
         def apiKey = builder.build()
 
@@ -86,7 +87,7 @@ class DefaultApiKeyBuilderTest {
     @Test
     void testApiKeyReaderNull() {
 
-        def builder = ApiKeys.builder().setApiKeyReader(null)
+        def builder = ApiKeys.builder().setReader(null)
 
         try {
             builder.build()
@@ -110,7 +111,7 @@ class DefaultApiKeyBuilderTest {
 
         try {
             ApiKeys.builder()
-                    .setApiKeyInputStream(is)
+                    .setInputStream(is)
                     .build()
             fail("Should have thrown due to empty apiKey.id value.")
         } catch (IllegalArgumentException e) {
@@ -122,16 +123,16 @@ class DefaultApiKeyBuilderTest {
     }
 
     @Test
-    void testInvalidApiKeyFileLocation() {
+    void testInvalidFileLocation() {
         try {
             ApiKeys.builder()
-                    .setApiKeyFileLocation("/tmp/someUnexistentApiKeyPropertiesFile.properties")
-                    .setApiKeyInputStream(null)
+                    .setFileLocation("/tmp/someUnexistentApiKeyPropertiesFile.properties")
+                    .setInputStream(null)
                     .build()
-            fail("Should have thrown due to invalid ApiKeyFileLocation.")
+            fail("Should have thrown due to invalid apiKeyFileLocation.")
         } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "Unable to load API Key using apiKeyFileLocation '/tmp/someUnexistentApiKeyPropertiesFile.properties'.  " +
-                    "Please check and ensure that file exists or use the 'setApiKeyFileLocation' method to specify a valid location.")
+                    "Please check and ensure that file exists or use the 'setFileLocation' method to specify a valid location.")
         }
     }
 

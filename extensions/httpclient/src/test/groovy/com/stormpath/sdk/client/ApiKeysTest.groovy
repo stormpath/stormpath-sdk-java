@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.impl.client.DefaultApiKeyBuilder
@@ -23,7 +21,7 @@ import org.testng.annotations.Test
 import static junit.framework.Assert.assertTrue
 
 /**
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 public class ApiKeysTest {
 

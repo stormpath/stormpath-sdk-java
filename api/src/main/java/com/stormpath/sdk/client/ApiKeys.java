@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.lang.Classes;
@@ -22,11 +21,11 @@ import com.stormpath.sdk.lang.Classes;
  * Static utility/helper class for working with {@link ApiKey} resources. For example:
  * <pre>
  * <b>ApiKeys.builder()</b>
- *     .setApiKeyFileLocation(path)
+ *     .setFileLocation(path)
  *     .build();
  * </pre>
  *
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
 public class ApiKeys {
 

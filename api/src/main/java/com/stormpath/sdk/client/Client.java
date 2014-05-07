@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
@@ -28,7 +27,12 @@ import com.stormpath.sdk.tenant.Tenant;
  * For example:
  * <pre>
  * String path = System.getProperty("user.home") + "/.stormpath/<a href="http://www.stormpath.com/docs/get-api-key">apiKey.properties</a>";
- * Client client = {@link Clients Clients}.builder().setApiKeyFileLocation(path).build();
+ * Client client = {@link Clients Clients}.builder()
+ *      .setApiKey(ApiKeys.builder()
+ *          .setFileLocation(path)
+ *          .build()
+ *      )
+ *      .build();
  *
  * //interact with the REST API resources as desired:
  * Tenant myTenant = client.getCurrentTenant();

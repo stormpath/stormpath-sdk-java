@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.lang.Classes;
@@ -22,7 +21,7 @@ import com.stormpath.sdk.lang.Classes;
  * Static utility/helper class for working with {@link Client} resources. For example:
  * <pre>
  * <b>Clients.builder()</b>
- *     .setApiKeyFileLocation(path)
+ *     .setFileLocation(path)
  *     .setProxy(new Proxy("192.168.2.120", 9001))
  *     .build();
  * </pre>

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.client;
 
 import java.io.InputStream;
@@ -33,26 +32,25 @@ import java.util.Properties;
  * <pre>
  * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
  *
- * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setApiKeyFileLocation(location).build();
+ * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
  * </pre>
  * Then, you will create your {@link Client} instance as follows:
  * <pre>
- * Client client = {@link Clients Clients}.builder().setApiKeyFileLocation(apiKey).build();
+ * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
  * </pre>
  * <p/>
  * You may load files from the filesystem, classpath, or URLs by prefixing the path with
  * {@code file:}, {@code classpath:}, or {@code url:} respectively.  See
- * {@link #setApiKeyFileLocation(String)} for more information.
+ * {@link #setFileLocation(String)} for more information.
  *
- * @see #setApiKeyFileLocation(String)
+ * @see #setFileLocation(String)
  * @see ClientBuilder#setApiKey(ApiKey)
- * @since 1.0.alpha
+ * @since 1.0.beta
  */
-
 public interface ApiKeyBuilder {
 
     /**
-     * Allows specifying the client's API Key {@code id} and {@code secret} values directly instead of reading the key
+     * Allows specifying the client's API Key {@code id} value directly instead of reading it
      * from a stream-based resource (e.g. File, Reader, Properties or InputStream).
      * <h3>Usage Warning</h3>
      * It is almost always advisable to NOT use this method and instead use methods that accept a
@@ -66,9 +64,9 @@ public interface ApiKeyBuilder {
      * In these restricted environments, the ApiKey {@code id} and {@code secret} would almost always be obtained from
      * environment variables, for example:
      * <pre>
-     * String apiKeyId = System.getenv("STORMPATH_API_KEY_ID");
-     * String apiKeySecret = System.getenv("STORMPATH_API_KEY_SECRET");
-     * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setApiKey(apiKeyId, apiKeySecret).build();
+     * String id = System.getenv("STORMPATH_API_KEY_ID");
+     * String secret = System.getenv("STORMPATH_API_KEY_SECRET");
+     * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setId(id).setSecret(secret).build();
      * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
      * </pre>
      * <h4>System Properties</h4>
@@ -89,55 +87,67 @@ public interface ApiKeyBuilder {
      * <p/>
      * <span color="red"><b>THIS IS AN ANTI-PATTERN! DO NOT DO THIS! THIS IS A SECURITY RISK!</b></span>
      * <pre color="red">
-     * String apiKeyId = "myRawApiKeyId";
-     * String apiKeySecret = "secretValueThatAnyoneCouldSeeIfTheyCheckedOutMySourceCode";
-     * ApiKey apiKey = ApiKeys.builder().setApiKey(apiKeyId, apiKeySecret).build();
+     * String id = "myRawApiKeyId";
+     * String secret = "secretValueThatAnyoneCouldSeeIfTheyCheckedOutMySourceCode";
+     * ApiKey apiKey = ApiKeys.builder().setId(id).setSecret(secret).build();
      * Client client = Clients.builder().setApiKey(apiKey).build();
      * </pre>
      *
-     * @param apiKeyId     the {@link ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
-     * @param apiKeySecret the {@link ApiKey#getSecret() ApiKey secret} value to use when communicating with Stormpath.
+     * @param id the {@link com.stormpath.sdk.client.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @return the ApiKeyBuilder instance for method chaining.
      * @see ClientBuilder#setApiKey(ApiKey)
      */
-    ApiKeyBuilder setApiKey(String apiKeyId, String apiKeySecret);
+    ApiKeyBuilder setId(String id);
+
+    /**
+     * Allows specifying the client's API Key {@code secret} value directly instead of reading it
+     * from a stream-based resource (e.g. File, Reader, Properties or InputStream).
+     * <p/>
+     * For usage instructions and security precautions see {@link #setId(String)}
+     *
+     * @param secret the {@link com.stormpath.sdk.client.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
+     * @return the ApiKeyBuilder instance for method chaining.
+     * @see #setId(String)
+     * @see ClientBuilder#setApiKey(ApiKey)
+     */
+    ApiKeyBuilder setSecret(String secret);
 
     /**
      * Allows usage of a Properties instance instead of loading a {@code .properties} file via
-     * {@link #setApiKeyFileLocation(String) apiKeyFileLocation} configuration.
+     * {@link #setFileLocation(String) fileLocation} configuration.
      * <p/>
      * The {@code Properties} contents and property name overrides function the same as described in the
-     * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     * {@link #setFileLocation(String) setFileLocation} JavaDoc.
      *
      * @param properties the properties instance to use to load the API Key ID and Secret.
      * @return the ApiKeyBuilder instance for method chaining.
      */
-    ApiKeyBuilder setApiKeyProperties(Properties properties);
+    ApiKeyBuilder setProperties(Properties properties);
 
     /**
      * Creates an API Key Properties instance based on the specified Reader instead of loading a {@code .properties}
-     * file via  {@link #setApiKeyFileLocation(String) apiKeyFileLocation} configuration.
+     * file via  {@link #setFileLocation(String) fileLocation} configuration.
      * <p/>
      * The constructed {@code Properties} contents and property name overrides function the same as described in the
-     * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     * {@link #setFileLocation(String) setFileLocation} JavaDoc.
      *
      * @param reader the reader to use to construct a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
      */
-    ApiKeyBuilder setApiKeyReader(Reader reader);
+    ApiKeyBuilder setReader(Reader reader);
 
     /**
      * Creates an API Key Properties instance based on the specified InputStream
      * instead of loading a {@code .properties} file via
-     * {@link #setApiKeyFileLocation(String) apiKeyFileLocation} configuration.
+     * {@link #setFileLocation(String) fileLocation} configuration.
      * <p/>
      * The constructed {@code Properties} contents and property name overrides function the same as described in the
-     * {@link #setApiKeyFileLocation(String) setApiKeyFileLocation} JavaDoc.
+     * {@link #setFileLocation(String) setFileLocation} JavaDoc.
      *
      * @param is the InputStream to use to construct a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
      */
-    ApiKeyBuilder setApiKeyInputStream(InputStream is);
+    ApiKeyBuilder setInputStream(InputStream is);
 
     /**
      * Sets the location of the {@code .properties} file to load containing the API Key (Id and secret) used by the
@@ -169,13 +179,13 @@ public interface ApiKeyBuilder {
      * <pre>
      * String location = "/home/jsmith/.stormpath/apiKey.properties";
      *
-     * ApiKey apiKey = ApiKeys.builder().setApiKeyFileLocation(location).build();
+     * ApiKey apiKey = ApiKeys.builder().setFileLocation(location).build();
      * Client client = Clients.builder().setApiKey(apiKey).build();
      * </pre>
      * <h3>Custom Property Names</h3>
      * If you want to control the property names used in the file, you may configure them via
-     * {@link #setApiKeyIdPropertyName(String) setApiKeyIdPropertyName} and
-     * {@link #setApiKeySecretPropertyName(String) setApiKeySecretPropertyName}.
+     * {@link #setIdPropertyName(String) setIdPropertyName} and
+     * {@link #setSecretPropertyName(String) setSecretPropertyName}.
      * <p/>
      * For example, if you had a {@code /home/jsmith/.stormpath/apiKey.properties} file with the following
      * name/value pairs:
@@ -191,9 +201,9 @@ public interface ApiKeyBuilder {
      *     Clients.builder()
      *     .setApiKey(
      *          ApiKeys.builder()
-     *          .setApiKeyFileLocation(location)
-     *          .setApiKeyIdPropertyName("myStormpathApiKeyId")
-     *          .setApiKeySecretPropertyName("myStormpathApiKeySecret")
+     *          .setFileLocation(location)
+     *          .setIdPropertyName("myStormpathApiKeyId")
+     *          .setSecretPropertyName("myStormpathApiKeySecret")
      *          .build())
      *     .build();
      * </pre>
@@ -202,29 +212,29 @@ public interface ApiKeyBuilder {
      *                 constructing the API Key to use for communicating with the Stormpath REST API.
      * @return the ApiKeyBuilder instance for method chaining.
      */
-    ApiKeyBuilder setApiKeyFileLocation(String location);
+    ApiKeyBuilder setFileLocation(String location);
 
     /**
      * Sets the name used to query for the API Key ID from a Properties instance.  That is:
      * <pre>
-     * String apiKeyId = properties.getProperty(<b>apiKeyIdPropertyName</b>);
+     * String apiKeyId = properties.getProperty(<b>idPropertyName</b>);
      * </pre>
      *
-     * @param apiKeyIdPropertyName the name used to query for the API Key ID from a Properties instance.
+     * @param idPropertyName the name used to query for the API Key ID from a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
      */
-    ApiKeyBuilder setApiKeyIdPropertyName(String apiKeyIdPropertyName);
+    ApiKeyBuilder setIdPropertyName(String idPropertyName);
 
     /**
      * Sets the name used to query for the API Key Secret from a Properties instance.  That is:
      * <pre>
-     * String apiKeySecret = properties.getProperty(<b>apiKeySecretPropertyName</b>);
+     * String apiKeySecret = properties.getProperty(<b>secretPropertyName</b>);
      * </pre>
      *
-     * @param apiKeySecretPropertyName the name used to query for the API Key Secret from a Properties instance.
+     * @param secretPropertyName the name used to query for the API Key Secret from a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
      */
-    ApiKeyBuilder setApiKeySecretPropertyName(String apiKeySecretPropertyName);
+    ApiKeyBuilder setSecretPropertyName(String secretPropertyName);
 
     /**
      * Constructs a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.

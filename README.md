@@ -6,7 +6,7 @@ Copyright &copy; 2013 Stormpath, Inc. and contributors.
 
 This project is open-source via the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
-For all additional information, please see the full [Project Documentation](https://www.stormpath.com/docs/java/product-guide).
+For all additional information, please see the full [Project Documentation](http://docs.stormpath.com/java/product-guide/).
 
 ### Build Instructions ###
 
@@ -15,6 +15,14 @@ This project requires Maven 3.0.3 to build.  Run the following:
 `> mvn install`
 
 ## Change Log ##
+
+### 1.0.beta ###
+
+#### Backwards Incompatible Changes ####
+
+This beta release contains a few backwards-incompatible changes, we strive to keep them minimal.
+
+- ClientBuilder was previously in charge of constructing the ApiKey. Now, the ApiKey is built through a new ApiKeyBuilder interface which can be instantiated via the new `com.stormpath.sdk.client.ApiKeys` utility class. ApiKeyBuilder provides a nice fluent builder API. Once the ApiKey is built, it can be set to the Client by means of the ClientBuilder instance.
 
 ### 1.0.alpha ###
 
@@ -226,7 +234,10 @@ import static com.stormpath.sdk.cache.Caches.*;
 ...
 
 Client client = Clients.builder()
-    .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+    .setApiKey(ApiKeys.builder()
+        .setFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+        .build()
+    )
     .setCacheManager(newCacheManager()
         .withDefaultTimeToLive(1, TimeUnit.DAYS) //general default
         .withDefaultTimeToIdle(2, TimeUnit.HOURS) //general default
@@ -245,7 +256,10 @@ Multi-JVM applications (an application deployed across multiple JVMs) would like
 ```java
 CacheManager cacheManager = new CacheManagerImplementationThatUsesMyPreferredCachingProduct();
 Client client = Clients.builder()
-    .setApiKeyFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+    .setApiKey(ApiKeys.builder()
+        .setFileLocation(System.getProperty("user.home") + "/.stormpath/apiKey.properties")
+        .build()
+    )
     .setCacheManager(cacheManager);
     .build();
 ```

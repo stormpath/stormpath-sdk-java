@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.application.Application
@@ -80,12 +78,12 @@ abstract class ClientIT {
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
         if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKey(apiKeyBuilder.setApiKeyFileLocation(apiKeyFileLocation).build())
+            builder.setApiKey(apiKeyBuilder.setFileLocation(apiKeyFileLocation).build())
         } else {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyBuilder.setApiKey(apiKeyId, apiKeySecret).build())
+            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).build())
         }
 
         if (enableCaching) {
@@ -104,12 +102,12 @@ abstract class ClientIT {
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
         if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKey(apiKeyBuilder.setApiKeyFileLocation(apiKeyFileLocation).build())
+            builder.setApiKey(apiKeyBuilder.setFileLocation(apiKeyFileLocation).build())
         } else {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyBuilder.setApiKey(apiKeyId, apiKeySecret).build())
+            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).build())
         }
 
         builder.setAuthenticationScheme(authenticationScheme)

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.cache.CacheManager;
@@ -23,7 +22,6 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
-
 
 /**
  * The default {@link ClientBuilder} implementation.
