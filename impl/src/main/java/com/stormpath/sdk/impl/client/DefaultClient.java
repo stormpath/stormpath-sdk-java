@@ -1,17 +1,19 @@
 /*
- * Copyright 2014 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.client;
 
@@ -60,7 +62,7 @@ public class DefaultClient implements Client {
     public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
         Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme);
-        DataStore ds = createDataStore(requestExecutor, baseUrl);
+        DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey);
 
         if (cacheManager != null) {
             // TODO: remove when we have a proper Builder interfaces. See https://github.com/stormpath/stormpath-sdk-java/issues/8
@@ -122,7 +124,7 @@ public class DefaultClient implements Client {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private DataStore createDataStore(Object requestExecutor, Object secondCtorArg) {
+    private DataStore createDataStore(Object requestExecutor, Object secondCtorArg, Object apiKey) {
 
         String requestExecutorInterfaceClassName = "com.stormpath.sdk.impl.http.RequestExecutor";
         Class requestExecutorInterfaceClass;
@@ -150,10 +152,10 @@ public class DefaultClient implements Client {
             secondCtorArgClass = int.class;
         }
 
-        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass);
+        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass, ApiKey.class);
 
         try {
-            return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg);
+            return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg, apiKey);
         } catch (Throwable t) {
             throw new RuntimeException("Unable to instantiate DataStore implementation: " + className, t);
         }

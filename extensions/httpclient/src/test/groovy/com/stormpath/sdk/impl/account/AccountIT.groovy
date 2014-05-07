@@ -26,6 +26,8 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
 import org.testng.annotations.Test
 
+import java.security.SecureRandom
+
 import static com.stormpath.sdk.api.ApiKeys.*
 import static org.testng.Assert.*
 
@@ -100,8 +102,8 @@ class AccountIT extends ClientIT {
         def apiKey = acct.createApiKey(newCreateRequest()
                                         .setEncryptSecret(true)
                                         .setEncryptionKeySize(128)
-                                        .setEncryptionKeyIterations(10)
-                                        .setEncryptionKeySalt("YAKpZIKRAUJ0-1pf57Bs_A")
+                                        .setEncryptionKeyIterations(1024)
+                                        .setEncryptionKeySalt(generateSalt(16))
                                         .withResponseOptions(options().withAccount().withTenant())
                                         .build())
 
@@ -116,9 +118,9 @@ class AccountIT extends ClientIT {
 
         // need to create another client to call the server because the api key is cached with the encrypted values
         // TODO define cache keys that include the query parameters
-        def client = buildClient()
+        // def client = buildClient()
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
-        assertNotEquals apiKey.secret, retrievedApiKey.secret
+        assertEquals retrievedApiKey.secret, apiKey.secret
 
         //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
     }
@@ -140,6 +142,13 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(acct)
 
         return acct
+    }
+
+    public String generateSalt(int bytesSize) {
+        SecureRandom random = new SecureRandom();
+        def byteArr = new byte[bytesSize];
+        random.nextBytes(byteArr);
+        return com.stormpath.sdk.impl.util.Base64.encodeToString(byteArr,false)
     }
 
 }

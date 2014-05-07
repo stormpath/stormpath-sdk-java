@@ -17,8 +17,10 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
@@ -40,6 +42,7 @@ import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -52,8 +55,16 @@ import com.stormpath.sdk.resource.Saveable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -79,6 +90,8 @@ public class DefaultDataStore implements InternalDataStore {
     private final MapMarshaller mapMarshaller;
     private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
+    private final ApiKey apiKey;
+    
     /**
      * @since 0.9
      */
@@ -88,17 +101,18 @@ public class DefaultDataStore implements InternalDataStore {
 
     private final QueryStringFactory queryStringFactory;
 
-    public DefaultDataStore(RequestExecutor requestExecutor) {
-        this(requestExecutor, DEFAULT_API_VERSION);
+    public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
+        this(requestExecutor, DEFAULT_API_VERSION, apiKey);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion) {
-        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion);
+    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKey apiKey) {
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKey);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
+        Assert.notNull(apiKey, "ApiKey cannot be null.");
         this.baseUrl = baseUrl;
         this.requestExecutor = requestExecutor;
         this.resourceFactory = new DefaultResourceFactory(this);
@@ -107,6 +121,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
         this.referenceFactory = new ReferenceFactory();
+        this.apiKey = apiKey;
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -117,6 +132,11 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheRegionNameResolver = cacheRegionNameResolver;
     }
 
+    @Override
+    public ApiKey getApiKey() {
+        return apiKey;
+    }
+    
     /* =====================================================================
        Resource Instantiation
        ===================================================================== */
@@ -170,7 +190,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         //check if cached:
         if (isCacheRetrievalEnabled(clazz)) {
-            data = getCachedValue(href, clazz);
+            data = getCachedValue(href, clazz, qs);
         }
 
         if (Collections.isEmpty(data)) {
@@ -180,7 +200,7 @@ public class DefaultDataStore implements InternalDataStore {
 
             if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
                 //cache for further use:
-                cache(clazz, data);
+                cache(clazz, data, qs);
             }
         }
 
@@ -329,7 +349,7 @@ public class DefaultDataStore implements InternalDataStore {
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
         if (isCacheUpdateEnabled(returnType)) {
-            cache(returnType, responseBody);
+            cache(returnType, responseBody, queryString);
         }
 
         //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
@@ -383,14 +403,14 @@ public class DefaultDataStore implements InternalDataStore {
         String customDataHref = directoryEntityHref + "/customData";
         customDataToCache.put(AbstractResource.HREF_PROP_NAME, customDataHref); //ensure first in order
 
-        Map<String, ?> existingCustomData = getCachedValue(customDataHref, CustomData.class);
+        Map<String, ?> existingCustomData = getCachedValue(customDataHref, CustomData.class, null);
         if (!Collections.isEmpty(existingCustomData)) {
             existingCustomData.remove(AbstractResource.HREF_PROP_NAME);
             customDataToCache.putAll(existingCustomData); //put what already exists first
         }
         customDataToCache.putAll(customData); //overwrite or add what was specified during the save operation
 
-        cache(CustomData.class, customDataToCache);
+        cache(CustomData.class, customDataToCache, null);
     }
 
     /* =====================================================================
@@ -481,7 +501,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 0.8
      */
     @SuppressWarnings("unchecked")
-    private void cache(Class<? extends Resource> clazz, Map<String, ?> data) {
+    private void cache(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString) {
         if (!isCachingEnabled()) {
             return;
         }
@@ -500,9 +520,39 @@ public class DefaultDataStore implements InternalDataStore {
 
         if (CustomData.class.isAssignableFrom(clazz)) {
             toCache.putAll(data);
-            Cache cache = getCache(clazz);
+            Cache cache = getCache(clazz, null);
             cache.put(href, toCache);
             return;
+        }
+
+        if (com.stormpath.sdk.api.ApiKey.class.isAssignableFrom(clazz) || (ApiKeyList.class.isAssignableFrom(clazz) && queryString.containsKey("id"))) {
+
+
+            if (queryString.containsKey("encryptSecret") && Boolean.valueOf(queryString.get("encryptSecret"))) {
+
+                toCache = new LinkedHashMap<String, Object>(data.size() + 1);
+                Map<String, Object> apiKeyMetaData = new LinkedHashMap<String, Object>();
+
+                apiKeyMetaData.put("encryptSecret", true);
+
+                if (queryString.containsKey("encryptionKeySize")) {
+
+                    apiKeyMetaData.put("encryptionKeySize", Integer.valueOf(queryString.get("encryptionKeySize")));
+                }
+
+                if (queryString.containsKey("encryptionKeyIterations")) {
+
+                    apiKeyMetaData.put("encryptionKeyIterations", Integer.valueOf(queryString.get("encryptionKeyIterations")));
+                }
+
+                if (queryString.containsKey("encryptionKeySalt")) {
+
+                    apiKeyMetaData.put("encryptionKeySalt", String.valueOf(queryString.get("encryptionKeySalt")));
+                }
+
+                toCache.put("apiKeyMetaData", apiKeyMetaData);
+            }
+
         }
 
         for (Map.Entry<String, ?> entry : data.entrySet()) {
@@ -530,7 +580,7 @@ public class DefaultDataStore implements InternalDataStore {
                             "It is expected that only ResourceReference properties are complex objects.");
 
                     //cache this materialized reference:
-                    cache(property.getType(), nested);
+                    cache(property.getType(), nested, null);
 
                     //Because the materialized reference has now been cached, we don't need to store
                     //all of its properties again in the 'toCache' instance.  Instead, we just want to store
@@ -561,7 +611,7 @@ public class DefaultDataStore implements InternalDataStore {
                     if (o instanceof Map) {
                         Map referenceData = (Map) o;
                         if (isMaterialized(referenceData)) {
-                            cache(itemType, referenceData);
+                            cache(itemType, referenceData, null);
                             element = this.referenceFactory.createReference(referenceData);
                         }
                     }
@@ -578,7 +628,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         //we don't cache collection resources at the moment (only the instances inside them):
         if (isDirectlyCacheable(clazz, toCache)) {
-            Cache cache = getCache(clazz);
+            Cache cache = getCache(clazz, null);
             cache.put(href, toCache);
         }
     }
@@ -616,11 +666,87 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
-    private <T extends Resource> Map<String, ?> getCachedValue(String href, Class<T> clazz) {
+    private <T extends Resource> Map<String, ?> getCachedValue(String href, Class<T> clazz, QueryString queryString) {
         Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(clazz, "Class argument cannot be null.");
-        Cache<String, Map<String, ?>> cache = getCache(clazz);
-        return cache.get(href);
+        Cache<String, Map<String, ?>> cache = getCache(clazz, queryString);
+
+        String cacheHref = href;
+        if (ApiKeyList.class.isAssignableFrom(clazz) && queryString != null && queryString.containsKey("id")) {
+
+            cacheHref = new String(baseUrl + "/apiKeys/" + queryString.get("id"));
+        }
+
+        Map<String, ?> cachedValue = cache.get(cacheHref);
+
+        if (cachedValue != null
+                && cachedValue.containsKey("apiKeyMetaData")
+                && cachedValue.get("apiKeyMetaData") != null
+                && Boolean.valueOf((Boolean) ((Map) cachedValue.get("apiKeyMetaData")).get("encryptSecret"))) {
+
+            Map<String, Object> apiKeyCache = new LinkedHashMap<String, Object>(cachedValue);
+            apiKeyCache.remove("apiKeyMetaData");
+
+            Map<String, ?> apiKeyMetaData = (Map<String, ?>) cachedValue.get("apiKeyMetaData");
+
+            String unEncryptedSecret = decryptSecret((String) cachedValue.get("secret"), (String) apiKeyMetaData.get("encryptionKeySalt"), (Integer) apiKeyMetaData.get("encryptionKeyIterations"), (Integer) apiKeyMetaData.get("encryptionKeySize"));
+
+            apiKeyCache.put("secret", unEncryptedSecret);
+
+            return apiKeyCache;
+        }
+
+        return cachedValue;
+    }
+
+    private static String ALGORITHM = "PBKDF2WithHmacSHA1";
+
+    private String decryptSecret(String base64Secret, String base64Salt, int iterations, int keySize) {
+
+
+        try {
+
+            byte[] encryptedValue = Base64.decode(base64Secret);
+
+            int ivSize = keySize;
+            int ivByteSize = ivSize / 8;
+
+            byte[] iv = new byte[ivByteSize];
+            System.arraycopy(encryptedValue, 0, iv, 0, ivByteSize);
+
+            byte[] rawEncryptedValue = new byte[encryptedValue.length - ivByteSize];
+
+            int encryptedSize = encryptedValue.length - ivByteSize;
+            System.arraycopy(encryptedValue, ivByteSize, rawEncryptedValue, 0, encryptedSize);
+
+            byte[] salt = Base64.decode(base64Salt);
+
+            SecretKey key = createKey(apiKey.getSecret(), salt, iterations, keySize);
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+            byte[] plainTxtBytes = cipher.doFinal(rawEncryptedValue);
+            return new String(plainTxtBytes, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+           throw new RuntimeException(e);
+        }
+
+    }
+
+
+    /**
+     * Creates the key to decrypt the secret
+     */
+    private SecretKey createKey(String password, byte[] salt, int iterations, int keySize) throws Exception {
+
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(ALGORITHM);
+
+        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterations, keySize) ;
+
+        SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
+
+        SecretKey secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
+
+        return secret;
     }
 
     /**
@@ -629,7 +755,7 @@ public class DefaultDataStore implements InternalDataStore {
     @SuppressWarnings("unchecked")
     private <T extends Resource> void uncache(T resource) {
         Assert.notNull(resource, "Resource argument cannot be null.");
-        Cache cache = getCache(resource.getClass());
+        Cache cache = getCache(resource.getClass(), null);
         String href = resource.getHref();
         cache.remove(href);
     }
@@ -637,9 +763,16 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
-    private <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz) {
+    private <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz, QueryString queryString) {
         Assert.notNull(clazz, "Class argument cannot be null.");
-        String cacheRegionName = this.cacheRegionNameResolver.getCacheRegionName((Class) clazz);
+
+        Class cacheClass = (Class) clazz;
+        if (ApiKeyList.class.isAssignableFrom(clazz) && queryString != null && queryString.containsKey("id")) {
+
+            cacheClass = ApiKey.class;
+        }
+
+        String cacheRegionName = this.cacheRegionNameResolver.getCacheRegionName(cacheClass);
         return this.cacheManager.getCache(cacheRegionName);
     }
 
