@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.http;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.resource.Resource;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
- * @since 0.1
+ * HttpRequest
+ *
+ * @since 1.0.RC
  */
-public interface AuthenticationResult extends Resource {
+public interface HttpRequest {
 
-    Account getAccount();
+    public Map<String, String[]> getHeaders();
 
-    void accept(AuthenticationResultVisitor visitor);
+    public InputStream getBody();
+
+    public HttpMethod getMethod();
+
+    public Map<String, String[]> getParameters();
+
+    public String getUri();
+
+    public String getQueryParameters();
+
 }

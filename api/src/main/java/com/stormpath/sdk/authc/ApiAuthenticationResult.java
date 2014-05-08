@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.api.ApiKey;
 
 /**
- * @since 0.1
+ * ApiAuthenticationResult
+ *
+ * @since 1.0.RC
  */
-public interface AuthenticationResult extends Resource {
+public interface ApiAuthenticationResult extends AuthenticationResult {
 
-    Account getAccount();
+    ApiKey getApiKey();
 
-    void accept(AuthenticationResultVisitor visitor);
 }

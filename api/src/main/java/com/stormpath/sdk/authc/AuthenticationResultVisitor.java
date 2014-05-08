@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.authc;
+
+import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 
 /**
- * @since 0.1
+ * AuthenticationResultVisitor
+ *
+ * @since 1.0.RC
  */
-public enum HttpMethod {
+public interface AuthenticationResultVisitor {
 
-    GET,
+    void visit(AuthenticationResult result);
 
-    POST,
+    void visit(ApiAuthenticationResult result);
 
-    PUT,
+    void visit(OauthAuthenticationResult result);
 
-    DELETE,
-
-    HEAD;
-
-    public static HttpMethod fromName(String name) {
-        for(HttpMethod method : values()) {
-            if (method.name().equalsIgnoreCase(name)) {
-                return method;
-            }
-        }
-        throw new IllegalArgumentException("Unrecognized method name: " + name);
-    }
+    void visit(BasicOauthAuthenticationResult result);
 }
