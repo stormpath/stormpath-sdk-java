@@ -20,7 +20,7 @@ package com.stormpath.sdk.account;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.api.CreateApiKeyRequest;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -343,7 +343,7 @@ public interface Account extends Resource, Saveable, Deletable {
      * {@link #getApiKeys(com.stormpath.sdk.api.ApiKeyCriteria)} method which might be useful in dynamic languages on the
      * JVM (for example, with Groovy):
      * <pre>
-     * def apiKeys = account.getApiKeys([id: 'efjweoifjweiofj'])
+     * def apiKeys = account.getApiKeys([expand: 'tenant'])
      * </pre>
      * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
      * <p/>
@@ -368,7 +368,7 @@ public interface Account extends Resource, Saveable, Deletable {
      * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
      * query-building experience.  For example:
      * <pre>
-     * account.getApiKeys(ApiKeys.where(ApiKeys.id()).eq("Sffwef345348nernfgierR"));
+     * account.getApiKeys(ApiKeys.criteria().offsetBy(50).withTenant());
      * </pre>
      * or, if you use static imports:
      * <pre>
@@ -376,7 +376,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *
      * ...
      *
-     * account.getApiKeys(where(id()).eq("Sffwef345348nernfgierR"));
+     * account.getApiKeys(criteria().offsetBy(50).withTenant());
      * </pre>
      *
      * @param criteria the criteria to use when performing a request to the collection.
@@ -395,26 +395,12 @@ public interface Account extends Resource, Saveable, Deletable {
 
 
     /**
-     * Creates a new api key instance in the account, with the option to retrieve api key references in the
-     * creation response.
-     * <h2>Example</h2>
-     * <pre>
-     * account.createApiKey(Accounts.newCreateRequest().build());
-     * </pre>
-     * <p/>
-     * If you would like to retrieve the api key's tenant and account in the response of the api key's creation.
-     * <pre>
-     * account.createApiKey(Accounts.newCreateRequest().withAccount().withTenant().build());
-     * </pre>
+     * Creates an {@link ApiKey} resource and ensures the returned {@link ApiKey} response reflects the specified {@link ApiKeyOptions}.
      *
-     * <p/>
-     * <b>Note:</b> In the Stormpath REST API, new resources are created by interacting with a collection resource.
-     * Therefore, this method is a convenience: it automatically issues a create with the account's
-     * {@link #getApiKeys() api key collection}.
-     *
-     * @param request the api key creation request
+     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the create
+     *                        response.
      * @since 1.1.beta
      */
-    ApiKey createApiKey(CreateApiKeyRequest request);
+    ApiKey createApiKey(ApiKeyOptions options);
 
 }

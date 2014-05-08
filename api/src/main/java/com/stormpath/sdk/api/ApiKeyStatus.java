@@ -23,12 +23,12 @@ package com.stormpath.sdk.api;
 public enum ApiKeyStatus {
 
     /**
-     * Accounts may authenticate using to enabled api keys.
+     * Accounts may authenticate using enabled api keys.
      */
     ENABLED,
 
     /**
-     * Accounts may not authenticate using to enabled api keys.
+     * Accounts may not authenticate using disabled api keys.
      */
     DISABLED,
 }

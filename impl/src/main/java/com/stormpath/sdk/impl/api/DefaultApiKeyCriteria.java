@@ -52,7 +52,6 @@ public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKe
     }
 
     protected void addDefaultCriterions() {
-
         add(new DefaultEqualsExpressionFactory(ENCRYPT_SECRET.getName()).eq(Boolean.TRUE));
         add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SIZE.getName()).eq(128));
         add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_ITERATIONS.getName()).eq(1024));

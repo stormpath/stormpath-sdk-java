@@ -27,11 +27,11 @@ public class DefaultApiKeyOptions extends DefaultOptions<ApiKeyOptions> implemen
 
     @Override
     public ApiKeyOptions withTenant() {
-        return expand(DefaultApiKey.ACCOUNT);
+        return expand(DefaultApiKey.TENANT);
     }
 
     @Override
     public ApiKeyOptions withAccount() {
-        return expand(DefaultApiKey.TENANT);
+        return expand(DefaultApiKey.ACCOUNT);
     }
 }

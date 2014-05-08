@@ -24,8 +24,8 @@ import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.application.AccountStoreMappingCriteria;
 import com.stormpath.sdk.application.AccountStoreMappingList;
@@ -40,9 +40,12 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
+import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
+import com.stormpath.sdk.impl.query.Expandable;
+import com.stormpath.sdk.impl.query.Expansion;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
@@ -57,6 +60,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
 /**
  * @since 0.2
@@ -367,19 +372,38 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
      */
     @Override
     public ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException {
-        Assert.hasText(id, "The argument 'id' cannot be null or empty to get an api key.");
-        ApiKeyCriteria criteria = new DefaultApiKeyCriteria();
-        criteria.add(new DefaultEqualsExpressionFactory("id").eq(id));
-        return getApiKey(criteria);
+        return getApiKey(id, new DefaultApiKeyOptions());
     }
 
     /**
      * @since 1.1.beta
      */
-    public ApiKey getApiKey(ApiKeyCriteria criteria) throws ResourceException, IllegalArgumentException {
+    @Override
+    public ApiKey getApiKey(String id, ApiKeyOptions options) throws ResourceException, IllegalArgumentException {
 
-        Assert.notNull(criteria, "The 'criteria' argument cannot be null to get an api key.");
-        Assert.notNull(getHref(), "The application must have an href to get an api key.");
+        Assert.hasText(id, "The 'id' argument cannot be null or empty to get an api key.");
+        Assert.notNull(options, "options argument cannot be null.");
+        Assert.hasText(getHref(), "The application must have an href to get an api key.");
+
+
+        DefaultApiKeyCriteria criteria = new DefaultApiKeyCriteria();
+        criteria.add(new DefaultEqualsExpressionFactory(ID.getName()).eq(id));
+
+        if (!options.isEmpty() && options instanceof Expandable) {
+
+            Expandable expandable = (Expandable) options;
+
+            for (Expansion exp : expandable.getExpansions()) {
+
+                if ("tenant".equals(exp.getName())) {
+                    criteria.withTenant();
+                }
+
+                if ("account".equals(exp.getName())) {
+                    criteria.withAccount();
+                }
+            }
+        }
 
         String href = getHref() + "/apiKeys";
         ApiKeyList apiKeys =  getDataStore().getResource(href, ApiKeyList.class, criteria);

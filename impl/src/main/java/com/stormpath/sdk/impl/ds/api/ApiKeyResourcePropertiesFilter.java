@@ -22,10 +22,12 @@ import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.ITEMS_PROPERTY_NAME;
 
 /**
  * @since 1.1.beta
@@ -55,10 +57,36 @@ public class ApiKeyResourcePropertiesFilter implements ResourcePropertiesFilter 
                     .setKeySize(Integer.valueOf(queryString.get(ENCRYPTION_KEY_SIZE.getName())))
                     .setBase64Salt(queryString.get(ENCRYPTION_KEY_SALT.getName()).getBytes());
 
-            String unEncryptedSecret = builder.build().decryptBase64String((String) resourceProperties.get("secret"));
+            String itemsName = ITEMS_PROPERTY_NAME;
+            String secretName = "secret";
+            if (resourceProperties.containsKey(itemsName) && resourceProperties.get(itemsName) instanceof Collection) { // if we get here, we're working with a collection of api keys
+
+                Collection apiKeys = (Collection) resourceProperties.get(itemsName);
+
+                for (Object apiKeyObj : apiKeys) {
+
+                    if (apiKeyObj instanceof Map) {
+
+                        Map<String, Object> apiKeyMap =  (Map<String, Object>) apiKeyObj;
+
+                        if (apiKeyMap.containsKey(secretName)) {
+
+                            String unEncryptedSecret = builder.build().decryptBase64String((String) apiKeyMap.get(secretName));
+                            apiKeyMap.put(secretName, unEncryptedSecret);
+                            continue;
+
+                        }
+                    }
+                }
+
+                // returning the collection resource with its api keys secrets unencrypted
+                return resourceProperties;
+            }
+            // if we get here, this is a single api key
+            String unEncryptedSecret = builder.build().decryptBase64String((String) resourceProperties.get(secretName));
 
             Map<String, Object> apiKeyProperties = new LinkedHashMap<String, Object>(resourceProperties);
-            apiKeyProperties.put("secret", unEncryptedSecret);
+            apiKeyProperties.put(secretName, unEncryptedSecret);
 
             return apiKeyProperties;
         }

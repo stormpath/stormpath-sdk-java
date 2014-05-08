@@ -24,7 +24,6 @@ import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
-import com.stormpath.sdk.impl.security.DefaultSaltGenerator
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.api.ApiKeys.*
@@ -91,22 +90,14 @@ class AccountIT extends ClientIT {
      * @since 1.1.beta
      */
     @Test
-    void testCreateApiKeyWithCriteria() {
+    void testCreateApiKeyWithOptions() {
 
         def app = createTempApp()
 
         //create a test account:
         def acct = createTestAccount(app)
 
-        def base64Salt = new DefaultSaltGenerator().generate()
-
-        def apiKey = acct.createApiKey(newCreateRequest()
-                                        .setEncryptSecret(true)
-                                        .setEncryptionKeySize(128)
-                                        .setEncryptionKeyIterations(1024)
-                                        .setEncryptionKeySalt(base64Salt)
-                                        .withResponseOptions(options().withAccount().withTenant())
-                                        .build())
+        def apiKey = acct.createApiKey(options().withAccount().withTenant())
 
 
         assertNotNull apiKey
@@ -121,6 +112,89 @@ class AccountIT extends ClientIT {
         assertEquals retrievedApiKey.secret, apiKey.secret
 
         //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
+    }
+
+    @Test
+    void testGetApiKeys() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = createTestAccount(app)
+
+        int apiKeysCreated = 10
+        for (int i = 0; i < apiKeysCreated; i++) {
+            acct.createApiKey()
+        }
+
+        def apiKeys = acct.getApiKeys()
+
+        int apiKeysCount = 0
+        for (ApiKey apiKey : apiKeys) {
+            apiKeysCount++
+        }
+
+        assertEquals apiKeysCount, apiKeysCreated
+    }
+
+    @Test
+    void testGetApiKeysWithCriteria() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = createTestAccount(app)
+
+        int apiKeysCreated = 10
+        for (int i = 0; i < apiKeysCreated; i++) {
+            acct.createApiKey()
+        }
+
+        int limit = 5
+        int offset = 2
+        def apiKeys = acct.getApiKeys(criteria().offsetBy(offset).limitTo(limit).withTenant())
+
+        assertEquals apiKeys.limit, limit
+        assertEquals apiKeys.offset, offset
+
+        int apiKeysCount = 0
+        for (ApiKey apiKey : apiKeys) {
+            assertTrue(apiKey.tenant.getPropertyNames().size() > 1) // testing expansion
+            apiKeysCount++
+        }
+
+        assertEquals(apiKeysCount, apiKeysCreated - offset)
+
+    }
+
+    @Test
+    void testGetApiKeysWithMap() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = createTestAccount(app)
+
+        int apiKeysCreated = 10
+        for (int i = 0; i < apiKeysCreated; i++) {
+            acct.createApiKey()
+        }
+
+        int limit = 5
+        int offset = 2
+        def apiKeys = acct.getApiKeys(['offset' : offset, 'limit' : limit, 'expand' : 'tenant'])
+
+        assertEquals apiKeys.limit, limit
+        assertEquals apiKeys.offset, offset
+
+        int apiKeysCount = 0
+        for (ApiKey apiKey : apiKeys) {
+            assertTrue(apiKey.tenant.getPropertyNames().size() > 1) // testing expansion
+            apiKeysCount++
+        }
+
+        assertEquals(apiKeysCount, apiKeysCreated - offset)
+
     }
 
     /**

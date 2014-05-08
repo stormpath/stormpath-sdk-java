@@ -24,7 +24,11 @@ import com.stormpath.sdk.query.Criteria;
  * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  ApiKeyCriteria instances can be
  * constructed by using the {@link ApiKeys} utility class, for example:
  * <pre>
- * ApiKeys.where(<b>ApiKeys.id()</b>.eq("Sffwef345348nernfgierR"));
+ * ApiKeys.criteria()
+ *     .offsetBy(50)
+ *     .limitTo(25)
+ *     .withTenant()
+ *     .withAccount();
  * </pre>
  * @since 1.1.beta
  */
