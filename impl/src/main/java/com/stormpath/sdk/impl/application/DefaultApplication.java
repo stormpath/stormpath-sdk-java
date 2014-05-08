@@ -26,7 +26,6 @@ import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.application.AccountStoreMappingCriteria;
 import com.stormpath.sdk.application.AccountStoreMappingList;
@@ -40,8 +39,10 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
@@ -367,14 +368,14 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException {
         Assert.hasText(id, "The argument 'id' cannot be null or empty to get an api key.");
-        ApiKeyCriteria criteria = ApiKeys.where(ApiKeys.id().eq(id));
+        ApiKeyCriteria criteria = new DefaultApiKeyCriteria();
+        criteria.add(new DefaultEqualsExpressionFactory("id").eq(id));
         return getApiKey(criteria);
     }
 
     /**
      * @since 1.1.beta
      */
-    @Override
     public ApiKey getApiKey(ApiKeyCriteria criteria) throws ResourceException, IllegalArgumentException {
 
         Assert.notNull(criteria, "The 'criteria' argument cannot be null to get an api key.");

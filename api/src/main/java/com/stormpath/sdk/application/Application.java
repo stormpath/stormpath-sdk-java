@@ -22,7 +22,6 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -673,27 +672,4 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.1.beta
      */
     ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException;
-
-    /**
-     *
-     * Gets an {@link ApiKey}, by the specified criteria, that belongs to an {@link Account} that has access to this application by a mapped account store.
-     * <p/>
-     * <h4>Example</h4>
-     * <pre>
-     * ApiKey apiKey = application.getApiKey(ApiKeys.where(ApiKeys.id().eq("Sffwef345348nernfgierR")).withTenant().withAccount());
-     * </pre>
-     * The api key will return with the tenant and the account resources expanded so you don't have to make another call to the server
-     * to retrieve those properties.
-     * NOTE: if the api key id is not specified in the criteria, a {@link ResourceException} will be returned with a message saying that
-     * the 'id' query parameter is required to retrieve an api key from Stormpath.
-     * <p/>
-     *
-     * @param criteria the {@link ApiKeyCriteria} for the {@link ApiKey} to be retrieved.
-     * @return an {@link ApiKey}, by the specified {@link ApiKeyCriteria}, that belongs to an {@link Account} that has access to this application
-     *          by a mapped account store.
-     * @throws ResourceException
-     * @throws IllegalArgumentException if the {@code criteria} argument is null or if trying to get an api key from an application with no href.
-     * @since 1.1.beta
-     */
-    ApiKey getApiKey(ApiKeyCriteria criteria) throws ResourceException, IllegalArgumentException;
 }

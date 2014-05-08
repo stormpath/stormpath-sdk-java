@@ -19,7 +19,6 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
@@ -252,31 +251,6 @@ class ApplicationIT extends ClientIT {
 
         assertNotNull appApiKey
         assertEquals appApiKey, apiKey
-
-    }
-
-    @Test
-    void testGetApiKeyByCriteria() {
-
-        def app = createTempApp()
-
-        def account = createTestAccount(app)
-
-        def apiKey = account.createApiKey()
-
-        def appApiKey = app.getApiKey(ApiKeys.where(ApiKeys.id().eq(apiKey.id)).and(ApiKeys.encryptSecret().eq(true))
-                                              .and(ApiKeys.encryptionKeySize().eq(128))
-                                              .and(ApiKeys.encryptionKeyIterations().eq(10))
-                                              .and(ApiKeys.encryptionKeySalt().eq("YAKpZIKRAUJ0-1pf57Bs_A"))
-                                      .withTenant()
-                                      .withAccount());
-
-        assertNotNull appApiKey
-        assertNotEquals apiKey.secret, appApiKey.secret
-
-        // testing the expansion where the expanded resources must have more than just the 'href' property
-        assertTrue appApiKey.account.getPropertyNames().size() > 1
-        assertTrue appApiKey.tenant.getPropertyNames().size() > 1
 
     }
 

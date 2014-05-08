@@ -23,6 +23,7 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.impl.security.DefaultSaltGenerator
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.api.ApiKeys.options
@@ -53,22 +54,21 @@ class ApiKeyIT extends ClientIT {
 
         def apiKey = getTestApiKey()
 
+        def base64Salt = new DefaultSaltGenerator().generate()
+
         apiKey.status = ApiKeyStatus.DISABLED
         apiKey.save(ApiKeys.newSaveRequest()
                     .setEncryptSecret(true)
                     .setEncryptionKeySize(128)
-                    .setEncryptionKeyIterations(10)
-                    .setEncryptionKeySalt("YAKpZIKRAUJ0-1pf57Bs_A")
+                    .setEncryptionKeyIterations(1024)
+                    .setEncryptionKeySalt(base64Salt)
                     .withResponseOptions(options().withAccount().withTenant())
                     .build())
 
         assertEquals apiKey.status, ApiKeyStatus.DISABLED
 
-        // need to create another client to call the server because the api key is cached with the encrypted values
-        // TODO define cache keys that include the query parameters
-        def client = buildClient()
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
-        assertNotEquals apiKey.secret, retrievedApiKey.secret
+        assertEquals apiKey.secret, retrievedApiKey.secret
 
         //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
     }

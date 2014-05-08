@@ -24,7 +24,6 @@ import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.api.CreateApiKeyRequest;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
@@ -34,9 +33,13 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
+import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
+import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -279,8 +282,10 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
      */
     @Override
     public ApiKey createApiKey() {
-        CreateApiKeyRequest request = ApiKeys.newCreateRequest().build();
-        return createApiKey(request);
+        String href = getApiKeys().getHref();
+        QueryString qs = new QueryStringFactory().createQueryString(new DefaultApiKeyCriteria());
+        href += "?" + qs.toString();
+        return getDataStore().create(href, new DefaultApiKey(getDataStore()), new DefaultApiKeyOptions());
     }
 
     /**

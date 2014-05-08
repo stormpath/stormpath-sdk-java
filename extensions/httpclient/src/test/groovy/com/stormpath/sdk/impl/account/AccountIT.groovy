@@ -24,9 +24,8 @@ import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.impl.security.DefaultSaltGenerator
 import org.testng.annotations.Test
-
-import java.security.SecureRandom
 
 import static com.stormpath.sdk.api.ApiKeys.*
 import static org.testng.Assert.*
@@ -99,11 +98,13 @@ class AccountIT extends ClientIT {
         //create a test account:
         def acct = createTestAccount(app)
 
+        def base64Salt = new DefaultSaltGenerator().generate()
+
         def apiKey = acct.createApiKey(newCreateRequest()
                                         .setEncryptSecret(true)
                                         .setEncryptionKeySize(128)
                                         .setEncryptionKeyIterations(1024)
-                                        .setEncryptionKeySalt(generateSalt(16))
+                                        .setEncryptionKeySalt(base64Salt)
                                         .withResponseOptions(options().withAccount().withTenant())
                                         .build())
 
@@ -116,9 +117,6 @@ class AccountIT extends ClientIT {
         assertNotNull apiKey.tenant
         assertEquals apiKey.tenant.href, acct.tenant.href
 
-        // need to create another client to call the server because the api key is cached with the encrypted values
-        // TODO define cache keys that include the query parameters
-        // def client = buildClient()
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
         assertEquals retrievedApiKey.secret, apiKey.secret
 
@@ -142,13 +140,6 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(acct)
 
         return acct
-    }
-
-    public String generateSalt(int bytesSize) {
-        SecureRandom random = new SecureRandom();
-        def byteArr = new byte[bytesSize];
-        random.nextBytes(byteArr);
-        return com.stormpath.sdk.impl.util.Base64.encodeToString(byteArr,false)
     }
 
 }
