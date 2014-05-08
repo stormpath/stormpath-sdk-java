@@ -76,10 +76,10 @@ public interface ApiKey extends Resource, Saveable, Deletable {
     Tenant getTenant();
 
     /**
-     * Saves this ApiKey resource and ensures the returned ApiKey response reflects the specified saveApiKeyRequest.
+     * Saves this ApiKey resource and ensures the returned ApiKey response reflects the specified {@link ApiKeyOptions}.
      *
-     * @param request The {@link SaveApiKeyRequest} to use to customize the ApiKey resource returned in the save
+     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the save
      *                        response.
      */
-    void save(SaveApiKeyRequest request);
+    void save(ApiKeyOptions options);
 }

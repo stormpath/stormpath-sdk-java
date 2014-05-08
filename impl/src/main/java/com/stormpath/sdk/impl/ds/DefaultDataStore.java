@@ -41,6 +41,7 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.CollectionProperties;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -68,6 +69,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 
 /**
  * @since 0.1
@@ -86,7 +88,7 @@ public class DefaultDataStore implements InternalDataStore {
     private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
     private final ApiKey apiKey;
-    private ResourcePropertiesFilterProcessor filterProcessor;
+    private final ResourcePropertiesFilterProcessor filterProcessor;
     
     /**
      * @since 0.9
@@ -122,7 +124,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
         filterProcessor = new ResourcePropertiesFilterProcessor();
-        filterProcessor.add(new ApiKeyCachePropertiesFilter(apiKey));
+        initFilterProcessor();
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -190,22 +192,21 @@ public class DefaultDataStore implements InternalDataStore {
         Map data = null;
 
         //check if cached:
-        if (isCacheRetrievalEnabled(clazz) || (ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName()))) {
+        if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, qs)) {
 
-            if (ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName())) {
-                String cacheHref = new String(baseUrl + "/apiKeys/" + qs.get("id"));
+            if (isApiKeyCollectionQuery(clazz, qs)) {
+                String cacheHref = new String(baseUrl + "/apiKeys/" + qs.get(ID.getName()));
                 Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
 
                 Map apiKeyData = getCachedValue(cacheHref, cacheClass);
 
                 if (!Collections.isEmpty(apiKeyData)) {
-                    List<Map> apiKeyList = new ArrayList<Map>(1);
-                    apiKeyList.add(apiKeyData);
-                    data = new LinkedHashMap<String, Object>();
-                    data.put(AbstractResource.HREF_PROP_NAME, href);
-                    data.put("offset", 0);
-                    data.put("limit", 25);
-                    data.put("items", apiKeyList);
+                    CollectionProperties.Builder builder = new CollectionProperties.Builder()
+                            .setHref(href)
+                            .setOffset(qs.containsKey(OFFSET.getName()) ? Integer.valueOf(qs.get(OFFSET.getName())) : 0)
+                            .setLimit(qs.containsKey(LIMIT.getName()) ? Integer.valueOf(qs.get(LIMIT.getName())) : 25)
+                            .setItemsMap(apiKeyData);
+                    data = builder.build();
                 }
 
             } else {
@@ -214,6 +215,7 @@ public class DefaultDataStore implements InternalDataStore {
             }
         }
 
+        Map<String, ?> returnResponseBody = data;
         if (Collections.isEmpty(data)) {
             //not cached - execute a request:
             Request request = createRequest(HttpMethod.GET, href, qs);
@@ -223,14 +225,24 @@ public class DefaultDataStore implements InternalDataStore {
                 //cache for further use:
                 cache(clazz, data, qs);
             }
+
+            // Adding the ApiKeyResourcePropertiesFilter here because if the resource was cached, the ApiKeyCachePropertiesFilter
+            // already took care of decrypting the api key secret to return to the user.
+            // Transitory filters serve the purpose of filtering the resource properties to return to the user,
+            // based on the current request.
+            // For example: decrypting the api key secret to return to the user
+            // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
+            // be added when initializing the filter (they depend on the current request).
+            filterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, qs));
+            returnResponseBody = filterProcessor.process(data);
         }
 
         if (CollectionResource.class.isAssignableFrom(clazz)) {
             //only collections can support a query string constructor argument:
-            return this.resourceFactory.instantiate(clazz, data, qs);
+            return this.resourceFactory.instantiate(clazz, returnResponseBody, qs);
         }
         //otherwise it must be an instance resource, so use the two-arg constructor:
-        return this.resourceFactory.instantiate(clazz, data);
+        return this.resourceFactory.instantiate(clazz, returnResponseBody);
     }
 
     /* =====================================================================
@@ -362,6 +374,11 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, Object> responseBody = executeRequest(request);
 
+        // Transitory filters serve the purpose of filtering the resource properties to return to the user,
+        // based on the current request.
+        // For example: decrypting the api key secret to return to the user
+        // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
+        // be added when initializing the filter (they depend on the current request).
         filterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, queryString));
         Map<String, Object> returnResponseBody = (Map<String, Object>) filterProcessor.process(responseBody);
 
@@ -829,5 +846,28 @@ public class DefaultDataStore implements InternalDataStore {
         } catch (java.util.NoSuchElementException e) {
             return null;
         }
+    }
+
+    /**
+     * Initializes the filter processor with the filters that should always be present when calling
+     * {@link ResourcePropertiesFilterProcessor#process(Map)}.
+     *
+     * @since 1.1.beta
+     */
+    protected void initFilterProcessor() {
+
+        // adding a default processor that always returns the provided resource properties map
+        filterProcessor.add(new ResourcePropertiesFilter() {
+            @Override
+            public Map<String, ?> filter(Map<String, ?> resourceProperties) {
+                return resourceProperties;
+            }
+        });
+        filterProcessor.add(new ApiKeyCachePropertiesFilter(apiKey));
+    }
+
+    private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
+
+        return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());
     }
 }

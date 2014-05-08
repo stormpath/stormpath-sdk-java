@@ -21,9 +21,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
-import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.impl.security.DefaultSaltGenerator
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.api.ApiKeys.options
@@ -50,25 +48,34 @@ class ApiKeyIT extends ClientIT {
     }
 
     @Test
-    void testSaveWithRequest() {
+    void testSaveWithOptions() {
 
         def apiKey = getTestApiKey()
 
-        def base64Salt = new DefaultSaltGenerator().generate()
-
         apiKey.status = ApiKeyStatus.DISABLED
-        apiKey.save(ApiKeys.newSaveRequest()
-                    .setEncryptSecret(true)
-                    .setEncryptionKeySize(128)
-                    .setEncryptionKeyIterations(1024)
-                    .setEncryptionKeySalt(base64Salt)
-                    .withResponseOptions(options().withAccount().withTenant())
-                    .build())
+        apiKey.save(options().withAccount().withTenant())
 
         assertEquals apiKey.status, ApiKeyStatus.DISABLED
 
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
-        assertEquals apiKey.secret, retrievedApiKey.secret
+        assertEquals apiKey, retrievedApiKey
+
+        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
+    }
+
+    @Test
+    void testSaveWithOptionsWithNoCaching() {
+
+        def apiKey = getTestApiKey()
+
+        apiKey.status = ApiKeyStatus.ENABLED
+        apiKey.save(options().withAccount().withTenant())
+
+        assertEquals apiKey.status, ApiKeyStatus.ENABLED
+
+        def client = buildClient(false)
+        def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
+        assertEquals apiKey, retrievedApiKey
 
         //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
     }

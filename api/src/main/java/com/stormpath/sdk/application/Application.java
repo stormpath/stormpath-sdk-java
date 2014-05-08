@@ -22,6 +22,7 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -672,4 +673,21 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.1.beta
      */
     ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException;
+
+    /**
+     * Gets an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
+     *<p/>
+     * A call to this method ensures that the returned {@link ApiKey} response reflects the specified {@link ApiKeyOptions}.
+     * </p>
+     * @param id the id of the {@link ApiKey} to be retrieved.
+     * @param options the {@link ApiKeyOptions} to use to customize the ApiKey resource upon retrieval.
+     *
+     * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store
+     *                          with the specified {@link ApiKeyOptions}.
+     *
+     * @throws ResourceException
+     * @throws IllegalArgumentException if the {@code id} argument is null or empty, or if the {@code options} argument is null..
+     * @since 1.1.beta
+     */
+    ApiKey getApiKey(String id, ApiKeyOptions options) throws ResourceException, IllegalArgumentException;
 }

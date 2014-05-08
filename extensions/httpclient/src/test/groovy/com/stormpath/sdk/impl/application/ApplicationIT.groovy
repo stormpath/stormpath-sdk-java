@@ -19,6 +19,7 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
@@ -251,6 +252,46 @@ class ApplicationIT extends ClientIT {
 
         assertNotNull appApiKey
         assertEquals appApiKey, apiKey
+
+    }
+
+    @Test
+    void testGetApiKeyByIdCacheDisabled() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        client = buildClient(false)
+
+        app = client.dataStore.getResource(app.href, Application)
+
+        def appApiKey = app.getApiKey(apiKey.id)
+
+        assertNotNull appApiKey
+        assertEquals appApiKey, apiKey
+
+    }
+
+    @Test
+    void testGetApiKeyByIdWithOptions() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def client = buildClient(false) // need to disable caching because the api key is cached without the options
+        app = client.getResource(app.href, Application)
+        def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+
+        assertNotNull appApiKey
+        assertEquals appApiKey.secret, apiKey.secret
+        assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion
+        assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion
 
     }
 

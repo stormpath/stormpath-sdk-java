@@ -24,7 +24,7 @@ import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.api.CreateApiKeyRequest;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -282,49 +282,18 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
      */
     @Override
     public ApiKey createApiKey() {
-        String href = getApiKeys().getHref();
-        QueryString qs = new QueryStringFactory().createQueryString(new DefaultApiKeyCriteria());
-        href += "?" + qs.toString();
-        return getDataStore().create(href, new DefaultApiKey(getDataStore()), new DefaultApiKeyOptions());
+        return createApiKey(new DefaultApiKeyOptions());
     }
 
     /**
      * @since 1.1.beta
      */
     @Override
-    public ApiKey createApiKey(CreateApiKeyRequest request) {
-        Assert.notNull(request, "Request argument cannot be null.");
-
+    public ApiKey createApiKey(ApiKeyOptions options) {
+        Assert.notNull(options, "options argument cannot be null.");
         String href = getApiKeys().getHref();
-        StringBuilder hrefBuilder = new StringBuilder(href);
-
-        boolean parameterSet = false;
-        if (request.isEncryptSecretOptionSpecified()) {
-            hrefBuilder.append(String.format("?encryptSecret=%s", request.isEncryptSecret()));
-            parameterSet = true;
-        }
-
-        if (request.isEncryptionKeySizeOptionSpecified()) {
-            hrefBuilder.append(parameterSet ? "&" : "?");
-            hrefBuilder.append(String.format("encryptionKeySize=%d", request.getEncryptionKeySize()));
-            parameterSet = true;
-        }
-
-        if (request.isEncryptionKeyIterationsOptionSpecified()) {
-            hrefBuilder.append(parameterSet ? "&" : "?");
-            hrefBuilder.append(String.format("encryptionKeyIterations=%d", request.getEncryptionKeyIterations()));
-            parameterSet = true;
-        }
-
-        if (request.isEncryptionKeySaltOptionSpecified()) {
-            hrefBuilder.append(parameterSet ? "&" : "?");
-            hrefBuilder.append(String.format("encryptionKeySalt=%s", request.getEncryptionKeySalt()));
-        }
-
-        if (request.isApiKeyOptionsSpecified()) {
-            return getDataStore().create(hrefBuilder.toString(), new DefaultApiKey(getDataStore()), request.getApiKeyOptions());
-        }
-
-        return getDataStore().create(href, new DefaultApiKey(getDataStore()));
+        QueryString qs = new QueryStringFactory().createQueryString(new DefaultApiKeyCriteria());
+        href += "?" + qs.toString();
+        return getDataStore().create(href, new DefaultApiKey(getDataStore()), options);
     }
 }
