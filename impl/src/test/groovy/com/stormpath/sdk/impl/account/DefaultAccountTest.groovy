@@ -25,11 +25,14 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.group.DefaultGroupMembership
 import com.stormpath.sdk.impl.group.DefaultGroupMembershipList
+import com.stormpath.sdk.impl.provider.DefaultProviderData
+import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
@@ -48,7 +51,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 14)
+        assertEquals(propertyDescriptors.size(), 15)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -64,6 +67,7 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("groupMemberships") instanceof CollectionReference && propertyDescriptors.get("groupMemberships").getType().equals(GroupMembershipList))
+        assertTrue(propertyDescriptors.get("providerData") instanceof ResourceReference && propertyDescriptors.get("providerData").getType().equals(ProviderData))
     }
 
     @Test
@@ -75,7 +79,8 @@ class DefaultAccountTest {
                           directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
                           tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
                           groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
-                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"]]
+                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultAccount = new DefaultAccount(internalDataStore, properties)
@@ -116,6 +121,9 @@ class DefaultAccountTest {
 
         expect(internalDataStore.instantiate(GroupMembershipList, properties.groupMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.groupMemberships))
 
+        expect(internalDataStore.getResource(properties.providerData.href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP))
+                .andReturn(new DefaultProviderData(internalDataStore, properties.providerData))
+
         expect(internalDataStore.delete(defaultAccount))
 
         def groupMembership =  new DefaultGroupMembership(internalDataStore)
@@ -146,6 +154,11 @@ class DefaultAccountTest {
 
         resource = defaultAccount.getGroupMemberships()
         assertTrue(resource instanceof DefaultGroupMembershipList && resource.getHref().equals(properties.groupMemberships.href))
+
+        resource = defaultAccount.getProviderData()
+        assertTrue(resource instanceof DefaultProviderData && resource.getHref().equals(properties.providerData.href))
+        resource = defaultAccount.getProviderData() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
+        assertTrue(resource instanceof DefaultProviderData && resource.getHref().equals(properties.providerData.href))
 
         defaultAccount.delete()
 
@@ -228,7 +241,68 @@ class DefaultAccountTest {
     }
 
 
+    @Test
+    void testMissingProviderDataHref() {
+        //this scenario should never happen as Hrefs are obtained from the backend when a directory is retrieved
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf",
+                name: "My Directory",
+                description: "My Description",
+                accounts: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups"],
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                providerData: [createdAt: "2014-04-18T21:32:19.651Z"]
+        ]
+
+        DefaultAccount defaultAccount = new DefaultAccount(internalDataStore, properties)
+        try {
+            defaultAccount.getProviderData()
+            fail("Should have thrown")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "providerData resource does not contain its required href property.")
+        }
+    }
+
+    @Test
+    void testIncompatibleProviderDataType() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf",
+                name: "My Directory",
+                description: "My Description",
+                accounts: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups"],
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                providerData: []
+        ]
+
+        DefaultAccount defaultAccount = new DefaultAccount(internalDataStore, properties)
+
+        try {
+            defaultAccount.getProviderData()
+            fail("Should have thrown")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "'providerData' property value type does not match the specified type. Specified type: interface com.stormpath.sdk.provider.ProviderData.  Existing type: java.util.ArrayList.  Value: []")
+        }
+    }
 
 
+    @Test
+    void testGetNullProviderData() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf",
+                name: "My Directory",
+                description: "My Description",
+                accounts: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups"],
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"]
+        ]
+
+        DefaultAccount defaultAccount = new DefaultAccount(internalDataStore, properties)
+
+        assertNull(defaultAccount.getProviderData())
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,17 +72,18 @@ abstract class ClientIT {
     Client buildClient(boolean enableCaching=true) {
 
         def builder = Clients.builder()
+        def apiKeyBuilder = ApiKeys.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
         if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKeyFileLocation(apiKeyFileLocation)
+            builder.setApiKey(apiKeyBuilder.setFileLocation(apiKeyFileLocation).build())
         } else {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyId, apiKeySecret)
+            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).setSecret(apiKeySecret).build())
         }
 
         if (enableCaching) {
@@ -95,17 +96,18 @@ abstract class ClientIT {
     Client buildClient(AuthenticationScheme authenticationScheme) {
 
         def builder = Clients.builder()
+        def apiKeyBuilder = ApiKeys.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         //see if the api key file exists first - if so, use it:
         def file = new File(apiKeyFileLocation)
         if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKeyFileLocation(apiKeyFileLocation)
+            builder.setApiKey(apiKeyBuilder.setFileLocation(apiKeyFileLocation).build())
         } else {
             //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
             String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
             String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyId, apiKeySecret)
+            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).setSecret(apiKeySecret).build())
         }
 
         builder.setAuthenticationScheme(authenticationScheme)

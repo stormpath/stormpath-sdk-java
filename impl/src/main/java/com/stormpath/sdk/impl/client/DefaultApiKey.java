@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.client;
+package com.stormpath.sdk.impl.client;
+
+import com.stormpath.sdk.client.ApiKey;
 
 /**
- * Default implementation of the {@link ApiKey} interface.  This implementation is immutable and (therefore) thread-safe.
+ * Default implementation of the {@link com.stormpath.sdk.client.ApiKey} interface. This implementation is immutable and (therefore) thread-safe.
  *
  * @since 0.1
  */

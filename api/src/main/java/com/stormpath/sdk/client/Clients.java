@@ -21,7 +21,7 @@ import com.stormpath.sdk.lang.Classes;
  * Static utility/helper class for working with {@link Client} resources. For example:
  * <pre>
  * <b>Clients.builder()</b>
- *     .setApiKeyFileLocation(path)
+ *     .setFileLocation(path)
  *     .setProxy(new Proxy("192.168.2.120", 9001))
  *     .build();
  * </pre>

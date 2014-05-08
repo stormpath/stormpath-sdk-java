@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.GroupMembershipList
+import com.stormpath.sdk.impl.client.DefaultApiKey
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
 
