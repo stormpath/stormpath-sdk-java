@@ -23,6 +23,7 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -332,4 +333,12 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * @since 0.9
      */
     void createGroup(CreateGroupRequest request);
+
+    /**
+     * Returns the {@link Provider} of this Directory.
+     *
+     * @return the {@link Provider} of this Directory.
+     * @since 1.0.beta
+     */
+    Provider getProvider();
 }

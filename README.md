@@ -18,6 +18,9 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 1.0.beta ###
 
+- Added Provider integration: Google and Facebook are supported.
+- Method chaining for Resources.
+
 #### Backwards Incompatible Changes ####
 
 This beta release contains a few backwards-incompatible changes, we strive to keep them minimal.

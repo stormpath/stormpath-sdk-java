@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http.authc
 
 import com.stormpath.sdk.client.AuthenticationScheme
-import org.junit.Test
+import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier

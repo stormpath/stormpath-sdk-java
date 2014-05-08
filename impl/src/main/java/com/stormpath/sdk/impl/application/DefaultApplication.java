@@ -23,8 +23,11 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
@@ -180,6 +183,14 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
         return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
+    }
+
+    /**
+     * @since 1.0.beta
+     */
+    @Override
+    public ProviderAccountResult getAccount(ProviderAccountRequest request) throws ResourceException {
+        return new ProviderAccountResolver(getDataStore()).resolveProviderAccount(getHref(), request);
     }
 
     @Override

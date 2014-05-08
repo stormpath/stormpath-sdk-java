@@ -17,7 +17,12 @@ package com.stormpath.sdk.account;
 
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -324,5 +329,14 @@ public interface Account extends Resource, Saveable, Deletable {
      * @since 0.9.3
      */
     boolean isMemberOfGroup(String hrefOrName);
+
+    /**
+     * Returns the ProviderData Resource belonging to the account.
+     *
+     * @return the ProviderData Resource belonging to the account.
+     *
+     * @since 1.0.beta
+     */
+    ProviderData getProviderData();
 
 }
