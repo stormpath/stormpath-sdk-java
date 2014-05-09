@@ -30,10 +30,12 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -333,6 +335,43 @@ class ApplicationIT extends ClientIT {
         assertEquals appApiKey.secret, apiKey.secret
         assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion
         assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion
+
+    }
+
+    @Test
+    void testGetApiKeyByIdWithOptionsInCache() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def client = buildClient()
+        app = client.getResource(app.href, Application)
+        def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+        def appApiKey2 = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+
+        assertNotNull appApiKey
+        assertNotNull appApiKey2
+        assertEquals appApiKey2.secret, appApiKey.secret
+        assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
+        assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
+
+        // testing that the expansions made it to the cache
+        def dataStore = (DefaultDataStore) client.dataStore
+        def accountCache = dataStore.cacheManager.getCache(Account.name)
+        assertNotNull accountCache
+        def accountCacheValue = accountCache.get(appApiKey2.account.href)
+        assertNotNull accountCacheValue
+        assertEquals accountCacheValue['username'], appApiKey.account.username
+
+        def tenantCache = dataStore.cacheManager.getCache(Tenant.name)
+        assertNotNull tenantCache
+        def tenantCacheValue = tenantCache.get(appApiKey2.tenant.href)
+        assertNotNull tenantCacheValue
+        assertEquals tenantCacheValue['key'], appApiKey.tenant.key
+
 
     }
 

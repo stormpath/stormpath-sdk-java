@@ -38,6 +38,19 @@ public class ApiKeyCacheMapCreator extends DefaultCacheMapCreator {
         this.queryString = queryString;
     }
 
+    /**
+     * <p>
+     *     Creates a map based on the data map and the query string provided in the constructor.
+     *     The map is created with the api key decryption meta data obtained from the query string.
+     * </p>
+     * <p>
+     *     If the query string is null or doesn't have the required api key decryption meta data,
+     *     this method returns an empty map created by {@link DefaultCacheMapCreator#create()}.
+     * </p>
+     *
+     * @return a map based on the data map and the query string provided in the constructor.
+     *     The map is created with the api key decryption meta data obtained from the query string.
+     */
     @Override
     public Map<String, Object> create() {
 

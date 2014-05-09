@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * @since 1.1.beta
+ * @see CacheMapCreatorFactory
  */
 public class DefaultCacheMapInitializer implements CacheMapInitializer {
 
@@ -33,6 +34,21 @@ public class DefaultCacheMapInitializer implements CacheMapInitializer {
         cacheMapCreatorFactory = new DefaultCacheMapCreatorFactory();
     }
 
+    /**
+     * <p>
+     *     Used to initialize a cache map based on the provided class, data and query string.
+     * </p>
+     * <p>
+     *     It uses the {@link CacheMapCreatorFactory} to initialize a map.
+     * </p>
+     *
+     * @param clazz the resource class that will be used to identify the type of resource.
+     * @param data the data to be cached that should be analyzed to initialize the map.
+     * @param queryString the query string to be analyzed to initialize the map.
+     * @return the initialized map.
+     *
+     * @see CacheMapCreatorFactory#create(Class, Map, QueryString)
+     */
     @Override
     public Map<String, Object> initialize(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString) {
         CacheMapCreator creator = cacheMapCreatorFactory.create(clazz, data, queryString);

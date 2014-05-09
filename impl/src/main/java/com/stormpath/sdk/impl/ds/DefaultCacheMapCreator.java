@@ -34,6 +34,13 @@ public class DefaultCacheMapCreator implements CacheMapCreator {
         this.data = data;
     }
 
+    /**
+     * Creates an empty cache map with the initial size being the size of the
+     * data map provided in the constructor.
+     *
+     * @return an empty cache map with the initial size being the size of the
+     * provided data.
+     */
     @Override
     public Map<String, Object> create() {
         return new LinkedHashMap<String, Object>(data.size());

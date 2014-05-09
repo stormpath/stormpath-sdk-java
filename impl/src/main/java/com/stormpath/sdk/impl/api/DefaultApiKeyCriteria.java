@@ -51,6 +51,11 @@ public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKe
         return this;
     }
 
+    /**
+     * Adds the default criterion entries for retrieving api keys from the server.
+     * Whenever api keys are retrieved from the server, the SDK should always
+     * request them with their secrets encrypted.
+     */
     protected void addDefaultCriterions() {
         add(new DefaultEqualsExpressionFactory(ENCRYPT_SECRET.getName()).eq(Boolean.TRUE));
         add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SIZE.getName()).eq(128));
