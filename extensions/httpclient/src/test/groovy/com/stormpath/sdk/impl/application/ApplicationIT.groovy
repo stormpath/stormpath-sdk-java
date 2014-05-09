@@ -31,6 +31,9 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.ProviderAccountRequest
+import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -237,6 +240,44 @@ class ApplicationIT extends ClientIT {
         request = new UsernamePasswordRequest(username, password)
         result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
+    }
+
+    //@since 1.0.beta
+    @Test
+    void testGetNonexistentGoogleAccount() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testGetNonexistentGoogleAccount")
+        GoogleProvider provider = client.instantiate(GoogleProvider.class);
+        def clientId = uniquify("999999911111111")
+        def clientSecret = uniquify("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0")
+        provider.setClientId(clientId).setClientSecret(clientSecret).setRedirectUri("https://www.myAppURL:8090/index.jsp");
+
+        def createDirRequest = Directories.newCreateRequestFor(dir).
+                forProvider(Providers.GOOGLE.builder()
+                        .setClientId(clientId)
+                        .setClientSecret(clientSecret)
+                        .setRedirectUri("https://www.myAppURL:8090/index.jsp")
+                        .build()
+                ).build()
+
+        dir = client.currentTenant.createDirectory(createDirRequest)
+        deleteOnTeardown(dir)
+
+        def app = createTempApp()
+        app.addAccountStore(dir)
+
+        ProviderAccountRequest request = Providers.GOOGLE.account().setCode("4/MZ-Z4Xr-V6K61-Y0CE-ifJlyIVwY.EqwqoikzZTUSaDn_5y0ZQNiQIAI2iwI").build();
+
+        try {
+            app.getAccount(request)
+            fail("should have thrown")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.getStatus(), 400)
+            assertEquals(e.getCode(), 7200)
+            assertEquals(e.getDeveloperMessage(), "Stormpath was not able to complete the request to Google: this can be " +
+                    "caused by either a bad Google directory configuration, or the provided account credentials are not " +
+                    "valid. Google error message: 400 Bad Request")
+        }
     }
 
     @Test

@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.http.authc
 import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.impl.http.HttpHeaders
 import com.stormpath.sdk.impl.http.Request
-import org.junit.Test
+import org.testng.annotations.Test
 
 import java.text.SimpleDateFormat
 

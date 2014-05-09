@@ -63,4 +63,9 @@ public interface InternalDataStore extends DataStore {
      * @since 1.1.beta
      */
     ApiKey getApiKey();
+    /**
+     * @since 1.0.beta
+     */
+    <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> stringClassMap);
+
 }

@@ -216,4 +216,29 @@ class AccountIT extends ClientIT {
         return acct
     }
 
+    //@since 1.0.beta
+    @Test
+    void testGetProviderData() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = client.instantiate(Account)
+        def password = 'Changeme1!'
+        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        acct.password = password
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        def providerData = acct.getProviderData()
+
+        assertEquals providerData.getHref(), acct.getHref() + "/providerData"
+        assertEquals providerData.getProviderId(), "stormpath"
+        assertNotNull providerData.getCreatedAt()
+        assertNotNull providerData.getModifiedAt()
+    }
+
 }
