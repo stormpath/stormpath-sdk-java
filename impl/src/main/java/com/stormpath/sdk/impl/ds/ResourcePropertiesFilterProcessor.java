@@ -21,17 +21,24 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
+ * <p>
+ *     This class is used to process the added {@link ResourcePropertiesFilter}s by
+ *     calling their {@link ResourcePropertiesFilter#filter(Map)} method and returning
+ *     the result of processing all configured filters.
+ * </p>
  * @since 1.1.beta
+ * @see ResourcePropertiesFilter
  */
 public class ResourcePropertiesFilterProcessor extends LinkedList<ResourcePropertiesFilter> {
 
     private final LinkedList<ResourcePropertiesFilter> transitoryFilters = new LinkedList<ResourcePropertiesFilter>();
 
     /**
-     *
+     * <p>
      * Calls {@link ResourcePropertiesFilter#filter(Map)} on all the existing filters, including the transitory ones
      * added by {@link #addTransitoryFilter(ResourcePropertiesFilter)}, and returns the result of calling all the filters.
      * </p>
+     * <p>
      * A call to this method removes all transitory filters added by {@link #addTransitoryFilter(ResourcePropertiesFilter)}
      * after they are processed.
      * </p>
@@ -39,6 +46,8 @@ public class ResourcePropertiesFilterProcessor extends LinkedList<ResourceProper
      * @param resourceProperties the resource properties that will be filtered by the filters contained in this list.
      *
      * @return a {@link Map} containing the result of calling all the filters.
+     * @see ResourcePropertiesFilter#filter(Map)
+     * @see #addTransitoryFilter(ResourcePropertiesFilter)
      */
     public Map<String, ?> process(Map<String, ?> resourceProperties) {
 
@@ -59,6 +68,7 @@ public class ResourcePropertiesFilterProcessor extends LinkedList<ResourceProper
     }
 
     /**
+     * <p>
      * Adds a {@link ResourcePropertiesFilter} that will only be executed in the next call to
      * the {@link #process(Map)} method. After the next call to {@link #process(Map)}, all filters added by this method
      * will be removed.
@@ -67,6 +77,8 @@ public class ResourcePropertiesFilterProcessor extends LinkedList<ResourceProper
      * @param filter the {@link ResourcePropertiesFilter} that will only be executed in the next call to
      * the {@link #process(Map)} method. After the next call to {@link #process(Map)}, all filters added by this method
      * will be removed.
+     *
+     * @see #process(Map)
      */
     public void addTransitoryFilter(ResourcePropertiesFilter filter) {
         transitoryFilters.add(filter);

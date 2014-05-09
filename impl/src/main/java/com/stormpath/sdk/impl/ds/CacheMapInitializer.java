@@ -23,9 +23,20 @@ import com.stormpath.sdk.resource.Resource;
 import java.util.Map;
 
 /**
+ * <p>
+ *     Interface used to define the method to initialize a cache map. Used in the {@link DefaultDataStore}.
+ * </p>
  * @since 1.1.beta
  */
 public interface CacheMapInitializer {
 
+    /**
+     * Used to initialize a cache map based on the provided class, data and query string.
+     *
+     * @param clazz the resource class that will be used to identify the type of resource.
+     * @param data the data to be cached that should be analyzed to initialize the map.
+     * @param queryString the query string to be analyzed to initialize the map.
+     * @return the initialized map.
+     */
     Map<String, Object> initialize(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString);
 }

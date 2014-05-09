@@ -665,7 +665,7 @@ public class DefaultDataStore implements InternalDataStore {
                             "It is expected that only ResourceReference properties are complex objects.");
 
                     //cache this materialized reference:
-                    cache(property.getType(), nested, null);
+                    cache(property.getType(), nested, queryString);
 
                     //Because the materialized reference has now been cached, we don't need to store
                     //all of its properties again in the 'toCache' instance.  Instead, we just want to store
@@ -696,7 +696,7 @@ public class DefaultDataStore implements InternalDataStore {
                     if (o instanceof Map) {
                         Map referenceData = (Map) o;
                         if (isMaterialized(referenceData)) {
-                            cache(itemType, referenceData, null);
+                            cache(itemType, referenceData, queryString);
                             element = this.referenceFactory.createReference(referenceData);
                         }
                     }
@@ -722,7 +722,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 0.8
      */
     private boolean isMaterialized(Map<String, ?> props) {
-        return props != null && props.get("href") != null && props.size() > 1;
+        return props != null && props.get(AbstractResource.HREF_PROP_NAME) != null && props.size() > 1;
     }
 
     /**
@@ -965,6 +965,10 @@ public class DefaultDataStore implements InternalDataStore {
         filterProcessor.add(new ApiKeyCachePropertiesFilter(apiKey));
     }
 
+    /**
+     *
+     * @since 1.1.beta
+     */
     private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
 
         return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());

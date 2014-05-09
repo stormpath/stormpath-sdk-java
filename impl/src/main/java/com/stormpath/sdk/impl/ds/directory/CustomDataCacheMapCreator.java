@@ -30,6 +30,11 @@ public class CustomDataCacheMapCreator extends DefaultCacheMapCreator {
         super(data);
     }
 
+    /**
+     * Creates a map with all the properties of the data map provided in the constructor.
+     *
+     * @return a map with all the properties of the data map provided in the constructor.
+     */
     @Override
     public Map<String, Object> create() {
         Map<String, Object> cacheMap = super.create();

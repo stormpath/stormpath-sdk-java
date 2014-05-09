@@ -19,7 +19,9 @@ package com.stormpath.sdk.impl.ds.api;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
+import com.stormpath.sdk.impl.ds.ResourcePropertiesFilterProcessor;
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,9 +38,35 @@ public class ApiKeyCachePropertiesFilter implements ResourcePropertiesFilter {
 
 
     public ApiKeyCachePropertiesFilter(ApiKey apiKey) {
+        Assert.notNull(apiKey);
         this.apiKey = apiKey;
     }
 
+    /**
+     * <p>
+     * This filter expects the cached api key map and returns another map
+     * with the properties of the api key, decrypting the api key secret.
+     * </p>
+     * <p>
+     * If the resource properties is null or does not contain the required
+     * api key meta data to decrypt the secret, the same {@code resourceProperties}
+     * is returned.
+     * </p>
+     *  <p>
+     * It uses the <b>client api key secret</b> to decrypt the api key secret, from
+     * the {@link ApiKey} provided in the constructor.
+     * </p>
+     *
+     * @param resourceProperties The map used to filter the cached api key properties
+     *                           and decrypt its secret value.
+     *
+     * @return the map with the properties of the api key, decrypting the api key secret.
+     *          If the resource properties is null or does not contain the required
+     *          api key meta data to decrypt the secret, the same {@code resourceProperties}
+     *          is returned.
+     *
+     * @see ResourcePropertiesFilterProcessor#addTransitoryFilter(ResourcePropertiesFilter)
+     */
     @Override
     public Map<String, ?> filter(Map<String, ?> resourceProperties) {
 

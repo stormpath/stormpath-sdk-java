@@ -23,9 +23,22 @@ import com.stormpath.sdk.resource.Resource;
 import java.util.Map;
 
 /**
+ * <p>
+ *     This interface defines the method to create a {@link CacheMapCreator} based on the provided arguments.
+ * </p>
  * @since 1.1.beta
  */
 public interface CacheMapCreatorFactory {
 
+    /**
+     * <p>
+     *     Creates a {@link CacheMapCreator} based on the provided arguments.
+     * </p>
+     * @param clazz the class used to determined the type of {@link CacheMapCreator} to create.
+     * @param data the data map used to create the {@link CacheMapCreator}.
+     * @param queryString the query string used to create the {@link CacheMapCreator}.
+     *
+     * @return a new {@link CacheMapCreator} instance.
+     */
     CacheMapCreator create(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString);
 }

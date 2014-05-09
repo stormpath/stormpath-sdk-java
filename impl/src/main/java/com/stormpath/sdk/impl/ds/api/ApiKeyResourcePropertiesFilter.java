@@ -19,8 +19,10 @@ package com.stormpath.sdk.impl.ds.api;
 
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
+import com.stormpath.sdk.impl.ds.ResourcePropertiesFilterProcessor;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -39,14 +41,47 @@ public class ApiKeyResourcePropertiesFilter implements ResourcePropertiesFilter 
     private final QueryString queryString;
 
     public ApiKeyResourcePropertiesFilter(ApiKey apiKey, QueryString queryString) {
+        Assert.notNull(apiKey);
         this.apiKey = apiKey;
         this.queryString = queryString;
     }
 
+    /**
+     *  <p>
+     *      This filter expects the api key properties with the secret encrypted
+     *      and returns the properties with the decrypted secret values.
+     *  </p>
+     *  <p>
+     *      The decryption meta data is expected in the {@link QueryString} and the {@link ApiKey} provided in the constructor.
+     *  </p>
+     *  <p>
+     *      It supports the properties of a single api key and the properties
+     *      of a collection of api keys. In the later case, all api keys secrets will be decrypted.
+     *  </p>
+     *  <p>
+     *      If the resource properties or the query string is null, or the query string does not contain the required
+     *      api key meta data to decrypt the secret, the same {@code resourceProperties}
+     *      is returned.
+     *  </p>
+     *  <p>
+     *      Because this filter depends on the query string, it is usually added as a transitory filter to be processed by
+     *      the {@link ResourcePropertiesFilter} on its {@link ResourcePropertiesFilterProcessor#addTransitoryFilter(ResourcePropertiesFilter)}
+     *      method.
+     *  </p>
+     *
+     * @param resourceProperties The map used to filter the api keys properties
+     *                           and decrypt their secret values.
+     *
+     * @return the api key properties with the decrypted secret values.
+     *
+     * @see ResourcePropertiesFilterProcessor#addTransitoryFilter(ResourcePropertiesFilter)
+     * @see ResourcePropertiesFilterProcessor#process(Map)
+     */
     @Override
     public Map<String, ?> filter(Map<String, ?> resourceProperties) {
 
-        if (queryString != null
+        if (resourceProperties!= null
+                && queryString != null
                 && queryString.containsKey(ENCRYPT_SECRET.getName())
                 && Boolean.valueOf(queryString.get(ENCRYPT_SECRET.getName()))
                 && queryString.containsKey(ENCRYPTION_KEY_SALT.getName())) {
