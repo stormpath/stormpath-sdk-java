@@ -28,13 +28,24 @@ import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.api.ApiKeyCachePropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyResourcePropertiesFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.http.HttpMethod;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryStringFactory;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.CollectionProperties;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -51,7 +62,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
@@ -174,9 +192,71 @@ public class DefaultDataStore implements InternalDataStore {
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
 
-        Map data = null;
+        Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
-        //check if cached:
+        if (CollectionResource.class.isAssignableFrom(clazz)) {
+            //only collections can support a query string constructor argument:
+            return this.resourceFactory.instantiate(clazz, data, qs);
+        }
+        //otherwise it must be an instance resource, so use the two-arg constructor:
+        return this.resourceFactory.instantiate(clazz, data);
+    }
+
+    /**
+     * This method provides the ability to instruct the DataStore how to decide which class of a resource hierarchy
+     * will be instantiated. For example, nowadays three {@link ProviderData} resources exists (ProviderData, FacebookProviderData and
+     * GoogleProviderData). The <code>childIdProperty</code> is the property that will be used in the response as the ID to seek
+     * for the proper concrete ProviderData class in the <code>idClassMap</>.
+     *
+     * @param href the endpoint where the request will be targeted to.
+     * @param parent the root class of the Resource hierarchy (helps to validate that the idClassMap contains subclasses of it).
+     * @param childIdProperty the property whose value will be used to identify the specific class in the hierarchy that we need to instantiate.
+     * @param idClassMap a mapping to be able to know which class corresponds to each <code>childIdProperty</code> value.
+     * @param <T> the root of the hierarchy of the Resource we want to instantiate.
+     * @param <R> the sub-class of the root Resource.
+     * @return
+     */
+    @Override
+    public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(parent, "parent class argument cannot be null.");
+        Assert.hasText(childIdProperty, "childIdProperty cannot be null or empty.");
+        Assert.notEmpty(idClassMap, "idClassMap cannot be null or empty.");
+
+        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
+
+        return getResource(sanitized.getHrefWithoutQuery(), parent, sanitized.getQuery(), childIdProperty, idClassMap);
+    }
+
+    private <T extends Resource, R extends T> R getResource(String href, Class<T> parent, QueryString qs, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
+        //need to qualify the href it to ensure our cache lookups work as expected
+        //(cache key = fully qualified href):
+        href = ensureFullyQualified(href);
+
+        Map<String, ?> data = retrieveResponseValue(href, parent, qs);
+
+        if (Collections.isEmpty(data)) {
+            throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
+        }
+
+        Object childClassName = data.get(childIdProperty);
+        Class<? extends R> childClass = idClassMap.get(childClassName);
+
+        if(childClass == null) {
+            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
+        }
+
+        if (CollectionResource.class.isAssignableFrom(childClass)) {
+            //only collections can support a query string constructor argument:
+            return this.resourceFactory.instantiate(childClass, data, qs);
+        }
+        //otherwise it must be an instance resource, so use the two-arg constructor:
+        return this.resourceFactory.instantiate(childClass, data);
+    }
+
+    private Map<String, ?> retrieveResponseValue(String href, Class clazz, QueryString qs) {
+
+        Map<String, ?> data = null;
         if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, qs)) {
 
             if (isApiKeyCollectionQuery(clazz, qs)) {
@@ -222,80 +302,7 @@ public class DefaultDataStore implements InternalDataStore {
             returnResponseBody = filterProcessor.process(data);
         }
 
-        if (CollectionResource.class.isAssignableFrom(clazz)) {
-            //only collections can support a query string constructor argument:
-            return this.resourceFactory.instantiate(clazz, returnResponseBody, qs);
-        }
-        //otherwise it must be an instance resource, so use the two-arg constructor:
-        return this.resourceFactory.instantiate(clazz, returnResponseBody);
-    }
-
-    /**
-     * This method provides the ability to instruct the DataStore how to decide which class of a resource hierarchy
-     * will be instantiated. For example, nowadays three {@link ProviderData} resources exists (ProviderData, FacebookProviderData and
-     * GoogleProviderData). The <code>childIdProperty</code> is the property that will be used in the response as the ID to seek
-     * for the proper concrete ProviderData class in the <code>idClassMap</>.
-     *
-     * @param href the endpoint where the request will be targetted to.
-     * @param parent the root class of the Resource hierarchy (helps to validate that the idClassMap contains subclasses of it).
-     * @param childIdProperty the property whose value will be used to identify the specific class in the hierarchy that we need to instantiate.
-     * @param idClassMap a mapping to be able to know which class corresponds to each <code>childIdProperty</code> value.
-     * @param <T> the root of the hierarchy of the Resource we want to instantiate.
-     * @param <R> the sub-class of the root Resource.
-     * @return
-     */
-    @Override
-    public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
-        Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(parent, "parent class argument cannot be null.");
-        Assert.hasText(childIdProperty, "childIdProperty cannot be null or empty.");
-        Assert.notEmpty(idClassMap, "idClassMap cannot be null or empty.");
-
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
-
-        return getResource(sanitized.getHrefWithoutQuery(), parent, sanitized.getQuery(), childIdProperty, idClassMap);
-    }
-
-    private <T extends Resource, R extends T> R getResource(String href, Class<T> parent, QueryString qs, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
-        //need to qualify the href it to ensure our cache lookups work as expected
-        //(cache key = fully qualified href):
-        href = ensureFullyQualified(href);
-
-        Map<String, ?> data = null;
-
-        //check if cached:
-        if (isCacheRetrievalEnabled(parent)) {
-            data = getCachedValue(href, parent);
-        }
-
-        if (Collections.isEmpty(data)) {
-            //not cached - execute a request:
-            Request request = createRequest(HttpMethod.GET, href, qs);
-            data = executeRequest(request);
-
-            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(parent)) {
-                //cache for further use:
-                cache(parent, data);
-            }
-        }
-
-        if (Collections.isEmpty(data)) {
-            throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
-        }
-
-        Object childClassName = data.get(childIdProperty);
-        Class<? extends R> childClass = idClassMap.get(childClassName);
-
-        if(childClass == null) {
-            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
-        }
-
-        if (CollectionResource.class.isAssignableFrom(childClass)) {
-            //only collections can support a query string constructor argument:
-            return this.resourceFactory.instantiate(childClass, data, qs);
-        }
-        //otherwise it must be an instance resource, so use the two-arg constructor:
-        return this.resourceFactory.instantiate(childClass, data);
+        return returnResponseBody;
     }
 
 

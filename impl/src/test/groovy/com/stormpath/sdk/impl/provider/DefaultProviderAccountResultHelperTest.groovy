@@ -1,20 +1,23 @@
 /*
- * Copyright 2014 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.provider
 
+import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor
@@ -42,6 +45,7 @@ class DefaultProviderAccountResultHelperTest {
     void testInstantiation() {
 
         //def properties = [providerAccountResult: providerAccountResult]
+        def apiKey = createStrictMock(ApiKey)
 
         def properties = [isNewAccount: true,
                 href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
@@ -62,7 +66,7 @@ class DefaultProviderAccountResultHelperTest {
 
         replay(requestExecutor)
 
-        def internalDataStore = new DefaultDataStore(requestExecutor)
+        def internalDataStore = new DefaultDataStore(requestExecutor, apiKey)
         def providerAccountResultHelper = new DefaultProviderAccountResultHelper(internalDataStore, properties)
         def providerAccountResult = providerAccountResultHelper.getProviderAccountResult()
         assertTrue(providerAccountResult.isNewAccount())
