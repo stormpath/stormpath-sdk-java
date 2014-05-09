@@ -40,6 +40,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
+import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -47,6 +48,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -71,6 +73,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
             new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class);
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+    static final ResourceReference<ProviderData> PROVIDER_DATA = new ResourceReference<ProviderData>("providerData", ProviderData.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<GroupList, Group> GROUPS =
@@ -82,7 +85,8 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, API_KEYS);
+            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
+            PROVIDER_DATA,API_KEYS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -263,6 +267,37 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     @Override
     public ApiKeyList getApiKeys() {
         return getResourceProperty(API_KEYS);
+    }
+    /**
+     * Returns the {@link ProviderData} instance associated with this Account.
+     *
+     * @return the {@link ProviderData} instance associated with this Account.
+     * @since 1.0.beta
+     */
+    @Override
+    public ProviderData getProviderData() {
+        Object value = getProperty(PROVIDER_DATA.getName());
+
+        if (ProviderData.class.isInstance(value) || value == null) {
+            return (ProviderData) value;
+        }
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            String href = (String) ((Map) value).get(HREF_PROP_NAME);
+
+            if (href == null) {
+                throw new IllegalStateException("providerData resource does not contain its required href property.");
+            }
+
+            //Since the specific ProviderData instance that we need to create varies depending on the actual Provider
+            //owning the account then we need to instruct the DataStore on how to instantiate it
+            ProviderData providerData = getDataStore().getResource(href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP);
+            setProperty(PROVIDER_DATA, providerData);
+            return providerData;
+        }
+
+        String msg = "'" + PROVIDER_DATA.getName() + "' property value type does not match the specified type. Specified type: " +
+                PROVIDER_DATA.getType() + ".  Existing type: " + value.getClass().getName() + ".  Value: " + value;
+        throw new IllegalStateException(msg);
     }
 
     @Override

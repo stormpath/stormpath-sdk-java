@@ -1,17 +1,19 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.resource;
 
@@ -359,6 +361,38 @@ public abstract class AbstractResource implements Resource {
         msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
         throw new IllegalArgumentException(msg);
     }
+
+
+//    /**
+//     * @since 0.8
+//     */
+//    @SuppressWarnings("unchecked")
+//    protected <T extends Resource, R extends T> R getSpecificResourceProperty(ResourceReference<T> property, Class<>) {
+//        String key = property.getName();
+//        Class<T> clazz = property.getType();
+//
+//        Object value = getProperty(key);
+//        if (value == null) {
+//            return null;
+//        }
+//        if (clazz.isInstance(value)) {
+//            return (R) value;
+//        }
+//        if (value instanceof Map && !((Map) value).isEmpty()) {
+//            T resource = dataStore.instantiate(clazz, (Map<String, Object>) value);
+//
+//
+//            //replace the existing link object (map with an href) with the newly constructed Resource instance.
+//            //Don't dirty the instance - we're just swapping out a property that already exists for the materialized version.
+//            setProperty(key, resource, false);
+//            return resource;
+//        }
+//
+//        String msg = "'" + key + "' property value type does not match the specified type.  Specified type: " +
+//                clazz.getName() + ".  Existing type: " + value.getClass().getName();
+//        msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
+//        throw new IllegalArgumentException(msg);
+//    }
 
     /**
      * @param property

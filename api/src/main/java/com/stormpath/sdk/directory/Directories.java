@@ -1,17 +1,19 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.directory;
 
@@ -19,6 +21,8 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Static utility/helper methods for working with {@link Directory} resources.  Most methods are
@@ -49,6 +53,9 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * @since 0.8
  */
 public final class Directories {
+
+    private static final Class<CreateDirectoryRequestBuilder> BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.directory.DefaultCreateDirectoryRequestBuilder");
 
     /**
      * Returns a new {@link DirectoryOptions} instance, used to customize how one or more {@link Directory}(ies) are retrieved.
@@ -162,6 +169,11 @@ public final class Directories {
      */
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
+    }
+
+    public static CreateDirectoryRequestBuilder newCreateRequestFor(Directory directory) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Directory.class);
+        return (CreateDirectoryRequestBuilder) Classes.instantiate(ctor, directory);
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {

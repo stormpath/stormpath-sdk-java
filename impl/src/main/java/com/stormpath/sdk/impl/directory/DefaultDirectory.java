@@ -1,17 +1,19 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.impl.directory;
 
@@ -29,6 +31,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
@@ -36,6 +39,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -52,6 +56,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+    static final ResourceReference<Provider> PROVIDER = new ResourceReference<Provider>("provider", Provider.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =
@@ -60,7 +65,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, ACCOUNTS, GROUPS);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -211,4 +216,47 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     public void accept(AccountStoreVisitor visitor) {
         visitor.visit(this);
     }
+
+    /**
+     * @since 1.0.beta
+     */
+    @Override
+    public Provider getProvider() {
+        Object value = getProperty(PROVIDER.getName());
+
+        if (Provider.class.isInstance(value) || value == null) {
+            return (Provider) value;
+        }
+        if (value instanceof Map && !((Map) value).isEmpty()) {
+            String href = (String) ((Map) value).get(HREF_PROP_NAME);
+
+            if (href == null) {
+                throw new IllegalStateException("provider resource does not contain its required href property.");
+            }
+
+            Provider provider = getDataStore().getResource(href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
+            setProperty(PROVIDER, provider);
+            return provider;
+        }
+
+        String msg = "'" + PROVIDER.getName() + "' property value type does not match the specified type. Specified type: " +
+                PROVIDER.getType() + ".  Existing type: " + value.getClass().getName() + ".  Value: " + value;
+        throw new IllegalStateException(msg);
+    }
+
+    /**
+     * This method has not been exposed in the API since this operation is only 'legal' if you're going to create a brand new
+     * directory. It is here, publicly visible, to allow the Tenant to add the provider information during Directory creation.
+     *
+     * @see {@link Tenant#createDirectory(com.stormpath.sdk.directory.CreateDirectoryRequest)}
+     * @since 1.0.beta
+     */
+    public Directory setProvider(Provider provider) {
+        //This exception should never be thrown to a developer unless he/she explicitly casts a Directory instance and then
+        //tries to set the provider of an existing Directory.
+        Assert.state(getHref() == null, "cannot change the provider of an existing Directory.");
+        setProperty(PROVIDER, provider);
+        return this;
+    }
+
 }

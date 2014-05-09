@@ -1,42 +1,62 @@
 /*
- * Copyright 2013 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 
 package com.stormpath.sdk.impl.application
 
-import com.stormpath.sdk.account.*
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.CreateAccountRequest
+import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.group.CreateGroupRequest
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.GroupOptions
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
+import com.stormpath.sdk.impl.provider.ProviderAccountAccess
+import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.lang.Objects
+import com.stormpath.sdk.provider.FacebookProviderData
+import com.stormpath.sdk.provider.ProviderAccountRequest
+import com.stormpath.sdk.provider.ProviderAccountResult
+import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
+import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -348,6 +368,58 @@ class DefaultApplicationTest {
         assertSame returnedGroup, group
 
         verify dataStore, group, groupList, request
+    }
+
+    //@since 1.0.beta
+    @Test
+    void testGetAccount() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def providerAccountResultHelper = createStrictMock(ProviderAccountResultHelper)
+        def providerAccountResult = createStrictMock(ProviderAccountResult)
+        ProviderAccountRequest request = Providers.FACEBOOK.account().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
+
+        def providerAccountAccess = new DefaultProviderAccountAccess<FacebookProviderData>(internalDataStore);
+        providerAccountAccess.setProviderData(request.getProviderData())
+
+        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResultHelper))).andReturn(providerAccountResultHelper)
+        expect(providerAccountResultHelper.getProviderAccountResult()).andReturn(providerAccountResult)
+
+        replay(internalDataStore, providerAccountResultHelper, providerAccountResult)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        ProviderAccountResult accountResult = defaultApplication.getAccount(request)
+        assertNotNull(accountResult)
+
+        verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
+    }
+
+    //@since 1.0.beta
+    static class ProviderAccountAccessEquals implements IArgumentMatcher {
+
+        private ProviderAccountAccess expected
+
+        ProviderAccountAccessEquals(ProviderAccountAccess providerAccountAccess) {
+            expected = providerAccountAccess;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! ProviderAccountAccess.isInstance(o)) {
+                return false;
+            }
+            ProviderAccountAccess actual = (ProviderAccountAccess) o
+            return (Objects.nullSafeEquals(expected.providerData, actual.providerData))
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append("providerData: " + expected.providerData.toString())
+        }
     }
 
 }
