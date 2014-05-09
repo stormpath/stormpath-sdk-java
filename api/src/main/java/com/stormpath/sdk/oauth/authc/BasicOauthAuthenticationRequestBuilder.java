@@ -25,8 +25,6 @@ import com.stormpath.sdk.oauth.permission.ScopeFactory;
  */
 public interface BasicOauthAuthenticationRequestBuilder {
 
-    public BasicOauthAuthenticationRequestBuilder forApplication(Application application);
-
     public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
 
     public BasicOauthAuthenticationResult execute();

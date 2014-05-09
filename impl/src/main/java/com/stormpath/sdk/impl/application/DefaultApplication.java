@@ -31,6 +31,7 @@ import com.stormpath.sdk.application.AccountStoreMappingCriteria;
 import com.stormpath.sdk.application.AccountStoreMappingList;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -39,9 +40,10 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
-import com.stormpath.sdk.impl.authc.BasicAuthenticator;
+import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
@@ -54,6 +56,8 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
@@ -61,6 +65,8 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Constructor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -70,6 +76,12 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
  * @since 0.2
  */
 public class DefaultApplication extends AbstractInstanceResource implements Application {
+
+    private static final Class<ApiAuthenticationRequestBuilder> API_AUTHENTICATION_REQUEST_BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.authc.DefaultApiAuthenticationRequestBuilder");
+
+    private static final String OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN = "com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder";
+
 
     private static final Logger log = LoggerFactory.getLogger(DefaultApplication.class);
 
@@ -209,7 +221,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
-        return new BasicAuthenticator(getDataStore()).authenticate(getHref(), request);
+        return new AuthenticationRequestDispatcher().authenticate(getDataStore(), this, request);
     }
 
     /**
@@ -438,6 +450,28 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 //        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
 //        return accountStoreMappingList.getHref();
         return href;
+    }
+
+    @Override
+    public ApiAuthenticationRequestBuilder authenticate(HttpServletRequest httpServletRequest) {
+        Constructor<ApiAuthenticationRequestBuilder> ctor = Classes.getConstructor(API_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, HttpServletRequest.class);
+        return Classes.instantiate(ctor, this, httpServletRequest);
+    }
+
+    @Override
+    public ApiAuthenticationRequestBuilder authenticate(HttpRequest httpRequest) {
+        Constructor<ApiAuthenticationRequestBuilder> ctor = Classes.getConstructor(API_AUTHENTICATION_REQUEST_BUILDER_CLASS,  Application.class, HttpRequest.class);
+        return Classes.instantiate(ctor, httpRequest);
+    }
+
+    @Override
+    public OauthAuthenticationRequestBuilder authenticateOauth(HttpServletRequest httpServletRequest) {
+        return (OauthAuthenticationRequestBuilder) Classes.newInstance(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN, this, httpServletRequest);
+    }
+
+    @Override
+    public OauthAuthenticationRequestBuilder authenticateOauth(HttpRequest httpRequest) {
+        return (OauthAuthenticationRequestBuilder) Classes.newInstance(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN, this, httpRequest);
     }
 
 }

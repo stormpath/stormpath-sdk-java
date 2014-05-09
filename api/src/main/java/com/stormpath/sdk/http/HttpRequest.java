@@ -27,6 +27,8 @@ public interface HttpRequest {
 
     public Map<String, String[]> getHeaders();
 
+    public String getHeader(String headerName);
+
     public InputStream getBody();
 
     public HttpMethod getMethod();

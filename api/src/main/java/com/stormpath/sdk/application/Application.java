@@ -23,6 +23,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -30,6 +31,9 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.Deletable;
@@ -38,6 +42,8 @@ import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Constructor;
 import java.util.Map;
 
 /**
@@ -716,4 +722,60 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.1.beta
      */
     ApiKey getApiKey(String id, ApiKeyOptions options) throws ResourceException, IllegalArgumentException;
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
+     * customize an {@code Api} authentication.
+     *
+     * @return a new {@link com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
+     * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
+     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
+     * @see Application#authenticateOauth(javax.servlet.http.HttpServletRequest)
+     * @see Application#authenticateOauth(com.stormpath.sdk.http.HttpRequest)
+     */
+    ApiAuthenticationRequestBuilder authenticate(HttpServletRequest httpServletRequest);
+
+    /**
+     * Creates a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
+     * customize an {@code Api} authentication.
+     *
+     * @return a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
+     * @throws IllegalArgumentException - If {@code httpRequest} is null.
+     * @see Application#authenticate(javax.servlet.http.HttpServletRequest)
+     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
+     * @see Application#authenticateOauth(javax.servlet.http.HttpServletRequest)
+     */
+    ApiAuthenticationRequestBuilder authenticate(HttpRequest httpRequest);
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
+     * customize an {@code Api} authentication.
+     * <pre>
+     * <b>ApiKeys.authenticateOauth(httpServletRequest)</b>
+     *     .forApplication(<b>application</b>)
+     *     .execute()
+     * </pre>
+     *
+     * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
+     * @throws IllegalStateException    - If {@code com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder} class couldn't be found in the classpath.
+     * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
+     * @see Application#authenticate(javax.servlet.http.HttpServletRequest)
+     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
+     * @see Application#authenticateOauth(com.stormpath.sdk.http.HttpRequest)
+     */
+    OauthAuthenticationRequestBuilder authenticateOauth(HttpServletRequest httpServletRequest);
+
+    /**
+     * Creates a new {@link OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
+     * customize an {@code Api} authentication.
+     *
+     * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
+     * @throws IllegalStateException    - If {@code com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder} class couldn't be found in the classpath.
+     * @throws IllegalArgumentException - If {@code httpRequest} is null.
+     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
+     * @see Application#authenticate(javax.servlet.http.HttpServletRequest)
+     * @see Application#authenticateOauth(javax.servlet.http.HttpServletRequest)
+     */
+    public OauthAuthenticationRequestBuilder authenticateOauth(HttpRequest httpRequest);
+
 }

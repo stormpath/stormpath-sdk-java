@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -26,19 +27,19 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import java.util.Map;
 
 /**
- * @since 0.2
+ * @since 1.0.beta
  */
-public class DefaultAuthenticationResult extends AbstractResource implements AuthenticationResult {
+public class DefaultApiAuthenticationResult extends AbstractResource implements ApiAuthenticationResult {
 
-    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
+    static final ResourceReference<ApiKey> API_KEY = new ResourceReference<ApiKey>("apiKey", ApiKey.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(API_KEY);
 
-    public DefaultAuthenticationResult(InternalDataStore dataStore) {
+    public DefaultApiAuthenticationResult(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAuthenticationResult(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultApiAuthenticationResult(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -48,8 +49,13 @@ public class DefaultAuthenticationResult extends AbstractResource implements Aut
     }
 
     @Override
+    public ApiKey getApiKey() {
+        return getResourceProperty(API_KEY);
+    }
+
+    @Override
     public Account getAccount() {
-        return getResourceProperty(ACCOUNT);
+        return getApiKey().getAccount();
     }
 
     @Override

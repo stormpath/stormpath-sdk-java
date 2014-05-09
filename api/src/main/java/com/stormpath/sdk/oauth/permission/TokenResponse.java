@@ -31,4 +31,6 @@ public interface TokenResponse {
     String getExpiresIn();
 
     String getRefreshToken();
+
+    String getJsonBody();
 }

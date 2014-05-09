@@ -15,14 +15,10 @@
  */
 package com.stormpath.sdk.oauth.authc;
 
-import com.stormpath.sdk.application.Application;
-
 /**
  * @since 1.0.RC
  */
 public interface BearerOauthAuthenticationRequestBuilder {
-
-    BearerOauthAuthenticationRequestBuilder forApplication(Application application);
 
     BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations);
 

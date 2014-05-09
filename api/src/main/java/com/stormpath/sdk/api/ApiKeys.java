@@ -17,13 +17,7 @@
  */
 package com.stormpath.sdk.api;
 
-import com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder;
-import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Constructor;
 
 /**
  * Static utility/helper methods for working with {@link ApiKey} resources.  Most methods are
@@ -53,13 +47,6 @@ import java.lang.reflect.Constructor;
  */
 public final class ApiKeys {
 
-    private static final Class<ApiAuthenticationRequestBuilder> API_AUTHENTICATION_REQUEST_BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.authc.DefaultApiAuthenticationRequestBuilder");
-
-
-    private static final Class<OauthAuthenticationRequestBuilder> OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder");
-
     /**
      * Returns a new {@link ApiKeyOptions} instance, used to customize how one or more {@link ApiKey}s are retrieved.
      *
@@ -85,70 +72,5 @@ public final class ApiKeys {
      */
     public static ApiKeyCriteria criteria() {
         return (ApiKeyCriteria) Classes.newInstance("com.stormpath.sdk.impl.api.DefaultApiKeyCriteria");
-    }
-
-    /**
-     * Creates a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
-     *
-     * @return a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
-     * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
-     * @see ApiKeys#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see ApiKeys#authenticateOauth(javax.servlet.http.HttpServletRequest)
-     * @see ApiKeys#authenticateOauth(com.stormpath.sdk.http.HttpRequest)
-     */
-    public static ApiAuthenticationRequestBuilder authenticate(HttpServletRequest httpServletRequest) {
-        Constructor<ApiAuthenticationRequestBuilder> ctor = Classes.getConstructor(API_AUTHENTICATION_REQUEST_BUILDER_CLASS, HttpServletRequest.class);
-        return Classes.instantiate(ctor, httpServletRequest);
-    }
-
-    /**
-     * Creates a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
-     *
-     * @return a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
-     * @throws IllegalArgumentException - If {@code httpRequest} is null.
-     * @see ApiKeys#authenticate(javax.servlet.http.HttpServletRequest)
-     * @see ApiKeys#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see ApiKeys#authenticateOauth(javax.servlet.http.HttpServletRequest)
-     */
-    public static ApiAuthenticationRequestBuilder authenticate(HttpRequest httpRequest) {
-        Constructor<ApiAuthenticationRequestBuilder> ctor = Classes.getConstructor(API_AUTHENTICATION_REQUEST_BUILDER_CLASS, HttpRequest.class);
-        return Classes.instantiate(ctor, httpRequest);
-    }
-
-    /**
-     * Creates a new {@link OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
-     * <pre>
-     * <b>ApiKeys.authenticateOauth(httpServletRequest)</b>
-     *     .forApplication(<b>application</b>)
-     *     .execute()
-     * </pre>
-     *
-     * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
-     * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
-     * @see ApiKeys#authenticate(javax.servlet.http.HttpServletRequest)
-     * @see ApiKeys#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see ApiKeys#authenticateOauth(com.stormpath.sdk.http.HttpRequest)
-     */
-    public static OauthAuthenticationRequestBuilder authenticateOauth(HttpServletRequest httpServletRequest) {
-        Constructor<OauthAuthenticationRequestBuilder> ctor = Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, HttpServletRequest.class);
-        return Classes.instantiate(ctor, httpServletRequest);
-    }
-
-    /**
-     * Creates a new {@link OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
-     *
-     * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
-     * @throws IllegalArgumentException - If {@code httpRequest} is null.
-     * @see ApiKeys#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see ApiKeys#authenticate(javax.servlet.http.HttpServletRequest)
-     * @see ApiKeys#authenticateOauth(javax.servlet.http.HttpServletRequest)
-     */
-    public static OauthAuthenticationRequestBuilder authenticateOauth(HttpRequest httpRequest) {
-        Constructor<OauthAuthenticationRequestBuilder> ctor = Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, HttpRequest.class);
-        return Classes.instantiate(ctor, httpRequest);
     }
 }

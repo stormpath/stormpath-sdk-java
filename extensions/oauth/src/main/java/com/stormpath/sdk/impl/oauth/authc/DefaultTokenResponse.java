@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.impl.oauth.authc;
 
 /**
- * ApiAuthenticationRequestBuilder
- *
  * @since 1.0.RC
  */
-public interface ApiAuthenticationRequestBuilder {
-
-    ApiAuthenticationResult execute();
+public class DefaultTokenResponse {
 }

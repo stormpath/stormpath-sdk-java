@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.error.authc;
+
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * ApiAuthenticationRequestBuilder
+ * UnsupportedAuthenticationSchemeException
  *
  * @since 1.0.RC
  */
-public interface ApiAuthenticationRequestBuilder {
 
-    ApiAuthenticationResult execute();
+public class UnsupportedAuthenticationSchemeException extends ResourceException {
+
+    public UnsupportedAuthenticationSchemeException(Error error) {
+        super(error);
+    }
+
 }
