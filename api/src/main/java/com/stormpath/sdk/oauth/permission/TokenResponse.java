@@ -32,5 +32,5 @@ public interface TokenResponse {
 
     String getRefreshToken();
 
-    String getJsonBody();
+    String toJson();
 }

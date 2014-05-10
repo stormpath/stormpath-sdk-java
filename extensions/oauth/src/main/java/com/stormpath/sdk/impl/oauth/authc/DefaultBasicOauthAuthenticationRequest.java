@@ -28,17 +28,26 @@ public class DefaultBasicOauthAuthenticationRequest extends BasicApiAuthenticati
 
     private final ScopeFactory scopeFactory;
 
+    private final HttpServletRequest httpServletRequest;
+
     public DefaultBasicOauthAuthenticationRequest(HttpServletRequest httpServletRequest, ScopeFactory scopeFactory) {
-        super(httpServletRequest);
+//        super(httpServletRequest);
+        super(null);
         this.scopeFactory = scopeFactory;
+        this.httpServletRequest = httpServletRequest;
     }
 
     public DefaultBasicOauthAuthenticationRequest(HttpRequest httpRequest, ScopeFactory scopeFactory) {
         super(httpRequest);
         this.scopeFactory = scopeFactory;
+        httpServletRequest = null;
     }
 
     public ScopeFactory getScopeFactory() {
         return scopeFactory;
+    }
+
+    public HttpServletRequest getHttpServletRequest() {
+        return httpServletRequest;
     }
 }

@@ -40,10 +40,10 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
-import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
+import com.stormpath.sdk.impl.authc.DefaultApiAuthenticationRequestBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
@@ -65,8 +65,6 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Constructor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -77,11 +75,32 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
  */
 public class DefaultApplication extends AbstractInstanceResource implements Application {
 
-    private static final Class<ApiAuthenticationRequestBuilder> API_AUTHENTICATION_REQUEST_BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.authc.DefaultApiAuthenticationRequestBuilder");
-
     private static final String OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN = "com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder";
 
+    private static final String OAUTH_BUILDER_NOT_AVAILABLE_MSG;
+
+    private static final String OAUTH_AUTHENTICATION_REQUEST_DISPATCHER_FQCN = "com.stormpath.sdk.impl.oauth.authc.OauthAuthenticationRequestDispatcher";
+
+    private static final Class<OauthAuthenticationRequestBuilder> OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS;
+
+    private static final Class<AuthenticationRequestDispatcher> AUTHENTICATION_REQUEST_DISPATCHER_CLASS;
+
+    static {
+        if (Classes.isAvailable(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN)) {
+            OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS = Classes.forName(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN);
+        } else {
+            OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS = null;
+        }
+
+        if (Classes.isAvailable(OAUTH_AUTHENTICATION_REQUEST_DISPATCHER_FQCN)) {
+            AUTHENTICATION_REQUEST_DISPATCHER_CLASS = Classes.forName(OAUTH_AUTHENTICATION_REQUEST_DISPATCHER_FQCN);
+        } else {
+            AUTHENTICATION_REQUEST_DISPATCHER_CLASS = AuthenticationRequestDispatcher.class;
+        }
+
+        OAUTH_BUILDER_NOT_AVAILABLE_MSG = "Unable to find the '" + OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN + "' implementation on the classpath.  Please ensure you " +
+                "have added the stormpath-sdk-oauth-{version}.jar file to your runtime classpath.";
+    }
 
     private static final Logger log = LoggerFactory.getLogger(DefaultApplication.class);
 
@@ -221,7 +240,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
-        return new AuthenticationRequestDispatcher().authenticate(getDataStore(), this, request);
+        AuthenticationRequestDispatcher dispatcher = Classes.newInstance(AUTHENTICATION_REQUEST_DISPATCHER_CLASS);
+        return dispatcher.authenticate(getDataStore(), this, request);
     }
 
     /**
@@ -429,7 +449,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         }
 
         String href = getHref() + "/apiKeys";
-        ApiKeyList apiKeys =  getDataStore().getResource(href, ApiKeyList.class, criteria);
+        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, criteria);
 
         ApiKey apiKey = null;
 
@@ -453,25 +473,15 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public ApiAuthenticationRequestBuilder authenticate(HttpServletRequest httpServletRequest) {
-        Constructor<ApiAuthenticationRequestBuilder> ctor = Classes.getConstructor(API_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, HttpServletRequest.class);
-        return Classes.instantiate(ctor, this, httpServletRequest);
+    public ApiAuthenticationRequestBuilder authenticate(Object httpRequest) {
+        return new DefaultApiAuthenticationRequestBuilder(this, httpRequest);
     }
 
     @Override
-    public ApiAuthenticationRequestBuilder authenticate(HttpRequest httpRequest) {
-        Constructor<ApiAuthenticationRequestBuilder> ctor = Classes.getConstructor(API_AUTHENTICATION_REQUEST_BUILDER_CLASS,  Application.class, HttpRequest.class);
-        return Classes.instantiate(ctor, httpRequest);
+    public OauthAuthenticationRequestBuilder authenticateOauth(Object httpRequest) {
+        if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
+            throw new RuntimeException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
+        }
+        return Classes.newInstance(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, this, httpRequest);
     }
-
-    @Override
-    public OauthAuthenticationRequestBuilder authenticateOauth(HttpServletRequest httpServletRequest) {
-        return (OauthAuthenticationRequestBuilder) Classes.newInstance(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN, this, httpServletRequest);
-    }
-
-    @Override
-    public OauthAuthenticationRequestBuilder authenticateOauth(HttpRequest httpRequest) {
-        return (OauthAuthenticationRequestBuilder) Classes.newInstance(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN, this, httpRequest);
-    }
-
 }

@@ -4,6 +4,7 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BearerLocation;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,13 +19,23 @@ public class DefaultBearerOauthAuthenticationRequest implements AuthenticationRe
     private final BearerLocation[] bearerLocations;
 
     public DefaultBearerOauthAuthenticationRequest(HttpServletRequest httpServletRequest, BearerLocation[] bearerLocations) {
+        Assert.notNull(httpServletRequest, "httpServletRequest cannot be null");
+        Assert.notNull(bearerLocations);
+        Assert.noNullElements(bearerLocations);
         this.httpServletRequest = httpServletRequest;
         this.bearerLocations = bearerLocations;
     }
 
     public DefaultBearerOauthAuthenticationRequest(HttpRequest httpRequest, BearerLocation[] bearerLocations) {
-        this.httpServletRequest = new OAuthHttpServletRequest(httpRequest);
-        this.bearerLocations = bearerLocations;
+        this(new OAuthHttpServletRequest(httpRequest), bearerLocations);
+    }
+
+    public HttpServletRequest getHttpServletRequest() {
+        return httpServletRequest;
+    }
+
+    public BearerLocation[] getBearerLocations() {
+        return bearerLocations;
     }
 
     @Override
@@ -49,7 +60,7 @@ public class DefaultBearerOauthAuthenticationRequest implements AuthenticationRe
 
     @Override
     public AccountStore getAccountStore() {
-        throw new UnsupportedOperationException("getAccountStore()this operation is not supported ApiAuthenticationRequest.");
+        throw new UnsupportedOperationException("getAccountStore()this operation is not supported OauthAuthenticationRequest.");
     }
 
 }

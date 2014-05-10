@@ -15,17 +15,25 @@
  */
 package com.stormpath.sdk.oauth.authc;
 
-import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.oauth.permission.ScopeFactory;
 
 /**
- * BasicOauthAuthenticationRequestBuilder
+ * BasicOauthAuthenticationRequestBuilder creates
  *
  * @since 1.0.RC
  */
 public interface BasicOauthAuthenticationRequestBuilder {
 
+    /**
+     *
+     * @param scopeFactory
+     * @return
+     */
     public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
 
+    /**
+     *
+     * @return
+     */
     public BasicOauthAuthenticationResult execute();
 }

@@ -31,8 +31,6 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -42,8 +40,6 @@ import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Constructor;
 import java.util.Map;
 
 /**
@@ -210,6 +206,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * application.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
      * </pre>
+     *
      * @param request the account creation request
      * @return a new Account that may login to this application.
      * @throws ResourceException if the Application does not have a designated {@link #getDefaultAccountStore() defaultAccountStore}
@@ -300,7 +297,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * Creates a new Group that may be used by this application in the application's
      * {@link #getDefaultGroupStore() defaultGroupStore}
      * <p/>
-     *This is a convenience method. It merely delegates to the Application's designated
+     * This is a convenience method. It merely delegates to the Application's designated
      * {@link #getDefaultGroupStore() defaultGroupStore}.
      * <h2>Example</h2>
      * <pre>
@@ -311,6 +308,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * application.createGroup(Groups.newCreateRequestFor(group).withResponseOptions(Groups.options().withCustomData()).build());
      * </pre>
+     *
      * @param request the group creation request
      * @return a new Group that may be used by this application.
      * @throws ResourceException if the Application does not have a designated {@link #getDefaultGroupStore() defaultGroupsStore}
@@ -452,8 +450,8 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the application's mapped account stores that match the specified query criteria.
-     * @since 0.9
      * @see #getAccountStoreMappings(AccountStoreMappingCriteria)
+     * @since 0.9
      */
     AccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
 
@@ -697,7 +695,8 @@ public interface Application extends Resource, Saveable, Deletable {
 
     /**
      * Gets an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
-     *<p/>
+     * <p/>
+     *
      * @param id the id of the {@link ApiKey} to be retrieved.
      * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
      * @throws ResourceException
@@ -708,15 +707,14 @@ public interface Application extends Resource, Saveable, Deletable {
 
     /**
      * Gets an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
-     *<p/>
+     * <p/>
      * A call to this method ensures that the returned {@link ApiKey} response reflects the specified {@link ApiKeyOptions}.
      * </p>
-     * @param id the id of the {@link ApiKey} to be retrieved.
+     *
+     * @param id      the id of the {@link ApiKey} to be retrieved.
      * @param options the {@link ApiKeyOptions} to use to customize the ApiKey resource upon retrieval.
-     *
      * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store
-     *                          with the specified {@link ApiKeyOptions}.
-     *
+     *         with the specified {@link ApiKeyOptions}.
      * @throws ResourceException
      * @throws IllegalArgumentException if the {@code id} argument is null or empty, or if the {@code options} argument is null..
      * @since 1.1.beta
@@ -724,58 +722,29 @@ public interface Application extends Resource, Saveable, Deletable {
     ApiKey getApiKey(String id, ApiKeyOptions options) throws ResourceException, IllegalArgumentException;
 
     /**
-     * Creates a new {@link com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
-     *
-     * @return a new {@link com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
-     * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
-     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see Application#authenticateOauth(javax.servlet.http.HttpServletRequest)
-     * @see Application#authenticateOauth(com.stormpath.sdk.http.HttpRequest)
-     */
-    ApiAuthenticationRequestBuilder authenticate(HttpServletRequest httpServletRequest);
-
-    /**
      * Creates a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
      * customize an {@code Api} authentication.
      *
      * @return a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
      * @throws IllegalArgumentException - If {@code httpRequest} is null.
-     * @see Application#authenticate(javax.servlet.http.HttpServletRequest)
-     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see Application#authenticateOauth(javax.servlet.http.HttpServletRequest)
+     * @see Application#authenticateOauth(Object)
+     * @since 1.0.RC
      */
-    ApiAuthenticationRequestBuilder authenticate(HttpRequest httpRequest);
+    ApiAuthenticationRequestBuilder authenticate(Object httpRequest);
 
     /**
      * Creates a new {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
      * customize an {@code Api} authentication.
      * <pre>
-     * <b>ApiKeys.authenticateOauth(httpServletRequest)</b>
-     *     .forApplication(<b>application</b>)
+     * <b>application.authenticateOauth(httpServletRequest)</b>
      *     .execute()
      * </pre>
      *
      * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
      * @throws IllegalStateException    - If {@code com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder} class couldn't be found in the classpath.
      * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
-     * @see Application#authenticate(javax.servlet.http.HttpServletRequest)
-     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see Application#authenticateOauth(com.stormpath.sdk.http.HttpRequest)
+     * @see Application#authenticate(Object)
+     * @since 1.0.RC
      */
-    OauthAuthenticationRequestBuilder authenticateOauth(HttpServletRequest httpServletRequest);
-
-    /**
-     * Creates a new {@link OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
-     *
-     * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
-     * @throws IllegalStateException    - If {@code com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder} class couldn't be found in the classpath.
-     * @throws IllegalArgumentException - If {@code httpRequest} is null.
-     * @see Application#authenticate(com.stormpath.sdk.http.HttpRequest)
-     * @see Application#authenticate(javax.servlet.http.HttpServletRequest)
-     * @see Application#authenticateOauth(javax.servlet.http.HttpServletRequest)
-     */
-    public OauthAuthenticationRequestBuilder authenticateOauth(HttpRequest httpRequest);
-
+    OauthAuthenticationRequestBuilder authenticateOauth(Object httpRequest);
 }

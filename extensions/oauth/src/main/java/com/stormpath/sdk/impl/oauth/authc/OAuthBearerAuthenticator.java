@@ -16,10 +16,8 @@
 package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.impl.oauth.issuer.HmacValueGenerator;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
-import org.apache.oltu.oauth2.as.issuer.ValueGenerator;
 import org.apache.oltu.oauth2.rs.request.OAuthAccessResourceRequest;
 
 import java.util.TimeZone;
@@ -35,16 +33,12 @@ public class OAuthBearerAuthenticator {
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-    private final ValueGenerator valueGenerator;
+    private final InternalDataStore dataStore;
 
-    private final Application application;
+    public OAuthBearerAuthenticator(InternalDataStore dataStore) {
 
-    public OAuthBearerAuthenticator(Application application, String apiKeySecret) {
-        Assert.notNull(application);
-        Assert.hasText(apiKeySecret);
+        this.dataStore = dataStore;
 
-        this.application = application;
-        this.valueGenerator = new HmacValueGenerator(apiKeySecret);
     }
 
     public BasicOauthAuthenticationResult authenticate(Application application, DefaultBearerOauthAuthenticationRequest request) {

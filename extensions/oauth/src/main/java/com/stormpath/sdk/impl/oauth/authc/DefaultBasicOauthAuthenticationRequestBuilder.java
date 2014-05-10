@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
@@ -64,7 +65,15 @@ public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauth
     @Override
     public BasicOauthAuthenticationResult execute() {
 
-        AuthenticationResult authenticationResult = application.authenticateAccount(null);
+        AuthenticationRequest request;
+
+        if (httpServletRequest != null) {
+            request = new DefaultBasicOauthAuthenticationRequest(httpServletRequest, scopeFactory);
+        } else {
+            request = new DefaultBasicOauthAuthenticationRequest(httpRequest, scopeFactory);
+        }
+
+        AuthenticationResult authenticationResult = application.authenticateAccount(request);
 
         Assert.isInstanceOf(BasicOauthAuthenticationResult.class, authenticationResult);
 

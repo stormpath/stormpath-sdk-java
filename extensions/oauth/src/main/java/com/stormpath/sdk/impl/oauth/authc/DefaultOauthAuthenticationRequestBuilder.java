@@ -16,6 +16,8 @@
 package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
@@ -66,15 +68,29 @@ public class DefaultOauthAuthenticationRequestBuilder implements OauthAuthentica
 
     @Override
     public BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations) {
-        Assert.noNullElements(locations);
         DefaultBearerOauthAuthenticationRequestBuilder builder = httpServletRequest != null
-                ? new DefaultBearerOauthAuthenticationRequestBuilder(httpServletRequest, application, locations)
-                : new DefaultBearerOauthAuthenticationRequestBuilder(httpRequest, application, locations);
-        return builder;
+                ? new DefaultBearerOauthAuthenticationRequestBuilder(httpServletRequest, application)
+                : new DefaultBearerOauthAuthenticationRequestBuilder(httpRequest, application);
+        return builder.inLocation(locations);
     }
 
     @Override
     public OauthAuthenticationResult execute() {
-        throw new UnsupportedOperationException("execute() method hasn't been implemented.");
+
+        AuthenticationRequest request;
+
+        OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();
+
+        if (httpServletRequest != null) {
+            request = factory.createFrom(httpServletRequest);
+        } else {
+            request = factory.createFrom(httpRequest);
+        }
+
+        AuthenticationResult result = application.authenticateAccount(request);
+
+        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
+
+        return (OauthAuthenticationResult) result;
     }
 }

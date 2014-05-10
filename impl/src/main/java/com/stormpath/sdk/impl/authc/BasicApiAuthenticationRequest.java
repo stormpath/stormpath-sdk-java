@@ -15,16 +15,15 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.error.authc.InvalidApiKeyException;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
 import org.apache.commons.codec.binary.Base64;
 
-import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 
 /**
@@ -34,35 +33,20 @@ public class BasicApiAuthenticationRequest implements AuthenticationRequest<Stri
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private final HttpServletRequest httpServletRequest;
-
     private final HttpRequest httpRequest;
 
     private final String id;
 
     private final String secret;
 
-    public BasicApiAuthenticationRequest(HttpServletRequest httpServletRequest) {
-        this(httpServletRequest, null);
-    }
-
     public BasicApiAuthenticationRequest(HttpRequest httpRequest) {
-        this(null, httpRequest);
-    }
-
-    private BasicApiAuthenticationRequest(HttpServletRequest httpServletRequest, HttpRequest httpRequest) {
-        this.httpServletRequest = httpServletRequest;
         this.httpRequest = httpRequest;
 
-        Assert.isTrue(hasHttpServletRequest() || hasHttpRequest());
+        Assert.isTrue(hasHttpRequest());
 
         String authzHeaderValue;
 
-        if (hasHttpRequest()) {
-            authzHeaderValue = httpRequest.getHeader(ApiAuthenticationRequestFactory.AUTHORIZATION_HEADER);
-        } else {
-            authzHeaderValue = httpServletRequest.getHeader(ApiAuthenticationRequestFactory.AUTHORIZATION_HEADER);
-        }
+        authzHeaderValue = httpRequest.getHeader(ApiAuthenticationRequestFactory.AUTHORIZATION_HEADER);
 
         String[] authTokens = getAuthenticationTokens(authzHeaderValue);
 
@@ -111,16 +95,8 @@ public class BasicApiAuthenticationRequest implements AuthenticationRequest<Stri
         return schemeAndValue[1];
     }
 
-    public HttpServletRequest getHttpServletRequest() {
-        return httpServletRequest;
-    }
-
     public HttpRequest getHttpRequest() {
         return httpRequest;
-    }
-
-    public boolean hasHttpServletRequest() {
-        return httpServletRequest != null;
     }
 
     public boolean hasHttpRequest() {

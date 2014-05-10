@@ -16,7 +16,8 @@
   ~  * limitations under the License.
   ~  */
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,17 +32,12 @@
     <name>Stormpath Java SDK :: API</name>
     <description>
         The Stormpath Java SDK API .jar provides a Java API that your code can use to make calls to the Stormpath
-        API.  This .jar is the only compile-time dependency within the Stormpath SDK project that your code should
-        depend on.  Implementations of this API (implementation .jars) should be runtime dependencies only.
+        API. This .jar is the only compile-time dependency within the Stormpath SDK project that your code should
+        depend on. Implementations of this API (implementation .jars) should be runtime dependencies only.
     </description>
     <packaging>jar</packaging>
 
     <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

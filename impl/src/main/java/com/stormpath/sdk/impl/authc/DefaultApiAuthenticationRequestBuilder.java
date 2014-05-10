@@ -8,20 +8,18 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @since 1.0.RC
  */
 public class DefaultApiAuthenticationRequestBuilder implements ApiAuthenticationRequestBuilder {
 
-    private final HttpServletRequest httpServletRequest;
+    private final Object httpServletRequest;
 
     private final HttpRequest httpRequest;
 
     private final Application application;
 
-    public DefaultApiAuthenticationRequestBuilder(Application application, HttpServletRequest httpServletRequest) {
+    public DefaultApiAuthenticationRequestBuilder(Application application, Object httpServletRequest) {
         this(application, httpServletRequest, null);
         Assert.notNull(httpServletRequest);
     }
@@ -31,7 +29,7 @@ public class DefaultApiAuthenticationRequestBuilder implements ApiAuthentication
         Assert.notNull(httpServletRequest);
     }
 
-    private DefaultApiAuthenticationRequestBuilder(Application application, HttpServletRequest httpServletRequest, HttpRequest httpRequest) {
+    private DefaultApiAuthenticationRequestBuilder(Application application, Object httpServletRequest, HttpRequest httpRequest) {
         Assert.notNull(application, "application cannot be null.");
         this.application = application;
         this.httpServletRequest = httpServletRequest;
@@ -43,11 +41,11 @@ public class DefaultApiAuthenticationRequestBuilder implements ApiAuthentication
 
         AuthenticationRequest request;
 
-        if (httpServletRequest != null) {
-            request = new ApiAuthenticationRequestFactory().createFrom(httpServletRequest);
-        } else {
-            request =  new ApiAuthenticationRequestFactory().createFrom(httpRequest);
-        }
+//        if (httpServletRequest != null) {
+//            request = new ApiAuthenticationRequestFactory().createFrom(httpServletRequest);
+//        } else {
+//        }
+        request =  new ApiAuthenticationRequestFactory().createFrom(httpRequest);
 
         AuthenticationResult result = application.authenticateAccount(request);
 

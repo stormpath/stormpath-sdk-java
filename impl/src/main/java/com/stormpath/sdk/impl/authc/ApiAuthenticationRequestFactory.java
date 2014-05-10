@@ -1,17 +1,14 @@
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
-import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.authc.BearerLocation;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,27 +41,27 @@ public class ApiAuthenticationRequestFactory {
         SUPPORTED_AUTHENTICATION_SCHEMES = Collections.unmodifiableSet(tempSet);
     }
 
-    public AuthenticationRequest createFrom(HttpServletRequest httpServletRequest) {
-
-        String authzHeaderValue = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
-
-        String[] schemeAndValue = getSchemeAndValue(authzHeaderValue);
-
-        if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
-            return (AuthenticationRequest) Classes.newInstance(BEARER_OAUTH_REQUEST_FQCN, httpServletRequest, new BearerLocation[]{BearerLocation.HEADER});
-        }
-
-        for (Enumeration<String> parameterNames = httpServletRequest.getParameterNames(); parameterNames.hasMoreElements(); ) {
-
-            String parameterName = parameterNames.nextElement();
-
-            if (GRANT_TYPE_PARAMETER.equals(parameterName)) {
-                return (AuthenticationRequest) Classes.newInstance(BASIC_OAUTH_REQUEST_FQCN, httpServletRequest, null);
-            }
-        }
-
-        return new BasicApiAuthenticationRequest(httpServletRequest);
-    }
+//    public AuthenticationRequest createFrom(HttpServletRequest httpServletRequest) {
+//
+//        String authzHeaderValue = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+//
+//        String[] schemeAndValue = getSchemeAndValue(authzHeaderValue);
+//
+//        if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
+//            return (AuthenticationRequest) Classes.newInstance(BEARER_OAUTH_REQUEST_FQCN, httpServletRequest, new BearerLocation[]{BearerLocation.HEADER});
+//        }
+//
+//        for (Enumeration<String> parameterNames = httpServletRequest.getParameterNames(); parameterNames.hasMoreElements(); ) {
+//
+//            String parameterName = parameterNames.nextElement();
+//
+//            if (GRANT_TYPE_PARAMETER.equals(parameterName)) {
+//                return (AuthenticationRequest) Classes.newInstance(BASIC_OAUTH_REQUEST_FQCN, httpServletRequest, null);
+//            }
+//        }
+//
+//        return new BasicApiAuthenticationRequest(httpServletRequest);
+//    }
 
     public AuthenticationRequest createFrom(HttpRequest httpRequest) {
 
@@ -79,17 +76,7 @@ public class ApiAuthenticationRequestFactory {
         return new BasicApiAuthenticationRequest(httpRequest);
     }
 
-
-    private void validateSupportedScheme(String scheme) {
-        for (String supportedSchema : SUPPORTED_AUTHENTICATION_SCHEMES) {
-            if (supportedSchema.equalsIgnoreCase(scheme)) {
-                return;
-            }
-        }
-        throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(UnsupportedAuthenticationSchemeException.class);
-    }
-
-    private String[] getSchemeAndValue(String authzHeaderValue) {
+    protected String[] getSchemeAndValue(String authzHeaderValue) {
 
         if (authzHeaderValue == null) {
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(MissingApiKeyException.class);
@@ -104,5 +91,14 @@ public class ApiAuthenticationRequestFactory {
         validateSupportedScheme(tokens[0]);
 
         return tokens;
+    }
+
+    private void validateSupportedScheme(String scheme) {
+        for (String supportedSchema : SUPPORTED_AUTHENTICATION_SCHEMES) {
+            if (supportedSchema.equalsIgnoreCase(scheme)) {
+                return;
+            }
+        }
+        throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(UnsupportedAuthenticationSchemeException.class);
     }
 }

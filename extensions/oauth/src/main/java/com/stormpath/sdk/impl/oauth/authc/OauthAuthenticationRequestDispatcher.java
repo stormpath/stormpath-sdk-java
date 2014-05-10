@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
+import com.stormpath.sdk.impl.authc.BasicApiAuthenticationRequest;
+import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
+import com.stormpath.sdk.impl.authc.BasicAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 
 /**
  * @since 1.0.RC
  */
-public class AuthenticationRequestDispatcher {
+public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestDispatcher {
 
-    protected static final String UNSUPPORTED_AUTH_REQUEST_MSG = "The AuthenticationRequest [%s] is not supported by this implementation.";
-
+    @Override
     public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request) {
         Assert.notNull(dataStore, "datastore cannot be null.");
         Assert.notNull(application, "application cannot be null.");
@@ -36,6 +39,14 @@ public class AuthenticationRequestDispatcher {
 
         if (request instanceof UsernamePasswordRequest) {
             return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
+        }
+
+        if (request instanceof DefaultBasicOauthAuthenticationRequest) {
+            return new OAuthBasicAuthenticator(dataStore).authenticate(application, (DefaultBasicOauthAuthenticationRequest) request);
+        }
+
+        if (request instanceof DefaultBearerOauthAuthenticationRequest) {
+            return new OAuthBearerAuthenticator(dataStore).authenticate(application, (DefaultBearerOauthAuthenticationRequest) request);
         }
 
         if (request instanceof BasicApiAuthenticationRequest) {
