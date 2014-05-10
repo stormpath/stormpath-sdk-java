@@ -1,35 +1,40 @@
 /*
- * Copyright 2014 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
-package com.stormpath.sdk.impl.client;
+package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.client.ApiKey;
-import com.stormpath.sdk.client.ApiKeyBuilder;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
 
 /**
- * The default {@link com.stormpath.sdk.client.ApiKeyBuilder} implementation.
- *
- * @since 1.0.beta
+ * @since 1.1.beta
  */
-public class DefaultApiKeyBuilder implements ApiKeyBuilder {
+public class ClientApiKeyBuilder implements ApiKeyBuilder {
 
     //private ApiKey apiKey;
     private String apiKeyId;
@@ -95,7 +100,7 @@ public class DefaultApiKeyBuilder implements ApiKeyBuilder {
         ApiKey apiKey;
 
         if (Strings.hasText(apiKeyId) && Strings.hasText(apiKeySecret)) {
-            apiKey = new DefaultApiKey(apiKeyId, apiKeySecret);
+            apiKey = new ClientApiKey(apiKeyId, apiKeySecret);
         } else {
             apiKey = loadApiKey();
         }
@@ -146,7 +151,7 @@ public class DefaultApiKeyBuilder implements ApiKeyBuilder {
 
     //since 0.5
     protected ApiKey createApiKey(String id, String secret) {
-        return new DefaultApiKey(id, secret);
+        return new ClientApiKey(id, secret);
     }
 
     private String getPropertyValue(Properties properties, String propName) {

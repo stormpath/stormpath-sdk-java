@@ -17,8 +17,8 @@
  */
 package com.stormpath.sdk.impl.client
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.CacheManager
-import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import org.testng.annotations.Test

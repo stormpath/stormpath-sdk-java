@@ -43,6 +43,13 @@ import com.stormpath.sdk.lang.Classes;
  *     .withAccount();
  * </pre>
  *
+ * This class can also be used for working with {@link com.stormpath.sdk.client.ApiKey} resources. For example:
+ * <pre>
+ * <b>ApiKeys.builder()</b>
+ *     .setFileLocation(path)
+ *     .build();
+ * </pre>
+ *
  * @since 1.0.RC
  */
 public final class ApiKeys {
@@ -72,5 +79,14 @@ public final class ApiKeys {
      */
     public static ApiKeyCriteria criteria() {
         return (ApiKeyCriteria) Classes.newInstance("com.stormpath.sdk.impl.api.DefaultApiKeyCriteria");
+    }
+
+    /**
+     * Returns a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances to authenticate the calls to Stormpath.
+     *
+     * @return a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances to authenticate the calls to Stormpath.
+     */
+    public static ApiKeyBuilder builder() {
+        return (ApiKeyBuilder) Classes.newInstance("com.stormpath.sdk.impl.api.ClientApiKeyBuilder");
     }
 }

@@ -29,7 +29,7 @@ import com.stormpath.sdk.tenant.Tenant;
  *
  * @since 1.1.beta
  */
-public interface ApiKey extends Resource, Saveable, Deletable {
+public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk.client.ApiKey { // temporarily extending the client package's ApiKey before deleting it
 
     /**
      * Returns the id of the api key.

@@ -17,7 +17,7 @@
  */
 package com.stormpath.sdk.impl.ds.api;
 
-import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
 import com.stormpath.sdk.impl.ds.ResourcePropertiesFilterProcessor;
 import com.stormpath.sdk.impl.http.QueryString;
@@ -52,7 +52,7 @@ public class ApiKeyResourcePropertiesFilter implements ResourcePropertiesFilter 
      *      and returns the properties with the decrypted secret values.
      *  </p>
      *  <p>
-     *      The decryption meta data is expected in the {@link QueryString} and the {@link ApiKey} provided in the constructor.
+     *      The decryption meta data is expected in the {@link QueryString} and the client {@link ApiKey} provided in the constructor.
      *  </p>
      *  <p>
      *      It supports the properties of a single api key and the properties

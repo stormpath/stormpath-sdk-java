@@ -17,7 +17,7 @@
  */
 package com.stormpath.sdk.impl.ds.api;
 
-import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
 import com.stormpath.sdk.impl.ds.ResourcePropertiesFilterProcessor;
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService;
@@ -54,7 +54,7 @@ public class ApiKeyCachePropertiesFilter implements ResourcePropertiesFilter {
      * </p>
      *  <p>
      * It uses the <b>client api key secret</b> to decrypt the api key secret, from
-     * the {@link ApiKey} provided in the constructor.
+     * the client {@link ApiKey} provided in the constructor.
      * </p>
      *
      * @param resourceProperties The map used to filter the cached api key properties

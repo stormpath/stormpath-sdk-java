@@ -19,6 +19,7 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.Application
@@ -358,8 +359,16 @@ class ApplicationIT extends ClientIT {
         assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
         assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
 
-        // testing that the expansions made it to the cache
         def dataStore = (DefaultDataStore) client.dataStore
+
+        // testing that the secret is encrypted in the cache
+        def apiKeyCache = dataStore.cacheManager.getCache(ApiKey.name)
+        assertNotNull apiKeyCache
+        def apiKeyCacheValue = apiKeyCache.get(appApiKey2.href)
+        assertNotNull apiKeyCacheValue
+        assertNotEquals apiKeyCacheValue['secret'], appApiKey2.secret
+
+        // testing that the expansions made it to the cache
         def accountCache = dataStore.cacheManager.getCache(Account.name)
         assertNotNull accountCache
         def accountCacheValue = accountCache.get(appApiKey2.account.href)

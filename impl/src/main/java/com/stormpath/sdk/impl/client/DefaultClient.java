@@ -118,7 +118,7 @@ public class DefaultClient implements Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class, AuthenticationScheme.class);
+        Constructor ctor = Classes.getConstructor(requestExecutorClass, com.stormpath.sdk.api.ApiKey.class, Proxy.class, AuthenticationScheme.class);
 
         return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme);
     }
@@ -152,7 +152,7 @@ public class DefaultClient implements Client {
             secondCtorArgClass = int.class;
         }
 
-        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass, ApiKey.class);
+        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass, com.stormpath.sdk.api.ApiKey.class);
 
         try {
             return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg, apiKey);

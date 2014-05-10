@@ -17,7 +17,7 @@
  */
 package com.stormpath.sdk.impl.ds
 
-import com.stormpath.sdk.client.ApiKey
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest

@@ -17,7 +17,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;

@@ -35,6 +35,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
+ * This implementation represents the api key resource that belongs to a Stormpath {@link Account}.
  * @since 1.1.beta
  */
 public class DefaultApiKey extends AbstractInstanceResource implements ApiKey {
@@ -113,5 +114,10 @@ public class DefaultApiKey extends AbstractInstanceResource implements ApiKey {
         properties.put(HREF_PROP_NAME, href);
 
         getDataStore().save(this, options);
+    }
+
+    @Override
+    protected boolean isPrintableProperty(String name) {
+        return !SECRET.getName().equalsIgnoreCase(name);
     }
 }

@@ -17,10 +17,10 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.account.DefaultAccount;
