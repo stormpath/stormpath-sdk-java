@@ -18,8 +18,7 @@
 package com.stormpath.sdk.impl.ds.api;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
-import com.stormpath.sdk.impl.ds.ResourcePropertiesFilterProcessor;
+import com.stormpath.sdk.impl.ds.PropertiesFilter;
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService;
 import com.stormpath.sdk.lang.Assert;
 
@@ -32,7 +31,7 @@ import static com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter.API_KEY_META_DA
 /**
  * @since 1.1.beta
  */
-public class ApiKeyCachePropertiesFilter implements ResourcePropertiesFilter {
+public class ApiKeyCachePropertiesFilter implements PropertiesFilter<Class, Map<String, ?>> {
 
     private final ApiKey apiKey;
 
@@ -54,7 +53,7 @@ public class ApiKeyCachePropertiesFilter implements ResourcePropertiesFilter {
      * </p>
      *  <p>
      * It uses the <b>client api key secret</b> to decrypt the api key secret, from
-     * the client {@link ApiKey} provided in the constructor.
+     * the {@link ApiKey} provided in the constructor.
      * </p>
      *
      * @param resourceProperties The map used to filter the cached api key properties
@@ -64,14 +63,14 @@ public class ApiKeyCachePropertiesFilter implements ResourcePropertiesFilter {
      *          If the resource properties is null or does not contain the required
      *          api key meta data to decrypt the secret, the same {@code resourceProperties}
      *          is returned.
-     *
-     * @see ResourcePropertiesFilterProcessor#addTransitoryFilter(ResourcePropertiesFilter)
      */
     @Override
-    public Map<String, ?> filter(Map<String, ?> resourceProperties) {
+    public Map<String, ?> filter(Class clazz, Map<String, ?> resourceProperties) {
 
         String apiKeyMetaDataName = API_KEY_META_DATA.toString();
-        if (resourceProperties != null
+        if (clazz != null
+                && ApiKey.class.isAssignableFrom(clazz)
+                && resourceProperties != null
                 && resourceProperties.containsKey(apiKeyMetaDataName)
                 && resourceProperties.get(apiKeyMetaDataName) != null
                 && Boolean.valueOf((Boolean) ((Map) resourceProperties.get(apiKeyMetaDataName)).get(ENCRYPT_SECRET.getName()))

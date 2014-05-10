@@ -31,8 +31,11 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
@@ -42,6 +45,8 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
+
+    def encryptionServiceBuilder = new ApiKeySecretEncryptionService.Builder()
 
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/17">Issue #17</a>
@@ -367,6 +372,7 @@ class ApplicationIT extends ClientIT {
         def apiKeyCacheValue = apiKeyCache.get(appApiKey2.href)
         assertNotNull apiKeyCacheValue
         assertNotEquals apiKeyCacheValue['secret'], appApiKey2.secret
+        assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), appApiKey2.secret
 
         // testing that the expansions made it to the cache
         def accountCache = dataStore.cacheManager.getCache(Account.name)
@@ -400,5 +406,28 @@ class ApplicationIT extends ClientIT {
         return  account
     }
 
+    String decryptSecretFromCacheMap(Map cacheMap) {
+
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+            return null
+        }
+
+        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+
+        def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
+        def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]
+        def iterations = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_ITERATIONS.getName()]
+
+        def encryptionService = encryptionServiceBuilder
+                .setBase64Salt(salt.getBytes())
+                .setKeySize(keySize)
+                .setIterations(iterations)
+                .setPassword(client.dataStore.apiKey.secret.toCharArray()).build()
+
+        def secret = encryptionService.decryptBase64String(cacheMap['secret'])
+
+        return secret
+
+    }
 
 }

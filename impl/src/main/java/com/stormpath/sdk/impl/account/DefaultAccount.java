@@ -33,13 +33,10 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
-import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
@@ -327,8 +324,6 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     public ApiKey createApiKey(ApiKeyOptions options) {
         Assert.notNull(options, "options argument cannot be null.");
         String href = getApiKeys().getHref();
-        QueryString qs = new QueryStringFactory().createQueryString(new DefaultApiKeyCriteria());
-        href += "?" + qs.toString();
         return getDataStore().create(href, new DefaultApiKey(getDataStore()), options);
     }
 }

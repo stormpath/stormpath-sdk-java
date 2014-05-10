@@ -18,8 +18,9 @@
 package com.stormpath.sdk.impl.ds.api;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.impl.ds.ResourcePropertiesFilter;
-import com.stormpath.sdk.impl.ds.ResourcePropertiesFilterProcessor;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.impl.ds.PropertiesFilter;
+import com.stormpath.sdk.impl.ds.PropertiesFilterProcessor;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService;
 import com.stormpath.sdk.lang.Assert;
@@ -34,7 +35,7 @@ import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.ITEMS_P
 /**
  * @since 1.1.beta
  */
-public class ApiKeyResourcePropertiesFilter implements ResourcePropertiesFilter {
+public class ApiKeyResourcePropertiesFilter implements PropertiesFilter<Class, Map<String, ?>> {
 
     private final ApiKey apiKey;
 
@@ -65,7 +66,7 @@ public class ApiKeyResourcePropertiesFilter implements ResourcePropertiesFilter 
      *  </p>
      *  <p>
      *      Because this filter depends on the query string, it is usually added as a transitory filter to be processed by
-     *      the {@link ResourcePropertiesFilter} on its {@link ResourcePropertiesFilterProcessor#addTransitoryFilter(ResourcePropertiesFilter)}
+     *      the {@link PropertiesFilter} on its {@link PropertiesFilterProcessor#addTransitoryFilter(PropertiesFilter)}
      *      method.
      *  </p>
      *
@@ -74,13 +75,15 @@ public class ApiKeyResourcePropertiesFilter implements ResourcePropertiesFilter 
      *
      * @return the api key properties with the decrypted secret values.
      *
-     * @see ResourcePropertiesFilterProcessor#addTransitoryFilter(ResourcePropertiesFilter)
-     * @see ResourcePropertiesFilterProcessor#process(Map)
+     * @see PropertiesFilterProcessor#addTransitoryFilter(PropertiesFilter)
+     * @see PropertiesFilterProcessor#process(Class,Map)
      */
     @Override
-    public Map<String, ?> filter(Map<String, ?> resourceProperties) {
+    public Map<String, ?> filter(Class clazz, Map<String, ?> resourceProperties) {
 
-        if (resourceProperties!= null
+        if (clazz != null
+                && (ApiKey.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz))
+                && resourceProperties!= null
                 && queryString != null
                 && queryString.containsKey(ENCRYPT_SECRET.getName())
                 && Boolean.valueOf(queryString.get(ENCRYPT_SECRET.getName()))

@@ -22,8 +22,6 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -106,13 +104,6 @@ public class DefaultApiKey extends AbstractInstanceResource implements ApiKey {
     @Override
     public void save(ApiKeyOptions options) {
         Assert.notNull(options, "options argument cannot be null.");
-
-        String href = getHref();
-        QueryString qs = new QueryStringFactory().createQueryString(new DefaultApiKeyCriteria());
-        href += "?" + qs.toString();
-
-        properties.put(HREF_PROP_NAME, href);
-
         getDataStore().save(this, options);
     }
 

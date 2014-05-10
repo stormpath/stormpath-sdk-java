@@ -1,17 +1,19 @@
 /*
- * Copyright 2014 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 Stormpath, Inc.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.stormpath.sdk.client;
 
@@ -54,8 +56,29 @@ public interface ClientBuilder {
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
      * @see ApiKeyBuilder#setId(String)
+     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
      */
+    @Deprecated
     ClientBuilder setApiKey(ApiKey apiKey);
+
+    /**
+     * Allows specifying an {@code ApiKey} instance directly instead of reading the key from a stream-based resource
+     * (e.g. File, Reader, Properties or InputStream).
+     * <p/>
+     * Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
+     * client as follows:
+     * <pre>
+     * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
+     *
+     * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
+     * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
+     * </pre>
+     *
+     * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
+     * @return the ClientBuilder instance for method chaining.
+     * @see ApiKeyBuilder#setId(String)
+     */
+    ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey);
 
     /**
      * Sets the HTTP proxy to be used when communicating with the Stormpath API server.

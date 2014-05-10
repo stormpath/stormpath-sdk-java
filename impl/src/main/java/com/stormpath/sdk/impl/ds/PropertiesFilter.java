@@ -18,37 +18,40 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.ds.api.ApiKeyCachePropertiesFilter;
+import com.stormpath.sdk.impl.ds.api.ApiKeyQueryPropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyResourcePropertiesFilter;
 
 import java.util.Map;
 
 /**
  * <p>
- * This interface defines the method to filter resource properties
- * when some processing needs to happen before returning the
- * resource, usually from the data store.
+ *     This interface defines the method required to filter the provided {@link Map} properties.
  * </p>
  * <p>
- * Filters are usually processed from the {@link ResourcePropertiesFilterProcessor}.
+ * Filters are usually processed from the {@link PropertiesFilterProcessor}.
  * </p>
+ * @since 1.1.beta
  *
+ * @see PropertiesFilterProcessor
  * @see ApiKeyCachePropertiesFilter
  * @see ApiKeyResourcePropertiesFilter
- * @see ResourcePropertiesFilterProcessor
- * @since 1.1.beta
+ * @see ApiKeyQueryPropertiesFilter
+ * @see QueryPropertiesFilter
  */
-public interface ResourcePropertiesFilter {
+public interface PropertiesFilter<C extends Class,  T extends Map> {
 
     /**
-     * Filters the resource properties when some processing needs to happen before returning the
-     * resource, usually from the data store.
+     * Filters the provided {@code properties} {@link Map} and returns the filtered {@link Map}.
      *
-     * @param resourceProperties the resource properties to be filtered.
+     * @param properties the {@link Map} to be filtered.
+     * @param clazz the class type of the class holding the properties.
      *
-     * @return the filtered properties maps.
-     * @see ApiKeyCachePropertiesFilter#filter(Map)
-     * @see ApiKeyResourcePropertiesFilter#filter(Map)
-     * @see ResourcePropertiesFilterProcessor#process(Map)
+     * @return the filtered {@link Map}.
+     *
+     * @see ApiKeyCachePropertiesFilter#filter(Class, Map)
+     * @see ApiKeyResourcePropertiesFilter#filter(Class, Map)
+     * @see ApiKeyQueryPropertiesFilter#filter(Class, Map)
+     * @see QueryPropertiesFilter#filter(Class, Map)
      */
-    Map<String, ?> filter(Map<String, ?> resourceProperties);
+    T filter(C clazz, T properties);
 }

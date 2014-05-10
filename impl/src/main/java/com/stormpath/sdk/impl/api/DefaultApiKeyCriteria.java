@@ -20,23 +20,14 @@ package com.stormpath.sdk.impl.api;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
-import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
-import com.stormpath.sdk.impl.security.DefaultSaltGenerator;
-import com.stormpath.sdk.impl.security.SaltGenerator;
-
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 
 /**
  * @since 1.1.beta
  */
 public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKeyOptions> implements ApiKeyCriteria  {
 
-    private final SaltGenerator saltGenerator;
-
     public DefaultApiKeyCriteria() {
         super(new DefaultApiKeyOptions());
-        saltGenerator = new DefaultSaltGenerator();
-        addDefaultCriterions();
     }
 
     @Override
@@ -49,17 +40,5 @@ public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKe
     public ApiKeyCriteria withAccount() {
         getOptions().withAccount();
         return this;
-    }
-
-    /**
-     * Adds the default criterion entries for retrieving api keys from the server.
-     * Whenever api keys are retrieved from the server, the SDK should always
-     * request them with their secrets encrypted.
-     */
-    protected void addDefaultCriterions() {
-        add(new DefaultEqualsExpressionFactory(ENCRYPT_SECRET.getName()).eq(Boolean.TRUE));
-        add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SIZE.getName()).eq(128));
-        add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_ITERATIONS.getName()).eq(1024));
-        add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SALT.getName()).eq(saltGenerator.generate()));
     }
 }

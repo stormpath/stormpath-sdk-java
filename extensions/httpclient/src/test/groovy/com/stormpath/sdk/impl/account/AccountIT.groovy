@@ -24,6 +24,9 @@ import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.impl.api.ApiKeyParameter
+import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
+import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.api.ApiKeys.*
@@ -33,6 +36,8 @@ import static org.testng.Assert.*
  * @since 0.9.3
  */
 class AccountIT extends ClientIT {
+
+    def encryptionServiceBuilder = new ApiKeySecretEncryptionService.Builder()
 
     @Test
     void testIsMemberOf() {
@@ -132,6 +137,37 @@ class AccountIT extends ClientIT {
         int apiKeysCount = 0
         for (ApiKey apiKey : apiKeys) {
             apiKeysCount++
+        }
+
+        assertEquals apiKeysCount, apiKeysCreated
+    }
+
+    @Test
+    void testGetApiKeysDecryptFromCache() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = createTestAccount(app)
+
+        int apiKeysCreated = 10
+        for (int i = 0; i < apiKeysCreated; i++) {
+            acct.createApiKey()
+        }
+
+        def client = buildClient(true)
+        acct = client.dataStore.getResource(acct.href, Account) // need to request the account from the new client to cache the api keys
+        def apiKeys = acct.getApiKeys()
+        def apiKeyCache = client.dataStore.cacheManager.getCache(ApiKey.name)
+        assertNotNull apiKeyCache
+        int apiKeysCount = 0
+        for (ApiKey apiKey : apiKeys) {
+            apiKeysCount++
+
+            def apiKeyCacheValue = apiKeyCache.get(apiKey.href)
+            assertNotNull apiKeyCacheValue
+            assertNotEquals apiKeyCacheValue['secret'], apiKey.secret
+            assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), apiKey.secret
         }
 
         assertEquals apiKeysCount, apiKeysCreated
@@ -239,6 +275,30 @@ class AccountIT extends ClientIT {
         assertEquals providerData.getProviderId(), "stormpath"
         assertNotNull providerData.getCreatedAt()
         assertNotNull providerData.getModifiedAt()
+    }
+
+    String decryptSecretFromCacheMap(Map cacheMap) {
+
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+            return null
+        }
+
+        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+
+        def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
+        def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]
+        def iterations = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_ITERATIONS.getName()]
+
+        def encryptionService = encryptionServiceBuilder
+                .setBase64Salt(salt.getBytes())
+                .setKeySize(keySize)
+                .setIterations(iterations)
+                .setPassword(client.dataStore.apiKey.secret.toCharArray()).build()
+
+        def secret = encryptionService.decryptBase64String(cacheMap['secret'])
+
+        return secret
+
     }
 
 }
