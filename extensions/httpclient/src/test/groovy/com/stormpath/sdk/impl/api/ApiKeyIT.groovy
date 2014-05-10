@@ -30,7 +30,7 @@ import static com.stormpath.sdk.api.ApiKeys.options
 import static org.testng.Assert.*
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 class ApiKeyIT extends ClientIT {
 

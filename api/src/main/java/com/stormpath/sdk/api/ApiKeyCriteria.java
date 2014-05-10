@@ -30,7 +30,7 @@ import com.stormpath.sdk.query.Criteria;
  *     .withTenant()
  *     .withAccount();
  * </pre>
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public interface ApiKeyCriteria extends Criteria<ApiKeyCriteria>, ApiKeyOptions<ApiKeyCriteria> {
 }

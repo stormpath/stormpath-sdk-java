@@ -27,7 +27,7 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 import static com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter.API_KEY_META_DATA;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class ApiKeyCacheMapCreator extends DefaultCacheMapCreator {
 

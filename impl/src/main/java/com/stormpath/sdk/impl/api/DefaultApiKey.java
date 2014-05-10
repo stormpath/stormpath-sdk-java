@@ -34,7 +34,7 @@ import java.util.Map;
 
 /**
  * This implementation represents the api key resource that belongs to a Stormpath {@link Account}.
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class DefaultApiKey extends AbstractInstanceResource implements ApiKey {
 

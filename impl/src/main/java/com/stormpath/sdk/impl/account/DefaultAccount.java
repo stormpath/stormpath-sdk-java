@@ -310,7 +310,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     @Override
     public ApiKey createApiKey() {
@@ -318,7 +318,7 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     @Override
     public ApiKey createApiKey(ApiKeyOptions options) {

@@ -30,7 +30,7 @@ import java.util.Map;
  * <p>
  * Filters are usually processed from the {@link PropertiesFilterProcessor}.
  * </p>
- * @since 1.1.beta
+ * @since 1.0.RC
  *
  * @see PropertiesFilterProcessor
  * @see ApiKeyCachePropertiesFilter

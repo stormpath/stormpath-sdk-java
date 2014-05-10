@@ -60,7 +60,7 @@ public interface InternalDataStore extends DataStore {
     //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKey getApiKey();
     /**

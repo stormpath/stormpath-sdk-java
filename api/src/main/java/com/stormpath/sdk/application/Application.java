@@ -701,7 +701,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
      * @throws ResourceException
      * @throws IllegalArgumentException if the {@code id} argument is null or empty.
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException;
 
@@ -717,7 +717,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *         with the specified {@link ApiKeyOptions}.
      * @throws ResourceException
      * @throws IllegalArgumentException if the {@code id} argument is null or empty, or if the {@code options} argument is null..
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKey getApiKey(String id, ApiKeyOptions options) throws ResourceException, IllegalArgumentException;
 

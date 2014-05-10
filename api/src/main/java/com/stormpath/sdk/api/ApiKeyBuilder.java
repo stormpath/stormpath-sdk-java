@@ -51,7 +51,7 @@ import java.util.Properties;
  *
  * @see #setFileLocation(String)
  * @see ClientBuilder#setApiKey(com.stormpath.sdk.client.ApiKey)
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ // temporarily extending the client package's ApiKeyBuilder before deleting it
 

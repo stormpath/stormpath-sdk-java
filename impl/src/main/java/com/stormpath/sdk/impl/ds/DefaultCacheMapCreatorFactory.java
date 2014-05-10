@@ -30,7 +30,7 @@ import java.util.Map;
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  * @see CacheMapCreator
  */
 public class DefaultCacheMapCreatorFactory implements CacheMapCreatorFactory {

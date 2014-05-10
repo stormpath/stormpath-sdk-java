@@ -26,7 +26,7 @@ import java.util.Map;
  * <p>
  *     This interface defines the method to create a {@link CacheMapCreator} based on the provided arguments.
  * </p>
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public interface CacheMapCreatorFactory {
 

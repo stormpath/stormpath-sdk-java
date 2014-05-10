@@ -32,7 +32,7 @@ import java.net.URL;
 import java.util.Properties;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class ClientApiKeyBuilder implements ApiKeyBuilder {
 

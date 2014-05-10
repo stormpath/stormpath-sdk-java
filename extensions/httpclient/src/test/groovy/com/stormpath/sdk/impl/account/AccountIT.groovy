@@ -67,7 +67,7 @@ class AccountIT extends ClientIT {
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     @Test
     void testCreateAndDeleteApiKey() {
@@ -92,7 +92,7 @@ class AccountIT extends ClientIT {
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     @Test
     void testCreateApiKeyWithOptions() {
@@ -234,7 +234,7 @@ class AccountIT extends ClientIT {
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     Account createTestAccount(def application) {
 

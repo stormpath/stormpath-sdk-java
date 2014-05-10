@@ -48,7 +48,7 @@ import java.util.Properties;
  * @see #setFileLocation(String)
  * @see ClientBuilder#setApiKey(ApiKey)
  * @since 1.0.beta
- * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder} instead.
+ * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder} instead.
  */
 @Deprecated
 public interface ApiKeyBuilder {
@@ -100,7 +100,7 @@ public interface ApiKeyBuilder {
      * @param id the {@link com.stormpath.sdk.client.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @return the ApiKeyBuilder instance for method chaining.
      * @see ClientBuilder#setApiKey(ApiKey)
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setId(String)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setId(String)} instead.
      */
     @Deprecated
     ApiKeyBuilder setId(String id);
@@ -115,7 +115,7 @@ public interface ApiKeyBuilder {
      * @return the ApiKeyBuilder instance for method chaining.
      * @see #setId(String)
      * @see ClientBuilder#setApiKey(ApiKey)
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setSecret(String)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setSecret(String)} instead.
      */
     @Deprecated
     ApiKeyBuilder setSecret(String secret);
@@ -129,7 +129,7 @@ public interface ApiKeyBuilder {
      *
      * @param properties the properties instance to use to load the API Key ID and Secret.
      * @return the ApiKeyBuilder instance for method chaining.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setProperties(Properties)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setProperties(Properties)} instead.
      */
     @Deprecated
     ApiKeyBuilder setProperties(Properties properties);
@@ -143,7 +143,7 @@ public interface ApiKeyBuilder {
      *
      * @param reader the reader to use to construct a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setReader(Reader)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setReader(Reader)} instead.
      */
     @Deprecated
     ApiKeyBuilder setReader(Reader reader);
@@ -158,7 +158,7 @@ public interface ApiKeyBuilder {
      *
      * @param is the InputStream to use to construct a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setInputStream(InputStream)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setInputStream(InputStream)} instead.
      */
     @Deprecated
     ApiKeyBuilder setInputStream(InputStream is);
@@ -225,7 +225,7 @@ public interface ApiKeyBuilder {
      * @param location the file, classpath or url location of the API Key {@code .properties} file to load when
      *                 constructing the API Key to use for communicating with the Stormpath REST API.
      * @return the ApiKeyBuilder instance for method chaining.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setFileLocation(String)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setFileLocation(String)} instead.
      */
     @Deprecated
     ApiKeyBuilder setFileLocation(String location);
@@ -238,7 +238,7 @@ public interface ApiKeyBuilder {
      *
      * @param idPropertyName the name used to query for the API Key ID from a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setIdPropertyName(String)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setIdPropertyName(String)} instead.
      */
     @Deprecated
     ApiKeyBuilder setIdPropertyName(String idPropertyName);
@@ -251,7 +251,7 @@ public interface ApiKeyBuilder {
      *
      * @param secretPropertyName the name used to query for the API Key Secret from a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setSecretPropertyName(String)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#setSecretPropertyName(String)} instead.
      */
     @Deprecated
     ApiKeyBuilder setSecretPropertyName(String secretPropertyName);
@@ -260,7 +260,7 @@ public interface ApiKeyBuilder {
      * Constructs a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.
      *
      * @return a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#build()} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeyBuilder#build()} instead.
      */
     @Deprecated
     ApiKey build();

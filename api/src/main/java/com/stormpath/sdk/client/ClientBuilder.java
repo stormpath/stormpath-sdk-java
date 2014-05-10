@@ -56,7 +56,7 @@ public interface ClientBuilder {
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
      * @see ApiKeyBuilder#setId(String)
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
      */
     @Deprecated
     ClientBuilder setApiKey(ApiKey apiKey);

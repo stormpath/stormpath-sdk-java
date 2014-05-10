@@ -27,7 +27,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * An ApiKey represents the api key that belongs to a particular {@link Account},
  * used for API authentication purposes.
  *
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk.client.ApiKey { // temporarily extending the client package's ApiKey before deleting it
 

@@ -27,7 +27,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import java.util.Map;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class DefaultApiKeyList extends AbstractCollectionResource<ApiKey> implements ApiKeyList {
 

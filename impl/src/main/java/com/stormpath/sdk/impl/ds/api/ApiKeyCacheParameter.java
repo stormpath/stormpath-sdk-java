@@ -18,7 +18,7 @@
 package com.stormpath.sdk.impl.ds.api;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public enum ApiKeyCacheParameter {
 

@@ -18,7 +18,7 @@
 package com.stormpath.sdk.impl.api;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public enum ApiKeyParameter {
 

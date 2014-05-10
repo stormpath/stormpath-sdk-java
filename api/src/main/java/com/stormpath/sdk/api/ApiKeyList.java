@@ -22,7 +22,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link ApiKey} instances.
  *
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public interface ApiKeyList extends CollectionResource<ApiKey> {
 }

@@ -21,7 +21,7 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class DefaultApiKeyOptions extends DefaultOptions<ApiKeyOptions> implements ApiKeyOptions<ApiKeyOptions>  {
 

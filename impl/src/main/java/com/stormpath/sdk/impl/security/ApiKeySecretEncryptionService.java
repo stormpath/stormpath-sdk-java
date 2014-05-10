@@ -30,7 +30,7 @@ import java.nio.charset.Charset;
 import java.security.spec.KeySpec;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class ApiKeySecretEncryptionService implements EncryptionService {
 

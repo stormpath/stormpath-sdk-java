@@ -23,7 +23,7 @@ import com.stormpath.sdk.resource.Resource;
 import java.util.Map;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  * @see CacheMapCreatorFactory
  */
 public class DefaultCacheMapInitializer implements CacheMapInitializer {

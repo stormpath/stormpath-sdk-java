@@ -26,7 +26,7 @@ package com.stormpath.sdk.client;
  * </pre>
  *
  * @since 1.0.beta
- * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeys} instead.
+ * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeys} instead.
  */
 @Deprecated
 public class ApiKeys {
@@ -35,7 +35,7 @@ public class ApiKeys {
      * Returns a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances.
      *
      * @return a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances.
-     * @deprecated in 1.1.beta and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeys#builder()} instead.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeys#builder()} instead.
      */
     @Deprecated
     public static ApiKeyBuilder builder() {

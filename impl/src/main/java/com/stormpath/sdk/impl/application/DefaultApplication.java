@@ -411,7 +411,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     @Override
     public ApiKey getApiKey(String id) throws ResourceException, IllegalArgumentException {
@@ -419,7 +419,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     /**
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     @Override
     public ApiKey getApiKey(String id, ApiKeyOptions options) throws ResourceException, IllegalArgumentException {

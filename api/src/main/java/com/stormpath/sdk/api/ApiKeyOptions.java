@@ -22,7 +22,7 @@ import com.stormpath.sdk.query.Options;
 /**
  * ApiKey-specific options that may be specified when retrieving {@link ApiKey} resources.
  *
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public interface ApiKeyOptions<T> extends Options {
 

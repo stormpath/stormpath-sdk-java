@@ -25,7 +25,7 @@ import java.util.Map;
  *     calling their {@link PropertiesFilter#filter(Class, Map)} method and returning
  *     the result of processing all configured filters.
  * </p>
- * @since 1.1.beta
+ * @since 1.0.RC
  * @see DefaultPropertiesFilterProcessor
  */
 public interface PropertiesFilterProcessor<T extends Map, F extends PropertiesFilter, C extends Class> {

@@ -960,7 +960,7 @@ public class DefaultDataStore implements InternalDataStore {
      * Initializes the filter processors with the filters that should always be present when calling
      * {@link PropertiesFilterProcessor#process(Class,Map)}.
      *
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     protected void initFilterProcessors() {
 
@@ -970,7 +970,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     /**
      *
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
 

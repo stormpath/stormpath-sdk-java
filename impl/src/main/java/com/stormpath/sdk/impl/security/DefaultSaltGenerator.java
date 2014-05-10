@@ -22,7 +22,7 @@ import org.apache.commons.codec.binary.Base64;
 import java.security.SecureRandom;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class DefaultSaltGenerator implements SaltGenerator {
 

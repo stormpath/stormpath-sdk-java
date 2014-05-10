@@ -22,7 +22,7 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKeyOptions> implements ApiKeyCriteria  {
 

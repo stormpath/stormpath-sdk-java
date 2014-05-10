@@ -26,7 +26,7 @@ import java.util.Map;
  * <p>
  *     This interface defines the method used to create a cache map.
  * </p>
- * @since 1.1.beta
+ * @since 1.0.RC
  * @see ApiKeyCacheMapCreator
  * @see CustomDataCacheMapCreator
  * @see DefaultCacheMapCreator

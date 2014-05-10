@@ -32,7 +32,7 @@ import java.util.Map;
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class ApiKeyQueryPropertiesFilter implements QueryPropertiesFilter {
 

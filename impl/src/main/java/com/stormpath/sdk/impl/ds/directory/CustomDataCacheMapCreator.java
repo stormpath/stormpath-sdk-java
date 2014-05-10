@@ -22,7 +22,7 @@ import com.stormpath.sdk.impl.ds.DefaultCacheMapCreator;
 import java.util.Map;
 
 /**
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class CustomDataCacheMapCreator extends DefaultCacheMapCreator {
 

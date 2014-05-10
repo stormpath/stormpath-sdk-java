@@ -25,7 +25,7 @@ import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * This implementation represents the api key that is used to authenticate a Tenant in Stormpath.
- * @since 1.1.beta
+ * @since 1.0.RC
  */
 public class ClientApiKey implements ApiKey {
 

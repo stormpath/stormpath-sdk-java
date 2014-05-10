@@ -342,7 +342,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *
      * @return all {@link ApiKey}s that belong to this account.
      *
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKeyList getApiKeys();
 
@@ -368,7 +368,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the account's api keys that match the specified query criteria.
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKeyList getApiKeys(Map<String, Object> queryParams);
 
@@ -391,7 +391,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the account's api keys that match the specified query criteria.
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKeyList getApiKeys(ApiKeyCriteria criteria);
 
@@ -399,7 +399,7 @@ public interface Account extends Resource, Saveable, Deletable {
      * Creates an {@link ApiKey} for this account and returns it.
      *
      * @return the created {@link ApiKey}.
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKey createApiKey();
 
@@ -409,7 +409,7 @@ public interface Account extends Resource, Saveable, Deletable {
      *
      * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the create
      *                        response.
-     * @since 1.1.beta
+     * @since 1.0.RC
      */
     ApiKey createApiKey(ApiKeyOptions options);
 
