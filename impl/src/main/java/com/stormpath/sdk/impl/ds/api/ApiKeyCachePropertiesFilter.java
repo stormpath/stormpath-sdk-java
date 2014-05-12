@@ -47,15 +47,16 @@ public class ApiKeyCachePropertiesFilter implements PropertiesFilter<Class, Map<
      * with the properties of the api key, decrypting the api key secret.
      * </p>
      * <p>
-     * If the resource properties is null or does not contain the required
-     * api key meta data to decrypt the secret, the same {@code resourceProperties}
-     * is returned.
+     * If the clazz argument or the resource properties is null, or does not contain the required
+     * api key meta data to decrypt the secret, or the clazz argument is not of type {@link ApiKey}.class
+     * the same {@code resourceProperties} is returned.
      * </p>
      *  <p>
      * It uses the <b>client api key secret</b> to decrypt the api key secret, from
      * the {@link ApiKey} provided in the constructor.
      * </p>
      *
+     * @param clazz the class type of the class holding the properties.
      * @param resourceProperties The map used to filter the cached api key properties
      *                           and decrypt its secret value.
      *

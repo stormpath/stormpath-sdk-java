@@ -44,6 +44,7 @@ public class DefaultPropertiesFilterProcessor implements PropertiesFilterProcess
      * after they are processed.
      * </p>
      *
+     * @param clazz the provided class type.
      * @param resourceProperties the resource properties that will be filtered by the added filters contained.
      *
      * @return a {@link Map} containing the result of calling all the filters.

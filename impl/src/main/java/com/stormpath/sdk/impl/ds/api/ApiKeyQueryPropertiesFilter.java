@@ -47,7 +47,7 @@ public class ApiKeyQueryPropertiesFilter implements QueryPropertiesFilter {
     /**
      * <p>
      *    This method verifies the provided {@code queryString} and, if the {@code clazz} argument
-     *    is of type {@link ApiKey} or {@link ApiKeyList}, returns new {@link QueryString} if no encryption
+     *    is of type {@link ApiKey}.class or {@link ApiKeyList}.class, returns new {@link QueryString} if no encryption
      *    parameters are found.
      * </p>
      * <p>

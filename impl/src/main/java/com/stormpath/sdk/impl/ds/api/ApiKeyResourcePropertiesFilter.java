@@ -60,7 +60,8 @@ public class ApiKeyResourcePropertiesFilter implements PropertiesFilter<Class, M
      *      of a collection of api keys. In the later case, all api keys secrets will be decrypted.
      *  </p>
      *  <p>
-     *      If the resource properties or the query string is null, or the query string does not contain the required
+     *      If the clazz argument or the resource properties is null, or the clazz argument is not of type {@link ApiKey}.class
+     *      or {@link ApiKeyList}.class, or the query string does not contain the required
      *      api key meta data to decrypt the secret, the same {@code resourceProperties}
      *      is returned.
      *  </p>
@@ -70,6 +71,7 @@ public class ApiKeyResourcePropertiesFilter implements PropertiesFilter<Class, M
      *      method.
      *  </p>
      *
+     * @param clazz the class type of the class holding the properties.
      * @param resourceProperties The map used to filter the api keys properties
      *                           and decrypt their secret values.
      *

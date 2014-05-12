@@ -31,9 +31,9 @@ import java.util.Map;
 public interface PropertiesFilterProcessor<T extends Map, F extends PropertiesFilter, C extends Class> {
 
     /**
-     * Processes the filters based on the provided {@code clazz} and {@code properties} parameters.
+     * Processes the filters based on the provided {@code clazz} type and {@code properties} parameters.
      *
-     * @param clazz the provided class.
+     * @param clazz the provided class type.
      * @param properties the properties {@link Map} to be filtered.
      * @return the filtered {@link Map}.
      */
