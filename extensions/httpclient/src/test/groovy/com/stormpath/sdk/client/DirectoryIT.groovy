@@ -76,4 +76,5 @@ class DirectoryIT extends ClientIT {
         def list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(email)))
         assertFalse list.iterator().hasNext() //no results
     }
+
 }

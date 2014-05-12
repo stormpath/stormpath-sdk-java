@@ -23,6 +23,7 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -157,7 +158,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * Therefore, this method is a convenience: it automatically issues a create with the directory's
      * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} argument.
      *
-     * @param request
+     * @param request the account creation request
      * @since 0.9
      */
     void createAccount(CreateAccountRequest request);
@@ -329,4 +330,12 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * @since 0.9
      */
     void createGroup(CreateGroupRequest request);
+
+    /**
+     * Returns the {@link Provider} of this Directory.
+     *
+     * @return the {@link Provider} of this Directory.
+     * @since 1.0.beta
+     */
+    Provider getProvider();
 }

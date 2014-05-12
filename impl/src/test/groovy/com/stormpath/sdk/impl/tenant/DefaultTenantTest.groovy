@@ -15,12 +15,19 @@
  */
 package com.stormpath.sdk.impl.tenant
 
+import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.provider.DefaultGoogleProvider
+import com.stormpath.sdk.lang.Objects
+import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.provider.Providers
+import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
-import static org.testng.Assert.assertEquals
+import static org.testng.Assert.*
 
 /**
  * @since 0.8
@@ -49,6 +56,98 @@ class DefaultTenantTest {
 
         verify internalDataStore, directory, returnedDirectory
     }
+
+    @Test
+    void testCreateDirectoryRequest() {
+
+        def properties = [ href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE",
+                applications: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/applications"],
+                directories: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/directories"]
+        ]
+
+        def providerProperties = [providerId: "google",
+                clientId: "aClientId999",
+                clientSecret: "aClientSecret111",
+                redirectUri: "http://someUrl:99999"
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def defaultDirectory = createStrictMock(DefaultDirectory)
+        def returnedDirectory = createStrictMock(Directory)
+        def defaultTenant = new DefaultTenant(internalDataStore, properties)
+
+        def defaultProvider = new DefaultGoogleProvider(null, providerProperties)
+
+        expect(internalDataStore.create("/directories", defaultDirectory)).andReturn(returnedDirectory)
+        expect(defaultDirectory.setProvider((Provider) reportMatcher(new ProviderEquals(defaultProvider)))).andReturn(defaultDirectory)
+
+        replay internalDataStore, defaultDirectory, returnedDirectory
+
+        def request = Directories.newCreateRequestFor(defaultDirectory).
+                forProvider(Providers.GOOGLE.builder()
+                        .setClientId("aClientId999")
+                        .setClientSecret("aClientSecret111")
+                        .setRedirectUri("http://someUrl:99999")
+                        .build()
+                ).build();
+
+        assertEquals(defaultTenant.createDirectory(request), returnedDirectory)
+
+        verify(internalDataStore, defaultDirectory, returnedDirectory)
+    }
+
+    @Test
+    void testUnrecognizedCreateDirectoryRequestType() {
+
+        def properties = [ href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE",
+                applications: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/applications"],
+                directories: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/directories"]
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def defaultDirectory = createStrictMock(Directory)
+        def defaultTenant = new DefaultTenant(internalDataStore, properties)
+
+        def request = Directories.newCreateRequestFor(defaultDirectory).
+                forProvider(Providers.GOOGLE.builder()
+                        .setClientId("aClientId999")
+                        .setClientSecret("aClientSecret111")
+                        .setRedirectUri("http://someUrl:99999")
+                        .build()
+                ).build()
+
+        try {
+            defaultTenant.createDirectory(request)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("the directory instance is of an unidentified type. The specified provider cannot be set to it: EasyMock for interface com.stormpath.sdk.directory.Directory"))
+        }
+
+    }
+
+    //@since 1.0.beta
+    static class ProviderEquals implements IArgumentMatcher {
+
+        private Provider expected
+
+        ProviderEquals(Provider provider) {
+            expected = provider;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! Provider.isInstance(o)) {
+                return false;
+            }
+            Provider actual = (Provider) o
+            return (Objects.nullSafeEquals(expected, actual))
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append("provider: " + expected.toString())
+        }
+    }
+
+
 
 
 

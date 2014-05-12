@@ -30,7 +30,7 @@ public class DefaultCreateGroupRequest implements CreateGroupRequest {
     private final GroupOptions options;
 
     public DefaultCreateGroupRequest(Group group, GroupOptions options) {
-        Assert.notNull(group, "Group cannot be null.");
+        Assert.notNull(group, "group cannot be null.");
         this.group = group;
         this.options = options;
     }

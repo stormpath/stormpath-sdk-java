@@ -25,7 +25,7 @@ import java.lang.reflect.Constructor;
 /**
  * Static utility/helper methods for working with {@link Group} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * Group-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
+ * Group-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
  * <b>Groups.where(Groups.name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>Groups.status()</b>.eq(GroupStatus.ENABLED))
