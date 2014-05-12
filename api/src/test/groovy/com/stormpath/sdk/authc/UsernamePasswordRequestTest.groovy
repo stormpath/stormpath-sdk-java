@@ -16,7 +16,7 @@
 package com.stormpath.sdk.authc
 
 import com.stormpath.sdk.directory.AccountStore
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
 import static org.testng.Assert.assertEquals
