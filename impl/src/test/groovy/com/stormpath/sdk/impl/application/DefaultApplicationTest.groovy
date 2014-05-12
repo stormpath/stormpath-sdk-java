@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -363,7 +363,7 @@ class DefaultApplicationTest {
         verify dataStore, group, groupList, request
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
     @Test
     void testSetDefaultAccountStore() {
 
@@ -402,16 +402,20 @@ class DefaultApplicationTest {
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
+        def modifiedApp = new DefaultApplication(null, newPropertiesState)
 
-        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(new DefaultApplication(null, newPropertiesState)))))
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
         expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setDefaultAccountStore(true))
         expect(newAccountStoreMapping.save())
-        expect(accountStoreMappings.getHref()).andReturn(properties.accountStoreMappings.href)
+
+        newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
-        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
@@ -419,7 +423,11 @@ class DefaultApplicationTest {
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
         expect(accountStoreMapping.setDefaultAccountStore(true))
         expect(accountStoreMapping.save())
-        expect(accountStoreMappings.getHref()).andReturn(properties.accountStoreMappings.href)
+
+        newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
 
@@ -430,7 +438,7 @@ class DefaultApplicationTest {
         verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
     @Test
     void testSetDefaultGroupStore() {
 
@@ -469,16 +477,20 @@ class DefaultApplicationTest {
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
+        def modifiedApp = new DefaultApplication(null, newPropertiesState)
 
-        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(new DefaultApplication(null, newPropertiesState)))))
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
         expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setDefaultGroupStore(true))
         expect(newAccountStoreMapping.save())
-        expect(accountStoreMappings.getHref()).andReturn(properties.accountStoreMappings.href)
+
+        newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
-        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
@@ -486,7 +498,11 @@ class DefaultApplicationTest {
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
         expect(accountStoreMapping.setDefaultGroupStore(true))
         expect(accountStoreMapping.save())
-        expect(accountStoreMappings.getHref()).andReturn(properties.accountStoreMappings.href)
+
+        newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
 
@@ -497,7 +513,7 @@ class DefaultApplicationTest {
         verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
     @Test
     void testGetAccount() {
 
@@ -527,7 +543,7 @@ class DefaultApplicationTest {
         verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
     static class ProviderAccountAccessEquals implements IArgumentMatcher {
 
         private ProviderAccountAccess expected
@@ -549,7 +565,7 @@ class DefaultApplicationTest {
         }
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
     static class ApplicationMatcher implements IArgumentMatcher {
 
         private Application expected

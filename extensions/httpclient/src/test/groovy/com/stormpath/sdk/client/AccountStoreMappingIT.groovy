@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -350,7 +350,10 @@ class AccountStoreMappingIT extends ClientIT {
         assertTrue(applicationString.contains("passwordResetTokens"))
     }
 
-    @Test(enabled = false) //until we can merge https://github.com/stormpath/stormpath-sdk-java/pull/45
+    /**
+     * @since 1.0.RC
+     */
+    @Test
     void testDefaultApplicationGaps() {
         Group group = client.instantiate(Group)
         group.name = uniquify("Testor Group")
@@ -364,24 +367,6 @@ class AccountStoreMappingIT extends ClientIT {
         //let's check the changes are visible even without saving
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
         AccountStoreMappingList accountStoreMappingList = app.getAccountStoreMappings()
-        assertEquals(accountStoreMappingList.iterator().size(), 2)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
-            if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
-                if(!accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is not marked as default in the AccountStoreMappingList")
-                }
-            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
-                if(accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the AccountStoreMappingList")
-                }
-            }
-        }
-        //Let's save the application to check that nothing has changed
-        app.save();
-
-        //let's check nothing changed after saving
-        assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
-        accountStoreMappingList = app.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 2)
         for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
@@ -425,23 +410,6 @@ class AccountStoreMappingIT extends ClientIT {
             }
         }
 
-        //Let's save the application to check that nothing has changed
-        app.save()
-        assertEquals(app.getDefaultAccountStore().getHref(), dir.getHref())
-        accountStoreMappingList = app.getAccountStoreMappings()
-        assertEquals(accountStoreMappingList.iterator().size(), 2)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
-            if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
-                if(accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the AccountStoreMappingList")
-                }
-            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
-                if(!accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is not marked as default in the AccountStoreMappingList")
-                }
-            }
-        }
-
         ////////// setDefaultGroupStore time //////////
 
         def newDir = createDirectory()
@@ -461,24 +429,6 @@ class AccountStoreMappingIT extends ClientIT {
                     fail("The DefaultGroupStoreMapping is wrongly marked as default in the AccountStoreMappingList")
                 }
 
-            }
-        }
-        //Let's save the application
-        app.save();
-
-        //let's check nothing changed after saving
-        assertEquals(app.getDefaultGroupStore().getHref(), newDir.getHref())
-        accountStoreMappingList = app.getAccountStoreMappings()
-        assertEquals(accountStoreMappingList.iterator().size(), 3)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
-            if (accountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
-                if(!accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is not marked as default in the AccountStoreMappingList")
-                }
-            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
-                if(accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is wrongly marked as default in the AccountStoreMappingList")
-                }
             }
         }
 
@@ -506,22 +456,6 @@ class AccountStoreMappingIT extends ClientIT {
             }
         }
 
-        //Let's save the application to check that nothing has changed
-        app.save()
-        assertEquals(app.getDefaultGroupStore().getHref(), dir.getHref())
-        accountStoreMappingList = app.getAccountStoreMappings()
-        assertEquals(accountStoreMappingList.iterator().size(), 3)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
-            if (accountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
-                if(accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is wronlgy marked as default in the AccountStoreMappingList")
-                }
-            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
-                if(!accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is not marked as default in the AccountStoreMappingList")
-                }
-            }
-        }
     }
 
     private Directory createDirectory() {
