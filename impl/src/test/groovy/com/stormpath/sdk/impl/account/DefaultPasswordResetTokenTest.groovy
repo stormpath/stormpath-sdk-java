@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,19 @@ class DefaultPasswordResetTokenTest {
                  account: [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]])
 
         assertTrue(resourceWithDS instanceof DefaultPasswordResetToken && resourceWithProps instanceof DefaultPasswordResetToken)
-        assertEquals(resourceWithProps.getPropertyDescriptors().size(), 2)
+        assertEquals(resourceWithProps.getPropertyDescriptors().size(), 3)
         assertTrue(resourceWithProps.getPropertyDescriptors().get("email") instanceof StringProperty && resourceWithProps.getPropertyDescriptors().get("account") instanceof ResourceReference)
         assertEquals(resourceWithProps.getPropertyDescriptors().get("account").getType(), Account)
+        assertTrue(resourceWithProps.getPropertyDescriptors().get("password") instanceof StringProperty)
 
         resourceWithDS.setEmail("some@email.com")
         assertEquals(resourceWithDS.getEmail(), "some@email.com")
 
         def innerProperties = [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]
         expect(internalDataStore.instantiate(Account, innerProperties)).andReturn(new DefaultAccount(internalDataStore, innerProperties))
+
+        resourceWithDS.setPassword("fooPassword")
+        assertEquals(resourceWithDS.getProperty("password"), "fooPassword")
 
         replay internalDataStore
 

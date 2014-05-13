@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -388,6 +388,91 @@ class DefaultApplicationTest {
         assertNotNull(accountResult)
 
         verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testResetPassword() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+
+        def account = createStrictMock(Account)
+        def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
+                account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+        def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
+        expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
+        expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        def instantiatedPasswordResetToken = new DefaultPasswordResetToken(internalDataStore, innerProperties)
+        expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"])) andReturn(instantiatedPasswordResetToken)
+
+        def createdPasswordResetToken = new DefaultPasswordResetToken(internalDataStore, [account: account])
+        expect(internalDataStore.create(properties.passwordResetTokens.href + "/token", instantiatedPasswordResetToken, PasswordResetToken)) andReturn(createdPasswordResetToken)
+
+        def authenticationResult = createStrictMock(AuthenticationResult)
+        def defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
+        expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
+        defaultBasicLoginAttempt.setType("basic")
+        defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+        expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
+
+        replay internalDataStore, account
+
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult)
+
+        verify internalDataStore, account
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testResetPasswordInvalidParameters() {
+
+        def defaultApplication = new DefaultApplication(null)
+
+        try {
+            defaultApplication.resetPassword("", "myNewPassword")
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "passwordResetToken cannot be empty or null.")
+        }
+
+        try {
+            defaultApplication.resetPassword(null, "myNewPassword")
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "passwordResetToken cannot be empty or null.")
+        }
+
+        try {
+            defaultApplication.resetPassword("someToken", "")
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "newPassword cannot be empty or null.")
+        }
+
+        try {
+            defaultApplication.resetPassword("someToken", null)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "newPassword cannot be empty or null.")
+        }
+
     }
 
     //@since 1.0.beta

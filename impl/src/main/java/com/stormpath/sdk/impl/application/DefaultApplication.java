@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,28 +153,14 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public Account sendPasswordResetEmail(String accountUsernameOrEmail) {
-        return sendPasswordResetEmail(accountUsernameOrEmail, null);
-    }
-
-    /**
-     * @since 1.0.beta
-     */
-    @Override
-    public Account sendPasswordResetEmail(String accountUsernameOrEmail, AccountStore accountStore) {
-        PasswordResetToken token = createPasswordResetToken(accountUsernameOrEmail, accountStore);
+        PasswordResetToken token = createPasswordResetToken(accountUsernameOrEmail);
         return token.getAccount();
     }
 
-    /**
-     * @since 1.0.beta
-     */
-    private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {
+    private PasswordResetToken createPasswordResetToken(String email) {
         String href = getPasswordResetTokensHref();
         PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class);
         passwordResetToken.setEmail(email);
-        if(accountStore != null) {
-            passwordResetToken.setAccountStore(accountStore);
-        }
         return getDataStore().create(href, passwordResetToken);
     }
 
@@ -193,12 +179,12 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     /**
-     * @since 1.0.beta
+     * @since 1.0.RC
      */
     @Override
     public Account resetPassword(String passwordResetToken, String newPassword) {
-        Assert.hasText(passwordResetToken, "passwordResetToken cannot be empty or null");
-        Assert.hasText(passwordResetToken, "newPassword cannot be empty or null");
+        Assert.hasText(passwordResetToken, "passwordResetToken cannot be empty or null.");
+        Assert.hasText(newPassword, "newPassword cannot be empty or null.");
         String href = getPasswordResetTokensHref() + "/" + passwordResetToken;
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
         props.put("href", href);

@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.account;
 
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -25,7 +24,7 @@ public interface PasswordResetToken extends Resource {
 
     String getEmail();
 
-    void setEmail(String email);
+    PasswordResetToken setEmail(String email);
 
     Account getAccount();
 
@@ -33,18 +32,8 @@ public interface PasswordResetToken extends Resource {
      * Setter for the new password that will be instantly applied if the reset token is correctly validated.
      *
      * @param password the new password that will be applied if the reset token is correctly validated.
-     * @since 1.0.beta
+     * @since 1.0.RC
      */
     PasswordResetToken setPassword(String password);
-
-    /**
-     * Sets the `AccountStore` where the reset attempt will be targeted to, bypassing the standard
-     * cycle-through-all-app-account-stores.
-     *
-     * @param accountStore the specific `AccountStore` where the reset request will be targeted to.
-     * @since 1.0.beta
-     */
-    PasswordResetToken setAccountStore(AccountStore accountStore);
-
 
 }

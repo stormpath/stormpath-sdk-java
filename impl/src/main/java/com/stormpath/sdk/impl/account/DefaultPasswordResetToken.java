@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
@@ -37,9 +36,8 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
-    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT, PASSWORD, ACCOUNT_STORE);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT, PASSWORD);
 
     public DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
@@ -60,8 +58,9 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     }
 
     @Override
-    public void setEmail(String email) {
+    public PasswordResetToken setEmail(String email) {
         setProperty(EMAIL, email);
+        return this;
     }
 
     @Override
@@ -70,20 +69,11 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     }
 
     /**
-     * @since 1.0.beta
+     * @since 1.0.RC
      */
     @Override
     public PasswordResetToken setPassword(String password) {
         setProperty(PASSWORD, password);
-        return this;
-    }
-
-    /**
-     * @since 1.0.beta
-     */
-    @Override
-    public PasswordResetToken setAccountStore(AccountStore accountStore) {
-        setProperty(ACCOUNT_STORE, accountStore);
         return this;
     }
 

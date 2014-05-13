@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -330,8 +330,6 @@ public interface Application extends Resource, Saveable, Deletable {
      */
     Account sendPasswordResetEmail(String accountUsernameOrEmail);
 
-    Account sendPasswordResetEmail(String accountUsernameOrEmail, AccountStore accountStore);
-
     /**
      * Verifies a password reset token in a user-clicked link within an email.
      * <p/>
@@ -369,6 +367,20 @@ public interface Application extends Resource, Saveable, Deletable {
      */
     Account verifyPasswordResetToken(String token);
 
+    /**
+     * Verifies the password reset token (received in the user's email) and immediately changes the password in the same
+     * request (if the token is valid).
+     * <p/>
+     * NOTE: Once the token has been successfully used, it is immediately invalidated and can't be used again. If you need
+     * to change the password again, you will previously need to execute {@link #sendPasswordResetEmail(String)} again in order
+     * to obtain a new password reset token.
+     *
+     * @param passwordResetToken the verification token, usually obtained as a request parameter by your application.
+     * @param newPassword the new password that will be set to the Account if the token is successfully validated.
+     * @return the Account matching the specified token.
+     * @see #sendPasswordResetEmail(String)
+     * @since 1.0.RC
+     */
     Account resetPassword(String passwordResetToken, String newPassword);
 
     /**
