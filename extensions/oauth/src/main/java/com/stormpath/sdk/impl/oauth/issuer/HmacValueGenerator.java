@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.oauth.issuer;
 
 
-import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.oltu.oauth2.as.issuer.ValueGenerator;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
@@ -28,6 +28,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+/**
+ * @since 1.0.RC
+ */
 public class HmacValueGenerator implements ValueGenerator {
 
     public static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -59,6 +62,7 @@ public class HmacValueGenerator implements ValueGenerator {
 
         byte[] hmac = computeHmac(messageBytes);
 
+        //this is the hmac[] + ":" + messageBytes[], the + 1 refers to the ":" character.
         byte[] resultMessage = new byte[hmac.length + messageBytes.length + 1];
 
         System.arraycopy(messageBytes, 0, resultMessage, 0, messageBytes.length);
@@ -67,11 +71,10 @@ public class HmacValueGenerator implements ValueGenerator {
 
         System.arraycopy(hmac, 0, resultMessage, messageBytes.length + 1, hmac.length);
 
-        //return Base64.encodeBase64URLSafeString(resultMessage);
-        return Base64.encodeToString(resultMessage, false);
+        return Base64.encodeBase64URLSafeString(resultMessage);
     }
 
-    private byte[] computeHmac(byte[] messageBytes) {
+    public byte[] computeHmac(byte[] messageBytes) {
         Assert.notNull(messageBytes, "msg to digest cannot be null or empty");
         try {
             SecretKeySpec key = new SecretKeySpec(secretKey, ALGORITHM);

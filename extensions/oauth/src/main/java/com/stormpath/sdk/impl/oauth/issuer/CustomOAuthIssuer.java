@@ -22,7 +22,7 @@ import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 /**
  * CustomOAuthIssuer
  *
- * @since 1.0.beta
+ * @since 1.0.RC
  */
 public class CustomOAuthIssuer implements OAuthIssuer {
 

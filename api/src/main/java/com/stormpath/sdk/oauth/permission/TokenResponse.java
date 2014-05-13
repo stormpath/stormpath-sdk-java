@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.oauth.permission;
 
-import java.util.Set;
-
 /**
  * TokenResponse
  *
@@ -24,13 +22,43 @@ import java.util.Set;
  */
 public interface TokenResponse {
 
+    /**
+     * Returns a base64 (url safe) string that
+     *
+     * @return
+     */
     String getAccessToken();
 
-    Set<String> getScope();
 
+    /**
+     * Returns the space separated collection of scope
+     * @return
+     */
+    String getScope();
+
+    /**
+     * @return The type of the accessToken result. Currently only "Bearer" is returned.
+     */
+    String getTokenType();
+
+    /**
+     * An string containing the time to live
+     *
+     * @return
+     */
     String getExpiresIn();
 
+
+    /**
+     *
+     * @return
+     */
     String getRefreshToken();
 
+    /**
+     * Returns all the non-values of this token response as json (body message).
+     *
+     * @return
+     */
     String toJson();
 }

@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
-
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.error.authc.InvalidAuthenticationRequestOauthException;
+import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
@@ -32,28 +32,20 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauthAuthenticationRequestBuilder {
 
-    private final HttpRequest httpRequest;
-
     private final HttpServletRequest httpServletRequest;
-
-    private ScopeFactory scopeFactory;
 
     private final Application application;
 
+    private ScopeFactory scopeFactory;
+
+    private long ttl = DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL;
+
     DefaultBasicOauthAuthenticationRequestBuilder(Application application, HttpServletRequest httpServletRequest, ScopeFactory scopeFactory) {
-        this(httpServletRequest, null, application, scopeFactory);
-    }
-
-    DefaultBasicOauthAuthenticationRequestBuilder(Application application, HttpRequest httpRequest, ScopeFactory scopeFactory) {
-        this(null, httpRequest, application, scopeFactory);
-    }
-
-    private DefaultBasicOauthAuthenticationRequestBuilder(HttpServletRequest httpServletRequest, HttpRequest httpRequest, Application application, ScopeFactory scopeFactory) {
         Assert.notNull(application, "application cannot be null or empty.");
 
-        this.httpRequest = httpRequest;
-        this.httpServletRequest = httpServletRequest;
+        this.scopeFactory = scopeFactory;
         this.application = application;
+        this.httpServletRequest = httpServletRequest;
     }
 
     @Override
@@ -63,14 +55,19 @@ public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauth
     }
 
     @Override
+    public BasicOauthAuthenticationRequestBuilder withTtl(long ttl) {
+        this.ttl = ttl;
+        return this;
+    }
+
+    @Override
     public BasicOauthAuthenticationResult execute() {
 
         AuthenticationRequest request;
-
-        if (httpServletRequest != null) {
-            request = new DefaultBasicOauthAuthenticationRequest(httpServletRequest, scopeFactory);
-        } else {
-            request = new DefaultBasicOauthAuthenticationRequest(httpRequest, scopeFactory);
+        try {
+            request = new DefaultBasicOauthAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
+        } catch (Exception e) {
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationRequestOauthException.class, e.getMessage());
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

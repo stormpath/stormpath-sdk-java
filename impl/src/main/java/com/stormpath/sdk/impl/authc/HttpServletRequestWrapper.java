@@ -13,32 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.impl.authc;
 
-import com.stormpath.sdk.oauth.permission.ScopeFactory;
+import java.util.Enumeration;
 
 /**
- * BasicOauthAuthenticationRequestBuilder creates
- *
  * @since 1.0.RC
  */
-public interface BasicOauthAuthenticationRequestBuilder {
+public interface HttpServletRequestWrapper {
 
-    /**
-     * @param scopeFactory
-     * @return
-     */
-    public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
+    public Class getHttpServletRequestClass();
 
-    /**
-     *
-     * @param ttl
-     * @return
-     */
-    public BasicOauthAuthenticationRequestBuilder withTtl(long ttl);
+    public Object getHttpServletRequest();
 
-    /**
-     * @return
-     */
-    public BasicOauthAuthenticationResult execute() throws Exception;
+    public String getHeader(String headerName);
+
+    public Enumeration<String> getParameterNames();
+
 }

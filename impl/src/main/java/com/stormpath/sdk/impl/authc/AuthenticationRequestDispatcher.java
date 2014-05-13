@@ -38,8 +38,8 @@ public class AuthenticationRequestDispatcher {
             return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
         }
 
-        if (request instanceof BasicApiAuthenticationRequest) {
-            return new BasicApiAuthenticator(dataStore).authenticate(application, (BasicApiAuthenticationRequest) request);
+        if (request instanceof DefaultBasicApiAuthenticationRequest) {
+            return new BasicApiAuthenticator(dataStore).authenticate(application, (DefaultBasicApiAuthenticationRequest) request);
         }
 
         throw new UnsupportedOperationException(String.format(UNSUPPORTED_AUTH_REQUEST_MSG, request.getClass().getName()));

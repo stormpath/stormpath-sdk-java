@@ -20,9 +20,9 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
-import com.stormpath.sdk.impl.authc.BasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
+import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 
@@ -33,7 +33,6 @@ public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestD
 
     @Override
     public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request) {
-        Assert.notNull(dataStore, "datastore cannot be null.");
         Assert.notNull(application, "application cannot be null.");
         Assert.notNull(request, "application cannot be null.");
 
@@ -49,8 +48,8 @@ public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestD
             return new OAuthBearerAuthenticator(dataStore).authenticate(application, (DefaultBearerOauthAuthenticationRequest) request);
         }
 
-        if (request instanceof BasicApiAuthenticationRequest) {
-            return new BasicApiAuthenticator(dataStore).authenticate(application, (BasicApiAuthenticationRequest) request);
+        if (request instanceof DefaultBasicApiAuthenticationRequest) {
+            return new BasicApiAuthenticator(dataStore).authenticate(application, (DefaultBasicApiAuthenticationRequest) request);
         }
 
         throw new UnsupportedOperationException(String.format(UNSUPPORTED_AUTH_REQUEST_MSG, request.getClass().getName()));

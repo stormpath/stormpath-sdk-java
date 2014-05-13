@@ -18,10 +18,23 @@ public interface OauthAuthenticationRequestBuilder extends ApiAuthenticationRequ
     BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
 
     /**
-     * @param locations
+     * Creates a new instance of {@link BearerOauthAuthenticationRequestBuilder} based on the current state
+     * of the builder.
+     *
+     * @param ttl
+     * @return
+     */
+    BasicOauthAuthenticationRequestBuilder withTtl(long ttl);
+
+    /**
+     * Creates a new instance of {@link BearerOauthAuthenticationRequestBuilder} based on the current state
+     * of the builder.
+     *
+     * @param locations - An array of {@link BearerLocation} where the
      * @return
      */
     BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations);
+
 
     /**
      * @return

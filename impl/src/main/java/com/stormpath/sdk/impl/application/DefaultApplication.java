@@ -40,6 +40,7 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
@@ -65,8 +66,11 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
@@ -85,6 +89,12 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     private static final Class<AuthenticationRequestDispatcher> AUTHENTICATION_REQUEST_DISPATCHER_CLASS;
 
+    private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
+
+    private static final Set<Class> HTTP_REQUEST_SUPPORTED_CLASSES;
+
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "Class [%s] is not one of the supported http requests classes [%s].";
+
     static {
         if (Classes.isAvailable(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN)) {
             OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS = Classes.forName(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN);
@@ -100,6 +110,16 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
         OAUTH_BUILDER_NOT_AVAILABLE_MSG = "Unable to find the '" + OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN + "' implementation on the classpath.  Please ensure you " +
                 "have added the stormpath-sdk-oauth-{version}.jar file to your runtime classpath.";
+
+        Set<Class> supportedClasses = new HashSet<Class>();
+
+        supportedClasses.add(HttpRequest.class);
+
+        if (Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN)) {
+            supportedClasses.add(Classes.forName(HTTP_SERVLET_REQUEST_FQCN));
+        }
+
+        HTTP_REQUEST_SUPPORTED_CLASSES = supportedClasses;
     }
 
     private static final Logger log = LoggerFactory.getLogger(DefaultApplication.class);
@@ -474,14 +494,29 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public ApiAuthenticationRequestBuilder authenticate(Object httpRequest) {
+        validateHttpRequest(httpRequest);
         return new DefaultApiAuthenticationRequestBuilder(this, httpRequest);
     }
 
     @Override
     public OauthAuthenticationRequestBuilder authenticateOauth(Object httpRequest) {
         if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
-            throw new RuntimeException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
+            throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
         }
-        return Classes.newInstance(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, this, httpRequest);
+        validateHttpRequest(httpRequest);
+        Constructor<OauthAuthenticationRequestBuilder> ctor = Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, Object.class);
+        return Classes.instantiate(ctor, this, httpRequest);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateHttpRequest(Object httpRequest) {
+        Assert.notNull(httpRequest);
+        Class httpRequestClass = httpRequest.getClass();
+        for (Class supportedClass : HTTP_REQUEST_SUPPORTED_CLASSES) {
+            if (supportedClass.isAssignableFrom(httpRequestClass)) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequestClass.getName(), HTTP_REQUEST_SUPPORTED_CLASSES.toString()));
     }
 }

@@ -32,6 +32,7 @@ public class BasicAuthenticator {
     private InternalDataStore dataStore;
 
     public BasicAuthenticator(InternalDataStore dataStore) {
+        Assert.notNull(dataStore);
         this.dataStore = dataStore;
     }
 

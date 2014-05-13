@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.authc.DefaultApiAuthenticationResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -28,17 +29,16 @@ import java.util.Set;
  */
 public class DefaultOauthAuthenticationResult extends DefaultApiAuthenticationResult implements OauthAuthenticationResult {
 
-    public DefaultOauthAuthenticationResult(InternalDataStore dataStore) {
-        super(dataStore);
-    }
+    private final Set<String> scope;
 
-    public DefaultOauthAuthenticationResult(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+    public DefaultOauthAuthenticationResult(InternalDataStore dataStore, ApiKey apiKey, Set<String> scope) {
+        super(dataStore, apiKey);
+        this.scope = scope;
     }
 
     @Override
     public Set<String> getScope() {
-        return null;
+        return scope;
     }
 
     @Override

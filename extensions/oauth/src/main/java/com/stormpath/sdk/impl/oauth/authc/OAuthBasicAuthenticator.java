@@ -15,25 +15,44 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.ApiAuthenticationResult;
+import com.stormpath.sdk.error.authc.UnsupportedGrantTypeOauthException;
+import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.oauth.issuer.HmacValueGenerator;
+import com.stormpath.sdk.impl.oauth.token.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
-import org.apache.oltu.oauth2.as.request.OAuthTokenRequest;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
+import org.apache.oltu.oauth2.as.issuer.ValueGenerator;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
+import org.apache.oltu.oauth2.common.message.types.TokenType;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.TimeZone;
 
 /**
  * OAuthBasicAuthenticator
  *
- * @since 1.0.beta
+ * @since 1.0.RC
  */
 public class OAuthBasicAuthenticator {
+
+    public final static char SPACE_SEPARATOR = ' ';
+
+    public final static char COLON_SEPARATOR = ':';
+
+    private static final String UTF_8 = "UTF-8";
+
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private static final EnumSet<GrantType> SUPPORTED_GRANT_TYPES;
 
@@ -41,108 +60,94 @@ public class OAuthBasicAuthenticator {
         SUPPORTED_GRANT_TYPES = EnumSet.of(GrantType.CLIENT_CREDENTIALS);
     }
 
-    public final static char SCOPE_SEPARATOR = ':';
-
-    public static String TOKEN_DURATION = "3600";
-
-    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
-
-    private final InternalDataStore internalDataStore;
+    private final InternalDataStore dataStore;
 
     public OAuthBasicAuthenticator(InternalDataStore internalDataStore) {
-
-        this.internalDataStore = internalDataStore;
-
+        this.dataStore = internalDataStore;
     }
 
     public BasicOauthAuthenticationResult authenticate(Application application, DefaultBasicOauthAuthenticationRequest request) {
-        Assert.notNull(application, "application cannot be null.");
+        Assert.notNull(request, "request cannot be null.");
 
-        try {
-            OAuthTokenRequest oauthRequest = new OAuthTokenRequest(request.getHttpServletRequest());
+        validateSupportedGrantType(request.getGrantType());
 
-            ApiKey apiKey = application.getApiKey(oauthRequest.getClientId());
+        ApiAuthenticationResult authResult = new BasicApiAuthenticator(dataStore).authenticate(application, request.getClientId(), request.getClientSecret());
 
-            if (apiKey == null) {
+        Set<String> grantedScopes;
 
+        String ttl = String.valueOf(request.getTtl());
+
+        DefaultTokenResponse.Builder responseBuilder = DefaultTokenResponse.tokenType(TokenType.BEARER).expiresIn(ttl);
+
+        String scope;
+
+        if (request.hasScopeFactory()) {
+            StringBuilder scopeBuilder = new StringBuilder();
+            grantedScopes = request.getScopeFactory().createScope(authResult, request.getScopes());
+            for (Iterator<String> scopeIterator = grantedScopes.iterator(); scopeIterator.hasNext(); ) {
+                scopeBuilder.append(scopeIterator.next());
+                if (scopeIterator.hasNext()) {
+                    scopeBuilder.append(SPACE_SEPARATOR);
+                }
             }
+            scope = scopeBuilder.toString();
+            responseBuilder.scope(scope);
 
-
-        } catch (OAuthSystemException e) {
-
-        } catch (OAuthProblemException e) {
-
+        } else {
+            grantedScopes = Collections.emptySet();
+            scope = null;
         }
-        return null;
+
+        String accessToken = buildAccessToken(application, authResult, ttl, scope);
+
+        responseBuilder.accessToken(accessToken);
+
+        return new DefaultBasicOauthAuthenticationResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
     }
 
-//    public AuthenticationResult authenticate(Application application, Default request) {
-//        Assert.notNull(application, "application cannot be null.");
-//
-//        OAuthAccessResourceRequest d;
-//
-//
-//        HttpServletRequest servletRequest = new OAuthHttpServletRequest(authRequest.getHttpRequest());
-//
-//        try {
-//            OAuthTokenRequest oauthRequest = new OAuthTokenRequest(servletRequest);
-//
-//            ApiKey apiKey = application.getApiKey(oauthRequest.getClientId());
-//
-//            if (apiKey == null || !apiKey.getSecret().equals(oauthRequest.getClientSecret())) {
-//
-//                OAuthASResponse.errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-//                        .setError(OAuthError.TokenResponse.UNAUTHORIZED_CLIENT)
-//                        .setErrorDescription("").buildJSONMessage();
-//            }
-//
-//            //TODO: Probably catch the IllegalArgumentException
-//            GrantType grantType = GrantType.valueOf(oauthRequest.getGrantType());
-//
-//            if (!SUPPORTED_GRANT_TYPES.contains(grantType)) {
-//
-//                String errorDescription = String.format("GrantType %s is not supported", grantType.toString());
-//
-//                OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-//                        .setError(OAuthError.TokenResponse.INVALID_GRANT)
-//                        .setErrorDescription(errorDescription).buildJSONMessage();
-//            }
-//
-//
-//            OAuthResponse response = OAuthASResponse.status(HttpServletResponse.SC_OK).buildJSONMessage();
-//
-//
-////            AuthenticationResult authenticationResult = new OAuthAuthenticationResult();
-//
-//            return null;
-//        } catch (Exception e) {
-//            //return new RequestAuthenticationException("") ;
-//            return null;
-//        }
-//    }
+    private void validateSupportedGrantType(String requestedGrantType) {
+        for (GrantType grantType : SUPPORTED_GRANT_TYPES) {
+            if (grantType.toString().equalsIgnoreCase(requestedGrantType)) {
+                return;
+            }
+        }
+        throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(UnsupportedGrantTypeOauthException.class);
+    }
 
-//    public static void main(String[] args) {
-//
-//        Map<String, String[]> headers = new HashMap<String, String[]>();
-//
-//        String[] authorization = {"Basic MUhZNERXWUxCQzk3TFZUU1NRV0UxNFdWQzo3U0JzQm5DMmtnYTJSTWp2SUlBRitOT0tGQlI4S3lyNHFXYlNkMHM2WkM4"};
-//
-//        headers.put("Authorization", authorization);
-//
-//        String[] redirectUri = {"http://test.stormpath.com/callback"};
-//        String[] responseType = {"token"};
-//        String[] state = {"requestState"};
-//        String[] scope = {"createStuff readStuff deleteStuff"};
-//        String[] clientId = {"1HY4DWYLBC97LVTSSQWE14WVC"};
-//
-//        Map<String, String[]> parameters = new HashMap<String, String[]>();
-//
-//        parameters.put(OAuth.OAUTH_REDIRECT_URI, redirectUri);
-//        parameters.put(OAuth.OAUTH_RESPONSE_TYPE, responseType);
-//        parameters.put(OAuth.OAUTH_STATE, state);
-//        parameters.put(OAuth.OAUTH_SCOPE, scope);
-//        parameters.put(OAuth.OAUTH_CLIENT_ID, clientId);
-//
-//
-//    }
+    /**
+     * The result of this method is a plain-text access token that contains the following information:
+     *
+     * urlEncoded(applicationHref):apiKeyId:createdTimestamp:ttl:scope(if exist).
+     *
+     */
+    private String buildAccessToken(Application application, ApiAuthenticationResult result, String ttl, String scope) {
+
+        long createdAt = Calendar.getInstance(UTC).getTime().getTime();
+
+        StringBuilder builder = new StringBuilder(encodeUrl(application.getHref()))
+                .append(COLON_SEPARATOR).append(result.getApiKey().getId())
+                .append(COLON_SEPARATOR).append(createdAt)
+                .append(COLON_SEPARATOR).append(ttl);
+
+        if (scope != null && !scope.isEmpty()) {
+            builder.append(COLON_SEPARATOR).append(scope);
+        }
+
+        ValueGenerator generator = new HmacValueGenerator(dataStore.getApiKey().getSecret());
+
+        try {
+            return generator.generateValue(builder.toString());
+        } catch (OAuthSystemException e) {
+            throw new IllegalStateException("Unexpected error while generating access token.", e);
+        }
+    }
+
+    private String encodeUrl(String url) {
+        try {
+            return URLEncoder.encode(url, UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            //This should never happen
+            return url;
+        }
+    }
 }

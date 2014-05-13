@@ -46,7 +46,7 @@ import java.util.Map;
 /**
  * OAuthHttpServletRequest
  *
- * @since 1.0.beta
+ * @since 1.0.RC
  */
 public class OAuthHttpServletRequest implements HttpServletRequest {
 

@@ -19,6 +19,8 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.ResourceException;
 
+import java.lang.reflect.Constructor;
+
 /**
  * ApiAuthenticationExceptionFactory
  *
@@ -35,9 +37,31 @@ public class ApiAuthenticationExceptionFactory {
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage("You're so bad at this.").message("Authentication Required").build();
+                .developerMessage("You suck at this.").message("Authentication Required").build();
 
         return Classes.newInstance(clazz, error);
+    }
+
+    public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz, String message) {
+
+        Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
+                .developerMessage(message).message("Authentication Required").build();
+
+        Constructor<? extends ResourceException> constructor = Classes.getConstructor(clazz, Error.class);
+
+        return Classes.instantiate(constructor, error);
+    }
+
+    public static ResourceException newOauthException(Class<? extends ResourceException> clazz, String oauthError) {
+
+        String oauthClientError = "error: " + oauthError;
+
+        Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
+                .developerMessage("Oauth authentication failed").message(oauthClientError).build();
+
+        Constructor<? extends ResourceException> constructor = Classes.getConstructor(clazz, Error.class);
+
+        return Classes.instantiate(constructor, error);
     }
 
 }

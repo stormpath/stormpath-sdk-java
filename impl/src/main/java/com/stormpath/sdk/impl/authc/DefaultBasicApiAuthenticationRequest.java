@@ -29,24 +29,39 @@ import java.nio.charset.Charset;
 /**
  * @since 1.0.RC
  */
-public class BasicApiAuthenticationRequest implements AuthenticationRequest<String, String> {
+public class DefaultBasicApiAuthenticationRequest implements AuthenticationRequest<String, String> {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private final HttpRequest httpRequest;
 
+    private final HttpServletRequestWrapper httpServletRequestWrapper;
+
     private final String id;
 
     private final String secret;
 
-    public BasicApiAuthenticationRequest(HttpRequest httpRequest) {
+    public DefaultBasicApiAuthenticationRequest(HttpServletRequestWrapper httpServletRequestWrapper) {
+        this(httpServletRequestWrapper, null);
+    }
+
+    public DefaultBasicApiAuthenticationRequest(HttpRequest httpRequest) {
+        this(null, httpRequest);
+    }
+
+    private DefaultBasicApiAuthenticationRequest(HttpServletRequestWrapper httpServletRequestWrapper, HttpRequest httpRequest) {
+        this.httpServletRequestWrapper = httpServletRequestWrapper;
         this.httpRequest = httpRequest;
 
-        Assert.isTrue(hasHttpRequest());
+        Assert.isTrue(hasHttpServletRequest() || hasHttpRequest());
 
         String authzHeaderValue;
 
-        authzHeaderValue = httpRequest.getHeader(ApiAuthenticationRequestFactory.AUTHORIZATION_HEADER);
+        if (hasHttpRequest()) {
+            authzHeaderValue = httpRequest.getHeader(ApiAuthenticationRequestFactory.AUTHORIZATION_HEADER);
+        } else {
+            authzHeaderValue = httpServletRequestWrapper.getHeader(ApiAuthenticationRequestFactory.AUTHORIZATION_HEADER);
+        }
 
         String[] authTokens = getAuthenticationTokens(authzHeaderValue);
 
@@ -101,6 +116,10 @@ public class BasicApiAuthenticationRequest implements AuthenticationRequest<Stri
 
     public boolean hasHttpRequest() {
         return httpRequest != null;
+    }
+
+    public boolean hasHttpServletRequest() {
+        return httpServletRequestWrapper != null;
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,16 +32,18 @@ import java.util.Map;
  */
 public class DefaultApiAuthenticationResult extends AbstractResource implements ApiAuthenticationResult {
 
-    static final ResourceReference<ApiKey> API_KEY = new ResourceReference<ApiKey>("apiKey", ApiKey.class);
+    public static final ResourceReference<ApiKey> API_KEY = new ResourceReference<ApiKey>("apiKey", ApiKey.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(API_KEY);
 
-    public DefaultApiAuthenticationResult(InternalDataStore dataStore) {
-        super(dataStore);
+    protected static Map<String, Object> buildPropertiesWithApiKeyApiKey(ApiKey apiKey) {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(API_KEY.getName(), apiKey);
+        return properties;
     }
 
-    public DefaultApiAuthenticationResult(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+    public DefaultApiAuthenticationResult(InternalDataStore dataStore, ApiKey apiKey) {
+        super(dataStore, buildPropertiesWithApiKeyApiKey(apiKey));
     }
 
     @Override

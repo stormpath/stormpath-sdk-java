@@ -13,32 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.error.authc;
 
-import com.stormpath.sdk.oauth.permission.ScopeFactory;
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * BasicOauthAuthenticationRequestBuilder creates
+ * InvalidAccessTokenOauthException
  *
  * @since 1.0.RC
  */
-public interface BasicOauthAuthenticationRequestBuilder {
+public class InvalidAccessTokenOauthException extends ResourceException {
 
-    /**
-     * @param scopeFactory
-     * @return
-     */
-    public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
-
-    /**
-     *
-     * @param ttl
-     * @return
-     */
-    public BasicOauthAuthenticationRequestBuilder withTtl(long ttl);
-
-    /**
-     * @return
-     */
-    public BasicOauthAuthenticationResult execute() throws Exception;
+    public InvalidAccessTokenOauthException(Error error) {
+        super(error);
+    }
 }

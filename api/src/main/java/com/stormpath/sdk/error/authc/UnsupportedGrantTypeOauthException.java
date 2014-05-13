@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.oauth.authc;
+package com.stormpath.sdk.error.authc;
+
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
+ * UnsupportedGrantTypeOauthException
+ *
  * @since 1.0.RC
  */
-public class DefaultTokenResponse {
+public class UnsupportedGrantTypeOauthException extends ResourceException {
+
+    public UnsupportedGrantTypeOauthException(Error error) {
+        super(error);
+    }
 }

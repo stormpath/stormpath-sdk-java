@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.BearerLocation;
@@ -34,58 +35,49 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DefaultOauthAuthenticationRequestBuilder implements OauthAuthenticationRequestBuilder {
 
-    private final HttpServletRequest httpServletRequest;
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
-    private final HttpRequest httpRequest;
+    private final HttpServletRequest httpServletRequest;
 
     private final Application application;
 
-    public DefaultOauthAuthenticationRequestBuilder(Application application, HttpServletRequest httpServletRequest) {
-        this(application, httpServletRequest, null);
-        Assert.notNull(httpServletRequest);
-    }
-
-    public DefaultOauthAuthenticationRequestBuilder(Application application, HttpRequest httpRequest) {
-        this(application, null, httpRequest);
-        Assert.notNull(httpRequest);
-    }
-
-    private DefaultOauthAuthenticationRequestBuilder(Application application, HttpServletRequest httpServletRequest, HttpRequest httpRequest) {
+    public DefaultOauthAuthenticationRequestBuilder(Application application, Object httpRequest) {
         Assert.notNull(application, "application cannot  be null.");
+        Assert.notNull(httpRequest, "httpRequest cannot be null.");
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = (HttpServletRequest) httpRequest;
+        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = new OAuthHttpServletRequest((HttpRequest) httpRequest);
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+        }
         this.application = application;
-        this.httpServletRequest = httpServletRequest;
-        this.httpRequest = httpRequest;
     }
 
     @Override
     public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory) {
-        DefaultBasicOauthAuthenticationRequestBuilder builder = httpServletRequest != null
-                ? new DefaultBasicOauthAuthenticationRequestBuilder(application, httpServletRequest, scopeFactory)
-                : new DefaultBasicOauthAuthenticationRequestBuilder(application, httpRequest, scopeFactory);
+        return new DefaultBasicOauthAuthenticationRequestBuilder(application, httpServletRequest, scopeFactory);
+    }
 
-        return builder;
+    @Override
+    public BasicOauthAuthenticationRequestBuilder withTtl(long ttl) {
+        return new DefaultBasicOauthAuthenticationRequestBuilder(application, httpServletRequest, null).withTtl(ttl);
     }
 
     @Override
     public BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations) {
-        DefaultBearerOauthAuthenticationRequestBuilder builder = httpServletRequest != null
-                ? new DefaultBearerOauthAuthenticationRequestBuilder(httpServletRequest, application)
-                : new DefaultBearerOauthAuthenticationRequestBuilder(httpRequest, application);
-        return builder.inLocation(locations);
+        return new DefaultBearerOauthAuthenticationRequestBuilder(httpServletRequest, application).inLocation(locations);
     }
 
     @Override
     public OauthAuthenticationResult execute() {
 
-        AuthenticationRequest request;
-
         OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();
 
-        if (httpServletRequest != null) {
-            request = factory.createFrom(httpServletRequest);
-        } else {
-            request = factory.createFrom(httpRequest);
-        }
+        AuthenticationRequest request = factory.createFrom(httpServletRequest);
 
         AuthenticationResult result = application.authenticateAccount(request);
 
