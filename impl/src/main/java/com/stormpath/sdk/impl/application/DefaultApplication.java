@@ -152,8 +152,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public Account sendPasswordResetEmail(String accountUsernameOrEmail) {
-        PasswordResetToken token = createPasswordResetToken(accountUsernameOrEmail);
+    public Account sendPasswordResetEmail(String email) {
+        PasswordResetToken token = createPasswordResetToken(email);
         return token.getAccount();
     }
 

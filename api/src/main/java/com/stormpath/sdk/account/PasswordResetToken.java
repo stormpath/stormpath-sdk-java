@@ -24,7 +24,7 @@ public interface PasswordResetToken extends Resource {
 
     String getEmail();
 
-    PasswordResetToken setEmail(String email);
+    void setEmail(String email);
 
     Account getAccount();
 
@@ -34,6 +34,6 @@ public interface PasswordResetToken extends Resource {
      * @param password the new password that will be applied if the reset token is correctly validated.
      * @since 1.0.RC
      */
-    PasswordResetToken setPassword(String password);
+    void setPassword(String password);
 
 }

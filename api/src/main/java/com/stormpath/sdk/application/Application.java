@@ -317,18 +317,19 @@ public interface Application extends Resource, Saveable, Deletable {
     Tenant getTenant();
 
     /**
-     * Sends a password reset email for the specified account username or email address.  The email will contain
+     * Sends a password reset email for the specified account email address.  The email will contain
      * a password reset link that the user can click or copy into their browser address bar.
      * <p/>
      * This method merely sends the password reset email that contains the link and nothing else.  You will need to
      * handle the link requests and then reset the account's password as described in the
      * {@link #verifyPasswordResetToken(String)} JavaDoc.
      *
-     * @param accountUsernameOrEmail a username or email address of an Account that may login to the application.
-     * @return the account corresponding to the specified username or email address.
+     * @param email an email address of an Account that may login to the application.
+     * @return the account corresponding to the specified email address.
      * @see #verifyPasswordResetToken(String)
+     * @see #resetPassword(String, String)
      */
-    Account sendPasswordResetEmail(String accountUsernameOrEmail);
+    Account sendPasswordResetEmail(String email);
 
     /**
      * Verifies a password reset token in a user-clicked link within an email.
