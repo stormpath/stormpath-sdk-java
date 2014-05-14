@@ -531,7 +531,6 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
-     * @return this instance for method chaining.
      */
     void setDefaultAccountStore(AccountStore accountStore);
 
@@ -596,7 +595,6 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
-     * @return this instance for method chaining.
      */
     void setDefaultGroupStore(AccountStore accountStore);
 
