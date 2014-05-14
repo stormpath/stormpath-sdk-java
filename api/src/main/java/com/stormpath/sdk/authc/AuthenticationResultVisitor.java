@@ -19,7 +19,8 @@ import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 
 /**
- * AuthenticationResultVisitor
+ * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> used to
+ * construct {@link com.stormpath.sdk.api.ApiKey} instances.
  *
  * @since 1.0.RC
  */

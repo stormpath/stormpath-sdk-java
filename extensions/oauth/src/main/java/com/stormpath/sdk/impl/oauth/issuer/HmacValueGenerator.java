@@ -26,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.UUID;
 
 /**
@@ -62,14 +63,18 @@ public class HmacValueGenerator implements ValueGenerator {
 
         byte[] hmac = computeHmac(messageBytes);
 
+        byte[] base64Message = Base64.encodeBase64(messageBytes);
+
+        byte[] base64Hmac = Base64.encodeBase64(hmac);
+
         //this is the hmac[] + ":" + messageBytes[], the + 1 refers to the ":" character.
-        byte[] resultMessage = new byte[hmac.length + messageBytes.length + 1];
+        byte[] resultMessage = new byte[base64Hmac.length + base64Message.length + 1];
 
-        System.arraycopy(messageBytes, 0, resultMessage, 0, messageBytes.length);
+        System.arraycopy(base64Message, 0, resultMessage, 0, base64Message.length);
 
-        resultMessage[messageBytes.length] = SEPARATOR;
+        resultMessage[base64Message.length] = SEPARATOR;
 
-        System.arraycopy(hmac, 0, resultMessage, messageBytes.length + 1, hmac.length);
+        System.arraycopy(base64Hmac, 0, resultMessage, base64Message.length + 1, base64Hmac.length);
 
         return Base64.encodeBase64URLSafeString(resultMessage);
     }
@@ -86,5 +91,29 @@ public class HmacValueGenerator implements ValueGenerator {
         } catch (InvalidKeyException e) {
             throw new IllegalStateException("The calculated SecretKey is not valid for algorithm: " + ALGORITHM, e);
         }
+    }
+
+
+    public static void main(String[] args) {
+
+        long now = System.currentTimeMillis();
+
+        SecureRandom ramdom = new SecureRandom();
+        byte[] nonce = new byte[16];
+        ramdom.nextBytes(nonce);
+
+        String encodedNonce = Base64.encodeBase64URLSafeString(nonce);
+
+        StringBuilder messageBuilder = new StringBuilder("/oauth/token?client_id=2RPXQCMCD0M3T5MAZUNDHGE4Q&redirect_uri=https%3A%2F%2Facme.stormpath.com%2Fcallback")
+                .append("&response_type=id_token&application_href=http%3A%2F%2Flocalhost%3A8080%2Fv1%2Fapplications%2F6uUbdlnmL0IsBP8ZubdgXl")
+                .append("&scope=sso&nonce=").append(encodedNonce).append("&timestamp=").append(now);
+
+
+        HmacValueGenerator generator = new HmacValueGenerator("g6soSmqihFFnpjKNGBDHKwKR8Q3BwL88gHlZ1t4xJf8");
+        String digest = Base64.encodeBase64URLSafeString(generator.computeHmac(messageBuilder.toString().getBytes(UTF_8)));
+
+        messageBuilder.append("&digest=").append(digest);
+
+        System.out.println("http://localhost:8080"+messageBuilder.toString());
     }
 }

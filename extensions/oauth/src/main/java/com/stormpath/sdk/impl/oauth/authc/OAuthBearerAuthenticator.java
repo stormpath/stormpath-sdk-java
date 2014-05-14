@@ -26,9 +26,9 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.oauth.issuer.HmacValueGenerator;
-import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
 import java.nio.charset.Charset;
@@ -142,10 +142,10 @@ public class OAuthBearerAuthenticator {
 
 
     private String extractPayload(String accessToken, String tenantSecret) {
-        byte[] decodedToken = Base64.decode(accessToken);
+        byte[] decodedToken = Base64.decodeBase64(accessToken);
 
         //split accessToken in two parts.
-        //decodedToken = signedPayload[] + ":" + payload[]
+        //decodedToken = base64(signedPayload[]) + ":" + base64(payload[])
         int separatorIndex = -1;
 
         for (int i = decodedToken.length - 1; i >= 0; i--) {
@@ -157,18 +157,20 @@ public class OAuthBearerAuthenticator {
 
         Assert.state(separatorIndex > 0, "This base64 string doesn't follow the accessToken rules 'signedPayload:payload'");
 
-        byte[] payload = new byte[separatorIndex];
-        System.arraycopy(decodedToken, 0, payload, 0, payload.length);
+        byte[] base64Payload = new byte[separatorIndex];
+        System.arraycopy(decodedToken, 0, base64Payload, 0, base64Payload.length);
 
         //Create the signedPayload array skipping the separator character.
-        byte[] signedPayload = new byte[decodedToken.length - (separatorIndex + 1)];
-        System.arraycopy(decodedToken, separatorIndex + 1, signedPayload, 0, signedPayload.length);
+        byte[] base64SignedPayload = new byte[decodedToken.length - (separatorIndex + 1)];
+        System.arraycopy(decodedToken, separatorIndex + 1, base64SignedPayload, 0, base64SignedPayload.length);
 
-        String payloadAsString = new String(payload, UTF_8);
+        byte[] payload = Base64.decodeBase64(base64Payload);
 
         HmacValueGenerator hmacValueGenerator = new HmacValueGenerator(tenantSecret);
 
         byte[] signedInput = hmacValueGenerator.computeHmac(payload);
+
+        byte[] signedPayload = Base64.decodeBase64(base64SignedPayload);
 
         if (signedInput.length != signedPayload.length) {
             throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "errr");
@@ -179,6 +181,6 @@ public class OAuthBearerAuthenticator {
                 throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "errr");
             }
         }
-        return payloadAsString;
+        return new String(payload, UTF_8);
     }
 }
