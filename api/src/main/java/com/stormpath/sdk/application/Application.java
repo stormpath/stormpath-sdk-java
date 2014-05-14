@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -522,6 +522,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating accounts; this method sets the AccountStore to which the Application delegates
      * new account persistence.
+     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
+     * to be called to persist changes, this is a convenience method will call the server immediately.
+     * </p>
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
@@ -583,6 +586,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating groups; this method sets the AccountStore to which the Application delegates
      * new group persistence.
+     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
+     * to be called to persist changes, this is a convenience method will call the server immediately.
+     * </p>
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}

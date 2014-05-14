@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.*
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.AccountStoreVisitor
@@ -247,7 +249,6 @@ class AccountStoreMappingIT extends ClientIT {
 
         app.setDefaultAccountStore(newDefaultAccountStore)
         app.setDefaultGroupStore(newDefaultAccountStore)
-        app.save()
 
         assertEquals(newDefaultAccountStore, app.getDefaultAccountStore())
         assertEquals(newDefaultAccountStore, app.getDefaultGroupStore())
@@ -349,22 +350,112 @@ class AccountStoreMappingIT extends ClientIT {
         assertTrue(applicationString.contains("passwordResetTokens"))
     }
 
-    @Test(enabled = false) //until we can merge https://github.com/stormpath/stormpath-sdk-java/pull/45
+    /**
+     * @since 1.0.RC
+     */
+    @Test
     void testDefaultApplicationGaps() {
         Group group = client.instantiate(Group)
-        group.name = uniquify("Test Group")
+        group.name = uniquify("Testor Group")
         group.status = GroupStatus.DISABLED
-        def dir = directories.first()
+        def dir = (Directory) app.getDefaultAccountStore()
         dir.createGroup(group)
+        deleteOnTeardown(group)
         assertNotEquals(app.getDefaultAccountStore().getHref(), group.getHref())
         app.setDefaultAccountStore(group)
-        app.save()
+
+        //let's check the changes are visible even without saving
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
+        AccountStoreMappingList accountStoreMappingList = app.getAccountStoreMappings()
+        assertEquals(accountStoreMappingList.iterator().size(), 2)
+        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+            if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
+                if(!accountStoreMapping.isDefaultAccountStore()) {
+                    fail("The DefaultAccountStoreMapping is not marked as default in the AccountStoreMappingList")
+                }
+            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
+                if(accountStoreMapping.isDefaultAccountStore()) {
+                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the AccountStoreMappingList")
+                }
+            }
+        }
+
+        //// Let's create a new account to see if it gets created in the DefaultAccountStore we just set
+        group.setStatus(GroupStatus.ENABLED)
+        group.save()
+        Account acct = client.instantiate(Account)
+        acct.username = uniquify('Stormpath-SDK-Test-AccountStore')
+        acct.password = 'Changeme1!'
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+        assertEquals(acct.getDirectory().getHref(), group.getDirectory().getHref())
+
+        //Now let's set the DefaultAccountStore to be an already existing account store mapping (this runs different code in DefaultApplication)
+        app.setDefaultAccountStore(dir)
+        assertEquals(app.getDefaultAccountStore().getHref(), dir.getHref())
+        accountStoreMappingList = app.getAccountStoreMappings()
+        assertEquals(accountStoreMappingList.iterator().size(), 2)
+        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+            if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
+                if(accountStoreMapping.isDefaultAccountStore()) {
+                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the AccountStoreMappingList")
+                }
+            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
+                if(!accountStoreMapping.isDefaultAccountStore()) {
+                    fail("The DefaultAccountStoreMapping is not marked as default in the AccountStoreMappingList")
+                }
+            }
+        }
+
+        ////////// setDefaultGroupStore time //////////
 
         def newDir = createDirectory()
         app.setDefaultGroupStore(newDir)
-        app.save()
+
+        //let's check the changes are visible even without saving
         assertEquals(app.getDefaultGroupStore().getHref(), newDir.getHref())
+        accountStoreMappingList = app.getAccountStoreMappings()
+        assertEquals(accountStoreMappingList.iterator().size(), 3)
+        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+            if (accountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
+                if(!accountStoreMapping.isDefaultGroupStore()) {
+                    fail("The DefaultGroupStoreMapping is not marked as default in the AccountStoreMappingList")
+                }
+            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
+                if(accountStoreMapping.isDefaultGroupStore()) {
+                    fail("The DefaultGroupStoreMapping is wrongly marked as default in the AccountStoreMappingList")
+                }
+
+            }
+        }
+
+        //// Let's create a new group to see if it gets created in the DefaultGroupStore we just set
+        def newGroup = client.instantiate(Group)
+        newGroup.name = uniquify('Testor Group')
+        newGroup = app.createGroup(newGroup)
+        deleteOnTeardown(newGroup)
+        assertEquals(newGroup.getDirectory().getHref(), newDir.getHref())
+
+        //Now let's set the DefaultGroupStore to be an already existing account store mapping (this runs different code in DefaultApplication)
+        app.setDefaultGroupStore(dir)
+        assertEquals(app.getDefaultGroupStore().getHref(), dir.getHref())
+        accountStoreMappingList = app.getAccountStoreMappings()
+        assertEquals(accountStoreMappingList.iterator().size(), 3)
+        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+            if (accountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
+                if(accountStoreMapping.isDefaultGroupStore()) {
+                    fail("The DefaultGroupStoreMapping is wronlgy marked as default in the AccountStoreMappingList")
+                }
+            } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
+                if(!accountStoreMapping.isDefaultGroupStore()) {
+                    fail("The DefaultGroupStoreMapping is not marked as default in the AccountStoreMappingList")
+                }
+            }
+        }
+
     }
 
     private Directory createDirectory() {
