@@ -33,6 +33,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -302,6 +303,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultAccountStore(true);
                 accountStoreMapping.save();
+                setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, accountStoreMapping);
                 break;
             }
         }
@@ -309,7 +311,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultAccountStore(true);
             mapping.save();
+            setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
         }
+        save();
     }
 
     /**
@@ -333,6 +337,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultGroupStore(true);
                 accountStoreMapping.save();
+                setProperty(DEFAULT_GROUP_STORE_MAPPING, accountStoreMapping);
                 break;
             }
         }
@@ -340,7 +345,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultGroupStore(true);
             mapping.save();
+            setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
         }
+        save();
     }
 
     /**
