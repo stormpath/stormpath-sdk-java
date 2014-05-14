@@ -525,12 +525,15 @@ public interface Application extends Resource, Saveable, Deletable {
      * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating accounts; this method sets the AccountStore to which the Application delegates
      * new account persistence.
+     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
+     * to be called to persist changes, this is a convenience method will call the server immediately.
+     * </p>
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Application}
      * @return this instance for method chaining.
      */
-    Application setDefaultAccountStore(AccountStore accountStore);
+    void setDefaultAccountStore(AccountStore accountStore);
 
     /**
      * Returns the {@link AccountStore} used to persist
@@ -587,12 +590,15 @@ public interface Application extends Resource, Saveable, Deletable {
      * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating groups; this method sets the AccountStore to which the Application delegates
      * new group persistence.
+     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
+     * to be called to persist changes, this is a convenience method will call the server immediately.
+     * </p>
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
      *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
      * @return this instance for method chaining.
      */
-    Application setDefaultGroupStore(AccountStore accountStore);
+    void setDefaultGroupStore(AccountStore accountStore);
 
     /**
      * Creates a new {@link AccountStoreMapping} for this Application, allowing the associated
