@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
-
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+package com.stormpath.sdk.impl.oauth.issuer.signer;
 
 /**
- * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> used to
- * construct {@link com.stormpath.sdk.api.ApiKey} instances.
+ * JwtSigner signs an access token using the JWT spec.
  *
  * @since 1.0.RC
  */
-public interface AuthenticationResultVisitor {
+public interface JwtSigner {
 
-    void visit(AuthenticationResult result);
+    String sign(String jsonPayload);
 
-    void visit(ApiAuthenticationResult result);
-
-    void visit(OauthAuthenticationResult result);
-
-    void visit(BasicOauthAuthenticationResult result);
+    String calculateSignature(String base64Header, String base64Json);
 }

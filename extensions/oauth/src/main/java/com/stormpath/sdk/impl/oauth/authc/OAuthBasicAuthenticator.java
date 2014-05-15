@@ -21,23 +21,25 @@ import com.stormpath.sdk.error.authc.UnsupportedGrantTypeOauthException;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.oauth.issuer.HmacValueGenerator;
+import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
+import com.stormpath.sdk.impl.oauth.issuer.signer.DefaultJwtSigner;
+import com.stormpath.sdk.impl.oauth.issuer.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.token.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
-import org.apache.oltu.oauth2.as.issuer.ValueGenerator;
+import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.apache.oltu.oauth2.common.message.types.TokenType;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
+
+import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /**
  * OAuthBasicAuthenticator
@@ -48,13 +50,11 @@ public class OAuthBasicAuthenticator {
 
     public final static char SPACE_SEPARATOR = ' ';
 
-    public final static char COLON_SEPARATOR = ':';
-
-    private static final String UTF_8 = "UTF-8";
-
-    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
-
     private static final EnumSet<GrantType> SUPPORTED_GRANT_TYPES;
+
+    public final static String TIMESTAMP_PARAM_NAME = "timestamp";
+
+    public final static String APPLICATION_HREF_PARAM_NAME = "application_href";
 
     static {
         SUPPORTED_GRANT_TYPES = EnumSet.of(GrantType.CLIENT_CREDENTIALS);
@@ -62,8 +62,12 @@ public class OAuthBasicAuthenticator {
 
     private final InternalDataStore dataStore;
 
+    private final JwtSigner jwtSigner;
+
     public OAuthBasicAuthenticator(InternalDataStore internalDataStore) {
-        this.dataStore = internalDataStore;
+        dataStore = internalDataStore;
+
+        jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getSecret());
     }
 
     public BasicOauthAuthenticationResult authenticate(Application application, DefaultBasicOauthAuthenticationRequest request) {
@@ -75,9 +79,9 @@ public class OAuthBasicAuthenticator {
 
         Set<String> grantedScopes;
 
-        String ttl = String.valueOf(request.getTtl());
+        long ttl = request.getTtl();
 
-        DefaultTokenResponse.Builder responseBuilder = DefaultTokenResponse.tokenType(TokenType.BEARER).expiresIn(ttl);
+        DefaultTokenResponse.Builder responseBuilder = DefaultTokenResponse.tokenType(TokenType.BEARER).expiresIn(String.valueOf(ttl));
 
         String scope;
 
@@ -98,11 +102,12 @@ public class OAuthBasicAuthenticator {
             scope = null;
         }
 
-        String accessToken = buildAccessToken(application, authResult, ttl, scope);
+        String accessToken = createAccessToken(application, authResult, ttl, scope);
 
         responseBuilder.accessToken(accessToken);
 
         return new DefaultBasicOauthAuthenticationResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
+
     }
 
     private void validateSupportedGrantType(String requestedGrantType) {
@@ -115,39 +120,32 @@ public class OAuthBasicAuthenticator {
     }
 
     /**
-     * The result of this method is a plain-text access token that contains the following information:
-     *
-     * urlEncoded(applicationHref):apiKeyId:createdTimestamp:ttl:scope(if exist).
-     *
+     * The result of this method is a that contains the following information.
+     * <p/>
+     * base64Header.bese64Payload.base64Signature
      */
-    private String buildAccessToken(Application application, ApiAuthenticationResult result, String ttl, String scope) {
+    private String createAccessToken(Application application, ApiAuthenticationResult result, long ttl, String scope) {
 
-        long createdAt = Calendar.getInstance(UTC).getTime().getTime();
+        long createdAt = System.currentTimeMillis();
 
-        StringBuilder builder = new StringBuilder(encodeUrl(application.getHref()))
-                .append(COLON_SEPARATOR).append(result.getApiKey().getId())
-                .append(COLON_SEPARATOR).append(createdAt)
-                .append(COLON_SEPARATOR).append(ttl);
+        Map<String, Object> jsonMap = new HashMap<String, Object>();
+
+        jsonMap.put(APPLICATION_HREF_PARAM_NAME, application.getHref());
+        jsonMap.put(OAUTH_CLIENT_ID, result.getApiKey().getId());
+        jsonMap.put(TIMESTAMP_PARAM_NAME, createdAt);
+        jsonMap.put(OAUTH_EXPIRES_IN, ttl);
 
         if (scope != null && !scope.isEmpty()) {
-            builder.append(COLON_SEPARATOR).append(scope);
+            jsonMap.put(OAUTH_SCOPE, scope);
         }
 
-        ValueGenerator generator = new HmacValueGenerator(dataStore.getApiKey().getSecret());
+        OAuthIssuer jwtIssuer = new JwtOauthIssuer(jwtSigner, jsonMap);
 
         try {
-            return generator.generateValue(builder.toString());
+            return jwtIssuer.accessToken();
         } catch (OAuthSystemException e) {
-            throw new IllegalStateException("Unexpected error while generating access token.", e);
+            throw new IllegalStateException("Unexpected exception occurred while creating access token.");
         }
-    }
 
-    private String encodeUrl(String url) {
-        try {
-            return URLEncoder.encode(url, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            //This should never happen
-            return url;
-        }
     }
 }

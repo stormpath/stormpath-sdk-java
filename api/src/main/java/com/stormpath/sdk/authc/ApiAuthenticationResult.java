@@ -18,8 +18,11 @@ package com.stormpath.sdk.authc;
 import com.stormpath.sdk.api.ApiKey;
 
 /**
- * ApiAuthenticationResult is an
+ * ApiAuthenticationResult
  *
+ * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
+ * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
  * @since 1.0.RC
  */
 public interface ApiAuthenticationResult extends AuthenticationResult {

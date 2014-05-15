@@ -16,11 +16,30 @@
 package com.stormpath.sdk.authc;
 
 /**
- * ApiAuthenticationRequestBuilder
+ * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> used to
+ * construct an executable {@link AuthenticationRequest} instance.
+ * <p/>
+ * <pre>
+ *     AuthenticationResult authResult = {@link com.stormpath.sdk.application.Application Application}.authentication(httpRequest).execute();
+ * </pre>
  *
+ * @see com.stormpath.sdk.application.Application#authenticate(Object)
+ * @see #execute()
  * @since 1.0.RC
  */
 public interface ApiAuthenticationRequestBuilder {
 
+    /**
+     * Returns an {@link ApiAuthenticationResult ApiAuthenticationResult} after a successful authentication
+     * of the cur
+     *
+     * The concrete type of the
+     *
+     *
+     * @return If authentication was successful an {@link ApiAuthenticationResult} instance if the
+     *         request
+     *
+     * @see com.stormpath.sdk.application.Application#authenticateOauth(Object)
+     */
     ApiAuthenticationResult execute();
 }

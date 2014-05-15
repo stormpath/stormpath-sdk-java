@@ -21,23 +21,29 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.authc.DisabledAccountException;
+import com.stormpath.sdk.error.authc.InvalidAccessTokenOauthException;
 import com.stormpath.sdk.error.authc.InvalidApiKeyException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
+import com.stormpath.sdk.impl.ds.MapMarshaller;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.oauth.issuer.HmacValueGenerator;
-import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.impl.oauth.issuer.signer.DefaultJwtSigner;
+import com.stormpath.sdk.impl.oauth.issuer.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
 import java.nio.charset.Charset;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
+
+import static org.apache.oltu.oauth2.common.OAuth.OAUTH_CLIENT_ID;
+import static org.apache.oltu.oauth2.common.OAuth.OAUTH_EXPIRES_IN;
 
 /**
  * @since 1.0.RC
@@ -46,42 +52,59 @@ public class OAuthBearerAuthenticator {
 
     private final static Charset UTF_8 = Charset.forName("UTF-8");
 
-    public final static String TOKEN_SEPARATOR_CHAR = ":";
+    public final static String JWT_BEARER_TOKEN_SEPARATOR = ".";
 
     public final static String SCOPE_SEPARATOR_CHAR = " ";
 
-    private final static byte SIGNED_TOKEN_SEPARATOR = 0x3A;
-
-    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
-
     private final InternalDataStore dataStore;
+
+    private final JwtSigner jwtSigner;
+
+    private final MapMarshaller mapMarshaller;
 
     public OAuthBearerAuthenticator(InternalDataStore dataStore) {
         this.dataStore = dataStore;
+        this.jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getSecret());
+        this.mapMarshaller = new JacksonMapMarshaller();
     }
 
     public OauthAuthenticationResult authenticate(Application application, DefaultBearerOauthAuthenticationRequest request) {
 
-        String accessToken;
+        String bearerValue;
 
         try {
-            accessToken = request.getAccessToken();
+            bearerValue = request.getAccessToken();
         } catch (OAuthSystemException e) {
             throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "");
         }
 
-        String payloadAsString = extractPayload(accessToken, dataStore.getApiKey().getSecret());
+        StringTokenizer tokenizer = new StringTokenizer(bearerValue, JWT_BEARER_TOKEN_SEPARATOR);
 
-        // The result of this method is a plain-text access token that contains the following information:
-        // urlEncoded(applicationHref):apiKeyId:createdTimestamp:ttl:scope(if exist).
-        StringTokenizer tokenizer = new StringTokenizer(payloadAsString, TOKEN_SEPARATOR_CHAR);
+        Assert.isTrue(tokenizer.countTokens() == 3, "Invalid bearer token.");
 
-        //Figure it out if we want to make an assertion that this tenant owns this application. It's url encoded.
-        String applicationHref = tokenizer.nextToken();
+        String base64JwtHeader = tokenizer.nextToken();
 
-        String apiKeyId = tokenizer.nextToken();
+        String base64JsonPayload = tokenizer.nextToken();
 
-        validateTokenNotExpired(tokenizer.nextToken(), tokenizer.nextToken());
+        String jwtSignature = tokenizer.nextToken();
+
+        String calculatedSignature = jwtSigner.calculateSignature(base64JwtHeader, base64JsonPayload);
+
+        if (!jwtSignature.equals(calculatedSignature)) {
+            throw ApiAuthenticationExceptionFactory.newOauthException(InvalidAccessTokenOauthException.class, "error: invalid credentials");
+        }
+
+        byte[] jsonBytes = Base64.decodeBase64(base64JsonPayload);
+
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+
+        long createdTimestamp = getRequiredValue(jsonMap, OAuthBasicAuthenticator.TIMESTAMP_PARAM_NAME);
+
+        Number expiresIn = getRequiredValue(jsonMap, OAUTH_EXPIRES_IN);
+
+        validateTokenNotExpired(createdTimestamp, expiresIn.longValue());
+
+        String apiKeyId = getRequiredValue(jsonMap, OAUTH_CLIENT_ID);
 
         //Retrieve the ApiKey that owns this
         ApiKey apiKey = getTokenApiKey(application, apiKeyId);
@@ -101,13 +124,11 @@ public class OAuthBearerAuthenticator {
         return new DefaultOauthAuthenticationResult(dataStore, apiKey, scope);
     }
 
-    private void validateTokenNotExpired(String created, String timeToLive) {
-        long createdTimestamp = Long.valueOf(created);
-        long ttl = Long.valueOf(timeToLive);
+    private void validateTokenNotExpired(long created, long timeToLive) {
 
-        long now = Calendar.getInstance(UTC).getTime().getTime();
+        long now = System.currentTimeMillis();
 
-        if ((createdTimestamp + ttl) > now) {
+        if ((created + timeToLive) > now) {
             throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "expired");
         }
     }
@@ -140,45 +161,12 @@ public class OAuthBearerAuthenticator {
         return apiKey;
     }
 
+    private <T> T getRequiredValue(Map jsonMap, String parameterName) {
 
-    private String extractPayload(String accessToken, String tenantSecret) {
-        byte[] decodedToken = Base64.decode(accessToken);
+        Object object = jsonMap.get(parameterName);
 
-        //split accessToken in two parts.
-        //decodedToken = signedPayload[] + ":" + payload[]
-        int separatorIndex = -1;
+        Assert.notNull(object, "required jwt parameter is missing or null.");
 
-        for (int i = decodedToken.length - 1; i >= 0; i--) {
-            if (decodedToken[i] == SIGNED_TOKEN_SEPARATOR) {
-                separatorIndex = i;
-                break;
-            }
-        }
-
-        Assert.state(separatorIndex > 0, "This base64 string doesn't follow the accessToken rules 'signedPayload:payload'");
-
-        byte[] payload = new byte[separatorIndex];
-        System.arraycopy(decodedToken, 0, payload, 0, payload.length);
-
-        //Create the signedPayload array skipping the separator character.
-        byte[] signedPayload = new byte[decodedToken.length - (separatorIndex + 1)];
-        System.arraycopy(decodedToken, separatorIndex + 1, signedPayload, 0, signedPayload.length);
-
-        String payloadAsString = new String(payload, UTF_8);
-
-        HmacValueGenerator hmacValueGenerator = new HmacValueGenerator(tenantSecret);
-
-        byte[] signedInput = hmacValueGenerator.computeHmac(payload);
-
-        if (signedInput.length != signedPayload.length) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "errr");
-        }
-
-        for (int i = 0; i < signedInput.length; i++) {
-            if (signedInput[i] != signedPayload[i]) {
-                throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "errr");
-            }
-        }
-        return payloadAsString;
+        return (T) object;
     }
 }

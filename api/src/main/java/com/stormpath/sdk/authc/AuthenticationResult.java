@@ -25,5 +25,12 @@ public interface AuthenticationResult extends Resource {
 
     Account getAccount();
 
+    /**
+     * @param visitor
+     *
+     * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
+     *
+     * @since 1.0.RC
+     */
     void accept(AuthenticationResultVisitor visitor);
 }
