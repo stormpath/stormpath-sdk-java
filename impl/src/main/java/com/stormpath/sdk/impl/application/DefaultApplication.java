@@ -1,45 +1,30 @@
 /*
+ * Copyright 2014 Stormpath, Inc.
  *
- *  * Copyright 2014 Stormpath, Inc.
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
@@ -50,12 +35,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
@@ -367,6 +347,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultAccountStore(true);
                 accountStoreMapping.save();
+                setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, accountStoreMapping);
                 break;
             }
         }
@@ -374,7 +355,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultAccountStore(true);
             mapping.save();
+            setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
         }
+        save();
     }
 
     /**
@@ -398,6 +381,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultGroupStore(true);
                 accountStoreMapping.save();
+                setProperty(DEFAULT_GROUP_STORE_MAPPING, accountStoreMapping);
                 break;
             }
         }
@@ -405,7 +389,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             AccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultGroupStore(true);
             mapping.save();
+            setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
         }
+        save();
     }
 
     /**

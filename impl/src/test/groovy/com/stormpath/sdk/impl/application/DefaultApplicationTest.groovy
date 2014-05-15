@@ -1,39 +1,30 @@
+
 /*
+ * Copyright 2014 Stormpath, Inc.
  *
- *  * Copyright 2014 Stormpath, Inc.
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.application
 
-import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.AccountCriteria
-import com.stormpath.sdk.account.AccountList
-import com.stormpath.sdk.account.CreateAccountRequest
-import com.stormpath.sdk.account.PasswordResetToken
+import com.stormpath.sdk.account.*
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
+import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.group.CreateGroupRequest
-import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupCriteria
-import com.stormpath.sdk.group.GroupList
-import com.stormpath.sdk.group.GroupOptions
+import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
@@ -370,7 +361,157 @@ class DefaultApplicationTest {
         verify dataStore, group, groupList, request
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
+    @Test
+    void testSetDefaultAccountStore() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
+                defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+        ]
+
+        def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
+        def groupHref = "https://api.stormpath.com/v1/groups/6dWPIXEi4MvGTnQcWApizf"
+
+        def dataStore = createStrictMock(InternalDataStore)
+        def accountStore = createStrictMock(AccountStore)
+        def group = createStrictMock(Group)
+        def accountStoreMappings = createStrictMock(AccountStoreMappingList)
+        def iterator = createStrictMock(Iterator)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+
+        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
+        expect(accountStoreMappings.iterator()).andReturn(iterator)
+        expect(iterator.hasNext()).andReturn(true)
+        expect(iterator.next()).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(group.getHref()).andReturn(groupHref)
+        expect(iterator.hasNext()).andReturn(false)
+        expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setAccountStore(group))
+
+        def newPropertiesState = new LinkedHashMap<String, Object>()
+        newPropertiesState.putAll(properties)
+        newPropertiesState.put("accountStoreMappings", accountStoreMappings);
+        def modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
+        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
+        expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setDefaultAccountStore(true))
+        expect(newAccountStoreMapping.save())
+
+        newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
+
+        //Second execution
+        expect(accountStoreMappings.iterator()).andReturn(iterator)
+        expect(iterator.hasNext()).andReturn(true)
+        expect(iterator.next()).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
+        expect(accountStoreMapping.setDefaultAccountStore(true))
+        expect(accountStoreMapping.save())
+
+        newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
+
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+
+        def app = new DefaultApplication(dataStore, properties)
+        app.setDefaultAccountStore(group)
+        app.setDefaultAccountStore(accountStore)
+
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+    }
+
+    //@since 1.0.RC
+    @Test
+    void testSetDefaultGroupStore() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
+                defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+        ]
+
+        def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
+        def groupHref = "https://api.stormpath.com/v1/groups/6dWPIXEi4MvGTnQcWApizf"
+
+        def dataStore = createStrictMock(InternalDataStore)
+        def accountStore = createStrictMock(AccountStore)
+        def group = createStrictMock(Group)
+        def accountStoreMappings = createStrictMock(AccountStoreMappingList)
+        def iterator = createStrictMock(Iterator)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+
+        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
+        expect(accountStoreMappings.iterator()).andReturn(iterator)
+        expect(iterator.hasNext()).andReturn(true)
+        expect(iterator.next()).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(group.getHref()).andReturn(groupHref)
+        expect(iterator.hasNext()).andReturn(false)
+        expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setAccountStore(group))
+
+        def newPropertiesState = new LinkedHashMap<String, Object>()
+        newPropertiesState.putAll(properties)
+        newPropertiesState.put("accountStoreMappings", accountStoreMappings);
+        def modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
+        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
+        expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setDefaultGroupStore(true))
+        expect(newAccountStoreMapping.save())
+
+        newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
+
+        //Second execution
+        expect(accountStoreMappings.iterator()).andReturn(iterator)
+        expect(iterator.hasNext()).andReturn(true)
+        expect(iterator.next()).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
+        expect(accountStoreMapping.setDefaultGroupStore(true))
+        expect(accountStoreMapping.save())
+
+        newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
+        modifiedApp = new DefaultApplication(null, newPropertiesState)
+
+        expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
+
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+
+        def app = new DefaultApplication(dataStore, properties)
+        app.setDefaultGroupStore(group)
+        app.setDefaultGroupStore(accountStore)
+
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+    }
+
+    //@since 1.0.RC
     @Test
     void testGetAccount() {
 
@@ -400,7 +541,7 @@ class DefaultApplicationTest {
         verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
     }
 
-    //@since 1.0.beta
+    //@since 1.0.RC
     static class ProviderAccountAccessEquals implements IArgumentMatcher {
 
         private ProviderAccountAccess expected
@@ -419,6 +560,28 @@ class DefaultApplicationTest {
 
         void appendTo(StringBuffer stringBuffer) {
             stringBuffer.append("providerData: " + expected.providerData.toString())
+        }
+    }
+
+    //@since 1.0.RC
+    static class ApplicationMatcher implements IArgumentMatcher {
+
+        private Application expected
+
+        ApplicationMatcher(Application application) {
+            expected = application;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! Application.isInstance(o)) {
+                return false;
+            }
+            Application actual = (Application) o
+            return (Objects.nullSafeEquals(expected, actual))
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append(expected.toString())
         }
     }
 
