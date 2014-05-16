@@ -19,7 +19,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * UnsupportedAuthenticationSchemeException
+ * A sub-class of {@link ResourceException} representing an authentication scheme not supported by Stormpath.
  *
  * @since 1.0.RC
  */

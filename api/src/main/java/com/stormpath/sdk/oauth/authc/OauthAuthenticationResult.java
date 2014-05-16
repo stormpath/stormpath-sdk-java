@@ -20,8 +20,10 @@ import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import java.util.Set;
 
 /**
- * OauthAuthenticationResult
+ * OauthAuthenticationResult represents an {@code Oauth} {@link com.stormpath.sdk.authc.AuthenticationResult authentication result}.
  *
+ * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
  * @since 1.0.RC
  */
 public interface OauthAuthenticationResult extends ApiAuthenticationResult {

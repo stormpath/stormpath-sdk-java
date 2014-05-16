@@ -16,12 +16,31 @@
 package com.stormpath.sdk.oauth.authc;
 
 /**
+ * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> used to
+ * construct an executable {@link com.stormpath.sdk.authc.AuthenticationRequest AuthenticationRequest} instance.
+ * <p/>
+ * <pre>
+ *     {@code AuthenticationResult authResult = }{@link com.stormpath.sdk.application.Application#authenticateOauth(Object) application.authenticateOauth(httpRequest)}{@code .inLocation(BearerLocation.HEADER).execute()};
+ * </pre>
+ *
+ * @see com.stormpath.sdk.application.Application#authenticateOauth(Object)
+ * @see #execute()
  * @since 1.0.RC
  */
 public interface BearerOauthAuthenticationRequestBuilder {
 
+    /**
+     *
+     * @param locations
+     * @return this instance for method chaining.
+     */
     BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations);
 
+    /**
+     * Executes this authentication request.
+     *
+     * @return the result of the authentication request in the form of a {@link OauthAuthenticationResult}.
+     */
     OauthAuthenticationResult execute();
 
 }

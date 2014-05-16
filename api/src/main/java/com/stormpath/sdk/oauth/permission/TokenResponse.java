@@ -31,23 +31,25 @@ public interface TokenResponse {
 
 
     /**
-     * Returns the space separated collection of scope
-     * @return
+     * Returns the space separated collection of scope.
+     *
+     * @return the space separated collection of scope.
      */
     String getScope();
 
     /**
+     * Returns the type of the accessToken result. Currently only "Bearer" is returned.
+     *
      * @return The type of the accessToken result. Currently only "Bearer" is returned.
      */
     String getTokenType();
 
     /**
-     * An string containing the time to live
+     * Returns an string containing the time to live.
      *
-     * @return
+     * @return an string containing the time to live.
      */
     String getExpiresIn();
-
 
     /**
      *
@@ -58,7 +60,7 @@ public interface TokenResponse {
     /**
      * Returns all the non-values of this token response as json (body message).
      *
-     * @return
+     * @return all the non-values of this token response as json (body message).
      */
     String toJson();
 }

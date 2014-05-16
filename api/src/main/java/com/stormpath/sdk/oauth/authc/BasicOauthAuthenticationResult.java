@@ -18,9 +18,16 @@ package com.stormpath.sdk.oauth.authc;
 import com.stormpath.sdk.oauth.permission.TokenResponse;
 
 /**
+ * Represents the result of a {@link BasicOauthAuthenticationRequestBuilder Basic Oauth Authentication request}.
+ *
  * @since 1.0.RC
  */
 public interface BasicOauthAuthenticationResult extends OauthAuthenticationResult {
 
+    /**
+     * The {@link TokenResponse} obtained as a result of a successful authentication request execution.
+     *
+     * @return the {@link TokenResponse} obtained as a result of a successful authentication request execution.
+     */
     TokenResponse getTokenResponse();
 }

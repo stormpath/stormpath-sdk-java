@@ -19,15 +19,28 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.resource.Resource;
 
 /**
+ * Main interface to be extended by any authentication result type supported by Stormpath.
+ *
+ * @see ApiAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
  * @since 0.1
  */
 public interface AuthenticationResult extends Resource {
 
+    /**
+     * Returns the actual {@link Account} obtained as a result of a successful authentication request.
+     *
+     * @return the actual {@link Account} obtained as a result of a successful authentication request.
+     */
     Account getAccount();
 
     /**
-     * @param visitor
+     * Allows an {@link AuthenticationResultVisitor authentication result visitor} to visit the concrete authentication
+     * result indistinctively of the authentication request type used. For example, {@link ApiAuthenticationResult},
+     * {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationResult) or {@link com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult}
      *
+     * @param visitor the visitor in charge of visiting the concrete authentication result
      * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
      *
      * @since 1.0.RC

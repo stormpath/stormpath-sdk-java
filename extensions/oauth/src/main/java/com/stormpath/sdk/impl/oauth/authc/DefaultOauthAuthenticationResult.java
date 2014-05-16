@@ -21,7 +21,6 @@ import com.stormpath.sdk.impl.authc.DefaultApiAuthenticationResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 
-import java.util.Map;
 import java.util.Set;
 
 /**

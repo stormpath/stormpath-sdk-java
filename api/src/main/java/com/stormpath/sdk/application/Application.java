@@ -729,7 +729,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * Creates a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}. The builder can be used to
      * customize an {@code Api} authentication.
      *
-     * @return a new {@link ApiAuthenticationRequestBuilder ApiAuthenticationRequestBuilder}.
+     * @return a new {@link ApiAuthenticationRequestBuilder}.
      * @throws IllegalArgumentException - If {@code httpRequest} is null.
      * @see Application#authenticateOauth(Object)
      * @since 1.0.RC
@@ -744,7 +744,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *     .execute()
      * </pre>
      *
-     * @return a new {@link ApiAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}.
+     * @return a new {@link OauthAuthenticationRequestBuilder}.
      * @throws IllegalStateException    - If {@code com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder} class couldn't be found in the classpath.
      * @throws IllegalArgumentException - If {@code httpServletRequest} is null.
      * @see Application#authenticate(Object)

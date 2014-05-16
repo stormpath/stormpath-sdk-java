@@ -20,7 +20,7 @@ package com.stormpath.sdk.authc;
  * construct an executable {@link AuthenticationRequest} instance.
  * <p/>
  * <pre>
- *     AuthenticationResult authResult = {@link com.stormpath.sdk.application.Application Application}.authentication(httpRequest).execute();
+ *     {@code AuthenticationResult authResult = }{@link com.stormpath.sdk.application.Application#authenticate(Object) application.authenticate(httpRequest)}{@code .execute()};
  * </pre>
  *
  * @see com.stormpath.sdk.application.Application#authenticate(Object)
@@ -30,16 +30,15 @@ package com.stormpath.sdk.authc;
 public interface ApiAuthenticationRequestBuilder {
 
     /**
-     * Returns an {@link ApiAuthenticationResult ApiAuthenticationResult} after a successful authentication
-     * of the cur
+     * Returns an {@link ApiAuthenticationResult ApiAuthenticationResult} after a successful {@link AuthenticationRequest}.
+     * <p/>
+     * The concrete type of the authentication result will depend on the request type; for example: {@code Api}, {@code BearerOauth}
+     * or {@code BasicOauth}.
      *
-     * The concrete type of the
-     *
-     *
-     * @return If authentication was successful an {@link ApiAuthenticationResult} instance if the
-     *         request
+     * @return If authentication was successful an {@link ApiAuthenticationResult} instance.
      *
      * @see com.stormpath.sdk.application.Application#authenticateOauth(Object)
+     * @see com.stormpath.sdk.application.Application#authenticate(Object)
      */
     ApiAuthenticationResult execute();
 }
