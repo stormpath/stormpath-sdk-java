@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,9 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * Tenant.
      *
      * @param name the name to set (must be non-null, non-empty and unique).
+     * @return this instance for method chaining.
      */
-    void setName(String name);
+    Directory setName(String name);
 
     /**
      * Returns the description.  This is an optional property and may be null or empty.
@@ -71,8 +72,9 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * Sets the description.  This is an optional property and may be null or empty.
      *
      * @param description the description to apply.
+     * @return this instance for method chaining.
      */
-    void setDescription(String description);
+    Directory setDescription(String description);
 
     /**
      * Returns the directory's status.
@@ -93,8 +95,9 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * login to applications.
      *
      * @param status the status to apply.
+     * @return this instance for method chaining.
      */
-    void setStatus(DirectoryStatus status);
+    Directory setStatus(DirectoryStatus status);
 
     /**
      * Creates a new account instance in the directory using the Directory's default registration workflow setting.
@@ -158,7 +161,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * Therefore, this method is a convenience: it automatically issues a create with the directory's
      * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} argument.
      *
-     * @param request the account creation request
+     * @param request the account creation request.
      * @since 0.9
      */
     void createAccount(CreateAccountRequest request);

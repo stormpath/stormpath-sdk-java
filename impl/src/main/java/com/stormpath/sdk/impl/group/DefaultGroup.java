@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,8 +80,9 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void setName(String name) {
+    public Group setName(String name) {
         setProperty(NAME, name);
+        return this;
     }
 
     @Override
@@ -90,8 +91,9 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void setDescription(String description) {
+    public Group setDescription(String description) {
         setProperty(DESCRIPTION, description);
+        return this;
     }
 
     @Override
@@ -104,8 +106,9 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public void setStatus(GroupStatus status) {
+    public Group setStatus(GroupStatus status) {
         setProperty(STATUS, status.name());
+        return this;
     }
 
     @Override

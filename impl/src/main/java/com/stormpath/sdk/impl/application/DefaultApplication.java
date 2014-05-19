@@ -33,7 +33,6 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -84,8 +83,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public void setName(String name) {
+    public Application setName(String name) {
         setProperty(NAME, name);
+        return this;
     }
 
     @Override
@@ -94,8 +94,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public void setDescription(String description) {
+    public Application setDescription(String description) {
         setProperty(DESCRIPTION, description);
+        return this;
     }
 
     @Override
@@ -108,8 +109,9 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public void setStatus(ApplicationStatus status) {
+    public Application setStatus(ApplicationStatus status) {
         setProperty(STATUS, status.name());
+        return this;
     }
 
     @Override

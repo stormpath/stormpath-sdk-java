@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * {@link com.stormpath.sdk.error.Error Error}
      *
      * @param username the account's username, which must be unique among all other accounts within a Directory.
+     * @return this instance for method chaining.
      */
-    void setUsername(String username);
+    Account setUsername(String username);
 
     /**
      * Returns the account's email address, guaranteed to be unique for all accounts within a Directory.
@@ -71,8 +72,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * {@link com.stormpath.sdk.error.Error Error}
      *
      * @param email the account's email address, which must be unique among all other accounts within a Directory.
+     * @return this instance for method chaining.
      */
-    void setEmail(String email);
+    Account setEmail(String email);
 
     /**
      * Sets (changes) the account's password to the specified raw (plaintext) password.  ONLY call this method if you
@@ -82,8 +84,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * After calling this method, you must call {@link #save()} to propagate the change to the Stormpath servers.
      *
      * @param password the account's new raw (plaintext) password.
+     * @return this instance for method chaining.
      */
-    void setPassword(String password);
+    Account setPassword(String password);
 
     /**
      * Returns the account's given name (aka 'first name' in Western cultures').
@@ -96,8 +99,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * Sets the account's given name (aka 'first name' in Western cultures').
      *
      * @param givenName the account's given name (aka 'first name' in Western cultures').
+     * @return this instance for method chaining.
      */
-    void setGivenName(String givenName);
+    Account setGivenName(String givenName);
 
     /**
      * Returns the account's middle name(s).
@@ -110,8 +114,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * Sets the account's middle name(s).
      *
      * @param middleName the account's middle name(s).
+     * @return this instance for method chaining.
      */
-    void setMiddleName(String middleName);
+    Account setMiddleName(String middleName);
 
     /**
      * Returns the account's surname (aka 'last name' in Western cultures).
@@ -124,8 +129,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * Sets the account's surname (aka 'last name' in Western cultures).
      *
      * @param surname the account's surname (aka 'last name' in Western cultures).
+     * @return this instance for method chaining.
      */
-    void setSurname(String surname);
+    Account setSurname(String surname);
 
     /**
      * Returns the account's 'full name', per Western cultural conventions.
@@ -153,8 +159,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * applications.
      *
      * @param status the account's status.
+     * @return this instance for method chaining.
      */
-    void setStatus(AccountStatus status);
+    Account setStatus(AccountStatus status);
 
     /**
      * Returns a paginated list of the account's assigned groups.
@@ -309,9 +316,10 @@ public interface Account extends Resource, Saveable, Deletable {
      * @param responseOptions The {@code AccountOptions} to use to customize the Account resource returned in the save
      *                        response.
      *
+     * @return this instance for method chaining.
      * @since 0.9
      */
-    void saveWithResponseOptions(AccountOptions responseOptions);
+    Account saveWithResponseOptions(AccountOptions responseOptions);
 
     /**
      * Returns true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.

@@ -24,7 +24,7 @@ public interface PasswordResetToken extends Resource {
 
     String getEmail();
 
-    void setEmail(String email);
+    PasswordResetToken setEmail(String email);
 
     Account getAccount();
 
