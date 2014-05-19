@@ -56,8 +56,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sets the application's name.  Application names must be unique within a Tenant.
      *
      * @param name tenant-unique name of the application.
+     * @return this instance for method chaining.
      */
-    void setName(String name);
+    Application setName(String name);
 
     /**
      * Returns the application description.
@@ -70,8 +71,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sets the application description.
      *
      * @param description the application description.
+     * @return this instance for method chaining.
      */
-    void setDescription(String description);
+    Application setDescription(String description);
 
     /**
      * Returns the application's status.  Application users may login to an enabled application.  They may not login
@@ -86,8 +88,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * to a disabled application.
      *
      * @param status the application's status.
+     * @return this instance for method chaining.
      */
-    void setStatus(ApplicationStatus status);
+    Application setStatus(ApplicationStatus status);
 
     /**
      * Returns a paginated list of all accounts that may login to the application.
@@ -644,7 +647,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * If {@link #createAccount }
      *
      * @param mapping the new AccountStoreMapping resource to add to the Application's AccountStoreMapping list.
-     * @return the newly created
+     * @return the newly created AccountStoreMapping instance.
      * @throws ResourceException
      * @since 0.9
      */

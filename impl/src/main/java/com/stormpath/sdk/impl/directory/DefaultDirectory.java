@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,9 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
-    public void setName(String name) {
+    public Directory setName(String name) {
         setProperty(NAME, name);
+        return this;
     }
 
     @Override
@@ -81,8 +82,9 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
-    public void setDescription(String description) {
+    public Directory setDescription(String description) {
         setProperty(DESCRIPTION, description);
+        return this;
     }
 
     @Override
@@ -95,8 +97,9 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
-    public void setStatus(DirectoryStatus status) {
+    public Directory setStatus(DirectoryStatus status) {
         setProperty(STATUS, status.name());
+        return this;
     }
 
     @Override

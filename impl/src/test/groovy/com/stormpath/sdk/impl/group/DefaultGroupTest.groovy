@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.group.GroupStatus
@@ -72,13 +73,13 @@ class DefaultGroupTest {
                           accountMemberships: [href: "https://api.stormpath.com/v1/groups/koaertnw47ufsjngDFSs/accountMemberships"]]
 
         InternalDataStore internalDataStore = createStrictMock(InternalDataStore)
-        DefaultGroup defaultGroup = new DefaultGroup(internalDataStore, properties)
+        Group defaultGroup = new DefaultGroup(internalDataStore, properties)
 
         assertNull(defaultGroup.getStatus())
 
-        defaultGroup.setName("My new group")
-        defaultGroup.setDescription("My new description")
-        defaultGroup.setStatus(GroupStatus.DISABLED)
+        defaultGroup = defaultGroup.setName("My new group")
+            .setDescription("My new description")
+            .setStatus(GroupStatus.DISABLED)
 
         assertEquals(defaultGroup.getName(), "My new group")
         assertEquals(defaultGroup.getDescription(), "My new description")

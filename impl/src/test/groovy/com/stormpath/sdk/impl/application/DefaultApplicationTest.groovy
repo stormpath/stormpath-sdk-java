@@ -25,7 +25,6 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
@@ -96,9 +95,9 @@ class DefaultApplicationTest {
 
         assertNull(defaultApplication.getStatus())
 
-        defaultApplication.setStatus(ApplicationStatus.DISABLED)
-        defaultApplication.setName("App Name")
-        defaultApplication.setDescription("App Description")
+        defaultApplication = defaultApplication.setStatus(ApplicationStatus.DISABLED)
+            .setName("App Name")
+            .setDescription("App Description")
 
         assertEquals(defaultApplication.getStatus(), ApplicationStatus.DISABLED)
         assertEquals(defaultApplication.getName(), "App Name")
@@ -397,17 +396,17 @@ class DefaultApplicationTest {
         expect(group.getHref()).andReturn(groupHref)
         expect(iterator.hasNext()).andReturn(false)
         expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setAccountStore(group))
+        expect(newAccountStoreMapping.setAccountStore(group)).andReturn(newAccountStoreMapping)
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         def modifiedApp = new DefaultApplication(null, newPropertiesState)
 
-        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
-        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
         expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setDefaultAccountStore(true))
+        expect(newAccountStoreMapping.setDefaultAccountStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
         newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
@@ -421,7 +420,7 @@ class DefaultApplicationTest {
         expect(iterator.next()).andReturn(accountStoreMapping)
         expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
-        expect(accountStoreMapping.setDefaultAccountStore(true))
+        expect(accountStoreMapping.setDefaultAccountStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
         newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
@@ -472,17 +471,17 @@ class DefaultApplicationTest {
         expect(group.getHref()).andReturn(groupHref)
         expect(iterator.hasNext()).andReturn(false)
         expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setAccountStore(group))
+        expect(newAccountStoreMapping.setAccountStore(group)).andReturn(newAccountStoreMapping)
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         def modifiedApp = new DefaultApplication(null, newPropertiesState)
 
-        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
-        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
         expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setDefaultGroupStore(true))
+        expect(newAccountStoreMapping.setDefaultGroupStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
         newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
@@ -496,7 +495,7 @@ class DefaultApplicationTest {
         expect(iterator.next()).andReturn(accountStoreMapping)
         expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
-        expect(accountStoreMapping.setDefaultGroupStore(true))
+        expect(accountStoreMapping.setDefaultGroupStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
         newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
