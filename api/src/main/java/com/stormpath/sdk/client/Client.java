@@ -17,6 +17,7 @@ package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantActions;
 
 /**
  * The {@code Client} is the main entry point to the Stormpath Java SDK.  A Java project wishing to
@@ -52,7 +53,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
  * @since 0.1
  */
-public interface Client extends DataStore {
+public interface Client extends DataStore, TenantActions {
 
     /**
      * Returns the sole {@link Tenant} resource associated to this client.
