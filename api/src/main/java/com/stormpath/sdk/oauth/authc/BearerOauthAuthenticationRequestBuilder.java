@@ -30,8 +30,9 @@ package com.stormpath.sdk.oauth.authc;
 public interface BearerOauthAuthenticationRequestBuilder {
 
     /**
+     * Specifies the location(s) where the <code>Bearer</code> shall be placed.
      *
-     * @param locations
+     * @param locations the location(s) for the <code>Bearer</code>.
      * @return this instance for method chaining.
      */
     BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations);

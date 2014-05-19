@@ -28,5 +28,10 @@ import java.util.Set;
  */
 public interface OauthAuthenticationResult extends ApiAuthenticationResult {
 
+    /**
+     * Returns the set of scopes granted to the Oauth Authentication.
+     *
+     * @return the set of scopes granted to the Oauth Authentication.
+     */
     Set<String> getScope();
 }

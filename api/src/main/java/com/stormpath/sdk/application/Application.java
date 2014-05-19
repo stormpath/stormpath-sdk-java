@@ -703,7 +703,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @param id the id of the {@link ApiKey} to be retrieved.
      * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store.
-     * @throws ResourceException
+     * @throws ResourceException when the ApiKey does not belong to the Account or the ApiKey does not exist.
      * @throws IllegalArgumentException if the {@code id} argument is null or empty.
      * @since 1.0.RC
      */
@@ -719,7 +719,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * @param options the {@link ApiKeyOptions} to use to customize the ApiKey resource upon retrieval.
      * @return an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a mapped account store
      *         with the specified {@link ApiKeyOptions}.
-     * @throws ResourceException
+     * @throws ResourceException when the ApiKey does not belong to the Account or the ApiKey does not exist.
      * @throws IllegalArgumentException if the {@code id} argument is null or empty, or if the {@code options} argument is null..
      * @since 1.0.RC
      */
@@ -738,7 +738,7 @@ public interface Application extends Resource, Saveable, Deletable {
 
     /**
      * Creates a new {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
-     * customize an {@code Api} authentication.
+     * customize an {@code Api} authentication via Oauth.
      * <pre>
      * <b>application.authenticateOauth(httpServletRequest)</b>
      *     .execute()

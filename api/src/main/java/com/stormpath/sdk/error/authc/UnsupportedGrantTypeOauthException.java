@@ -19,7 +19,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * UnsupportedGrantTypeOauthException
+ * Thrown when the requested grant type is not supported.
  *
  * @since 1.0.RC
  */

@@ -19,7 +19,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * InvalidAuthenticationRequestOauthException
+ * Thrown when an Oauth Authentication Request cannot be properly created.
  *
  * @since 1.0.RC
  */

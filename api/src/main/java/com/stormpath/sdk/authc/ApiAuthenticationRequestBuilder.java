@@ -32,7 +32,9 @@ public interface ApiAuthenticationRequestBuilder {
     /**
      * Returns an {@link ApiAuthenticationResult ApiAuthenticationResult} after a successful {@link AuthenticationRequest}.
      * <p/>
-     * The concrete type of the authentication result will depend on the request type; for example: {@code Api}, {@code BearerOauth}
+     * This generic builder will try to interpret the actual authentication request type based on its internal state.
+     * <p/>
+     * The concrete type of the authentication result will depend on the request type: {@code Api}, {@code BearerOauth}
      * or {@code BasicOauth}.
      *
      * @return If authentication was successful an {@link ApiAuthenticationResult} instance.

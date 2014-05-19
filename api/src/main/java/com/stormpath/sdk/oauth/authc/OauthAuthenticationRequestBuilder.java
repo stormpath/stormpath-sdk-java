@@ -34,6 +34,9 @@ public interface OauthAuthenticationRequestBuilder extends ApiAuthenticationRequ
 
     /**
      * Specifies the {@link ScopeFactory} to be used for this authentication request.
+     * <p/>
+     * Note that this method will return a new {@link BasicOauthAuthenticationRequestBuilder} with the current state of the
+     * this builder.
      *
      * @param scopeFactory the {@link ScopeFactory} to be used for this authentication request.
      * @return a new {@link BasicOauthAuthenticationRequestBuilder} instance created with the current state of the
@@ -42,17 +45,25 @@ public interface OauthAuthenticationRequestBuilder extends ApiAuthenticationRequ
     BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
 
     /**
-     * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request.
+     * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request in
+     * seconds.
+     * <p/>
+     * Note that this method will return a new {@link BasicOauthAuthenticationRequestBuilder} with the current state of the
+     * this builder.
      *
-     * @param ttl the time to live of this authentication request.
-     * @return a new {@link OauthAuthenticationRequestBuilder} instance created with the current state of the
+     * @param ttl the time to live (in seconds) of this authentication request.
+     * @return a new {@link BasicOauthAuthenticationRequestBuilder} instance created with the current state of the
      *         this builder.
      */
     BasicOauthAuthenticationRequestBuilder withTtl(long ttl);
 
     /**
+     * Specifies the location(s) where the <code>Bearer</code> shall be placed.
+     * <p/>
+     * Note that this method will return a new {@link BearerOauthAuthenticationRequestBuilder} with the current state of the
+     * this builder.
      *
-     * @param locations
+     * @param locations the location(s) for the <code>Bearer</code>.
      * @return a new {@link BearerOauthAuthenticationRequestBuilder} instance created with the current state of the
      *         this builder.
      */

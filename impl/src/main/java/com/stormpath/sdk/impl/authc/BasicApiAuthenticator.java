@@ -7,6 +7,7 @@ import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import com.stormpath.sdk.error.authc.DisabledAccountException;
+import com.stormpath.sdk.error.authc.DisabledApiKeyException;
 import com.stormpath.sdk.error.authc.IncorrectCredentialsException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -42,19 +43,20 @@ public class BasicApiAuthenticator {
 
         ApiKey apiKey = application.getApiKey(id, new DefaultApiKeyOptions().withAccount());
 
+        if (!apiKey.getSecret().equals(secret)) {
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(IncorrectCredentialsException.class);
+        }
+
         if (apiKey.getStatus() == ApiKeyStatus.DISABLED) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(DisabledAccountException.class);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(DisabledApiKeyException.class);
         }
 
         Account account = apiKey.getAccount();
 
-        if (apiKey.getAccount().getStatus() != AccountStatus.ENABLED) {
-            throw new DisabledAccountException(null, account.getStatus());
+        if (account.getStatus() != AccountStatus.ENABLED) {
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(DisabledAccountException.class);
         }
 
-        if (!apiKey.getSecret().equals(secret)) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(IncorrectCredentialsException.class);
-        }
         return new DefaultApiAuthenticationResult(dataStore, apiKey);
     }
 }

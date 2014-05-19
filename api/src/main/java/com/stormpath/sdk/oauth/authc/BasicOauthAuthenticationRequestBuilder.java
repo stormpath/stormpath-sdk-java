@@ -40,9 +40,10 @@ public interface BasicOauthAuthenticationRequestBuilder {
     public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory);
 
     /**
-     * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request.
+     * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request
+     * in seconds.
      *
-     * @param ttl the time to live of this authentication request.
+     * @param ttl the time to live (in seconds) of this authentication request.
      * @return this instance for method chaining.
      */
     public BasicOauthAuthenticationRequestBuilder withTtl(long ttl);

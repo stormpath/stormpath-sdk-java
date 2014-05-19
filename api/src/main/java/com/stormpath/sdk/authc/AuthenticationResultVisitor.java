@@ -26,11 +26,31 @@ import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
  */
 public interface AuthenticationResultVisitor {
 
+    /**
+     * Visits the {@link AuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     *
+     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     */
     void visit(AuthenticationResult result);
 
+    /**
+     * Visits the {@link ApiAuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     *
+     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     */
     void visit(ApiAuthenticationResult result);
 
+    /**
+     * Visits the {@link OauthAuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     *
+     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     */
     void visit(OauthAuthenticationResult result);
 
+    /**
+     * Visits the {@link BasicOauthAuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     *
+     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     */
     void visit(BasicOauthAuthenticationResult result);
 }

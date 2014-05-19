@@ -24,6 +24,8 @@ public class DefaultTokenResponse implements TokenResponse {
 
     private final String tokenType;
 
+    private final String applicationHref;
+
     private final OAuthResponse oAuthResponse;
 
     private DefaultTokenResponse(Builder builder) {
@@ -32,9 +34,11 @@ public class DefaultTokenResponse implements TokenResponse {
         refreshToken = builder.refreshToken;
         scope = builder.scope;
         tokenType = builder.tokenType;
+        applicationHref = builder.applicationHref;
 
         Assert.hasText(accessToken);
         Assert.hasText(expiresIn);
+        Assert.hasText(applicationHref);
 
         try {
             oAuthResponse = builder.tokenResponseBuilder.buildJSONMessage();
@@ -64,6 +68,11 @@ public class DefaultTokenResponse implements TokenResponse {
     }
 
     @Override
+    public String getApplicationHref() {
+        return applicationHref;
+    }
+
+    @Override
     public String toJson() {
         return oAuthResponse.getBody();
     }
@@ -83,6 +92,7 @@ public class DefaultTokenResponse implements TokenResponse {
         private String refreshToken;
         private String scope;
         private String tokenType;
+        private String applicationHref;
 
         private OAuthASResponse.OAuthTokenResponseBuilder tokenResponseBuilder;
 
@@ -112,6 +122,12 @@ public class DefaultTokenResponse implements TokenResponse {
         public Builder refreshToken(String refreshToken) {
             this.refreshToken = refreshToken;
             tokenResponseBuilder.setRefreshToken(refreshToken);
+            return this;
+        }
+
+        public Builder applicationHref(String applicationHref) {
+            this.applicationHref = applicationHref;
+            tokenResponseBuilder.location(applicationHref);
             return this;
         }
 

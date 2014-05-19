@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth.authc;
 
 /**
- * BearerLocation
+ * Specifies the possible locations for the Bearer.
  *
  * @since 1.0.RC
  */

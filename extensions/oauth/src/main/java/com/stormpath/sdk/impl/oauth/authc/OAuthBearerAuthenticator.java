@@ -128,7 +128,7 @@ public class OAuthBearerAuthenticator {
 
         long now = System.currentTimeMillis();
 
-        if ((created + timeToLive) > now) {
+        if ((created + timeToLive * 1000) > now) {
             throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "expired");
         }
     }

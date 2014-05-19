@@ -16,24 +16,24 @@
 package com.stormpath.sdk.oauth.permission;
 
 /**
- * TokenResponse
+ * The TokenResponse is a wrapper for the Bearer result of the {@link com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder Basic Authentication}.
+ * It provides access to all the disaggregated information contained in the Bearer.
  *
  * @since 1.0.RC
  */
 public interface TokenResponse {
 
     /**
-     * Returns a base64 (url safe) string that
+     * Returns the <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">Json Web Token</a> of this Bearer.
      *
-     * @return
+     * @return the JWT of this Bearer.
      */
     String getAccessToken();
 
-
     /**
-     * Returns the space separated collection of scope.
+     * Returns the space separated collection of scopes.
      *
-     * @return the space separated collection of scope.
+     * @return the space separated collection of scopes.
      */
     String getScope();
 
@@ -52,8 +52,11 @@ public interface TokenResponse {
     String getExpiresIn();
 
     /**
+     * <b>NOTE: Not yer supported.<b/>
+     * <p/>
+     * Returns the refresh token of this Bearer.
      *
-     * @return
+     * @return the refresh token of this Bearer.
      */
     String getRefreshToken();
 
@@ -63,4 +66,11 @@ public interface TokenResponse {
      * @return all the non-values of this token response as json (body message).
      */
     String toJson();
+
+    /**
+     * Returns the Application Href identifying the Application this Bearer corresponds to.
+     *
+     * @return the Application Href identifying the Application this Bearer corresponds to.
+     */
+    String getApplicationHref();
 }
