@@ -127,7 +127,6 @@ public class DefaultTokenResponse implements TokenResponse {
 
         public Builder applicationHref(String applicationHref) {
             this.applicationHref = applicationHref;
-            tokenResponseBuilder.location(applicationHref);
             return this;
         }
 
