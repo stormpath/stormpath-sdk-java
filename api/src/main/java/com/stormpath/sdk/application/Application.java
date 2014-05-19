@@ -320,18 +320,19 @@ public interface Application extends Resource, Saveable, Deletable {
     Tenant getTenant();
 
     /**
-     * Sends a password reset email for the specified account username or email address.  The email will contain
+     * Sends a password reset email for the specified account email address.  The email will contain
      * a password reset link that the user can click or copy into their browser address bar.
      * <p/>
      * This method merely sends the password reset email that contains the link and nothing else.  You will need to
      * handle the link requests and then reset the account's password as described in the
      * {@link #verifyPasswordResetToken(String)} JavaDoc.
      *
-     * @param accountUsernameOrEmail a username or email address of an Account that may login to the application.
-     * @return the account corresponding to the specified username or email address.
+     * @param email an email address of an Account that may login to the application.
+     * @return the account corresponding to the specified email address.
      * @see #verifyPasswordResetToken(String)
+     * @see #resetPassword(String, String)
      */
-    Account sendPasswordResetEmail(String accountUsernameOrEmail);
+    Account sendPasswordResetEmail(String email);
 
     /**
      * Verifies a password reset token in a user-clicked link within an email.
@@ -369,6 +370,22 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.4
      */
     Account verifyPasswordResetToken(String token);
+
+    /**
+     * Verifies the password reset token (received in the user's email) and immediately changes the password in the same
+     * request (if the token is valid).
+     * <p/>
+     * NOTE: Once the token has been successfully used, it is immediately invalidated and can't be used again. If you need
+     * to change the password again, you will previously need to execute {@link #sendPasswordResetEmail(String)} again in order
+     * to obtain a new password reset token.
+     *
+     * @param passwordResetToken the verification token, usually obtained as a request parameter by your application.
+     * @param newPassword the new password that will be set to the Account if the token is successfully validated.
+     * @return the Account matching the specified token.
+     * @see #sendPasswordResetEmail(String)
+     * @since 1.0.RC
+     */
+    Account resetPassword(String passwordResetToken, String newPassword);
 
     /**
      * Authenticates an account's submitted principals and credentials (e.g. username and password).  The account must

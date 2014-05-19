@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.fail
 
 /**
  * Password Reset Integration Tests for Stormpath developers.
@@ -86,5 +87,43 @@ class PasswordResetManualIT extends ClientIT {
         Account authenticated = appToTest.authenticateAccount(request).account
 
         assertEquals acct.href, authenticated.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test //spToken must be set to the password_reset_key value in the datastore for the specified account
+    void testResetPasswordAfterEmail() {
+
+        Tenant tenant = client.getCurrentTenant();
+
+        Application appToTest = null;
+
+        ApplicationList applications = tenant.getApplications()
+        for (Application app : applications) {
+            if (app.name != "Stormpath") {
+                appToTest = app;
+                break;
+            }
+        }
+
+        def newPassword = 'Aabc1234'
+        def acct = appToTest.resetPassword(spToken, newPassword)
+
+        assertEquals(email, acct.email, "Could not retrieve correct account during password reset.")
+
+        def request = new UsernamePasswordRequest(email, newPassword)
+        Account authenticated = appToTest.authenticateAccount(request).account
+
+        assertEquals acct.href, authenticated.href
+
+        //Let's validate the reset token url has disappeared after being successfully used
+        try {
+            appToTest.resetPassword(spToken, newPassword)
+            fail("should have thrown")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            //exception expected
+        }
+
     }
 }
