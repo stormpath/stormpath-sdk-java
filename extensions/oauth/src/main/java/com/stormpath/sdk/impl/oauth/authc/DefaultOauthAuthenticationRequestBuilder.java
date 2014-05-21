@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
+import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.BearerLocation;
@@ -50,7 +50,7 @@ public class DefaultOauthAuthenticationRequestBuilder implements OauthAuthentica
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OAuthHttpServletRequest((HttpRequest) httpRequest);
+            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }

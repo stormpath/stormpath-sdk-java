@@ -44,15 +44,15 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * OAuthHttpServletRequest
+ * OauthHttpServletRequest
  *
  * @since 1.0.RC
  */
-public class OAuthHttpServletRequest implements HttpServletRequest {
+public class OauthHttpServletRequest implements HttpServletRequest {
 
     private final HttpRequest httpRequest;
 
-    public OAuthHttpServletRequest(HttpRequest httpRequest) {
+    public OauthHttpServletRequest(HttpRequest httpRequest) {
         this.httpRequest = httpRequest;
     }
 
@@ -73,20 +73,22 @@ public class OAuthHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getHeader(String name) {
-        String[] headers = httpRequest.getHeaders().get(name);
-        if (headers == null || headers.length == 0) {
-            return null;
+        for (Map.Entry<String, String[]> entry : httpRequest.getHeaders().entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(name)) {
+                return entry.getValue()[0];
+            }
         }
-        return headers[0];
+        return null;
     }
 
     @Override
     public Enumeration<String> getHeaders(String name) {
-        String[] headers = httpRequest.getHeaders().get(name);
-        if (headers == null || headers.length == 0) {
-            return Collections.emptyEnumeration();
+        for (Map.Entry<String, String[]> entry : httpRequest.getHeaders().entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(name)) {
+                return Collections.enumeration(Arrays.asList(entry.getValue()));
+            }
         }
-        return Collections.enumeration(Arrays.asList(headers));
+        return Collections.emptyEnumeration();
     }
 
     @Override

@@ -20,7 +20,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
+import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.permission.ScopeFactory;
 import org.apache.oltu.oauth2.as.request.OAuthTokenRequest;
@@ -73,7 +73,7 @@ public class DefaultBasicOauthAuthenticationRequest extends OAuthTokenRequest im
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            httpServletRequest = new OAuthHttpServletRequest((HttpRequest) httpRequest);
+            httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }

@@ -155,6 +155,11 @@
                 <artifactId>stormpath-sdk-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-sdk-oauth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- 3rd party dependencies: -->
             <dependency>

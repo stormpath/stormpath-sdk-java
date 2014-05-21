@@ -29,13 +29,12 @@ import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
+import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
  * Class ApiAuthenticationIT is used for testing Api Authentication methods.
@@ -55,6 +54,41 @@ class ApiAuthenticationIT extends ClientIT {
     }
 
     @Test
+    void testBasicAuthentication() {
+
+        def apiKey = account.createApiKey()
+
+        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
+
+        verifySuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+
+        def newApiKey = account.createApiKey()
+
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(newApiKey.id, newApiKey.secret), null))
+
+        verifySuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+
+        apiKey.setStatus(ApiKeyStatus.DISABLED)
+        apiKey.save()
+
+        Map parameters = convertToParametersMap([:])
+
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null)).parameters(parameters)
+
+        OauthHttpServletRequest servletRequest = new OauthHttpServletRequest(httpRequestBuilder.build())
+
+        verifyError(servletRequest, DisabledApiKeyException)
+
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(newApiKey.id, newApiKey.secret), null))
+
+        servletRequest = new OauthHttpServletRequest(httpRequestBuilder.build())
+
+        verifySuccessfulAuthentication(servletRequest, account, DefaultApiAuthenticationResult)
+    }
+
+    @Test
     void testApiKeyAuthenticationErrors() {
 
         def apiKey = account.createApiKey()
@@ -63,31 +97,31 @@ class ApiAuthenticationIT extends ClientIT {
 
         verifyError(httpRequestBuilder.build(), MissingApiKeyException)
 
-        httpRequestBuilder.headers(["Authorization" : convertToArray("this-is-not-correct-cred")])
+        httpRequestBuilder.headers(["Authorization": convertToArray("this-is-not-correct-cred")])
 
         verifyError(httpRequestBuilder.build(), MissingApiKeyException)
 
-        httpRequestBuilder.headers(["Authorization" : convertToArray("SAuthc MyUserAnd")])
+        httpRequestBuilder.headers(["Authorization": convertToArray("SAuthc MyUserAnd")])
 
         verifyError(httpRequestBuilder.build(), UnsupportedAuthenticationSchemeException)
 
-        httpRequestBuilder.headers(["Authorization" : convertToArray("Basic @#%^&*")])
+        httpRequestBuilder.headers(["Authorization": convertToArray("Basic @#%^&*")])
 
         verifyError(httpRequestBuilder.build(), InvalidApiKeyException)
 
-        httpRequestBuilder.headers(["Authorization" : convertToArray("Basic this-is-not-correct")])
+        httpRequestBuilder.headers(["Authorization": convertToArray("Basic this-is-not-correct")])
 
         verifyError(httpRequestBuilder.build(), InvalidApiKeyException)
 
-        httpRequestBuilder.headers(createBasicHttpHeaders(createBasicCredentials(apiKey.id, "")))
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, ""), null))
 
         verifyError(httpRequestBuilder.build(), IncorrectCredentialsException)
 
-        httpRequestBuilder.headers(createBasicHttpHeaders(createBasicCredentials(apiKey.id, "wrong-value")))
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, "wrong-value"), null))
 
         verifyError(httpRequestBuilder.build(), IncorrectCredentialsException)
 
-        httpRequestBuilder.headers(createBasicHttpHeaders(createBasicCredentials(apiKey.id, apiKey.secret)))
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null))
 
         verifySuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
 
@@ -105,9 +139,9 @@ class ApiAuthenticationIT extends ClientIT {
         verifyError(httpRequestBuilder.build(), DisabledAccountException)
     }
 
-    void verifySuccessfulAuthentication(Object httpRequest, Account expectedAccount, Class expectedResultClass){
+    void verifySuccessfulAuthentication(Object httpRequest, Account expectedAccount, Class expectedResultClass) {
 
-        def authResult =  application.authenticate(httpRequest).execute()
+        def authResult = application.authenticate(httpRequest).execute()
 
         assertTrue expectedResultClass.isAssignableFrom(authResult.class)
 
@@ -118,36 +152,57 @@ class ApiAuthenticationIT extends ClientIT {
     void verifyError(Object httpRequest, Class exceptionClass) {
         try {
             application.authenticate(httpRequest).execute()
-            fail("must throw an exception")
+            fail("ResourceException: " + exceptionClass.toString() + "was expected")
         } catch (com.stormpath.sdk.resource.ResourceException exception) {
             assertTrue exceptionClass.isAssignableFrom(exception.class);
         }
     }
 
-    def String[] convertToArray(String value){
+    def static String[] convertToArray(String value) {
 
         String[] array = [value]
 
         array
     }
 
-    def Map createBasicHttpHeaders(String basicCredentials) {
+    def static Map createHttpHeaders(String authzHeader, String contentType) {
 
         def headers = [:]
-        String[] basicAuthHeader = ["Basic " + basicCredentials]
-        headers.put("content-type", "application/json;charset=utf-8")
-        headers.put("authorization", basicAuthHeader)
+        String[] authzHeaderArray = [authzHeader]
+
+        if (contentType == null || contentType.isEmpty()) {
+            contentType = "application/json"
+        }
+
+        String[] contentTypeArray = [contentType]
+        headers.put("content-type", contentTypeArray)
+
+        headers.put("authorization", authzHeaderArray)
 
         headers
     }
 
-    def String createBasicCredentials(String id, String secret) {
+    def static Map convertToParametersMap(Map<String, String> inputMap) {
+
+        Map<String, String[]> result = new HashMap<>()
+
+        for (Map.Entry<String, String> entry : inputMap.entrySet()) {
+
+            String[] value = [entry.value]
+
+            result.put(entry.key, value)
+        }
+
+        result
+    }
+
+    def static String createBasicAuthzHeader(String id, String secret) {
 
         String cred = id + ":" + secret
 
         byte[] bytes = cred.getBytes("UTF-8")
 
-        return Base64.encodeToString(bytes, false)
+        "Basic " + Base64.encodeToString(bytes, false)
     }
 
     def Account createTestAccount(Application app) {
