@@ -60,8 +60,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sets the application's name.  Application names must be unique within a Tenant.
      *
      * @param name tenant-unique name of the application.
+     * @return this instance for method chaining.
      */
-    void setName(String name);
+    Application setName(String name);
 
     /**
      * Returns the application description.
@@ -74,8 +75,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sets the application description.
      *
      * @param description the application description.
+     * @return this instance for method chaining.
      */
-    void setDescription(String description);
+    Application setDescription(String description);
 
     /**
      * Returns the application's status.  Application users may login to an enabled application.  They may not login
@@ -90,8 +92,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * to a disabled application.
      *
      * @param status the application's status.
+     * @return this instance for method chaining.
      */
-    void setStatus(ApplicationStatus status);
+    Application setStatus(ApplicationStatus status);
 
     /**
      * Returns a paginated list of all accounts that may login to the application.
@@ -323,18 +326,19 @@ public interface Application extends Resource, Saveable, Deletable {
     Tenant getTenant();
 
     /**
-     * Sends a password reset email for the specified account username or email address.  The email will contain
+     * Sends a password reset email for the specified account email address.  The email will contain
      * a password reset link that the user can click or copy into their browser address bar.
      * <p/>
      * This method merely sends the password reset email that contains the link and nothing else.  You will need to
      * handle the link requests and then reset the account's password as described in the
      * {@link #verifyPasswordResetToken(String)} JavaDoc.
      *
-     * @param accountUsernameOrEmail a username or email address of an Account that may login to the application.
-     * @return the account corresponding to the specified username or email address.
+     * @param email an email address of an Account that may login to the application.
+     * @return the account corresponding to the specified email address.
      * @see #verifyPasswordResetToken(String)
+     * @see #resetPassword(String, String)
      */
-    Account sendPasswordResetEmail(String accountUsernameOrEmail);
+    Account sendPasswordResetEmail(String email);
 
     /**
      * Verifies a password reset token in a user-clicked link within an email.
@@ -372,6 +376,22 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 0.4
      */
     Account verifyPasswordResetToken(String token);
+
+    /**
+     * Verifies the password reset token (received in the user's email) and immediately changes the password in the same
+     * request (if the token is valid).
+     * <p/>
+     * NOTE: Once the token has been successfully used, it is immediately invalidated and can't be used again. If you need
+     * to change the password again, you will previously need to execute {@link #sendPasswordResetEmail(String)} again in order
+     * to obtain a new password reset token.
+     *
+     * @param passwordResetToken the verification token, usually obtained as a request parameter by your application.
+     * @param newPassword the new password that will be set to the Account if the token is successfully validated.
+     * @return the Account matching the specified token.
+     * @see #sendPasswordResetEmail(String)
+     * @since 1.0.RC
+     */
+    Account resetPassword(String passwordResetToken, String newPassword);
 
     /**
      * Authenticates an account's submitted principals and credentials (e.g. username and password).  The account must
@@ -650,7 +670,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * If {@link #createAccount }
      *
      * @param mapping the new AccountStoreMapping resource to add to the Application's AccountStoreMapping list.
-     * @return the newly created
+     * @return the newly created AccountStoreMapping instance.
      * @throws ResourceException
      * @since 0.9
      */

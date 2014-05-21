@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,9 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore {
      * {@link com.stormpath.sdk.error.Error Error}
      *
      * @param name the group's name, which must be unique among all other groups within a Directory.
+     * @return this instance for method chaining.
      */
-    void setName(String name);
+    Group setName(String name);
 
     /**
      * Returns the group's description.  This is an optional property and may be null or empty.
@@ -63,8 +64,9 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore {
      * Sets the group's description.  This is an optional property and may be null or empty.
      *
      * @param description the group's description.  This is an optional property and may be null or empty.
+     * @return this instance for method chaining.
      */
-    void setDescription(String description);
+    Group setDescription(String description);
 
     /**
      * Returns the Group's status.  If a group is mapped to an Application as an Account Store (for login purposes),
@@ -81,8 +83,9 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore {
      * Groups mapped to an Application may login to that application.
      *
      * @param status the Group's status.
+     * @return this instance for method chaining.
      */
-    void setStatus(GroupStatus status);
+    Group setStatus(GroupStatus status);
 
     /**
      * Returns the Stormpath CustomData owned by this Group resource.

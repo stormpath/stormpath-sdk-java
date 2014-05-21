@@ -1,4 +1,8 @@
 /*
+<<<<<<< HEAD
+=======
+ * Copyright 2014 Stormpath, Inc.
+>>>>>>> 3f6447842b280844a7c83c573b22f666dbf7d864
  *
  *  * Copyright 2014 Stormpath, Inc.
  *  *
@@ -59,10 +63,10 @@ class DirectoryIT extends ClientIT {
         def email = 'johndeleteme@nowhere.com'
 
         Account account = client.instantiate(Account)
-        account.givenName = 'John'
-        account.surname = 'DELETEME'
-        account.email =  email
-        account.password = 'Changeme1!'
+        account = account.setGivenName('John')
+            .setSurname('DELETEME')
+            .setEmail(email)
+            .setPassword('Changeme1!')
 
         dir.createAccount(account)
 

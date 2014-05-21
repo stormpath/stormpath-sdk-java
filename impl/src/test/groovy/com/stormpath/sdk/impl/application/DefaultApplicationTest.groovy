@@ -94,9 +94,9 @@ class DefaultApplicationTest {
 
         assertNull(defaultApplication.getStatus())
 
-        defaultApplication.setStatus(ApplicationStatus.DISABLED)
-        defaultApplication.setName("App Name")
-        defaultApplication.setDescription("App Description")
+        defaultApplication = defaultApplication.setStatus(ApplicationStatus.DISABLED)
+            .setName("App Name")
+            .setDescription("App Description")
 
         assertEquals(defaultApplication.getStatus(), ApplicationStatus.DISABLED)
         assertEquals(defaultApplication.getName(), "App Name")
@@ -395,17 +395,17 @@ class DefaultApplicationTest {
         expect(group.getHref()).andReturn(groupHref)
         expect(iterator.hasNext()).andReturn(false)
         expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setAccountStore(group))
+        expect(newAccountStoreMapping.setAccountStore(group)).andReturn(newAccountStoreMapping)
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         def modifiedApp = new DefaultApplication(null, newPropertiesState)
 
-        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
-        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
         expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setDefaultAccountStore(true))
+        expect(newAccountStoreMapping.setDefaultAccountStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
         newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
@@ -419,7 +419,7 @@ class DefaultApplicationTest {
         expect(iterator.next()).andReturn(accountStoreMapping)
         expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
-        expect(accountStoreMapping.setDefaultAccountStore(true))
+        expect(accountStoreMapping.setDefaultAccountStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
         newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
@@ -470,17 +470,17 @@ class DefaultApplicationTest {
         expect(group.getHref()).andReturn(groupHref)
         expect(iterator.hasNext()).andReturn(false)
         expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setAccountStore(group))
+        expect(newAccountStoreMapping.setAccountStore(group)).andReturn(newAccountStoreMapping)
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         def modifiedApp = new DefaultApplication(null, newPropertiesState)
 
-        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
-        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE))
+        expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
+        expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
         expect(dataStore.create("/accountStoreMappings", newAccountStoreMapping)).andReturn(newAccountStoreMapping)
-        expect(newAccountStoreMapping.setDefaultGroupStore(true))
+        expect(newAccountStoreMapping.setDefaultGroupStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
         newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
@@ -494,7 +494,7 @@ class DefaultApplicationTest {
         expect(iterator.next()).andReturn(accountStoreMapping)
         expect(accountStoreMapping.getAccountStore()).andReturn(accountStore)
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
-        expect(accountStoreMapping.setDefaultGroupStore(true))
+        expect(accountStoreMapping.setDefaultGroupStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
         newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
@@ -511,7 +511,7 @@ class DefaultApplicationTest {
         verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
     }
 
-    //@since 1.0.RC
+    //@since 1.0.beta
     @Test
     void testGetAccount() {
 
@@ -541,7 +541,92 @@ class DefaultApplicationTest {
         verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
     }
 
-    //@since 1.0.RC
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testResetPassword() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+
+        def account = createStrictMock(Account)
+        def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
+                account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+        def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
+        expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
+        expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        def instantiatedPasswordResetToken = new DefaultPasswordResetToken(internalDataStore, innerProperties)
+        expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"])) andReturn(instantiatedPasswordResetToken)
+
+        def createdPasswordResetToken = new DefaultPasswordResetToken(internalDataStore, [account: account])
+        expect(internalDataStore.create(properties.passwordResetTokens.href + "/token", instantiatedPasswordResetToken, PasswordResetToken)) andReturn(createdPasswordResetToken)
+
+        def authenticationResult = createStrictMock(AuthenticationResult)
+        def defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
+        expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
+        defaultBasicLoginAttempt.setType("basic")
+        defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+        expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
+
+        replay internalDataStore, account
+
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult)
+
+        verify internalDataStore, account
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testResetPasswordInvalidParameters() {
+
+        def defaultApplication = new DefaultApplication(null)
+
+        try {
+            defaultApplication.resetPassword("", "myNewPassword")
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "passwordResetToken cannot be empty or null.")
+        }
+
+        try {
+            defaultApplication.resetPassword(null, "myNewPassword")
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "passwordResetToken cannot be empty or null.")
+        }
+
+        try {
+            defaultApplication.resetPassword("someToken", "")
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "newPassword cannot be empty or null.")
+        }
+
+        try {
+            defaultApplication.resetPassword("someToken", null)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "newPassword cannot be empty or null.")
+        }
+
+    }
+
+    //@since 1.0.beta
     static class ProviderAccountAccessEquals implements IArgumentMatcher {
 
         private ProviderAccountAccess expected

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,14 @@ import java.util.Map;
  */
 public class DefaultPasswordResetToken extends AbstractResource implements PasswordResetToken {
 
+    // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
+    static final StringProperty PASSWORD = new StringProperty("password");
+
+    // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT, PASSWORD);
 
     public DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
@@ -54,12 +58,22 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     }
 
     @Override
-    public void setEmail(String email) {
+    public PasswordResetToken setEmail(String email) {
         setProperty(EMAIL, email);
+        return this;
     }
 
     @Override
     public Account getAccount() {
         return getResourceProperty(ACCOUNT);
     }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Override
+    public void setPassword(String password) {
+        setProperty(PASSWORD, password);
+    }
+
 }
