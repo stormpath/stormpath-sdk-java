@@ -19,6 +19,9 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.authc.ApiAuthenticationResult
+import com.stormpath.sdk.authc.AuthenticationResult
+import com.stormpath.sdk.authc.AuthenticationResultVisitor
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.error.authc.DisabledAccountException
 import com.stormpath.sdk.error.authc.DisabledApiKeyException
@@ -31,6 +34,9 @@ import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
+import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
+import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
+import com.stormpath.sdk.oauth.permission.TokenResponse
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -62,13 +68,13 @@ class ApiAuthenticationIT extends ClientIT {
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
 
-        verifySuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
 
         def newApiKey = account.createApiKey()
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(newApiKey.id, newApiKey.secret), null))
 
-        verifySuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
 
         apiKey.setStatus(ApiKeyStatus.DISABLED)
         apiKey.save()
@@ -85,7 +91,26 @@ class ApiAuthenticationIT extends ClientIT {
 
         servletRequest = new OauthHttpServletRequest(httpRequestBuilder.build())
 
-        verifySuccessfulAuthentication(servletRequest, account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(servletRequest, account, DefaultApiAuthenticationResult)
+    }
+
+    @Test
+    void testOauthAuthentication() {
+
+        def apiKey = account.createApiKey()
+
+        def parameters = convertToParametersMap(["grant_type": "client_credentials"])
+
+        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+
+        def result = (BasicOauthAuthenticationResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, BasicOauthAuthenticationResult)
+
+        httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
+
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, OauthAuthenticationResult)
+
     }
 
     @Test
@@ -123,7 +148,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null))
 
-        verifySuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
 
         apiKey.setStatus(ApiKeyStatus.DISABLED)
         apiKey.save()
@@ -139,14 +164,53 @@ class ApiAuthenticationIT extends ClientIT {
         verifyError(httpRequestBuilder.build(), DisabledAccountException)
     }
 
-    void verifySuccessfulAuthentication(Object httpRequest, Account expectedAccount, Class expectedResultClass) {
+    def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Account expectedAccount, Class expectedResultClass) {
 
         def authResult = application.authenticate(httpRequest).execute()
+
+        verifySuccessfulAuthentication(authResult, application, expectedAccount, expectedResultClass)
+
+        authResult
+    }
+
+    static void verifySuccessfulAuthentication(AuthenticationResult authResult, Application expectedApp, Account expectedAccount, Class expectedResultClass) {
 
         assertTrue expectedResultClass.isAssignableFrom(authResult.class)
 
         assertEquals expectedAccount.href, authResult.account.href
 
+        assertEquals expectedAccount.givenName, authResult.account.givenName
+
+        authResult.accept(new AuthenticationResultVisitor() {
+            @Override
+            void visit(AuthenticationResult result) {
+                fail("Error: This must never received in ApiAuthentication.")
+            }
+
+            @Override
+            void visit(ApiAuthenticationResult result) {
+                assertNotNull result.apiKey
+            }
+
+            @Override
+            void visit(OauthAuthenticationResult result) {
+                assertNotNull result.apiKey
+            }
+
+            @Override
+            void visit(BasicOauthAuthenticationResult result) {
+
+                TokenResponse tokenResponse = result.tokenResponse
+
+                assertNotNull tokenResponse
+
+                assertEquals tokenResponse.applicationHref, expectedApp.href
+                assertNotNull tokenResponse.accessToken
+                assertEquals 3, new StringTokenizer(tokenResponse.accessToken, ".").countTokens()
+                assertEquals tokenResponse.tokenType, "Bearer"
+                assertEquals tokenResponse.refreshToken, null
+            }
+        })
     }
 
     void verifyError(Object httpRequest, Class exceptionClass) {
@@ -203,6 +267,11 @@ class ApiAuthenticationIT extends ClientIT {
         byte[] bytes = cred.getBytes("UTF-8")
 
         "Basic " + Base64.encodeToString(bytes, false)
+    }
+
+    def static String createBearerAuthzHeader(String accessToken) {
+
+        "Bearer " + accessToken
     }
 
     def Account createTestAccount(Application app) {

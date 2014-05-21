@@ -23,9 +23,9 @@ import com.stormpath.sdk.resource.ResourceException;
  *
  * @since 1.0.RC
  */
-public class InvalidAccessTokenOauthException extends ResourceException {
+public class AccessTokenOauthException extends ResourceException {
 
-    public InvalidAccessTokenOauthException(Error error) {
+    public AccessTokenOauthException(Error error) {
         super(error);
     }
 }

@@ -1,8 +1,8 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.error.authc.InvalidAuthenticationRequestOauthException;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
+import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
@@ -112,7 +112,7 @@ public class ApiAuthenticationRequestFactory {
         try {
             return Classes.instantiate(constructor, httpRequest);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(InvalidAuthenticationRequestOauthException.class, e.getMessage());
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
     }
 

@@ -19,13 +19,30 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * Thrown when the requested grant type is not supported.
+ * A sub-class of {@link com.stormpath.sdk.resource.ResourceException} representing an attempt fail an oauth authentication.
  *
  * @since 1.0.RC
  */
-public class UnsupportedGrantTypeOauthException extends ResourceException {
+public class OauthAuthenticationException extends ResourceException {
 
-    public UnsupportedGrantTypeOauthException(Error error) {
+    public static final String INVALID_REQUEST = "invalid_request";
+
+    public static final String INVALID_CLIENT = "invalid_client";
+
+    public static final String UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type";
+
+    public static final String INVALID_GRANT = "invalid_grant";
+
+    public static final String INVALID_SCOPE = "invalid_scope";
+
+    private final String oauthError;
+
+    public OauthAuthenticationException(Error error, String oauthError) {
         super(error);
+        this.oauthError = oauthError;
+    }
+
+    public String getOauthError() {
+        return oauthError;
     }
 }

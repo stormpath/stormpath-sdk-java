@@ -20,9 +20,8 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.error.authc.AccessTokenOauthException;
 import com.stormpath.sdk.error.authc.DisabledApiKeyException;
-import com.stormpath.sdk.error.authc.InvalidAccessTokenOauthException;
-import com.stormpath.sdk.error.authc.InvalidApiKeyException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
@@ -75,7 +74,7 @@ public class OAuthBearerAuthenticator {
         try {
             bearerValue = request.getAccessToken();
         } catch (OAuthSystemException e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "");
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(AccessTokenOauthException.class, "access_token is invalid.");
         }
 
         StringTokenizer tokenizer = new StringTokenizer(bearerValue, JWT_BEARER_TOKEN_SEPARATOR);
@@ -91,18 +90,18 @@ public class OAuthBearerAuthenticator {
         String calculatedSignature = jwtSigner.calculateSignature(base64JwtHeader, base64JsonPayload);
 
         if (!jwtSignature.equals(calculatedSignature)) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(InvalidAccessTokenOauthException.class, "error: invalid credentials");
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(AccessTokenOauthException.class, "access_token is invalid.");
         }
 
         byte[] jsonBytes = Base64.decodeBase64(base64JsonPayload);
 
         Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
 
-        long createdTimestamp = getRequiredValue(jsonMap, OAuthBasicAuthenticator.TIMESTAMP_PARAM_NAME);
+        Number createdTimestamp = getRequiredValue(jsonMap, OAuthBasicAuthenticator.TIMESTAMP_PARAM_NAME);
 
         Number expiresIn = getRequiredValue(jsonMap, OAUTH_EXPIRES_IN);
 
-        validateTokenNotExpired(createdTimestamp, expiresIn.longValue());
+        validateTokenNotExpired(createdTimestamp.longValue(), expiresIn.longValue());
 
         String apiKeyId = getRequiredValue(jsonMap, OAUTH_CLIENT_ID);
 
@@ -128,8 +127,8 @@ public class OAuthBearerAuthenticator {
 
         long now = System.currentTimeMillis();
 
-        if ((created + timeToLive * 1000) > now) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(InvalidApiKeyException.class, "expired");
+        if (now > ((created + timeToLive) * 1000)) {
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(AccessTokenOauthException.class, "access_token is expired.");
         }
     }
 

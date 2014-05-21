@@ -258,7 +258,7 @@ public class OauthHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getContentType() {
-        throw new UnsupportedOperationException("getContentType() method hasn't been implemented.");
+        return getHeader("Content-Type");
     }
 
     @Override

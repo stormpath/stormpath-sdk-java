@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.error.authc.InvalidAuthenticationRequestOauthException;
+import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
@@ -67,7 +67,7 @@ public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauth
         try {
             request = new DefaultBasicOauthAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationRequestOauthException.class, e.getMessage());
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

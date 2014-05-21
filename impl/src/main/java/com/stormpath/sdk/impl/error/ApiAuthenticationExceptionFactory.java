@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.error;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.error.authc.DisabledAccountException;
+import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.ResourceException;
 
@@ -34,10 +35,14 @@ public class ApiAuthenticationExceptionFactory {
 
     public static final String MORE_INFO = "http://docs.stormpath.com/java/quickstart";
 
+    private static final String DEFAULT_DEVELOPER_MESSAGE = "Authentication with a valid API Key is required.";
+
+    private static final String DEFAULT_CLIENT_MESSAGE = "Authentication Required";
+
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage("Invalid username and/or password.").message("Authentication Required").build();
+                .developerMessage(DEFAULT_DEVELOPER_MESSAGE).message(DEFAULT_CLIENT_MESSAGE).build();
 
         Constructor<? extends ResourceException> constructor = Classes.getConstructor(clazz, Error.class);
 
@@ -47,7 +52,7 @@ public class ApiAuthenticationExceptionFactory {
     public static DisabledAccountException newDisabledAccountException(AccountStatus accountStatus) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage("Invalid username and/or password.").message("Authentication Required").build();
+                .developerMessage(DEFAULT_DEVELOPER_MESSAGE).message(DEFAULT_CLIENT_MESSAGE).build();
 
         return new DisabledAccountException(error, accountStatus);
     }
@@ -56,9 +61,10 @@ public class ApiAuthenticationExceptionFactory {
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz, String message) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage(message).message("Authentication Required").build();
+                .developerMessage(message).message(DEFAULT_CLIENT_MESSAGE).build();
 
-        Constructor<? extends ResourceException> constructor = Classes.getConstructor(clazz, Error.class);
+
+        Constructor<? extends ResourceException> constructor = getConstructorFromClass(clazz);
 
         return Classes.instantiate(constructor, error);
     }
@@ -68,11 +74,18 @@ public class ApiAuthenticationExceptionFactory {
         String oauthClientError = "error: " + oauthError;
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage("Oauth authentication failed").message(oauthClientError).build();
+                .developerMessage(DEFAULT_DEVELOPER_MESSAGE).message(oauthClientError).build();
 
-        Constructor<? extends ResourceException> constructor = Classes.getConstructor(clazz, Error.class);
+        Constructor<? extends ResourceException> constructor = getConstructorFromClass(clazz);
 
         return Classes.instantiate(constructor, error);
+    }
+
+    private static Constructor<? extends ResourceException> getConstructorFromClass(Class<? extends ResourceException> clazz) {
+        if (OauthAuthenticationException.class.isAssignableFrom(clazz)) {
+            return Classes.getConstructor(clazz, Error.class, String.class);
+        }
+        return Classes.getConstructor(clazz, Error.class);
     }
 
 }

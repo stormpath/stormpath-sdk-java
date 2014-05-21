@@ -34,6 +34,8 @@ public interface BasicOauthAuthenticationRequestBuilder {
     /**
      * Specifies the {@link ScopeFactory} to be used for this authentication request.
      *
+     * If not provided an empty scope will be returned.
+     *
      * @param scopeFactory the {@link ScopeFactory} to be used for this authentication request.
      * @return this instance for method chaining.
      */
@@ -42,6 +44,8 @@ public interface BasicOauthAuthenticationRequestBuilder {
     /**
      * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request
      * in seconds.
+     *
+     * If not provided the default ttl (3600 seconds) will be used.
      *
      * @param ttl the time to live (in seconds) of this authentication request.
      * @return this instance for method chaining.

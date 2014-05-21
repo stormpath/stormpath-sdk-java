@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.ApiAuthenticationResult;
-import com.stormpath.sdk.error.authc.UnsupportedGrantTypeOauthException;
+import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
@@ -27,6 +27,7 @@ import com.stormpath.sdk.impl.ouath.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.token.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
+import com.stormpath.sdk.resource.ResourceException;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
@@ -75,7 +76,13 @@ public class OAuthBasicAuthenticator {
 
         validateSupportedGrantType(request.getGrantType());
 
-        ApiAuthenticationResult authResult = new BasicApiAuthenticator(dataStore).authenticate(application, request.getClientId(), request.getClientSecret());
+        ApiAuthenticationResult authResult;
+
+        try {
+            authResult = new BasicApiAuthenticator(dataStore).authenticate(application, request.getClientId(), request.getClientSecret());
+        } catch (ResourceException e) {
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_CLIENT);
+        }
 
         Set<String> grantedScopes;
 
@@ -104,7 +111,8 @@ public class OAuthBasicAuthenticator {
 
         String accessToken = createAccessToken(application, authResult, ttl, scope);
 
-        responseBuilder.accessToken(accessToken);
+        responseBuilder.accessToken(accessToken).applicationHref(application.getHref());
+        ;
 
         return new DefaultBasicOauthAuthenticationResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
 
@@ -116,7 +124,7 @@ public class OAuthBasicAuthenticator {
                 return;
             }
         }
-        throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(UnsupportedGrantTypeOauthException.class);
+        throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE);
     }
 
     /**
@@ -126,7 +134,8 @@ public class OAuthBasicAuthenticator {
      */
     private String createAccessToken(Application application, ApiAuthenticationResult result, long ttl, String scope) {
 
-        long createdAt = System.currentTimeMillis();
+        //created is the UTC current time in seconds.
+        long createdAt = System.currentTimeMillis() / 1000;
 
         Map<String, Object> jsonMap = new HashMap<String, Object>();
 

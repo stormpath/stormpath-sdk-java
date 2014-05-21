@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.error.authc.InvalidAuthenticationRequestOauthException;
+import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BearerLocation;
@@ -62,7 +62,7 @@ public class DefaultBearerOauthAuthenticationRequestBuilder implements BearerOau
         try {
             request = new DefaultBearerOauthAuthenticationRequest(httpServletRequest, locations);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationRequestOauthException.class, e.getMessage());
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, e.getMessage());
         }
 
         AuthenticationResult result = application.authenticateAccount(request);
