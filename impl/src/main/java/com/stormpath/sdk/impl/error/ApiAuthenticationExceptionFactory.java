@@ -15,15 +15,15 @@
  */
 package com.stormpath.sdk.impl.error;
 
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.error.authc.DisabledAccountException;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.ResourceException;
 
 import java.lang.reflect.Constructor;
 
 /**
- * ApiAuthenticationExceptionFactory
- *
  * @since 1.0.RC
  */
 public class ApiAuthenticationExceptionFactory {
@@ -37,10 +37,21 @@ public class ApiAuthenticationExceptionFactory {
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage("You suck at this.").message("Authentication Required").build();
+                .developerMessage("Invalid username and/or password.").message("Authentication Required").build();
 
-        return Classes.newInstance(clazz, error);
+        Constructor<? extends ResourceException> constructor = Classes.getConstructor(clazz, Error.class);
+
+        return Classes.instantiate(constructor, error);
     }
+
+    public static DisabledAccountException newDisabledAccountException(AccountStatus accountStatus) {
+
+        Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
+                .developerMessage("Invalid username and/or password.").message("Authentication Required").build();
+
+        return new DisabledAccountException(error, accountStatus);
+    }
+
 
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz, String message) {
 

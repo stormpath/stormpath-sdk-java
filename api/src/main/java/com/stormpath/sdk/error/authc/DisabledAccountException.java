@@ -21,7 +21,7 @@ import com.stormpath.sdk.resource.ResourceException;
 
 /**
  * A sub-class of {@link ResourceException} representing an attempt to login to a {@link AccountStatus#DISABLED disabled}
- * {@link com.stormpath.sdk.account.Account Account}.
+ * or {@link AccountStatus#UNVERIFIED unverified} {@link com.stormpath.sdk.account.Account Account}.
  *
  * @since 1.0.RC
  */
@@ -34,6 +34,12 @@ public class DisabledAccountException extends ResourceException {
         this.accountStatus = accountStatus;
     }
 
+    /**
+     * Returns the actual {@link com.stormpath.sdk.account.Account#getStatus() status} of the
+     * {@link com.stormpath.sdk.account.Account Account} that failed to be authenticated.
+     *
+     * @return {@link AccountStatus} instance.
+     */
     public AccountStatus getAccountStatus() {
         return accountStatus;
     }

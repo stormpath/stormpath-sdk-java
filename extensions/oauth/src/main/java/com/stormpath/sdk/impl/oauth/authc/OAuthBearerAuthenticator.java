@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.error.authc.DisabledAccountException;
+import com.stormpath.sdk.error.authc.DisabledApiKeyException;
 import com.stormpath.sdk.error.authc.InvalidAccessTokenOauthException;
 import com.stormpath.sdk.error.authc.InvalidApiKeyException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
@@ -149,13 +149,13 @@ public class OAuthBearerAuthenticator {
         ApiKey apiKey = application.getApiKey(apiKeyId, new DefaultApiKeyOptions().withAccount());
 
         if (apiKey.getStatus() == ApiKeyStatus.DISABLED) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(DisabledAccountException.class);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(DisabledApiKeyException.class);
         }
 
         Account account = apiKey.getAccount();
 
-        if (apiKey.getAccount().getStatus() != AccountStatus.ENABLED) {
-            throw new DisabledAccountException(null, account.getStatus());
+        if (account.getStatus() != AccountStatus.ENABLED) {
+            throw ApiAuthenticationExceptionFactory.newDisabledAccountException(account.getStatus());
         }
 
         return apiKey;

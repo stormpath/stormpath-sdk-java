@@ -21,6 +21,7 @@ import com.stormpath.sdk.error.authc.InvalidApiKeyException;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
 import org.apache.commons.codec.binary.Base64;
 
@@ -76,7 +77,7 @@ public class DefaultBasicApiAuthenticationRequest implements AuthenticationReque
         byte[] encodedBytes = encodedAuthenticationTokens.getBytes(UTF_8);
 
         if (!Base64.isBase64(encodedBytes)) {
-            throw new InvalidApiKeyException(null);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidApiKeyException.class);
         }
 
         String decoded = new String(Base64.decodeBase64(encodedBytes), UTF_8);
@@ -84,27 +85,26 @@ public class DefaultBasicApiAuthenticationRequest implements AuthenticationReque
         String[] tokens = decoded.split(":", 2);
 
         if (tokens.length != 2) { //no password specified
-            throw new InvalidApiKeyException(null);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidApiKeyException.class);
         }
 
         return tokens;
-
     }
 
     private String getEncodedAuthenticationToken(String authzHeaderValue) {
 
         if (authzHeaderValue == null) {
-            throw new MissingApiKeyException(null);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(MissingApiKeyException.class);
         }
 
         String[] schemeAndValue = authzHeaderValue.split(" ", 2);
 
         if (schemeAndValue.length != 2) {
-            throw new MissingApiKeyException(null);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(MissingApiKeyException.class);
         }
 
         if (!ApiAuthenticationRequestFactory.BASIC_AUTHENTICATION_SCHEME.equalsIgnoreCase(schemeAndValue[0])) {
-            throw new UnsupportedAuthenticationSchemeException(null);
+            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(UnsupportedAuthenticationSchemeException.class);
         }
 
         return schemeAndValue[1];

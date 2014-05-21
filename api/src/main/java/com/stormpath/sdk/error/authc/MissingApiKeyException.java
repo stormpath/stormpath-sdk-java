@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.error.authc;
 
+import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
@@ -22,8 +23,9 @@ import com.stormpath.sdk.resource.ResourceException;
  *
  * @since 1.0.RC
  */
-public class MissingApiKeyException extends ResourceException{
-    public MissingApiKeyException(com.stormpath.sdk.error.Error error) {
+public class MissingApiKeyException extends ResourceException {
+
+    public MissingApiKeyException(Error error) {
         super(error);
     }
 }
