@@ -155,8 +155,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     @Override
-    public Account sendPasswordResetEmail(String accountUsernameOrEmail) {
-        PasswordResetToken token = createPasswordResetToken(accountUsernameOrEmail);
+    public Account sendPasswordResetEmail(String email) {
+        PasswordResetToken token = createPasswordResetToken(email);
         return token.getAccount();
     }
 
@@ -172,12 +172,29 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         return passwordResetTokensLink.get(HREF_PROP_NAME);
     }
 
+    @Override
     public Account verifyPasswordResetToken(String token) {
         String href = getPasswordResetTokensHref() + "/" + token;
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
         props.put("href", href);
         PasswordResetToken prToken = getDataStore().instantiate(PasswordResetToken.class, props);
         return prToken.getAccount();
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Override
+    public Account resetPassword(String passwordResetToken, String newPassword) {
+        Assert.hasText(passwordResetToken, "passwordResetToken cannot be empty or null.");
+        Assert.hasText(newPassword, "newPassword cannot be empty or null.");
+        String href = getPasswordResetTokensHref() + "/" + passwordResetToken;
+        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
+        props.put("href", href);
+        PasswordResetToken instantiatedToken = getDataStore().instantiate(PasswordResetToken.class, props);
+        instantiatedToken.setPassword(newPassword);
+        PasswordResetToken createdPasswordResetToken = getDataStore().create(href, instantiatedToken, PasswordResetToken.class);
+        return createdPasswordResetToken.getAccount();
     }
 
     @Override
