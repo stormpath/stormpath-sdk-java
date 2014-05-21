@@ -112,7 +112,6 @@ public class OAuthBasicAuthenticator {
         String accessToken = createAccessToken(application, authResult, ttl, scope);
 
         responseBuilder.accessToken(accessToken).applicationHref(application.getHref());
-        ;
 
         return new DefaultBasicOauthAuthenticationResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
 

@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.authc.ApiAuthenticationResult
@@ -28,14 +29,17 @@ import com.stormpath.sdk.error.authc.DisabledApiKeyException
 import com.stormpath.sdk.error.authc.IncorrectCredentialsException
 import com.stormpath.sdk.error.authc.InvalidApiKeyException
 import com.stormpath.sdk.error.authc.MissingApiKeyException
+import com.stormpath.sdk.error.authc.OauthAuthenticationException
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
+import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
+import com.stormpath.sdk.oauth.permission.ScopeFactory
 import com.stormpath.sdk.oauth.permission.TokenResponse
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -68,13 +72,13 @@ class ApiAuthenticationIT extends ClientIT {
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
         def newApiKey = account.createApiKey()
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(newApiKey.id, newApiKey.secret), null))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
         apiKey.setStatus(ApiKeyStatus.DISABLED)
         apiKey.save()
@@ -91,7 +95,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         servletRequest = new OauthHttpServletRequest(httpRequestBuilder.build())
 
-        attemptSuccessfulAuthentication(servletRequest, account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(servletRequest, DefaultApiAuthenticationResult)
     }
 
     @Test
@@ -105,12 +109,38 @@ class ApiAuthenticationIT extends ClientIT {
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
 
-        def result = (BasicOauthAuthenticationResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, BasicOauthAuthenticationResult)
+        def result = (BasicOauthAuthenticationResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), BasicOauthAuthenticationResult)
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, OauthAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
 
+        testWithScopeFactory(apiKey)
+    }
+
+    void testWithScopeFactory(ApiKey apiKey) {
+
+        Set<String> applicationScopes = ["readResource", "deleteResource", "createResource", "updateResource"]
+
+        def parameters = convertToParametersMap(["grant_type": "client_credentials", "scope": "readResource createResource"])
+
+        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+
+        ScopeFactory myScopeFactory = createScopeFactory(applicationScopes, account, false)
+
+        def authResult = application.authenticateOauth(httpRequestBuilder.build()).using(myScopeFactory).withTtl(10).execute()
+
+        verifySuccessfulAuthentication(authResult, application, account, BasicOauthAuthenticationResult)
+
+        assertNotNull authResult.scope
+
+        assertEquals authResult.scope.size(), 2
+
+        assertTrue authResult.scope.contains("readResource")
+
+        assertTrue authResult.scope.contains("createResource")
     }
 
     @Test
@@ -148,7 +178,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), account, DefaultApiAuthenticationResult)
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
         apiKey.setStatus(ApiKeyStatus.DISABLED)
         apiKey.save()
@@ -164,11 +194,11 @@ class ApiAuthenticationIT extends ClientIT {
         verifyError(httpRequestBuilder.build(), DisabledAccountException)
     }
 
-    def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Account expectedAccount, Class expectedResultClass) {
+    def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Class expectedResultClass) {
 
         def authResult = application.authenticate(httpRequest).execute()
 
-        verifySuccessfulAuthentication(authResult, application, expectedAccount, expectedResultClass)
+        verifySuccessfulAuthentication(authResult, application, account, expectedResultClass)
 
         authResult
     }
@@ -211,6 +241,26 @@ class ApiAuthenticationIT extends ClientIT {
                 assertEquals tokenResponse.refreshToken, null
             }
         })
+    }
+
+    static ScopeFactory createScopeFactory(final Set<String> applicationScopes, final expectedAccount, boolean throwErrorOnInvalidRequestedScope) {
+
+        return new ScopeFactory() {
+
+            public Set<String> createScope(AuthenticationResult result, Set<String> requestedScopes) {
+                assertEquals expectedAccount.href, result.account.href
+
+                Set<String> resultScope = []
+                for (String scope : requestedScopes) {
+                    if (applicationScopes.contains(scope)) {
+                        resultScope.add(scope)
+                    } else if (throwErrorOnInvalidRequestedScope) {
+                        throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException, OauthAuthenticationException.INVALID_SCOPE)
+                    }
+                }
+                return resultScope
+            };
+        }
     }
 
     void verifyError(Object httpRequest, Class exceptionClass) {
