@@ -36,6 +36,7 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -794,4 +795,13 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.0.RC
      */
     OauthAuthenticationRequestBuilder authenticateOauth(Object httpRequest);
+
+    /**
+     * Returns a {@link SsoRedirectUrlBuilder} to construct a <a href="http://openid.net/specs/draft-jones-json-web-token-07.html#anchor3">
+     * JWT</a>-encoded SSO Site URL.
+     *
+     * @return a {@link SsoRedirectUrlBuilder} to construct a JWT-encoded SSO Site URL.
+     * @since 1.0.RC
+     */
+    SsoRedirectUrlBuilder createSsoRedirectUrl();
 }
