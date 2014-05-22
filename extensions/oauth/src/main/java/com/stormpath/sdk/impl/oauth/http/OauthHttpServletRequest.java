@@ -30,7 +30,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,9 +41,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
- * OauthHttpServletRequest
+ * OauthHttpServletRequest is a custom implementation of the {@link HttpServletRequest} that implements the
+ * bare minimum methods to handle OAuth 2.0 requests.
+ * <p/>
+ * The methods supported are delegated to the wrapped {@link HttpRequest} instance.
  *
  * @since 1.0.RC
  */
@@ -83,7 +86,17 @@ public class OauthHttpServletRequest implements HttpServletRequest {
                 return Collections.enumeration(Arrays.asList(entry.getValue()));
             }
         }
-        return Collections.emptyEnumeration();
+        return new Enumeration<String>() {
+            @Override
+            public boolean hasMoreElements() {
+                return false;
+            }
+
+            @Override
+            public String nextElement() {
+                throw new NoSuchElementException();
+            }
+        };
     }
 
     @Override
@@ -166,10 +179,6 @@ public class OauthHttpServletRequest implements HttpServletRequest {
         throw new UnsupportedOperationException("getSession() method hasn't been implemented.");
     }
 
-    @Override
-    public String changeSessionId() {
-        throw new UnsupportedOperationException("changeSessionId() method hasn't been implemented.");
-    }
 
     @Override
     public boolean isRequestedSessionIdValid() {
@@ -217,11 +226,6 @@ public class OauthHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-        throw new UnsupportedOperationException("upgrade() method hasn't been implemented.");
-    }
-
-    @Override
     public Object getAttribute(String name) {
         throw new UnsupportedOperationException("getAttribute() method hasn't been implemented.");
     }
@@ -244,11 +248,6 @@ public class OauthHttpServletRequest implements HttpServletRequest {
     @Override
     public int getContentLength() {
         throw new UnsupportedOperationException("getContentLength() method hasn't been implemented.");
-    }
-
-    @Override
-    public long getContentLengthLong() {
-        throw new UnsupportedOperationException("getContentLengthLong() method hasn't been implemented.");
     }
 
     @Override
