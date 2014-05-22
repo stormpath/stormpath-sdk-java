@@ -20,31 +20,27 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 
-import java.io.InputStream;
 import java.util.Map;
 
 /**
- * DefaultHttpRequest
+ * This is the default implementation for {@link HttpRequest} interface.
  *
- * @since 1.0.beta
+ * @since 1.0.RC
  */
 public class DefaultHttpRequest implements HttpRequest {
 
     private final Map<String, String[]> headers;
     private final HttpMethod method;
-    private final InputStream body;
     private final Map<String, String[]> parameters;
     private final String queryParameters;
 
-    public DefaultHttpRequest(Map<String, String[]> headers, HttpMethod method, InputStream body, Map<String, String[]> parameters, String queryParameters) {
+    public DefaultHttpRequest(Map<String, String[]> headers, HttpMethod method, Map<String, String[]> parameters, String queryParameters) {
         this.headers = headers;
         this.method = method;
-        this.body = body;
         this.parameters = parameters;
         this.queryParameters = queryParameters;
 
         Assert.notNull(method, "method cannot be null.");
-        Assert.state(method != HttpMethod.GET || body == null);
     }
 
     @Override
@@ -68,11 +64,6 @@ public class DefaultHttpRequest implements HttpRequest {
             }
         }
         return null;
-    }
-
-    @Override
-    public InputStream getBody() {
-        return body;
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * DefaultHttpRequestBuilder
  *
- * @since 1.0.beta
+ * @since 1.0.RC
  */
 public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
 
@@ -35,12 +35,6 @@ public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
     }
 
     @Override
-    public HttpRequestBuilder body(InputStream body) {
-        this.body = body;
-        return this;
-    }
-
-    @Override
     public HttpRequestBuilder parameters(Map<String, String[]> parameters) {
         this.parameters = parameters;
         return this;
@@ -54,6 +48,6 @@ public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
 
     @Override
     public HttpRequest build() {
-        return new DefaultHttpRequest(headers, method, body, parameters, queryParameters);
+        return new DefaultHttpRequest(headers, method, parameters, queryParameters);
     }
 }

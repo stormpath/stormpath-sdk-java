@@ -73,12 +73,7 @@ public class OauthHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getHeader(String name) {
-        for (Map.Entry<String, String[]> entry : httpRequest.getHeaders().entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(name)) {
-                return entry.getValue()[0];
-            }
-        }
-        return null;
+        return httpRequest.getHeader(name);
     }
 
     @Override
@@ -422,4 +417,5 @@ public class OauthHttpServletRequest implements HttpServletRequest {
     public DispatcherType getDispatcherType() {
         throw new UnsupportedOperationException("getDispatcherType() method hasn't been implemented.");
     }
+
 }

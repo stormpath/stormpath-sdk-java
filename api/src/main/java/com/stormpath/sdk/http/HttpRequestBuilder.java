@@ -37,8 +37,6 @@ public interface HttpRequestBuilder {
 
     public HttpRequestBuilder headers(Map<String, String[]> headers);
 
-    public HttpRequestBuilder body(InputStream body);
-
     public HttpRequestBuilder parameters(Map<String, String[]> parameters);
 
     public HttpRequestBuilder queryParameters(String queryParameters);

@@ -750,7 +750,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * customize an {@code Api} authentication.
      *
      * @return a new {@link ApiAuthenticationRequestBuilder}.
-     * @throws IllegalArgumentException - If {@code httpRequest} is null.
+     * @throws IllegalArgumentException - If {@code httpRequest} is null or not supported.
      * @see Application#authenticateOauth(Object)
      * @since 1.0.RC
      */
@@ -759,6 +759,29 @@ public interface Application extends Resource, Saveable, Deletable {
     /**
      * Creates a new {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder OauthAuthenticationRequestBuilder}. The builder can be used to
      * customize an {@code Api} authentication via Oauth.
+     *
+     * Per the <a href="http://tools.ietf.org/html/rfc6749#section-2.3>OAuth 2.0</a> support the HTTP Basic authentication scheme
+     * for authenticating clients, while other methods like passing the {@code client_id} and  {@code client_password} in the request
+     * body is not supported.
+     *
+     * In version 1.0 only the <a href="http://tools.ietf.org/html/rfc6749#section-4.4">Client Credentials</a> grant type is
+     * supported.
+     *
+     * To get an {@code access_token} the  client makes a request to the token endpoint by adding the following parameters using the "application/x-www-form-urlencoded"
+     *
+     * {@code grant_type} - Required. Value MUST be set to "client_credentials".
+     *
+     * {@code scope} - Optional. The scope of the access request.
+     *
+     * <pre>
+     *     POST /token HTTP/1.1
+     *     Host: server.example.com
+     *     Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+     *     Content-Type: application/x-www-form-urlencoded
+     *
+     *     grant_type=client_credentials
+     * </pre>
+     *
      * <pre>
      * <b>application.authenticateOauth(httpServletRequest)</b>
      *     .execute()
