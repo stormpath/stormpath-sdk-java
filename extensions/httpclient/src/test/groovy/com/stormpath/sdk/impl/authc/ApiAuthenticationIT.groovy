@@ -116,6 +116,14 @@ class ApiAuthenticationIT extends ClientIT {
 
         attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
 
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).queryParameters("grant_type=client_credentials")
+
+        result = (BasicOauthAuthenticationResult) application.authenticate(httpRequestBuilder.build()).execute()
+
+        httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/xml"))
+
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+
         testWithScopeFactory(apiKey)
     }
 
@@ -155,7 +163,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         parameters = convertToParametersMap(["access_token": accessToken])
 
-        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type":convertToArray("application/x-www-form-urlencoded")]).parameters(parameters)
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/x-www-form-urlencoded")]).parameters(parameters)
 
         authResult = application.authenticateOauth(httpRequestBuilder.build()).inLocation(BearerLocation.BODY).execute()
 

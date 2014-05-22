@@ -20,7 +20,11 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * This is the default implementation for {@link HttpRequest} interface.
@@ -31,8 +35,8 @@ public class DefaultHttpRequest implements HttpRequest {
 
     private final Map<String, String[]> headers;
     private final HttpMethod method;
-    private final Map<String, String[]> parameters;
     private final String queryParameters;
+    private Map<String, String[]> parameters;
 
     public DefaultHttpRequest(Map<String, String[]> headers, HttpMethod method, Map<String, String[]> parameters, String queryParameters) {
         this.headers = headers;
@@ -73,12 +77,50 @@ public class DefaultHttpRequest implements HttpRequest {
 
     @Override
     public Map<String, String[]> getParameters() {
+        if (parameters == null) {
+            parseParameters();
+        }
         return parameters;
     }
+
 
     @Override
     public String getQueryParameters() {
         return queryParameters;
+    }
+
+    private void parseParameters() {
+        if (queryParameters == null || queryParameters.isEmpty()) {
+            return;
+        }
+
+        Map<String, List<String>> tempParameters = new HashMap<String, List<String>>();
+
+        for (StringTokenizer tokenizer = new StringTokenizer(queryParameters, "&"); tokenizer.hasMoreElements(); ) {
+            String token = tokenizer.nextToken();
+
+            String[] pair = token.split("=");
+
+            Assert.isTrue(pair.length == 2, "this query parameter is invalid.");
+
+            List<String> values;
+            if (tempParameters.containsKey(pair[0])) {
+                values = tempParameters.get(pair[0]);
+            } else {
+                values = new ArrayList<String>();
+                tempParameters.put(pair[0], values);
+            }
+            values.add(pair[1]);
+        }
+
+        parameters = new HashMap<String, String[]>();
+
+        for (Map.Entry<String, List<String>> entry : tempParameters.entrySet()) {
+            List<String> valuesList = entry.getValue();
+            String[] valuesArray = new String[valuesList.size()];
+            valuesList.toArray(valuesArray);
+            parameters.put(entry.getKey(), valuesArray);
+        }
     }
 
 }
