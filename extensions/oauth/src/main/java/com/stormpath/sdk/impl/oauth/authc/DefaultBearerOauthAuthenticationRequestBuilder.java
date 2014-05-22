@@ -62,7 +62,7 @@ public class DefaultBearerOauthAuthenticationRequestBuilder implements BearerOau
         try {
             request = new DefaultBearerOauthAuthenticationRequest(httpServletRequest, locations);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, e.getMessage());
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult result = application.authenticateAccount(request);

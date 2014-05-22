@@ -41,8 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import static org.apache.oltu.oauth2.common.OAuth.OAUTH_CLIENT_ID;
-import static org.apache.oltu.oauth2.common.OAuth.OAUTH_EXPIRES_IN;
+import static com.stormpath.sdk.error.authc.AccessTokenOauthException.*;
+import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /**
  * @since 1.0.RC
@@ -74,7 +74,7 @@ public class OAuthBearerAuthenticator {
         try {
             bearerValue = request.getAccessToken();
         } catch (OAuthSystemException e) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(AccessTokenOauthException.class, "access_token is invalid.");
+            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         }
 
         StringTokenizer tokenizer = new StringTokenizer(bearerValue, JWT_BEARER_TOKEN_SEPARATOR);
@@ -90,7 +90,7 @@ public class OAuthBearerAuthenticator {
         String calculatedSignature = jwtSigner.calculateSignature(base64JwtHeader, base64JsonPayload);
 
         if (!jwtSignature.equals(calculatedSignature)) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(AccessTokenOauthException.class, "access_token is invalid.");
+            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         }
 
         byte[] jsonBytes = Base64.decodeBase64(base64JsonPayload);
@@ -108,12 +108,13 @@ public class OAuthBearerAuthenticator {
         //Retrieve the ApiKey that owns this
         ApiKey apiKey = getTokenApiKey(application, apiKeyId);
 
-        Set<String> scope;
-        if (tokenizer.hasMoreElements()) {
-            StringTokenizer scopeTokenizer = new StringTokenizer(tokenizer.nextToken(), SCOPE_SEPARATOR_CHAR);
-            scope = new HashSet<String>();
+        String grantedScopes = getOptionalValue(jsonMap, OAUTH_SCOPE);
 
-            for (String scopeValue = scopeTokenizer.nextToken(); scopeTokenizer.hasMoreElements(); ) {
+        Set<String> scope;
+        if (grantedScopes != null && !grantedScopes.isEmpty()) {
+            scope = new HashSet<String>();
+            for (StringTokenizer scopeTokenizer = new StringTokenizer(grantedScopes, SCOPE_SEPARATOR_CHAR); scopeTokenizer.hasMoreElements(); ) {
+                String scopeValue = scopeTokenizer.nextToken();
                 scope.add(scopeValue);
             }
         } else {
@@ -128,7 +129,7 @@ public class OAuthBearerAuthenticator {
         long now = System.currentTimeMillis();
 
         if (now > ((created + timeToLive) * 1000)) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(AccessTokenOauthException.class, "access_token is expired.");
+            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
         }
     }
 
@@ -148,13 +149,13 @@ public class OAuthBearerAuthenticator {
         ApiKey apiKey = application.getApiKey(apiKeyId, new DefaultApiKeyOptions().withAccount());
 
         if (apiKey.getStatus() == ApiKeyStatus.DISABLED) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(DisabledApiKeyException.class);
+            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
         }
 
         Account account = apiKey.getAccount();
 
         if (account.getStatus() != AccountStatus.ENABLED) {
-            throw ApiAuthenticationExceptionFactory.newDisabledAccountException(account.getStatus());
+            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
         }
 
         return apiKey;
@@ -165,6 +166,17 @@ public class OAuthBearerAuthenticator {
         Object object = jsonMap.get(parameterName);
 
         Assert.notNull(object, "required jwt parameter is missing or null.");
+
+        return (T) object;
+    }
+
+    private <T> T getOptionalValue(Map jsonMap, String parameterName) {
+
+        Object object = jsonMap.get(parameterName);
+
+        if (object == null) {
+            return null;
+        }
 
         return (T) object;
     }

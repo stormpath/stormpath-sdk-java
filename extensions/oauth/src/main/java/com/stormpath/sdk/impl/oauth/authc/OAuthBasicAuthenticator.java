@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
 import com.stormpath.sdk.impl.ouath.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.ouath.signer.JwtSigner;
-import com.stormpath.sdk.impl.oauth.token.DefaultTokenResponse;
+import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;

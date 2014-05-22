@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.oauth.authc;
 
-import com.stormpath.sdk.oauth.permission.ScopeFactory;
+import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 /**
  * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> used to

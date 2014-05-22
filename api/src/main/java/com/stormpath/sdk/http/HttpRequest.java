@@ -37,8 +37,6 @@ public interface HttpRequest {
 
     public Map<String, String[]> getParameters();
 
-    public String getUri();
-
     public String getQueryParameters();
 
 }

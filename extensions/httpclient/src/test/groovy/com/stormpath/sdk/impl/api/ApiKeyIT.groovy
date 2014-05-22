@@ -21,6 +21,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
@@ -92,6 +93,48 @@ class ApiKeyIT extends ClientIT {
 
         assertNotNull retrievedApiKey
         assertEquals retrievedApiKey, apiKey
+    }
+
+    /**
+     * Found an issue where the collection resource (in this case account.apiKeys) once is accessed the reference
+     * never looks at the server anymore, this means that creation or deletion of the items are ignored by the
+     * collection resource at all times, and there is no way to ask for a new collection from the same entity.
+     */
+    @Test
+    void testListApiKeysWithDeletion() {
+
+        def application = createTempApp()
+
+        def acct = client.instantiate(Account)
+
+        def password = 'Changeme1!'
+        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        acct.password = password
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        List<ApiKey> apiKeyArray = []
+
+        (1..5).each {
+            apiKeyArray.add(acct.createApiKey())
+        }
+
+        assertEquals acct.getApiKeys().iterator().size(), 5          \
+
+        //Deleting all but last one.
+        (1..4).each { i ->
+            apiKeyArray[i].delete()
+        }
+
+        //Getting the account again from a client with no cache to receive a fresh account object from the server.
+        //then get the apiKeys collection and assert there is only one left.
+
+        Client client2 = buildClient(false)
+        Account acct2 = client2.getResource(acct.href, Account)
+        assertEquals acct2.getApiKeys().iterator().size(), 1
     }
 
     @Test

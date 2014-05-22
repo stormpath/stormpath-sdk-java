@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.permission;
+package com.stormpath.sdk.oauth.authz;
 
 /**
  * The TokenResponse is a wrapper for the Bearer result of the {@link com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder Basic Authentication}.

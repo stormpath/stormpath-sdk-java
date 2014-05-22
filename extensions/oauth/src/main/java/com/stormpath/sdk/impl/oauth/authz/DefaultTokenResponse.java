@@ -1,7 +1,7 @@
-package com.stormpath.sdk.impl.oauth.token;
+package com.stormpath.sdk.impl.oauth.authz;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.permission.TokenResponse;
+import com.stormpath.sdk.oauth.authz.TokenResponse;
 import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.OAuthResponse;

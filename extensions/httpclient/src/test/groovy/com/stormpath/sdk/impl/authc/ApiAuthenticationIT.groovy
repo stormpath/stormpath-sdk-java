@@ -38,9 +38,10 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
+import com.stormpath.sdk.oauth.authc.BearerLocation
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
-import com.stormpath.sdk.oauth.permission.ScopeFactory
-import com.stormpath.sdk.oauth.permission.TokenResponse
+import com.stormpath.sdk.oauth.authz.ScopeFactory
+import com.stormpath.sdk.oauth.authz.TokenResponse
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -130,17 +131,39 @@ class ApiAuthenticationIT extends ClientIT {
 
         ScopeFactory myScopeFactory = createScopeFactory(applicationScopes, account, false)
 
-        def authResult = application.authenticateOauth(httpRequestBuilder.build()).using(myScopeFactory).withTtl(10).execute()
+        def authResult = application.authenticateOauth(httpRequestBuilder.build()).using(myScopeFactory).withTtl(120).execute()
 
         verifySuccessfulAuthentication(authResult, application, account, BasicOauthAuthenticationResult)
 
         assertNotNull authResult.scope
 
         assertEquals authResult.scope.size(), 2
-
         assertTrue authResult.scope.contains("readResource")
-
         assertTrue authResult.scope.contains("createResource")
+
+        String accessToken = authResult.tokenResponse.accessToken
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).queryParameters("access_token=" + accessToken)
+
+        authResult = application.authenticateOauth(httpRequestBuilder.build()).inLocation(BearerLocation.QUERY_PARAM).execute()
+
+        verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
+
+        assertEquals authResult.scope.size(), 2
+        assertTrue authResult.scope.contains("readResource")
+        assertTrue authResult.scope.contains("createResource")
+
+        parameters = convertToParametersMap(["access_token": accessToken])
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type":convertToArray("application/x-www-form-urlencoded")]).parameters(parameters)
+
+        authResult = application.authenticateOauth(httpRequestBuilder.build()).inLocation(BearerLocation.BODY).execute()
+
+        assertEquals authResult.scope.size(), 2
+        assertTrue authResult.scope.contains("readResource")
+        assertTrue authResult.scope.contains("createResource")
+
+        verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
     }
 
     @Test

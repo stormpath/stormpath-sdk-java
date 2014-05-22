@@ -26,7 +26,7 @@ import com.stormpath.sdk.oauth.authc.BearerLocation;
 import com.stormpath.sdk.oauth.authc.BearerOauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
-import com.stormpath.sdk.oauth.permission.ScopeFactory;
+import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 

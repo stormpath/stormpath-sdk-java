@@ -123,7 +123,7 @@ public class OauthHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getQueryString() {
-        throw new UnsupportedOperationException("getQueryString() method hasn't been implemented.");
+        return httpRequest.getQueryParameters();
     }
 
     @Override

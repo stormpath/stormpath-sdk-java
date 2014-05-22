@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
-import com.stormpath.sdk.oauth.permission.ScopeFactory;
+import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 

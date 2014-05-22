@@ -53,13 +53,7 @@ public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
     }
 
     @Override
-    public HttpRequestBuilder uri(String uri) {
-        this.uri = uri;
-        return this;
-    }
-
-    @Override
     public HttpRequest build() {
-        return new DefaultHttpRequest(headers, method, body, parameters, uri, queryParameters);
+        return new DefaultHttpRequest(headers, method, body, parameters, queryParameters);
     }
 }

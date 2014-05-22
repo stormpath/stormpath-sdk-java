@@ -16,7 +16,9 @@
 package com.stormpath.sdk.http;
 
 /**
- * HttpMethod
+ * HttpMethod is a subset of the methods defined as part of the
+ * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Hypertext Transfer Protocol -- HTTP/1.1</a>
+ * specification.
  *
  * @since 1.0.RC
  */

@@ -34,15 +34,13 @@ public class DefaultHttpRequest implements HttpRequest {
     private final HttpMethod method;
     private final InputStream body;
     private final Map<String, String[]> parameters;
-    private final String uri;
     private final String queryParameters;
 
-    public DefaultHttpRequest(Map<String, String[]> headers, HttpMethod method, InputStream body, Map<String, String[]> parameters, String uri, String queryParameters) {
+    public DefaultHttpRequest(Map<String, String[]> headers, HttpMethod method, InputStream body, Map<String, String[]> parameters, String queryParameters) {
         this.headers = headers;
         this.method = method;
         this.body = body;
         this.parameters = parameters;
-        this.uri = uri;
         this.queryParameters = queryParameters;
 
         Assert.notNull(method, "method cannot be null.");
@@ -85,11 +83,6 @@ public class DefaultHttpRequest implements HttpRequest {
     @Override
     public Map<String, String[]> getParameters() {
         return parameters;
-    }
-
-    @Override
-    public String getUri() {
-        return uri;
     }
 
     @Override

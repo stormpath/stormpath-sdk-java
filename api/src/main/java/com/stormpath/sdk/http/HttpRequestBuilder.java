@@ -19,8 +19,18 @@ import java.io.InputStream;
 import java.util.Map;
 
 /**
- * HttpRequestBuilder
+ * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> used to
+ * construct {@link HttpRequest} instances.
+ * <p/>
+ * <p/>
+ * The {@link HttpRequestBuilder} is useful to build {@link HttpRequest} instances for developers that don't
+ * have access to the Servlet container, and therefore, cannot execute operations using implementations
+ * of the {@code javax.servlet.HttpServlet} api.
  *
+ * @see HttpRequest
+ * @see HttpRequests
+ * @see com.stormpath.sdk.application.Application#authenticate(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateOauth(Object)
  * @since 1.0.RC
  */
 public interface HttpRequestBuilder {
@@ -32,8 +42,6 @@ public interface HttpRequestBuilder {
     public HttpRequestBuilder parameters(Map<String, String[]> parameters);
 
     public HttpRequestBuilder queryParameters(String queryParameters);
-
-    public HttpRequestBuilder uri(String uri);
 
     public HttpRequest build();
 }

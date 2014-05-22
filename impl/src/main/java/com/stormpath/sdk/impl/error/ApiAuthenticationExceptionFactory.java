@@ -57,7 +57,6 @@ public class ApiAuthenticationExceptionFactory {
         return new DisabledAccountException(error, accountStatus);
     }
 
-
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz, String message) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
@@ -69,7 +68,7 @@ public class ApiAuthenticationExceptionFactory {
         return Classes.instantiate(constructor, error);
     }
 
-    public static ResourceException newOauthException(Class<? extends ResourceException> clazz, String oauthError) {
+    public static ResourceException newOauthException(Class<? extends OauthAuthenticationException> clazz, String oauthError) {
 
         String oauthClientError = "error: " + oauthError;
 
@@ -78,7 +77,7 @@ public class ApiAuthenticationExceptionFactory {
 
         Constructor<? extends ResourceException> constructor = getConstructorFromClass(clazz);
 
-        return Classes.instantiate(constructor, error);
+        return Classes.instantiate(constructor, error, oauthError);
     }
 
     private static Constructor<? extends ResourceException> getConstructorFromClass(Class<? extends ResourceException> clazz) {
