@@ -131,7 +131,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         Set<String> applicationScopes = ["readResource", "deleteResource", "createResource", "updateResource"]
 
-        def parameters = convertToParametersMap(["grant_type": "client_credentials", "scope": "readResource createResource"])
+        def parameters = convertToParametersMap(["grant_type": "client_credentials", "scope": "readResource createResource", "anyParam": "ignored"])
 
         def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
 
@@ -151,7 +151,10 @@ class ApiAuthenticationIT extends ClientIT {
 
         String accessToken = authResult.tokenResponse.accessToken
 
-        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).queryParameters("access_token=" + accessToken)
+        String[] contentTypeArray = ["application/json"]
+        headers = ["content-type": contentTypeArray]
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).queryParameters("access_token=" + accessToken).headers(headers)
 
         authResult = application.authenticateOauth(httpRequestBuilder.build()).inLocation(BearerLocation.QUERY_PARAM).execute()
 
@@ -223,6 +226,47 @@ class ApiAuthenticationIT extends ClientIT {
         account.save()
 
         verifyError(httpRequestBuilder.build(), DisabledAccountException)
+    }
+
+    @Test
+    void testOauthAuthenticationErrors() {
+
+        def apiKey = account.createApiKey()
+
+        def parameters = convertToParametersMap(["grant_type": "client_credentials"])
+
+        //Error: Content-Type: application/json
+        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/json")
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
+
+        //Error: HttpMethod is GET
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
+
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+
+        //Error: grant_type: authorization_code is not supported.
+        parameters = convertToParametersMap(["grant_type": "authorization_code", "code": "my_code", "redirect_uri": "http://myredirecturi.com"])
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
+
+        //Error: grant_type: password is not supported.
+        parameters = convertToParametersMap(["grant_type": "password", "username": "myuser", "password": "aPassword"])
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
+
+        //Error: grant_type: refresh_token is not supported.
+        parameters = convertToParametersMap(["grant_type": "refresh_token", "refresh_token": "myrefresh_token", "anyParam": "ignored"])
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
+
+        //Error: invalid apiKey secret.
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, "invalid"), "application/x-www-form-urlencoded")
+        parameters = convertToParametersMap(["grant_type": "client_credentials", "anyParam": "ignored"])
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_CLIENT)
     }
 
     def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Class expectedResultClass) {
@@ -300,6 +344,16 @@ class ApiAuthenticationIT extends ClientIT {
             fail("ResourceException: " + exceptionClass.toString() + "was expected")
         } catch (com.stormpath.sdk.resource.ResourceException exception) {
             assertTrue exceptionClass.isAssignableFrom(exception.class);
+        }
+    }
+
+    void verifyOauthError(Object httpRequest, String expectedOauthError) {
+        try {
+            application.authenticate(httpRequest).execute()
+            fail("OathError: " + expectedOauthError + "was expected")
+        } catch (OauthAuthenticationException exception) {
+
+            assertEquals exception.getOauthError(), expectedOauthError
         }
     }
 

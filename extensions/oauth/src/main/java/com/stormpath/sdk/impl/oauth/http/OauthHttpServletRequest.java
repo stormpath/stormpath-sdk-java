@@ -86,17 +86,7 @@ public class OauthHttpServletRequest implements HttpServletRequest {
                 return Collections.enumeration(Arrays.asList(entry.getValue()));
             }
         }
-        return new Enumeration<String>() {
-            @Override
-            public boolean hasMoreElements() {
-                return false;
-            }
-
-            @Override
-            public String nextElement() {
-                throw new NoSuchElementException();
-            }
-        };
+        return EmptyEnumeration.getInstance();
     }
 
     @Override
@@ -415,6 +405,28 @@ public class OauthHttpServletRequest implements HttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         throw new UnsupportedOperationException("getDispatcherType() method hasn't been implemented.");
+    }
+
+    private static class EmptyEnumeration implements Enumeration<String> {
+
+        private static EmptyEnumeration instance = new EmptyEnumeration();
+
+        private EmptyEnumeration() {
+        }
+
+        public static EmptyEnumeration getInstance() {
+            return instance;
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return false;
+        }
+
+        @Override
+        public String nextElement() {
+            throw new NoSuchElementException("Empty enumeration. hasMoreElements() must be called first");
+        }
     }
 
 }

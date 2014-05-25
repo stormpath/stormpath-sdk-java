@@ -44,6 +44,7 @@ public class DefaultHttpRequest implements HttpRequest {
         this.parameters = parameters;
         this.queryParameters = queryParameters;
 
+        Assert.notNull(headers, "headers cannot be null.");
         Assert.notNull(method, "method cannot be null.");
     }
 
