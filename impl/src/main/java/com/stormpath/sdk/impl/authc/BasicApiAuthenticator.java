@@ -54,7 +54,7 @@ public class BasicApiAuthenticator {
 
         ApiKey apiKey = application.getApiKey(id, new DefaultApiKeyOptions().withAccount());
 
-        if (!apiKey.getSecret().equals(secret)) {
+        if (apiKey == null || !apiKey.getSecret().equals(secret)) {
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(IncorrectCredentialsException.class);
         }
 

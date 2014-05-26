@@ -24,6 +24,7 @@ import com.stormpath.sdk.authc.ApiAuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResultVisitor
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.error.authc.AccessTokenOauthException
 import com.stormpath.sdk.error.authc.DisabledAccountException
 import com.stormpath.sdk.error.authc.DisabledApiKeyException
 import com.stormpath.sdk.error.authc.IncorrectCredentialsException
@@ -202,6 +203,10 @@ class ApiAuthenticationIT extends ClientIT {
 
         verifyError(httpRequestBuilder.build(), InvalidApiKeyException)
 
+        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader("not-existent-key", ""), null))
+
+        verifyError(httpRequestBuilder.build(), IncorrectCredentialsException)
+
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, ""), null))
 
         verifyError(httpRequestBuilder.build(), IncorrectCredentialsException)
@@ -262,11 +267,50 @@ class ApiAuthenticationIT extends ClientIT {
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
         verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
 
-        //Error: invalid apiKey secret.
-        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, "invalid"), "application/x-www-form-urlencoded")
         parameters = convertToParametersMap(["grant_type": "client_credentials", "anyParam": "ignored"])
+
+        //Error: invalid apiKey id.
+        headers = createHttpHeaders(createBasicAuthzHeader("unknown", apiKey.secret), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
         verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_CLIENT)
+
+        //Error: invalid apiKey secret.
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, "invalid"), "application/x-www-form-urlencoded")
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_CLIENT)
+
+        //Create a 3 seconds token
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        def result = application.authenticateOauth(httpRequestBuilder.build()).withTtl(3).execute()
+
+        //Try bearer once.
+        httpRequestBuilder = HttpRequests.method(HttpMethod.DELETE).headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
+        result = application.authenticateOauth(httpRequestBuilder.build()).inLocation(BearerLocation.HEADER, BearerLocation.QUERY_PARAM).execute()
+
+        assertNotNull result
+
+        //Wait 3.001 seconds and try again
+        Thread.sleep(3001)
+
+        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.EXPIRED_ACCESS_TOKEN)
+
+        //Create a minute token
+        //Create a 3 seconds token
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        result = application.authenticateOauth(httpRequestBuilder.build()).withTtl(60).execute()
+
+        //Access token is in more than one location in more that one location
+        parameters = convertToParametersMap(["access_token": result.tokenResponse.accessToken, "anyParam": "ignored"])
+        httpRequestBuilder = HttpRequests.method(HttpMethod.PUT).parameters(parameters).queryParameters("access_token=" + result.tokenResponse.accessToken).headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/x-www-form-urlencoded"))
+
+        try {
+            application.authenticateOauth(httpRequestBuilder.build()).inLocation(BearerLocation.HEADER, BearerLocation.BODY, BearerLocation.QUERY_PARAM).execute()
+            fail("OauthAuthenticationException is expected")
+        } catch (OauthAuthenticationException e) {
+            assertEquals e.getOauthError(), OauthAuthenticationException.INVALID_REQUEST
+        }
     }
 
     def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Class expectedResultClass) {

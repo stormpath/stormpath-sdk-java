@@ -148,7 +148,7 @@ public class OAuthBearerAuthenticator {
 
         ApiKey apiKey = application.getApiKey(apiKeyId, new DefaultApiKeyOptions().withAccount());
 
-        if (apiKey.getStatus() == ApiKeyStatus.DISABLED) {
+        if (apiKey == null || apiKey.getStatus() == ApiKeyStatus.DISABLED) {
             throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
         }
 
