@@ -52,7 +52,6 @@ public class DefaultGoogleProvider extends AbstractProvider implements GooglePro
         return getString(CLIENT_ID);
     }
 
-    @Override
     public GoogleProvider setClientId(String clientId) {
         setProperty(CLIENT_ID, clientId);
         return this;
@@ -63,7 +62,6 @@ public class DefaultGoogleProvider extends AbstractProvider implements GooglePro
         return getString(CLIENT_SECRET);
     }
 
-    @Override
     public GoogleProvider setClientSecret(String clientSecret) {
         setProperty(CLIENT_SECRET, clientSecret);
         return this;
@@ -74,7 +72,6 @@ public class DefaultGoogleProvider extends AbstractProvider implements GooglePro
         return getString(REDIRECT_URI);
     }
 
-    @Override
     public GoogleProvider setRedirectUri(String redirectUri) {
         setProperty(REDIRECT_URI, redirectUri);
         return this;

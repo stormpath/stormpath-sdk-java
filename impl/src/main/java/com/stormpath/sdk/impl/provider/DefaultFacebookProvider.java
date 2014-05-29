@@ -51,7 +51,6 @@ public class DefaultFacebookProvider extends AbstractProvider implements Faceboo
         return getString(CLIENT_ID);
     }
 
-    @Override
     public FacebookProvider setClientId(String clientId) {
         setProperty(CLIENT_ID, clientId);
         return this;
@@ -62,7 +61,6 @@ public class DefaultFacebookProvider extends AbstractProvider implements Faceboo
         return getString(CLIENT_SECRET);
     }
 
-    @Override
     public FacebookProvider setClientSecret(String clientSecret) {
         setProperty(CLIENT_SECRET, clientSecret);
         return this;

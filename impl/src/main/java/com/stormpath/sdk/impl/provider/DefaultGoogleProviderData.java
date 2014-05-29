@@ -52,22 +52,28 @@ public class DefaultGoogleProviderData extends AbstractProviderData implements G
         return getString(ACCESS_TOKEN);
     }
 
-    public void setAccessToken(String accessToken) {
+    public GoogleProviderData setAccessToken(String accessToken) {
         setProperty(ACCESS_TOKEN, accessToken);
+        return this;
     }
 
-    @Override
     public String getCode() {
         return getString(CODE);
     }
 
-    public void setCode(String code) {
+    public GoogleProviderData setCode(String code) {
         setProperty(CODE, code);
+        return this;
     }
 
     @Override
     public String getRefreshToken() {
         return getString(REFRESH_TOKEN);
+    }
+
+    public GoogleProviderData setRefreshToken(String refreshToken) {
+        setProperty(REFRESH_TOKEN, refreshToken);
+        return this;
     }
 
     @Override

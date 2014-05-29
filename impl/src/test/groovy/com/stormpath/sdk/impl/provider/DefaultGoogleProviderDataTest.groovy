@@ -74,6 +74,9 @@ class DefaultGoogleProviderDataTest {
         assertNull(providerData.getCode())
         providerData.setCode("4/2Dz0r7r9oNBE9dFD-_JUb.suCu7uj8TEnp6UAPm0")
         assertEquals(providerData.getCode(), "4/2Dz0r7r9oNBE9dFD-_JUb.suCu7uj8TEnp6UAPm0")
+        providerData.setRefreshToken("myNewRefreshToken")
+        assertEquals(providerData.getRefreshToken(), "myNewRefreshToken")
+
     }
 
     @Test
