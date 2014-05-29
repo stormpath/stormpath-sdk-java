@@ -122,7 +122,7 @@ class ApiKeyIT extends ClientIT {
             apiKeyArray.add(acct.createApiKey())
         }
 
-        assertEquals acct.getApiKeys().iterator().size(), 5          \
+        assertEquals acct.getApiKeys().iterator().size(), 5
 
         //Deleting all but last one.
         (1..4).each { i ->

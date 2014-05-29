@@ -22,7 +22,7 @@ import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.authc.ApiAuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResult
-import com.stormpath.sdk.authc.AuthenticationResultVisitor
+import com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.error.authc.AccessTokenOauthException
 import com.stormpath.sdk.error.authc.DisabledAccountException
@@ -330,12 +330,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         assertEquals expectedAccount.givenName, authResult.account.givenName
 
-        authResult.accept(new AuthenticationResultVisitor() {
-            @Override
-            void visit(AuthenticationResult result) {
-                fail("Error: This must never received in ApiAuthentication.")
-            }
-
+        authResult.accept(new AuthenticationResultVisitorAdapter() {
             @Override
             void visit(ApiAuthenticationResult result) {
                 assertNotNull result.apiKey
