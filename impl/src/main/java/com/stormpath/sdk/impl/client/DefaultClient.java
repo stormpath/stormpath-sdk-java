@@ -15,19 +15,30 @@
  */
 package com.stormpath.sdk.impl.client;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.directory.CreateDirectoryRequest;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryCriteria;
+import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * The default {@link Client} implementation.
@@ -45,7 +56,6 @@ public class DefaultClient implements Client {
     private final DataStore dataStore;
 
     private String currentTenantHref;
-
 
     /**
      * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
@@ -188,5 +198,104 @@ public class DefaultClient implements Client {
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         return this.dataStore.getResource(href, clazz);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public Application createApplication(Application application) throws ResourceException {
+        return getCurrentTenant().createApplication(application);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public Application createApplication(CreateApplicationRequest request) throws ResourceException {
+        return getCurrentTenant().createApplication(request);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public ApplicationList getApplications() {
+        return getCurrentTenant().getApplications();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public ApplicationList getApplications(Map<String, Object> queryParams) {
+        return getCurrentTenant().getApplications(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public ApplicationList getApplications(ApplicationCriteria criteria) {
+        return getCurrentTenant().getApplications(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public Directory createDirectory(Directory directory) {
+        return getCurrentTenant().createDirectory(directory);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public Directory createDirectory(CreateDirectoryRequest createDirectoryRequest) throws ResourceException {
+        return getCurrentTenant().createDirectory(createDirectoryRequest);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public DirectoryList getDirectories() {
+        return getCurrentTenant().getDirectories();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public DirectoryList getDirectories(Map<String, Object> queryParams) {
+        return getCurrentTenant().getDirectories(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public DirectoryList getDirectories(DirectoryCriteria criteria) {
+        return getCurrentTenant().getDirectories(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.0.RC
+     */
+    @Override
+    public Account verifyAccountEmail(String token) {
+        return getCurrentTenant().verifyAccountEmail(token);
     }
 }
