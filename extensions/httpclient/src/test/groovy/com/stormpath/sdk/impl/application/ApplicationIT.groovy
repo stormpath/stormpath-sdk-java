@@ -425,7 +425,61 @@ class ApplicationIT extends ClientIT {
         def secret = encryptionService.decryptBase64String(cacheMap['secret'])
 
         return secret
+    }
 
+    /**
+     * Asserts <a href="https://github.com/stormpath/stormpath-sdk-java/issues/58">Issue 58</a>.
+     * @since 1.0.RC
+     */
+    @Test
+    void testCreateApplicationViaTenantActions() {
+        Application app = client.instantiate(Application)
+        app.name = uniquify("Java SDK: ApplicationIT.testCreateApplicationViaTenantActions")
+        app = client.createApplication(app);
+        deleteOnTeardown(app)
+        assertNotNull app.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testCreateApplicationRequestViaTenantActions() {
+        Application app = client.instantiate(Application)
+        app.name = uniquify("Java SDK: ApplicationIT.testCreateApplicationRequestViaTenantActions")
+        def request = Applications.newCreateRequestFor(app).build()
+        app = client.createApplication(request)
+        deleteOnTeardown(app)
+        assertNotNull app.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testGetApplicationsViaTenantActions() {
+        def appList = client.getApplications()
+        assertNotNull appList.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testGetApplicationsWithMapViaTenantActions() {
+        def map = new HashMap<String, Object>()
+        def appList = client.getApplications(map)
+        assertNotNull appList.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testGetApplicationsWithAppCriteriaViaTenantActions() {
+        def appCriteria = Applications.criteria()
+        def appList = client.getApplications(appCriteria)
+        assertNotNull appList.href
     }
 
 }

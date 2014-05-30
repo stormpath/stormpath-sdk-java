@@ -17,9 +17,10 @@ package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantActions;
 
 /**
- * The {@code Client} is the main entry point to the Stormpath Java SDK.  A Java project wishing to
+ * The {@code Client} is the main entry point to the Stormpath Java SDK.  A JVM project wishing to
  * communicate with the Stormpath REST API service must build a {@code Client} instance.  After obtaining
  * a {@code Client instance}, the REST API may be used by making simple Java calls on objects returned from
  * the Client (or any children objects obtained therein).
@@ -27,19 +28,16 @@ import com.stormpath.sdk.tenant.Tenant;
  * For example:
  * <pre>
  * String path = System.getProperty("user.home") + "/.stormpath/<a href="http://www.stormpath.com/docs/get-api-key">apiKey.properties</a>";
- * Client client = {@link Clients Clients}.builder()
- *      .setApiKey(ApiKeys.builder()
- *          .setFileLocation(path)
- *          .build()
- *      )
- *      .build();
+ * Client client = {@link Clients Clients}.{@link com.stormpath.sdk.client.Clients#builder() builder()}
+ *     .{@link com.stormpath.sdk.client.ClientBuilder#setApiKey(ApiKey) setApiKey}({@link ApiKeys ApiKeys}.builder()
+ *         .setFileLocation(path)
+ *         .build())
+ *     .build();
  *
- * //interact with the REST API resources as desired:
- * Tenant myTenant = client.getCurrentTenant();
- *
- * ApplicationList applications = tenant.getApplications();
+ * ApplicationList applications = client.getApplications();
  *
  * System.out.println("My Applications: ");
+ *
  * for (Application application : applications) {
  *     System.out.println(application);
  * }
@@ -49,10 +47,31 @@ import com.stormpath.sdk.tenant.Tenant;
  * wrapper to its internal 'real' {@code DataStore} instance.  This is a convenience mechanism to eliminate the constant need to
  * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
  *
+ * <h3>TenantActions API</h3>
+ * <p>As of 1.0.RC, this interface extends {@link TenantActions} to allow for a more convenient way of performing
+ * Tenant behavior when interacting with a {@code Client} instance directly. For example, instead of:
+ * <pre>
+ * client.getCurrentTenant().getApplications();
+ * </pre>
+ * one might choose to write:
+ * <pre>
+ * client.getApplications();
+ * </pre>
+ * which is less verbose and probably better self-documenting for many use cases.
+ * </p>
+ * <p>
+ * All Client {@code TenantActions} method implementations simply delegate to
+ * <pre>
+ * {@link #getCurrentTenant() getCurrentTenant()}.<em>methodName</em>
+ * </pre>
+ * <p/>
+ *
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
+ * @see TenantActions
+ * @see DataStore
  * @since 0.1
  */
-public interface Client extends DataStore {
+public interface Client extends DataStore, TenantActions {
 
     /**
      * Returns the sole {@link Tenant} resource associated to this client.
@@ -61,8 +80,10 @@ public interface Client extends DataStore {
     Tenant getCurrentTenant();
 
     /**
-     * Returns the internal {@link DataStore} of the client.
-     * @return the internal {@link DataStore} of the client.
+     * Returns the internal {@link DataStore} of the client.  It is typically not necessary to invoke this method as
+     * the Client implements the {@link DataStore} API and will delegate to this instance automatically.
+     *
+     * @return the client's internal {@link DataStore}.
      */
     DataStore getDataStore();
 

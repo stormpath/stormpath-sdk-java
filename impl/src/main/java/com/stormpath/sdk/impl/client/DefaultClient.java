@@ -15,27 +15,38 @@
  */
 package com.stormpath.sdk.impl.client;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.directory.CreateDirectoryRequest;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryCriteria;
+import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * The default {@link Client} implementation.
- * </p>
  * <h3>DataStore API</h3>
- * As of 0.8, this class implements the {@link DataStore} interface, but this implementation merely acts as a wrapper to
- * the underlying 'real' {@code DataStore} instance. This is a convenience mechanism to eliminate the constant need to
- * call {@code client.getDataStore()} every time one needs to instantiate or look up a Resource.
+ * <p>As of 0.8, this class implements the {@link
+ * DataStore} interface, but this implementation merely acts as a wrapper to the underlying 'real' {@code DataStore}
+ * instance. This is a convenience mechanism to eliminate the constant need to call {@code client.getDataStore()} every
+ * time one needs to instantiate or look up a Resource.</p>
  *
  * @see <a href="http://www.stormpath.com/docs/quickstart/connect">Communicating with Stormpath: Get your API Key</a>
  * @since 1.0.alpha
@@ -46,16 +57,19 @@ public class DefaultClient implements Client {
 
     private String currentTenantHref;
 
-
     /**
      * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
      * JavaDoc for a usage example.
      *
-     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with Stormpath's API server
-     * @param baseUrl the Stormpath base URL
-     * @param proxy the HTTP proxy to be used when communicating with the Stormpath API server (can be null)
-     * @param cacheManager the {@link com.stormpath.sdk.cache.CacheManager} that should be used to cache Stormpath REST resources (can be null)
-     * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server (can be null)
+     * @param apiKey               the Stormpath account API Key that will be used to authenticate the client with
+     *                             Stormpath's API server
+     * @param baseUrl              the Stormpath base URL
+     * @param proxy                the HTTP proxy to be used when communicating with the Stormpath API server (can be
+     *                             null)
+     * @param cacheManager         the {@link com.stormpath.sdk.cache.CacheManager} that should be used to cache
+     *                             Stormpath REST resources (can be null)
+     * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
+     *                             server (can be null)
      */
     public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
@@ -188,5 +202,115 @@ public class DefaultClient implements Client {
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         return this.dataStore.getResource(href, clazz);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public Application createApplication(Application application) throws ResourceException {
+        return getCurrentTenant().createApplication(application);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public Application createApplication(CreateApplicationRequest request) throws ResourceException {
+        return getCurrentTenant().createApplication(request);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public ApplicationList getApplications() {
+        return getCurrentTenant().getApplications();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public ApplicationList getApplications(Map<String, Object> queryParams) {
+        return getCurrentTenant().getApplications(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public ApplicationList getApplications(ApplicationCriteria criteria) {
+        return getCurrentTenant().getApplications(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public Directory createDirectory(Directory directory) {
+        return getCurrentTenant().createDirectory(directory);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public Directory createDirectory(CreateDirectoryRequest createDirectoryRequest) throws ResourceException {
+        return getCurrentTenant().createDirectory(createDirectoryRequest);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public DirectoryList getDirectories() {
+        return getCurrentTenant().getDirectories();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public DirectoryList getDirectories(Map<String, Object> queryParams) {
+        return getCurrentTenant().getDirectories(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public DirectoryList getDirectories(DirectoryCriteria criteria) {
+        return getCurrentTenant().getDirectories(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC
+     */
+    @Override
+    public Account verifyAccountEmail(String token) {
+        return getCurrentTenant().verifyAccountEmail(token);
     }
 }
