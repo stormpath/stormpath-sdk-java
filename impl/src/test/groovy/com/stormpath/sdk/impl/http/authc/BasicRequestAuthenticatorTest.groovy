@@ -40,7 +40,7 @@ class BasicRequestAuthenticatorTest {
 
         def id = "fooId"
         def secret = "barKey"
-        String authorizationHeader = com.stormpath.sdk.impl.util.Base64.encodeToString((id + ":" + secret).getBytes("UTF-8"), false);
+        String authorizationHeader = com.stormpath.sdk.impl.util.Base64.encodeBase64String((id + ":" + secret).getBytes("UTF-8"));
 
         def request = createStrictMock(Request)
         def apiKey = createStrictMock(ApiKey)

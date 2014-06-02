@@ -22,8 +22,8 @@ import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
-import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.Charset;
 

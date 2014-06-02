@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.ouath.signer;
 
+import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
-import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;

@@ -440,7 +440,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         byte[] bytes = cred.getBytes("UTF-8")
 
-        "Basic " + Base64.encodeToString(bytes, false)
+        "Basic " + Base64.encodeBase64String(bytes)
     }
 
     def static String createBearerAuthzHeader(String accessToken) {

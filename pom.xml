@@ -95,7 +95,6 @@
         <jackson.version>1.9.11</jackson.version>
         <oltu.version>1.0.0</oltu.version>
         <servlet.version>3.0.1</servlet.version>
-        <commonsCodec.version>1.6</commonsCodec.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
@@ -166,18 +165,6 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpClient.version}</version>
-                <!-- The Stormpath Java SDK project uses SLF4J: -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>${commonsCodec.version}</version>
                 <!-- The Stormpath Java SDK project uses SLF4J: -->
                 <exclusions>
                     <exclusion>

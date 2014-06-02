@@ -65,7 +65,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
         } catch (UnsupportedEncodingException e) {
             throw new RequestAuthenticationException("Unable to acquire UTF-8 bytes!");
         }
-        authorizationHeader = Base64.encodeToString(valueBytes, false);
+        authorizationHeader = Base64.encodeBase64String(valueBytes);
         request.getHeaders().set(AUTHORIZATION_HEADER, AUTHENTICATION_SCHEME + " " + authorizationHeader);
     }
 

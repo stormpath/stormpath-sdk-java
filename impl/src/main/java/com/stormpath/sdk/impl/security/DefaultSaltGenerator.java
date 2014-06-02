@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.security;
 
-import org.apache.commons.codec.binary.Base64;
+import com.stormpath.sdk.impl.util.Base64;
 
 import java.security.SecureRandom;
 
