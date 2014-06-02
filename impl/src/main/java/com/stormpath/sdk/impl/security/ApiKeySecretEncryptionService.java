@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.security;
 
+import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
-import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
