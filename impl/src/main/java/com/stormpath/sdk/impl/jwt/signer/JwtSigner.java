@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.ouath.signer;
+package com.stormpath.sdk.impl.jwt.signer;
 
 /**
  * JwtSigner signs an access token using the JWT spec.
