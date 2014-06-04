@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.authc;
-
-import java.util.Enumeration;
+package com.stormpath.sdk.error.jwt;
 
 /**
+ * A sub-class of {@link RuntimeException} representing an attempt to use a <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">
+ * Json Web Token</a> with an invalid signature.
+ *
  * @since 1.0.RC
  */
-public interface HttpServletRequestWrapper {
+public class InvalidJwtSignatureException extends RuntimeException {
 
-    public Class getHttpServletRequestClass();
-
-    public Object getHttpServletRequest();
-
-    public String getHeader(String headerName);
-
-    public String getParameter(String parameterName);
-
-    public Enumeration<String> getParameterNames();
-
+    public InvalidJwtSignatureException(String msg) {
+        super(msg);
+    }
 }

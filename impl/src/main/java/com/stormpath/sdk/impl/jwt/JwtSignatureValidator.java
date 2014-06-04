@@ -1,0 +1,52 @@
+/*
+ * Copyright 2014 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.stormpath.sdk.impl.jwt;
+
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.error.jwt.InvalidJwtSignatureException;
+import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
+import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
+import com.stormpath.sdk.lang.Assert;
+
+/**
+ * @since 1.0.RC
+ */
+public class JwtSignatureValidator {
+
+    private final JwtSigner jwtSigner;
+
+    public JwtSignatureValidator(ApiKey apiKey) {
+
+        Assert.notNull(apiKey, "apiKey cannot be null.");
+
+        jwtSigner = new DefaultJwtSigner(apiKey.getSecret());
+    }
+
+    /**
+     * @param jwtWrapper - A wrapper {@link JwtWrapper} instance containing the Json Web Token information.
+     * @throws InvalidJwtSignatureException
+     */
+    public void validate(JwtWrapper jwtWrapper) throws InvalidJwtSignatureException {
+        Assert.notNull(jwtWrapper, "jwtWrapper cannot be null.");
+
+        String calculatedSignature = jwtSigner.calculateSignature(jwtWrapper.getBase64JwtHeader(), jwtWrapper.getBase64JsonPayload());
+
+        if (jwtWrapper.getBase64JwtSignature().equals(calculatedSignature)) {
+            return;
+        }
+        throw new InvalidJwtSignatureException("Jwt signature is invalid.");
+    }
+}

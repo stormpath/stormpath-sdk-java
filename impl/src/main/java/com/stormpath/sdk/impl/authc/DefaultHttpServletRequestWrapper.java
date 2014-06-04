@@ -48,6 +48,11 @@ public class DefaultHttpServletRequestWrapper implements HttpServletRequestWrapp
     }
 
     @Override
+    public String getParameter(String parameterName) {
+        return httpServletRequest.getParameter(parameterName);
+    }
+
+    @Override
     public Enumeration<String> getParameterNames() {
         return httpServletRequest.getParameterNames();
     }

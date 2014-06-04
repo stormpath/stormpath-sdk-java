@@ -17,8 +17,9 @@ package com.stormpath.sdk.impl.sso;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.ouath.signer.DefaultJwtSigner;
-import com.stormpath.sdk.impl.ouath.signer.JwtSigner;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
+import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
@@ -28,6 +29,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 
 /**
  * @since 1.0.RC
@@ -83,16 +86,16 @@ public class DefaultSsoRedirectUrlBuilder implements SsoRedirectUrlBuilder {
         final ApiKey apiKey = this.internalDataStore.getApiKey();
 
         Map<String, Object> body = new LinkedHashMap<String, Object>();
-        body.put("iat", now);
-        body.put("jti", nonce);
-        body.put("iss", apiKey.getId());
-        body.put("sub", applicationHref);
+        body.put(ISSUED_AT_PARAM_NAME, now);
+        body.put(NONCE_PARAM_NAME, nonce);
+        body.put(ISSUER_PARAM_NAME, apiKey.getId());
+        body.put(SUBJECT_PARAM_NAME, applicationHref);
         if (Strings.hasText(this.path)) {
-            body.put("path", this.path);
+            body.put(PATH_PARAM_NAME, this.path);
         }
-        body.put("cb_uri", this.callbackUri);
+        body.put(REDIRECT_URI_PARAM_NAME, this.callbackUri);
         if (Strings.hasText(this.state)) {
-            body.put("state", this.state);
+            body.put(STATE_PARAM_NAME, this.state);
         }
 
         ObjectMapper mapper = new ObjectMapper();
@@ -102,7 +105,13 @@ public class DefaultSsoRedirectUrlBuilder implements SsoRedirectUrlBuilder {
             String message = mapper.writeValueAsString(body);
             JwtSigner jwtSigner = new DefaultJwtSigner(apiKey.getSecret());
             String jwt = jwtSigner.sign(message);
-            return SSO_ENDPOINT + "?jwtRequest=" + jwt;
+
+            QueryString queryString = new QueryString();
+            queryString.put(JWR_REQUEST_PARAM_NAME, jwt);
+
+            StringBuilder urlBuilder = new StringBuilder(SSO_ENDPOINT).append('?').append(queryString.toString());
+
+            return urlBuilder.toString();
 
         } catch (IOException e) {
             throw new IllegalStateException("Something went wrong when constructing the SsoRedirectUri: " + e);

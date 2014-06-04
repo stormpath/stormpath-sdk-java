@@ -18,6 +18,7 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.AccountResult;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -387,7 +388,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * to obtain a new password reset token.
      *
      * @param passwordResetToken the verification token, usually obtained as a request parameter by your application.
-     * @param newPassword the new password that will be set to the Account if the token is successfully validated.
+     * @param newPassword        the new password that will be set to the Account if the token is successfully validated.
      * @return the Account matching the specified token.
      * @see #sendPasswordResetEmail(String)
      * @since 1.0.RC
@@ -804,4 +805,14 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.0.RC
      */
     SsoRedirectUrlBuilder createSsoRedirectUrl();
+
+
+    /**
+     * Returns the {@link AccountResult accountResult} that is pointed by the {@code httpRequest}
+     *
+     * @param httpRequest
+     * @return - An {@link AccountResult accountResult} that has
+     * @throws IllegalArgumentException - If {@code httpRequest} is null or not supported.
+     */
+    AccountResult handleSsoResponse(Object httpRequest);
 }

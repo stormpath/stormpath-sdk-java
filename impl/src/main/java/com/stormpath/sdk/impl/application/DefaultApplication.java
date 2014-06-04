@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.AccountResult;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
@@ -55,6 +56,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.sso.DefaultSsoRedirectUrlBuilder;
+import com.stormpath.sdk.impl.sso.DefaultSsoResponseHandler;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
@@ -540,6 +542,15 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     @Override
     public SsoRedirectUrlBuilder createSsoRedirectUrl() {
         return new DefaultSsoRedirectUrlBuilder(getDataStore(), getHref());
+    }
+
+    @Override
+    public AccountResult handleSsoResponse(Object httpRequest) {
+        validateHttpRequest(httpRequest);
+
+        DefaultSsoResponseHandler handler = new DefaultSsoResponseHandler(getDataStore());
+
+        return handler.handle(this, httpRequest);
     }
 
     @SuppressWarnings("unchecked")

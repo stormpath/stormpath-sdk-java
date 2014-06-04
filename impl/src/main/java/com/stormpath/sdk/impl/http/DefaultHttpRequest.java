@@ -84,6 +84,23 @@ public class DefaultHttpRequest implements HttpRequest {
         return parameters;
     }
 
+    @Override
+    public String getParameter(String parameterName) {
+
+        Map<String, String[]> httpParameters = getParameters();
+
+        if (httpParameters == null) {
+            return null;
+        }
+
+        String[] values = httpParameters.get(parameterName);
+
+        if (values == null || values.length == 0) {
+            return null;
+        }
+
+        return values[0];
+    }
 
     @Override
     public String getQueryParameters() {

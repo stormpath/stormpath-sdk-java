@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.sso
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
-import org.apache.commons.codec.binary.Base64
+import com.stormpath.sdk.impl.util.Base64
 import org.testng.annotations.Test
 
 import java.nio.charset.Charset
