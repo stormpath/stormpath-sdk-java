@@ -162,7 +162,7 @@ public class DefaultDataStore implements InternalDataStore {
         Map<String, ?> data = null;
 
         //check if cached:
-        if (Collections.isEmpty(data) && isCacheRetrievalEnabled(clazz)) {
+        if (isCacheRetrievalEnabled(clazz)) {
             data = getCachedValue(href, clazz);
         }
 
@@ -224,7 +224,7 @@ public class DefaultDataStore implements InternalDataStore {
         Map<String, ?> data = null;
 
         //check if cached:
-        if (Collections.isEmpty(data) && isCacheRetrievalEnabled(parent)) {
+        if (isCacheRetrievalEnabled(parent)) {
             data = getCachedValue(href, parent);
         }
 
