@@ -75,8 +75,8 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 /** @since 0.2 */
 public class DefaultApplication extends AbstractInstanceResource implements Application {
 
-    private static final String OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN =
-        "com.stormpath.sdk.impl.oauth.authc.DefaultOauthAuthenticationRequestBuilder";
+    private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
+        "com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator";
 
     private static final String OAUTH_BUILDER_NOT_AVAILABLE_MSG;
 
@@ -95,8 +95,8 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         "Class [%s] is not one of the supported http requests classes [%s].";
 
     static {
-        if (Classes.isAvailable(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN)) {
-            OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS = Classes.forName(OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN);
+        if (Classes.isAvailable(OAUTH_REQUEST_AUTHENTICATOR_FQCN)) {
+            OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS = Classes.forName(OAUTH_REQUEST_AUTHENTICATOR_FQCN);
         } else {
             OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS = null;
         }
@@ -107,7 +107,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
             AUTHENTICATION_REQUEST_DISPATCHER_CLASS = AuthenticationRequestDispatcher.class;
         }
 
-        OAUTH_BUILDER_NOT_AVAILABLE_MSG = "Unable to find the '" + OAUTH_AUTHENTICATION_REQUEST_BUILDER_FQCN +
+        OAUTH_BUILDER_NOT_AVAILABLE_MSG = "Unable to find the '" + OAUTH_REQUEST_AUTHENTICATOR_FQCN +
                                           "' implementation on the classpath.  Please ensure you " +
                                           "have added the stormpath-sdk-oauth-{version}.jar file to your runtime classpath.";
 

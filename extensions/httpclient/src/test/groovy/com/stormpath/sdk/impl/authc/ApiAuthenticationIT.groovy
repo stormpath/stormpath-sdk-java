@@ -112,7 +112,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).queryParameters("grant_type=client_credentials")
 
-        result = (TokenOauthAuthenticationResult) application.authenticateApiRequest(httpRequestBuilder.build()).execute()
+        result = (TokenOauthAuthenticationResult) application.authenticateApiRequest(httpRequestBuilder.build())
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/xml"))
 
@@ -308,7 +308,7 @@ class ApiAuthenticationIT extends ClientIT {
 
     def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Class expectedResultClass) {
 
-        def authResult = application.authenticateApiRequest(httpRequest).execute()
+        def authResult = application.authenticateApiRequest(httpRequest)
 
         verifySuccessfulAuthentication(authResult, application, account, expectedResultClass)
 
