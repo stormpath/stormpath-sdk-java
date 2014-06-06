@@ -117,7 +117,7 @@ public interface ClientBuilder {
      * used to authenticate every request sent to the Stormpath API server.
      * <p/>
      * It is not recommended that you override this setting <em>unless</em> your application is deployed in an
-     * environment that - outside of the application's control - manipulates request headers on outgoing HTTP requests.
+     * environment that - outside of your application's control - manipulates request headers on outgoing HTTP requests.
      * Google App Engine is one such environment, for example.
      * <p/>
      * As such, in these environments only, an alternative authentication mechanism is necessary, such as
