@@ -18,19 +18,44 @@ package com.stormpath.sdk.authc;
 import com.stormpath.sdk.api.ApiKey;
 
 /**
- * ApiAuthenticationResult represents an {@code Api} {@link AuthenticationResult authentication result}.
+ * An {@code AuthenticationResult} that indicates a client authenticated with your server-side API (eg
+ * REST API) using an ApiKey.  The ApiKey used to authenticate the request can be obtained via {@link #getApiKey()}.
+ * <h3>Different Results</h3>
+ * <p>The actual runtime type of of an {@code ApiAuthenticationResult} might be more specific, for example, an
+ * {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationResult OuthAuthenticationResult}.  If you need to react
+ * to different authentication result types, you can use an {@link AuthenticationResultVisitor} to perform
+ * type-specific logic.  For example:
+ * <pre>
+ * ApiAuthenticationResult result = application.authenticateApiRequest(request);
+ *
+ * result.accept(new {@link com.stormpath.sdk.authc.AuthenticationResultVisitor AuthenticationResultVisitor}() {
+ *
+ *     &#64;Override
+ *     public void visit(ApiAuthenticationResult result) {
+ *         //the request was authenticated with HTTP Basic authentication
+ *     }
+ *
+ *     &#64;Override
+ *     public void visit(OauthAuthenticationResult result) {
+ *         //the request was authenticated using OAuth
+ *     }
+ *
+ *     ... etc ...
+ * });
+ * </pre>
+ * </p>
  *
  * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
  * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
- * @see com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult
  * @since 1.0.RC
  */
 public interface ApiAuthenticationResult extends AuthenticationResult {
 
     /**
-     * Returns the {@link ApiKey} of this {@link AuthenticationResult}.
+     * Returns the {@link ApiKey} used to authenticate the API request.
      *
-     * @return - The {@link ApiKey} of this {@link AuthenticationResult}.
+     * @return the {@link ApiKey} used to authenticate the API request.
      */
     ApiKey getApiKey();
 

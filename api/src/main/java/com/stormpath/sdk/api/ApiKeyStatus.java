@@ -16,17 +16,21 @@
 package com.stormpath.sdk.api;
 
 /**
+ * Represents the status (usability) of an {@link ApiKey} instance.
+ *
  * @since 1.0.RC
  */
 public enum ApiKeyStatus {
 
     /**
-     * Accounts may authenticate using enabled api keys.
+     * An enabled ApiKey may be used to authenticate a request on behalf of its {@link
+     * com.stormpath.sdk.api.ApiKey#getAccount() account}.
      */
     ENABLED,
 
     /**
-     * Accounts may not authenticate using disabled api keys.
+     * A disabled ApiKey may not be used to authenticate a request on behalf of its {@link
+     * com.stormpath.sdk.api.ApiKey#getAccount() account}.
      */
     DISABLED,
 }

@@ -19,7 +19,7 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.oauth.authc.BearerLocation;
+import com.stormpath.sdk.oauth.authc.RequestLocation;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,7 +35,8 @@ public class OauthAuthenticationRequestFactory extends ApiAuthenticationRequestF
 
         try {
             if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
-                return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, new BearerLocation[]{BearerLocation.HEADER});
+                return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, new RequestLocation[]{
+                    RequestLocation.HEADER});
             }
             return new DefaultBasicOauthAuthenticationRequest(httpServletRequest, null, DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL);
         } catch (Exception e) {

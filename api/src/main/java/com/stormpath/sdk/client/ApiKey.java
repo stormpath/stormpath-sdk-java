@@ -34,7 +34,6 @@ public interface ApiKey {
      * @return the public unique identifier.
      * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKey#getId()} instead.
      */
-    @Deprecated
     String getId();
 
     /**
@@ -45,6 +44,5 @@ public interface ApiKey {
      * @return the raw SECRET used for API authentication.
      * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKey#getSecret()} instead.
      */
-    @Deprecated
     String getSecret();
 }

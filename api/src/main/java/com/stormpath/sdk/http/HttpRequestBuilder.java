@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.http;
 
-import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -29,8 +28,8 @@ import java.util.Map;
  *
  * @see HttpRequest
  * @see HttpRequests
- * @see com.stormpath.sdk.application.Application#authenticate(Object)
- * @see com.stormpath.sdk.application.Application#authenticateOauth(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * @since 1.0.RC
  */
 public interface HttpRequestBuilder {

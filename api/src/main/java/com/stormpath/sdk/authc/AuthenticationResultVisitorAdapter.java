@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult;
 
 /**
  * AuthenticationResultVisitorAdapter is an implementation of the {@link AuthenticationResultVisitor} that throws
@@ -45,7 +45,7 @@ import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
  *          ...
  *      }
  *
- *      public void visit(BasicOauthAuthenticationResult result) {
+ *      public void visit(TokenOauthAuthenticationResult result) {
  *          TokenResponse tokenResponse = result.getTokenResponse();
  *          ...
  *      }
@@ -72,8 +72,8 @@ public class AuthenticationResultVisitorAdapter implements AuthenticationResultV
     }
 
     @Override
-    public void visit(BasicOauthAuthenticationResult result) {
-        throw new UnsupportedOperationException("visit(BasicOauthAuthenticationResult) is not expected.");
+    public void visit(TokenOauthAuthenticationResult result) {
+        throw new UnsupportedOperationException("visit(TokenOauthAuthenticationResult) is not expected.");
     }
 
 }

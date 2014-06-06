@@ -16,24 +16,49 @@
 package com.stormpath.sdk.oauth.authz;
 
 /**
- * The TokenResponse is a wrapper for the Bearer result of the {@link com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder Basic Authentication}.
- * It provides access to all the disaggregated information contained in the Bearer.
+ * Response data to be returned to an OAuth client as a result of processing a successful Client Password
+ * Authentication Request as defined in the
+ * <a href="http://tools.ietf.org/html/rfc6749#section-2.3.1">OAuth 2 specification, Section 2.3.1</a>.
+ * <h3>Usage</h3>
+ * <p>When you delegate an HTTP Oauth 2 Token Request to the Stormpath SDK, if the request is successful, a
+ * {@code TokenResponse} will be returned.  This {@code TokenResponse} data must be sent to the OAuth client in the
+ * HTTP response.  For example:</p>
+ * <pre>
+ * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
+ *
+ * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+ *
+ *    Application application = client.getResource(myApplicationRestUrl, Application.class);
+ *
+ *    BasicOAuthAuthenticationResult result = (BasicOAuthAuthenticationResult) application.authenticateOauthRequest(request).execute();
+ *
+ *    <b>TokenResponse token = result.getTokenResponse();
+ *
+ *    response.setStatus(HttpServletResponse.SC_OK);
+ *    response.setContentType("application/json");
+ *    response.getWriter().print(token.toJson());</b>
+ *
+ *    response.getWriter().flush();
+ * }
+ * </pre>
+ * <p>As you can see, {@link #toJson()} will return a JSON string to populate the response body - it is not strictly
+ * necessary to read individual properties on the {@code TokenResponse} instance.</p>
  *
  * @since 1.0.RC
  */
 public interface TokenResponse {
 
     /**
-     * Returns the <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">Json Web Token</a> of this Bearer.
+     * Returns the Access Token string that should be used by the client as the bearer token for subsequent requests.
      *
-     * @return the JWT of this Bearer.
+     * @return the Access Token string that should be used by the client as the bearer token for subsequent requests.
      */
     String getAccessToken();
 
     /**
-     * Returns the space separated collection of scopes.
+     * Returns the space separated collection of granted scopes.
      *
-     * @return the space separated collection of scopes.
+     * @return the space separated collection of granted scopes.
      */
     String getScope();
 
@@ -45,16 +70,17 @@ public interface TokenResponse {
     String getTokenType();
 
     /**
-     * Returns an string containing the time to live.
+     * Returns the Time-To-Live value that indicates for how long the access token is valid.  After this amount of time
+     * passes, the token cannot be used.
      *
-     * @return an string containing the time to live.
+     * @return the Time-To-Live value that indicates for how long the access token is valid.
      */
     String getExpiresIn();
 
     /**
-     * <b>NOTE: Not yer supported.<b/>
-     * <p/>
-     * Returns the refresh token of this Bearer.
+     * <b>NOTE: Not yet supported.<b/>
+     *
+     * <p>Returns the refresh token of this Bearer.</p>
      *
      * @return the refresh token of this Bearer.
      */

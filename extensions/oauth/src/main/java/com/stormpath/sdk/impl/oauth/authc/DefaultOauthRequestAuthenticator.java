@@ -21,11 +21,11 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
-import com.stormpath.sdk.oauth.authc.BearerLocation;
-import com.stormpath.sdk.oauth.authc.BearerOauthAuthenticationRequestBuilder;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationRequestBuilder;
+import com.stormpath.sdk.oauth.authc.BearerOauthRequestAuthenticator;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.authc.RequestLocation;
+import com.stormpath.sdk.oauth.authc.TokenOauthRequestAuthenticator;
 import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC
  */
-public class DefaultOauthAuthenticationRequestBuilder implements OauthAuthenticationRequestBuilder {
+public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticator {
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
@@ -41,7 +41,7 @@ public class DefaultOauthAuthenticationRequestBuilder implements OauthAuthentica
 
     private final Application application;
 
-    public DefaultOauthAuthenticationRequestBuilder(Application application, Object httpRequest) {
+    public DefaultOauthRequestAuthenticator(Application application, Object httpRequest) {
         Assert.notNull(application, "application cannot  be null.");
         Assert.notNull(httpRequest, "httpRequest cannot be null.");
 
@@ -58,18 +58,18 @@ public class DefaultOauthAuthenticationRequestBuilder implements OauthAuthentica
     }
 
     @Override
-    public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory) {
-        return new DefaultBasicOauthAuthenticationRequestBuilder(application, httpServletRequest, scopeFactory);
+    public TokenOauthRequestAuthenticator using(ScopeFactory scopeFactory) {
+        return new DefaultTokenOauthRequestAuthenticator(application, httpServletRequest, scopeFactory);
     }
 
     @Override
-    public BasicOauthAuthenticationRequestBuilder withTtl(long ttl) {
-        return new DefaultBasicOauthAuthenticationRequestBuilder(application, httpServletRequest, null).withTtl(ttl);
+    public TokenOauthRequestAuthenticator withTtl(long ttl) {
+        return new DefaultTokenOauthRequestAuthenticator(application, httpServletRequest, null).withTtl(ttl);
     }
 
     @Override
-    public BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations) {
-        return new DefaultBearerOauthAuthenticationRequestBuilder(httpServletRequest, application).inLocation(locations);
+    public BearerOauthRequestAuthenticator inLocation(RequestLocation... locations) {
+        return new DefaultBearerOauthRequestAuthenticator(httpServletRequest, application).inLocation(locations);
     }
 
     @Override

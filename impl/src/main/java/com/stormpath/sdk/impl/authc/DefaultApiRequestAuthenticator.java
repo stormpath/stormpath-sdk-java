@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.ApiAuthenticationRequestBuilder;
 import com.stormpath.sdk.authc.ApiAuthenticationResult;
+import com.stormpath.sdk.authc.ApiRequestAuthenticator;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
@@ -29,7 +29,7 @@ import java.lang.reflect.Constructor;
 /**
  * @since 1.0.RC
  */
-public class DefaultApiAuthenticationRequestBuilder implements ApiAuthenticationRequestBuilder {
+public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
@@ -51,7 +51,7 @@ public class DefaultApiAuthenticationRequestBuilder implements ApiAuthentication
 
     private final Application application;
 
-    public DefaultApiAuthenticationRequestBuilder(Application application, Object httpRequest) {
+    public DefaultApiRequestAuthenticator(Application application, Object httpRequest) {
         Assert.notNull(httpRequest);
         Assert.notNull(application, "application cannot be null.");
 
