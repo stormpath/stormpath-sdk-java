@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.oauth.issuer;
 
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
 import com.stormpath.sdk.impl.ds.MapMarshaller;
-import com.stormpath.sdk.impl.ouath.signer.JwtSigner;
+import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
