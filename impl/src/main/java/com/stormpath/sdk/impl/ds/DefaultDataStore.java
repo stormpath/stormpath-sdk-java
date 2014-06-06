@@ -29,6 +29,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -63,6 +64,8 @@ public class DefaultDataStore implements InternalDataStore {
     private final MapMarshaller mapMarshaller;
     private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
+    private volatile Map<String, Enlistment> hrefMapStore;
+
     /**
      * @since 0.9
      */
@@ -91,6 +94,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
         this.referenceFactory = new ReferenceFactory();
+        this.hrefMapStore = new SoftHashMap<String, Enlistment>();
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -112,6 +116,11 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz, Map<String, Object> properties) {
+        if (properties != null && properties.containsKey("href") && !CollectionResource.class.isAssignableFrom(clazz)) {
+            Enlistment enlistment = new Enlistment(properties);
+            this.hrefMapStore.put((String) properties.get("href"), enlistment);
+            return this.resourceFactory.instantiate(clazz, enlistment);
+        }
         return this.resourceFactory.instantiate(clazz, properties);
     }
 
@@ -153,7 +162,7 @@ public class DefaultDataStore implements InternalDataStore {
         Map<String, ?> data = null;
 
         //check if cached:
-        if (isCacheRetrievalEnabled(clazz)) {
+        if (Collections.isEmpty(data) && isCacheRetrievalEnabled(clazz)) {
             data = getCachedValue(href, clazz);
         }
 
@@ -166,6 +175,11 @@ public class DefaultDataStore implements InternalDataStore {
                 //cache for further use:
                 cache(clazz, data);
             }
+        }
+
+        //@since 1.0.RC
+        if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) && data.get("href") != null) {
+            data = toEnlistment(data);
         }
 
         if (CollectionResource.class.isAssignableFrom(clazz)) {
@@ -210,7 +224,7 @@ public class DefaultDataStore implements InternalDataStore {
         Map<String, ?> data = null;
 
         //check if cached:
-        if (isCacheRetrievalEnabled(parent)) {
+        if (Collections.isEmpty(data) && isCacheRetrievalEnabled(parent)) {
             data = getCachedValue(href, parent);
         }
 
@@ -222,6 +236,11 @@ public class DefaultDataStore implements InternalDataStore {
             if (!Collections.isEmpty(data) && isCacheUpdateEnabled(parent)) {
                 //cache for further use:
                 cache(parent, data);
+            }
+
+            //@since 1.0.RC
+            if (!Collections.isEmpty(data) && data.get("href") != null) {
+                data = toEnlistment(data);
             }
         }
 
@@ -255,13 +274,11 @@ public class DefaultDataStore implements InternalDataStore {
 
         Class<T> clazz = (Class<T>) resource.getClass();
 
-        T returnValue = create(parentHref, resource, clazz);
+        Map<String, Object> responseBody = getResponseBody(parentHref, resource, clazz, null);
 
         //ensure the caller's argument is updated with what is returned from the server:
         AbstractResource in = (AbstractResource) resource;
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+        in.setProperties(responseBody);
 
         return (T) in;
     }
@@ -277,13 +294,11 @@ public class DefaultDataStore implements InternalDataStore {
 
         Class<T> clazz = (Class<T>) resource.getClass();
 
-        T returnValue = save(parentHref, resource, clazz, qs);
+        Map<String, Object> responseBody = getResponseBody(parentHref, resource, clazz, qs);
 
         //ensure the caller's argument is updated with what is returned from the server:
         AbstractResource in = (AbstractResource) resource;
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+        in.setProperties(responseBody);
 
         return (T) in;
     }
@@ -303,12 +318,10 @@ public class DefaultDataStore implements InternalDataStore {
 
         Class<T> clazz = (Class<T>) resource.getClass();
 
-        T returnValue = save(href, resource, clazz);
+        Map<String, Object> responseBody = getResponseBody(href, resource, clazz, null);
 
         //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-        aResource.setProperties(props);
+        aResource.setProperties(responseBody);
     }
 
     @Override
@@ -355,6 +368,10 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType, QueryString queryString) {
+        return resourceFactory.instantiate(returnType, getResponseBody(href, resource, returnType, queryString));
+    }
+
+    private <T extends Resource, R extends Resource> Map<String, Object> getResponseBody(String href, T resource, Class<? extends R> returnType, QueryString queryString) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
@@ -371,8 +388,6 @@ public class DefaultDataStore implements InternalDataStore {
         long length = body.available();
 
         Request request = new DefaultRequest(HttpMethod.POST, href, queryString, null, body, length);
-
-        //Map<String, Object> responseBody = executeRequest(request);
 
         Response response = executeRequestGetFullResponse(request);
         Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
@@ -398,6 +413,11 @@ public class DefaultDataStore implements InternalDataStore {
             cacheNestedCustomData(href, props);
         }
 
+        //@since 1.0.RC
+        if (!Collections.isEmpty(responseBody) && responseBody.get("href") != null) {
+            responseBody = toEnlistment(responseBody);
+        }
+
         //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
         //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
         //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
@@ -410,8 +430,7 @@ public class DefaultDataStore implements InternalDataStore {
                 responseBody.put("isNewAccount", true);
             }
         }
-
-        return resourceFactory.instantiate(returnType, responseBody);
+        return responseBody;
     }
 
     /**
@@ -873,4 +892,19 @@ public class DefaultDataStore implements InternalDataStore {
             return null;
         }
     }
+
+    //@since 1.0.RC
+    private Enlistment toEnlistment(Map data) {
+        Enlistment enlistment = null;
+        Object responseHref = data.get("href");
+        if (this.hrefMapStore.containsKey(responseHref)) {
+            enlistment = this.hrefMapStore.get(responseHref);
+            enlistment.setProperties((Map<String, Object>) data);
+        } else {
+            enlistment = new Enlistment((Map<String, Object>) data);
+            this.hrefMapStore.put((String) responseHref, enlistment);
+        }
+        return enlistment;
+    }
+
 }

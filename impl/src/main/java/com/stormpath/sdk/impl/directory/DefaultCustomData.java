@@ -23,11 +23,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @since 0.9
@@ -65,14 +61,27 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public void delete() {
+        writeLock.lock();
         getDataStore().delete(this);
+        writeLock.unlock();
     }
 
     @Override
     public int size() {
         readLock.lock();
         try {
-            return properties.size();
+            int count = 0;
+            for(String key : this.properties.keySet()) {
+                if(!this.dirtyProperties.containsKey(key)) {
+                    count++;
+                }
+            }
+            for(String key : this.dirtyProperties.keySet()) {
+                if(!this.properties.containsKey(key)) {
+                    count++;
+                }
+            }
+            return count - this.deletedPropertyNames.size();
         } finally {
             readLock.unlock();
         }
@@ -80,12 +89,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public boolean isEmpty() {
-        readLock.lock();
-        try {
-            return properties.isEmpty();
-        } finally {
-            readLock.unlock();
-        }
+        return this.size() <= 0;
     }
 
     @Override
@@ -93,7 +97,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
         Assert.isInstanceOf(String.class, key);
         readLock.lock();
         try {
-            return properties.containsKey(key);
+            return !this.deletedPropertyNames.contains(key) && (properties.containsKey(key) || this.dirtyProperties.containsKey(key));
         } finally {
             readLock.unlock();
         }
@@ -103,7 +107,17 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     public boolean containsValue(Object value) {
         readLock.lock();
         try {
-            return properties.containsValue(value);
+            for(Entry<String, Object> entry: this.dirtyProperties.entrySet()) {
+                if(entry.getValue().equals(value) && !this.deletedPropertyNames.contains(entry.getKey())) {
+                    return true;
+                }
+            }
+            for(Entry<String, Object> entry: this.properties.entrySet()) {
+                if(entry.getValue().equals(value) && !this.deletedPropertyNames.contains(entry.getKey())) {
+                    return true;
+                }
+            }
+            return false;
         } finally {
             readLock.unlock();
         }
@@ -125,8 +139,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
         Assert.isInstanceOf(String.class, key);
         writeLock.lock();
         try {
-            Object object = this.properties.remove(key);
-            this.dirtyProperties.remove(key);
+            Object object = this.dirtyProperties.remove(key);
             this.deletedPropertyNames.add(key.toString());
             this.dirty = true;
             return object;
@@ -163,7 +176,6 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
                 if (propertiesToFilter.contains(propertyName)) {
                     continue;
                 }
-                this.properties.remove(propertyName);
                 this.dirtyProperties.remove(propertyName);
                 this.deletedPropertyNames.add(propertyName);
             }
@@ -174,14 +186,24 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public Set<String> keySet() {
-        return super.getPropertyNames();
+        readLock.lock();
+        try {
+            Set<String> keySet = new LinkedHashSet<String>(this.properties.keySet());
+            keySet.addAll(this.dirtyProperties.keySet());
+            keySet.removeAll(this.deletedPropertyNames);
+            return java.util.Collections.unmodifiableSet(keySet);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Collection<Object> values() {
         readLock.lock();
         try {
-            return properties.values();
+            Collection<Object> values = new ArrayList<Object>(this.properties.values());
+            values.addAll(this.dirtyProperties.values());
+            return java.util.Collections.unmodifiableCollection(values);
         } finally {
             readLock.unlock();
         }
@@ -191,7 +213,10 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     public Set<Entry<String, Object>> entrySet() {
         readLock.lock();
         try {
-            return this.properties.entrySet();
+            Set<Entry<String, Object>> entrySet = new LinkedHashSet<Entry<String, Object>>(this.properties.entrySet());
+            entrySet.addAll(this.dirtyProperties.entrySet());
+            entrySet.removeAll(this.deletedPropertyNames);
+            return java.util.Collections.unmodifiableSet(entrySet);
         } finally {
             readLock.unlock();
         }
@@ -200,12 +225,14 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     @Override
     public void save() {
         if (isDirty()) {
+            this.writeLock.lock();
             if (hasRemovedProperties()) {
                 deleteRemovedProperties();
             }
             if (hasNewProperties()) {
                 super.save();
             }
+            this.writeLock.unlock();
         }
     }
 
@@ -213,7 +240,9 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
         Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
         for (String deletedPropertyName : deletedPropertyNames) {
             getDataStore().deleteResourceProperty(this, deletedPropertyName);
+            this.properties.remove(deletedPropertyName);
         }
+        this.deletedPropertyNames.clear();
     }
 
     public boolean hasRemovedProperties() {

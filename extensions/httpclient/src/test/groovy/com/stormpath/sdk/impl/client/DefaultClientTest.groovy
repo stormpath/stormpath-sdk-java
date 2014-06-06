@@ -15,12 +15,26 @@
  */
 package com.stormpath.sdk.impl.client
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.ds.Enlistment
+import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
+import com.stormpath.sdk.impl.ds.ResourceFactory
+import com.stormpath.sdk.impl.http.HttpMethod
+import com.stormpath.sdk.impl.http.Request
+import com.stormpath.sdk.impl.http.RequestExecutor
+import com.stormpath.sdk.impl.http.Response
+import com.stormpath.sdk.impl.http.support.DefaultRequest
+import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -81,6 +95,7 @@ class DefaultClientTest {
         def map = createStrictMock(Map)
         def set = createStrictMock(Set)
         def iterator = createNiceMock(Iterator)
+        def currentTenantHref = "https://api.stormpath.com/v1/tenants/3cFOIsPgvKwsGjAeIiWV6d"
 
         expect(proxy.getHost()).andReturn("192.168.2.110")
         expect(proxy.getPort()).andReturn(777)
@@ -88,6 +103,7 @@ class DefaultClientTest {
         expect(cacheManager.getCache("com.stormpath.sdk.tenant.Tenant")).andReturn(cache)
         expect(cache.get("http://localhost:8080/v1/tenants/current")).andReturn(map)
         expect(map.isEmpty()).andReturn(false).times(2)
+        expect(map.get("href")).andReturn(currentTenantHref).times(2)
         expect(map.size()).andReturn(1)
         expect(map.entrySet()).andReturn(set)
         expect(set.iterator()).andReturn(iterator)
@@ -113,5 +129,130 @@ class DefaultClientTest {
         assertEquals(client.getDataStore().baseUrl, baseUrl)
     }
 
+    //@since 1.0.RC
+    @Test
+    void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
+        def apiKey = createNiceMock(ApiKey)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def resourceFactory = createStrictMock(ResourceFactory)
+        def response = createStrictMock(Response)
+
+        def properties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                fullName: "Mel Ben Smuk",
+                email: 'my@email.com',
+                givenName: 'Given Name',
+                emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
+                directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
+                customData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/customData"]
+        ]
+
+        def propertiesAfterSave = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                fullName: "Mel Ben Smuk",
+                email: 'my@email.com',
+                givenName: 'My New Given Name',
+                emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
+                directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
+                customData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/customData"]
+        ]
+        def mapMarshaller = new JacksonMapMarshaller();
+        // convert String into InputStream
+        InputStream is01 = new ByteArrayInputStream(mapMarshaller.marshal(properties).getBytes());
+        InputStream is02 = new ByteArrayInputStream(mapMarshaller.marshal(properties).getBytes());
+        InputStream is01AfterSave = new ByteArrayInputStream(mapMarshaller.marshal(propertiesAfterSave).getBytes());
+
+        def dataStore = new DefaultDataStore(requestExecutor)
+
+        //Server call for Resource01
+        expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.GET, properties.href))))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is01)
+
+        //Server call for Resource02
+        expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.GET, properties.href))))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is02)
+
+        expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.POST, properties.href))))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is01AfterSave)
+        expect(response.getHttpStatus()).andReturn(200)
+
+        replay requestExecutor, response, resourceFactory
+
+        //Let's start
+        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, null, null)
+        setNewValue(client, "dataStore", dataStore)
+        def account01 = client.getResource(properties.href, Account)
+        def account02 = client.getResource(properties.href, Account)
+
+        Field propertiesField = account01.getClass().superclass.superclass.superclass.getDeclaredField("properties")
+        propertiesField.setAccessible(true);
+
+        //let check both resources share the very same backing data instance
+        assertSame(propertiesField.get(account01), propertiesField.get(account02))
+        assertSame(account01.getGivenName(), account02.getGivenName())
+
+        //We will update givenName of account01, account02 mut not have the givenName value changed as it was not saved yet
+        assertEquals(account01.dirtyProperties, Collections.emptyMap())
+        account01.setGivenName("My New Given name")
+        assertNotEquals(account01.getGivenName(), account02.getGivenName())
+        assertEquals(account01.dirtyProperties, [givenName: "My New Given name"])
+        assertEquals(account02.dirtyProperties, Collections.emptyMap())
+        assertSame(propertiesField.get(account01), propertiesField.get(account02))
+
+        //Saving now, both resources must have the same data now
+        account01.save()
+        assertSame(account01.getGivenName(), account02.getGivenName())
+        assertEquals(account01.dirtyProperties, Collections.emptyMap())
+        assertEquals(account02.dirtyProperties, Collections.emptyMap())
+        assertSame(propertiesField.get(account01), propertiesField.get(account02))
+
+        verify requestExecutor, response, resourceFactory
+    }
+
+    //@since 1.0.RC
+    static class RequestMatcher implements IArgumentMatcher {
+
+        private Request expected
+
+        RequestMatcher(Request request) {
+            expected = request;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! Request.isInstance(o)) {
+                return false;
+            }
+            Request actual = (Request) o
+            return expected.getMethod().equals(actual.getMethod()) && expected.getResourceUrl().equals(actual.getResourceUrl()) && expected.getQueryString().equals(actual.getQueryString())
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append(expected.toString())
+        }
+    }
+
+    //@since 1.0.RC
+    private void setNewValue(Object object, String fieldName, Object value){
+        Field field = object.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        int modifiers = field.getModifiers();
+        Field modifierField = field.getClass().getDeclaredField("modifiers");
+        modifiers = modifiers & ~Modifier.FINAL;
+        modifierField.setAccessible(true);
+        modifierField.setInt(field, modifiers);
+        field.set(object, value);
+    }
 
 }

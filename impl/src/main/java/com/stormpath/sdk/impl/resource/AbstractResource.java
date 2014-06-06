@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.resource;
 
+import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -41,7 +42,7 @@ public abstract class AbstractResource implements Resource {
 
     public static final String HREF_PROP_NAME = "href";
 
-    protected final Map<String, Object> properties;       //Protected by read/write lock
+    protected Map<String, Object> properties;       //Protected by read/write lock
     protected final Map<String, Object> dirtyProperties;  //Protected by read/write lock
     protected final Set<String> deletedPropertyNames;     //Protected by read/write lock
     private final InternalDataStore dataStore;
@@ -63,9 +64,13 @@ public abstract class AbstractResource implements Resource {
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
         this.dataStore = dataStore;
-        this.properties = new LinkedHashMap<String, Object>();
         this.dirtyProperties = new LinkedHashMap<String, Object>();
         this.deletedPropertyNames = new HashSet<String>();
+        if (properties instanceof Enlistment) {
+            this.properties = properties;
+        } else {
+            this.properties = new LinkedHashMap<String, Object>();
+        }
         setProperties(properties);
     }
 
@@ -82,11 +87,15 @@ public abstract class AbstractResource implements Resource {
     public final void setProperties(Map<String, Object> properties) {
         writeLock.lock();
         try {
-            this.properties.clear();
             this.dirtyProperties.clear();
             this.dirty = false;
-            if (properties != null && !properties.isEmpty()) {
-                this.properties.putAll(properties);
+            if(properties != null && !properties.isEmpty()) {
+                if(this.properties instanceof Enlistment && this.properties != properties) {
+                    this.properties.clear();
+                    this.properties.putAll(properties);
+                } else {
+                    this.properties = properties;
+                }
                 // Don't consider this resource materialized if it is only a reference.  A reference is any object that
                 // has only one 'href' property.
                 boolean hrefOnly = this.properties.size() == 1 && this.properties.containsKey(HREF_PROP_NAME);
@@ -142,8 +151,14 @@ public abstract class AbstractResource implements Resource {
         AbstractResource resource = dataStore.getResource(getHref(), getClass());
         writeLock.lock();
         try {
-            this.properties.clear();
-            this.properties.putAll(resource.properties);
+            if (this.properties != resource.properties) {
+                if (! (this.properties instanceof Enlistment)) {
+                    this.properties = resource.properties;
+                } else {
+                    this.properties.clear();
+                    this.properties.putAll(resource.properties);
+                }
+            }
 
             //retain dirty properties:
             this.properties.putAll(this.dirtyProperties);
@@ -211,7 +226,11 @@ public abstract class AbstractResource implements Resource {
     private Object readProperty(String name) {
         readLock.lock();
         try {
-            return this.properties.get(name);
+            Object value = this.dirtyProperties.get(name);
+            if(value == null) {
+                value = this.properties.get(name);
+            }
+            return value;
         } finally {
             readLock.unlock();
         }
@@ -233,13 +252,13 @@ public abstract class AbstractResource implements Resource {
      */
     protected Object setProperty(String name, Object value, final boolean dirty) {
         writeLock.lock();
-        Object previous ;
+        Object previous;
         try {
-            previous = this.properties.put(name, value);
-            if (dirty) {
-                this.dirtyProperties.put(name, value);
-                this.dirty = true;
+            previous = this.dirtyProperties.put(name, value);
+            if(previous == null) {
+                previous = this.properties.get(name);
             }
+            this.dirty = true;
             if (this.deletedPropertyNames.contains(name)) {
                 this.deletedPropertyNames.remove(name);
             }
@@ -248,6 +267,7 @@ public abstract class AbstractResource implements Resource {
         }
         return previous;
     }
+
 
     /**
      * @since 0.8
