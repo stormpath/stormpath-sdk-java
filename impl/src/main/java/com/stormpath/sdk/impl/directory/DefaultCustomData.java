@@ -68,23 +68,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public int size() {
-        readLock.lock();
-        try {
-            int count = 0;
-            for(String key : this.properties.keySet()) {
-                if(!this.dirtyProperties.containsKey(key)) {
-                    count++;
-                }
-            }
-            for(String key : this.dirtyProperties.keySet()) {
-                if(!this.properties.containsKey(key)) {
-                    count++;
-                }
-            }
-            return count - this.deletedPropertyNames.size();
-        } finally {
-            readLock.unlock();
-        }
+        return this.keySet().size();
     }
 
     @Override
@@ -94,13 +78,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public boolean containsKey(Object key) {
-        Assert.isInstanceOf(String.class, key);
-        readLock.lock();
-        try {
-            return !this.deletedPropertyNames.contains(key) && (properties.containsKey(key) || this.dirtyProperties.containsKey(key));
-        } finally {
-            readLock.unlock();
-        }
+        return this.keySet().contains(key);
     }
 
     @Override
@@ -172,7 +150,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
             propertiesToFilter.add(HREF_PROP_NAME);
             propertiesToFilter.addAll(getPropertyDescriptors().keySet());
 
-            for (String propertyName : getPropertyNames()) {
+            for (String propertyName : this.keySet()) {
                 if (propertiesToFilter.contains(propertyName)) {
                     continue;
                 }
@@ -214,15 +192,17 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
+        Set<Entry<String, Object>> entrySet = new LinkedHashSet<Entry<String, Object>>();
         readLock.lock();
         try {
-            Set<Entry<String, Object>> entrySet = new LinkedHashSet<Entry<String, Object>>(this.properties.entrySet());
-            entrySet.addAll(this.dirtyProperties.entrySet());
-            entrySet.removeAll(this.deletedPropertyNames);
-            return java.util.Collections.unmodifiableSet(entrySet);
+            Set<String> keySet = this.keySet();
+            for(String key : keySet) {
+                entrySet.add(new AbstractMap.SimpleEntry<String, Object>(key, this.get(key)));
+            }
         } finally {
             readLock.unlock();
         }
+        return entrySet;
     }
 
     @Override
