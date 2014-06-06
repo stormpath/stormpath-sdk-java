@@ -18,9 +18,10 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 1.0.RC ###
 
+- [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
 - [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters.
 - [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call.
-- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources
+- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
 
 ### 1.0.beta ###
 

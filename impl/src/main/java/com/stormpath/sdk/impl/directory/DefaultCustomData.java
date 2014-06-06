@@ -201,8 +201,11 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     public Collection<Object> values() {
         readLock.lock();
         try {
-            Collection<Object> values = new ArrayList<Object>(this.properties.values());
-            values.addAll(this.dirtyProperties.values());
+            Set<Entry<String, Object>> entrySet = this.entrySet();
+            Collection<Object> values = new ArrayList<Object>(entrySet.size());
+            for (Entry<String, Object> entry : entrySet) {
+                values.add(entry.getValue());
+            }
             return java.util.Collections.unmodifiableCollection(values);
         } finally {
             readLock.unlock();
@@ -226,23 +229,32 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     public void save() {
         if (isDirty()) {
             this.writeLock.lock();
-            if (hasRemovedProperties()) {
-                deleteRemovedProperties();
+            try{
+                if (hasRemovedProperties()) {
+                    deleteRemovedProperties();
+                }
+                if (hasNewProperties()) {
+                    super.save();
+                }
+            } finally {
+                this.writeLock.unlock();
             }
-            if (hasNewProperties()) {
-                super.save();
-            }
-            this.writeLock.unlock();
         }
     }
 
     public void deleteRemovedProperties() {
-        Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
-        for (String deletedPropertyName : deletedPropertyNames) {
-            getDataStore().deleteResourceProperty(this, deletedPropertyName);
-            this.properties.remove(deletedPropertyName);
+        this.writeLock.lock();
+        try {
+
+            Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
+            for (String deletedPropertyName : deletedPropertyNames) {
+                getDataStore().deleteResourceProperty(this, deletedPropertyName);
+                this.properties.remove(deletedPropertyName);
+            }
+            this.deletedPropertyNames.clear();
+        } finally {
+            this.writeLock.unlock();
         }
-        this.deletedPropertyNames.clear();
     }
 
     public boolean hasRemovedProperties() {

@@ -239,7 +239,7 @@ public class DefaultDataStore implements InternalDataStore {
             }
 
             //@since 1.0.RC
-            if (!Collections.isEmpty(data) && data.get("href") != null) {
+            if (!Collections.isEmpty(data) && data.get("href") != null && !CollectionResource.class.isAssignableFrom(parent)) {
                 data = toEnlistment(data);
             }
         }
@@ -893,9 +893,13 @@ public class DefaultDataStore implements InternalDataStore {
         }
     }
 
-    //@since 1.0.RC
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all
+     * Resource instances referencing the same Href.
+     * @since 1.0.RC
+     */
     private Enlistment toEnlistment(Map data) {
-        Enlistment enlistment = null;
+        Enlistment enlistment;
         Object responseHref = data.get("href");
         if (this.hrefMapStore.containsKey(responseHref)) {
             enlistment = this.hrefMapStore.get(responseHref);
