@@ -35,7 +35,7 @@ import com.stormpath.sdk.resource.Resource;
  * to perform specific logic based on the type of result returned.  For this, you can use the type-safe
  * {@link AuthenticationResultVisitor} interface.  For example:
  * <pre>
- * AuthenticationResult result = application.authenticate(request);
+ * AuthenticationResult result = application.authenticateApiRequest(request);
  *
  * result.accept(new AuthenticationResultVisitor() {
  *

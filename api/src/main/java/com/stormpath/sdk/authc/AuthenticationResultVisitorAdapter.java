@@ -29,7 +29,7 @@ import com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult;
  *
  *  ...
  *
- *  AuthenticationResult authResult = application.authenticate(httpRequest).execute();
+ *  AuthenticationResult authResult = application.authenticateApiRequest(httpRequest).execute();
  *
  *  authResult.accept(new AuthenticationResultVisitorAdapter() {
  *
