@@ -30,7 +30,7 @@ package com.stormpath.sdk.oauth.authz;
  *
  *    Application application = client.getResource(myApplicationRestUrl, Application.class);
  *
- *    BasicOAuthAuthenticationResult result = (BasicOAuthAuthenticationResult) application.authenticateOauthRequest(request).execute();
+ *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult) application.authenticateOauthRequest(request).execute();
  *
  *    <b>TokenResponse token = result.getTokenResponse();
  *

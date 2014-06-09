@@ -1002,7 +1002,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      *    Application application = client.getResource(myApplicationRestUrl, Application.class);
      *
-     *    BasicOAuthAuthenticationResult result = (BasicOAuthAuthenticationResult) application.authenticateOauthRequest(request).execute();
+     *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult) application.authenticateOauthRequest(request).execute();
      *
      *    <b>TokenResponse token = result.getTokenResponse();
      *
@@ -1052,7 +1052,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      *    <b>int desiredTimeoutSeconds = 3600; //change to your preferred value</b>
      *
-     *    BasicOAuthAuthenticationResult result = (BasicOAuthAuthenticationResult)application
+     *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult)application
      *        .authenticateOauthRequest(request)
      *        <b>.withTtl(desiredTimeoutSeconds)</b>
      *        .execute();
@@ -1089,7 +1089,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      *    <b>ScopeFactory scopeFactory = getScopeFactory(); //get your ScopeFactory implementation from your app config</b>
      *
-     *    BasicOAuthAuthenticationResult result = (BasicOAuthAuthenticationResult)application
+     *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult)application
      *        .authenticateOauthRequest(request)
      *        .withTtl(desiredTimeoutSeconds)
      *        <b>.withScopeFactory(scopeFactory)</b>
