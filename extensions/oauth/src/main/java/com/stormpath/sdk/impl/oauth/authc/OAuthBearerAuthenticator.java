@@ -78,7 +78,9 @@ public class OAuthBearerAuthenticator {
 
         StringTokenizer tokenizer = new StringTokenizer(bearerValue, JWT_BEARER_TOKEN_SEPARATOR);
 
-        Assert.isTrue(tokenizer.countTokens() == 3, "Invalid bearer token.");
+        if (tokenizer.countTokens() != 3) {
+            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+        }
 
         String base64JwtHeader = tokenizer.nextToken();
 

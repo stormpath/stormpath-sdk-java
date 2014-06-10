@@ -246,21 +246,44 @@ class ApiAuthenticationIT extends ClientIT {
         account.save()
 
         verifyError(httpRequestBuilder.build(), DisabledAccountException)
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders(createBearerAuthzHeader("a.b.c"), "application/x-www-form-urlencoded"))
+        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders(createBearerAuthzHeader("a.b"), "application/x-www-form-urlencoded"))
+        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders(createBearerAuthzHeader("a.仮名.b"), "application/x-www-form-urlencoded"))
+        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
     }
 
     @Test
     void testOauthAuthenticationErrors() {
 
+        //Try invalid formed tokens.
+        def headers = createHttpHeaders(createBearerAuthzHeader("a.b.c"), "application/x-www-form-urlencoded")
+        def httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
+        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.INVALID_ACCESS_TOKEN)
+
+        //Try invalid formed tokens.
+        headers = createHttpHeaders(createBearerAuthzHeader("a.b"), "application/x-www-form-urlencoded")
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
+        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.INVALID_ACCESS_TOKEN)
+
+        headers = createHttpHeaders(createBearerAuthzHeader("a.仮名.c"), "application/x-www-form-urlencoded")
+        httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
+        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.INVALID_ACCESS_TOKEN)
+
         def apiKey = account.createApiKey()
 
-        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["Authorization": convertToArray("Digest MyUserAnd")])
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["Authorization": convertToArray("Digest MyUserAnd")])
         verifyError(httpRequestBuilder.build(), UnsupportedAuthenticationSchemeException, true)
 
         httpRequestBuilder =  HttpRequests.method(HttpMethod.GET).headers(convertToParametersMap(["content-type" : "application/json"]))
         verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
 
         //Error: Content-Type: application/json
-        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/json")
+        headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/json")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers)
         verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
 

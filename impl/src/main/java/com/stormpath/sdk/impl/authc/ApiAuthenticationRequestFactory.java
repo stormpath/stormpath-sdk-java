@@ -17,6 +17,7 @@ import com.stormpath.sdk.oauth.authc.RequestLocation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,17 +83,20 @@ public class ApiAuthenticationRequestFactory {
         Object httpRequest = servletRequestWrapper.getHttpServletRequest();
 
         if (schemeAndValue == null) {
+
             HttpMethod method = HttpMethod.fromName(servletRequestWrapper.getMethod());
 
-            if (method != HttpMethod.GET && hasContentType(servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, new RequestLocation[]{RequestLocation.BODY});
+            RequestLocation[] requestLocations = getRequestLocations(false, method, servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER));
+
+            if (requestLocations.length > 0) {
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, requestLocations);
             }
         } else {
             if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
 
-                boolean hasApplicationFormUrlEncoded = hasContentType(servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+                RequestLocation[] requestLocations = getRequestLocations(true, HttpMethod.fromName(servletRequestWrapper.getMethod()), servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER));
 
-                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, getRequestLocations(true, hasApplicationFormUrlEncoded));
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, requestLocations);
             }
 
             if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
@@ -119,16 +123,17 @@ public class ApiAuthenticationRequestFactory {
 
             HttpMethod method = httpRequest.getMethod();
 
-            if (method != HttpMethod.GET && hasContentType(httpRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, new RequestLocation[]{RequestLocation.BODY});
-            }
+            RequestLocation[] requestLocations = getRequestLocations(false, method, httpRequest.getHeader(CONTENT_TYPE_HEADER));
 
+            if (requestLocations.length > 0) {
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, requestLocations);
+            }
         } else {
             if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
 
-                boolean hasApplicationFormUrlEncoded = hasContentType(httpRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+                RequestLocation[] requestLocations = getRequestLocations(true, httpRequest.getMethod(), httpRequest.getHeader(CONTENT_TYPE_HEADER));
 
-                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, getRequestLocations(true, hasApplicationFormUrlEncoded));
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, requestLocations);
             }
 
             if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
@@ -205,12 +210,15 @@ public class ApiAuthenticationRequestFactory {
         return false;
     }
 
-    protected RequestLocation[] getRequestLocations(boolean hasBearerAuthHeader, boolean hasApplicationFormUrlEncoded) {
+    protected RequestLocation[] getRequestLocations(boolean addHeaderLocation, HttpMethod httpMethod, String requestContentType) {
         List<RequestLocation> requestLocationList = new ArrayList<RequestLocation>();
-        if (hasBearerAuthHeader) {
+        if (addHeaderLocation) {
             requestLocationList.add(RequestLocation.HEADER);
         }
-        if (hasApplicationFormUrlEncoded) {
+
+        EnumSet<HttpMethod> bodyLocationMethods = EnumSet.of(HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT);
+
+        if (bodyLocationMethods.contains(httpMethod) && hasContentType(requestContentType, MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
             requestLocationList.add(RequestLocation.BODY);
         }
         RequestLocation[] requestLocations = new RequestLocation[requestLocationList.size()];
