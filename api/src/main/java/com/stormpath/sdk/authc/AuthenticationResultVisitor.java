@@ -15,18 +15,18 @@
  */
 package com.stormpath.sdk.authc;
 
+import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
-import com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult;
 
 /**
  * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> interface that allows one to
- * react to different types of authentication results, particularly those reflecting a successfully authenticated API
- * request (e.g. using {@link com.stormpath.sdk.api.ApiKey ApiKeys}.
+ * react to different types of authentication results, particularly those reflecting successfully authenticated API
+ * requests (e.g. using {@link com.stormpath.sdk.api.ApiKey ApiKeys}.
  *
  * @see com.stormpath.sdk.api.ApiKey ApiKey
  * @see ApiAuthenticationResult
  * @see OauthAuthenticationResult
- * @see TokenOauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.AccessTokenResult
  * @since 1.0.RC
  */
 public interface AuthenticationResultVisitor {
@@ -60,8 +60,8 @@ public interface AuthenticationResultVisitor {
      * must return a new OAuth 2 Access Token to the caller.  This almost always occurs as a result of handling a
      * request to the application's OAuth 2 Access Token endpoint, for example, {@code /oauth2/token}.
      *
-     * @param result the {@link TokenOauthAuthenticationResult} representing the successful OAuth-based API
+     * @param result the {@link com.stormpath.sdk.oauth.authc.AccessTokenResult} representing the successful OAuth-based API
      *               authentication attempt that must respond with an OAuth 2 Access Token response.
      */
-    void visit(TokenOauthAuthenticationResult result);
+    void visit(AccessTokenResult result);
 }

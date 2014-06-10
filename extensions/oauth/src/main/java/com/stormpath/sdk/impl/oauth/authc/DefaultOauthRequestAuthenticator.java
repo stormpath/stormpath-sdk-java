@@ -21,11 +21,11 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BearerOauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.authc.AccessTokenRequestAuthenticator;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 import com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator;
 import com.stormpath.sdk.oauth.authc.RequestLocation;
-import com.stormpath.sdk.oauth.authc.TokenOauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.authc.ResourceRequestAuthenticator;
 import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,18 +58,18 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
     }
 
     @Override
-    public TokenOauthRequestAuthenticator using(ScopeFactory scopeFactory) {
-        return new DefaultTokenOauthRequestAuthenticator(application, httpServletRequest, scopeFactory);
+    public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory) {
+        return new DefaultAccessTokenRequestAuthenticator(application, httpServletRequest, scopeFactory);
     }
 
     @Override
-    public TokenOauthRequestAuthenticator withTtl(long ttl) {
-        return new DefaultTokenOauthRequestAuthenticator(application, httpServletRequest, null).withTtl(ttl);
+    public AccessTokenRequestAuthenticator withTtl(long ttl) {
+        return new DefaultAccessTokenRequestAuthenticator(application, httpServletRequest, null).withTtl(ttl);
     }
 
     @Override
-    public BearerOauthRequestAuthenticator inLocation(RequestLocation... locations) {
-        return new DefaultBearerOauthRequestAuthenticator(httpServletRequest, application).inLocation(locations);
+    public ResourceRequestAuthenticator inLocation(RequestLocation... locations) {
+        return new DefaultResourceRequestAuthenticator(httpServletRequest, application).inLocation(locations);
     }
 
     @Override

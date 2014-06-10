@@ -24,7 +24,8 @@ import com.stormpath.sdk.oauth.authz.ScopeFactory;
  * the authentication attempt is processed.  For example:
  * <p>
  * <pre>
- * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(httpRequest)}
+ * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * application.authenticateOauthRequest(httpRequest)}
  *     <b>{@link #using(com.stormpath.sdk.oauth.authz.ScopeFactory) .using(scopeFactory)}
  *     {@link #withTtl(long) .withTtl(3600)}
  *     {@link #execute() .execute()};</b>
@@ -38,41 +39,46 @@ import com.stormpath.sdk.oauth.authz.ScopeFactory;
 public interface OauthRequestAuthenticator extends ApiRequestAuthenticator {
 
     /**
-     * Specifies the {@link ScopeFactory} to be used for this authentication request.
-     * <p/>
-     * Note that this method will return a new {@link TokenOauthRequestAuthenticator} with the current state of the
-     * this builder.
+     * Specifies the {@link ScopeFactory} to be used when generating a new Access Token as a result of authenticating
+     * the OAuth request.
+     *
+     * <p><b>This method should only be called when the OAuth client is specifically requesting a new Access Token</b>,
+     * for example, a request to your application's oauth token endpoint, e.g. {@code /oauth/token}</p>
      *
      * @param scopeFactory the {@link ScopeFactory} to be used for this authentication request.
-     * @return a new {@link TokenOauthRequestAuthenticator} instance created with the current state of the
+     * @return a new {@link AccessTokenRequestAuthenticator} instance created with the current state of the
      *         this builder.
      */
-    TokenOauthRequestAuthenticator using(ScopeFactory scopeFactory);
+    AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory);
 
     /**
-     * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request in
-     * seconds.  If not specified, the default value is {@code 3600} (seconds) - i.e. 1 hour.
-     * <p/>
-     * Note that this method will return a new {@link TokenOauthRequestAuthenticator} with the current state of the
-     * this builder.
+     * Specifies the <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a> of this authentication request
+     * in seconds.  If not specified, the default value is {@code 3600} (seconds) - i.e. 1 hour.
+     *
+     * <p><b>This method should only be called when the OAuth client is specifically requesting a new Access Token</b>,
+     * for example, a request to your application's oauth token endpoint, e.g. {@code /oauth/token}</p>
      *
      * @param ttl the time to live (in seconds) of this authentication request.
-     * @return a new {@link TokenOauthRequestAuthenticator} instance created with the current state of the
+     * @return a new {@link AccessTokenRequestAuthenticator} instance created with the current state of the
      *         this builder.
      */
-    TokenOauthRequestAuthenticator withTtl(long ttl);
+    AccessTokenRequestAuthenticator withTtl(long ttl);
 
     /**
-     * Specifies the location(s) where the <code>Bearer</code> shall be placed.
-     * <p/>
-     * Note that this method will return a new {@link BearerOauthRequestAuthenticator} with the current state of the
-     * this builder.
+     * Specifies the request location(s) that will be checked when looking up the request's Access Token.  Unspecified
+     * locations will not be checked.
+     * <p>
+     * If this method is not called, both the request header and body will be checked by default.
+     * </p>
+     *
+     * <p>This method will return a new {@link ResourceRequestAuthenticator} with the current state of the this
+     * builder.</p>
      *
      * @param locations the location(s) for the <code>Bearer</code>.
-     * @return a new {@link BearerOauthRequestAuthenticator} instance created with the current state of the
+     * @return a new {@link ResourceRequestAuthenticator} instance created with the current state of the
      *         this builder.
      */
-    BearerOauthRequestAuthenticator inLocation(RequestLocation... locations);
+    ResourceRequestAuthenticator inLocation(RequestLocation... locations);
 
     /**
      * Executes this authentication request.

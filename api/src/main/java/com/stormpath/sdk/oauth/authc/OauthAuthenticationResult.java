@@ -32,18 +32,19 @@ import java.util.Set;
  * <p>Application-specific scope values may be assigned to an OAuth Access Token when the token is created.
  * Implement the {@link com.stormpath.sdk.oauth.authz.ScopeFactory ScopeFactory} interface and provide your
  * {@code ScopeFactory} instance to the {@code application.}{@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) authenticateOauthRequest(request)}
- * method at the time a new token is being requested.
+ * method at the time a new token is being requested (typically when a client requests a new token via your
+ * application's oauth token endpoint, e.g. {@code /oauth/token}).
  *
  * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(request)
- * @see TokenOauthAuthenticationResult
+ * @see AccessTokenResult
  * @since 1.0.RC
  */
 public interface OauthAuthenticationResult extends ApiAuthenticationResult {
 
     /**
-     * Returns the set of scopes granted to the Oauth Authentication.
+     * Returns the set of scopes granted to the Oauth API caller.
      *
-     * @return the set of scopes granted to the Oauth Authentication.
+     * @return the set of scopes granted to the Oauth API caller.
      */
     Set<String> getScope();
 }

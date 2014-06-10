@@ -21,8 +21,8 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult;
-import com.stormpath.sdk.oauth.authc.TokenOauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.authc.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC
  */
-public class DefaultTokenOauthRequestAuthenticator implements TokenOauthRequestAuthenticator {
+public class DefaultAccessTokenRequestAuthenticator implements AccessTokenRequestAuthenticator {
 
     private final HttpServletRequest httpServletRequest;
 
@@ -40,8 +40,8 @@ public class DefaultTokenOauthRequestAuthenticator implements TokenOauthRequestA
 
     private long ttl = DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL;
 
-    DefaultTokenOauthRequestAuthenticator(Application application, HttpServletRequest httpServletRequest,
-                                          ScopeFactory scopeFactory) {
+    DefaultAccessTokenRequestAuthenticator(Application application, HttpServletRequest httpServletRequest,
+                                           ScopeFactory scopeFactory) {
         Assert.notNull(application, "application cannot be null or empty.");
 
         this.scopeFactory = scopeFactory;
@@ -50,19 +50,19 @@ public class DefaultTokenOauthRequestAuthenticator implements TokenOauthRequestA
     }
 
     @Override
-    public TokenOauthRequestAuthenticator using(ScopeFactory scopeFactory) {
+    public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory) {
         this.scopeFactory = scopeFactory;
         return this;
     }
 
     @Override
-    public TokenOauthRequestAuthenticator withTtl(long ttl) {
+    public AccessTokenRequestAuthenticator withTtl(long ttl) {
         this.ttl = ttl;
         return this;
     }
 
     @Override
-    public TokenOauthAuthenticationResult execute() {
+    public AccessTokenResult execute() {
 
         AuthenticationRequest request;
         try {
@@ -73,8 +73,8 @@ public class DefaultTokenOauthRequestAuthenticator implements TokenOauthRequestA
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);
 
-        Assert.isInstanceOf(TokenOauthAuthenticationResult.class, authenticationResult);
+        Assert.isInstanceOf(AccessTokenResult.class, authenticationResult);
 
-        return (TokenOauthAuthenticationResult) authenticationResult;
+        return (AccessTokenResult) authenticationResult;
     }
 }

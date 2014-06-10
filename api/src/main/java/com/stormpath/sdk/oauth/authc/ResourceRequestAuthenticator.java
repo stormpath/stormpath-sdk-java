@@ -16,8 +16,8 @@
 package com.stormpath.sdk.oauth.authc;
 
 /**
- * An OAuth-specific {@code ApiRequestAuthenticator} that authenticates an API Request based on the presence of an OAuth
- * bearer Access Token.  This interface reflects the
+ * Authenticates a client request to an API resource (URI) endpoint based on the presence of an OAuth Access Token in
+ * the request.  This interface reflects the
  * <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> to allow customization of how
  * the authentication attempt is processed.  For example:
  * <p>
@@ -29,23 +29,29 @@ package com.stormpath.sdk.oauth.authc;
  * </pre>
  * </p>
  *
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(httpRequest)
  * @see #execute()
  * @since 1.0.RC
  */
-public interface BearerOauthRequestAuthenticator {
+public interface ResourceRequestAuthenticator {
 
     /**
      * Specifies the location(s) where the OAuth bearer {@code access_token} will be checked.  Once found, the token
-     * will be used to authenticate the OAuth request.
+     * will be used to authenticate the OAuth request.  Unless configured via this method, the default locations that
+     * will be checked are the {@link RequestLocation#HEADER} and {@link RequestLocation#BODY}.  See
+     * {@link RequestLocation} for more information.
      *
      * @param locations the location(s) where the OAuth bearer {@code access_token} will be checked.
      * @return this instance for method chaining.
+     * @see RequestLocation
      */
-    BearerOauthRequestAuthenticator inLocation(RequestLocation... locations);
+    ResourceRequestAuthenticator inLocation(RequestLocation... locations);
 
     /**
-     * Authenticates the OAuth request using a bearer Access Token.
+     * Authenticates the OAuth request using a bearer Access Token and returns a corresponding result.  The result
+     * type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult}.  See
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(httpRequest)} for more information.
      *
      * @return the result of the authentication attempt.
      */

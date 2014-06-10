@@ -28,7 +28,7 @@ import com.stormpath.sdk.resource.Resource;
  * authentication attempts by ApiKey ({@link ApiAuthenticationResult}), OAuth Bearer Token,
  * ({@link com.stormpath.sdk.oauth.authc.OauthAuthenticationResult OauthAuthenticationResult}, or OAuth
  * via ApiKey as a <a href="http://tools.ietf.org/html/rfc6749#section-2.3.1">Client Credentials Grant Type</a> request
- * ({@link com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult TokenOauthAuthenticationResult}).</p>
+ * ({@link com.stormpath.sdk.oauth.authc.AccessTokenResult AccessTokenResult}).</p>
  *
  * <p>
  * While all of these results allow you to access the calling account via {@link #getAccount()}, sometimes you may wish
@@ -60,7 +60,7 @@ import com.stormpath.sdk.resource.Resource;
  *
  * @see ApiAuthenticationResult
  * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult OauthAuthenticationResult
- * @see com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult TokenOauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.AccessTokenResult AccessTokenResult
  * @since 0.1
  */
 public interface AuthenticationResult extends Resource {
@@ -76,7 +76,7 @@ public interface AuthenticationResult extends Resource {
      * Allows an {@link AuthenticationResultVisitor authentication result visitor} to visit the concrete authentication
      * result indistinctively of the authentication request type used. For example, {@link ApiAuthenticationResult},
      * {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationResult) or
-     * {@link com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult }
+     * {@link com.stormpath.sdk.oauth.authc.AccessTokenResult }
      *
      * @param visitor the visitor in charge of visiting the concrete authentication result
      * @see AuthenticationResultVisitor

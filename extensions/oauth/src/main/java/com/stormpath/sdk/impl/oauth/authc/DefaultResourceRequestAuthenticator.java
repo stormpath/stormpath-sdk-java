@@ -21,25 +21,24 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BearerOauthRequestAuthenticator;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 import com.stormpath.sdk.oauth.authc.RequestLocation;
+import com.stormpath.sdk.oauth.authc.ResourceRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC
  */
-public class DefaultBearerOauthRequestAuthenticator implements BearerOauthRequestAuthenticator {
+public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthenticator {
 
     private final Application application;
 
     private RequestLocation[] locations;
 
-
     private final HttpServletRequest httpServletRequest;
 
-    DefaultBearerOauthRequestAuthenticator(HttpServletRequest httpServletRequest, Application application) {
+    DefaultResourceRequestAuthenticator(HttpServletRequest httpServletRequest, Application application) {
         Assert.notNull(httpServletRequest);
         Assert.notNull(application, "application cannot be null.");
 
@@ -48,7 +47,7 @@ public class DefaultBearerOauthRequestAuthenticator implements BearerOauthReques
     }
 
     @Override
-    public BearerOauthRequestAuthenticator inLocation(RequestLocation... locations) {
+    public ResourceRequestAuthenticator inLocation(RequestLocation... locations) {
         this.locations = locations;
         return this;
     }

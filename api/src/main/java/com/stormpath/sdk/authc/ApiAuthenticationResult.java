@@ -47,7 +47,7 @@ import com.stormpath.sdk.api.ApiKey;
  *
  * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
  * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
- * @see com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.AccessTokenResult
  * @since 1.0.RC
  */
 public interface ApiAuthenticationResult extends AuthenticationResult {

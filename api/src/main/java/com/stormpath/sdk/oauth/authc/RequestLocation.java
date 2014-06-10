@@ -17,27 +17,31 @@ package com.stormpath.sdk.oauth.authc;
 
 /**
  * The possible locations in an HTTP request where an OAuth 2 bearer token may be found and used for authenticating
- * the request.  By default, all request locations are inspected, but you can explicitly restrict which locations are
- * inspected by specifying only the locations you want.
+ * the request.  By default, the SDK will only inspect the {@link #HEADER} and {@link #BODY} during a request; using
+ * request parameters for authentication is generally discouraged for security reasons.  That being said, if you have a
+ * specific need for using request parameters, such as supporting a legacy HTTP client, you can configure the SDK to
+ * check the {@link #QUERY_PARAM} location as well.  Example configuration below.
  *
  * <h3>Usage</h3>
- * When you accept a known OAuth HTTP request, you can tell the Stormpath SDK which request locations you are willing to
- * inspect when the SDK processes the request.  For example:
+ *
+ * <p>When you accept a known OAuth HTTP request, you can specify the request locations that will be checked when
+ * retrieving the OAuth Access Token used to authenticate the request.  For example:
  * <pre>
  * import static com.stormpath.sdk.oauth.authc.RequestLocation.*;
  * ...
  *
- * application.authenticateOauth(httpRequest).<b>{@link OauthRequestAuthenticator#inLocation(RequestLocation...) inLocation}</b>(HEADER, BODY).execute();
+ * application.authenticateOauth(httpRequest).<b>{@link OauthRequestAuthenticator#inLocation(RequestLocation...) inLocation}</b>(HEADER, BODY, QUERY_PARAM).execute();
  * </pre>
+ * </p>
  * <p>
- * Again, by default, the SDK will automatically inspect all available locations.  But it might be valuable to only
- * inspect {@code HEADER} or {@code BODY} locations in higher security environments where query parameters may not be
- * seen as secure enough.
+ * Again, by default, the SDK will automatically inspect the {@link #HEADER} and {@link #BODY}.  You must explicitly
+ * add {@link #QUERY_PARAM} if you wish to use query parameters for authentication, as query parameters are generally
+ * not considered as secure as the other two locations.
  * </p>
  *
  * @since 1.0.RC
  * @see OauthRequestAuthenticator#inLocation(RequestLocation...)
- * @see BearerOauthRequestAuthenticator#inLocation(RequestLocation...)
+ * @see ResourceRequestAuthenticator#inLocation(RequestLocation...)
  */
 public enum RequestLocation {
 
@@ -59,6 +63,10 @@ public enum RequestLocation {
      * Try to find the OAuth 2 bearer token in an HTTP request {@code access_token} query parameter.  This is an option
      * defined in the <a href="http://tools.ietf.org/html/rfc6750#section-2.3">OAuth 2 Bearer Token
      * specification, Section 2.3</a>.
+     * <p>Unlike the {@link #HEADER} and {@link #BODY} locations, <b>this location is NOT
+     * checked by default</b>, as query parameters are generally perceived as less secure than the other two
+     * locations.  If you wish to also inspect request query parameters for authenticating the OAuth request, this
+     * option must be configured explicitly, as shown in this enum's top-level JavaDoc.</p>
      */
     QUERY_PARAM
 }

@@ -34,11 +34,11 @@ import com.stormpath.sdk.oauth.authz.TokenResponse;
  *
  * @since 1.0.RC
  */
-public interface TokenOauthAuthenticationResult extends OauthAuthenticationResult {
+public interface AccessTokenResult extends OauthAuthenticationResult {
 
     /**
      * The {@link com.stormpath.sdk.oauth.authz.TokenResponse} obtained as a result of a successful authentication
-     * request execution.  See the the class {@link TokenOauthAuthenticationResult JavaDoc} and the
+     * request execution.  See the the class {@link AccessTokenResult JavaDoc} and the
      * {@link TokenResponse} JavaDoc for an example of how the response might be returned to an API client.
      *
      * @return the {@link com.stormpath.sdk.oauth.authz.TokenResponse} obtained as a result of a successful

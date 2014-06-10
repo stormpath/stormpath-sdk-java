@@ -31,9 +31,9 @@ import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
+import com.stormpath.sdk.oauth.authc.AccessTokenResult
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
 import com.stormpath.sdk.oauth.authc.RequestLocation
-import com.stormpath.sdk.oauth.authc.TokenOauthAuthenticationResult
 import com.stormpath.sdk.oauth.authz.ScopeFactory
 import com.stormpath.sdk.oauth.authz.TokenResponse
 import org.testng.annotations.BeforeMethod
@@ -104,7 +104,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
 
-        def result = (TokenOauthAuthenticationResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), TokenOauthAuthenticationResult)
+        def result = (AccessTokenResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), AccessTokenResult)
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
 
@@ -112,7 +112,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).queryParameters("grant_type=client_credentials")
 
-        result = (TokenOauthAuthenticationResult) application.authenticateApiRequest(httpRequestBuilder.build())
+        result = (AccessTokenResult) application.authenticateApiRequest(httpRequestBuilder.build())
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/xml"))
 
@@ -135,7 +135,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         def authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).using(myScopeFactory).withTtl(120).execute()
 
-        verifySuccessfulAuthentication(authResult, application, account, TokenOauthAuthenticationResult)
+        verifySuccessfulAuthentication(authResult, application, account, AccessTokenResult)
 
         assertNotNull authResult.scope
 
@@ -335,7 +335,7 @@ class ApiAuthenticationIT extends ClientIT {
             }
 
             @Override
-            void visit(TokenOauthAuthenticationResult result) {
+            void visit(AccessTokenResult result) {
 
                 TokenResponse tokenResponse = result.tokenResponse
 

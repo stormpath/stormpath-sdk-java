@@ -783,7 +783,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <p>
      * This method will automatically authenticate <em>both</em> HTTP Basic and OAuth 2 requests.  However, if you
      * require more specific or customized OAuth request processing, use the
-     * {@link #authenticateOauthRequest(Object)} method instead - that method allows you to customize how an OAuth request
+     * {@link #authenticateOauthRequest(Object)} method instead; that method allows you to customize how an OAuth request
      * is processed.  For example, you will likely want to call {@link #authenticateOauthRequest(Object)} for requests
      * directed to your application's specific OAuth 2 token and authorization urls (often referenced as
      * {@code /oauth2/token} and {@code /oauth2/authorize} in OAuth 2 documentation).
@@ -913,13 +913,20 @@ public interface Application extends Resource, Saveable, Deletable {
      * ...
      * </pre>
      *
-     *
+     * @param httpRequest either a <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                    {@code javax.servlet.http.HttpServletRequest}</a> instance (if your app runs in a
+     *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
      * @return an {@link ApiAuthenticationResult} that represents the result of the authentication attempt.
+     * @throws IllegalArgumentException if the method argument is null or is not either a either a
+     *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
+     *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
      * @throws ResourceException if unable to authenticate the request
      * @see Application#authenticateOauthRequest(Object)
      * @since 1.0.RC
      */
-    ApiAuthenticationResult authenticateApiRequest(Object httpRequest) throws ResourceException;
+    ApiAuthenticationResult authenticateApiRequest(Object httpRequest) throws IllegalArgumentException, ResourceException;
 
     /**
      * Authenticates an OAuth-based HTTP request submitted to your application's API, returning a result that
@@ -932,12 +939,13 @@ public interface Application extends Resource, Saveable, Deletable {
      *     <li>
      *     The request is authenticating with an Access Token and you want to explicitly control the
      *     locations in the request where you allow the access token to exist.  If you're comfortable with the default
-     *     behavior of inspecting all 3 locations (headers, body, and query params), you do not need to call this
-     *     method, and should call the {@link #authenticateApiRequest(Object)} method instead.
+     *     behavior of inspecting the headers and request body (and not request params, as they can be seen as a less
+     *     secure way of authentication), you do not need to call this method, and should call the
+     *     {@link #authenticateApiRequest(Object)} method instead.
      *     </li>
      *     <li>
      *     <p>The HTTP request is an OAuth Client Credentials Grant Type request whereby the client is explicitly
-     *     asking for a new Access Token <em>and</em> you want to control the generated token's OAuth scope and/or
+     *     asking for a new Access Token <em>and</em> you want to control the returned token's OAuth scope and/or
      *     time-to-live (TTL).</p>
      *     <p>This almost always is the case when the client is interacting with your
      *     OAuth token endpoint, for example, a URI like {@code /oauth2/tokens}.  If the request is a normal OAuth
@@ -953,7 +961,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <h3>Scenario 1: OAuth (Bearer) Access Token Allowed Locations</h3>
      *
      * <p>By default, this method and {@link #authenticateApiRequest(Object)} will authenticate an OAuth request
-     * that presents its (bearer) Access Token in one of 3 locations in the request:
+     * that presents its (bearer) Access Token in two of three locations in the request:
      * <ol>
      *     <li>
      *         The request's {@code Authorization} header, per the
@@ -965,31 +973,28 @@ public interface Application extends Resource, Saveable, Deletable {
      *         <a href="http://tools.ietf.org/html/rfc6750#section-2.2">OAuth 2 Bearer Token specification, Section
      *         2.2</a>
      *     </li>
-     *     <li>
-     *         A request {@code access_token} query parameter, per the
-     *         <a href="http://tools.ietf.org/html/rfc6750#section-2.3">OAuth 2 Bearer Token specification, Section
-     *         2.3</a>
-     *     </li>
      * </ol>
      * </p>
-     *
-     * <p>However, some security experts consider query parameters to be an insecure way of performing authentication
-     * (and Stormpath agrees with this viewpoint).  If you also feel the same, you can restrict the locations of where
-     * you will accept a bearer authentication token to just the headers or body.  For example:
+     * <p>
+     * Although checking a request {@code access_token} query parameter, per the
+     * <a href="http://tools.ietf.org/html/rfc6750#section-2.3">OAuth 2 Bearer Token specification, Section 2.3</a> is
+     * also supported, query parameters are <em>NOT</em> inspected by default.  Using request parameters for
+     * authentication is often seen as a potential security risk and generally discouraged.  That being said, if you
+     * need to support this location, perhaps because you need to support a legacy client, you can enable this
+     * location explicitly if desired, for example:
      * <pre>
      * import static com.stormpath.sdk.oauth.authc.RequestLocation.*;
      *
      * OAuthAuthenticationResult result = application.authenticateOauthRequest(httpRequest)
-     *     <b>.inLocation({@link com.stormpath.sdk.oauth.authc.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.authc.RequestLocation#BODY BODY})</b>
+     *     <b>{@link OauthRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.authc.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.authc.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.authc.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.authc.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
      *     .execute();
      * </pre>
      * </p>
      *
-     * <p>The above code example implies that you will tell developers integrating with your API that their OAuth
-     * clients may only use HEADER or BODY-based authentication and that you will not accept query parameter-based
-     * requests.</p>
+     * <p>The above code example implies that you will tell developers which options they
+     * may use (and may not use) when configuring their OAuth client to communicate with your API.</p>
      *
-     * <h3>Scenario 2: Creating Access Tokens</h3>
+     * <h3>Scenario 2: Creating OAuth Access Tokens</h3>
      *
      * <p>If the HTTP request is sent to your OAuth token creation endpoint, for example, {@code /oauth2/token} you
      * will need to call this method, and the Stormpath SDK will automatically create an Access Token for you.  After
@@ -1002,7 +1007,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      *    Application application = client.getResource(myApplicationRestUrl, Application.class);
      *
-     *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult) application.authenticateOauthRequest(request).execute();
+     *    AccessTokenResult result = (AccessTokenResult) application.authenticateOauthRequest(request).execute();
      *
      *    <b>TokenResponse token = result.getTokenResponse();
      *
@@ -1023,11 +1028,11 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * <p>If your application does not run in a Servlet environment - for example, maybe you use a custom HTTP
      * framework, or Netty, or Play!, you can use the {@link com.stormpath.sdk.http.HttpRequestBuilder
-     * HttpRequestBuilder} to represent your framework-specific HTTP request object into a format the Stormpath SDK
-     * understands.  You can then use example:</p>
+     * HttpRequestBuilder} to represent your framework-specific HTTP request object as a type the Stormpath SDK
+     * understands.  For example:</p>
      * <pre>
      * ...
-     * <b>// Convert the framework-specific HTTP Request into a format the Stormpath SDK understands:
+     * <b>// Convert the framework-specific HTTP Request into a request type the Stormpath SDK understands:
      *    {@link com.stormpath.sdk.http.HttpRequest HttpRequest} request = {@link com.stormpath.sdk.http.HttpRequests HttpRequests}.method(frameworkSpecificRequest.getMethod())
      *        .headers(frameworkSpecificRequest.getHeaders())
      *        .queryParameters(frameworkSpecificRequest.getQueryParameters())
@@ -1037,7 +1042,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * ...
      * </pre>
      *
-     * <h4>Customizing the Access Token TTL</h4>
+     * <h4>Customizing the OAuth Access Token Time-To-Live (TTL)</h4>
      *
      * <p>By default, this SDK creates Access Tokens that are valid for 3600 seconds (1 hour).  If you want to change
      * this value, you will need to invoke the {@code withTtl} method on the returned executor and specify your desired
@@ -1052,7 +1057,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      *    <b>int desiredTimeoutSeconds = 3600; //change to your preferred value</b>
      *
-     *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult)application
+     *    AccessTokenResult result = (AccessTokenResult)application
      *        .authenticateOauthRequest(request)
      *        <b>.withTtl(desiredTimeoutSeconds)</b>
      *        .execute();
@@ -1068,11 +1073,11 @@ public interface Application extends Resource, Saveable, Deletable {
      * </pre>
      * </p>
      *
-     * <h4>Customizing the Access Token Scope</h4>
+     * <h4>Customizing the OAuth Access Token Scope</h4>
      *
      * <p>As an Authorization protocol, OAuth allows you to attach <em>scope</em>, aka application-specific
      * <em>permissions</em> to an Access Token when it is created.  You can check this scope on
-     * {@link #authenticateApiRequest(Object) later requests}, and make authorization decisions to allow or deny the API
+     * {@link #authenticateApiRequest(Object) later requests} and make authorization decisions to allow or deny the API
      * request based on the granted scope.</p>
      *
      * <p>When an access token is created, you can specify your application's own custom scope by calling the
@@ -1089,7 +1094,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      *    <b>ScopeFactory scopeFactory = getScopeFactory(); //get your ScopeFactory implementation from your app config</b>
      *
-     *    TokenOAuthAuthenticationResult result = (TokenOAuthAuthenticationResult)application
+     *    AccessTokenResult result = (AccessTokenResult)application
      *        .authenticateOauthRequest(request)
      *        .withTtl(desiredTimeoutSeconds)
      *        <b>.withScopeFactory(scopeFactory)</b>
@@ -1111,11 +1116,17 @@ public interface Application extends Resource, Saveable, Deletable {
      * implementation returns the <em>actual</em> scope that you want granted to the Access Token (which may or may not
      * be different than the requested scope based on your requirements).</p>
      *
+     * @param httpRequest either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
+     *                    Servlet container or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.
      * @return a new {@link com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator} that acts as a builder to allow you
-     *         to customize
-     * @throws IllegalArgumentException if the {@code httpRequest} object is null.
+     *         to customize request processing behavior
+     * @throws IllegalArgumentException if the method argument is null or is not either a either a
+     *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
+     *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
      * @see Application#authenticateApiRequest(Object)
      * @since 1.0.RC
      */
-    OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest);
+    OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
 }
