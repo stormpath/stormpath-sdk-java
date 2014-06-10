@@ -21,7 +21,6 @@ import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.oauth.authc.RequestLocation;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +40,10 @@ public class OauthAuthenticationRequestFactory extends ApiAuthenticationRequestF
 
                 HttpMethod method = HttpMethod.fromName(httpServletRequest.getMethod());
 
-                if (method != HttpMethod.GET && hasContentType(httpServletRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-                    return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, new RequestLocation[]{RequestLocation.BODY});
+                RequestLocation[] requestLocations = getRequestLocations(false, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER));
+
+                if (requestLocations.length > 0) {
+                    return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, requestLocations);
                 }
 
             } else {
@@ -50,9 +51,9 @@ public class OauthAuthenticationRequestFactory extends ApiAuthenticationRequestF
                     return new DefaultBasicOauthAuthenticationRequest(httpServletRequest, null, DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL);
                 } else if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
 
-                    boolean hasApplicationFormUrlEncoded = hasContentType(httpServletRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+                    HttpMethod method = HttpMethod.fromName(httpServletRequest.getMethod());
 
-                    return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, getRequestLocations(true, hasApplicationFormUrlEncoded));
+                    return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, getRequestLocations(true, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER)));
                 }
             }
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationException.class);
