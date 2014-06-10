@@ -51,7 +51,7 @@ public class DefaultJwtSigner implements JwtSigner {
         try {
             JWT_SIGN_HEADER = mapper.writeValueAsString(signHeaderMap);
         } catch (IOException e) {
-            throw new IllegalStateException("Shit happened!");
+            throw new IllegalStateException("Unexpected error occurred while creating JwtHeader.", e);
         }
 
         BASE64_URL_JWT_SIGN_HEADER = Base64.encodeBase64URLSafeString(JWT_SIGN_HEADER.getBytes(UTF_8));
