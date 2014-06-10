@@ -37,7 +37,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 /**
  * @since 1.0.RC
  */
-public class DefaultSsoResponseHandler {
+public class DefaultSsoIdentityResolver {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
@@ -55,12 +55,12 @@ public class DefaultSsoResponseHandler {
 
     private final InternalDataStore dataStore;
 
-    public DefaultSsoResponseHandler(InternalDataStore dataStore) {
+    public DefaultSsoIdentityResolver(InternalDataStore dataStore) {
         Assert.notNull(dataStore, "datastore cannot be null or empty.");
         this.dataStore = dataStore;
     }
 
-    public AccountResult handle(Application application, Object httpRequest) {
+    public AccountResult resolve(Application application, Object httpRequest) {
         Assert.notNull(dataStore, "dataStore cannot be null.");
         Assert.notNull(application, "application cannot be null.");
         Assert.notNull(httpRequest, "httpRequest cannot be null.");

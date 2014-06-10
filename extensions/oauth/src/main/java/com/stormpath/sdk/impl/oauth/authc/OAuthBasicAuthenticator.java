@@ -21,12 +21,12 @@ import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
+import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
@@ -71,7 +71,7 @@ public class OAuthBasicAuthenticator {
         jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getSecret());
     }
 
-    public BasicOauthAuthenticationResult authenticate(Application application, DefaultBasicOauthAuthenticationRequest request) {
+    public AccessTokenResult authenticate(Application application, DefaultBasicOauthAuthenticationRequest request) {
         Assert.notNull(request, "request cannot be null.");
 
         validateSupportedGrantType(request.getGrantType());
@@ -113,7 +113,7 @@ public class OAuthBasicAuthenticator {
 
         responseBuilder.accessToken(accessToken).applicationHref(application.getHref());
 
-        return new DefaultBasicOauthAuthenticationResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
+        return new DefaultAccessTokenResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
 
     }
 

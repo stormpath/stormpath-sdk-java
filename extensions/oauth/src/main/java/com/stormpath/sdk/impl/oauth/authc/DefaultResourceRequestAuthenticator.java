@@ -21,25 +21,24 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BearerLocation;
-import com.stormpath.sdk.oauth.authc.BearerOauthAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.RequestLocation;
+import com.stormpath.sdk.oauth.authc.ResourceRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC
  */
-public class DefaultBearerOauthAuthenticationRequestBuilder implements BearerOauthAuthenticationRequestBuilder {
+public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthenticator {
 
     private final Application application;
 
-    private BearerLocation[] locations;
-
+    private RequestLocation[] locations;
 
     private final HttpServletRequest httpServletRequest;
 
-    DefaultBearerOauthAuthenticationRequestBuilder(HttpServletRequest httpServletRequest, Application application) {
+    DefaultResourceRequestAuthenticator(HttpServletRequest httpServletRequest, Application application) {
         Assert.notNull(httpServletRequest);
         Assert.notNull(application, "application cannot be null.");
 
@@ -48,7 +47,7 @@ public class DefaultBearerOauthAuthenticationRequestBuilder implements BearerOau
     }
 
     @Override
-    public BearerOauthAuthenticationRequestBuilder inLocation(BearerLocation... locations) {
+    public ResourceRequestAuthenticator inLocation(RequestLocation... locations) {
         this.locations = locations;
         return this;
     }
@@ -56,13 +55,14 @@ public class DefaultBearerOauthAuthenticationRequestBuilder implements BearerOau
     @Override
     public OauthAuthenticationResult execute() {
 
-        locations = locations == null ? new BearerLocation[]{BearerLocation.HEADER} : locations;
+        locations = locations == null ? new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY} : locations;
 
         AuthenticationRequest request;
         try {
             request = new DefaultBearerOauthAuthenticationRequest(httpServletRequest, locations);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult result = application.authenticateAccount(request);

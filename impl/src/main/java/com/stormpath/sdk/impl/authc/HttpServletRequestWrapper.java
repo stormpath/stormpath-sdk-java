@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.authc;
 
-import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * @since 1.0.RC
@@ -28,8 +28,10 @@ public interface HttpServletRequestWrapper {
 
     public String getHeader(String headerName);
 
-    public String getParameter(String parameterName);
+    public String getMethod();
 
-    public Enumeration<String> getParameterNames();
+    public Map<String, String[]> getParameterMap();
+    
+    public String getParameter(String parameterName);
 
 }

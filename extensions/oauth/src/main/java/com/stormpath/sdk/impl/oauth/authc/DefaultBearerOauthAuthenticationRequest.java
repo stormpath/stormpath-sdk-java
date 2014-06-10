@@ -20,7 +20,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BearerLocation;
+import com.stormpath.sdk.oauth.authc.RequestLocation;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ParameterStyle;
@@ -38,12 +38,12 @@ public class DefaultBearerOauthAuthenticationRequest extends OAuthAccessResource
 
     //This is used via reflection by: com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
     //Don't delete it.
-    public DefaultBearerOauthAuthenticationRequest(Object httpRequest) throws OAuthSystemException, OAuthProblemException {
-        this(getHttpServletRequest(httpRequest), new BearerLocation[]{BearerLocation.HEADER});
+    public DefaultBearerOauthAuthenticationRequest(Object httpRequest, RequestLocation[] requestLocations) throws OAuthSystemException, OAuthProblemException {
+        this(getHttpServletRequest(httpRequest), requestLocations);
     }
 
-    public DefaultBearerOauthAuthenticationRequest(HttpServletRequest httpServletRequest, BearerLocation[] bearerLocations) throws OAuthProblemException, OAuthSystemException {
-        super(httpServletRequest, new TokenType[]{TokenType.BEARER}, convert(bearerLocations));
+    public DefaultBearerOauthAuthenticationRequest(HttpServletRequest httpServletRequest, RequestLocation[] requestLocations) throws OAuthProblemException, OAuthSystemException {
+        super(httpServletRequest, new TokenType[]{TokenType.BEARER}, convert(requestLocations));
         Assert.notNull(httpServletRequest, "httpServletRequest cannot be null");
     }
 
@@ -60,15 +60,15 @@ public class DefaultBearerOauthAuthenticationRequest extends OAuthAccessResource
         return httpServletRequest;
     }
 
-    private static ParameterStyle[] convert(BearerLocation[] bearerLocations) {
-        Assert.notNull(bearerLocations);
+    private static ParameterStyle[] convert(RequestLocation[] requestLocations) {
+        Assert.notNull(requestLocations);
 
-        ParameterStyle[] parameterStyles = new ParameterStyle[bearerLocations.length];
+        ParameterStyle[] parameterStyles = new ParameterStyle[requestLocations.length];
 
         int index = 0;
 
-        for (BearerLocation bearerLocation : bearerLocations) {
-            switch (bearerLocation) {
+        for (RequestLocation requestLocation : requestLocations) {
+            switch (requestLocation) {
                 case HEADER:
                     parameterStyles[index] = ParameterStyle.HEADER;
                     break;
@@ -81,7 +81,7 @@ public class DefaultBearerOauthAuthenticationRequest extends OAuthAccessResource
                     parameterStyles[index] = ParameterStyle.QUERY;
                     break;
                 default:
-                    throw new IllegalArgumentException("bearerLocations has an illegal argument.");
+                    throw new IllegalArgumentException("requestLocations has an illegal argument.");
             }
             index++;
         }

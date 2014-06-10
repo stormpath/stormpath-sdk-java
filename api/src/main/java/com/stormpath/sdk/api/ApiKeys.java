@@ -50,6 +50,7 @@ import com.stormpath.sdk.lang.Classes;
  *
  * @since 1.0.RC
  */
+@SuppressWarnings("unchecked")
 public final class ApiKeys {
 
     /**

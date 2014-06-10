@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.error.authc;
 
-import com.stormpath.sdk.oauth.authz.TokenResponse;
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * Represents the result of a {@link BasicOauthAuthenticationRequestBuilder Basic Oauth Authentication request}.
+ * Thrown when the Authentication credentials (or access_token for Oauth requests) cannot be found in the {@code httpRequest}.
  *
  * @since 1.0.RC
  */
-public interface BasicOauthAuthenticationResult extends OauthAuthenticationResult {
+public class InvalidAuthenticationException extends ResourceException {
 
-    /**
-     * The {@link com.stormpath.sdk.oauth.authz.TokenResponse} obtained as a result of a successful authentication request execution.
-     *
-     * @return the {@link com.stormpath.sdk.oauth.authz.TokenResponse} obtained as a result of a successful authentication request execution.
-     */
-    TokenResponse getTokenResponse();
+    public InvalidAuthenticationException(Error error) {
+        super(error);
+    }
 }

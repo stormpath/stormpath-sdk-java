@@ -21,8 +21,8 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationRequestBuilder;
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.oauth.authz.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC
  */
-public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauthAuthenticationRequestBuilder {
+public class DefaultAccessTokenRequestAuthenticator implements AccessTokenRequestAuthenticator {
 
     private final HttpServletRequest httpServletRequest;
 
@@ -40,7 +40,8 @@ public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauth
 
     private long ttl = DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL;
 
-    DefaultBasicOauthAuthenticationRequestBuilder(Application application, HttpServletRequest httpServletRequest, ScopeFactory scopeFactory) {
+    DefaultAccessTokenRequestAuthenticator(Application application, HttpServletRequest httpServletRequest,
+                                           ScopeFactory scopeFactory) {
         Assert.notNull(application, "application cannot be null or empty.");
 
         this.scopeFactory = scopeFactory;
@@ -49,19 +50,19 @@ public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauth
     }
 
     @Override
-    public BasicOauthAuthenticationRequestBuilder using(ScopeFactory scopeFactory) {
+    public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory) {
         this.scopeFactory = scopeFactory;
         return this;
     }
 
     @Override
-    public BasicOauthAuthenticationRequestBuilder withTtl(long ttl) {
+    public AccessTokenRequestAuthenticator withTtl(long ttl) {
         this.ttl = ttl;
         return this;
     }
 
     @Override
-    public BasicOauthAuthenticationResult execute() {
+    public AccessTokenResult execute() {
 
         AuthenticationRequest request;
         try {
@@ -72,8 +73,8 @@ public class DefaultBasicOauthAuthenticationRequestBuilder implements BasicOauth
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);
 
-        Assert.isInstanceOf(BasicOauthAuthenticationResult.class, authenticationResult);
+        Assert.isInstanceOf(AccessTokenResult.class, authenticationResult);
 
-        return (BasicOauthAuthenticationResult) authenticationResult;
+        return (AccessTokenResult) authenticationResult;
     }
 }

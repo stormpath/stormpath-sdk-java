@@ -20,18 +20,31 @@ import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import java.util.Set;
 
 /**
- * OauthAuthenticationResult represents an {@code Oauth} {@link com.stormpath.sdk.authc.AuthenticationResult authentication result}.
+ * An {@code AuthenticationResult} that indicates a client authenticated with your server-side API (eg
+ * REST API) via OAuth 2.  The ApiKey used to authenticate the request can be obtained via {@link #getApiKey()}.
  *
- * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
- * @see com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult
+ * <h3>Scope</h3>
+ *
+ * <p>Any OAuth scope granted to the API client is available via {@link #getScope()}.  You can use the returned scope
+ * values to perform permission checks in your application before allowing or denying a particular feature. Scope values
+ * are application-specific and interpreted however you wish.</p>
+ *
+ * <p>Application-specific scope values may be assigned to an OAuth Access Token when the token is created.
+ * Implement the {@link com.stormpath.sdk.oauth.authz.ScopeFactory ScopeFactory} interface and provide your
+ * {@code ScopeFactory} instance to the {@code application.}{@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) authenticateOauthRequest(request)}
+ * method at the time a new token is being requested (typically when a client requests a new token via your
+ * application's oauth token endpoint, e.g. {@code /oauth/token}).
+ *
+ * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(request)
+ * @see AccessTokenResult
  * @since 1.0.RC
  */
 public interface OauthAuthenticationResult extends ApiAuthenticationResult {
 
     /**
-     * Returns the set of scopes granted to the Oauth Authentication.
+     * Returns the set of scopes granted to the Oauth API caller.
      *
-     * @return the set of scopes granted to the Oauth Authentication.
+     * @return the set of scopes granted to the Oauth API caller.
      */
     Set<String> getScope();
 }

@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.oauth.authz.TokenResponse;
 
 import java.util.Set;
@@ -26,11 +26,13 @@ import java.util.Set;
 /**
  * @since 1.0.RC
  */
-public class DefaultBasicOauthAuthenticationResult extends DefaultOauthAuthenticationResult implements BasicOauthAuthenticationResult {
+public class DefaultAccessTokenResult
+    extends DefaultOauthAuthenticationResult implements AccessTokenResult {
 
     private final TokenResponse tokenResponse;
 
-    public DefaultBasicOauthAuthenticationResult(InternalDataStore dataStore, ApiKey apiKey, Set<String> scope, TokenResponse tokenResponse) {
+    public DefaultAccessTokenResult(InternalDataStore dataStore, ApiKey apiKey, Set<String> scope,
+                                    TokenResponse tokenResponse) {
         super(dataStore, apiKey, scope);
         this.tokenResponse = tokenResponse;
     }

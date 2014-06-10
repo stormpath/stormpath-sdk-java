@@ -22,38 +22,53 @@ import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * An ApiKey represents the api key that belongs to a particular {@link Account},
- * used for API authentication purposes.
+ * An ApiKey is a secure random username/password pair (called an {@link #getId() id} and
+ * {@link #getSecret() secret}) attributed to an {@link Account} used by the account to make secure requests to a
+ * API server.
+ * <p>An {@link Account Account} may have zero or more ApiKeys, and allowing multiple keys is often useful for key
+ * rotation strategies.  For example, a new key can be generated while an existing key is in use.  Applications can
+ * then reference the new key (e.g. on startup), and once running, the old key can then be deleted.  This allows for
+ * key rotation without an interruption in service, which would happen otherwise if an old key was invalidated the
+ * instant a new key was generated.</p>
  *
+ * @see #getId()
+ * @see #getSecret()
+ * @see #getAccount()
  * @since 1.0.RC
  */
-public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk.client.ApiKey { // temporarily extending the client package's ApiKey before deleting it
+public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk.client.ApiKey {
+    // temporarily extending com.stormpath.sdk.client.ApiKey before deleting it in 1.0 final
 
     /**
-     * Returns the id of the api key.
+     * Returns the ApiKey ID that uniquely identifies this ApiKey among all others.
      *
-     * @return the id of the api key.
+     * @return the ApiKey ID that uniquely identifies this ApiKey among all others.
      */
     String getId();
 
     /**
-     * Returns the secret of the api key.
+     * Returns the ApiKey plaintext secret - a very secret, very private value that should never be disclosed to anyone
+     * other than the actual account holder.  The secret value is mostly used for computing HMAC digests, but can also
+     * be used as a password for password-based key derivation and encryption.
+     * <h3>Security Notice</h3>
+     * <p>Stormpath SDKs automatically encrypt this value at rest and in SDK cache to prevent plaintext access.  The
+     * plaintext value is only available by calling this method, which returns the plaintext (unencrypted) value.
      *
-     * @return the secret of the api key.
+     * @return the ApiKey plaintext secret
      */
     String getSecret();
 
     /**
-     * Returns the api key's status.  Api keys that are not {@link ApiKeyStatus#ENABLED ENABLED}
-     * may not allow their @link Account}s to authenticate their requests.
+     * Returns the ApiKey status.  ApiKeys that are not {@link ApiKeyStatus#ENABLED ENABLED} cannot be used to
+     * authenticate requests.  ApiKeys are enabled by default.
      *
-     * @return the api key's status.
+     * @return the ApiKey status.
      */
     ApiKeyStatus getStatus();
 
     /**
-     * Sets the api key's status.  Api keys that are not {@link ApiKeyStatus#ENABLED ENABLED}
-     * may not allow their @link Account}s to authenticate their requests.
+     * Sets the ApiKey status.  ApiKeys that are not {@link ApiKeyStatus#ENABLED ENABLED} cannot be used to
+     * authenticate requests. ApiKeys are enabled by default.
      *
      * @param status the api key's status.
      */
@@ -67,17 +82,17 @@ public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk
     Account getAccount();
 
     /**
-     * Returns the Stormpath {@link Tenant} that owns this ApiKey resource.
+     * Returns the Stormpath {@link Tenant} that contains the Account to which the ApiKey belongs.
      *
-     * @return the Stormpath {@link Tenant} that owns this ApiKey resource.
+     * @return the Stormpath {@link Tenant} that contains the Account to which the ApiKey belongs.
      */
     Tenant getTenant();
 
     /**
-     * Saves this ApiKey resource and ensures the returned ApiKey response reflects the specified {@link ApiKeyOptions}.
+     * Saves this ApiKey resource and ensures the returned ApiKey response reflects the specified {@link
+     * ApiKeyOptions}.
      *
-     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the save
-     *                        response.
+     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the save response.
      */
     void save(ApiKeyOptions options);
 }

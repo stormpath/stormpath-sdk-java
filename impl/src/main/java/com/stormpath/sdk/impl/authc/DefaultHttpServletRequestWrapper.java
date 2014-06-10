@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.authc;
 import com.stormpath.sdk.lang.Assert;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * @since 1.0.RC
@@ -48,13 +48,17 @@ public class DefaultHttpServletRequestWrapper implements HttpServletRequestWrapp
     }
 
     @Override
+    public String getMethod() {
+        return httpServletRequest.getMethod();
+    }
+
+    @Override
     public String getParameter(String parameterName) {
         return httpServletRequest.getParameter(parameterName);
     }
 
     @Override
-    public Enumeration<String> getParameterNames() {
-        return httpServletRequest.getParameterNames();
+    public Map<String, String[]> getParameterMap() {
+        return httpServletRequest.getParameterMap();
     }
-
 }

@@ -15,42 +15,53 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.oauth.authc.BasicOauthAuthenticationResult;
+import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 
 /**
- * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> used to
- * construct {@link com.stormpath.sdk.api.ApiKey} instances.
+ * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> interface that allows one to
+ * react to different types of authentication results, particularly those reflecting successfully authenticated API
+ * requests (e.g. using {@link com.stormpath.sdk.api.ApiKey ApiKeys}.
  *
+ * @see com.stormpath.sdk.api.ApiKey ApiKey
+ * @see ApiAuthenticationResult
+ * @see OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.authc.AccessTokenResult
  * @since 1.0.RC
  */
 public interface AuthenticationResultVisitor {
 
     /**
-     * Visits the {@link AuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     * Allows handling of a successful (usually username/password)-based authentication attempt.
      *
-     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     * @param result the {@link AuthenticationResult} instance reflecting a successful username/password authentication
+     *               attempt.
      */
     void visit(AuthenticationResult result);
 
     /**
-     * Visits the {@link ApiAuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     * Invoked when an API request has been successfully authenticated with an
+     * {@link com.stormpath.sdk.api.ApiKey ApiKey}, usually as a result of HTTP Basic Authentication.
      *
-     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     * @param result the {@link ApiAuthenticationResult} representing the successful API authentication attempt.
      */
     void visit(ApiAuthenticationResult result);
 
     /**
-     * Visits the {@link OauthAuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     * Invoked when an API request has been successfully authenticated using the OAuth 2 protocol.
      *
-     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     * @param result the {@link OauthAuthenticationResult} representing the successful OAuth-based API authentication
+     *               attempt.
      */
     void visit(OauthAuthenticationResult result);
 
     /**
-     * Visits the {@link BasicOauthAuthenticationResult} instance in order to construct the proper {@link com.stormpath.sdk.api.ApiKey}.
+     * Invoked when an API request has been successfully authenticated using the OAuth 2 protocol and the HTTP response
+     * must return a new OAuth 2 Access Token to the caller.  This almost always occurs as a result of handling a
+     * request to the application's OAuth 2 Access Token endpoint, for example, {@code /oauth2/token}.
      *
-     * @param result the concrete {@link AuthenticationResult} instance being visited.
+     * @param result the {@link com.stormpath.sdk.oauth.authc.AccessTokenResult} representing the successful OAuth-based API
+     *               authentication attempt that must respond with an OAuth 2 Access Token response.
      */
-    void visit(BasicOauthAuthenticationResult result);
+    void visit(AccessTokenResult result);
 }
