@@ -26,6 +26,7 @@ import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.authc.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
@@ -43,7 +44,7 @@ import java.util.Set;
 import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /**
- * OAuthBasicAuthenticator
+ * OAuthBasicAuthenticator is the default implementation of the resource authorization authenticator.
  *
  * @since 1.0.RC
  */
@@ -129,7 +130,7 @@ public class OAuthBasicAuthenticator {
     /**
      * The result of this method is a that contains the following information.
      * <p/>
-     * base64Header.bese64Payload.base64Signature
+     * base64Header.base64Payload.base64Signature
      */
     private String createAccessToken(Application application, ApiAuthenticationResult result, long ttl, String scope) {
 
@@ -143,7 +144,7 @@ public class OAuthBasicAuthenticator {
         jsonMap.put(TIMESTAMP_PARAM_NAME, createdAt);
         jsonMap.put(OAUTH_EXPIRES_IN, ttl);
 
-        if (scope != null && !scope.isEmpty()) {
+        if (Strings.hasText(scope)) {
             jsonMap.put(OAUTH_SCOPE, scope);
         }
 

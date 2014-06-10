@@ -28,6 +28,7 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
@@ -86,7 +87,7 @@ public class OAuthBearerAuthenticator {
         String grantedScopes = getOptionalValue(jsonMap, OAUTH_SCOPE);
 
         Set<String> scope;
-        if (grantedScopes != null && !grantedScopes.isEmpty()) {
+        if (Strings.hasText(grantedScopes)) {
             scope = new HashSet<String>();
             for (StringTokenizer scopeTokenizer = new StringTokenizer(grantedScopes, SCOPE_SEPARATOR_CHAR); scopeTokenizer.hasMoreElements(); ) {
                 String scopeValue = scopeTokenizer.nextToken();
