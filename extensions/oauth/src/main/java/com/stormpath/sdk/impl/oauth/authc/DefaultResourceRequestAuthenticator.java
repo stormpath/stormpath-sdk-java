@@ -55,7 +55,7 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     @Override
     public OauthAuthenticationResult execute() {
 
-        locations = locations == null ? new RequestLocation[]{RequestLocation.HEADER} : locations;
+        locations = locations == null ? new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY} : locations;
 
         AuthenticationRequest request;
         try {

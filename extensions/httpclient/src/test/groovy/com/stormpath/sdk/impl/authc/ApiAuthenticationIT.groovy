@@ -24,7 +24,15 @@ import com.stormpath.sdk.authc.ApiAuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.error.authc.*
+import com.stormpath.sdk.error.authc.AccessTokenOauthException
+import com.stormpath.sdk.error.authc.DisabledAccountException
+import com.stormpath.sdk.error.authc.DisabledApiKeyException
+import com.stormpath.sdk.error.authc.IncorrectCredentialsException
+import com.stormpath.sdk.error.authc.InvalidApiKeyException
+import com.stormpath.sdk.error.authc.InvalidAuthenticationException
+import com.stormpath.sdk.error.authc.MissingApiKeyException
+import com.stormpath.sdk.error.authc.OauthAuthenticationException
+import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
@@ -118,6 +126,12 @@ class ApiAuthenticationIT extends ClientIT {
 
         attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
 
+        headers = ["content-type": convertToArray("application/x-www-form-urlencoded; charset=UTF-8")]
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.DELETE).headers(headers).parameters(convertToParametersMap(["access_token":result.tokenResponse.accessToken]))
+
+        attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+
         testWithScopeFactory(apiKey)
     }
 
@@ -162,7 +176,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/x-www-form-urlencoded")]).parameters(parameters)
 
-        authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).inLocation(RequestLocation.BODY).execute()
+        authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).execute()
 
         assertEquals authResult.scope.size(), 2
         assertTrue authResult.scope.contains("readResource")
@@ -178,7 +192,11 @@ class ApiAuthenticationIT extends ClientIT {
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(["content-type": convertToArray("application/json")])
 
-        verifyError(httpRequestBuilder.build(), MissingApiKeyException)
+        verifyError(httpRequestBuilder.build(), InvalidAuthenticationException)
+
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/json")])
+
+        verifyError(httpRequestBuilder.build(), InvalidAuthenticationException)
 
         httpRequestBuilder.headers(["Authorization": convertToArray("this-is-not-correct-cred")])
 
@@ -208,6 +226,10 @@ class ApiAuthenticationIT extends ClientIT {
 
         verifyError(httpRequestBuilder.build(), IncorrectCredentialsException)
 
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/x-www-form-urlencoded")]).parameters(convertToParametersMap(["this":"that"]))
+
+        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null))
 
         attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
@@ -231,12 +253,18 @@ class ApiAuthenticationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def parameters = convertToParametersMap(["grant_type": "client_credentials"])
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["Authorization": convertToArray("Digest MyUserAnd")])
+        verifyError(httpRequestBuilder.build(), UnsupportedAuthenticationSchemeException, true)
+
+        httpRequestBuilder =  HttpRequests.method(HttpMethod.GET).headers(convertToParametersMap(["content-type" : "application/json"]))
+        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
 
         //Error: Content-Type: application/json
         def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/json")
-        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers)
         verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
+
+        def parameters = convertToParametersMap(["grant_type": "client_credentials"])
 
         //Error: HttpMethod is GET
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
@@ -371,8 +399,18 @@ class ApiAuthenticationIT extends ClientIT {
     }
 
     void verifyError(Object httpRequest, Class exceptionClass) {
+        verifyError(httpRequest, exceptionClass, false)
+    }
+
+    void verifyError(Object httpRequest, Class exceptionClass, boolean useOauthRequest) {
         try {
-            application.authenticateApiRequest(httpRequest).execute()
+
+            if (useOauthRequest) {
+                application.authenticateOauthRequest(httpRequest).execute()
+            } else {
+                application.authenticateApiRequest(httpRequest)
+            }
+
             fail("ResourceException: " + exceptionClass.toString() + "was expected")
         } catch (com.stormpath.sdk.resource.ResourceException exception) {
             assertTrue exceptionClass.isAssignableFrom(exception.class);
@@ -381,10 +419,9 @@ class ApiAuthenticationIT extends ClientIT {
 
     void verifyOauthError(Object httpRequest, String expectedOauthError) {
         try {
-            application.authenticateApiRequest(httpRequest).execute()
-            fail("OathError: " + expectedOauthError + "was expected")
+            application.authenticateOauthRequest(httpRequest).execute()
+            fail("OathError: " + expectedOauthError + " was expected")
         } catch (OauthAuthenticationException exception) {
-
             assertEquals exception.getOauthError(), expectedOauthError
         }
     }

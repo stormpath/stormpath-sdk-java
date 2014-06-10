@@ -1,24 +1,29 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.error.authc.InvalidAuthenticationException;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.oauth.authc.RequestLocation;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
- * ApiAuthenticationRequestFactory
- *
  * @since 1.0.RC
  */
 public class ApiAuthenticationRequestFactory {
@@ -36,6 +41,8 @@ public class ApiAuthenticationRequestFactory {
     private final static Set<String> SUPPORTED_AUTHENTICATION_SCHEMES;
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
 
     public static final String BASIC_AUTHENTICATION_SCHEME = "Basic";
 
@@ -72,20 +79,35 @@ public class ApiAuthenticationRequestFactory {
 
         String[] schemeAndValue = getSchemeAndValue(authzHeaderValue);
 
-        Object servletRequest = servletRequestWrapper.getHttpServletRequest();
+        Object httpRequest = servletRequestWrapper.getHttpServletRequest();
 
-        if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
-            return createOauthRequest(BEARER_OAUTH_REQUEST_CLASS, servletRequest);
-        }
+        if (schemeAndValue == null) {
+            HttpMethod method = HttpMethod.fromName(servletRequestWrapper.getMethod());
 
-        for (Enumeration<String> parameterNames = servletRequestWrapper.getParameterNames(); parameterNames.hasMoreElements(); ) {
-            String parameterName = parameterNames.nextElement();
+            if (method != HttpMethod.GET && hasContentType(servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, new RequestLocation[]{RequestLocation.BODY});
+            }
+        } else {
+            if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
 
-            if (GRANT_TYPE_PARAMETER.equals(parameterName)) {
-                return createOauthRequest(BASIC_OAUTH_REQUEST_CLASS, servletRequest);
+                boolean hasApplicationFormUrlEncoded = hasContentType(servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, getRequestLocations(true, hasApplicationFormUrlEncoded));
+            }
+
+            if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
+
+                if (hasContentType(servletRequestWrapper.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+                    Map<String, String[]> parameterMap = servletRequestWrapper.getParameterMap();
+
+                    if (parameterMap != null && parameterMap.containsKey(GRANT_TYPE_PARAMETER)) {
+                        return createOauthRequest(BASIC_OAUTH_REQUEST_CLASS, httpRequest);
+                    }
+                }
+                return new DefaultBasicApiAuthenticationRequest(servletRequestWrapper);
             }
         }
-        return new DefaultBasicApiAuthenticationRequest(servletRequestWrapper);
+        throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationException.class);
     }
 
     public AuthenticationRequest createFrom(HttpRequest httpRequest) {
@@ -93,16 +115,36 @@ public class ApiAuthenticationRequestFactory {
 
         String[] schemeAndValue = getSchemeAndValue(authzHeaderValue);
 
-        if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
-            return createOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest);
+        if (schemeAndValue == null) {
+
+            HttpMethod method = httpRequest.getMethod();
+
+            if (method != HttpMethod.GET && hasContentType(httpRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, new RequestLocation[]{RequestLocation.BODY});
+            }
+
+        } else {
+            if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
+
+                boolean hasApplicationFormUrlEncoded = hasContentType(httpRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+
+                return createResourceOauthRequest(BEARER_OAUTH_REQUEST_CLASS, httpRequest, getRequestLocations(true, hasApplicationFormUrlEncoded));
+            }
+
+            if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
+
+                if (hasContentType(httpRequest.getHeader(CONTENT_TYPE_HEADER), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+                    Map<String, String[]> parameterMap = httpRequest.getParameters();
+
+                    if (parameterMap != null && parameterMap.containsKey(GRANT_TYPE_PARAMETER)) {
+                        return createOauthRequest(BASIC_OAUTH_REQUEST_CLASS, httpRequest);
+                    }
+                }
+                return new DefaultBasicApiAuthenticationRequest(httpRequest);
+            }
         }
 
-        Map<String, String[]> parametersMap = httpRequest.getParameters();
-
-        if (parametersMap != null && parametersMap.containsKey(GRANT_TYPE_PARAMETER)) {
-            return createOauthRequest(BASIC_OAUTH_REQUEST_CLASS, httpRequest);
-        }
-        return new DefaultBasicApiAuthenticationRequest(httpRequest);
+        throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationException.class);
     }
 
     private AuthenticationRequest createOauthRequest(Class<AuthenticationRequest> oauthRequestClass, Object httpRequest) {
@@ -116,9 +158,20 @@ public class ApiAuthenticationRequestFactory {
         }
     }
 
+    private AuthenticationRequest createResourceOauthRequest(Class<AuthenticationRequest> oauthRequestClass, Object httpRequest, RequestLocation[] requestLocations) {
+        Assert.notNull(oauthRequestClass, OAUTH_REQUEST_NOT_AVAILABLE_MSG);
+        Constructor<AuthenticationRequest> constructor = Classes.getConstructor(oauthRequestClass, Object.class, RequestLocation[].class);
+
+        try {
+            return Classes.instantiate(constructor, httpRequest, requestLocations);
+        } catch (Exception e) {
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+        }
+    }
+
     protected String[] getSchemeAndValue(String authzHeaderValue) {
         if (authzHeaderValue == null) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(MissingApiKeyException.class);
+            return null;
         }
         String[] tokens = authzHeaderValue.split(" ", 2);
 
@@ -130,11 +183,37 @@ public class ApiAuthenticationRequestFactory {
     }
 
     private void validateSupportedScheme(String scheme) {
-        for (String supportedSchema : SUPPORTED_AUTHENTICATION_SCHEMES) {
-            if (supportedSchema.equalsIgnoreCase(scheme)) {
+        for (String supportedScheme : SUPPORTED_AUTHENTICATION_SCHEMES) {
+            if (supportedScheme.equalsIgnoreCase(scheme)) {
                 return;
             }
         }
         throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(UnsupportedAuthenticationSchemeException.class);
+    }
+
+    protected boolean hasContentType(String requestContentType, String requiredContentType) {
+        if (!Strings.hasText(requiredContentType) || !Strings.hasText(requestContentType)) {
+            return false;
+        }
+        StringTokenizer tokenizer = new StringTokenizer(requestContentType, ";");
+        while (tokenizer.hasMoreTokens()) {
+            if (requiredContentType.equals(tokenizer.nextToken())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected RequestLocation[] getRequestLocations(boolean hasBearerAuthHeader, boolean hasApplicationFormUrlEncoded) {
+        List<RequestLocation> requestLocationList = new ArrayList<RequestLocation>();
+        if (hasBearerAuthHeader) {
+            requestLocationList.add(RequestLocation.HEADER);
+        }
+        if (hasApplicationFormUrlEncoded) {
+            requestLocationList.add(RequestLocation.BODY);
+        }
+        RequestLocation[] requestLocations = new RequestLocation[requestLocationList.size()];
+        return requestLocationList.toArray(requestLocations);
     }
 }

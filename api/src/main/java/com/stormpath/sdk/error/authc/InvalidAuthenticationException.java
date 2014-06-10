@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.error.authc;
 
-import java.util.Map;
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
+ * Thrown when the Authentication credentials (or access_token for Oauth requests) cannot be found in the {@code httpRequest}.
+ *
  * @since 1.0.RC
  */
-public interface HttpServletRequestWrapper {
+public class InvalidAuthenticationException extends ResourceException {
 
-    public Class getHttpServletRequestClass();
-
-    public Object getHttpServletRequest();
-
-    public String getHeader(String headerName);
-
-    public String getMethod();
-
-    public Map<String, String[]> getParameterMap();
-
+    public InvalidAuthenticationException(Error error) {
+        super(error);
+    }
 }

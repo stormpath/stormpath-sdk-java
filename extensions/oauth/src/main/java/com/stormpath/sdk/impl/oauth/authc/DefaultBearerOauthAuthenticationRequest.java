@@ -38,8 +38,8 @@ public class DefaultBearerOauthAuthenticationRequest extends OAuthAccessResource
 
     //This is used via reflection by: com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
     //Don't delete it.
-    public DefaultBearerOauthAuthenticationRequest(Object httpRequest) throws OAuthSystemException, OAuthProblemException {
-        this(getHttpServletRequest(httpRequest), new RequestLocation[]{RequestLocation.HEADER});
+    public DefaultBearerOauthAuthenticationRequest(Object httpRequest, RequestLocation[] requestLocations) throws OAuthSystemException, OAuthProblemException {
+        this(getHttpServletRequest(httpRequest), requestLocations);
     }
 
     public DefaultBearerOauthAuthenticationRequest(HttpServletRequest httpServletRequest, RequestLocation[] requestLocations) throws OAuthProblemException, OAuthSystemException {
