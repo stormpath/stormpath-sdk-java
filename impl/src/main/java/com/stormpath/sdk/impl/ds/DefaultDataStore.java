@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,11 +116,6 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz, Map<String, Object> properties) {
-        if (properties != null && properties.containsKey("href") && !CollectionResource.class.isAssignableFrom(clazz)) {
-            Enlistment enlistment = new Enlistment(properties);
-            this.hrefMapStore.put((String) properties.get("href"), enlistment);
-            return this.resourceFactory.instantiate(clazz, enlistment);
-        }
         return this.resourceFactory.instantiate(clazz, properties);
     }
 

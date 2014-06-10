@@ -26,11 +26,7 @@ import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 
-import static org.easymock.EasyMock.createNiceMock
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
+import static org.easymock.EasyMock.*
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
@@ -123,6 +119,7 @@ class DefaultCustomDataTest {
     void testMapManipulation() {
         def ds = createStrictMock(InternalDataStore)
         def customData = new DefaultCustomData(ds)
+        setValue(AbstractResource, customData, "materialized", true)
 
         assertEquals(customData.size(), 0)
         assertFalse(customData.containsValue("aValue"))
@@ -174,7 +171,8 @@ class DefaultCustomDataTest {
         customData.put("aKey","newValue")
         assertEquals(customData.size(), 1)
         assertTrue(customData.containsKey("aKey"))
-        assertTrue(customData.containsValue("aValue"))
+        assertFalse(customData.containsValue("aValue"))
+        assertTrue(customData.containsValue("newValue"))
         assertEquals(customData.entrySet().size(), 1)
         assertEquals(customData.keySet().size(), 1)
         assertEquals(customData.values().size(), 1)
@@ -182,6 +180,7 @@ class DefaultCustomDataTest {
         assertEquals(customData.size(), 0)
         assertFalse(customData.containsKey("aKey"))
         assertFalse(customData.containsValue("aValue"))
+        assertFalse(customData.containsValue("newValue"))
         assertEquals(customData.entrySet().size(), 0)
         assertEquals(customData.keySet().size(), 0)
         assertEquals(customData.values().size(), 0)
@@ -205,6 +204,13 @@ class DefaultCustomDataTest {
         assertTrue(customData.values().contains("cV"))
         assertEquals(customData.entrySet().size(), 5)
     }
+
+    private void setValue(Class clazz, Object object, String fieldName, value){
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        field.set(object, value)
+    }
+
 
 }
 
@@ -241,6 +247,5 @@ private class DefaultDataStoreDelegateTo extends DefaultDataStore {
         field.setAccessible(true)
         field.set(object, value)
     }
-
 
 }

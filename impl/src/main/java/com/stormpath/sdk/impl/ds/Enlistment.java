@@ -25,6 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This {@link Map} is used to store a single instance of Resource's data which is shared among all Resource instances
+ * describing the same server-side item (i.e, having the very same href). Locks are used to provide thread-safe Map
+ * operations.
+ *
+ * @see {@link DefaultDataStore}
  * @since 1.0.RC
  */
 public class Enlistment implements Map<String, Object> {
@@ -34,8 +39,6 @@ public class Enlistment implements Map<String, Object> {
     protected final Map<String, Object> backingMap;  //Protected by read/write lock
     protected final Lock readLock;
     protected final Lock writeLock;
-
-    private volatile boolean materialized;
 
     public Enlistment(Map<String, Object> map) {
         ReadWriteLock rwl = new ReentrantReadWriteLock();

@@ -226,6 +226,9 @@ public abstract class AbstractResource implements Resource {
     private Object readProperty(String name) {
         readLock.lock();
         try {
+            if(this.deletedPropertyNames.contains(name)){
+                return null;
+            }
             Object value = this.dirtyProperties.get(name);
             if(value == null) {
                 value = this.properties.get(name);
