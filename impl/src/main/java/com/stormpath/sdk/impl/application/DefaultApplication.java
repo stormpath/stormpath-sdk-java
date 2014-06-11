@@ -55,7 +55,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.impl.sso.DefaultSsoIdentityResolver;
+import com.stormpath.sdk.impl.sso.DefaultSsoAccountResolver;
 import com.stormpath.sdk.impl.sso.DefaultSsoRedirectUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
@@ -63,6 +63,7 @@ import com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.sso.SsoAccountResolver;
 import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
@@ -534,12 +535,11 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.RC */
     @Override
-    public AccountResult handleSsoResponse(Object httpRequest) {
+    public SsoAccountResolver handleSsoResponse(Object httpRequest) {
+
         validateHttpRequest(httpRequest);
 
-        DefaultSsoIdentityResolver resolver = new DefaultSsoIdentityResolver(getDataStore());
-
-        return resolver.resolve(this, httpRequest);
+        return new DefaultSsoAccountResolver(getDataStore(), this, httpRequest);
     }
 
     @SuppressWarnings("unchecked")

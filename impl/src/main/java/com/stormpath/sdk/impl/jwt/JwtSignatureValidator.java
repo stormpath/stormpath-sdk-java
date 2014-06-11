@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.jwt;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.error.jwt.InvalidJwtSignatureException;
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
@@ -37,9 +37,9 @@ public class JwtSignatureValidator {
 
     /**
      * @param jwtWrapper - A wrapper {@link JwtWrapper} instance containing the Json Web Token information.
-     * @throws InvalidJwtSignatureException
+     * @throws com.stormpath.sdk.error.jwt.InvalidJwtException
      */
-    public void validate(JwtWrapper jwtWrapper) throws InvalidJwtSignatureException {
+    public void validate(JwtWrapper jwtWrapper) throws InvalidJwtException {
         Assert.notNull(jwtWrapper, "jwtWrapper cannot be null.");
 
         String calculatedSignature = jwtSigner.calculateSignature(jwtWrapper.getBase64JwtHeader(), jwtWrapper.getBase64JsonPayload());
@@ -47,6 +47,6 @@ public class JwtSignatureValidator {
         if (jwtWrapper.getBase64JwtSignature().equals(calculatedSignature)) {
             return;
         }
-        throw new InvalidJwtSignatureException("Jwt signature is invalid.");
+        throw new InvalidJwtException(InvalidJwtException.INVALID_JWT_SIGNATURE_ERROR);
     }
 }

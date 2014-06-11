@@ -15,10 +15,11 @@
  */
 package com.stormpath.sdk.impl.jwt;
 
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
 import com.stormpath.sdk.impl.ds.MapMarshaller;
 import com.stormpath.sdk.impl.util.Base64;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -43,11 +44,15 @@ public class JwtWrapper {
 
     public JwtWrapper(String jwt) {
 
-        Assert.hasText(jwt, "jwt cannot ne null or empty");
+        if (!Strings.hasText(jwt)) {
+            throw new InvalidJwtException(InvalidJwtException.MISSING_JWT_ERROR);
+        }
 
         StringTokenizer tokenizer = new StringTokenizer(jwt, JwtConstants.JWT_TOKENS_SEPARATOR);
 
-        Assert.isTrue(tokenizer.countTokens() == 3, "Invalid jwt value.");
+        if (tokenizer.countTokens() != 3) {
+            throw new InvalidJwtException(InvalidJwtException.INVALID_JWT_VALUE_FORMAT_ERROR);
+        }
 
         this.base64JwtHeader = tokenizer.nextToken();
         this.base64JsonPayload = tokenizer.nextToken();
@@ -72,7 +77,9 @@ public class JwtWrapper {
 
         byte[] jsonBytes = Base64.decodeBase64(base64JsonPayload);
 
-        Assert.notNull(jsonBytes, "JsonPayload couldn't be decoded.");
+        if (jsonBytes == null) {
+            throw new InvalidJwtException(InvalidJwtException.INVALID_JWT_BODY_ENCODING_ERROR);
+        }
 
         return mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
     }

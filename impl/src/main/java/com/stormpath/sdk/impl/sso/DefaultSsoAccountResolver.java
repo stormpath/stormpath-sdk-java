@@ -18,14 +18,18 @@ package com.stormpath.sdk.impl.sso;
 import com.stormpath.sdk.account.AccountResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
+import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.sso.NonceStore;
+import com.stormpath.sdk.sso.SsoAccountResolver;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -37,7 +41,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 /**
  * @since 1.0.RC
  */
-public class DefaultSsoIdentityResolver {
+public class DefaultSsoAccountResolver implements SsoAccountResolver {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
@@ -55,18 +59,71 @@ public class DefaultSsoIdentityResolver {
 
     private final InternalDataStore dataStore;
 
-    public DefaultSsoIdentityResolver(InternalDataStore dataStore) {
-        Assert.notNull(dataStore, "datastore cannot be null or empty.");
-        this.dataStore = dataStore;
-    }
+    private final Application application;
 
-    public AccountResult resolve(Application application, Object httpRequest) {
-        Assert.notNull(dataStore, "dataStore cannot be null.");
+    private final String jwtResponse;
+
+    private NonceStore nonceStore;
+
+    public DefaultSsoAccountResolver(InternalDataStore dataStore, Application application, Object httpRequest) {
+        Assert.notNull(dataStore, "datastore cannot be null or empty.");
         Assert.notNull(application, "application cannot be null.");
         Assert.notNull(httpRequest, "httpRequest cannot be null.");
 
-        String jwtResponse;
+        this.dataStore = dataStore;
+        this.application = application;
+        this.jwtResponse = getJwtResponse(httpRequest);
+    }
 
+    @Override
+    public void setNonceStore(NonceStore nonceStore) {
+        Assert.notNull(nonceStore);
+        this.nonceStore = nonceStore;
+    }
+
+    @Override
+    public AccountResult resolve() {
+
+        nonceStore = nonceStore == null ? new DefaultNonceStore((DefaultDataStore) dataStore) : nonceStore;
+
+        JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
+
+        Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
+
+        String apiKeyId = getRequiredValue(jsonPayload, AUDIENCE_PARAM_NAME);
+
+        getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
+
+        Number expire = getRequiredValue(jsonPayload, EXPIRE_PARAM_NAME);
+
+        verifyJwtIsNotExpired(expire.longValue());
+
+        String responseNonce = getRequiredValue(jsonPayload, RESPONSE_NONCE_PARAMETER);
+
+        if (nonceStore.hasNonce(responseNonce)) {
+            throw new InvalidJwtException(InvalidJwtException.ALREADY_USED_JWT_ERROR);
+        }
+
+        nonceStore.putNonce(responseNonce);
+
+        String issuer = getRequiredValue(jsonPayload, ISSUER_PARAM_NAME);
+        String accountHref = getRequiredValue(jsonPayload, SUBJECT_PARAM_NAME);
+        Boolean isNewAccount = getRequiredValue(jsonPayload, IS_NEW_SUBJECT_PARAM_NAME);
+        String state = getOptionalValue(jsonPayload, STATE_PARAM_NAME);
+
+        Map<String, Object> account = new HashMap<String, Object>();
+        account.put(DefaultAccountResult.HREF_PROP_NAME, accountHref);
+
+        Map<String, Object> properties = new LinkedHashMap<String, Object>();
+        properties.put(DefaultAccountResult.ACCOUNT.getName(), account);
+        properties.put(DefaultAccountResult.NEW_ACCOUNT.getName(), isNewAccount);
+        properties.put(DefaultAccountResult.STATE.getName(), state);
+
+        return new DefaultAccountResult(dataStore, properties);
+    }
+
+    private String getJwtResponse(Object httpRequest) {
+        String jwtResponse;
         if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
             jwtResponse = ((HttpRequest) httpRequest).getParameter(JWR_RESPONSE_PARAM_NAME);
         } else {
@@ -82,33 +139,16 @@ public class DefaultSsoIdentityResolver {
 
             jwtResponse = httpServletRequestWrapper.getParameter(JWR_RESPONSE_PARAM_NAME);
         }
+        return jwtResponse;
+    }
 
-        JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
+    private void verifyJwtIsNotExpired(long expireInSeconds) {
 
-        Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
+        long now = System.currentTimeMillis() / 1000;
 
-        String apiKeyId = getRequiredValue(jsonPayload, AUDIENCE_PARAM_NAME);
-
-        getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
-
-        Number expire = getRequiredValue(jsonPayload, EXPIRE_PARAM_NAME);
-        String responseNonce = getRequiredValue(jsonPayload, RESPONSE_NONCE_PARAMETER);
-
-        String issuer = getRequiredValue(jsonPayload, ISSUER_PARAM_NAME);
-
-        String accountHref = getRequiredValue(jsonPayload, SUBJECT_PARAM_NAME);
-        Boolean isNewAccount = getRequiredValue(jsonPayload, IS_NEW_SUBJECT_PARAM_NAME);
-        String state = getOptionalValue(jsonPayload, STATE_PARAM_NAME);
-
-        Map<String, Object> account = new HashMap<String, Object>();
-        account.put(DefaultAccountResult.HREF_PROP_NAME, accountHref);
-
-        Map<String, Object> properties = new LinkedHashMap<String, Object>();
-        properties.put(DefaultAccountResult.ACCOUNT.getName(), account);
-        properties.put(DefaultAccountResult.NEW_ACCOUNT.getName(), isNewAccount);
-        properties.put(DefaultAccountResult.STATE.getName(), state);
-
-        return new DefaultAccountResult(dataStore, properties);
+        if (now > expireInSeconds) {
+            throw new InvalidJwtException(InvalidJwtException.EXPIRED_JWT_ERROR);
+        }
     }
 
     private JwtSignatureValidator getJwtSignatureValidator(String jwtApiKeyId) {
@@ -141,5 +181,5 @@ public class DefaultSsoIdentityResolver {
 
         return (T) object;
     }
-
 }
+

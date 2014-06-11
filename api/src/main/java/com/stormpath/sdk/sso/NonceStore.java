@@ -13,17 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.error.jwt;
+package com.stormpath.sdk.sso;
 
 /**
- * A sub-class of {@link RuntimeException} representing an attempt to use a <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">
- * Json Web Token</a> with an invalid signature.
+ * NonceStore is a configurable
  *
  * @since 1.0.RC
  */
-public class InvalidJwtSignatureException extends RuntimeException {
+public interface NonceStore {
 
-    public InvalidJwtSignatureException(String msg) {
-        super(msg);
-    }
+    /**
+     * Checks whether the store contains the provided nonce.
+     *
+     * @param nonce - The nonce to check.
+     * @return - {@code true} if the  provided nonce has been recently put in this {@code nonceStore},
+     *         false otherwise.
+     */
+    boolean hasNonce(String nonce);
+
+    /**
+     * Put the given nonce in the store.
+     *
+     * @param nonce - The nonce to put in this {@code nonceStore}.
+     */
+    void putNonce(String nonce);
+
 }

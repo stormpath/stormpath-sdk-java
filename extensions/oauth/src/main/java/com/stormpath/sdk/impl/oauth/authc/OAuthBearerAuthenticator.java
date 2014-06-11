@@ -21,7 +21,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.authc.AccessTokenOauthException;
-import com.stormpath.sdk.error.jwt.InvalidJwtSignatureException;
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
@@ -67,7 +67,7 @@ public class OAuthBearerAuthenticator {
             jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
             throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
-        } catch (InvalidJwtSignatureException e) {
+        } catch (InvalidJwtException e) {
             throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         }
 

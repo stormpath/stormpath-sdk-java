@@ -37,6 +37,7 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.sso.SsoAccountResolver;
 import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -1142,11 +1143,17 @@ public interface Application extends Resource, Saveable, Deletable {
     SsoRedirectUrlBuilder createSsoRedirectUrl();
 
     /**
-     * Returns the {@link AccountResult accountResult} that is pointed by the {@code httpRequest}
+     * Returns the {@link SsoAccountResolver ssoAccountResolver} that can be configured to resolve the {@link AccountResult accounted}
+     * that is pointed by the {@code httpRequest}
      *
-     * @param httpRequest
-     * @return - An {@link AccountResult accountResult} that has
-     * @throws IllegalArgumentException - If {@code httpRequest} is null or not supported.
+     * @param httpRequest - either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
+     *                    Servlet container or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.
+     * @return - An {@link SsoAccountResolver} that acts as a builder to allow you to customize how the {@code httpRequest} will be processed.
+     * @throws IllegalArgumentException if the method argument is null or is not either a either a
+     *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
+     *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
      */
-    AccountResult handleSsoResponse(Object httpRequest);
+    SsoAccountResolver handleSsoResponse(Object httpRequest);
 }
