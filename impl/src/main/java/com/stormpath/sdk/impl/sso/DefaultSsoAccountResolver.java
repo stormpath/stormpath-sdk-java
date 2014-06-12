@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.AccountResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
@@ -78,13 +79,13 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
     }
 
     @Override
-    public void setNonceStore(NonceStore nonceStore) {
+    public void withNonceStore(NonceStore nonceStore) {
         Assert.notNull(nonceStore);
         this.nonceStore = nonceStore;
     }
 
     @Override
-    public AccountResult resolve() {
+    public AccountResult execute() {
 
         JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
 
@@ -122,20 +123,29 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
         return new DefaultAccountResult(dataStore, properties);
     }
 
-    private String getJwtResponse(Object httpRequest) {
+    private String getJwtResponse(Object httpRequestObject) {
         String jwtResponse;
-        if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
-            jwtResponse = ((HttpRequest) httpRequest).getParameter(JWR_RESPONSE_PARAM_NAME);
+
+        if (HttpRequest.class.isAssignableFrom(httpRequestObject.getClass())) {
+
+            HttpRequest httpRequest = (HttpRequest) httpRequestObject;
+
+            Assert.isTrue(httpRequest.getMethod() == HttpMethod.GET, "Only Http GET method is supported.");
+
+            jwtResponse = httpRequest.getParameter(JWR_RESPONSE_PARAM_NAME);
+
         } else {
             //This must never happen, if the object request is of HttpServletRequest type the HTTP_SERVLET_REQUEST_WRAPPER_CLASS
             //must be already loaded and therefore cannot be null.
             if (HTTP_SERVLET_REQUEST_WRAPPER_CLASS == null) {
-                throw new RuntimeException("DefaultHttpServletRequestWrapper not loaded error occurred while handling httpRequest of type: " + httpRequest.getClass().getName());
+                throw new RuntimeException("DefaultHttpServletRequestWrapper not loaded error occurred while handling httpRequest of type: " + httpRequestObject.getClass().getName());
             }
 
             Constructor<? extends HttpServletRequestWrapper> ctor = Classes.getConstructor(HTTP_SERVLET_REQUEST_WRAPPER_CLASS, Object.class);
 
-            HttpServletRequestWrapper httpServletRequestWrapper = Classes.instantiate(ctor, httpRequest);
+            HttpServletRequestWrapper httpServletRequestWrapper = Classes.instantiate(ctor, httpRequestObject);
+            HttpMethod method = HttpMethod.fromName(httpServletRequestWrapper.getMethod());
+            Assert.isTrue(HttpMethod.GET == method, "Only Http GET method is supported.");
 
             jwtResponse = httpServletRequestWrapper.getParameter(JWR_RESPONSE_PARAM_NAME);
         }
@@ -143,7 +153,6 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
         if (!Strings.hasText(jwtResponse)) {
             throw new InvalidJwtException(InvalidJwtException.JWT_REQUIRED_ERROR);
         }
-
         return jwtResponse;
     }
 

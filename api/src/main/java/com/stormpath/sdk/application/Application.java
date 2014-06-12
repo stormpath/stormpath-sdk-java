@@ -1143,7 +1143,7 @@ public interface Application extends Resource, Saveable, Deletable {
     SsoRedirectUrlBuilder createSsoRedirectUrl();
 
     /**
-     * Returns the {@link SsoAccountResolver ssoAccountResolver} that can be configured to resolve the {@link AccountResult accounted}
+     * Returns the {@link SsoAccountResolver ssoAccountResolver} that can be configured to execute the {@link AccountResult accounted}
      * that is pointed by the {@code httpRequest}
      *
      * @param httpRequest - either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a

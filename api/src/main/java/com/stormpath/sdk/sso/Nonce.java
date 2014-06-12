@@ -18,12 +18,18 @@ package com.stormpath.sdk.sso;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * A <a href="http://en.wikipedia.org/wiki/Cryptographic_nonce">nonce</a> representation.
+ * A <a href="http://en.wikipedia.org/wiki/Cryptographic_nonce">cryptographic nonce</a> representation
+ * for values that must cannot be used more than once.
  *
  * @since 1.0.RC
  */
 public interface Nonce extends Resource {
 
+    /**
+     * Returns the current {@code value} of this {@link Nonce nonce} instance.
+     *
+     * @return - The {@code value} of this {@link Nonce nonce} instance.
+     */
     String getValue();
 
 }

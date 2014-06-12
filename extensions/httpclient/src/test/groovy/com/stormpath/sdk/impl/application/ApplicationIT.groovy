@@ -416,6 +416,10 @@ class ApplicationIT extends ClientIT {
 
         def objectMapper = new ObjectMapper()
 
+        assertTrue Base64.isBase64(base64Header)
+        assertTrue Base64.isBase64(base64JsonPayload)
+        assertTrue Base64.isBase64(base64Signature)
+
         byte[] decodedJsonPayload = Base64.decodeBase64(base64JsonPayload)
 
         def jsonPayload = objectMapper.readValue(decodedJsonPayload, Map)

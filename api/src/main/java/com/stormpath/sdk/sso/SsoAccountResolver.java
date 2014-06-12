@@ -18,22 +18,52 @@ package com.stormpath.sdk.sso;
 import com.stormpath.sdk.account.AccountResult;
 
 /**
- * SsoAccountResolver
+ * Resolves an {@code ssoRequest} to obtain the {@link AccountResult}. This request is usually submitted
+ * to the application's SSO response endpoint (e.g. {@code /sso/response}).
+ * <p>
+ * This interface reflects the <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> so
+ * that the request to execute the {@code accountResult} process may be customized.
+ * </p>
+ * <p/>
+ * <h3>Usage Example</h3>
+ * <pre>
+ * //assume a GET request to, say, https://mycompany.com/sso/response?jwtResponse=...;
  *
- * @since 0.49
+ * public void resolveAccountIdentity(HttpServletRequest request, HttpServletResponse response) {
+ *
+ *     Application application = client.getResource(myApplicationRestUrl, Application.class);
+ *
+ *    //if you want to control how the nonce are stored in your application.
+ *    <b>NonceStore nonceStore = new MyNonceStore();</b> //create the 'MyNonceStore' class yourself
+ *
+ *     AccountResult result = application.handleSsoResponse(request)
+ *        <b>{@link #withNonceStore(NonceStore) .withNonceStore(nonceStore)}
+ *        .execute()</b>;
+ *
+ *    //Put the account in the session.
+ * }
+ * </pre>
+ *
+ * @see com.stormpath.sdk.application.Application#handleSsoResponse(Object)
+ * @see #withNonceStore(NonceStore)
+ * @see #execute()
+ * @since 1.0.RC
  */
 public interface SsoAccountResolver {
 
     /**
+     * Overrides the default implementation of the {@link NonceStore} to be used when resolving the {@code accountResult}
+     * from this request.
      *
-     * @param nonceStore
-     * @throws IllegalArgumentException if set a {@code null}
+     * @param nonceStore - The {@link NonceStore} implementation to use during the process to execute this request.
+     * @throws IllegalArgumentException when the {@code nonceStore} argument is {@code null}.
      */
-    void setNonceStore(NonceStore nonceStore);
+    void withNonceStore(NonceStore nonceStore);
 
     /**
+     * Executes this resolve identity request.
      *
-     * @return
+     * @return - the resolved identity in the form of an {@link AccountResult}
      */
-    AccountResult resolve();
+    AccountResult execute();
 }
