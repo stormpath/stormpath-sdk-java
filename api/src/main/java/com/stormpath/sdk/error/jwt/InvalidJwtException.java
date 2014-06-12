@@ -35,6 +35,10 @@ public class InvalidJwtException extends RuntimeException {
 
     public static final String ALREADY_USED_JWT_ERROR = "JWT has already been used.";
 
+    public static final String JWT_RESPONSE_MISSING_PARAMETER_ERROR = "Required jwtResponse parameter is missing.";
+
+    public static final String JWT_RESPONSE_INVALID_APIKEY_ID_ERROR = "The client used to sign the jwrResponse is different than the one used in this datasore.";
+
     public InvalidJwtException(String jwtError) {
         super(jwtError);
     }

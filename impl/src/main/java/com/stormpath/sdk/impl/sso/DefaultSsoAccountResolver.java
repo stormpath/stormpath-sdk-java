@@ -173,14 +173,14 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
             return new JwtSignatureValidator(apiKey);
         }
 
-        throw new IllegalArgumentException("The client used to sign the jwrResponse is different than the one used in this datasore.");
+        throw new InvalidJwtException(InvalidJwtException.JWT_RESPONSE_INVALID_APIKEY_ID_ERROR);
     }
 
     private <T> T getRequiredValue(Map jsonMap, String parameterName) {
         Object object = jsonMap.get(parameterName);
 
         if (object == null) {
-            throw new IllegalArgumentException("Required jwtResponse parameter is missing: [" + parameterName + "]");
+            throw new InvalidJwtException(InvalidJwtException.JWT_RESPONSE_MISSING_PARAMETER_ERROR);
         }
         return (T) object;
     }

@@ -42,18 +42,24 @@ class SsoResponseIT extends ClientIT {
 
     Application application
 
+    ObjectMapper objectMapper
+
     Account account
 
     @BeforeMethod
     void initiateTest() {
         application = createTempApp()
         account = createTestAccount(application)
+        objectMapper = new ObjectMapper()
     }
 
     @Test
     void testHandleSsoResponse() {
 
-        String jwtResponseValue = buildSsoResponse("https://myapplication.com", 60, "anState")
+        String apiKeyId = client.dataStore.apiKey.id
+        String apiKeySecret = client.dataStore.apiKey.secret
+
+        String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "anState")
 
         QueryString queryString = new QueryString()
         queryString.put("jwtResponse", jwtResponseValue)
@@ -63,7 +69,7 @@ class SsoResponseIT extends ClientIT {
 
         assertAccountResult(httpRequest, "anState")
 
-        jwtResponseValue = buildSsoResponse("https://myapplication.com", 60, null)
+        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, null)
 
         queryString = new QueryString()
         queryString.put("jwtResponse", jwtResponseValue)
@@ -77,7 +83,12 @@ class SsoResponseIT extends ClientIT {
     @Test
     void testHandleSsoResponseError() {
 
-        String jwtResponseValue = buildSsoResponse("https://myapplication.com", 60, "thisIs the expected state")
+        String apiKeyId = client.dataStore.apiKey.id
+        String apiKeySecret = client.dataStore.apiKey.secret
+
+        String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "thisIs the expected state")
+
+        assertHandleSsoError(jwtResponseValue, IllegalArgumentException, null)
 
         QueryString queryString = new QueryString()
         queryString.put("jwtResponse", jwtResponseValue)
@@ -98,7 +109,7 @@ class SsoResponseIT extends ClientIT {
         assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.ALREADY_USED_JWT_ERROR)
 
         //Let the jwtExpired (ttl 2 seconds)
-        jwtResponseValue = buildSsoResponse("https://myapplication.com", 2, "thisIs will expire")
+        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 2, "thisIs will expire")
         queryString.put("jwtResponse", jwtResponseValue)
 
         //Wait 3 seconds
@@ -108,6 +119,35 @@ class SsoResponseIT extends ClientIT {
                 .queryParameters(queryString.toString()).build()
 
         assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.EXPIRED_JWT_ERROR)
+
+        jwtResponseValue = buildSsoResponse("this-is-an-invalid-key-id", apiKeySecret, "https://myapplication.com", 2, "thisIs will expire")
+        queryString.put("jwtResponse", jwtResponseValue)
+
+        httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml"))
+                .queryParameters(queryString.toString()).build()
+
+        assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.JWT_RESPONSE_INVALID_APIKEY_ID_ERROR)
+
+        jwtResponseValue = buildSsoResponse(apiKeyId, "invalid-secret", "https://myapplication.com", 2, "thisIs will expire")
+        queryString.put("jwtResponse", jwtResponseValue)
+
+        httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml"))
+                .queryParameters(queryString.toString()).build()
+
+        assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.INVALID_JWT_SIGNATURE_ERROR)
+
+        //Missing issuer parameter
+        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "", 2, "thisIs will expire")
+        queryString.put("jwtResponse", jwtResponseValue)
+
+        httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml"))
+                .queryParameters(queryString.toString()).build()
+
+        assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.JWT_RESPONSE_MISSING_PARAMETER_ERROR)
+
+        httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml")).build()
+
+        assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.JWT_REQUIRED_ERROR)
     }
 
     void assertHandleSsoError(Object httpRequest, Class<? extends Exception> expectedException, String expectedMessage) {
@@ -140,23 +180,27 @@ class SsoResponseIT extends ClientIT {
         assertFalse result.newAccount
     }
 
-    String buildSsoResponse(String issuer, int ttl, String state) {
-
-        def apiKeyId = client.dataStore.apiKey.id
+    String buildSsoResponse(String apiKeyId, String apiKeySecret, String issuer, int ttl, String state) {
 
         def expired = (System.currentTimeMillis() / 1000) + ttl
 
         def nonce = UUID.randomUUID().toString()
 
-        def map = [sub: account.href, isNewSub: false, iss: issuer, aud: apiKeyId, exp: expired, irt: nonce]
+        def map = [sub: account.href, isNewSub: false, exp: expired, irt: nonce]
+
+        if (Strings.hasText(apiKeyId)) {
+            map.aud = apiKeyId
+        }
+
+        if (Strings.hasText(issuer)) {
+            map.iss = issuer
+        }
 
         if (Strings.hasText(state)) {
             map.state = state
         }
 
-        ObjectMapper objectMapper = new ObjectMapper()
-
-        DefaultJwtSigner signer = new DefaultJwtSigner(client.dataStore.apiKey.secret)
+        DefaultJwtSigner signer = new DefaultJwtSigner(apiKeySecret)
 
         signer.sign(objectMapper.writeValueAsString(map))
     }
