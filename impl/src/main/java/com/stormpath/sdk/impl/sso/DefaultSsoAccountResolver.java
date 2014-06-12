@@ -28,6 +28,7 @@ import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.sso.NonceStore;
 import com.stormpath.sdk.sso.SsoAccountResolver;
 
@@ -73,6 +74,7 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
         this.dataStore = dataStore;
         this.application = application;
         this.jwtResponse = getJwtResponse(httpRequest);
+        this.nonceStore = new DefaultNonceStore((DefaultDataStore) dataStore);
     }
 
     @Override
@@ -83,8 +85,6 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
 
     @Override
     public AccountResult resolve() {
-
-        nonceStore = nonceStore == null ? new DefaultNonceStore((DefaultDataStore) dataStore) : nonceStore;
 
         JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
 
@@ -139,6 +139,11 @@ public class DefaultSsoAccountResolver implements SsoAccountResolver {
 
             jwtResponse = httpServletRequestWrapper.getParameter(JWR_RESPONSE_PARAM_NAME);
         }
+
+        if (!Strings.hasText(jwtResponse)) {
+            throw new InvalidJwtException(InvalidJwtException.JWT_REQUIRED_ERROR);
+        }
+
         return jwtResponse;
     }
 

@@ -42,7 +42,7 @@ public class DefaultNonceStore implements NonceStore {
 
         Assert.hasText(nonce);
 
-        if (defaultDataStore.isCachingEnabled()) {
+        if (!defaultDataStore.isCachingEnabled()) {
             return false;
         }
 
@@ -58,7 +58,7 @@ public class DefaultNonceStore implements NonceStore {
 
         Assert.hasText(nonce);
 
-        if (defaultDataStore.isCachingEnabled()) {
+        if (!defaultDataStore.isCachingEnabled()) {
             return;
         }
 

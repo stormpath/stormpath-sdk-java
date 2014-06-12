@@ -23,9 +23,9 @@ package com.stormpath.sdk.error.jwt;
  */
 public class InvalidJwtException extends RuntimeException {
 
-    public static final String MISSING_JWT_ERROR = "JWT value is null or empty.";
+    public static final String JWT_REQUIRED_ERROR = "JWT parameter is required..";
 
-    public static final String INVALID_JWT_VALUE_FORMAT_ERROR = "The jwt value format is not correct.";
+    public static final String JWT_INVALID_VALUE_ERROR = "The jwt value format is not correct.";
 
     public static final String INVALID_JWT_BODY_ENCODING_ERROR = "JWT json body cannot be decoded.";
 

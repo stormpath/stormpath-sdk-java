@@ -19,6 +19,7 @@ import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
 import com.stormpath.sdk.impl.ds.MapMarshaller;
 import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import java.nio.charset.Charset;
@@ -43,15 +44,14 @@ public class JwtWrapper {
     private final MapMarshaller mapMarshaller;
 
     public JwtWrapper(String jwt) {
-
         if (!Strings.hasText(jwt)) {
-            throw new InvalidJwtException(InvalidJwtException.MISSING_JWT_ERROR);
+            throw new InvalidJwtException(InvalidJwtException.JWT_REQUIRED_ERROR);
         }
 
         StringTokenizer tokenizer = new StringTokenizer(jwt, JwtConstants.JWT_TOKENS_SEPARATOR);
 
         if (tokenizer.countTokens() != 3) {
-            throw new InvalidJwtException(InvalidJwtException.INVALID_JWT_VALUE_FORMAT_ERROR);
+            throw new InvalidJwtException(InvalidJwtException.JWT_INVALID_VALUE_ERROR);
         }
 
         this.base64JwtHeader = tokenizer.nextToken();
