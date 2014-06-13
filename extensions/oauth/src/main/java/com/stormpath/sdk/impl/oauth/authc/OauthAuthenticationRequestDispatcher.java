@@ -29,6 +29,7 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.0.RC
  */
+@SuppressWarnings("UnusedDeclaration") //used via reflection in com.stormpath.sdk.impl.application.DefaultApplication
 public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestDispatcher {
 
     @Override
