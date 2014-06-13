@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.oauth;
 
 /**
  * Authenticates a client request to an API resource (URI) endpoint based on the presence of an OAuth Access Token in

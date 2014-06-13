@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.authc.ApiRequestAuthenticator;
-import com.stormpath.sdk.oauth.authz.ScopeFactory;
+import com.stormpath.sdk.api.ApiRequestAuthenticator;
 
 /**
  * An OAuth-specific {@code ApiRequestAuthenticator} that implements the
@@ -26,7 +25,7 @@ import com.stormpath.sdk.oauth.authz.ScopeFactory;
  * <pre>
  * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * application.authenticateOauthRequest(httpRequest)}
- *     <b>{@link #using(com.stormpath.sdk.oauth.authz.ScopeFactory) .using(scopeFactory)}
+ *     <b>{@link #using(ScopeFactory) .using(scopeFactory)}
  *     {@link #withTtl(long) .withTtl(3600)}
  *     {@link #execute() .execute()};</b>
  * </pre>

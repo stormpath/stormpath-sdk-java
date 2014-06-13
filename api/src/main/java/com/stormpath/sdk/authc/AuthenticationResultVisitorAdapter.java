@@ -15,8 +15,9 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.oauth.authc.AccessTokenResult;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.api.ApiAuthenticationResult;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 
 /**
  * AuthenticationResultVisitorAdapter is an implementation of the {@link AuthenticationResultVisitor} that throws

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authz;
+package com.stormpath.sdk.oauth;
 
 /**
  * Response data to be returned to an OAuth client as a result of processing a successful Client Password

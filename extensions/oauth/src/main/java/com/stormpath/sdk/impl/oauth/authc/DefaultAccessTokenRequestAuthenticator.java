@@ -21,9 +21,9 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.AccessTokenRequestAuthenticator;
-import com.stormpath.sdk.oauth.authc.AccessTokenResult;
-import com.stormpath.sdk.oauth.authz.ScopeFactory;
+import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 

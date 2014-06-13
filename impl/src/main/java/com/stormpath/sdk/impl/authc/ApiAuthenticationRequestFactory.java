@@ -12,7 +12,7 @@ import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.authc.RequestLocation;
+import com.stormpath.sdk.oauth.RequestLocation;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

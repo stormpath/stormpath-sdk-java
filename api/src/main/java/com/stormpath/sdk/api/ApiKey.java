@@ -23,8 +23,9 @@ import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * An ApiKey is a secure random username/password pair (called an {@link #getId() id} and
- * {@link #getSecret() secret}) attributed to an {@link Account} used by the account to make secure requests to a
- * API server.
+ * {@link #getSecret() secret}) attributed to an {@link Account} that can be used by the account to make secure
+ * requests to an API service.
+ *
  * <p>An {@link Account Account} may have zero or more ApiKeys, and allowing multiple keys is often useful for key
  * rotation strategies.  For example, a new key can be generated while an existing key is in use.  Applications can
  * then reference the new key (e.g. on startup), and once running, the old key can then be deleted.  This allows for
@@ -50,9 +51,13 @@ public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk
      * Returns the ApiKey plaintext secret - a very secret, very private value that should never be disclosed to anyone
      * other than the actual account holder.  The secret value is mostly used for computing HMAC digests, but can also
      * be used as a password for password-based key derivation and encryption.
+     *
      * <h3>Security Notice</h3>
+     *
      * <p>Stormpath SDKs automatically encrypt this value at rest and in SDK cache to prevent plaintext access.  The
      * plaintext value is only available by calling this method, which returns the plaintext (unencrypted) value.
+     * Please use this method with caution and only when necessary to ensure your API users' secrets remain
+     * secure.
      *
      * @return the ApiKey plaintext secret
      */
@@ -60,7 +65,7 @@ public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk
 
     /**
      * Returns the ApiKey status.  ApiKeys that are not {@link ApiKeyStatus#ENABLED ENABLED} cannot be used to
-     * authenticate requests.  ApiKeys are enabled by default.
+     * authenticate requests.  ApiKeys are enabled by default when they are created.
      *
      * @return the ApiKey status.
      */
@@ -68,7 +73,7 @@ public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk
 
     /**
      * Sets the ApiKey status.  ApiKeys that are not {@link ApiKeyStatus#ENABLED ENABLED} cannot be used to
-     * authenticate requests. ApiKeys are enabled by default.
+     * authenticate requests. ApiKeys are enabled by default when they are created.
      *
      * @param status the api key's status.
      */
@@ -89,10 +94,11 @@ public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk
     Tenant getTenant();
 
     /**
-     * Saves this ApiKey resource and ensures the returned ApiKey response reflects the specified {@link
+     * Saves this ApiKey resource and ensures the server response reflects the specified {@link
      * ApiKeyOptions}.
      *
-     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the save response.
+     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource representation returned in the
+     *                save response.
      */
     void save(ApiKeyOptions options);
 }

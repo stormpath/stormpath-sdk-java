@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.api;
 
-import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.authc.AuthenticationResult;
 
 /**
  * An {@code AuthenticationResult} that indicates a client authenticated with your server-side API (eg
  * REST API) using an ApiKey.  The ApiKey used to authenticate the request can be obtained via {@link #getApiKey()}.
  * <h3>Different Results</h3>
  * <p>The actual runtime type of of an {@code ApiAuthenticationResult} might be more specific, for example, an
- * {@link com.stormpath.sdk.oauth.authc.OauthAuthenticationResult OuthAuthenticationResult}.  If you need to react
- * to different authentication result types, you can use an {@link AuthenticationResultVisitor} to perform
+ * {@link com.stormpath.sdk.oauth.OauthAuthenticationResult OuthAuthenticationResult}.  If you need to react
+ * to different authentication result types, you can use an {@link com.stormpath.sdk.authc.AuthenticationResultVisitor} to perform
  * type-specific logic.  For example:
  * <pre>
  * ApiAuthenticationResult result = application.authenticateApiRequest(request);
@@ -46,8 +46,8 @@ import com.stormpath.sdk.api.ApiKey;
  * </p>
  *
  * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
- * @see com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
- * @see com.stormpath.sdk.oauth.authc.AccessTokenResult
+ * @see com.stormpath.sdk.oauth.OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.AccessTokenResult
  * @since 1.0.RC
  */
 public interface ApiAuthenticationResult extends AuthenticationResult {

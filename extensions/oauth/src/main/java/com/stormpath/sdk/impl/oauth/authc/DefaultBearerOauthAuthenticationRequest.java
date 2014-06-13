@@ -20,7 +20,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.RequestLocation;
+import com.stormpath.sdk.oauth.RequestLocation;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ParameterStyle;
@@ -36,8 +36,7 @@ public class DefaultBearerOauthAuthenticationRequest extends OAuthAccessResource
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
-    //This is used via reflection by: com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
-    //Don't delete it.
+    @SuppressWarnings("UnusedDeclaration") //used via reflection by com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
     public DefaultBearerOauthAuthenticationRequest(Object httpRequest, RequestLocation[] requestLocations) throws OAuthSystemException, OAuthProblemException {
         this(getHttpServletRequest(httpRequest), requestLocations);
     }

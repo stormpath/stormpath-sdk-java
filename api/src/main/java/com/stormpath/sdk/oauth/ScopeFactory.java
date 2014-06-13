@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authz;
+package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 
@@ -29,7 +29,7 @@ import java.util.Set;
  * ScopeFactory <b>myScopeFactory</b> = new MyScopeFactory();
  *
  * OauthAuthenticationResult result = application.authenticateOauth(httpRequest)
- *     .<b>{@link com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator#using(ScopeFactory) using}(myScopeFactory)</b>
+ *     .<b>{@link com.stormpath.sdk.oauth.OauthRequestAuthenticator#using(ScopeFactory) using}(myScopeFactory)</b>
  *     ...
  *     .execute();
  * </pre>

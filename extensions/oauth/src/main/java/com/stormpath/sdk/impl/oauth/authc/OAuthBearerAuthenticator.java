@@ -29,7 +29,7 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 

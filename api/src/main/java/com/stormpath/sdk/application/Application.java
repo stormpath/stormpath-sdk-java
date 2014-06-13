@@ -19,9 +19,9 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -29,7 +29,7 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.Deletable;
@@ -983,10 +983,10 @@ public interface Application extends Resource, Saveable, Deletable {
      * need to support this location, perhaps because you need to support a legacy client, you can enable this
      * location explicitly if desired, for example:
      * <pre>
-     * import static com.stormpath.sdk.oauth.authc.RequestLocation.*;
+     * import static com.stormpath.sdk.oauth.RequestLocation.*;
      *
      * OAuthAuthenticationResult result = application.authenticateOauthRequest(httpRequest)
-     *     <b>{@link OauthRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.authc.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.authc.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.authc.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.authc.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
+     *     <b>{@link OauthRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
      *     .execute();
      * </pre>
      * </p>
@@ -1020,7 +1020,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * </pre>
      * </p>
      *
-     * <p>As you can see, {@link com.stormpath.sdk.oauth.authz.TokenResponse#toJson() tokenResponse.toJson()} method
+     * <p>As you can see, {@link com.stormpath.sdk.oauth.TokenResponse#toJson() tokenResponse.toJson()} method
      * will return a JSON string to populate the response body - it is not strictly
      * necessary to read individual properties on the {@code TokenResponse} instance.</p>
      *
@@ -1111,7 +1111,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * </pre>
      * </p>
      *
-     * <p>Your {@link com.stormpath.sdk.oauth.authz.ScopeFactory ScopeFactory} implementation can inspect the
+     * <p>Your {@link com.stormpath.sdk.oauth.ScopeFactory ScopeFactory} implementation can inspect the
      * 1) successfully authenticated API client Account and 2) the client's <em>requested</em> scope.  Your
      * implementation returns the <em>actual</em> scope that you want granted to the Access Token (which may or may not
      * be different than the requested scope based on your requirements).</p>
@@ -1119,7 +1119,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * @param httpRequest either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
      *                    Servlet container or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
      *                    instance if it does not.
-     * @return a new {@link com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator} that acts as a builder to allow you
+     * @return a new {@link com.stormpath.sdk.oauth.OauthRequestAuthenticator} that acts as a builder to allow you
      *         to customize request processing behavior
      * @throws IllegalArgumentException if the method argument is null or is not either a either a
      *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">

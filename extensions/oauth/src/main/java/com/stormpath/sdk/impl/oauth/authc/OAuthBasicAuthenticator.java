@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
+import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -26,7 +26,7 @@ import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.AccessTokenResult;
+import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;

@@ -15,8 +15,9 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.oauth.authc.AccessTokenResult;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.api.ApiAuthenticationResult;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 
 /**
  * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> interface that allows one to
@@ -24,9 +25,9 @@ import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
  * requests (e.g. using {@link com.stormpath.sdk.api.ApiKey ApiKeys}.
  *
  * @see com.stormpath.sdk.api.ApiKey ApiKey
- * @see ApiAuthenticationResult
+ * @see com.stormpath.sdk.api.ApiAuthenticationResult
  * @see OauthAuthenticationResult
- * @see com.stormpath.sdk.oauth.authc.AccessTokenResult
+ * @see com.stormpath.sdk.oauth.AccessTokenResult
  * @since 1.0.RC
  */
 public interface AuthenticationResultVisitor {
@@ -43,7 +44,7 @@ public interface AuthenticationResultVisitor {
      * Invoked when an API request has been successfully authenticated with an
      * {@link com.stormpath.sdk.api.ApiKey ApiKey}, usually as a result of HTTP Basic Authentication.
      *
-     * @param result the {@link ApiAuthenticationResult} representing the successful API authentication attempt.
+     * @param result the {@link com.stormpath.sdk.api.ApiAuthenticationResult} representing the successful API authentication attempt.
      */
     void visit(ApiAuthenticationResult result);
 
@@ -60,7 +61,7 @@ public interface AuthenticationResultVisitor {
      * must return a new OAuth 2 Access Token to the caller.  This almost always occurs as a result of handling a
      * request to the application's OAuth 2 Access Token endpoint, for example, {@code /oauth2/token}.
      *
-     * @param result the {@link com.stormpath.sdk.oauth.authc.AccessTokenResult} representing the successful OAuth-based API
+     * @param result the {@link com.stormpath.sdk.oauth.AccessTokenResult} representing the successful OAuth-based API
      *               authentication attempt that must respond with an OAuth 2 Access Token response.
      */
     void visit(AccessTokenResult result);
