@@ -33,7 +33,7 @@ import java.util.Set;
  * Implement the {@link ScopeFactory ScopeFactory} interface and provide your
  * {@code ScopeFactory} instance to the {@code application.}{@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) authenticateOauthRequest(request)}
  * method at the time a new token is being requested (typically when a client requests a new token via your
- * application's oauth token endpoint, e.g. {@code /oauth/token}).
+ * application's oauth token endpoint, e.g. {@code /oauth/token}).</p>
  *
  * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(request)
  * @see AccessTokenResult

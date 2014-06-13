@@ -20,12 +20,14 @@ package com.stormpath.sdk.oauth;
  * application's OAuth token endpoint (e.g. {@code /oauth/token}).  The request is authenticated using the
  * <a href="http://tools.ietf.org/html/rfc6749#section-4.4">OAuth 2 Client Credentials Grant Type</a>, and the
  * new token will be available in the returned {@link AccessTokenResult}.
+ *
  * <p>
  * This interface reflects the <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> so
  * that the request authentication process may be customized.
  * </p>
  *
  * <h3>Usage Example</h3>
+ *
  * <pre>
  * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
  *

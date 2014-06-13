@@ -20,16 +20,40 @@ import com.stormpath.sdk.lang.Classes;
 import java.lang.reflect.Constructor;
 
 /**
- * HttpRequests
+ * Utility factory class for creating {@link HttpRequest} instances for SDK users that do not already depend on the
+ * {@code HttpServletRequest} API.
  *
+ * <p>Once you obtain either a {@code HttpServletRequest} or construct a {@link HttpRequest}, either may be
+ * authenticated (presumably to assert an identity for calls to your REST API)
+ * using {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+ * application.authenticateApiRequest(httpRequest)} or
+ * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * application.authenticateOauthRequest(httpRequest)}.</p>
+ *
+ * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * @since 1.0.RC
  */
 public final class HttpRequests {
 
     private static final Class<HttpRequestBuilder> HTTP_REQUEST_BUILDER =
-            Classes.forName("com.stormpath.sdk.impl.http.DefaultHttpRequestBuilder");
+        Classes.forName("com.stormpath.sdk.impl.http.DefaultHttpRequestBuilder");
 
-    public static HttpRequestBuilder method(HttpMethod method) {
+    /**
+     * Creates and returns a new {@link HttpRequestBuilder} that builds request instances that will be used for request
+     * authentication via {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(httpRequest)} or
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(httpRequest)}.
+     *
+     * <p>This method is only useful for SDK users that do not depend on the {@code HttpServletRequest} API, as
+     * the {@code application.authenticate*} methods accept that type natively.</p>
+     *
+     * @param method the source request's http method.
+     * @return a new HttpRequestBuilder that can be used to construct a new {@link HttpRequest} instance.
+     * @throws IllegalArgumentException if the method argument is {@code null}.
+     */
+    public static HttpRequestBuilder method(HttpMethod method) throws IllegalArgumentException {
         Constructor<HttpRequestBuilder> ctor = Classes.getConstructor(HTTP_REQUEST_BUILDER, HttpMethod.class);
         return Classes.instantiate(ctor, method);
     }

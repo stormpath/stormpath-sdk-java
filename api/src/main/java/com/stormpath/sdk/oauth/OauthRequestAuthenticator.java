@@ -21,7 +21,7 @@ import com.stormpath.sdk.api.ApiRequestAuthenticator;
  * An OAuth-specific {@code ApiRequestAuthenticator} that implements the
  * <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> to allow customization of how
  * the authentication attempt is processed.  For example:
- * <p>
+ *
  * <pre>
  * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * application.authenticateOauthRequest(httpRequest)}
@@ -29,7 +29,6 @@ import com.stormpath.sdk.api.ApiRequestAuthenticator;
  *     {@link #withTtl(long) .withTtl(3600)}
  *     {@link #execute() .execute()};</b>
  * </pre>
- * </p>
  *
  * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * @see #execute()

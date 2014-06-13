@@ -19,10 +19,13 @@ package com.stormpath.sdk.oauth;
  * Response data to be returned to an OAuth client as a result of processing a successful Client Password
  * Authentication Request as defined in the
  * <a href="http://tools.ietf.org/html/rfc6749#section-2.3.1">OAuth 2 specification, Section 2.3.1</a>.
+ *
  * <h3>Usage</h3>
+ *
  * <p>When you delegate an HTTP Oauth 2 Token Request to the Stormpath SDK, if the request is successful, a
  * {@code TokenResponse} will be returned.  This {@code TokenResponse} data must be sent to the OAuth client in the
  * HTTP response.  For example:</p>
+ *
  * <pre>
  * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
  *
@@ -41,6 +44,7 @@ package com.stormpath.sdk.oauth;
  *    response.getWriter().flush();
  * }
  * </pre>
+ *
  * <p>As you can see, {@link #toJson()} will return a JSON string to populate the response body - it is not strictly
  * necessary to read individual properties on the {@code TokenResponse} instance.</p>
  *

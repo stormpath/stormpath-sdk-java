@@ -22,6 +22,7 @@ import java.util.Set;
 /**
  * A {@code ScopeFactory} allows you to define application-specific <code>scopes</code> (aka 'permissions') granted to
  * a successfully authenticated {@link com.stormpath.sdk.account.Account Account} making an OAuth request.  For example:
+ *
  * <pre>
  * // Your implementation knows how to inspect an {@link com.stormpath.sdk.account.Account Account} resource and return
  * // a collection of OAuth scope strings (permissions) that should be considered as assigned to that account for the
@@ -33,6 +34,7 @@ import java.util.Set;
  *     ...
  *     .execute();
  * </pre>
+ *
  * <p>
  * Specifying a {@code ScopeFactory} is optional. It is necessary only if you want to perform OAuth authorization
  * (access control) checks after the OAuth caller is authenticated.
@@ -45,6 +47,7 @@ public interface ScopeFactory {
     /**
      * Returns the set of Application-specific granted scopes (permissions) for a successfully authenticated account
      * making an OAuth request.
+     *
      * <p>
      * Implementations will likely inspect the authenticated account (via
      * {@link com.stormpath.sdk.authc.AuthenticationResult#getAccount() result.getAccount()}) and the

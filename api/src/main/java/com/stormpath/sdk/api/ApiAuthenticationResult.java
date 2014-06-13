@@ -20,11 +20,14 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 /**
  * An {@code AuthenticationResult} that indicates a client authenticated with your server-side API (eg
  * REST API) using an ApiKey.  The ApiKey used to authenticate the request can be obtained via {@link #getApiKey()}.
+ *
  * <h3>Different Results</h3>
+ *
  * <p>The actual runtime type of of an {@code ApiAuthenticationResult} might be more specific, for example, an
  * {@link com.stormpath.sdk.oauth.OauthAuthenticationResult OuthAuthenticationResult}.  If you need to react
- * to different authentication result types, you can use an {@link com.stormpath.sdk.authc.AuthenticationResultVisitor} to perform
- * type-specific logic.  For example:
+ * to different authentication result types, you can use an {@link com.stormpath.sdk.authc.AuthenticationResultVisitor}
+ * to perform type-specific logic.  For example:</p>
+ *
  * <pre>
  * ApiAuthenticationResult result = application.authenticateApiRequest(request);
  *
@@ -43,7 +46,6 @@ import com.stormpath.sdk.authc.AuthenticationResult;
  *     ... etc ...
  * });
  * </pre>
- * </p>
  *
  * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
  * @see com.stormpath.sdk.oauth.OauthAuthenticationResult
