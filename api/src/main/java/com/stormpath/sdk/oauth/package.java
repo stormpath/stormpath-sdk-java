@@ -77,7 +77,7 @@
  *
  * <p>After your REST client has authenticated with your token endpoint, they will send subsequent requests to your
  * other REST resource endpoints using the previously generated access token.  Just relay the request to the Stormpath
- * SDK, and the SDK will automatically:
+ * SDK, and the SDK will automatically:</p>
  *
  * <ol>
  *     <li>Authenticate the request using the discovered OAuth authentication token</li>
@@ -122,7 +122,7 @@
  * application.authenticateApiRequest(httpRequest)} and
  * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * application.authenticateOauthRequest(httpRequest) application.authenticateOauthRequest(httpRequest)} JavaDoc has
- * much more information and sample use cases.  Please see those methods' JavaDoc for more.
+ * much more information and sample use cases.  Please see those methods' JavaDoc for more.</p>
  *
  * @see com.stormpath.sdk.application.Application Application
  * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
