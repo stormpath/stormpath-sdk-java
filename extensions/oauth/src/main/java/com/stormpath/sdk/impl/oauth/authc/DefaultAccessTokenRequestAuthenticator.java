@@ -38,7 +38,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
 
     private ScopeFactory scopeFactory;
 
-    private long ttl = DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL;
+    private long ttl = AccessTokenAuthenticationRequest.DEFAULT_TTL;
 
     DefaultAccessTokenRequestAuthenticator(Application application, HttpServletRequest httpServletRequest,
                                            ScopeFactory scopeFactory) {
@@ -66,9 +66,10 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
 
         AuthenticationRequest request;
         try {
-            request = new DefaultBasicOauthAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
+            request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

@@ -31,9 +31,9 @@ public class ApiAuthenticationRequestFactory {
 
     private static final String OAUTH_REQUEST_NOT_AVAILABLE_MSG;
 
-    private static final String BASIC_OAUTH_REQUEST_FQCN = "com.stormpath.sdk.impl.oauth.authc.DefaultBasicOauthAuthenticationRequest";
+    private static final String BASIC_OAUTH_REQUEST_FQCN = "com.stormpath.sdk.impl.oauth.authc.AccessTokenAuthenticationRequest";
 
-    private static final String BEARER_OAUTH_REQUEST_FQCN = "com.stormpath.sdk.impl.oauth.authc.DefaultBearerOauthAuthenticationRequest";
+    private static final String BEARER_OAUTH_REQUEST_FQCN = "com.stormpath.sdk.impl.oauth.authc.ResourceAuthenticationRequest";
 
     private static final Class<AuthenticationRequest> BASIC_OAUTH_REQUEST_CLASS;
 

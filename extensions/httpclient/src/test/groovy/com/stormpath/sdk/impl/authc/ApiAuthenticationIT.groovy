@@ -322,8 +322,8 @@ class ApiAuthenticationIT extends ClientIT {
 
         assertNotNull result
 
-        //Wait 3.001 seconds and try again
-        Thread.sleep(3001)
+        //Wait > 3 seconds and try again
+        Thread.sleep(3300)
 
         verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.EXPIRED_ACCESS_TOKEN)
 

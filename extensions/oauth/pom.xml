@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>stormpath-sdk-oauth</artifactId>
-    <name>Stormpath Java SDK :: Extensions :: OAUTH</name>
+    <name>Stormpath Java SDK :: Extensions :: OAuth</name>
     <description>
         The Stormpath Java OAUTH HTTP  implementation .jar is used at runtime.. This
         implementation jar should be a runtime dependency only and should NOT be depended on at compile time by

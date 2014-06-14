@@ -43,17 +43,17 @@ public class OauthAuthenticationRequestFactory extends ApiAuthenticationRequestF
                 RequestLocation[] requestLocations = getRequestLocations(false, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER));
 
                 if (requestLocations.length > 0) {
-                    return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, requestLocations);
+                    return new ResourceAuthenticationRequest(httpServletRequest, requestLocations);
                 }
 
             } else {
                 if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
-                    return new DefaultBasicOauthAuthenticationRequest(httpServletRequest, null, DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL);
+                    return new AccessTokenAuthenticationRequest(httpServletRequest, null, AccessTokenAuthenticationRequest.DEFAULT_TTL);
                 } else if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
 
                     HttpMethod method = HttpMethod.fromName(httpServletRequest.getMethod());
 
-                    return new DefaultBearerOauthAuthenticationRequest(httpServletRequest, getRequestLocations(true, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER)));
+                    return new ResourceAuthenticationRequest(httpServletRequest, getRequestLocations(true, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER)));
                 }
             }
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationException.class);

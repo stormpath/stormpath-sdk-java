@@ -46,7 +46,7 @@ import static org.apache.oltu.oauth2.common.OAuth.*;
 /**
  * @since 1.0.RC
  */
-public class OAuthBearerAuthenticator {
+public class ResourceRequestAuthenticator {
 
     private final static Charset UTF_8 = Charset.forName("UTF-8");
 
@@ -60,13 +60,13 @@ public class OAuthBearerAuthenticator {
 
     private final MapMarshaller mapMarshaller;
 
-    public OAuthBearerAuthenticator(InternalDataStore dataStore) {
+    public ResourceRequestAuthenticator(InternalDataStore dataStore) {
         this.dataStore = dataStore;
         this.jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getSecret());
         this.mapMarshaller = new JacksonMapMarshaller();
     }
 
-    public OauthAuthenticationResult authenticate(Application application, DefaultBearerOauthAuthenticationRequest request) {
+    public OauthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
 
         String bearerValue;
 
@@ -98,13 +98,13 @@ public class OAuthBearerAuthenticator {
 
         Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
 
-        Number createdTimestamp = getRequiredValue(jsonMap, OAuthBasicAuthenticator.TIMESTAMP_PARAM_NAME);
+        //Number createdTimestamp = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_CREATION_TIMESTAMP_FIELD_NAME);
 
-        Number expiresIn = getRequiredValue(jsonMap, OAUTH_EXPIRES_IN);
+        Number expirationTimestamp = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME);
 
-        validateTokenNotExpired(createdTimestamp.longValue(), expiresIn.longValue());
+        assertTokenNotExpired(/*createdTimestamp.longValue(), */expirationTimestamp.longValue());
 
-        String apiKeyId = getRequiredValue(jsonMap, OAUTH_CLIENT_ID);
+        String apiKeyId = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_SUBJECT_FIELD_NAME);
 
         //Retrieve the ApiKey that owns this
         ApiKey apiKey = getTokenApiKey(application, apiKeyId);
@@ -125,11 +125,11 @@ public class OAuthBearerAuthenticator {
         return new DefaultOauthAuthenticationResult(dataStore, apiKey, scope);
     }
 
-    private void validateTokenNotExpired(long created, long timeToLive) {
+    private void assertTokenNotExpired(long expirationTimestampAsSecondsSinceEpoch) {
 
-        long now = System.currentTimeMillis();
+        long nowAsSecondsSinceEpoch = System.currentTimeMillis() / 1000;
 
-        if (now > ((created + timeToLive) * 1000)) {
+        if (nowAsSecondsSinceEpoch >= expirationTimestampAsSecondsSinceEpoch) {
             throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
         }
     }

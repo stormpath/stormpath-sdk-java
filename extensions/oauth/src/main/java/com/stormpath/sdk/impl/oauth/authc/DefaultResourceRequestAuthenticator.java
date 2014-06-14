@@ -27,9 +27,7 @@ import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @since 1.0.RC
- */
+/** @since 1.0.RC */
 public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthenticator {
 
     private final Application application;
@@ -41,7 +39,6 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     DefaultResourceRequestAuthenticator(HttpServletRequest httpServletRequest, Application application) {
         Assert.notNull(httpServletRequest);
         Assert.notNull(application, "application cannot be null.");
-
         this.httpServletRequest = httpServletRequest;
         this.application = application;
     }
@@ -55,14 +52,16 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     @Override
     public OauthAuthenticationResult execute() {
 
-        locations = locations == null ? new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY} : locations;
+        RequestLocation[] locations = this.locations != null ? this.locations :
+                                      new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
 
         AuthenticationRequest request;
+
         try {
-            request = new DefaultBearerOauthAuthenticationRequest(httpServletRequest, locations);
+            request = new ResourceAuthenticationRequest(httpServletRequest, locations);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory
-                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class,
+                                                                      OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult result = application.authenticateAccount(request);

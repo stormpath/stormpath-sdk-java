@@ -43,35 +43,45 @@ import java.util.Set;
 import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /**
- * OAuthBasicAuthenticator
+ * Authenticates http requests that represents an attempt to obtain a new Access Token from the application's token
+ * endpoint, for example, {@code /oauth/token}.
+ *
+ * <p>This implementation currently only supports OAuth 2 Client Credentials Grant Type requests.</p>
  *
  * @since 1.0.RC
  */
-public class OAuthBasicAuthenticator {
+public class AccessTokenRequestAuthenticator {
 
     public final static char SPACE_SEPARATOR = ' ';
 
-    private static final EnumSet<GrantType> SUPPORTED_GRANT_TYPES;
+    private static final EnumSet<GrantType> SUPPORTED_GRANT_TYPES = EnumSet.of(GrantType.CLIENT_CREDENTIALS);
 
-    public final static String TIMESTAMP_PARAM_NAME = "timestamp";
+    // This implementation generates Access Tokens that are JWTs.  The JWT specification lists the following
+    // default field names that should be used for JWTs making identity assertions:
 
-    public final static String APPLICATION_HREF_PARAM_NAME = "application_href";
+    // http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-21#section-4.1.1
+    public static final String ACCESS_TOKEN_ISSUER_FIELD_NAME = "iss";
 
-    static {
-        SUPPORTED_GRANT_TYPES = EnumSet.of(GrantType.CLIENT_CREDENTIALS);
-    }
+    // http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-21#section-4.1.2
+    public static final String ACCESS_TOKEN_SUBJECT_FIELD_NAME = "sub";
+
+    // http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-21#section-4.1.6
+    public static final String ACCESS_TOKEN_CREATION_TIMESTAMP_FIELD_NAME = "iat";
+
+    // http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-21#section-4.1.4
+    public static final String ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME = "exp";
 
     private final InternalDataStore dataStore;
 
     private final JwtSigner jwtSigner;
 
-    public OAuthBasicAuthenticator(InternalDataStore internalDataStore) {
+    public AccessTokenRequestAuthenticator(InternalDataStore internalDataStore) {
         dataStore = internalDataStore;
 
         jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getSecret());
     }
 
-    public AccessTokenResult authenticate(Application application, DefaultBasicOauthAuthenticationRequest request) {
+    public AccessTokenResult authenticate(Application application, AccessTokenAuthenticationRequest request) {
         Assert.notNull(request, "request cannot be null.");
 
         validateSupportedGrantType(request.getGrantType());
@@ -79,16 +89,19 @@ public class OAuthBasicAuthenticator {
         ApiAuthenticationResult authResult;
 
         try {
-            authResult = new BasicApiAuthenticator(dataStore).authenticate(application, request.getClientId(), request.getClientSecret());
+            authResult = new BasicApiAuthenticator(dataStore)
+                .authenticate(application, request.getClientId(), request.getClientSecret());
         } catch (ResourceException e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_CLIENT);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_CLIENT);
         }
 
         Set<String> grantedScopes;
 
         long ttl = request.getTtl();
 
-        DefaultTokenResponse.Builder responseBuilder = DefaultTokenResponse.tokenType(TokenType.BEARER).expiresIn(String.valueOf(ttl));
+        DefaultTokenResponse.Builder responseBuilder =
+            DefaultTokenResponse.tokenType(TokenType.BEARER).expiresIn(String.valueOf(ttl));
 
         String scope;
 
@@ -114,7 +127,6 @@ public class OAuthBasicAuthenticator {
         responseBuilder.accessToken(accessToken).applicationHref(application.getHref());
 
         return new DefaultAccessTokenResult(dataStore, authResult.getApiKey(), grantedScopes, responseBuilder.build());
-
     }
 
     private void validateSupportedGrantType(String requestedGrantType) {
@@ -138,10 +150,14 @@ public class OAuthBasicAuthenticator {
 
         Map<String, Object> jsonMap = new HashMap<String, Object>();
 
-        jsonMap.put(APPLICATION_HREF_PARAM_NAME, application.getHref());
-        jsonMap.put(OAUTH_CLIENT_ID, result.getApiKey().getId());
-        jsonMap.put(TIMESTAMP_PARAM_NAME, createdAt);
-        jsonMap.put(OAUTH_EXPIRES_IN, ttl);
+        jsonMap.put(ACCESS_TOKEN_ISSUER_FIELD_NAME, application.getHref());
+        jsonMap.put(ACCESS_TOKEN_SUBJECT_FIELD_NAME, result.getApiKey().getId());
+        jsonMap.put(ACCESS_TOKEN_CREATION_TIMESTAMP_FIELD_NAME, createdAt);
+
+        //ttl is in seconds.  The expiration timestamp needs to be equal to: createdAt (in seconds) + ttl :
+        long expirationTimeAsSecondsSinceEpoch = createdAt + ttl;
+
+        jsonMap.put(ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME, expirationTimeAsSecondsSinceEpoch);
 
         if (scope != null && !scope.isEmpty()) {
             jsonMap.put(OAUTH_SCOPE, scope);

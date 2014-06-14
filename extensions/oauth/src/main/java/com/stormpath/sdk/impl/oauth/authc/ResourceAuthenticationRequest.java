@@ -32,16 +32,16 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC
  */
-public class DefaultBearerOauthAuthenticationRequest extends OAuthAccessResourceRequest implements AuthenticationRequest {
+public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest implements AuthenticationRequest {
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
     @SuppressWarnings("UnusedDeclaration") //used via reflection by com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
-    public DefaultBearerOauthAuthenticationRequest(Object httpRequest, RequestLocation[] requestLocations) throws OAuthSystemException, OAuthProblemException {
+    public ResourceAuthenticationRequest(Object httpRequest, RequestLocation[] requestLocations) throws OAuthSystemException, OAuthProblemException {
         this(getHttpServletRequest(httpRequest), requestLocations);
     }
 
-    public DefaultBearerOauthAuthenticationRequest(HttpServletRequest httpServletRequest, RequestLocation[] requestLocations) throws OAuthProblemException, OAuthSystemException {
+    public ResourceAuthenticationRequest(HttpServletRequest httpServletRequest, RequestLocation[] requestLocations) throws OAuthProblemException, OAuthSystemException {
         super(httpServletRequest, new TokenType[]{TokenType.BEARER}, convert(requestLocations));
         Assert.notNull(httpServletRequest, "httpServletRequest cannot be null");
     }
