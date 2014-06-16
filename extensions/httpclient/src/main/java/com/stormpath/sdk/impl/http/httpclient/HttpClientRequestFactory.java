@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.http.httpclient;
 
-import com.stormpath.sdk.impl.http.HttpMethod;
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RestException;

@@ -72,7 +72,7 @@ abstract class ClientIT {
     Client buildClient(boolean enableCaching=true) {
 
         def builder = Clients.builder()
-        def apiKeyBuilder = ApiKeys.builder()
+        def apiKeyBuilder = com.stormpath.sdk.api.ApiKeys.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         //see if the api key file exists first - if so, use it:
@@ -96,7 +96,7 @@ abstract class ClientIT {
     Client buildClient(AuthenticationScheme authenticationScheme) {
 
         def builder = Clients.builder()
-        def apiKeyBuilder = ApiKeys.builder()
+        def apiKeyBuilder = com.stormpath.sdk.api.ApiKeys.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         //see if the api key file exists first - if so, use it:

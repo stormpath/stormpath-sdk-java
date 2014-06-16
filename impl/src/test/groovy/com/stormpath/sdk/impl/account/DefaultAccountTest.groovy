@@ -17,9 +17,14 @@ package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.EmailVerificationToken
+import com.stormpath.sdk.api.ApiKeyList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -51,7 +56,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 15)
+        assertEquals(propertyDescriptors.size(), 16)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -67,6 +72,7 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("groupMemberships") instanceof CollectionReference && propertyDescriptors.get("groupMemberships").getType().equals(GroupMembershipList))
+        assertTrue(propertyDescriptors.get("apiKeys") instanceof CollectionReference && propertyDescriptors.get("apiKeys").getType().equals(ApiKeyList))
         assertTrue(propertyDescriptors.get("providerData") instanceof ResourceReference && propertyDescriptors.get("providerData").getType().equals(ProviderData))
     }
 
@@ -80,7 +86,8 @@ class DefaultAccountTest {
                           tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
                           groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
                           groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
-                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"]]
+                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
+                          apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultAccount = new DefaultAccount(internalDataStore, properties)

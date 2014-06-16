@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.impl.client.DefaultApiKey
+import com.stormpath.sdk.impl.api.ClientApiKey
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
 
@@ -34,7 +34,6 @@ import com.stormpath.sdk.tenant.Tenant
  *  You will have to run this test the first time to see what account
  *  is being returned from your system.
  *
- *  TODO: Create an account in the Application so less human interaction will be needed.
  *
  * @since 0.4
  */
@@ -48,7 +47,7 @@ class PasswordResetAndAuthenticationManualIT {
 //     6 - I try to authenticate with the new password
 //     7 - Authentication fails
     public static void main(String[] args) {
-        DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
+        ClientApiKey apiKey = new ClientApiKey(args[0], args[1]);
         String oldPassword = args[2];
         String newPassword = args[3];
 

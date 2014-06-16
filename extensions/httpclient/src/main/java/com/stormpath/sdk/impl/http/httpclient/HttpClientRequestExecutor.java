@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package com.stormpath.sdk.impl.http.httpclient;
 
-import com.stormpath.sdk.client.ApiKey;
-import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
@@ -27,7 +25,9 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.RestException;
-import com.stormpath.sdk.impl.http.authc.*;
+import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;

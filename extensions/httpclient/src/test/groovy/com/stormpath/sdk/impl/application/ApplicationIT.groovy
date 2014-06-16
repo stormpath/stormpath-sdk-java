@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc. and contributors.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
@@ -27,15 +29,22 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.api.ApiKeyParameter
+import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
+
+    def encryptionServiceBuilder = new ApiKeySecretEncryptionService.Builder()
 
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/17">Issue #17</a>
@@ -277,6 +286,146 @@ class ApplicationIT extends ClientIT {
         }
     }
 
+    @Test
+    void testGetApiKeyById() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def appApiKey = app.getApiKey(apiKey.id)
+
+        assertNotNull appApiKey
+        assertEquals appApiKey, apiKey
+
+    }
+
+    @Test
+    void testGetApiKeyByIdCacheDisabled() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        client = buildClient(false)
+
+        app = client.dataStore.getResource(app.href, Application)
+
+        def appApiKey = app.getApiKey(apiKey.id)
+
+        assertNotNull appApiKey
+        assertEquals appApiKey, apiKey
+
+    }
+
+    @Test
+    void testGetApiKeyByIdWithOptions() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def client = buildClient(false) // need to disable caching because the api key is cached without the options
+        app = client.getResource(app.href, Application)
+        def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+
+        assertNotNull appApiKey
+        assertEquals appApiKey.secret, apiKey.secret
+        assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion
+        assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion
+
+    }
+
+    @Test
+    void testGetApiKeyByIdWithOptionsInCache() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        def client = buildClient()
+        app = client.getResource(app.href, Application)
+        def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+        def appApiKey2 = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+
+        assertNotNull appApiKey
+        assertNotNull appApiKey2
+        assertEquals appApiKey2.secret, appApiKey.secret
+        assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
+        assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
+
+        def dataStore = (DefaultDataStore) client.dataStore
+
+        // testing that the secret is encrypted in the cache
+        def apiKeyCache = dataStore.cacheManager.getCache(ApiKey.name)
+        assertNotNull apiKeyCache
+        def apiKeyCacheValue = apiKeyCache.get(appApiKey2.href)
+        assertNotNull apiKeyCacheValue
+        assertNotEquals apiKeyCacheValue['secret'], appApiKey2.secret
+        assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), appApiKey2.secret
+
+        // testing that the expansions made it to the cache
+        def accountCache = dataStore.cacheManager.getCache(Account.name)
+        assertNotNull accountCache
+        def accountCacheValue = accountCache.get(appApiKey2.account.href)
+        assertNotNull accountCacheValue
+        assertEquals accountCacheValue['username'], appApiKey.account.username
+
+        def tenantCache = dataStore.cacheManager.getCache(Tenant.name)
+        assertNotNull tenantCache
+        def tenantCacheValue = tenantCache.get(appApiKey2.tenant.href)
+        assertNotNull tenantCacheValue
+        assertEquals tenantCacheValue['key'], appApiKey.tenant.key
+
+
+    }
+
+    def Account createTestAccount(Application app) {
+
+        def email = 'deleteme@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email =  email
+        account.password = 'Changeme1!'
+
+        app.createAccount(account)
+        deleteOnTeardown(account)
+
+        return  account
+    }
+
+    String decryptSecretFromCacheMap(Map cacheMap) {
+
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+            return null
+        }
+
+        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+
+        def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
+        def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]
+        def iterations = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_ITERATIONS.getName()]
+
+        def encryptionService = encryptionServiceBuilder
+                .setBase64Salt(salt.getBytes())
+                .setKeySize(keySize)
+                .setIterations(iterations)
+                .setPassword(client.dataStore.apiKey.secret.toCharArray()).build()
+
+        def secret = encryptionService.decryptBase64String(cacheMap['secret'])
+
+        return secret
+    }
 
     /**
      * Asserts <a href="https://github.com/stormpath/stormpath-sdk-java/issues/58">Issue 58</a>.

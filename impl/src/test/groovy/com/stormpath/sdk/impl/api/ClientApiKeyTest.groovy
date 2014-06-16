@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.client
+package com.stormpath.sdk.impl.api
 
 import org.testng.annotations.Test
 
@@ -22,12 +22,12 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.beta
  */
-class DefaultApiKeyTest {
+class ClientApiKeyTest {
 
     @Test
     void testConstructorIdNull() {
         try {
-            new DefaultApiKey(null, "secret");
+            new ClientApiKey(null, "secret");
             fail("Should have thrown due to null id.")
         } catch (IllegalArgumentException ex) {
             assertEquals(ex.getMessage(), "API key id cannot be null.")
@@ -37,7 +37,7 @@ class DefaultApiKeyTest {
     @Test
     void testConstructorSecretNull() {
         try {
-            new DefaultApiKey("id", null);
+            new ClientApiKey("id", null);
             fail("Should have thrown due to null secret.")
         } catch (IllegalArgumentException ex) {
             assertEquals(ex.getMessage(), "API key secret cannot be null.")
@@ -46,29 +46,29 @@ class DefaultApiKeyTest {
 
     @Test
     void testConstructor() {
-        def apiKey = new DefaultApiKey("fooId", "barSecret");
-        assertEquals(apiKey.getId(), "fooId")
-        assertEquals(apiKey.getSecret(), "barSecret")
+        def apiKey = new ClientApiKey("fooId", "barSecret");
+        org.testng.Assert.assertEquals(apiKey.getId(), "fooId")
+        org.testng.Assert.assertEquals(apiKey.getSecret(), "barSecret")
     }
 
     @Test
     void testToString() {
-        def apiKey = new DefaultApiKey("fooId", "barSecret");
-        assertEquals(apiKey.toString(), "fooId")
+        def apiKey = new ClientApiKey("fooId", "barSecret");
+        org.testng.Assert.assertEquals(apiKey.toString(), "fooId")
     }
 
     @Test
     void testHashCode() {
-        def apiKey = new DefaultApiKey("fooId", "barSecret");
-        assertEquals(apiKey.hashCode(), 97614977)
+        def apiKey = new ClientApiKey("fooId", "barSecret");
+        org.testng.Assert.assertEquals(apiKey.hashCode(), 97614977)
     }
 
     @Test
     void testEquals() {
-        def apiKey = new DefaultApiKey("fooId", "barSecret");
-        def apiKey2 = new DefaultApiKey("fooId", "barSecret");
-        def apiKey3 = new DefaultApiKey("fooId", "nope");
-        def apiKey4 = new DefaultApiKey("nope", "barSecret");
+        def apiKey = new ClientApiKey("fooId", "barSecret");
+        def apiKey2 = new ClientApiKey("fooId", "barSecret");
+        def apiKey3 = new ClientApiKey("fooId", "nope");
+        def apiKey4 = new ClientApiKey("nope", "barSecret");
 
         assertTrue(apiKey.equals(apiKey))
         assertTrue(apiKey.equals(apiKey2))

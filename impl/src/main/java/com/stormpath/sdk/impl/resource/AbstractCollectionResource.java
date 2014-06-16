@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import java.util.Map;
  */
 public abstract class AbstractCollectionResource<T extends Resource> extends AbstractResource implements CollectionResource<T> {
 
-    protected static final IntegerProperty OFFSET = new IntegerProperty("offset");
-    protected static final IntegerProperty LIMIT = new IntegerProperty("limit");
-    protected static final String ITEMS_PROPERTY_NAME = "items";
+    public static final IntegerProperty OFFSET = new IntegerProperty("offset");
+    public static final IntegerProperty LIMIT = new IntegerProperty("limit");
+    public static final String ITEMS_PROPERTY_NAME = "items";
 
     private final Map<String, Object> queryParams;
 

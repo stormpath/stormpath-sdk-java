@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@ package com.stormpath.sdk.impl.tenant;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
-import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.application.Applications;
+import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;

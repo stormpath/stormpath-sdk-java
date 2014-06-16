@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.error.authc;
+
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * @since 0.1
+ * Thrown when the Authentication credentials (or access_token for Oauth requests) cannot be found in the {@code httpRequest}.
+ *
+ * @since 1.0.RC
  */
-public enum HttpMethod {
+public class InvalidAuthenticationException extends ResourceException {
 
-    GET,
-
-    POST,
-
-    PUT,
-
-    DELETE,
-
-    HEAD;
-
-    public static HttpMethod fromName(String name) {
-        for(HttpMethod method : values()) {
-            if (method.name().equalsIgnoreCase(name)) {
-                return method;
-            }
-        }
-        throw new IllegalArgumentException("Unrecognized method name: " + name);
+    public InvalidAuthenticationException(Error error) {
+        super(error);
     }
 }

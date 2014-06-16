@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.client;
 
-import com.stormpath.sdk.lang.Classes;
-
 /**
  * Static utility/helper class for working with {@link ApiKey} resources. For example:
  * <pre>
@@ -26,16 +24,20 @@ import com.stormpath.sdk.lang.Classes;
  * </pre>
  *
  * @since 1.0.beta
+ * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeys} instead.
  */
+@Deprecated
 public class ApiKeys {
 
     /**
      * Returns a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances.
      *
      * @return a new {@link ApiKeyBuilder} instance, used to construct {@link ApiKey} instances.
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiKeys#builder()} instead.
      */
+    @Deprecated
     public static ApiKeyBuilder builder() {
-        return (ApiKeyBuilder) Classes.newInstance("com.stormpath.sdk.impl.client.DefaultApiKeyBuilder");
+        return com.stormpath.sdk.api.ApiKeys.builder();
     }
 
 }

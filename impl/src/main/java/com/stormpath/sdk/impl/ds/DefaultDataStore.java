@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,36 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
+import com.stormpath.sdk.impl.ds.api.ApiKeyCachePropertiesFilter;
+import com.stormpath.sdk.impl.ds.api.ApiKeyQueryPropertiesFilter;
+import com.stormpath.sdk.impl.ds.api.ApiKeyResourcePropertiesFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryStringFactory;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.CollectionProperties;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -45,7 +61,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 
 /**
  * @since 0.1
@@ -63,6 +89,10 @@ public class DefaultDataStore implements InternalDataStore {
     private final MapMarshaller mapMarshaller;
     private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
+    private final ApiKey apiKey;
+    private final PropertiesFilterProcessor resourceDataFilterProcessor;
+    private final PropertiesFilterProcessor queryStringFilterProcessor;
+    
     /**
      * @since 0.9
      */
@@ -72,17 +102,20 @@ public class DefaultDataStore implements InternalDataStore {
 
     private final QueryStringFactory queryStringFactory;
 
-    public DefaultDataStore(RequestExecutor requestExecutor) {
-        this(requestExecutor, DEFAULT_API_VERSION);
+    private final CacheMapInitializer cacheMapInitializer;
+
+    public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
+        this(requestExecutor, DEFAULT_API_VERSION, apiKey);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion) {
-        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion);
+    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKey apiKey) {
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKey);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
+        Assert.notNull(apiKey, "ApiKey cannot be null.");
         this.baseUrl = baseUrl;
         this.requestExecutor = requestExecutor;
         this.resourceFactory = new DefaultResourceFactory(this);
@@ -91,6 +124,15 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
         this.referenceFactory = new ReferenceFactory();
+        this.apiKey = apiKey;
+        this.cacheMapInitializer = new DefaultCacheMapInitializer();
+        resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor();
+        // Adding another processor for query strings because we don't want to mix
+        // the processing (filtering) of the query strings with the processing of the resource properties,
+        // even though they're both (resource properties and query string objects) Maps that might apply
+        // to the be added to the same filter. This separation also improves requests performance.
+        queryStringFilterProcessor = new DefaultPropertiesFilterProcessor();
+        initFilterProcessors();
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -101,6 +143,11 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheRegionNameResolver = cacheRegionNameResolver;
     }
 
+    @Override
+    public ApiKey getApiKey() {
+        return apiKey;
+    }
+    
     /* =====================================================================
        Resource Instantiation
        ===================================================================== */
@@ -150,23 +197,7 @@ public class DefaultDataStore implements InternalDataStore {
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
 
-        Map<String, ?> data = null;
-
-        //check if cached:
-        if (isCacheRetrievalEnabled(clazz)) {
-            data = getCachedValue(href, clazz);
-        }
-
-        if (Collections.isEmpty(data)) {
-            //not cached - execute a request:
-            Request request = createRequest(HttpMethod.GET, href, qs);
-            data = executeRequest(request);
-
-            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
-                //cache for further use:
-                cache(clazz, data);
-            }
-        }
+        Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
         if (CollectionResource.class.isAssignableFrom(clazz)) {
             //only collections can support a query string constructor argument:
@@ -182,7 +213,7 @@ public class DefaultDataStore implements InternalDataStore {
      * GoogleProviderData). The <code>childIdProperty</code> is the property that will be used in the response as the ID to seek
      * for the proper concrete ProviderData class in the <code>idClassMap</>.
      *
-     * @param href the endpoint where the request will be targetted to.
+     * @param href the endpoint where the request will be targeted to.
      * @param parent the root class of the Resource hierarchy (helps to validate that the idClassMap contains subclasses of it).
      * @param childIdProperty the property whose value will be used to identify the specific class in the hierarchy that we need to instantiate.
      * @param idClassMap a mapping to be able to know which class corresponds to each <code>childIdProperty</code> value.
@@ -207,23 +238,7 @@ public class DefaultDataStore implements InternalDataStore {
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
 
-        Map<String, ?> data = null;
-
-        //check if cached:
-        if (isCacheRetrievalEnabled(parent)) {
-            data = getCachedValue(href, parent);
-        }
-
-        if (Collections.isEmpty(data)) {
-            //not cached - execute a request:
-            Request request = createRequest(HttpMethod.GET, href, qs);
-            data = executeRequest(request);
-
-            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(parent)) {
-                //cache for further use:
-                cache(parent, data);
-            }
-        }
+        Map<String, ?> data = retrieveResponseValue(href, parent, qs);
 
         if (Collections.isEmpty(data)) {
             throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
@@ -242,6 +257,58 @@ public class DefaultDataStore implements InternalDataStore {
         }
         //otherwise it must be an instance resource, so use the two-arg constructor:
         return this.resourceFactory.instantiate(childClass, data);
+    }
+
+    private Map<String, ?> retrieveResponseValue(String href, Class clazz, QueryString qs) {
+
+        QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(clazz, qs);
+        Map<String, ?> data = null;
+        if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) {
+
+            if (isApiKeyCollectionQuery(clazz, filteredQs)) {
+                String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
+                Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
+
+                Map apiKeyData = getCachedValue(cacheHref, cacheClass);
+
+                if (!Collections.isEmpty(apiKeyData)) {
+                    CollectionProperties.Builder builder = new CollectionProperties.Builder()
+                            .setHref(href)
+                            .setOffset(filteredQs.containsKey(OFFSET.getName()) ? Integer.valueOf(filteredQs.get(OFFSET.getName())) : 0)
+                            .setLimit(filteredQs.containsKey(LIMIT.getName()) ? Integer.valueOf(filteredQs.get(LIMIT.getName())) : 25)
+                            .setItemsMap(apiKeyData);
+                    data = builder.build();
+                }
+
+            } else {
+
+                data = getCachedValue(href, clazz);
+            }
+        }
+
+        Map<String, ?> returnResponseBody = data;
+        if (Collections.isEmpty(data)) {
+            //not cached - execute a request:
+            Request request = createRequest(HttpMethod.GET, href, filteredQs);
+            data = executeRequest(request);
+
+            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
+                //cache for further use:
+                cache(clazz, data, filteredQs);
+            }
+
+            // Adding the ApiKeyResourcePropertiesFilter here because if the resource was cached, the ApiKeyCachePropertiesFilter
+            // already took care of decrypting the api key secret to return to the user.
+            // Transitory filters serve the purpose of filtering the resource properties to return to the user,
+            // based on the current request.
+            // For example: decrypting the api key secret to return to the user
+            // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
+            // be added when initializing the filter (they depend on the current request).
+            resourceDataFilterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
+            returnResponseBody = resourceDataFilterProcessor.process(clazz, data);
+        }
+
+        return returnResponseBody;
     }
 
 
@@ -354,7 +421,7 @@ public class DefaultDataStore implements InternalDataStore {
         return save(href, resource, returnType, null);
     }
 
-    private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType, QueryString queryString) {
+    private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType, QueryString qs) {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
@@ -370,12 +437,19 @@ public class DefaultDataStore implements InternalDataStore {
         StringInputStream body = new StringInputStream(bodyString);
         long length = body.available();
 
-        Request request = new DefaultRequest(HttpMethod.POST, href, queryString, null, body, length);
-
-        //Map<String, Object> responseBody = executeRequest(request);
+        QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(returnType, qs);
+        Request request = new DefaultRequest(HttpMethod.POST, href, filteredQs, null, body, length);
 
         Response response = executeRequestGetFullResponse(request);
         Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
+
+        // Transitory filters serve the purpose of filtering the resource properties to return to the user,
+        // based on the current request.
+        // For example: decrypting the api key secret to return to the user
+        // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
+        // be added when initializing the filter (they depend on the current request).
+        resourceDataFilterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
+        Map<String, ?> returnResponseBody = resourceDataFilterProcessor.process(returnType, responseBody);
 
         if (Collections.isEmpty(responseBody)) {
             return null;
@@ -385,7 +459,7 @@ public class DefaultDataStore implements InternalDataStore {
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
         if (isCacheUpdateEnabled(returnType)) {
-            cache(returnType, responseBody);
+            cache(returnType, responseBody, filteredQs);
         }
 
         //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
@@ -411,7 +485,7 @@ public class DefaultDataStore implements InternalDataStore {
             }
         }
 
-        return resourceFactory.instantiate(returnType, responseBody);
+        return resourceFactory.instantiate(returnType, returnResponseBody);
     }
 
     /**
@@ -459,7 +533,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
         customDataToCache.putAll(customData); //overwrite or add what was specified during the save operation
 
-        cache(CustomData.class, customDataToCache);
+        cache(CustomData.class, customDataToCache, null);
     }
 
     /* =====================================================================
@@ -550,7 +624,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 0.8
      */
     @SuppressWarnings("unchecked")
-    private void cache(Class<? extends Resource> clazz, Map<String, ?> data) {
+    private void cache(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString) {
         if (!isCachingEnabled()) {
             return;
         }
@@ -565,10 +639,9 @@ public class DefaultDataStore implements InternalDataStore {
                             AbstractResource.HREF_PROP_NAME + "' attribute).");
         }
 
-        Map<String, Object> toCache = new LinkedHashMap<String, Object>(data.size());
+        Map<String, Object> toCache = cacheMapInitializer.initialize(clazz, data, queryString);
 
         if (CustomData.class.isAssignableFrom(clazz)) {
-            toCache.putAll(data);
             Cache cache = getCache(clazz);
             cache.put(href, toCache);
             return;
@@ -599,7 +672,7 @@ public class DefaultDataStore implements InternalDataStore {
                             "It is expected that only ResourceReference properties are complex objects.");
 
                     //cache this materialized reference:
-                    cache(property.getType(), nested);
+                    cache(property.getType(), nested, queryString);
 
                     //Because the materialized reference has now been cached, we don't need to store
                     //all of its properties again in the 'toCache' instance.  Instead, we just want to store
@@ -630,7 +703,7 @@ public class DefaultDataStore implements InternalDataStore {
                     if (o instanceof Map) {
                         Map referenceData = (Map) o;
                         if (isMaterialized(referenceData)) {
-                            cache(itemType, referenceData);
+                            cache(itemType, referenceData, queryString);
                             element = this.referenceFactory.createReference(referenceData);
                         }
                     }
@@ -656,7 +729,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 0.8
      */
     private boolean isMaterialized(Map<String, ?> props) {
-        return props != null && props.get("href") != null && props.size() > 1;
+        return props != null && props.get(AbstractResource.HREF_PROP_NAME) != null && props.size() > 1;
     }
 
     /**
@@ -689,7 +762,12 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(clazz, "Class argument cannot be null.");
         Cache<String, Map<String, ?>> cache = getCache(clazz);
-        return cache.get(href);
+
+        Map<String, ?> cachedValue = cache.get(href);
+
+        cachedValue = resourceDataFilterProcessor.process(clazz, cachedValue);
+
+        return cachedValue;
     }
 
     /**
@@ -762,6 +840,8 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         if (value instanceof Map) { //if the property is a reference, don't write the entire object - just the href will do:
+            //TODO need to change this to write the entire object because this code defeats the purpose of entity expansion
+            //     when this code gets called (returning the reference instead of the whole object that is returned from Stormpath)
             return this.referenceFactory.createReference(propName, (Map) value);
         }
 
@@ -872,5 +952,26 @@ public class DefaultDataStore implements InternalDataStore {
         } catch (java.util.NoSuchElementException e) {
             return null;
         }
+    }
+
+    /**
+     * Initializes the filter processors with the filters that should always be present when calling
+     * {@link PropertiesFilterProcessor#process(Class,Map)}.
+     *
+     * @since 1.0.RC
+     */
+    protected void initFilterProcessors() {
+
+        resourceDataFilterProcessor.add(new ApiKeyCachePropertiesFilter(apiKey));
+        queryStringFilterProcessor.add(new ApiKeyQueryPropertiesFilter());
+    }
+
+    /**
+     *
+     * @since 1.0.RC
+     */
+    private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
+
+        return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());
     }
 }

@@ -46,8 +46,18 @@
         </dependency>
         <!-- Runtime dependency to replace commons-logging needed by HTTPClient: -->
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-oauth</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -19,14 +19,28 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.impl.api.DefaultApiKey;
+import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderData;
@@ -61,10 +75,13 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
     static final CollectionReference<GroupMembershipList, GroupMembership> GROUP_MEMBERSHIPS =
             new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, GroupMembership.class);
+    static final CollectionReference<ApiKeyList, ApiKey> API_KEYS =
+            new CollectionReference<ApiKeyList, ApiKey>("apiKeys", ApiKeyList.class, ApiKey.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, PROVIDER_DATA, GROUPS, GROUP_MEMBERSHIPS);
+            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
+            PROVIDER_DATA,API_KEYS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -250,6 +267,10 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         return false;
     }
 
+    @Override
+    public ApiKeyList getApiKeys() {
+        return getResourceProperty(API_KEYS);
+    }
     /**
      * Returns the {@link ProviderData} instance associated with this Account.
      *
@@ -282,4 +303,33 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         throw new IllegalStateException(msg);
     }
 
+    @Override
+    public ApiKeyList getApiKeys(Map<String, Object> queryParams) {
+        ApiKeyList list = getApiKeys(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ApiKeyList.class, queryParams);
+    }
+
+    @Override
+    public ApiKeyList getApiKeys(ApiKeyCriteria criteria) {
+        ApiKeyList list = getApiKeys(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ApiKeyList.class, criteria);
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Override
+    public ApiKey createApiKey() {
+        return createApiKey(new DefaultApiKeyOptions());
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Override
+    public ApiKey createApiKey(ApiKeyOptions options) {
+        Assert.notNull(options, "options argument cannot be null.");
+        String href = getApiKeys().getHref();
+        return getDataStore().create(href, new DefaultApiKey(getDataStore()), options);
+    }
 }

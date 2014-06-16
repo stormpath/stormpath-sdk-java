@@ -29,6 +29,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>oauth</module>
         <module>httpclient</module>
     </modules>
 
