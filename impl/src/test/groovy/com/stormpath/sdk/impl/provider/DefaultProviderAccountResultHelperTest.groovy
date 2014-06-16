@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.provider
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor
@@ -42,6 +43,7 @@ class DefaultProviderAccountResultHelperTest {
     void testInstantiation() {
 
         //def properties = [providerAccountResult: providerAccountResult]
+        def apiKey = createStrictMock(ApiKey)
 
         def properties = [isNewAccount: true,
                 href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
@@ -62,7 +64,7 @@ class DefaultProviderAccountResultHelperTest {
 
         replay(requestExecutor)
 
-        def internalDataStore = new DefaultDataStore(requestExecutor)
+        def internalDataStore = new DefaultDataStore(requestExecutor, apiKey)
         def providerAccountResultHelper = new DefaultProviderAccountResultHelper(internalDataStore, properties)
         def providerAccountResult = providerAccountResultHelper.getProviderAccountResult()
         assertTrue(providerAccountResult.isNewAccount())

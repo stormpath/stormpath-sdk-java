@@ -16,7 +16,11 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.*;
+import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.ClientBuilder;
+import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -26,7 +30,7 @@ import com.stormpath.sdk.lang.Assert;
  */
 public class DefaultClientBuilder implements ClientBuilder {
 
-    private ApiKey apiKey;
+    private com.stormpath.sdk.api.ApiKey apiKey;
     private String baseUrl = "https://api.stormpath.com/v1";
     private Proxy proxy;
     private AuthenticationScheme authenticationScheme;
@@ -34,6 +38,11 @@ public class DefaultClientBuilder implements ClientBuilder {
 
     @Override
     public ClientBuilder setApiKey(ApiKey apiKey) {
+        return setApiKey((com.stormpath.sdk.api.ApiKey) apiKey);
+    }
+
+    @Override
+    public ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey) {
         Assert.notNull(apiKey, "apiKey cannot be null.");
         this.apiKey = apiKey;
         return this;

@@ -54,8 +54,29 @@ public interface ClientBuilder {
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
      * @see ApiKeyBuilder#setId(String)
+     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
      */
+    @Deprecated
     ClientBuilder setApiKey(ApiKey apiKey);
+
+    /**
+     * Allows specifying an {@code ApiKey} instance directly instead of reading the key from a stream-based resource
+     * (e.g. File, Reader, Properties or InputStream).
+     * <p/>
+     * Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
+     * client as follows:
+     * <pre>
+     * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
+     *
+     * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
+     * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
+     * </pre>
+     *
+     * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
+     * @return the ClientBuilder instance for method chaining.
+     * @see ApiKeyBuilder#setId(String)
+     */
+    ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey);
 
     /**
      * Sets the HTTP proxy to be used when communicating with the Stormpath API server.
@@ -117,7 +138,7 @@ public interface ClientBuilder {
      * used to authenticate every request sent to the Stormpath API server.
      * <p/>
      * It is not recommended that you override this setting <em>unless</em> your application is deployed in an
-     * environment that - outside of the application's control - manipulates request headers on outgoing HTTP requests.
+     * environment that - outside of your application's control - manipulates request headers on outgoing HTTP requests.
      * Google App Engine is one such environment, for example.
      * <p/>
      * As such, in these environments only, an alternative authentication mechanism is necessary, such as

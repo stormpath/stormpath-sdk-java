@@ -32,6 +32,7 @@ public class BasicAuthenticator {
     private InternalDataStore dataStore;
 
     public BasicAuthenticator(InternalDataStore dataStore) {
+        Assert.notNull(dataStore);
         this.dataStore = dataStore;
     }
 
@@ -53,7 +54,7 @@ public class BasicAuthenticator {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Unable to acquire UTF-8 bytes!");
         }
-        value = Base64.encodeToString(valueBytes, false);
+        value = Base64.encodeBase64String(valueBytes);
 
         BasicLoginAttempt attempt = this.dataStore.instantiate(BasicLoginAttempt.class);
 

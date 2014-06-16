@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.http.authc
 
-import com.stormpath.sdk.client.ApiKey
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.impl.http.HttpHeaders
 import com.stormpath.sdk.impl.http.Request
 import org.testng.annotations.Test
@@ -40,7 +40,7 @@ class BasicRequestAuthenticatorTest {
 
         def id = "fooId"
         def secret = "barKey"
-        String authorizationHeader = com.stormpath.sdk.impl.util.Base64.encodeToString((id + ":" + secret).getBytes("UTF-8"), false);
+        String authorizationHeader = com.stormpath.sdk.impl.util.Base64.encodeBase64String((id + ":" + secret).getBytes("UTF-8"));
 
         def request = createStrictMock(Request)
         def apiKey = createStrictMock(ApiKey)

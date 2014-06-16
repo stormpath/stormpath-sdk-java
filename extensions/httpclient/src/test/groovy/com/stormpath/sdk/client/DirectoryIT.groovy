@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -57,10 +60,10 @@ class DirectoryIT extends ClientIT {
         def email = 'johndeleteme@nowhere.com'
 
         Account account = client.instantiate(Account)
-        account.givenName = 'John'
-        account.surname = 'DELETEME'
-        account.email =  email
-        account.password = 'Changeme1!'
+        account = account.setGivenName('John')
+            .setSurname('DELETEME')
+            .setEmail(email)
+            .setPassword('Changeme1!')
 
         dir.createAccount(account)
 
@@ -75,6 +78,71 @@ class DirectoryIT extends ClientIT {
 
         def list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(email)))
         assertFalse list.iterator().hasNext() //no results
+    }
+
+
+    /**
+     * Asserts <a href="https://github.com/stormpath/stormpath-sdk-java/issues/58">Issue 58</a>.
+     * @since 1.0.RC
+     */
+    @Test
+    void testCreateDirectoryViaTenantActions() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateDirectoryViaTenantActions")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testCreateDirectoryRequestViaTenantActions() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateDirectoryRequestViaTenantActions")
+        GoogleProvider provider = client.instantiate(GoogleProvider.class)
+        provider.setClientId("616598318417021").setClientSecret("c0ad961d45fdc0310c1c7d67c8f1d800")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.GOOGLE.builder()
+                    .setClientId("616598318417021")
+                    .setClientSecret("c0ad961d45fdc0310c1c7d67c8f1d800")
+                    .setRedirectUri("http://localhost")
+                    .build()
+                ).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testGetDirectoriesViaTenantActions() {
+        def dirList = client.getDirectories()
+        assertNotNull dirList.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testGetDirectoriesWithMapViaTenantActions() {
+        def map = new HashMap<String, Object>()
+        def dirList = client.getDirectories(map)
+        assertNotNull dirList.href
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testGetDirectoriesWithDirCriteriaViaTenantActions() {
+        def dirCriteria = Directories.criteria()
+        def dirList = client.getDirectories(dirCriteria)
+        assertNotNull dirList.href
     }
 
 }

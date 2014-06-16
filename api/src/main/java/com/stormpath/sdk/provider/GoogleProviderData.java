@@ -30,13 +30,6 @@ public interface GoogleProviderData extends ProviderData {
     String getAccessToken();
 
     /**
-     * Getter for the Google authorization code.
-     *
-     * @return the Google authorization code
-     */
-    String getCode();
-
-    /**
      * Getter for the Google refresh token.
      *
      * @return the Google refresh token.

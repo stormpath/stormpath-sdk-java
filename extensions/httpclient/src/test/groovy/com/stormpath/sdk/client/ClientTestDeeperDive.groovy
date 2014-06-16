@@ -26,7 +26,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.GroupMembershipList
-import com.stormpath.sdk.impl.client.DefaultApiKey
+import com.stormpath.sdk.impl.api.ClientApiKey
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
 
@@ -36,7 +36,7 @@ import com.stormpath.sdk.tenant.Tenant
 class ClientTestDeeperDive {
 
     public static void main(String[] args) {
-        DefaultApiKey apiKey = new DefaultApiKey(args[0], args[1]);
+        ClientApiKey apiKey = new ClientApiKey(args[0], args[1]);
 
         def builder = Clients.builder().setApiKey(apiKey)
         ((DefaultClientBuilder)builder).setBaseUrl("http://localhost:8080/v1")

@@ -15,10 +15,10 @@
  */
 package com.stormpath.sdk.impl.client
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.cache.Caches
-import com.stormpath.sdk.client.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.Clients
@@ -54,7 +54,7 @@ class DefaultClientBuilderTest {
 
         Client client = Clients.builder().setApiKey(apiKey).build()
 
-        //caching disabled by default (end-user must explicilty enable it based on their caching preferences):
+        //caching disabled by default (end-user must explicitly enable it based on their caching preferences):
         assertTrue client.dataStore.cacheManager instanceof DisabledCacheManager
     }
 

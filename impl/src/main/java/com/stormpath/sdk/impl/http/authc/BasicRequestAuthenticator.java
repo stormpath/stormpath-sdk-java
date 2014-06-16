@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.client.ApiKey;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.Base64;
@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.SimpleTimeZone;
 
 /**
  * This {@link RequestAuthenticator} implements a <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
@@ -64,7 +65,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
         } catch (UnsupportedEncodingException e) {
             throw new RequestAuthenticationException("Unable to acquire UTF-8 bytes!");
         }
-        authorizationHeader = Base64.encodeToString(valueBytes, false);
+        authorizationHeader = Base64.encodeBase64String(valueBytes);
         request.getHeaders().set(AUTHORIZATION_HEADER, AUTHENTICATION_SCHEME + " " + authorizationHeader);
     }
 

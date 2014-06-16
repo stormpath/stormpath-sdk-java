@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
@@ -54,6 +55,12 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria);
 
+    //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
+
+    /**
+     * @since 1.0.RC
+     */
+    ApiKey getApiKey();
     /**
      * @since 1.0.beta
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,16 @@ public interface PasswordResetToken extends Resource {
 
     String getEmail();
 
-    void setEmail(String email);
+    PasswordResetToken setEmail(String email);
 
     Account getAccount();
+
+    /**
+     * Setter for the new password that will be instantly applied if the reset token is correctly validated.
+     *
+     * @param password the new password that will be applied if the reset token is correctly validated.
+     * @since 1.0.RC
+     */
+    void setPassword(String password);
+
 }

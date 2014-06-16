@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.directory
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryStatus
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupCriteria
@@ -77,13 +78,13 @@ class DefaultDirectoryTest {
                 provider: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider"]
         ]
 
-        DefaultDirectory defaultDirectory = new DefaultDirectory(internalDataStore, properties)
+        Directory defaultDirectory = new DefaultDirectory(internalDataStore, properties)
 
         assertNull(defaultDirectory.getStatus())
 
-        defaultDirectory.setName("My new Directory")
-        defaultDirectory.setDescription("My new Description")
-        defaultDirectory.setStatus(DirectoryStatus.DISABLED)
+        defaultDirectory = defaultDirectory.setName("My new Directory")
+            .setDescription("My new Description")
+            .setStatus(DirectoryStatus.DISABLED)
 
         assertEquals(defaultDirectory.getName(), "My new Directory")
         assertEquals(defaultDirectory.getDescription(), "My new Description")

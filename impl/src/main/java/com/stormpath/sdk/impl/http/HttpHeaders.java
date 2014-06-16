@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.http;
 
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
 import com.stormpath.sdk.impl.util.MultiValueMap;
 import com.stormpath.sdk.lang.Assert;
