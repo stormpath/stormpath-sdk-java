@@ -2,7 +2,7 @@
 
 # Stormpath Java SDK #
 
-Copyright &copy; 2013 Stormpath, Inc. and contributors.
+Copyright &copy; 2013-2014 Stormpath, Inc. and contributors.
 
 This project is open-source via the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
@@ -17,6 +17,8 @@ This project requires Maven 3.0.3 to build.  Run the following:
 ## Change Log ##
 
 ### 1.0.RC ###
+
+This is the Stormpath Java SDK's first 1.0 Release Candidate
 
 #### New Features & Enhancements ####
 
