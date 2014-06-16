@@ -18,7 +18,9 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 1.0.RC ###
 
-This is the Stormpath Java SDK's first 1.0 Release Candidate
+Stormpath Java SDK 1.0 Release Candidate
+
+1.0 final will be released after this release.
 
 #### New Features & Enhancements ####
 
