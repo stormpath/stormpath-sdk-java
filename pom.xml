@@ -311,7 +311,7 @@
                 <configuration>
                     <mavenExecutorId>forked-path</mavenExecutorId>
                     <useReleaseProfile>false</useReleaseProfile>
-                    <arguments>-Pdocs,stormpath-signature</arguments>
+                    <arguments>-DskipTests -Pdocs,stormpath-signature</arguments>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
