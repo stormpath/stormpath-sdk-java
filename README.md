@@ -51,7 +51,8 @@ account.save();
 one might choose to write instead:
 
 ```java
-client.instantiate(Account.class).setGivenName("John").setSurname("Smith).setEmail("jsmith@gmail.com").save();
+client.instantiate(Account.class)
+  .setGivenName("John").setSurname("Smith").setEmail("jsmith@gmail.com").save();
 ```
 
 ##### Client Tenant Actions #####
