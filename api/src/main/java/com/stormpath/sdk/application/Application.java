@@ -1157,7 +1157,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <pre>
      * public void onLoginLinkClick(HttpServletRequest request, HttpServletResponse response) {
      *
-     *     Application application = client.getResource(myApplicationRestUrl, Application.class);
+     *    Application application = client.getResource(myApplicationRestUrl, Application.class);
      *
      *    //this is the <b>fully qualified</b> URL that your end-user should return to after they are finished at the
      *    // ID Site.  It is usually a URL in your web application, for example: https://awesomeapp.com/id
@@ -1195,18 +1195,59 @@ public interface Application extends Resource, Saveable, Deletable {
      * Creates a new {@link IdSiteCallbackHandler} used to handle HTTP replies from your ID Site to your
      * application's {@code callbackUri}, as described in the {@link #newIdSiteUrlBuilder()} method.
      *
-     * <p><b>This method
-     * should be called when processing an HTTP request sent by the ID Site to the {@code callbackUri} you specified
-     * using the {@link IdSiteUrlBuilder}.</b></p>
+     * <p><b>This method should be called when processing an HTTP request sent by the ID Site to the
+     * {@code callbackUri} specified via the {@link #newIdSiteUrlBuilder()} method.</b></p>
+     *
+     * <h5>Example</h5>
+     *
+     * <p>Assume that you previously {@link #newIdSiteUrlBuilder()}, built the URL, and redirected your end-user to
+     * that URL.  When the end-user is finished interacting with your ID Site, they will be redirected back to the
+     * {@code callbackUri} you specified when constructing the URL.  You would call this method when processing the
+     * request to that {@code callbackUri}.</p>
+     *
+     * <p>For example, assume your callbackUri is {@code https://awesomeapp.com/id} and you process requests to that
+     * URI with a (sample) {@code onIdSiteCallback} method below:</p>
+     *
+     * <pre>
+     * public void onIdSiteCallback(HttpServletRequest request, HttpServletResponse response) {
+     *
+     *    Application application = client.getResource(myApplicationRestUrl, Application.class);
+     *
+     *    <b>AccountResult result = application.newIdSiteCallbackHandler(request).getAccountResult();</b>
+     *
+     *    //get the account that signed-up or logged in successfully:
+     *    Account account = result.getAccount();
+     *
+     *    //do whatever you want with the returned account :)
+     *
+     *    // result.isNewAccount() == true for a newly registered user
+     *    // result.isNewAccount() == false for an existing user that logged in
+     *
+     *    // When you're done, you might want to redirect the end-user to a welcome page or
+     *    // a 'my account' page, for example:
+     *    response.sendRedirect("/myaccount");
+     * }
+     * </pre>
+     *
+     * <h5>Servlet Container or No Servlet Container?</h5>
+     *
+     * <p>This method will accept either a {@code javax.servlet.http.HttpServletRequest} instance if your app is running
+     * in a Servlet container, or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest} instance if it is
+     * not.  See the {@link com.stormpath.sdk.http.HttpRequests} helper class to help build the request object if you
+     * are running in a non-servlet environment.</p>
      *
      * @param httpRequest either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
      *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
      *                    instance if it does not.
-     * @return an {@link com.stormpath.sdk.idsite.IdSiteCallbackHandler} that acts as a builder to allow you to customize how the {@code httpRequest} will be processed.
+     * @return an {@link IdSiteCallbackHandler} that allows you customize how the {@code httpRequest} will be handled.
      * @throws IllegalArgumentException if the method argument is null or is not either a either a
      *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
      *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
      *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
+     * @see #newIdSiteUrlBuilder()
+     * @see com.stormpath.sdk.http.HttpRequests
+     * @see com.stormpath.sdk.idsite.IdSiteCallbackHandler
+     * @see com.stormpath.sdk.idsite.IdSiteCallbackHandler#getAccountResult()
      *
      * @since 1.0.RC2
      */
