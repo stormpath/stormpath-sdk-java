@@ -1,7 +1,7 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountResult;
+import com.stormpath.sdk.idsite.AccountResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.BooleanProperty;

@@ -39,11 +39,15 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.idsite.IdSiteAccountResolver;
+import com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
 import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteAccountResolver;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteRedirectUrlBuilder;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
@@ -54,16 +58,12 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.impl.sso.DefaultSsoAccountResolver;
-import com.stormpath.sdk.impl.sso.DefaultSsoRedirectUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.sso.SsoAccountResolver;
-import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -528,17 +528,17 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.RC */
     @Override
-    public SsoRedirectUrlBuilder createSsoRedirectUrl() {
-        return new DefaultSsoRedirectUrlBuilder(getDataStore(), getHref());
+    public IdSiteRedirectUrlBuilder createIdSiteUrl() {
+        return new DefaultIdSiteRedirectUrlBuilder(getDataStore(), getHref());
     }
 
     /** @since 1.0.RC */
     @Override
-    public SsoAccountResolver handleSsoResponse(Object httpRequest) {
+    public IdSiteAccountResolver handleIdSiteReply(Object httpRequest) {
 
         validateHttpRequest(httpRequest);
 
-        return new DefaultSsoAccountResolver(getDataStore(), this, httpRequest);
+        return new DefaultIdSiteAccountResolver(getDataStore(), this, httpRequest);
     }
 
     @SuppressWarnings("unchecked")

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.sso;
+package com.stormpath.sdk.idsite;
 
 /**
  * Store {@code nonce} values and provides methods to check if a nonce has already been used, and to
@@ -39,8 +39,8 @@ package com.stormpath.sdk.sso;
  * }
  * </pre>
  *
- * @see com.stormpath.sdk.sso.SsoAccountResolver#withNonceStore(NonceStore)
- * @since 1.0.RC
+ * @see IdSiteAccountResolver#withNonceStore(NonceStore)
+ * @since 1.0.RC2
  */
 public interface NonceStore {
 

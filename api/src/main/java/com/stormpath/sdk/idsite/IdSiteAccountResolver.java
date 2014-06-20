@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.sso;
-
-import com.stormpath.sdk.account.AccountResult;
+package com.stormpath.sdk.idsite;
 
 /**
  * Resolves an {@code ssoRequest} to obtain the {@link AccountResult}. This request is usually submitted
@@ -36,7 +34,7 @@ import com.stormpath.sdk.account.AccountResult;
  *    //if you want to control how the nonce are stored in your application.
  *    <b>NonceStore nonceStore = new MyNonceStore();</b> //create the 'MyNonceStore' class yourself
  *
- *     AccountResult result = application.handleSsoResponse(request)
+ *     AccountResult result = application.handleIdSiteReply(request)
  *        <b>{@link #withNonceStore(NonceStore) .withNonceStore(nonceStore)}
  *        .execute()</b>;
  *
@@ -44,12 +42,12 @@ import com.stormpath.sdk.account.AccountResult;
  * }
  * </pre>
  *
- * @see com.stormpath.sdk.application.Application#handleSsoResponse(Object)
+ * @see com.stormpath.sdk.application.Application#handleIdSiteReply(Object)
  * @see #withNonceStore(NonceStore)
  * @see #execute()
- * @since 1.0.RC
+ * @since 1.0.RC2
  */
-public interface SsoAccountResolver {
+public interface IdSiteAccountResolver {
 
     /**
      * Overrides the default implementation of the {@link NonceStore} to be used when resolving the {@code accountResult}

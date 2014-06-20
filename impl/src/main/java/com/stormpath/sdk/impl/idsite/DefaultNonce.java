@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.sso;
+package com.stormpath.sdk.impl.idsite;
 
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.sso.Nonce;
+import com.stormpath.sdk.idsite.Nonce;
 
 import java.util.HashMap;
 import java.util.Map;

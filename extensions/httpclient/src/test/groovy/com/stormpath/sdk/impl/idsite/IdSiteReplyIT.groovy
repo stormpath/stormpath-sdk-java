@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.sso
+package com.stormpath.sdk.impl.idsite
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.AccountResult
+import com.stormpath.sdk.idsite.AccountResult
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.error.jwt.InvalidJwtException
@@ -33,12 +33,12 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * Class SsoResponseIT is used for to test {@link Application#handleSsoResponse(Object)}
+ * Class IdSiteReplyIT is used for to test {@link Application#handleIdSiteReply(Object)}
  * method.
  *
  * @since 1.0.RC
  */
-class SsoResponseIT extends ClientIT {
+class IdSiteReplyIT extends ClientIT {
 
     Application application
 
@@ -152,7 +152,7 @@ class SsoResponseIT extends ClientIT {
 
     void assertHandleSsoError(Object httpRequest, Class<? extends Exception> expectedException, String expectedMessage) {
         try {
-            application.handleSsoResponse(httpRequest).execute()
+            application.handleIdSiteReply(httpRequest).execute()
             fail("Test failed, exception was expected. Exception expected: " + expectedException.getName())
         } catch (Exception ex) {
             assertTrue expectedException.isAssignableFrom(ex.getClass())
@@ -164,7 +164,7 @@ class SsoResponseIT extends ClientIT {
 
     void assertAccountResult(Object httpRequest, String expectedState) {
 
-        AccountResult result = application.handleSsoResponse(httpRequest).execute()
+        AccountResult result = application.handleIdSiteReply(httpRequest).execute()
 
         assertNotNull result
         assertNotNull result.account

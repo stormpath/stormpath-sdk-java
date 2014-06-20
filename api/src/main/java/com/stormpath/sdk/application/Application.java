@@ -18,7 +18,7 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.AccountResult;
+import com.stormpath.sdk.idsite.AccountResult;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
@@ -30,6 +30,8 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.idsite.IdSiteAccountResolver;
+import com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -37,8 +39,6 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.sso.SsoAccountResolver;
-import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -1134,26 +1134,28 @@ public interface Application extends Resource, Saveable, Deletable {
     OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
 
     /**
-     * Returns a {@link SsoRedirectUrlBuilder} to construct a <a href="http://openid.net/specs/draft-jones-json-web-token-07.html#anchor3">
+     * Returns a {@link com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder} to construct a <a href="http://openid.net/specs/draft-jones-json-web-token-07.html#anchor3">
      * JWT</a>-encoded SSO Site URL.
      *
-     * @return a {@link SsoRedirectUrlBuilder} to construct a JWT-encoded SSO Site URL.
-     * @since 1.0.RC
+     * @return a {@link com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder} to construct a JWT-encoded SSO Site URL.
+     * @since 1.0.RC2
      */
-    SsoRedirectUrlBuilder createSsoRedirectUrl();
+    IdSiteRedirectUrlBuilder createIdSiteUrl();
 
     /**
-     * Returns the {@link SsoAccountResolver ssoAccountResolver} that can be configured to execute the {@link AccountResult accounted}
+     * Returns the {@link com.stormpath.sdk.idsite.IdSiteAccountResolver ssoAccountResolver} that can be configured to execute the {@link AccountResult accounted}
      * that is pointed by the {@code httpRequest}
      *
      * @param httpRequest - either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
      *                    Servlet container or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
      *                    instance if it does not.
-     * @return - An {@link SsoAccountResolver} that acts as a builder to allow you to customize how the {@code httpRequest} will be processed.
+     * @return - An {@link com.stormpath.sdk.idsite.IdSiteAccountResolver} that acts as a builder to allow you to customize how the {@code httpRequest} will be processed.
      * @throws IllegalArgumentException if the method argument is null or is not either a either a
      *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
      *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
      *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
+     *
+     * @since 1.0.RC2
      */
-    SsoAccountResolver handleSsoResponse(Object httpRequest);
+    IdSiteAccountResolver handleIdSiteReply(Object httpRequest);
 }

@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.sso;
+package com.stormpath.sdk.idsite;
 
 /**
  * Builder for creating <a href="http://openid.net/specs/draft-jones-json-web-token-07.html#anchor3">JSON Web Token</a>
  * encoded SSO URL.
  *
- * @since 1.0.RC
+ * @since 1.0.RC2
  */
-public interface SsoRedirectUrlBuilder {
+public interface IdSiteRedirectUrlBuilder {
 
     /**
      * Setter for the final destination where to get the browser redirected.
@@ -31,7 +31,7 @@ public interface SsoRedirectUrlBuilder {
      * @param callbackUri the final destination where to get the browser redirected.
      * @return this instance for method chaining.
      */
-    SsoRedirectUrlBuilder setCallbackUri(String callbackUri);
+    IdSiteRedirectUrlBuilder setCallbackUri(String callbackUri);
 
     /**
      * Setter for the client-specified state.
@@ -39,7 +39,7 @@ public interface SsoRedirectUrlBuilder {
      * @param state any client-specified state.
      * @return this instance for method chaining.
      */
-    SsoRedirectUrlBuilder setState(String state);
+    IdSiteRedirectUrlBuilder setState(String state);
 
     /**
      * The initial user-interface path that should be displayed upon UI launch.
@@ -48,7 +48,7 @@ public interface SsoRedirectUrlBuilder {
      * @param path initial user-interface path that should be displayed upon UI launch.
      * @return this instance for method chaining.
      */
-    SsoRedirectUrlBuilder setPath(String path);
+    IdSiteRedirectUrlBuilder setPath(String path);
 
     /**
      * Constructs the JWT-encoded SSO URL based on the current builder state.

@@ -38,7 +38,7 @@ import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
-import com.stormpath.sdk.impl.sso.DefaultSsoRedirectUrlBuilder
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteRedirectUrlBuilder
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.FacebookProviderData
@@ -552,9 +552,9 @@ class DefaultApplicationTest {
         def internalDataStore = createStrictMock(InternalDataStore)
 
         def defaultApplication = new DefaultApplication(internalDataStore, properties)
-        def ssoRedirectUrlBuilder = defaultApplication.createSsoRedirectUrl()
+        def ssoRedirectUrlBuilder = defaultApplication.createIdSiteUrl()
 
-        assertTrue(ssoRedirectUrlBuilder instanceof DefaultSsoRedirectUrlBuilder)
+        assertTrue(ssoRedirectUrlBuilder instanceof DefaultIdSiteRedirectUrlBuilder)
         assertEquals(ssoRedirectUrlBuilder.internalDataStore, internalDataStore)
         assertEquals(ssoRedirectUrlBuilder.applicationHref, properties.href)
     }

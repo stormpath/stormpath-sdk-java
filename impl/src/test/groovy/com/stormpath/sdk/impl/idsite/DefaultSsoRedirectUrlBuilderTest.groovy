@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.sso
+package com.stormpath.sdk.impl.idsite
 
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -37,7 +37,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
 
         def applicationHref = "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj"
 
-        def builder = new DefaultSsoRedirectUrlBuilder(internalDataStore, applicationHref)
+        def builder = new DefaultIdSiteRedirectUrlBuilder(internalDataStore, applicationHref)
         try {
             builder.build()
             fail("should have thrown")
@@ -73,7 +73,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
 
         replay internalDataStore, apiKey
 
-        def builder = new DefaultSsoRedirectUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        def builder = new DefaultIdSiteRedirectUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
         def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do").build()
 
         String[] pieces = ssoRedirectUrl.substring(ssoRedirectUrl.indexOf("?jwtRequest=") + 12).split("\\.");
@@ -119,7 +119,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
 
         replay internalDataStore, apiKey
 
-        def builder = new DefaultSsoRedirectUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        def builder = new DefaultIdSiteRedirectUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
         def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do")
                 .setPath("/sso-site")
                 .setState("someState")

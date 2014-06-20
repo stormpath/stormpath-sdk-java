@@ -1,17 +1,19 @@
-package com.stormpath.sdk.account;
+package com.stormpath.sdk.idsite;
+
+import com.stormpath.sdk.account.Account;
 
 /**
  * Represents the result of the passing an HttpRequest that contains the
  *
- * @see com.stormpath.sdk.application.Application#handleSsoResponse(Object)
- * @since 1.0.RC
+ * @see com.stormpath.sdk.application.Application#handleIdSiteReply(Object)
+ * @since 1.0.RC2
  */
 public interface AccountResult {
 
     /**
-     * Getter for the {@link Account} Resource containing a user in Stormpath.
+     * Getter for the {@link com.stormpath.sdk.account.Account} Resource containing a user in Stormpath.
      *
-     * @return the {@link Account} Resource containing a user in Stormpath.
+     * @return the {@link com.stormpath.sdk.account.Account} Resource containing a user in Stormpath.
      */
     Account getAccount();
 

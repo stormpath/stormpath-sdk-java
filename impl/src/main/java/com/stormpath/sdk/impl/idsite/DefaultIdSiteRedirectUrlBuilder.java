@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.sso;
+package com.stormpath.sdk.impl.idsite;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.sso.SsoRedirectUrlBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 /**
  * @since 1.0.RC
  */
-public class DefaultSsoRedirectUrlBuilder implements SsoRedirectUrlBuilder {
+public class DefaultIdSiteRedirectUrlBuilder implements IdSiteRedirectUrlBuilder {
 
     public static final String SSO_ENDPOINT = "http://api.stormpath.com/sso";
 
@@ -49,7 +49,7 @@ public class DefaultSsoRedirectUrlBuilder implements SsoRedirectUrlBuilder {
 
     private String path;
 
-    public DefaultSsoRedirectUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
+    public DefaultIdSiteRedirectUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
         Assert.hasText(applicationHref, "applicationHref cannot be null or empty");
 
@@ -58,19 +58,19 @@ public class DefaultSsoRedirectUrlBuilder implements SsoRedirectUrlBuilder {
     }
 
     @Override
-    public SsoRedirectUrlBuilder setCallbackUri(String callbackUri) {
+    public IdSiteRedirectUrlBuilder setCallbackUri(String callbackUri) {
         this.callbackUri = callbackUri;
         return this;
     }
 
     @Override
-    public SsoRedirectUrlBuilder setState(String state) {
+    public IdSiteRedirectUrlBuilder setState(String state) {
         this.state = state;
         return this;
     }
 
     @Override
-    public SsoRedirectUrlBuilder setPath(String path) {
+    public IdSiteRedirectUrlBuilder setPath(String path) {
         this.path = path;
         return this;
     }

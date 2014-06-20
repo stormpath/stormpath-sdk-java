@@ -394,7 +394,7 @@ class ApplicationIT extends ClientIT {
     void testCreateSsoRedirectUrl() {
         def app = createTempApp()
 
-        def ssoRedirectUrlBuilder = app.createSsoRedirectUrl()
+        def ssoRedirectUrlBuilder = app.createIdSiteUrl()
 
         def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").setPath("/mypath").setState("anyState").build()
 

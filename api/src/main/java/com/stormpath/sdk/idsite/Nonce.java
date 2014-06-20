@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.sso;
+package com.stormpath.sdk.idsite;
 
 import com.stormpath.sdk.resource.Resource;
 
@@ -21,7 +21,7 @@ import com.stormpath.sdk.resource.Resource;
  * A <a href="http://en.wikipedia.org/wiki/Cryptographic_nonce">cryptographic nonce</a> representation
  * for values that must cannot be used more than once.
  *
- * @since 1.0.RC
+ * @since 1.0.RC2
  */
 public interface Nonce extends Resource {
 
