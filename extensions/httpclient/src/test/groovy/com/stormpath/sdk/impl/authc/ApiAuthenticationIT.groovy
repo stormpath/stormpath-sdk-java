@@ -17,33 +17,21 @@ package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
+import com.stormpath.sdk.api.ApiAuthenticationResult
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.authc.ApiAuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.error.authc.AccessTokenOauthException
-import com.stormpath.sdk.error.authc.DisabledAccountException
-import com.stormpath.sdk.error.authc.DisabledApiKeyException
-import com.stormpath.sdk.error.authc.IncorrectCredentialsException
-import com.stormpath.sdk.error.authc.InvalidApiKeyException
-import com.stormpath.sdk.error.authc.InvalidAuthenticationException
-import com.stormpath.sdk.error.authc.MissingApiKeyException
-import com.stormpath.sdk.error.authc.OauthAuthenticationException
-import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException
+import com.stormpath.sdk.error.authc.*
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
-import com.stormpath.sdk.oauth.authc.AccessTokenResult
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult
-import com.stormpath.sdk.oauth.authc.RequestLocation
-import com.stormpath.sdk.oauth.authz.ScopeFactory
-import com.stormpath.sdk.oauth.authz.TokenResponse
+import com.stormpath.sdk.oauth.*
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -334,8 +322,8 @@ class ApiAuthenticationIT extends ClientIT {
 
         assertNotNull result
 
-        //Wait 3.001 seconds and try again
-        Thread.sleep(3001)
+        //Wait > 3 seconds and try again
+        Thread.sleep(3300)
 
         verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.EXPIRED_ACCESS_TOKEN)
 

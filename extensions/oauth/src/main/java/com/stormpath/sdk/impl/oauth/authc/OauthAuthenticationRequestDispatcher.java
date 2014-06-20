@@ -29,6 +29,7 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.0.RC
  */
+@SuppressWarnings("UnusedDeclaration") //used via reflection in com.stormpath.sdk.impl.application.DefaultApplication
 public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestDispatcher {
 
     @Override
@@ -40,12 +41,12 @@ public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestD
             return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
         }
 
-        if (request instanceof DefaultBasicOauthAuthenticationRequest) {
-            return new OAuthBasicAuthenticator(dataStore).authenticate(application, (DefaultBasicOauthAuthenticationRequest) request);
+        if (request instanceof AccessTokenAuthenticationRequest) {
+            return new AccessTokenRequestAuthenticator(dataStore).authenticate(application, (AccessTokenAuthenticationRequest) request);
         }
 
-        if (request instanceof DefaultBearerOauthAuthenticationRequest) {
-            return new OAuthBearerAuthenticator(dataStore).authenticate(application, (DefaultBearerOauthAuthenticationRequest) request);
+        if (request instanceof ResourceAuthenticationRequest) {
+            return new ResourceRequestAuthenticator(dataStore).authenticate(application, (ResourceAuthenticationRequest) request);
         }
 
         if (request instanceof DefaultBasicApiAuthenticationRequest) {

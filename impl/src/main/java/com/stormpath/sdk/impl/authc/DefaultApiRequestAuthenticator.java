@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.api.ApiAuthenticationResult;
+import com.stormpath.sdk.api.ApiRequestAuthenticator;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.ApiAuthenticationResult;
-import com.stormpath.sdk.authc.ApiRequestAuthenticator;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;

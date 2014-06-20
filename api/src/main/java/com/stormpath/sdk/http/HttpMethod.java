@@ -16,7 +16,7 @@
 package com.stormpath.sdk.http;
 
 /**
- * HttpMethod is a subset of the methods defined as part of the
+ * An enum representing the HTTP methods defined in the
  * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Hypertext Transfer Protocol -- HTTP/1.1</a>
  * specification.
  *
@@ -24,14 +24,15 @@ package com.stormpath.sdk.http;
  */
 public enum HttpMethod {
 
-    GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
+    GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE, CONNECT;
 
     /**
-     * Retrieves the {@link HttpMethod} instance associated to the name.
+     * Returns the {@code HttpMethod} instance associated with the specified String name.
      *
-     * @param name - The name of the {@code Method} instance to retrieve.
-     * @return - Method mapped to {@code name} argument.
-     * @throws IllegalArgumentException - If name is null or if cannot be mapped to an actual method.
+     * @param name The name of the {@code HttpMethod} instance to retrieve.
+     * @return the {@code HttpMethod} instance associated with the specified String name.
+     * @throws IllegalArgumentException if {@code name} is null or does not match (case insensitive) an HttpMethod
+     *                                  value.
      */
     public static HttpMethod fromName(String name) {
         for (HttpMethod method : values()) {

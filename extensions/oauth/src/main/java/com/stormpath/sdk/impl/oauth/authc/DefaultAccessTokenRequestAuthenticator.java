@@ -21,9 +21,9 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.AccessTokenRequestAuthenticator;
-import com.stormpath.sdk.oauth.authc.AccessTokenResult;
-import com.stormpath.sdk.oauth.authz.ScopeFactory;
+import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +38,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
 
     private ScopeFactory scopeFactory;
 
-    private long ttl = DefaultBasicOauthAuthenticationRequest.DEFAULT_TTL;
+    private long ttl = AccessTokenAuthenticationRequest.DEFAULT_TTL;
 
     DefaultAccessTokenRequestAuthenticator(Application application, HttpServletRequest httpServletRequest,
                                            ScopeFactory scopeFactory) {
@@ -66,9 +66,10 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
 
         AuthenticationRequest request;
         try {
-            request = new DefaultBasicOauthAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
+            request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

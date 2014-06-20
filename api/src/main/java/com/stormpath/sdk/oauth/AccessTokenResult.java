@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
-
-import com.stormpath.sdk.oauth.authz.TokenResponse;
+package com.stormpath.sdk.oauth;
 
 /**
  * An {@code AuthenticationResult} that indicates a client authenticated with your server-side API specifically
@@ -37,11 +35,11 @@ import com.stormpath.sdk.oauth.authz.TokenResponse;
 public interface AccessTokenResult extends OauthAuthenticationResult {
 
     /**
-     * The {@link com.stormpath.sdk.oauth.authz.TokenResponse} obtained as a result of a successful authentication
+     * The {@link TokenResponse} obtained as a result of a successful authentication
      * request execution.  See the the class {@link AccessTokenResult JavaDoc} and the
      * {@link TokenResponse} JavaDoc for an example of how the response might be returned to an API client.
      *
-     * @return the {@link com.stormpath.sdk.oauth.authz.TokenResponse} obtained as a result of a successful
+     * @return the {@link TokenResponse} obtained as a result of a successful
      *         authentication request execution, and which should be returned to the API client.
      */
     TokenResponse getTokenResponse();

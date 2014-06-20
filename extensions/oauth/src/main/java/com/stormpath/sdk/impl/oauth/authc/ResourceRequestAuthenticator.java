@@ -29,7 +29,7 @@ import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
 import java.util.Collections;
@@ -41,10 +41,8 @@ import java.util.StringTokenizer;
 import static com.stormpath.sdk.error.authc.AccessTokenOauthException.*;
 import static org.apache.oltu.oauth2.common.OAuth.*;
 
-/**
- * @since 1.0.RC
- */
-public class OAuthBearerAuthenticator {
+/** @since 1.0.RC */
+public class ResourceRequestAuthenticator {
 
     public final static String SCOPE_SEPARATOR_CHAR = " ";
 
@@ -52,13 +50,13 @@ public class OAuthBearerAuthenticator {
 
     private final JwtSignatureValidator jwtSignatureValidator;
 
-    public OAuthBearerAuthenticator(InternalDataStore dataStore) {
+    public ResourceRequestAuthenticator(InternalDataStore dataStore) {
         Assert.notNull(dataStore, "datastore cannot be null or empty.");
         this.dataStore = dataStore;
         this.jwtSignatureValidator = new JwtSignatureValidator(dataStore.getApiKey());
     }
 
-    public OauthAuthenticationResult authenticate(Application application, DefaultBearerOauthAuthenticationRequest request) {
+    public OauthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
 
         JwtWrapper jwtWrapper;
 
@@ -66,20 +64,23 @@ public class OAuthBearerAuthenticator {
             jwtWrapper = new JwtWrapper(request.getAccessToken());
             jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         } catch (InvalidJwtException e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         }
 
         Map jsonMap = jwtWrapper.getJsonPayloadAsMap();
 
-        Number createdTimestamp = getRequiredValue(jsonMap, OAuthBasicAuthenticator.TIMESTAMP_PARAM_NAME);
+        //Number createdTimestamp = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_CREATION_TIMESTAMP_FIELD_NAME);
 
-        Number expiresIn = getRequiredValue(jsonMap, OAUTH_EXPIRES_IN);
+        Number expirationTimestamp =
+            getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME);
 
-        validateTokenNotExpired(createdTimestamp.longValue(), expiresIn.longValue());
+        assertTokenNotExpired(/*createdTimestamp.longValue(), */expirationTimestamp.longValue());
 
-        String apiKeyId = getRequiredValue(jsonMap, OAUTH_CLIENT_ID);
+        String apiKeyId = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_SUBJECT_FIELD_NAME);
 
         //Retrieve the ApiKey that owns this
         ApiKey apiKey = getTokenApiKey(application, apiKeyId);
@@ -89,7 +90,8 @@ public class OAuthBearerAuthenticator {
         Set<String> scope;
         if (Strings.hasText(grantedScopes)) {
             scope = new HashSet<String>();
-            for (StringTokenizer scopeTokenizer = new StringTokenizer(grantedScopes, SCOPE_SEPARATOR_CHAR); scopeTokenizer.hasMoreElements(); ) {
+            for (StringTokenizer scopeTokenizer = new StringTokenizer(grantedScopes, SCOPE_SEPARATOR_CHAR);
+                 scopeTokenizer.hasMoreElements(); ) {
                 String scopeValue = scopeTokenizer.nextToken();
                 scope.add(scopeValue);
             }
@@ -100,17 +102,19 @@ public class OAuthBearerAuthenticator {
         return new DefaultOauthAuthenticationResult(dataStore, apiKey, scope);
     }
 
-    private void validateTokenNotExpired(long created, long timeToLive) {
+    private void assertTokenNotExpired(long expirationTimestampAsSecondsSinceEpoch) {
 
-        long now = System.currentTimeMillis();
+        long nowAsSecondsSinceEpoch = System.currentTimeMillis() / 1000;
 
-        if (now > ((created + timeToLive) * 1000)) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
+        if (nowAsSecondsSinceEpoch >= expirationTimestampAsSecondsSinceEpoch) {
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
         }
     }
 
     /**
-     * Retrieves the {@link ApiKey} instance pointed by this {@code apiKeyId} and accessible from the {@code application}
+     * Retrieves the {@link ApiKey} instance pointed by this {@code apiKeyId} and accessible from the {@code
+     * application}
      * <p/>
      * The ApiKey is retrieved from the {@link Application} passed as argument.
      * <p/>

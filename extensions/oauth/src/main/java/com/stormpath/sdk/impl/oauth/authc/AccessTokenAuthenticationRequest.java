@@ -22,7 +22,7 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authz.ScopeFactory;
+import com.stormpath.sdk.oauth.ScopeFactory;
 import org.apache.oltu.oauth2.as.request.OAuthTokenRequest;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.utils.OAuthUtils;
@@ -32,9 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC
  */
-public class DefaultBasicOauthAuthenticationRequest extends OAuthTokenRequest implements AuthenticationRequest<String, String> {
+public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implements AuthenticationRequest<String, String> {
 
-    public static final long DEFAULT_TTL = 3600;
+    public static final long DEFAULT_TTL = 3600; //3600 seconds = 1 hour
 
     private final ScopeFactory scopeFactory;
 
@@ -46,13 +46,12 @@ public class DefaultBasicOauthAuthenticationRequest extends OAuthTokenRequest im
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
-    //This is used via reflection by: com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
-    //Don't delete it.
-    public DefaultBasicOauthAuthenticationRequest(Object httpRequest) throws Exception {
+    @SuppressWarnings("UnusedDeclaration") //used via reflection in com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
+    public AccessTokenAuthenticationRequest(Object httpRequest) throws Exception {
         this(getHttpServletRequest(httpRequest), null, DEFAULT_TTL);
     }
 
-    public DefaultBasicOauthAuthenticationRequest(HttpServletRequest httpServletRequest, ScopeFactory scopeFactory, long ttl) throws Exception {
+    public AccessTokenAuthenticationRequest(HttpServletRequest httpServletRequest, ScopeFactory scopeFactory, long ttl) throws Exception {
         super(httpServletRequest);
         Assert.isTrue(ttl > 0, "ttl cannot be less or equal to 0 (zero).");
 

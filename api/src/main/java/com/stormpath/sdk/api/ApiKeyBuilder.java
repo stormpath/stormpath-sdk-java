@@ -26,26 +26,29 @@ import java.util.Properties;
 /**
  * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> used to
  * construct {@link ApiKey} instances.
- * <p/>
- * The {@code ApiKeyBuilder} is especially useful for constructing Client ApiKey instances with Stormpath API Key
+ *
+ * <p>The {@code ApiKeyBuilder} is especially useful for constructing Client ApiKey instances with Stormpath API Key
  * information loaded from an external {@code .properties} file (or Properties instance) to ensure the API Key secret
- * (password) does not reside in plaintext in code.
- * <p/>
- * Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
- * api key object as follows:
+ * (password) does not reside in plaintext in code.</p>
+ *
+ * <p>Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
+ * api key object as follows:</p>
+ *
  * <pre>
  * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
  *
  * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
  * </pre>
- * Then, you will create your {@link Client} instance as follows:
+ *
+ * <p>Then, you will create your {@link Client} instance as follows:</p>
+ *
  * <pre>
  * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
  * </pre>
- * <p/>
- * You may load files from the filesystem, classpath, or URLs by prefixing the path with
+ *
+ * <p>You may load files from the filesystem, classpath, or URLs by prefixing the path with
  * {@code file:}, {@code classpath:}, or {@code url:} respectively.  See
- * {@link #setFileLocation(String)} for more information.
+ * {@link #setFileLocation(String)} for more information.</p>
  *
  * @see #setFileLocation(String)
  * @see ClientBuilder#setApiKey(com.stormpath.sdk.client.ApiKey)

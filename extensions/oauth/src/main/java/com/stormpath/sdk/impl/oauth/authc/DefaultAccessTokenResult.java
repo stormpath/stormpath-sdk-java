@@ -18,16 +18,16 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.oauth.authc.AccessTokenResult;
-import com.stormpath.sdk.oauth.authz.TokenResponse;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.TokenResponse;
 
 import java.util.Set;
 
 /**
+ *
  * @since 1.0.RC
  */
-public class DefaultAccessTokenResult
-    extends DefaultOauthAuthenticationResult implements AccessTokenResult {
+public class DefaultAccessTokenResult extends DefaultOauthAuthenticationResult implements AccessTokenResult {
 
     private final TokenResponse tokenResponse;
 

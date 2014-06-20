@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.oauth;
 
 /**
  * Authenticates a client request to an API resource (URI) endpoint based on the presence of an OAuth Access Token in
  * the request.  This interface reflects the
  * <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> to allow customization of how
  * the authentication attempt is processed.  For example:
- * <p>
+ *
  * <pre>
  * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * application.authenticateOauthRequest(httpRequest)}
  *   <b>{@link #inLocation(RequestLocation...) .inLocation(RequestLocation.HEADER, RequestLocation.BODY)}
  *   .execute()</b>;
  * </pre>
- * </p>
  *
  * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(httpRequest)
  * @see #execute()

@@ -19,7 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.authc.DefaultApiAuthenticationResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 
 import java.util.Set;
 

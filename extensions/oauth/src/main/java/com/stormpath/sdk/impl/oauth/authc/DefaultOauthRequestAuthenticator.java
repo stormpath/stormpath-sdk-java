@@ -21,18 +21,19 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.authc.AccessTokenRequestAuthenticator;
-import com.stormpath.sdk.oauth.authc.OauthAuthenticationResult;
-import com.stormpath.sdk.oauth.authc.OauthRequestAuthenticator;
-import com.stormpath.sdk.oauth.authc.RequestLocation;
-import com.stormpath.sdk.oauth.authc.ResourceRequestAuthenticator;
-import com.stormpath.sdk.oauth.authz.ScopeFactory;
+import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.RequestLocation;
+import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
+import com.stormpath.sdk.oauth.ScopeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC
  */
+@SuppressWarnings("UnusedDeclaration") //used via reflection from API module
 public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticator {
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";

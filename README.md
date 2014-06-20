@@ -2,7 +2,7 @@
 
 # Stormpath Java SDK #
 
-Copyright &copy; 2013 Stormpath, Inc. and contributors.
+Copyright &copy; 2013-2014 Stormpath, Inc. and contributors.
 
 This project is open-source via the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
@@ -18,10 +18,80 @@ This project requires Maven 3.0.3 to build.  Run the following:
 
 ### 1.0.RC ###
 
-- [Issue 48](https://github.com/stormpath/stormpath-sdk-java/issues/48): OAuth Provider Support
-- [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters.
-- [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call.
-- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources
+Stormpath Java SDK 1.0 Release Candidate
+
+1.0 final will be released after this release.
+
+#### New Features & Enhancements ####
+
+##### Secure your REST API using OAuth 2! #####
+
+The Stormpath Java SDK can now act as an OAuth 2 Provider with full API Key management support!
+
+You can now use the Java SDK to create and manage API Keys for your end-users so they can authenticate with your own
+REST API.  You can create, delete, enable/disable as many API Keys as you want for each of your end-user `Account`
+resources.  See the `Account` interface's `createApiKey*` and `getApiKeys*` methods.
+
+Now for the _really_ powerful stuff: the Stormpath Java SDK implements OAuth2 provider functionality. Your end-users can
+use these API Keys to make OAuth 2 requests to your REST API, and the Stormpath Java SDK will authenticate the requests
+via OAuth as you wish.  This includes both OAuth 2 access token requests (e.g. the `/oauth/token` endpoint) as well as
+resource requests (e.g. `/movies/1234`).  **At no point do you ever need to see, touch, or write OAuth code!**
+The Stormpath SDK does it for you.
+
+See the `Application` interface's `authenticateApiRequest` and `authenticateOauthRequest` methods for lots of detailed
+information.
+
+##### Resource method chaining #####
+
+All resource mutator methods can now be chained for less verbose object construction.  For example, instead of:
+
+```java
+Account account = client.instantiate(Account.class);
+account.setGivenName("John");
+account.setGivenName("Smith");
+account.setEmail("jsmith@gmail.com");
+account.save();
+```
+one might choose to write instead:
+
+```java
+client.instantiate(Account.class)
+  .setGivenName("John").setSurname("Smith").setEmail("jsmith@gmail.com").save();
+```
+
+##### Client Tenant Actions #####
+
+The `Client` and `Tenant` interfaces now both extend a new `TenantActions` interface that represents common
+tenant behavior.  This allows you to perform this common tenant behavior directly via a `Client` instance without
+having to call the intermediate `client.getCurrentTenant()` method first.
+
+For example, instead of:
+
+```java
+client.getCurrentTenant().createApplication(anApp);
+```
+you may now write:
+
+```java
+client.createApplication(anApp);
+```
+
+which is likely more intuitive.
+
+##### Password Reset Cleanup #####
+
+Resetting an end-user's password via password reset token can now be done in a single method call.  Just provide the
+reset token and the new password, and that's it.
+
+#### Resolved Issues ####
+
+- [Issue 46](https://github.com/stormpath/stormpath-sdk-java/issues/46): Application#setDefault*StoreMapping IT failure
+- [Issue 48](https://github.com/stormpath/stormpath-sdk-java/issues/48): OAuth provider support with API Key management!
+- [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters
+- [Issue 54](https://github.com/stormpath/stormpath-sdk-java/issues/54): AuthenticationResult must not extend Resource
+- [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call
+- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
+- [Issue 58](https://github.com/stormpath/stormpath-sdk-java/issues/58): Allow a `Client` instance to directly perform common `Tenant` actions.
 
 ### 1.0.beta ###
 

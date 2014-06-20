@@ -17,10 +17,10 @@ package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.ApiAuthenticationResult;
 import com.stormpath.sdk.error.authc.DisabledApiKeyException;
 import com.stormpath.sdk.error.authc.IncorrectCredentialsException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;

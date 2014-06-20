@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth.authc;
+package com.stormpath.sdk.oauth;
 
 /**
  * The possible locations in an HTTP request where an OAuth 2 bearer token may be found and used for authenticating
@@ -25,14 +25,15 @@ package com.stormpath.sdk.oauth.authc;
  * <h3>Usage</h3>
  *
  * <p>When you accept a known OAuth HTTP request, you can specify the request locations that will be checked when
- * retrieving the OAuth Access Token used to authenticate the request.  For example:
+ * retrieving the OAuth Access Token used to authenticate the request.  For example:</p>
+ *
  * <pre>
- * import static com.stormpath.sdk.oauth.authc.RequestLocation.*;
+ * import static com.stormpath.sdk.oauth.RequestLocation.*;
  * ...
  *
  * application.authenticateOauth(httpRequest).<b>{@link OauthRequestAuthenticator#inLocation(RequestLocation...) inLocation}</b>(HEADER, BODY, QUERY_PARAM).execute();
  * </pre>
- * </p>
+ *
  * <p>
  * Again, by default, the SDK will automatically inspect the {@link #HEADER} and {@link #BODY}.  You must explicitly
  * add {@link #QUERY_PARAM} if you wish to use query parameters for authentication, as query parameters are generally

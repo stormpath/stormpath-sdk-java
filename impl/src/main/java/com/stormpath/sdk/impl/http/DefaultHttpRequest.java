@@ -39,13 +39,13 @@ public class DefaultHttpRequest implements HttpRequest {
     private Map<String, String[]> parameters;
 
     public DefaultHttpRequest(Map<String, String[]> headers, HttpMethod method, Map<String, String[]> parameters, String queryParameters) {
+        Assert.notNull(method, "method cannot be null.");
+        Assert.notNull(headers, "headers cannot be null.");
+
         this.headers = headers;
         this.method = method;
         this.parameters = parameters;
         this.queryParameters = queryParameters;
-
-        Assert.notNull(headers, "headers cannot be null.");
-        Assert.notNull(method, "method cannot be null.");
     }
 
     @Override

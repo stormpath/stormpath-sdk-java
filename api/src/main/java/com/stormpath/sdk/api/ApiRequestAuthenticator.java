@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.api;
 
 /**
  * Authenticates an API HTTP Request and returns a {@link ApiAuthenticationResult result}.
@@ -27,8 +27,9 @@ public interface ApiRequestAuthenticator {
     /**
      * Returns an {@link ApiAuthenticationResult ApiAuthenticationResult} after a successful authentication to an
      * HTTP API endpoint.
+     *
      * <p>The concrete type of the authentication result will depend on the request type, and can be resolved to the
-     * specific type using a {@link AuthenticationResultVisitor}.
+     * specific type using a {@link com.stormpath.sdk.authc.AuthenticationResultVisitor}.
      *
      * @return ApiAuthenticationResult if the API request was authenticated successfully.
      *
