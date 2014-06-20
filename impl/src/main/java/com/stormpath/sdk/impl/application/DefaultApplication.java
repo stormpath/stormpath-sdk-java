@@ -39,14 +39,14 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.IdSiteReplyHandler;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
 import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.idsite.DefaultIdSiteReplyHandler;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
@@ -534,11 +534,11 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.RC */
     @Override
-    public IdSiteReplyHandler newIdSiteReplyHandler(Object httpRequest) {
+    public IdSiteCallbackHandler newIdSiteReplyHandler(Object httpRequest) {
 
         validateHttpRequest(httpRequest);
 
-        return new DefaultIdSiteReplyHandler(getDataStore(), this, httpRequest);
+        return new DefaultIdSiteCallbackHandler(getDataStore(), this, httpRequest);
     }
 
     @SuppressWarnings("unchecked")

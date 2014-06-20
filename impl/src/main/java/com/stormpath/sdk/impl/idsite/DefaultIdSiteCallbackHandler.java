@@ -21,7 +21,7 @@ import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.AccountResult;
-import com.stormpath.sdk.idsite.IdSiteReplyHandler;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.NonceStore;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
@@ -43,7 +43,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 /**
  * @since 1.0.RC2
  */
-public class DefaultIdSiteReplyHandler implements IdSiteReplyHandler {
+public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
@@ -67,7 +67,7 @@ public class DefaultIdSiteReplyHandler implements IdSiteReplyHandler {
 
     private NonceStore nonceStore;
 
-    public DefaultIdSiteReplyHandler(InternalDataStore dataStore, Application application, Object httpRequest) {
+    public DefaultIdSiteCallbackHandler(InternalDataStore dataStore, Application application, Object httpRequest) {
         Assert.notNull(dataStore, "datastore cannot be null or empty.");
         Assert.notNull(application, "application cannot be null.");
         Assert.notNull(httpRequest, "httpRequest cannot be null.");

@@ -39,7 +39,7 @@ package com.stormpath.sdk.idsite;
  * }
  * </pre>
  *
- * @see IdSiteReplyHandler#setNonceStore(NonceStore)
+ * @see IdSiteCallbackHandler#setNonceStore(NonceStore)
  * @since 1.0.RC2
  */
 public interface NonceStore {

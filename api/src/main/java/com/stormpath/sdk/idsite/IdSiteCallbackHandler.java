@@ -47,7 +47,7 @@ package com.stormpath.sdk.idsite;
  * @see #getAccountResult()
  * @since 1.0.RC2
  */
-public interface IdSiteReplyHandler {
+public interface IdSiteCallbackHandler {
 
     /**
      * Overrides the default implementation of the {@link NonceStore} to be used when resolving the {@code accountResult}
