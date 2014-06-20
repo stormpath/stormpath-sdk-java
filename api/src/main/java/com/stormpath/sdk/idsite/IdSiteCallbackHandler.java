@@ -42,7 +42,7 @@ package com.stormpath.sdk.idsite;
  * }
  * </pre>
  *
- * @see com.stormpath.sdk.application.Application#newIdSiteReplyHandler(Object)
+ * @see com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)
  * @see #setNonceStore(NonceStore)
  * @see #getAccountResult()
  * @since 1.0.RC2

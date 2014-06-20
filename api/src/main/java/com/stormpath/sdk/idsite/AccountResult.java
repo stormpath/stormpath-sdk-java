@@ -5,7 +5,7 @@ import com.stormpath.sdk.account.Account;
 /**
  * Represents the result of the passing an HttpRequest that contains the
  *
- * @see com.stormpath.sdk.application.Application#newIdSiteReplyHandler(Object)
+ * @see com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)
  * @since 1.0.RC2
  */
 public interface AccountResult {

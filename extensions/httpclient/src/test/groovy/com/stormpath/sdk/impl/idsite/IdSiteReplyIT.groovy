@@ -33,7 +33,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * Class IdSiteReplyIT is used for to test {@link Application#newIdSiteReplyHandler(Object)}
+ * Class IdSiteReplyIT is used for to test {@link Application#newIdSiteCallbackHandler(Object)}
  * method.
  *
  * @since 1.0.RC
@@ -152,7 +152,7 @@ class IdSiteReplyIT extends ClientIT {
 
     void assertHandleSsoError(Object httpRequest, Class<? extends Exception> expectedException, String expectedMessage) {
         try {
-            application.newIdSiteReplyHandler(httpRequest).getAccountResult()
+            application.newIdSiteCallbackHandler(httpRequest).getAccountResult()
             fail("Test failed, exception was expected. Exception expected: " + expectedException.getName())
         } catch (Exception ex) {
             assertTrue expectedException.isAssignableFrom(ex.getClass())
@@ -164,7 +164,7 @@ class IdSiteReplyIT extends ClientIT {
 
     void assertAccountResult(Object httpRequest, String expectedState) {
 
-        AccountResult result = application.newIdSiteReplyHandler(httpRequest).getAccountResult()
+        AccountResult result = application.newIdSiteCallbackHandler(httpRequest).getAccountResult()
 
         assertNotNull result
         assertNotNull result.account

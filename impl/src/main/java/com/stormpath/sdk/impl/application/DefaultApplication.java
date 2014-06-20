@@ -534,7 +534,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.RC */
     @Override
-    public IdSiteCallbackHandler newIdSiteReplyHandler(Object httpRequest) {
+    public IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest) {
 
         validateHttpRequest(httpRequest);
 

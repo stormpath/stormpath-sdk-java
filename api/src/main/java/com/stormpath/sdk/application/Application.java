@@ -1139,9 +1139,9 @@ public interface Application extends Resource, Saveable, Deletable {
      * the user is done (logging in, registering, etc), they will be redirected back to a {@code callbackUri} of
      * your choice.
      *
-     * <p>This method is a complement to the {@link #newIdSiteReplyHandler(Object)} method: you use this
+     * <p>This method is a complement to the {@link #newIdSiteCallbackHandler(Object)} method: you use this
      * {@code newIdSiteUrlBuilder} method to send the end-user to your ID Site.  When the end-user is finished on the ID
-     * Site and they are returned to your application, you use the {@link #newIdSiteReplyHandler(Object)} method to
+     * Site and they are returned to your application, you use the {@link #newIdSiteCallbackHandler(Object)} method to
      * process the result.</p>
      *
      * <h5>Example</h5>
@@ -1178,7 +1178,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * <p>When the end-user is done using your ID Site, they will be redirected back to your specified
      * {@code callbackUri}.  <b>Requests submitted to your {@code callbackUri} should be handled via the
-     * {@link #newIdSiteReplyHandler(Object)} method.</b></p>
+     * {@link #newIdSiteCallbackHandler(Object)} method.</b></p>
      *
      *
      *
@@ -1210,5 +1210,5 @@ public interface Application extends Resource, Saveable, Deletable {
      *
      * @since 1.0.RC2
      */
-    IdSiteCallbackHandler newIdSiteReplyHandler(Object httpRequest);
+    IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
 }
