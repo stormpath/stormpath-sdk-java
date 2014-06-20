@@ -25,3 +25,4 @@
  *
  * @since 1.0.RC
  */
+package com.stormpath.sdk.http;
