@@ -39,7 +39,7 @@ package com.stormpath.sdk.idsite;
  * }
  * </pre>
  *
- * @see IdSiteAccountResolver#withNonceStore(NonceStore)
+ * @see IdSiteReplyHandler#setNonceStore(NonceStore)
  * @since 1.0.RC2
  */
 public interface NonceStore {
@@ -57,7 +57,7 @@ public interface NonceStore {
     /**
      * Put the given nonce in the store.
      *
-     * @param nonce - The nonce to put in this {@code nonceStore}.
+     * @param nonce the nonce to put in this {@code nonceStore}.
      * @see #hasNonce(String)
      */
     void putNonce(String nonce);

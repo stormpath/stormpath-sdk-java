@@ -21,7 +21,7 @@ package com.stormpath.sdk.idsite;
  *
  * @since 1.0.RC2
  */
-public interface IdSiteRedirectUrlBuilder {
+public interface IdSiteUrlBuilder {
 
     /**
      * Setter for the final destination where to get the browser redirected.
@@ -31,7 +31,7 @@ public interface IdSiteRedirectUrlBuilder {
      * @param callbackUri the final destination where to get the browser redirected.
      * @return this instance for method chaining.
      */
-    IdSiteRedirectUrlBuilder setCallbackUri(String callbackUri);
+    IdSiteUrlBuilder setCallbackUri(String callbackUri);
 
     /**
      * Setter for the client-specified state.
@@ -39,7 +39,7 @@ public interface IdSiteRedirectUrlBuilder {
      * @param state any client-specified state.
      * @return this instance for method chaining.
      */
-    IdSiteRedirectUrlBuilder setState(String state);
+    IdSiteUrlBuilder setState(String state);
 
     /**
      * The initial user-interface path that should be displayed upon UI launch.
@@ -48,7 +48,7 @@ public interface IdSiteRedirectUrlBuilder {
      * @param path initial user-interface path that should be displayed upon UI launch.
      * @return this instance for method chaining.
      */
-    IdSiteRedirectUrlBuilder setPath(String path);
+    IdSiteUrlBuilder setPath(String path);
 
     /**
      * Constructs the JWT-encoded SSO URL based on the current builder state.

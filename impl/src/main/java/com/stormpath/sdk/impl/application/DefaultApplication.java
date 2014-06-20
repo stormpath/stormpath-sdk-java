@@ -39,15 +39,15 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.IdSiteAccountResolver;
-import com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder;
+import com.stormpath.sdk.idsite.IdSiteReplyHandler;
+import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
 import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.idsite.DefaultIdSiteAccountResolver;
-import com.stormpath.sdk.impl.idsite.DefaultIdSiteRedirectUrlBuilder;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteReplyHandler;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
@@ -528,17 +528,17 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.RC */
     @Override
-    public IdSiteRedirectUrlBuilder createIdSiteUrl() {
-        return new DefaultIdSiteRedirectUrlBuilder(getDataStore(), getHref());
+    public IdSiteUrlBuilder newIdSiteUrlBuilder() {
+        return new DefaultIdSiteUrlBuilder(getDataStore(), getHref());
     }
 
     /** @since 1.0.RC */
     @Override
-    public IdSiteAccountResolver handleIdSiteReply(Object httpRequest) {
+    public IdSiteReplyHandler newIdSiteReplyHandler(Object httpRequest) {
 
         validateHttpRequest(httpRequest);
 
-        return new DefaultIdSiteAccountResolver(getDataStore(), this, httpRequest);
+        return new DefaultIdSiteReplyHandler(getDataStore(), this, httpRequest);
     }
 
     @SuppressWarnings("unchecked")

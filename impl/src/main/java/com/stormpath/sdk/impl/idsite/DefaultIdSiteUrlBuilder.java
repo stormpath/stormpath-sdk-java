@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.idsite;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.idsite.IdSiteRedirectUrlBuilder;
+import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
@@ -35,7 +35,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 /**
  * @since 1.0.RC
  */
-public class DefaultIdSiteRedirectUrlBuilder implements IdSiteRedirectUrlBuilder {
+public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
     public static final String SSO_ENDPOINT = "http://api.stormpath.com/sso";
 
@@ -49,7 +49,7 @@ public class DefaultIdSiteRedirectUrlBuilder implements IdSiteRedirectUrlBuilder
 
     private String path;
 
-    public DefaultIdSiteRedirectUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
+    public DefaultIdSiteUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
         Assert.hasText(applicationHref, "applicationHref cannot be null or empty");
 
@@ -58,19 +58,19 @@ public class DefaultIdSiteRedirectUrlBuilder implements IdSiteRedirectUrlBuilder
     }
 
     @Override
-    public IdSiteRedirectUrlBuilder setCallbackUri(String callbackUri) {
+    public IdSiteUrlBuilder setCallbackUri(String callbackUri) {
         this.callbackUri = callbackUri;
         return this;
     }
 
     @Override
-    public IdSiteRedirectUrlBuilder setState(String state) {
+    public IdSiteUrlBuilder setState(String state) {
         this.state = state;
         return this;
     }
 
     @Override
-    public IdSiteRedirectUrlBuilder setPath(String path) {
+    public IdSiteUrlBuilder setPath(String path) {
         this.path = path;
         return this;
     }

@@ -16,13 +16,13 @@
 package com.stormpath.sdk.impl.idsite
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.idsite.AccountResult
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.error.jwt.InvalidJwtException
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
 import com.stormpath.sdk.http.HttpRequests
+import com.stormpath.sdk.idsite.AccountResult
 import com.stormpath.sdk.impl.http.QueryString
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner
 import com.stormpath.sdk.lang.Strings
@@ -33,7 +33,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * Class IdSiteReplyIT is used for to test {@link Application#handleIdSiteReply(Object)}
+ * Class IdSiteReplyIT is used for to test {@link Application#newIdSiteReplyHandler(Object)}
  * method.
  *
  * @since 1.0.RC
@@ -152,7 +152,7 @@ class IdSiteReplyIT extends ClientIT {
 
     void assertHandleSsoError(Object httpRequest, Class<? extends Exception> expectedException, String expectedMessage) {
         try {
-            application.handleIdSiteReply(httpRequest).execute()
+            application.newIdSiteReplyHandler(httpRequest).getAccountResult()
             fail("Test failed, exception was expected. Exception expected: " + expectedException.getName())
         } catch (Exception ex) {
             assertTrue expectedException.isAssignableFrom(ex.getClass())
@@ -164,7 +164,7 @@ class IdSiteReplyIT extends ClientIT {
 
     void assertAccountResult(Object httpRequest, String expectedState) {
 
-        AccountResult result = application.handleIdSiteReply(httpRequest).execute()
+        AccountResult result = application.newIdSiteReplyHandler(httpRequest).getAccountResult()
 
         assertNotNull result
         assertNotNull result.account

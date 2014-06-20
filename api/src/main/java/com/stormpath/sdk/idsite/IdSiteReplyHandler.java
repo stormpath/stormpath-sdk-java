@@ -35,33 +35,33 @@ package com.stormpath.sdk.idsite;
  *    <b>NonceStore nonceStore = new MyNonceStore();</b> //create the 'MyNonceStore' class yourself
  *
  *     AccountResult result = application.handleIdSiteReply(request)
- *        <b>{@link #withNonceStore(NonceStore) .withNonceStore(nonceStore)}
+ *        <b>{@link #setNonceStore(NonceStore) .withNonceStore(nonceStore)}
  *        .execute()</b>;
  *
  *    //Put the account in the session.
  * }
  * </pre>
  *
- * @see com.stormpath.sdk.application.Application#handleIdSiteReply(Object)
- * @see #withNonceStore(NonceStore)
- * @see #execute()
+ * @see com.stormpath.sdk.application.Application#newIdSiteReplyHandler(Object)
+ * @see #setNonceStore(NonceStore)
+ * @see #getAccountResult()
  * @since 1.0.RC2
  */
-public interface IdSiteAccountResolver {
+public interface IdSiteReplyHandler {
 
     /**
      * Overrides the default implementation of the {@link NonceStore} to be used when resolving the {@code accountResult}
      * from this request.
      *
-     * @param nonceStore - The {@link NonceStore} implementation to use during the process to execute this request.
+     * @param nonceStore the {@link NonceStore} implementation to use during the process to execute this request.
      * @throws IllegalArgumentException when the {@code nonceStore} argument is {@code null}.
      */
-    void withNonceStore(NonceStore nonceStore);
+    void setNonceStore(NonceStore nonceStore);
 
     /**
      * Executes this resolve identity request.
      *
-     * @return - the resolved identity in the form of an {@link AccountResult}
+     * @return the resolved identity in the form of an {@link AccountResult}
      */
-    AccountResult execute();
+    AccountResult getAccountResult();
 }

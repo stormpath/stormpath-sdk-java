@@ -15,13 +15,14 @@
  */
 package com.stormpath.sdk.impl.idsite;
 
-import com.stormpath.sdk.idsite.AccountResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.IdSiteAccountResolver;
+import com.stormpath.sdk.idsite.AccountResult;
+import com.stormpath.sdk.idsite.IdSiteReplyHandler;
+import com.stormpath.sdk.idsite.NonceStore;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
@@ -31,7 +32,6 @@ import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.idsite.NonceStore;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 /**
  * @since 1.0.RC2
  */
-public class DefaultIdSiteAccountResolver implements IdSiteAccountResolver {
+public class DefaultIdSiteReplyHandler implements IdSiteReplyHandler {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
@@ -67,7 +67,7 @@ public class DefaultIdSiteAccountResolver implements IdSiteAccountResolver {
 
     private NonceStore nonceStore;
 
-    public DefaultIdSiteAccountResolver(InternalDataStore dataStore, Application application, Object httpRequest) {
+    public DefaultIdSiteReplyHandler(InternalDataStore dataStore, Application application, Object httpRequest) {
         Assert.notNull(dataStore, "datastore cannot be null or empty.");
         Assert.notNull(application, "application cannot be null.");
         Assert.notNull(httpRequest, "httpRequest cannot be null.");
@@ -79,13 +79,13 @@ public class DefaultIdSiteAccountResolver implements IdSiteAccountResolver {
     }
 
     @Override
-    public void withNonceStore(NonceStore nonceStore) {
+    public void setNonceStore(NonceStore nonceStore) {
         Assert.notNull(nonceStore);
         this.nonceStore = nonceStore;
     }
 
     @Override
-    public AccountResult execute() {
+    public AccountResult getAccountResult() {
 
         JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
 
