@@ -16,34 +16,12 @@
 package com.stormpath.sdk.idsite;
 
 /**
- * Handles HTTP replies from your ID Site to your application's {@code callbackUri}.
+ * Handles HTTP replies sent from your ID Site to your application's {@code callbackUri}, for example,
+ * {@code https://awesomeapp.com/id}, and returns an {@link AccountResult}.
  *
- *
- * Resolves an {@code ssoRequest} to obtain the {@link AccountResult}. This request is usually submitted
- * to the application's SSO response endpoint (e.g. {@code /sso/response}).
- * <p>
- * This interface reflects the <a href="http://en.wikipedia.org/wiki/Builder_pattern">Builder design pattern</a> so
- * that the request to execute the {@code accountResult} process may be customized.
+ * <p>Usage example is documented in
+ * {@code application.}{@link com.stormpath.sdk.application.Application#newIdSiteUrlBuilder() newIdSiteUrlBuilder()}.
  * </p>
- * <p/>
- * <h3>Usage Example</h3>
- * <pre>
- * //assume a GET request to, say, https://mycompany.com/sso/response?jwtResponse=...;
- *
- * public void resolveAccountIdentity(HttpServletRequest request, HttpServletResponse response) {
- *
- *     Application application = client.getResource(myApplicationRestUrl, Application.class);
- *
- *    //if you want to control how the nonce are stored in your application.
- *    <b>NonceStore nonceStore = new MyNonceStore();</b> //create the 'MyNonceStore' class yourself
- *
- *     AccountResult result = application.handleIdSiteReply(request)
- *        <b>{@link #setNonceStore(NonceStore) .withNonceStore(nonceStore)}
- *        .execute()</b>;
- *
- *    //Put the account in the session.
- * }
- * </pre>
  *
  * @see com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)
  * @see #setNonceStore(NonceStore)
