@@ -63,6 +63,17 @@ public interface HttpRequest {
     public Map<String, String[]> getParameters();
 
     /**
+     * Returns the first available value of the request parameter with the specified name or {@code null} if the
+     * parameter does not exist.
+     *
+     * @param parameterName the name of the parameter to look up
+     * @return the first available value of the request parameter with the specified name or {@code null} if the
+     *         parameter does not exist.
+     * @since 1.0.RC2
+     */
+    public String getParameter(String parameterName);
+
+    /**
      * Returns the request query parameter String, or {@code null} if there is no URI query parameter component.
      *
      * @return the request query parameter String, or {@code null} if there is no URI query parameter component.

@@ -53,6 +53,11 @@ public class DefaultHttpServletRequestWrapper implements HttpServletRequestWrapp
     }
 
     @Override
+    public String getParameter(String parameterName) {
+        return httpServletRequest.getParameter(parameterName);
+    }
+
+    @Override
     public Map<String, String[]> getParameterMap() {
         return httpServletRequest.getParameterMap();
     }

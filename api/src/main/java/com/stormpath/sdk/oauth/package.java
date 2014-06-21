@@ -129,3 +129,4 @@
  * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
  * @since 1.0.RC
  */
+package com.stormpath.sdk.oauth;

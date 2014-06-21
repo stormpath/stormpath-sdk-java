@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.idsite;
 
-import java.util.Map;
+import com.stormpath.sdk.resource.Resource;
 
 /**
- * @since 1.0.RC
+ * A <a href="http://en.wikipedia.org/wiki/Cryptographic_nonce">cryptographic nonce</a> representation
+ * for values that cannot be used more than once.
+ *
+ * @since 1.0.RC2
  */
-public interface HttpServletRequestWrapper {
+public interface Nonce extends Resource {
 
-    public Class getHttpServletRequestClass();
-
-    public Object getHttpServletRequest();
-
-    public String getHeader(String headerName);
-
-    public String getMethod();
-
-    public Map<String, String[]> getParameterMap();
-    
-    public String getParameter(String parameterName);
-
+    /**
+     * Returns the {@code value} of this {@link Nonce nonce} instance.
+     *
+     * @return the {@code value} of this {@link Nonce nonce} instance.
+     */
+    String getValue();
 }

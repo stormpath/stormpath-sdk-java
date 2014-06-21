@@ -39,11 +39,15 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
+import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
 import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
@@ -520,6 +524,21 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         Constructor<OauthRequestAuthenticator> ctor =
             Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, Object.class);
         return Classes.instantiate(ctor, this, httpRequest);
+    }
+
+    /** @since 1.0.RC */
+    @Override
+    public IdSiteUrlBuilder newIdSiteUrlBuilder() {
+        return new DefaultIdSiteUrlBuilder(getDataStore(), getHref());
+    }
+
+    /** @since 1.0.RC */
+    @Override
+    public IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest) {
+
+        validateHttpRequest(httpRequest);
+
+        return new DefaultIdSiteCallbackHandler(getDataStore(), this, httpRequest);
     }
 
     @SuppressWarnings("unchecked")

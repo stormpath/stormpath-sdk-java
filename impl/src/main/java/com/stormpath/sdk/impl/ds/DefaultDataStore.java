@@ -577,7 +577,7 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
-    protected boolean isCachingEnabled() {
+    public boolean isCachingEnabled() {
         return this.cacheManager != null && !(this.cacheManager instanceof DisabledCacheManager);
     }
 
@@ -784,7 +784,7 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
-    private <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz) {
+    public <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz) {
         Assert.notNull(clazz, "Class argument cannot be null.");
         String cacheRegionName = this.cacheRegionNameResolver.getCacheRegionName((Class) clazz);
         return this.cacheManager.getCache(cacheRegionName);

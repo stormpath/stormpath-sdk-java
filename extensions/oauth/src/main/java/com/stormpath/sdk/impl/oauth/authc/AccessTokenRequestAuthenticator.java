@@ -26,6 +26,7 @@ import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
@@ -135,13 +136,14 @@ public class AccessTokenRequestAuthenticator {
                 return;
             }
         }
-        throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE);
+        throw ApiAuthenticationExceptionFactory
+            .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE);
     }
 
     /**
      * The result of this method is a that contains the following information.
      * <p/>
-     * base64Header.bese64Payload.base64Signature
+     * base64Header.base64Payload.base64Signature
      */
     private String createAccessToken(Application application, ApiAuthenticationResult result, long ttl, String scope) {
 
@@ -159,7 +161,7 @@ public class AccessTokenRequestAuthenticator {
 
         jsonMap.put(ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME, expirationTimeAsSecondsSinceEpoch);
 
-        if (scope != null && !scope.isEmpty()) {
+        if (Strings.hasText(scope)) {
             jsonMap.put(OAUTH_SCOPE, scope);
         }
 

@@ -30,5 +30,6 @@
  * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
  * @since 1.0.RC
  */
+package com.stormpath.sdk.api;
 
 

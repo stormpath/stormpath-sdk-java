@@ -21,19 +21,17 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.authc.AccessTokenOauthException;
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
-import com.stormpath.sdk.impl.ds.MapMarshaller;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
-import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
+import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
+import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,64 +41,42 @@ import java.util.StringTokenizer;
 import static com.stormpath.sdk.error.authc.AccessTokenOauthException.*;
 import static org.apache.oltu.oauth2.common.OAuth.*;
 
-/**
- * @since 1.0.RC
- */
+/** @since 1.0.RC */
 public class ResourceRequestAuthenticator {
-
-    private final static Charset UTF_8 = Charset.forName("UTF-8");
-
-    public final static String JWT_BEARER_TOKEN_SEPARATOR = ".";
 
     public final static String SCOPE_SEPARATOR_CHAR = " ";
 
     private final InternalDataStore dataStore;
 
-    private final JwtSigner jwtSigner;
-
-    private final MapMarshaller mapMarshaller;
+    private final JwtSignatureValidator jwtSignatureValidator;
 
     public ResourceRequestAuthenticator(InternalDataStore dataStore) {
+        Assert.notNull(dataStore, "datastore cannot be null or empty.");
         this.dataStore = dataStore;
-        this.jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getSecret());
-        this.mapMarshaller = new JacksonMapMarshaller();
+        this.jwtSignatureValidator = new JwtSignatureValidator(dataStore.getApiKey());
     }
 
     public OauthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
 
-        String bearerValue;
+        JwtWrapper jwtWrapper;
 
         try {
-            bearerValue = request.getAccessToken();
+            jwtWrapper = new JwtWrapper(request.getAccessToken());
+            jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+        } catch (InvalidJwtException e) {
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(bearerValue, JWT_BEARER_TOKEN_SEPARATOR);
-
-        if (tokenizer.countTokens() != 3) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
-        }
-
-        String base64JwtHeader = tokenizer.nextToken();
-
-        String base64JsonPayload = tokenizer.nextToken();
-
-        String jwtSignature = tokenizer.nextToken();
-
-        String calculatedSignature = jwtSigner.calculateSignature(base64JwtHeader, base64JsonPayload);
-
-        if (!jwtSignature.equals(calculatedSignature)) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
-        }
-
-        byte[] jsonBytes = Base64.decodeBase64(base64JsonPayload);
-
-        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+        Map jsonMap = jwtWrapper.getJsonPayloadAsMap();
 
         //Number createdTimestamp = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_CREATION_TIMESTAMP_FIELD_NAME);
 
-        Number expirationTimestamp = getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME);
+        Number expirationTimestamp =
+            getRequiredValue(jsonMap, AccessTokenRequestAuthenticator.ACCESS_TOKEN_EXPIRATION_TIMESTAMP_FIELD_NAME);
 
         assertTokenNotExpired(/*createdTimestamp.longValue(), */expirationTimestamp.longValue());
 
@@ -112,9 +88,10 @@ public class ResourceRequestAuthenticator {
         String grantedScopes = getOptionalValue(jsonMap, OAUTH_SCOPE);
 
         Set<String> scope;
-        if (grantedScopes != null && !grantedScopes.isEmpty()) {
+        if (Strings.hasText(grantedScopes)) {
             scope = new HashSet<String>();
-            for (StringTokenizer scopeTokenizer = new StringTokenizer(grantedScopes, SCOPE_SEPARATOR_CHAR); scopeTokenizer.hasMoreElements(); ) {
+            for (StringTokenizer scopeTokenizer = new StringTokenizer(grantedScopes, SCOPE_SEPARATOR_CHAR);
+                 scopeTokenizer.hasMoreElements(); ) {
                 String scopeValue = scopeTokenizer.nextToken();
                 scope.add(scopeValue);
             }
@@ -130,12 +107,14 @@ public class ResourceRequestAuthenticator {
         long nowAsSecondsSinceEpoch = System.currentTimeMillis() / 1000;
 
         if (nowAsSecondsSinceEpoch >= expirationTimestampAsSecondsSinceEpoch) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
+            throw ApiAuthenticationExceptionFactory
+                .newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
         }
     }
 
     /**
-     * Retrieves the {@link ApiKey} instance pointed by this {@code apiKeyId} and accessible from the {@code application}
+     * Retrieves the {@link ApiKey} instance pointed by this {@code apiKeyId} and accessible from the {@code
+     * application}
      * <p/>
      * The ApiKey is retrieved from the {@link Application} passed as argument.
      * <p/>

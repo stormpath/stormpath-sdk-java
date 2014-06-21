@@ -29,6 +29,8 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
+import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -1129,4 +1131,125 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.0.RC
      */
     OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
+
+    /**
+     * Creates a new {@link IdSiteUrlBuilder} that allows you to build a URL you can use to redirect your
+     * application users to a hosted login/registration/forgot-password site - what Stormpath
+     * calls an 'Identity Site' (or 'ID Site' for short) - for performing common user identity functionality.  When
+     * the user is done (logging in, registering, etc), they will be redirected back to a {@code callbackUri} of
+     * your choice.
+     *
+     * <p>This method is a complement to the {@link #newIdSiteCallbackHandler(Object)} method: you use this
+     * {@code newIdSiteUrlBuilder} method to send the end-user to your ID Site.  When the end-user is finished on the ID
+     * Site and they are returned to your application, you use the {@link #newIdSiteCallbackHandler(Object)} method to
+     * process the result.</p>
+     *
+     * <h5>Example</h5>
+     *
+     * <p>Let's assume your application's end-users use a web browser to visit your web application at
+     * {@code https://awesomeapp.com}.  When they login, you want to send them to something like
+     * {@code https://my.awesomeapp.com} or {@code https://id.awesomeapp.com} so you don't have to build all the
+     * login, registration, and forgot password screens from scratch.</p>
+     *
+     * <p>When your end-user clicks a 'login' link, you would redirect them to your ID Site.  That link click request
+     * might be handled as follows:</p>
+     *
+     * <pre>
+     * public void onLoginLinkClick(HttpServletRequest request, HttpServletResponse response) {
+     *
+     *    Application application = client.getResource(myApplicationRestUrl, Application.class);
+     *
+     *    //this is the <b>fully qualified</b> URL that your end-user should return to after they are finished at the
+     *    // ID Site.  It is usually a URL in your web application, for example: https://awesomeapp.com/id
+     *    // For security reasons, <b>the callbackUri must equal a registered URI in the Stormpath Administration console</b>
+     *    String callbackUri = "https://awesomeapp.com/id";
+     *
+     *    String redirectUrl = <b>application.newIdSiteUrlBuilder().{@link IdSiteUrlBuilder#setCallbackUri(String)
+     * setCallbackUri}(callbackUri).build()</b>;
+     *
+     *    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+     *    response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+     *    response.setHeader("Pragma", "no-cache");
+     *
+     *    //send a 302 redirect to your ID Site.  When they're done, they will return to your callbackUri:
+     *    response.sendRedirect(redirectUrl);
+     * }
+     * </pre>
+     *
+     * <p>When the end-user is done using your ID Site, they will be redirected back to your specified
+     * {@code callbackUri}.  <b>Requests submitted to your {@code callbackUri} should be handled via the
+     * {@link #newIdSiteCallbackHandler(Object)} method.</b></p>
+     *
+     *
+     *
+     * @return a new {@link IdSiteUrlBuilder} that allows you to build a URL you can use to redirect your
+     *         application users to a hosted login/registration/forgot-password 'ID Site'.
+     * @see IdSiteUrlBuilder#setCallbackUri(String)
+     * @see IdSiteUrlBuilder#setPath(String)
+     * @see IdSiteUrlBuilder#setState(String)
+     * @since 1.0.RC2
+     */
+    IdSiteUrlBuilder newIdSiteUrlBuilder();
+
+    /**
+     * Creates a new {@link IdSiteCallbackHandler} used to handle HTTP replies from your ID Site to your
+     * application's {@code callbackUri}, as described in the {@link #newIdSiteUrlBuilder()} method.
+     *
+     * <p><b>This method should be called when processing an HTTP request sent by the ID Site to the
+     * {@code callbackUri} specified via the {@link #newIdSiteUrlBuilder()} method.</b></p>
+     *
+     * <h5>Example</h5>
+     *
+     * <p>Assume that you previously {@link #newIdSiteUrlBuilder()}, built the URL, and redirected your end-user to
+     * that URL.  When the end-user is finished interacting with your ID Site, they will be redirected back to the
+     * {@code callbackUri} you specified when constructing the URL.  You would call this method when processing the
+     * request to that {@code callbackUri}.</p>
+     *
+     * <p>For example, assume your callbackUri is {@code https://awesomeapp.com/id} and you process requests to that
+     * URI with a (sample) {@code onIdSiteCallback} method below:</p>
+     *
+     * <pre>
+     * public void onIdSiteCallback(HttpServletRequest request, HttpServletResponse response) {
+     *
+     *    Application application = client.getResource(myApplicationRestUrl, Application.class);
+     *
+     *    <b>AccountResult result = application.newIdSiteCallbackHandler(request).getAccountResult();</b>
+     *
+     *    //get the account that signed-up or logged in successfully:
+     *    Account account = result.getAccount();
+     *
+     *    //do whatever you want with the returned account :)
+     *
+     *    // result.isNewAccount() == true for a newly registered user
+     *    // result.isNewAccount() == false for an existing user that logged in
+     *
+     *    // When you're done, you might want to redirect the end-user to a welcome page or
+     *    // a 'my account' page, for example:
+     *    response.sendRedirect("/myaccount");
+     * }
+     * </pre>
+     *
+     * <h5>Servlet Container or No Servlet Container?</h5>
+     *
+     * <p>This method will accept either a {@code javax.servlet.http.HttpServletRequest} instance if your app is running
+     * in a Servlet container, or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest} instance if it is
+     * not.  See the {@link com.stormpath.sdk.http.HttpRequests} helper class to help build the request object if you
+     * are running in a non-servlet environment.</p>
+     *
+     * @param httpRequest either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
+     *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.
+     * @return an {@link IdSiteCallbackHandler} that allows you customize how the {@code httpRequest} will be handled.
+     * @throws IllegalArgumentException if the method argument is null or is not either a either a
+     *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
+     *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
+     * @see #newIdSiteUrlBuilder()
+     * @see com.stormpath.sdk.http.HttpRequests
+     * @see com.stormpath.sdk.idsite.IdSiteCallbackHandler
+     * @see com.stormpath.sdk.idsite.IdSiteCallbackHandler#getAccountResult()
+     *
+     * @since 1.0.RC2
+     */
+    IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
 }
