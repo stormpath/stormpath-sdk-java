@@ -18,26 +18,19 @@ package com.stormpath.sdk.idsite;
 /**
  * Store {@code nonce} values and provides methods to check if a nonce has already been used, and to
  * add it to the {@code nonceStore} to ensure that the same nonce cannot be used again.
- * <p/>
- * <h3>Usage Example</h3>
- * <pre>
- * import java.util.concurrent.ConcurrentMap;
- * import java.util.concurrent.ConcurrentHashMap;
  *
+ * <h5>Implementation Warning</h5>
  *
- * public MyMapNonceStore implements NonceStore {
+ * <p>NonceStore implementations <b>MUST</b> support TTL (Time-to-Live) policies and automatic eviction of entries
+ * that are older than a configured TTL.  If an implementation does not support TTL eviction, the store will fill up
+ * indefinitely over time, likely causing storage errors.</p>
  *
- *     private ConcurrentMap&lt;String, Object&gt; concurrentMap = new ConcurrentHashMap&lt;String, Object&gt;();
+ * <p>Because of the TTL requirement, most NonceStore implementations delegate to a Caching API that supports TTL
+ * eviction.</p>
  *
- *     public boolean hasNonce(String nonce) {
- *         returns concurrentMap.containsKey(nonce);
- *     }
- *
- *     public void putNonce(String nonce) {
- *         concurrentMap.putIfAbsent(nonce, nonce);
- *     }
- * }
- * </pre>
+ * <p><b>NOTE:</b>If you enable caching in the Stormpath SDK, the SDK will automatically enable a default cache-based
+ * NonceStore implementation for you.  Just ensure that your caching configuration uses a default cache TTL slightly
+ * greater than 1 minute (the valid lifespan of a ID Site reply message).</p>
  *
  * @see IdSiteCallbackHandler#setNonceStore(NonceStore)
  * @since 1.0.RC2
@@ -45,17 +38,16 @@ package com.stormpath.sdk.idsite;
 public interface NonceStore {
 
     /**
-     * Checks whether the store contains the provided nonce.
+     * {@code true} if the specified nonce is present in this {@code nonceStore}, {@code false} otherwise.
      *
-     * @param nonce - The nonce to check.
-     * @return - {@code true} if the  provided nonce has been stored in this {@code nonceStore},
-     *         false otherwise.
+     * @param nonce the nonce to check.
+     * @return {@code true} if the specified nonce is present in this {@code nonceStore}, {@code false} otherwise.
      * @see #putNonce(String)
      */
     boolean hasNonce(String nonce);
 
     /**
-     * Put the given nonce in the store.
+     * Adds the specified nonce to the store.
      *
      * @param nonce the nonce to put in this {@code nonceStore}.
      * @see #hasNonce(String)

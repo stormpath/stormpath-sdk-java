@@ -34,11 +34,11 @@ package com.stormpath.sdk.idsite;
  * as a URL query parameter for anyone that can see the URL.  As such, it is recommended that you do not store
  * secure state in this value unless you encrypt it first.</p>
  *
- *
- *
- *
- * Builder for creating <a href="http://openid.net/specs/draft-jones-json-web-token-07.html#anchor3">JSON Web Token</a>
- * encoded SSO URL.
+ * @see #setCallbackUri(String)
+ * @see #setPath(String)
+ * @see #setState(String)
+ * @see com.stormpath.sdk.application.Application#newIdSiteUrlBuilder()
+ * @see com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)
  *
  * @since 1.0.RC2
  */

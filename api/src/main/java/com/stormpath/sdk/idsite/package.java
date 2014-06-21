@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.idsite;
-
-import com.stormpath.sdk.resource.Resource;
-
 /**
- * A <a href="http://en.wikipedia.org/wiki/Cryptographic_nonce">cryptographic nonce</a> representation
- * for values that cannot be used more than once.
+ * Components for supporting hosted Identity Site 'ID Site' workflows - hosted login, registration, forgot password,
+ * etc.
  *
+ * <p>The classes in this package mainly support the {@code Application}
+ * {@link com.stormpath.sdk.application.Application#newIdSiteUrlBuilder() newIdSiteUrlBuilder()} and
+ * {@link com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)} methods.</p>
+ *
+ * @see com.stormpath.sdk.application.Application#newIdSiteUrlBuilder()
+ * @see com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)
  * @since 1.0.RC2
  */
-public interface Nonce extends Resource {
-
-    /**
-     * Returns the {@code value} of this {@link Nonce nonce} instance.
-     *
-     * @return the {@code value} of this {@link Nonce nonce} instance.
-     */
-    String getValue();
-}
+package com.stormpath.sdk.idsite;
