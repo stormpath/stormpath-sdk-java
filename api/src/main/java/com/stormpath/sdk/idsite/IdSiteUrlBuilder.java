@@ -16,6 +16,27 @@
 package com.stormpath.sdk.idsite;
 
 /**
+ * Helps build a URL you can use to redirect your application users to a hosted login/registration/forgot-password site
+ * - what Stormpath calls an 'Identity Site' (or 'ID Site' for short) - for performing common user identity
+ * functionality.  When the user is done (logging in, registering, etc), they will be redirected back to a
+ * {@link #setCallbackUri(String) callbackUri} of your choice.
+ *
+ * <h5>Retaining Application State</h5>
+ *
+ * <p>If you need to retain application state, such as the location in your UI the user is attempting to visit, and you
+ * want that state presented back to you when the user returns from the ID Site, you can use the {@link
+ * #setState(String) setState(aString)} method.  This state will be retained while the user is on the ID Site, and
+ * the exact same state will be available when the user returns to your application's {@code callbackUri}.</p>
+ *
+ * <p>The {@code state} property, while sent over TLS/SSL and cryptographically signed, is guaranteed that it will not
+ * be tampered with or manipulated in any way.  However, it itself is not additionally encrypted and might be
+ * accessible
+ * as a URL query parameter for anyone that can see the URL.  As such, it is recommended that you do not store
+ * secure state in this value unless you encrypt it first.</p>
+ *
+ *
+ *
+ *
  * Builder for creating <a href="http://openid.net/specs/draft-jones-json-web-token-07.html#anchor3">JSON Web Token</a>
  * encoded SSO URL.
  *
@@ -24,9 +45,13 @@ package com.stormpath.sdk.idsite;
 public interface IdSiteUrlBuilder {
 
     /**
-     * Setter for the final destination where to get the browser redirected.
-     * <p/>
-     * This is a mandatory value.
+     * Sets the location where the user will be sent when returning from the ID Site.  This property is mandatory and
+     * must be set.  See the {@link com.stormpath.sdk.application.Application#newIdSiteCallbackHandler(Object)
+     * application.newIdSiteCallbackHandler} documentation for information on how to process requests to your
+     * {@code callbackUri}.
+     *
+     * <p>For security reasons, <b>this location must be registered in your ID Site configuration in the Stormpath
+     * Admin Console</b>.</p>
      *
      * @param callbackUri the final destination where to get the browser redirected.
      * @return this instance for method chaining.
@@ -34,26 +59,37 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setCallbackUri(String callbackUri);
 
     /**
-     * Setter for the client-specified state.
+     * Sets application-specific state that should be retained and made available to your
+     * {@link #setCallbackUri(String) callbackUri} when the user returns from the ID Site.
      *
-     * @param state any client-specified state.
+     * @param state application-specific state that should be retained and made available to your
+     *              {@link #setCallbackUri(String) callbackUri} when the user returns from the ID Site.
      * @return this instance for method chaining.
      */
     IdSiteUrlBuilder setState(String state);
 
     /**
-     * The initial user-interface path that should be displayed upon UI launch.
-     * If unspecified, this defaults to <code>/</code>
+     * Sets the initial path in the ID Site where the user should be sent. If unspecified, this defaults to
+     * {@code /}, implying that the ID Site's landing/home page is the desired location.
      *
-     * @param path initial user-interface path that should be displayed upon UI launch.
+     * <h5>Example</h5>
+     *
+     * <p>Most Stormpath customers allow their ID Site's default landing page {@code /} to reflect a traditional
+     * 'Login or Signup' page for convenience.  However, if you know that an end-user is attempting to register, and
+     * your ID Site's user registration form is located at {@code /register}, you might want to call
+     * {@code setPath(&quot;/&quot;)} to send the user directly to that view instead.</p>
+     *
+     * @param path the initial path in the ID Site where the user should be sent.
      * @return this instance for method chaining.
      */
     IdSiteUrlBuilder setPath(String path);
 
     /**
-     * Constructs the JWT-encoded SSO URL based on the current builder state.
+     * Builds and returns the the fully qualified URL representing the initial location in the ID Site where the
+     * end-user should be redirected.
      *
-     * @return the JWT-encoded SSO URL based on the current builder state.
+     * @return the the fully qualified URL representing the initial location in the ID Site where the
+     *         end-user should be redirected.
      */
     String build();
 }
