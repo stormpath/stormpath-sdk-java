@@ -10,11 +10,39 @@ For all additional information, please see the full [Project Documentation](http
 
 ### Build Instructions ###
 
-This project requires Maven 3.0.3 to build.  Run the following:
+This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 `> mvn install`
 
 ## Change Log ##
+
+### 1.0.RC2 ###
+
+Stormpath Java SDK 1.0 Release Candidate 2
+
+#### ID Site Functionality! ####
+
+This is one of the big features that we wanted to ensure was supported in the SDK before 1.0 final: your own hosted
+white-labeled Identity Site, what we call an 'ID Site'!
+
+You can have a 100% customizable white-labeled site, for example, `https://id.awesomeapp.com` or
+`https://my.awesomeapp.com`, hosted and served securely by Stormpath.  Your ID Site provides your end-users with a
+hosted and secure registration, login, and password reset functionality, and **completely hands-off integration with
+Google and Facebook!**.
+
+Your white-labeled ID Site is beautiful and 'just works' out-of-the box and requires no development effort, but if you
+want to customize it in any way, you can easily fork our default GitHub repo and customize it as you desire, and we'll
+serve your fork securely just the same.
+
+All that is required for this to work is that your application redirects your end-user to your secure ID Site URL and,
+when the user is done, can receive a redirect back to your application.  This 1.0.RC2 release includes these two
+additional functions so you don't have to code that yourself.
+
+See the [Application}(http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html)
+interface's **[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteUrlBuilder())**
+method (for redirecting end-users to your ID Site) and the
+**[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteCallbackHandler(java.lang.Object))**
+method (for hanling the return reply from your ID Site) for code examples!
 
 ### 1.0.RC ###
 
