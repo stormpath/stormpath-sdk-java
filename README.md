@@ -41,7 +41,7 @@ additional functions so you don't have to code that yourself.
 See the [Application}(http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html)
 interface's **[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteUrlBuilder())**
 method (for redirecting end-users to your ID Site) and the
-**[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteCallbackHandler(java.lang.Object))**
+**[newIdSiteCallbackHandler](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteCallbackHandler(java.lang.Object))**
 method (for hanling the return reply from your ID Site) for code examples!
 
 ### 1.0.RC ###
