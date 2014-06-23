@@ -38,7 +38,7 @@ All that is required for this to work is that your application redirects your en
 when the user is done, can receive a redirect back to your application.  This 1.0.RC2 release includes these two
 additional functions so you don't have to code that yourself.
 
-See the [Application}(http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html)
+See the [Application](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html)
 interface's **[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteUrlBuilder())**
 method (for redirecting end-users to your ID Site) and the
 **[newIdSiteCallbackHandler](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteCallbackHandler(java.lang.Object))**
