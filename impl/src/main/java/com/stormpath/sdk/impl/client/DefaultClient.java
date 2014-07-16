@@ -72,9 +72,13 @@ public class DefaultClient implements Client {
      *                             server (can be null)
      */
     public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
+        this(apiKey, baseUrl, proxy, cacheManager, authenticationScheme, "");
+    }
+
+    public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, String userAgent) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
         Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme);
-        DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey);
+        DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey, userAgent);
 
         if (cacheManager != null) {
             // TODO: remove when we have a proper Builder interfaces. See https://github.com/stormpath/stormpath-sdk-java/issues/8
@@ -136,7 +140,7 @@ public class DefaultClient implements Client {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private DataStore createDataStore(Object requestExecutor, Object secondCtorArg, Object apiKey) {
+    private DataStore createDataStore(Object requestExecutor, Object secondCtorArg, Object apiKey, String userAgent) {
 
         String requestExecutorInterfaceClassName = "com.stormpath.sdk.impl.http.RequestExecutor";
         Class requestExecutorInterfaceClass;
@@ -164,10 +168,10 @@ public class DefaultClient implements Client {
             secondCtorArgClass = int.class;
         }
 
-        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass, com.stormpath.sdk.api.ApiKey.class);
+        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass, com.stormpath.sdk.api.ApiKey.class, String.class);
 
         try {
-            return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg, apiKey);
+            return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg, apiKey, userAgent);
         } catch (Throwable t) {
             throw new RuntimeException("Unable to instantiate DataStore implementation: " + className, t);
         }

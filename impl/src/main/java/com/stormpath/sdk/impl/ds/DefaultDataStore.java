@@ -35,6 +35,7 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
+import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
@@ -84,6 +85,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     public static final int DEFAULT_API_VERSION = 1;
 
+    public static final String DEFAULT_USER_AGENT_STRING = UserAgent.getDefaultUserAgentString();
+
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -92,7 +95,8 @@ public class DefaultDataStore implements InternalDataStore {
     private final ApiKey apiKey;
     private final PropertiesFilterProcessor resourceDataFilterProcessor;
     private final PropertiesFilterProcessor queryStringFilterProcessor;
-    
+    private final String userAgent;
+
     /**
      * @since 0.9
      */
@@ -109,13 +113,18 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKey apiKey) {
-        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKey);
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKey, DEFAULT_USER_AGENT_STRING);
     }
 
     public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey) {
+        this(requestExecutor, "https://" + baseUrl + "/v" + DEFAULT_API_VERSION, apiKey, DEFAULT_USER_AGENT_STRING);
+    }
+
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey, String userAgentString) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
         Assert.notNull(apiKey, "ApiKey cannot be null.");
+        Assert.notNull(apiKey, "userAgentString cannot be null.");
         this.baseUrl = baseUrl;
         this.requestExecutor = requestExecutor;
         this.resourceFactory = new DefaultResourceFactory(this);
@@ -126,6 +135,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.referenceFactory = new ReferenceFactory();
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
+        this.userAgent = userAgentString;
         resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor();
         // Adding another processor for query strings because we don't want to mix
         // the processing (filtering) of the query strings with the processing of the resource properties,
@@ -915,7 +925,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+        request.getHeaders().set("User-Agent", this.userAgent);
         if (request.getBody() != null) {
             //this data store currently only deals with JSON messages:
             request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
