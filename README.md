@@ -16,6 +16,12 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 ## Change Log ##
 
+### 1.0.0 ###
+
+#### Resolved Issues ####
+
+- [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
+
 ### 1.0.RC2 ###
 
 Stormpath Java SDK 1.0 Release Candidate 2

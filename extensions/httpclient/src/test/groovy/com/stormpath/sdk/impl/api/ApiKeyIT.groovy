@@ -135,6 +135,80 @@ class ApiKeyIT extends ClientIT {
         assertEquals acct2.getApiKeys().iterator().size(), 1
     }
 
+    /**
+     * Tests the fix of the issue found in above test (https://github.com/stormpath/stormpath-sdk-java/issues/62)
+     * @since 1.0.0
+     */
+    @Test
+    void testListApiKeysWithDeletion_NewCollectionInstance() {
+
+        def application = createTempApp()
+
+        def acct = client.instantiate(Account)
+
+        def password = 'Changeme1!'
+        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        acct.password = password
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        List<ApiKey> apiKeyArray = []
+
+        (1..5).each {
+            apiKeyArray.add(acct.createApiKey())
+        }
+
+        assertEquals acct.getApiKeys().iterator().size(), 5
+
+        //Deleting all but last one.
+        (1..4).each { i ->
+            apiKeyArray[i].delete()
+        }
+
+        assertEquals acct.getApiKeys().iterator().size(), 1
+    }
+
+    /**
+     * Tests the fix of the issue found in above test (https://github.com/stormpath/stormpath-sdk-java/issues/62)
+     * @since 1.0.0
+     */
+    @Test
+    void testListApiKeysWithDeletion_SameCollection_NewIterator() {
+
+        def application = createTempApp()
+
+        def acct = client.instantiate(Account)
+
+        def password = 'Changeme1!'
+        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        acct.password = password
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        List<ApiKey> apiKeyArray = []
+
+        (1..5).each {
+            apiKeyArray.add(acct.createApiKey())
+        }
+
+        def apiKeys = acct.getApiKeys()
+
+        assertEquals apiKeys.iterator().size(), 5
+
+        //Deleting all but last one.
+        (1..4).each { i ->
+            apiKeyArray[i].delete()
+        }
+
+        assertEquals apiKeys.iterator().size(), 1
+    }
+
     @Test
     void testDecryptFromCache() {
 
