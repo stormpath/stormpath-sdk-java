@@ -157,4 +157,116 @@ public class DefaultSsoRedirectUrlBuilderTest {
         verify internalDataStore, apiKey
     }
 
+    // @since 1.0.0
+    @Test
+    void testBuilderWithLogoutTrue() {
+        def UTF_8 = Charset.forName("UTF-8");
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getId()).andReturn("3RLOQCNCD1M3T5MAZDNDHGE5")
+        expect(apiKey.getSecret()).andReturn("g6soSmqihFHnpjKDGBDHKwKR8Q2BwL88gHlZ1t4xJf6")
+
+        replay internalDataStore, apiKey
+
+        def builder = new DefaultIdSiteUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do")
+                .setPath("/sso-site")
+                .setState("someState")
+                .setLogout(true)
+                .build()
+
+        String[] pieces = ssoRedirectUrl.substring(ssoRedirectUrl.indexOf("?jwtRequest=") + 12).split("\\.");
+        if (pieces.length != 3) {
+            fail("Expected JWT to have 3 segments separated by '.', but it has " + pieces.length + " segments");
+        }
+        String jwtHeaderSegment = pieces[0];
+        String jwtPayloadSegment = pieces[1];
+        byte[] signature = Base64.decodeBase64(pieces[2]);
+
+        def mapMarshaller = new JacksonMapMarshaller();
+
+        //Verify Header
+        assertEquals(jwtHeaderSegment, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+
+        byte[] jsonBytes = Base64.decodeBase64(jwtPayloadSegment);
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+
+        //Verify Payload
+        assertEquals(jsonMap.size(), 7)
+        assertTrue(((String)jsonMap.get("iat")).size() > 0)
+        assertTrue(((String)jsonMap.get("jti")).size() > 0)
+        assertEquals((String)jsonMap.get("iss"), "3RLOQCNCD1M3T5MAZDNDHGE5")
+        assertEquals((String)jsonMap.get("sub"), "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        assertEquals((String)jsonMap.get("cb_uri"), "http://fooUrl:8081/index.do")
+        assertEquals((String)jsonMap.get("path"), "/sso-site")
+        assertEquals((String)jsonMap.get("state"), "someState")
+
+        //Verify Signature
+        assertTrue(signature.size() > 0 )
+
+        //Verify URL
+        assertTrue ssoRedirectUrl.startsWith(builder.SSO_ENDPOINT + "/logout?jwtRequest=")
+
+        verify internalDataStore, apiKey
+    }
+
+    // @since 1.0.0
+    @Test
+    void testBuilderWithLogoutFalse() {
+        def UTF_8 = Charset.forName("UTF-8");
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getId()).andReturn("3RLOQCNCD1M3T5MAZDNDHGE5")
+        expect(apiKey.getSecret()).andReturn("g6soSmqihFHnpjKDGBDHKwKR8Q2BwL88gHlZ1t4xJf6")
+
+        replay internalDataStore, apiKey
+
+        def builder = new DefaultIdSiteUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do")
+                .setPath("/sso-site")
+                .setState("someState")
+                .setLogout(false)
+                .build()
+
+        String[] pieces = ssoRedirectUrl.substring(ssoRedirectUrl.indexOf("?jwtRequest=") + 12).split("\\.");
+        if (pieces.length != 3) {
+            fail("Expected JWT to have 3 segments separated by '.', but it has " + pieces.length + " segments");
+        }
+        String jwtHeaderSegment = pieces[0];
+        String jwtPayloadSegment = pieces[1];
+        byte[] signature = Base64.decodeBase64(pieces[2]);
+
+        def mapMarshaller = new JacksonMapMarshaller();
+
+        //Verify Header
+        assertEquals(jwtHeaderSegment, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+
+        byte[] jsonBytes = Base64.decodeBase64(jwtPayloadSegment);
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+
+        //Verify Payload
+        assertEquals(jsonMap.size(), 7)
+        assertTrue(((String)jsonMap.get("iat")).size() > 0)
+        assertTrue(((String)jsonMap.get("jti")).size() > 0)
+        assertEquals((String)jsonMap.get("iss"), "3RLOQCNCD1M3T5MAZDNDHGE5")
+        assertEquals((String)jsonMap.get("sub"), "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        assertEquals((String)jsonMap.get("cb_uri"), "http://fooUrl:8081/index.do")
+        assertEquals((String)jsonMap.get("path"), "/sso-site")
+        assertEquals((String)jsonMap.get("state"), "someState")
+
+        //Verify Signature
+        assertTrue(signature.size() > 0 )
+
+        //Verify URL
+        assertTrue ssoRedirectUrl.startsWith(builder.SSO_ENDPOINT + "?jwtRequest=")
+
+        verify internalDataStore, apiKey
+    }
+
 }
