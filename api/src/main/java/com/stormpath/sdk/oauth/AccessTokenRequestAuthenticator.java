@@ -90,5 +90,5 @@ public interface AccessTokenRequestAuthenticator {
      *
      * @return the result of the authentication request in the form of a {@link AccessTokenResult}.
      */
-    public AccessTokenResult execute() throws Exception;
+    public AccessTokenResult execute();
 }
