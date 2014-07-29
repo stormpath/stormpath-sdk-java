@@ -37,7 +37,7 @@ public class UserAgent {
 
     private static final String USER_AGENT = createUserAgentString();
 
-    public static String getDefaultUserAgentString() {
+    public static String getUserAgentString() {
         return USER_AGENT;
     }
 

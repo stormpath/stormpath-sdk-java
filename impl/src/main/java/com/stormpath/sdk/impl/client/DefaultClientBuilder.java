@@ -21,7 +21,6 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -36,7 +35,6 @@ public class DefaultClientBuilder implements ClientBuilder {
     private Proxy proxy;
     private AuthenticationScheme authenticationScheme;
     private CacheManager cacheManager;
-    private String userAgent;
 
     @Override
     public ClientBuilder setApiKey(ApiKey apiKey) {
@@ -75,7 +73,7 @@ public class DefaultClientBuilder implements ClientBuilder {
     public Client build() {
         Assert.state(this.apiKey != null, "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
 
-        return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme, userAgent);
+        return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme);
     }
 
     //For internal Stormpath needs only and not intended for public consumption
@@ -84,13 +82,6 @@ public class DefaultClientBuilder implements ClientBuilder {
             throw new IllegalArgumentException("baseUrl argument cannot be null.");
         }
         this.baseUrl = baseUrl;
-        return this;
-    }
-
-    //For internal Stormpath needs only and not intended for public consumption
-    public ClientBuilder setUserAgentString(String userAgent) {
-        Assert.notNull(userAgent, "userAgent argument cannot be null.");
-        this.userAgent = baseUrl;
         return this;
     }
 
