@@ -30,7 +30,7 @@ class ClientApiKeyTest {
             new ClientApiKey(null, "secret");
             fail("Should have thrown due to null id.")
         } catch (IllegalArgumentException ex) {
-            assertEquals(ex.getMessage(), "API key id cannot be null.")
+            assertEquals(ex.getMessage(), "API key id cannot be null or empty.")
         }
     }
 
@@ -40,7 +40,7 @@ class ClientApiKeyTest {
             new ClientApiKey("id", null);
             fail("Should have thrown due to null secret.")
         } catch (IllegalArgumentException ex) {
-            assertEquals(ex.getMessage(), "API key secret cannot be null.")
+            assertEquals(ex.getMessage(), "API key secret cannot be null or empty.")
         }
     }
 
