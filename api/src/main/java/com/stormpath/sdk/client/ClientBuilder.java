@@ -148,10 +148,16 @@ import com.stormpath.sdk.cache.CacheManager;
  * scale and/or high availability), you will likely need to specify a custom
  * {@code CacheManager} implementation that is based on network distributed/coherent memory.  For example, an
  * implementation might delegate to a <a href="http://hazelcast.org/">Hazelcast</a> or
- * <a href="http://redis.io/">Redis</a> cluster. For example:</p>
+ * <a href="http://redis.io/">Redis</a> cluster. For example, if using the out-of-the-box Hazelcast plugin:</p>
  *
  * <pre>
- * CacheManager cacheManager = new MyDistributedMemoryCacheManagerImplementation();
+ * import com.stormpath.sdk.hazelcast.HazelcastCacheManager;
+ * // ... etc ...
+ *
+ * //Get a HazelcastInstance from your app/config.  This can be a HazelcastClient instance too:
+ * HazelcastInstance hazelcastInstance = getHazelcastInstanceOrHazelcastClient();
+ *
+ * CacheManager cacheManager = new HazelcastCacheManager(hazelcastInstance);
  * Client client = {@link com.stormpath.sdk.client.Clients Clients}.builder().setCacheManager(cacheManager).build();
  * </pre>
  *
