@@ -32,6 +32,7 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.oauth.*
+import org.codehaus.jackson.map.ObjectMapper
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -48,10 +49,13 @@ class ApiAuthenticationIT extends ClientIT {
 
     Account account
 
+    ObjectMapper mapper
+
     @BeforeMethod
     void initiateTest() {
         application = createTempApp()
         account = createTestAccount(application)
+        mapper = new ObjectMapper()
     }
 
     @Test
@@ -141,9 +145,14 @@ class ApiAuthenticationIT extends ClientIT {
 
         assertNotNull authResult.scope
 
+        Map mapTokenResponse = mapper.readValue(authResult.tokenResponse.toJson(), Map)
+
+        String[] scopes = mapTokenResponse.scope.split(" ")
+
         assertEquals authResult.scope.size(), 2
-        assertTrue authResult.scope.contains("readResource")
-        assertTrue authResult.scope.contains("createResource")
+        assertEquals scopes.size(), 2
+        assertTrue authResult.scope.contains(scopes[0])
+        assertTrue authResult.scope.contains(scopes[1])
 
         String accessToken = authResult.tokenResponse.accessToken
 
@@ -384,7 +393,8 @@ class ApiAuthenticationIT extends ClientIT {
                 assertNotNull tokenResponse.accessToken
                 assertEquals 3, new StringTokenizer(tokenResponse.accessToken, ".").countTokens()
                 assertEquals tokenResponse.tokenType, "Bearer"
-                assertEquals tokenResponse.refreshToken, null
+                assertNotNull tokenResponse.expiresIn
+                assertNull tokenResponse.refreshToken
             }
         })
     }
