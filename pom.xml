@@ -393,6 +393,11 @@
 <!-- Optimizely -->
 <script src="//cdn.optimizely.com/js/225847041.js"></script>
                                 ]]></top>
+
+                            <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
+                                 clean up the HTML source in JavaDoc comments: -->
+                            <additionalparam>-Xdoclint:none</additionalparam>
+
                         </configuration>
                     </plugin>
                     <plugin>
