@@ -21,11 +21,14 @@ import com.stormpath.sdk.lang.Classes;
  * Static utility/helper class for working with {@link Client} resources. For example:
  * <pre>
  * <b>Clients.builder()</b>
- *     .setFileLocation(path)
+ *     // ... etc ...
  *     .setProxy(new Proxy("192.168.2.120", 9001))
  *     .build();
  * </pre>
  *
+ * <p>See the {@link ClientBuilder ClientBuilder} JavaDoc for extensive documentation on client configuration.</p>
+ *
+ * @see ClientBuilder
  * @since 1.0.alpha
  */
 public final class Clients {
