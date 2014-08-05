@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.api.ApiKeyStatus;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
@@ -34,11 +35,11 @@ public class ClientApiKey implements ApiKey {
     private static final String METHOD_ERROR_MESSAGE = "This method is not accessible from a client api key. Only getId() and getSecret() are available from this instance.";
 
     public ClientApiKey(String id, String secret) {
-        if (id == null) {
-            throw new IllegalArgumentException("API key id cannot be null.");
+        if (!Strings.hasText(id)) {
+            throw new IllegalArgumentException("API key id cannot be null or empty.");
         }
-        if (secret == null) {
-            throw new IllegalArgumentException("API key secret cannot be null.");
+        if (!Strings.hasText(secret)) {
+            throw new IllegalArgumentException("API key secret cannot be null or empty.");
         }
         this.id = id;
         this.secret = secret;

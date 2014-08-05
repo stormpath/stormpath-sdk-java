@@ -18,7 +18,9 @@ package com.stormpath.sdk.provider;
 /**
  * A Builder to construct {@link CreateProviderRequest}s.
  *
- * @see com.stormpath.sdk.directory.CreateDirectoryRequestBuilder#forProvider(CreateProviderRequest)
+ * @see com.stormpath.sdk.provider.ProviderRequestFactory#builder()
+ * @see com.stormpath.sdk.provider.Providers#FACEBOOK
+ * @see com.stormpath.sdk.provider.Providers#GOOGLE
  * @since 1.0.beta
  */
 public interface CreateProviderRequestBuilder<T extends CreateProviderRequestBuilder> {

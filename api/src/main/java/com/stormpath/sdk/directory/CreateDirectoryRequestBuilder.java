@@ -17,6 +17,13 @@ package com.stormpath.sdk.directory;
 
 import com.stormpath.sdk.provider.CreateProviderRequest;
 
+/**
+ *
+ * A Builder to construct {@link CreateDirectoryRequest}s.
+ *
+ * @see com.stormpath.sdk.directory.Directories#newCreateRequestFor(Directory)
+ * @since 1.0.beta
+ */
 public interface CreateDirectoryRequestBuilder {
 
     <T extends CreateProviderRequest> CreateDirectoryRequestBuilder forProvider(T request);
