@@ -21,7 +21,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 #### Resolved Issues ####
 
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
-- [Issue 76](https://github.com/stormpath/stormpath-sdk-java/issues/76): SSO/Logout Support for ID Site.
+- [Issue 76](https://github.com/stormpath/stormpath-sdk-java/issues/76): SSO/Logout Support and Result Listener for ID Site.
 
 ### 1.0.RC2 ###
 
