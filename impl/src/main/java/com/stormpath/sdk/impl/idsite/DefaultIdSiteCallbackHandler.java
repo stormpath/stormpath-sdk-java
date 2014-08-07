@@ -20,7 +20,10 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.*;
+import com.stormpath.sdk.idsite.AccountResult;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
+import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.idsite.NonceStore;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
@@ -113,9 +116,6 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         Boolean isNewAccount = getRequiredValue(jsonPayload, IS_NEW_SUBJECT_PARAM_NAME);
         String state = getOptionalValue(jsonPayload, STATE_PARAM_NAME);
 
-        //@since 1.0.0
-        dispatchResponseStatus();
-
         Map<String, Object> account = new HashMap<String, Object>();
         account.put(DefaultAccountResult.HREF_PROP_NAME, accountHref);
 
@@ -124,7 +124,12 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         properties.put(DefaultAccountResult.NEW_ACCOUNT.getName(), isNewAccount);
         properties.put(DefaultAccountResult.STATE.getName(), state);
 
-        return new DefaultAccountResult(dataStore, properties);
+        AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
+
+        //@since 1.0.0
+        dispatchResponseStatus(accountResult);
+
+        return accountResult;
     }
 
     /**
@@ -212,28 +217,28 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     /**
      * Notifies the {@link com.stormpath.sdk.idsite.IdSiteResultListener} about the actual operation of the Id Site invocation:
      * <ul>
-     *     <li> Registered -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered()} ()}</>
-     *     <li> Authenticated -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated()} </>
-     *     <li> Logout -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onLogout()} </>
+     *     <li> Registered -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(AccountResult)} ()}</>
+     *     <li> Authenticated -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated(AccountResult)} </>
+     *     <li> Logout -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onLogout(AccountResult)} </>
      * </ul>
      *
      * @throws IllegalArgumentException if the result status is unknown.
      * @since 1.0.0
      */
-    private void dispatchResponseStatus() {
+    private void dispatchResponseStatus(AccountResult accountResult) {
         if(this.resultListener != null) {
             JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
             Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
             IdSiteResultStatus status = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
             switch (status) {
                 case REGISTERED:
-                    this.resultListener.onRegistered();
+                    this.resultListener.onRegistered(accountResult);
                     break;
                 case AUTHENTICATED:
-                    this.resultListener.onAuthenticated();
+                    this.resultListener.onAuthenticated(accountResult);
                     break;
                 case LOGOUT:
-                    resultListener.onLogout();
+                    resultListener.onLogout(accountResult);
                     break;
                 default:
                     throw new IllegalArgumentException("Encountered unknown IdSite result status: " + status);

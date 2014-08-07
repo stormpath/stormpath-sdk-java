@@ -19,12 +19,15 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
+import com.stormpath.sdk.idsite.AccountResult
 import com.stormpath.sdk.idsite.IdSiteResultListener
 import com.stormpath.sdk.impl.ds.DefaultDataStore
+import org.easymock.EasyMock
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.jwt.JwtConstants.JWR_RESPONSE_PARAM_NAME
 import static org.easymock.EasyMock.*
+import static org.testng.Assert.assertEquals
 
 /**
  * @since 1.0.0
@@ -70,25 +73,68 @@ class DefaultIdSiteCallbackHandlerTest {
         String apiKeyId = "2EV70AHRTYF0JOA7OEFO3SM29"
         String apiKeySecret = "goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8"
 
+        def accountResultFromListener = null
+
         expect(request.getMethod()).andReturn(HttpMethod.GET)
         expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
         expect(dataStore.getApiKey()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(dataStore.isCachingEnabled()).andReturn(false).times(2)
+
         if (expectedListenerMethod.equals(IdSiteResultStatus.REGISTERED)) {
-            expect(listener.onRegistered())
+            expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
+                @Override
+                public void onRegistered(AccountResult accountResult) {
+                    accountResultFromListener = accountResult
+                }
+                @Override
+                public void onAuthenticated(AccountResult accountResult) {
+                    throw new UnsupportedOperationException("This method should have not been executed")
+                }
+                @Override
+                public void onLogout(AccountResult accountResult) {
+                    throw new UnsupportedOperationException("This method should have not been executed")
+                }
+            })
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.AUTHENTICATED)) {
-            expect(listener.onAuthenticated())
+            expect(listener.onAuthenticated(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
+                @Override
+                public void onRegistered(AccountResult accountResult) {
+                    throw new UnsupportedOperationException("This method should have not been executed")
+                }
+                @Override
+                public void onAuthenticated(AccountResult accountResult) {
+                    accountResultFromListener = accountResult
+                }
+                @Override
+                public void onLogout(AccountResult accountResult) {
+                    throw new UnsupportedOperationException("This method should have not been executed")
+                }
+            })
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.LOGOUT)) {
-            expect(listener.onLogout())
+            expect(listener.onLogout(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
+                @Override
+                public void onRegistered(AccountResult accountResult) {
+                    throw new UnsupportedOperationException("This method should have not been executed")
+                }
+                @Override
+                public void onAuthenticated(AccountResult accountResult) {
+                    throw new UnsupportedOperationException("This method should have not been executed")
+                }
+                @Override
+                public void onLogout(AccountResult accountResult) {
+                    accountResultFromListener = accountResult
+                }
+            })
         }
 
         replay dataStore, application, request, listener, apiKey
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
-        callbackHandler.getAccountResult()
+        AccountResult accountResult = callbackHandler.getAccountResult()
+        assertEquals(accountResult, accountResultFromListener)
 
         verify dataStore, application, request, listener, apiKey
 

@@ -85,15 +85,14 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setPath(String path);
 
     /**
-     * Indicates whether the ID Site should perform a logout of the user executing this request. When a user logs out,
+     * Indicates that the ID Site should perform a logout of the user executing this request. When a user logs out,
      * their session with the ID Site is no longer valid for every application pertaining to this domain and they
      * will be required to log in again.
      *
-     * @param logout true if this request intends to signal a logout; false otherwise.
      * @return this instance for method chaining.
      * @since 1.0.0
      */
-    IdSiteUrlBuilder setLogout(boolean logout);
+    IdSiteUrlBuilder withLogout();
 
     /**
      * Builds and returns the the fully qualified URL representing the initial location in the ID Site where the

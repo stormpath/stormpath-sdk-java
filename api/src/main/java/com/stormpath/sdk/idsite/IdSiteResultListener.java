@@ -27,19 +27,23 @@ public interface IdSiteResultListener {
 
     /**
      * This method will be invoked if a successful registration operation takes place on Id Site.
+     *
+     * @param accountResult the AccountResult this event corresponds to.
      */
-    public void onRegistered();
+    public void onRegistered(AccountResult accountResult);
 
     /**
      * This method will be invoked if a successful authentication operation takes place on Id Site.
+     *
+     * @param accountResult the AccountResult this event corresponds to.
      */
-    public void onAuthenticated();
+    public void onAuthenticated(AccountResult accountResult);
 
     /**
      * This method will be invoked if a successful logout operation takes place on Id Site.
+     *
+     * @param accountResult the AccountResult this event corresponds to.
      */
-    public void onLogout();
-
-
+    public void onLogout(AccountResult accountResult);
 
 }

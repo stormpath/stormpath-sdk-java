@@ -79,8 +79,8 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
     }
 
     @Override
-    public IdSiteUrlBuilder setLogout(boolean logout) {
-        this.logout = logout;
+    public IdSiteUrlBuilder withLogout() {
+        this.logout = true;
         return this;
     }
 
