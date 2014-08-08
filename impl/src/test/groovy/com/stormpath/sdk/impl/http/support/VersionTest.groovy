@@ -25,6 +25,7 @@ class VersionTest {
 
     @Test
     void testGetClientVersion() {
-       Assert.hasText(Version.clientVersion)
+        Assert.hasText(Version.clientVersion)
+        Assert.isTrue(Version.clientVersion.contains("."))
     }
 }

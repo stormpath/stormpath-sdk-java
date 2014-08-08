@@ -16,22 +16,32 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>stormpath-sdk-extensions</artifactId>
-    <name>Stormpath Java SDK :: Extensions</name>
-    <packaging>pom</packaging>
+    <artifactId>stormpath-sdk-hazelcast</artifactId>
+    <name>Stormpath Java SDK :: Extensions :: Hazelcast</name>
+    <description>
+        A plugin for the Stormpath SDK that enables Hazelcast as the cache mechanism for the SDK's caching needs.
+    </description>
+    <packaging>jar</packaging>
 
-    <modules>
-        <module>oauth</module>
-        <module>hazelcast</module>
-        <module>httpclient</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+
+    </dependencies>
 
 </project>
