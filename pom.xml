@@ -86,6 +86,7 @@
         <module>api</module>
         <module>impl</module>
         <module>extensions</module>
+        <module>examples</module>
     </modules>
 
     <properties>
@@ -95,7 +96,7 @@
         <httpClient.version>4.2.2</httpClient.version>
         <jackson.version>1.9.11</jackson.version>
         <oltu.version>1.0.0</oltu.version>
-        <servlet.version>3.0.1</servlet.version>
+        <servlet.version>3.1.0</servlet.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
@@ -158,6 +159,11 @@
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-oauth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-sdk-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
