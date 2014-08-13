@@ -96,7 +96,10 @@
         <httpClient.version>4.2.2</httpClient.version>
         <jackson.version>1.9.11</jackson.version>
         <oltu.version>1.0.0</oltu.version>
-        <servlet.version>3.1.0</servlet.version>
+
+        <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
+             See: http://stackoverflow.com/questions/22314453/unsupported-major-minor-version-51-0-error-when-using-1-6-in-pom-and-openjdk6-fo -->
+        <servlet.version>3.0.1</servlet.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
