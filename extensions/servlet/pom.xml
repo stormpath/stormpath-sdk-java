@@ -38,6 +38,10 @@
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-impl</artifactId>
+        </dependency>
         <!-- Runtime dependency to replace commons-logging needed by HTTPClient: -->
         <dependency>
             <groupId>javax.servlet</groupId>

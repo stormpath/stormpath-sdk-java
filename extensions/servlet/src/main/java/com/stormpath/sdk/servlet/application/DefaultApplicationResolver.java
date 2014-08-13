@@ -10,7 +10,7 @@ import javax.servlet.ServletContext;
 
 public class DefaultApplicationResolver implements ApplicationResolver {
 
-    public static final  String STORMPATH_APPLICATION_HREF_CONTEXT_PARAM_NAME = "stormpathApplicationHref";
+    public static final  String STORMPATH_APPLICATION_HREF_CONTEXT_PARAM_NAME = "stormpath.application.href";
     private static final String APP_HREF_ERROR                                =
         "The web application's web.xml does not have a " + STORMPATH_APPLICATION_HREF_CONTEXT_PARAM_NAME +
         " context-param defined with a param-value of the href of a Stormpath registered " +

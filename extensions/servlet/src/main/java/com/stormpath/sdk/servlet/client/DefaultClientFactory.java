@@ -16,49 +16,108 @@
 package com.stormpath.sdk.servlet.client;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
+import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.lang.DefaultEnvironmentVariableNameFactory;
+import com.stormpath.sdk.impl.lang.EnvironmentVariableNameFactory;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import javax.servlet.ServletContext;
-import java.io.File;
 
-/**
- * Default {@link ClientFactory} implementation that assumes a {@code $HOME/.stormpath/apiKey.properties} file is
- * available.
- */
+/** Default {@link ClientFactory} implementation. */
 public class DefaultClientFactory implements ClientFactory {
 
-    public static final String DEFAULT_API_KEY_FILE_LOCATION =
-        System.getProperty("user.home") + File.separatorChar +
-        ".stormpath" + File.separatorChar +
-        "apiKey.properties";
+    public static final String STORMPATH_API_KEY_FILE          = "stormpath.apiKey.file";
+    public static final String STORMPATH_AUTHENTICATION_SCHEME = "stormpath.authenticationScheme";
 
-    public static final String STORMPATH_API_KEY_FILE_LOCATION_PARAM_NAME = "stormpathApiKeyFileLocation";
-    public static final String STORMPATH_CLIENT_AUTHENTICATION_SCHEME_PARAM_NAME = "stormpathClientAuthenticationScheme";
+    public static final String STORMPATH_PROXY_HOST     = "stormpath.proxy.host";
+    public static final String STORMPATH_PROXY_PORT     = "stormpath.proxy.port";
+    public static final String STORMPATH_PROXY_USERNAME = "stormpath.proxy.username";
+    public static final String STORMAPTH_PROXY_PASSWORD = "stormpath.proxy.password";
+
+    private final EnvironmentVariableNameFactory environmentVariableNameFactory =
+        new DefaultEnvironmentVariableNameFactory();
 
     @Override
+
     public Client createClient(ServletContext servletContext) {
 
-        String location = servletContext.getInitParameter(STORMPATH_API_KEY_FILE_LOCATION_PARAM_NAME);
+        ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
 
-        if (!Strings.hasText(location)) {
-            location = DEFAULT_API_KEY_FILE_LOCATION;
-        }
+        String location = servletContext.getInitParameter(STORMPATH_API_KEY_FILE);
+        if (Strings.hasText(location)) {
+            apiKeyBuilder.setFileLocation(location);
+        } //otherwise default discovery heuristics will be assumed. See ApiKeyBuilder.build() for these heuristics.
 
-        ApiKey apiKey = ApiKeys.builder().setFileLocation(location).build();
+        ApiKey apiKey = apiKeyBuilder.build();
 
         ClientBuilder builder = Clients.builder().setApiKey(apiKey);
 
-        String schemeName = servletContext.getInitParameter(STORMPATH_CLIENT_AUTHENTICATION_SCHEME_PARAM_NAME);
+        applyProxyIfNecessary(builder, servletContext);
+
+        String schemeName = servletContext.getInitParameter(STORMPATH_AUTHENTICATION_SCHEME);
         if (Strings.hasText(schemeName)) {
             AuthenticationScheme scheme = AuthenticationScheme.valueOf(schemeName.toUpperCase());
             builder.setAuthenticationScheme(scheme);
         }
 
         return Clients.builder().setApiKey(apiKey).build();
+    }
+
+    protected void applyProxyIfNecessary(ClientBuilder builder, ServletContext servletContext) {
+        String proxyHost = getValue(STORMPATH_PROXY_HOST, servletContext);
+        if (proxyHost == null) {
+            return;
+        }
+
+        Proxy proxy;
+
+        //proxy is present!
+        int port = 80; //default
+        String portValue = getValue(STORMPATH_PROXY_PORT, servletContext);
+        if (Strings.hasText(portValue)) {
+            port = Integer.parseInt(portValue);
+        }
+
+        String proxyUsername = getValue(STORMPATH_PROXY_USERNAME, servletContext);
+        String proxyPassword = getValue(STORMAPTH_PROXY_PASSWORD, servletContext);
+
+        if (!Strings.hasText(proxyUsername) && !Strings.hasText(proxyPassword)) {
+            proxy = new Proxy(proxyHost, port);
+        } else {
+            proxy = new Proxy(proxyHost, port, proxyUsername, proxyPassword);
+        }
+
+        builder.setProxy(proxy);
+    }
+
+    protected String getValue(final String propName, ServletContext servletContext) {
+        Assert.hasText(propName, "propName argument cannot be null or empty.");
+        Assert.notNull(servletContext, "servletContext cannot be null or empty.");
+
+        final String envVarName = environmentVariableNameFactory.createEnvironmentVariableName(propName);
+
+        String value = servletContext.getInitParameter(propName);
+        if (Strings.hasText(value)) {
+            return value;
+        }
+
+        value = servletContext.getInitParameter(envVarName);
+        if (Strings.hasText(value)) {
+            return value;
+        }
+
+        value = System.getProperty(propName);
+        if (Strings.hasText(value)) {
+            return value;
+        }
+
+        return System.getenv(envVarName);
     }
 }

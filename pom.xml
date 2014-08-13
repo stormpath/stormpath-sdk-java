@@ -104,6 +104,9 @@
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
 
+        <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
+        <jstl.version>1.2</jstl.version>
+
     </properties>
 
     <dependencies>
@@ -166,6 +169,11 @@
                 <artifactId>stormpath-sdk-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-sdk-httpclient</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- 3rd party dependencies: -->
             <dependency>
@@ -206,6 +214,11 @@
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
                 <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>${jstl.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>

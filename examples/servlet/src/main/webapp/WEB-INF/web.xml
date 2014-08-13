@@ -5,12 +5,23 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     
     <context-param>
-        <param-name>stormpathApplicationHref</param-name>
+        <param-name>stormpath.application.href</param-name>
+        <!-- Change this URL to your own application's Stormpath HREF: -->
         <param-value>https://api.stormpath.com/v1/applications/295wLwTPf2T3zOEXosMvHy</param-value>
     </context-param>
-
     <listener>
         <listener-class>com.stormpath.sdk.servlet.client.ClientLoaderListener</listener-class>
     </listener>
+
+
+    <!-- Things below here are relevant for this particular sample app only - do not copy into your own project: -->
+    <servlet>
+        <servlet-name>WelcomeController</servlet-name>
+        <servlet-class>com.stormpath.sdk.examples.servlet.WelcomeController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WelcomeController</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 
 </web-app>

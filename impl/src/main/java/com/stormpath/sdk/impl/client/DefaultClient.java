@@ -126,7 +126,7 @@ public class DefaultClient implements Client {
             //HTTP calls via the HttpClient.  Throw an exception:
 
             String msg = "Unable to find the '" + className + "' implementation on the classpath.  Please ensure you " +
-                    "have added the stormpath-sdk-impl-httpclient .jar file to your runtime classpath.";
+                    "have added the stormpath-sdk-httpclient .jar file to your runtime classpath.";
             throw new RuntimeException(msg);
         }
 
