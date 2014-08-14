@@ -64,7 +64,7 @@ public class UserAgent {
     //Runtime
     private static final String SDK_RUNTIME_STRING = "java";
 
-    ////Additional Information///
+    ////Additional Information////
 
     //Security Frameworks
     private static final String SECURITY_FRAMEWORK_SHIRO_ID = "shiro";
