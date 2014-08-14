@@ -244,8 +244,8 @@ public class UserAgent {
     }
 
     /**
-     * WARNING: This method must never be invoked unless we already know that the class identified by <code>WEB_SERVER_WEBSPHERE_CLASS</code>
-     * really exists in the classpath. For example, we first need to assure that <code>Classes.isAvailable(WEB_SERVER_WEBSPHERE_CLASS))</code>
+     * This method should only be invoked after already knowing that the class identified by <code>WEB_SERVER_WEBSPHERE_CLASS</code>
+     * really exists in the classpath. For example, it can be checked that <code>Classes.isAvailable(WEB_SERVER_WEBSPHERE_CLASS))</code>
      * is <code>TRUE</code>
      */
     private static String getWebSphereVersion() {
@@ -301,8 +301,8 @@ public class UserAgent {
     }
 
     /**
-     * WARNING: This method must never be invoked unless we already know that the class identified by <code>WEB_SERVER_WEBLOGIC_CLASS</code>
-     * really exists in the classpath. For example, we first need to assure that <code>Classes.isAvailable(WEB_SERVER_WEBLOGIC_CLASS))</code>
+     * This method should only be invoked after already knowing that the class identified by <code>WEB_SERVER_WEBLOGIC_CLASS</code>
+     * really exists in the classpath. For example, it can be checked that <code>Classes.isAvailable(WEB_SERVER_WEBLOGIC_CLASS))</code>
      * is <code>TRUE</code>
      */
     private static String getWebLogicVersion() {
