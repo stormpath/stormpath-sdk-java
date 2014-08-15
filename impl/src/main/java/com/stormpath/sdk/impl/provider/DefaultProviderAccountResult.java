@@ -68,4 +68,11 @@ public class DefaultProviderAccountResult extends AbstractResource implements Pr
         return getBoolean(NEW_ACCOUNT);
     }
 
+    //@since 1.0.0
+    @Override
+    public String getHref() {
+        throw new UnsupportedOperationException("Although this class implements the Resource interface, it is technically " +
+                "not a Resource and therefore does not have an href property");
+    }
+
 }
