@@ -165,7 +165,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
 
     // @since 1.0.0
     @Test
-    void testBuilderWithLogout() {
+    void testBuilderForLogout() {
         def UTF_8 = Charset.forName("UTF-8");
 
         def internalDataStore = createStrictMock(InternalDataStore)
@@ -181,7 +181,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
         def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do")
                 .setPath("/sso-site")
                 .setState("someState")
-                .withLogout()
+                .forLogout()
                 .build()
 
         String[] pieces = ssoRedirectUrl.substring(ssoRedirectUrl.indexOf("?jwtRequest=") + 12).split("\\.");

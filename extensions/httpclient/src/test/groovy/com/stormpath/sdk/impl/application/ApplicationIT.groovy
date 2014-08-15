@@ -438,7 +438,7 @@ class ApplicationIT extends ClientIT {
 
         def ssoRedirectUrlBuilder = app.newIdSiteUrlBuilder()
 
-        def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").withLogout().build()
+        def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").forLogout().build()
 
         assertNotNull ssoURL
 
