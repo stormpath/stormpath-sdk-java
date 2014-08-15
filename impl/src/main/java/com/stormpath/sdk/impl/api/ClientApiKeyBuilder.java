@@ -17,18 +17,16 @@ package com.stormpath.sdk.impl.api;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
-import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.impl.lang.FileResource;
 import com.stormpath.sdk.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.util.Properties;
 
 /** @since 1.0.RC */
@@ -322,7 +320,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     }
 
     protected Reader createFileReader(String apiKeyFileLocation) throws IOException {
-        InputStream is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
+        InputStream is = new FileResource(apiKeyFileLocation).getInputStream();
         return toReader(is);
     }
 
@@ -334,90 +332,6 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         Properties properties = new Properties();
         properties.load(reader);
         return properties;
-    }
-
-    private static class ResourceUtils {
-
-        /** Resource path prefix that specifies to load from a classpath location, value is <b>{@code classpath:}</b> */
-        public static final String CLASSPATH_PREFIX = "classpath:";
-        /** Resource path prefix that specifies to load from a url location, value is <b>{@code url:}</b> */
-        public static final String URL_PREFIX       = "url:";
-        /** Resource path prefix that specifies to load from a file location, value is <b>{@code file:}</b> */
-        public static final String FILE_PREFIX      = "file:";
-
-        /** Prevent instantiation. */
-        private ResourceUtils() {
-        }
-
-        /**
-         * Returns {@code true} if the resource path is not null and starts with one of the recognized
-         * resource prefixes ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
-         * {@link #URL_PREFIX URL_PREFIX}, or {@link #FILE_PREFIX FILE_PREFIX}), {@code false} otherwise.
-         *
-         * @param resourcePath the resource path to check
-         * @return {@code true} if the resource path is not null and starts with one of the recognized
-         *         resource prefixes, {@code false} otherwise.
-         * @since 0.8
-         */
-        @SuppressWarnings({"UnusedDeclaration"})
-        public static boolean hasResourcePrefix(String resourcePath) {
-            return resourcePath != null &&
-                   (resourcePath.startsWith(CLASSPATH_PREFIX) ||
-                    resourcePath.startsWith(URL_PREFIX) ||
-                    resourcePath.startsWith(FILE_PREFIX));
-        }
-
-        /**
-         * Returns the InputStream for the resource represented by the specified path, supporting scheme
-         * prefixes that direct how to acquire the input stream
-         * ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
-         * {@link #URL_PREFIX URL_PREFIX}, or {@link #FILE_PREFIX FILE_PREFIX}).  If the path is not prefixed by one
-         * of these schemes, the path is assumed to be a file-based path that can be loaded with a
-         * {@link java.io.FileInputStream FileInputStream}.
-         *
-         * @param resourcePath the String path representing the resource to obtain.
-         * @return the InputStraem for the specified resource.
-         * @throws java.io.IOException if there is a problem acquiring the resource at the specified path.
-         */
-        public static InputStream getInputStreamForPath(String resourcePath) throws IOException {
-
-            InputStream is;
-            if (resourcePath.startsWith(CLASSPATH_PREFIX)) {
-                is = loadFromClassPath(stripPrefix(resourcePath));
-
-            } else if (resourcePath.startsWith(URL_PREFIX)) {
-                is = loadFromUrl(stripPrefix(resourcePath));
-
-            } else if (resourcePath.startsWith(FILE_PREFIX)) {
-                is = loadFromFile(stripPrefix(resourcePath));
-
-            } else {
-                is = loadFromFile(resourcePath);
-            }
-
-            if (is == null) {
-                throw new IOException("Resource [" + resourcePath + "] could not be found.");
-            }
-
-            return is;
-        }
-
-        private static InputStream loadFromFile(String path) throws IOException {
-            return new FileInputStream(path);
-        }
-
-        private static InputStream loadFromUrl(String urlPath) throws IOException {
-            URL url = new URL(urlPath);
-            return url.openStream();
-        }
-
-        private static InputStream loadFromClassPath(String path) {
-            return Classes.getResourceAsStream(path);
-        }
-
-        private static String stripPrefix(String resourcePath) {
-            return resourcePath.substring(resourcePath.indexOf(":") + 1);
-        }
     }
 
 }

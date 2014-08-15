@@ -10,10 +10,11 @@ public class DefaultClientResolver implements ClientResolver {
     private static final String ERROR_MSG = "There is no Client instance accessible via the ServletContext " +
                                             "attribute key [" + ClientLoader.CLIENT_ATTRIBUTE_KEY + "].  This is an " +
                                             "invalid webapp configuration.  Consider defining the " +
-                                            ClientLoaderListener.class.getName() + " in web.xml or manually adding " +
+                                            DefaultClientLoaderListener.class.getName() +
+                                            " in web.xml or manually adding " +
                                             "a Client instance to the ServletContext under this key.  For example:\n\n" +
                                             "<listener>\n" +
-                                            "     <listener-class>com.stormpath.sdk.servlet.client.ClientLoaderListener</listener-class>\n" +
+                                            "     <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>\n" +
                                             " </listener>";
 
     public Client getClient(final ServletContext servletContext) {

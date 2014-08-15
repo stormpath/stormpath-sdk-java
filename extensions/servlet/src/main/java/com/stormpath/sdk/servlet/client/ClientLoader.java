@@ -34,8 +34,8 @@ import javax.servlet.ServletContext;
  * <h3>Usage</h3>
  *
  * <p>This implementation will, without any configuration at all, instantiate and use a
- * {@link DefaultClientFactory} to build the {@link Client} used by the application.  The
- * {@code DefaultClientFactory} supports the following {@code context-param} options in your
+ * {@link DefaultServletContextClientFactory} to build the {@link Client} used by the application.  The
+ * {@code DefaultServletContextClientFactory} supports the following {@code context-param} options in your
  * {@code web.xml} configuration: {@code stormpathApiKeyFileLocation} and {@code stormpathClientAuthenticationScheme}.
  * </p>
  *
@@ -81,14 +81,14 @@ import javax.servlet.ServletContext;
  * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest"><code>sauthc1</code></a>
  * is assumed by default.</p>
  *
- * <h4>Custom ClientFactory Implementation</h4>
+ * <h4>Custom ServletContextClientFactory Implementation</h4>
  *
- * <p>As mentioned above, the {@code ClientLoader} assumes the {@code DefaultClientFactory} behavior
+ * <p>As mentioned above, the {@code ClientLoader} assumes the {@code DefaultServletContextClientFactory} behavior
  * (supporting the above two {@code context-param} options) is sufficient for many needs.  If you need to build your
  * application's {@code Client} instance in a custom way - perhaps to enable specific
  * {@link com.stormpath.sdk.cache.CacheManager CacheManager} instance using a
  * {@link com.stormpath.sdk.client.Clients#builder() ClientBuilder} - you can implement the
- * {@link ClientFactory} interface yourself and specify that implementation class name as
+ * {@link ServletContextClientFactory} interface yourself and specify that implementation class name as
  * follows:</p>
  *
  * <pre>
@@ -98,16 +98,16 @@ import javax.servlet.ServletContext;
  * &lt;/context-param&gt;
  * </pre>
  *
- * <p>If you do not specify this context-param, {@link DefaultClientFactory
- * com.stormpath.sdk.servlet.client.DefaultClientFactory} is assumed by default.</p>
+ * <p>If you do not specify this context-param, {@link DefaultServletContextClientFactory
+ * com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory} is assumed by default.</p>
  *
- * <p><b>Because the {@code DefaultClientFactory} implementation is basic and does not support specifying
+ * <p><b>Because the {@code DefaultServletContextClientFactory} implementation is basic and does not support specifying
  * a custom CacheManager implementation, it is recommended that you create your own
- * {@link ClientFactory} implementation and specify that class name here for more advanced use cases.
+ * {@link ServletContextClientFactory} implementation and specify that class name here for more advanced use cases.
  * </b></p>
  *
- * @see ClientFactory
- * @see DefaultClientFactory
+ * @see ServletContextClientFactory
+ * @see DefaultServletContextClientFactory
  * @since 1.0
  */
 public class ClientLoader {
@@ -116,7 +116,7 @@ public class ClientLoader {
      * Servlet Context config param for specifying the {@link Client} implementation class to use:
      * {@code shiroEnvironmentClass}
      */
-    public static final String CLIENT_FACTORY_CLASS_PARAM = "stormpathClientFactoryClass";
+    public static final String CLIENT_FACTORY_CLASS_PARAM = "stormpathServletContextClientFactoryClass";
 
     public static final String CLIENT_ATTRIBUTE_KEY = ClientLoader.class.getName() + ".CLIENT_ATTRIBUTE_KEY";
 
@@ -125,9 +125,9 @@ public class ClientLoader {
     /**
      * Creates and initializes a Stormpath {@link Client} instance for the web application attributed to the
      * specified {@code ServletContext} and assigns that instance to the ServletContext for that context's lifespan.
-     * The client instance is created by instantiating a {@link ClientFactory} implementation class, and the
+     * The client instance is created by instantiating a {@link ServletContextClientFactory} implementation class, and the
      * class name can be specified as a {@code stormpathClientFactoryClass} context parameter.  If this
-     * parameter is not specified, the default {@link DefaultClientFactory} implementation is assumed.
+     * parameter is not specified, the default {@link DefaultServletContextClientFactory} implementation is assumed.
      *
      * @param servletContext current servlet context
      * @return the new Stormpath {@code Client} instance.
@@ -138,7 +138,7 @@ public class ClientLoader {
 
         if (servletContext.getAttribute(CLIENT_ATTRIBUTE_KEY) != null) {
             String msg = "There is already a Stormpath client instance associated with the current ServletContext.  " +
-                         "Check if you have multiple ClientLoader* definitions in your web.xml!";
+                         "Check if you have multiple ClientLoader* definitions in your web.xml or annotation config!";
             throw new IllegalStateException(msg);
         }
 
@@ -172,13 +172,13 @@ public class ClientLoader {
     }
 
     /**
-     * Return the {@link ClientFactory} implementation class to use, either the default {@link DefaultClientFactory}
+     * Return the {@link ServletContextClientFactory} implementation class to use, either the default {@link DefaultServletContextClientFactory}
      * or a custom class if specified.
      *
      * @param servletContext current servlet context
      * @return the WebEnvironment implementation class to use
      * @see #CLIENT_FACTORY_CLASS_PARAM
-     * @see DefaultClientFactory
+     * @see DefaultServletContextClientFactory
      */
     protected Class<?> determineClientFactoryClass(ServletContext servletContext) {
         String className = servletContext.getInitParameter(CLIENT_FACTORY_CLASS_PARAM);
@@ -187,10 +187,10 @@ public class ClientLoader {
             try {
                 return Classes.forName(className);
             } catch (UnknownClassException ex) {
-                throw new IllegalStateException("Failed to load custom ClientFactory class [" + className + "]", ex);
+                throw new IllegalStateException("Failed to load custom ServletContextClientFactory class [" + className + "]", ex);
             }
         } else {
-            return DefaultClientFactory.class;
+            return DefaultServletContextClientFactory.class;
         }
     }
 
@@ -198,11 +198,12 @@ public class ClientLoader {
      * Instantiates a {@link Client} based on the specified ServletContext.
      * <p>
      * This implementation {@link #determineClientFactoryClass(javax.servlet.ServletContext) determines} a
-     * {@link ClientFactory} implementation class to use.  That class is instantiated, returned, and invoked.
+     * {@link ServletContextClientFactory} implementation class to use.  That class is instantiated, returned, and invoked.
      * </p>
      * <p>
-     * This allows custom {@code ClientFactory} implementations to be specified via a ServletContext init-param if
-     * desired.  If not specified, the default {@link DefaultClientFactory} implementation will be used.
+     * This allows custom {@code ServletContextClientFactory} implementations to be specified via a ServletContext init-param if
+     * desired.  If not specified, the default {@link DefaultServletContextClientFactory} implementation will be used.
+     * </p>
      *
      * @param sc current servlet context
      * @return the constructed Stormpath client instance
@@ -210,12 +211,12 @@ public class ClientLoader {
     protected Client doCreateClient(ServletContext sc) {
 
         Class<?> clazz = determineClientFactoryClass(sc);
-        if (!ClientFactory.class.isAssignableFrom(clazz)) {
-            throw new IllegalStateException("Custom ClientFactory class [" + clazz.getName() +
-                                             "] is not of required type [" + ClientFactory.class.getName() + "]");
+        if (!ServletContextClientFactory.class.isAssignableFrom(clazz)) {
+            throw new IllegalStateException("Custom ServletContextClientFactory class [" + clazz.getName() +
+                                             "] is not of required type [" + ServletContextClientFactory.class.getName() + "]");
         }
 
-        ClientFactory factory = (ClientFactory)Classes.newInstance(clazz);
+        ServletContextClientFactory factory = (ServletContextClientFactory)Classes.newInstance(clazz);
 
         return factory.createClient(sc);
     }

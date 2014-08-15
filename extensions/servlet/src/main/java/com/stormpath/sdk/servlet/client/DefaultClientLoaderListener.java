@@ -19,7 +19,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * Bootstrap listener to startup and shutdown the web application's Stormpath
+ * Default bootstrap listener to startup and shutdown the web application's Stormpath
  * {@link com.stormpath.sdk.client.Client Client} instance at ServletContext startup and shutdown respectively.  This
  * class exists only to implement the {@link ServletContextListener} interface. All 'real' logic is done in the parent
  * {@link ClientLoader} class.
@@ -30,19 +30,19 @@ import javax.servlet.ServletContextListener;
  *
  * <pre>
  * &lt;listener&gt;
- *     &lt;listener-class&gt;<code>com.stormpath.sdk.servlet.client.ClientLoaderListener</code>&lt;/listener-class&gt;
+ *     &lt;listener-class&gt;<code>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</code>&lt;/listener-class&gt;
  * &lt;/listener&gt;
  * &lt;context-param&gt;
- *     &lt;param-name&gt;stormpathApplicationHref&lt;/param-name&gt;
+ *     &lt;param-name&gt;stormpath.properties&lt;/param-name&gt;
  *     &lt;!-- Replace this next value with your web <a href="http://docs.stormpath.com/rest/product-guide/#locate-an-applications-rest-url">application's Stormpath HREF value</a> --&gt;
- *     &lt;param-value&gt;<b>CHANGE_ME_TO_YOUR_APP_STORMPATH_HREF</b>&lt;/param-value&gt;
+ *     &lt;param-value&gt;stormpath.application.href = <b>CHANGE_ME_TO_YOUR_APP_STORMPATH_HREF</b>&lt;/param-value&gt;
  * &lt;/context-param&gt;
  * </pre>
  *
  * @see ClientLoader
  * @since 1.0
  */
-public class ClientLoaderListener extends ClientLoader implements ServletContextListener {
+public class DefaultClientLoaderListener extends ClientLoader implements ServletContextListener {
 
     /**
      * Initializes the Stormpath {@link com.stormpath.sdk.client.Client Client} instance and binds it to the

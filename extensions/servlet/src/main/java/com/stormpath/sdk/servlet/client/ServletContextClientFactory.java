@@ -19,7 +19,7 @@ import com.stormpath.sdk.client.Client;
 
 import javax.servlet.ServletContext;
 
-public interface ClientFactory {
+public interface ServletContextClientFactory {
 
     Client createClient(ServletContext servletContext);
 

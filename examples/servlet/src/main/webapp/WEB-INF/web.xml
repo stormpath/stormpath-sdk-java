@@ -10,7 +10,7 @@
         <param-value>https://api.stormpath.com/v1/applications/295wLwTPf2T3zOEXosMvHy</param-value>
     </context-param>
     <listener>
-        <listener-class>com.stormpath.sdk.servlet.client.ClientLoaderListener</listener-class>
+        <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
     </listener>
 
 
