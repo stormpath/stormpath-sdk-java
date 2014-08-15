@@ -82,8 +82,6 @@ public class UserAgent {
     private static final String WEB_SERVER_JBOSS_CLASS = "org.jboss.as.security.plugins.AuthenticationCacheEvictionListener";
     private static final String WEB_SERVER_WEBSPHERE_ID = "websphere";
     private static final String WEB_SERVER_WEBSPHERE_CLASS = "com.ibm.websphere.product.VersionInfo";
-    private static final String WEB_SERVER_GERONIMO_ID = "geronimo";
-    private static final String WEB_SERVER_GERONIMO_CLASS = "org.apache.geronimo.system.main.Daemon";
     private static final String WEB_SERVER_GLASSFISH_ID = "glassfish";
     private static final String WEB_SERVER_GLASSFISH_CLASS = "com.sun.enterprise.glassfish.bootstrap.GlassFishMain";
     private static final String WEB_SERVER_WEBLOGIC_ID = "weblogic";
@@ -169,10 +167,6 @@ public class UserAgent {
         String webServerString;
         //Glassfish uses Tomcat internally, therefore the Glassfish check must be carried out before Tomcat's
         webServerString = getFullEntryString(WEB_SERVER_GLASSFISH_CLASS, WEB_SERVER_GLASSFISH_ID);
-        if(Strings.hasText(webServerString)) {
-            return webServerString;
-        }
-        webServerString = getFullEntryString(WEB_SERVER_GERONIMO_CLASS, WEB_SERVER_GERONIMO_ID);
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
