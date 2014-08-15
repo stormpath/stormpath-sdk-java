@@ -21,8 +21,7 @@ import com.stormpath.sdk.impl.resource.BooleanProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.createMock
-import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
@@ -47,14 +46,33 @@ class DefaultProviderAccountResultTest {
     @Test
     void testInstantiation() {
 
-        def account = createMock(Account)
-        def properties = [isNewAccount: true, account: account]
+        def properties = [isNewAccount: true,
+                          href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                          fullName: "Mel Ben Smuk",
+                          emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
+                          directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                          groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"]
+        ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
+        def account = createStrictMock(Account)
+
+        Map<String, Object> propertiesWithoutIsNewAccount = new HashMap<String, Object>()
+        propertiesWithoutIsNewAccount.putAll(properties)
+        propertiesWithoutIsNewAccount.remove("isNewAccount")
+
+        expect(internalDataStore.instantiate(Account, propertiesWithoutIsNewAccount)).andReturn(account)
+
+        replay(internalDataStore, account)
 
         def providerAccountResult = new DefaultProviderAccountResult(internalDataStore, properties)
         assertTrue(providerAccountResult.isNewAccount())
         assertEquals(providerAccountResult.getAccount(), account)
+
+        verify(internalDataStore, account)
     }
 
     @Test

@@ -21,6 +21,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 #### Resolved Issues ####
 
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
+- [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
 
 ### 1.0.RC2 ###
 
