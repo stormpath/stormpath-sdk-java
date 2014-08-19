@@ -1,10 +1,10 @@
-package com.stormpath.sdk.servlet.lang;
+package com.stormpath.sdk.servlet.io;
 
-import com.stormpath.sdk.impl.lang.ClasspathResource;
-import com.stormpath.sdk.impl.lang.FileResource;
-import com.stormpath.sdk.impl.lang.Resource;
-import com.stormpath.sdk.impl.lang.ResourceFactory;
-import com.stormpath.sdk.impl.lang.UrlResource;
+import com.stormpath.sdk.impl.io.ClasspathResource;
+import com.stormpath.sdk.impl.io.FileResource;
+import com.stormpath.sdk.impl.io.Resource;
+import com.stormpath.sdk.impl.io.ResourceFactory;
+import com.stormpath.sdk.impl.io.UrlResource;
 import com.stormpath.sdk.lang.Assert;
 
 import javax.servlet.ServletContext;

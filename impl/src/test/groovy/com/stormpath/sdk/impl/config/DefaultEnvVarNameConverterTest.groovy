@@ -1,9 +1,8 @@
-package com.stormpath.sdk.impl.lang
+package com.stormpath.sdk.impl.config
 
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
-
 
 class DefaultEnvVarNameConverterTest {
 

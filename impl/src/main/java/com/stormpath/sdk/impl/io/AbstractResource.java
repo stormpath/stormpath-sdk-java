@@ -1,4 +1,4 @@
-package com.stormpath.sdk.impl.lang;
+package com.stormpath.sdk.impl.io;
 
 import com.stormpath.sdk.lang.Assert;
 

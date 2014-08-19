@@ -1,4 +1,4 @@
-package com.stormpath.sdk.impl.lang;
+package com.stormpath.sdk.impl.config;
 
 import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;

@@ -1,19 +1,19 @@
-package com.stormpath.sdk.servlet.client;
+package com.stormpath.sdk.servlet.config;
 
-import com.stormpath.sdk.impl.lang.ClasspathResource;
-import com.stormpath.sdk.impl.lang.DefaultEnvVarNameConverter;
-import com.stormpath.sdk.impl.lang.EnvVarNameConverter;
-import com.stormpath.sdk.impl.lang.EnvironmentVariablesPropertiesSource;
-import com.stormpath.sdk.impl.lang.FilteredPropertiesSource;
-import com.stormpath.sdk.impl.lang.OptionalPropertiesSource;
-import com.stormpath.sdk.impl.lang.PropertiesSource;
-import com.stormpath.sdk.impl.lang.Resource;
-import com.stormpath.sdk.impl.lang.ResourceFactory;
-import com.stormpath.sdk.impl.lang.ResourcePropertiesSource;
-import com.stormpath.sdk.impl.lang.StringResource;
-import com.stormpath.sdk.impl.lang.SystemPropertiesSource;
+import com.stormpath.sdk.impl.config.DefaultEnvVarNameConverter;
+import com.stormpath.sdk.impl.config.EnvVarNameConverter;
+import com.stormpath.sdk.impl.config.EnvironmentVariablesPropertiesSource;
+import com.stormpath.sdk.impl.config.FilteredPropertiesSource;
+import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
+import com.stormpath.sdk.impl.config.PropertiesSource;
+import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
+import com.stormpath.sdk.impl.config.SystemPropertiesSource;
+import com.stormpath.sdk.impl.io.ClasspathResource;
+import com.stormpath.sdk.impl.io.Resource;
+import com.stormpath.sdk.impl.io.ResourceFactory;
+import com.stormpath.sdk.impl.io.StringResource;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.lang.ServletContainerResourceFactory;
+import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
 
 import javax.servlet.ServletContext;
 import java.util.ArrayList;

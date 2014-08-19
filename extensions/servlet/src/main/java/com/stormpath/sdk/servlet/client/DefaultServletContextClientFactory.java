@@ -29,6 +29,8 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.cache.CacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.DefaultCacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.ServletContextAttributeCacheManager;
+import com.stormpath.sdk.servlet.config.DefaultServletContextPropertiesFactory;
+import com.stormpath.sdk.servlet.config.ServletContextPropertiesFactory;
 
 import javax.servlet.ServletContext;
 import java.util.Properties;

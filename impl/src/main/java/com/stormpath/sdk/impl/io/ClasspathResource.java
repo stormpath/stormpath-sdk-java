@@ -1,15 +1,16 @@
-package com.stormpath.sdk.impl.lang;
+package com.stormpath.sdk.impl.io;
 
-import java.io.FileInputStream;
+import com.stormpath.sdk.lang.Classes;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-public class FileResource extends AbstractResource {
+public class ClasspathResource extends AbstractResource {
 
-    public static final String SCHEME = "file";
+    public static final String SCHEME = "classpath";
     public static final String SCHEME_PREFIX = SCHEME + ":";
 
-    public FileResource(String location) {
+    public ClasspathResource(String location) {
         super(location);
     }
 
@@ -20,6 +21,6 @@ public class FileResource extends AbstractResource {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return new FileInputStream(getLocation());
+        return Classes.getResourceAsStream(getLocation());
     }
 }

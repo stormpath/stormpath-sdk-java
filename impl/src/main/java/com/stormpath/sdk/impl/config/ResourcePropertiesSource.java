@@ -1,5 +1,6 @@
-package com.stormpath.sdk.impl.lang;
+package com.stormpath.sdk.impl.config;
 
+import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.lang.Assert;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.stormpath.sdk.servlet.client;
+package com.stormpath.sdk.servlet.config;
 
 import javax.servlet.ServletContext;
 import java.util.Properties;

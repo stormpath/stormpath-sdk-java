@@ -1,4 +1,4 @@
-package com.stormpath.sdk.impl.lang;
+package com.stormpath.sdk.impl.io;
 
 import java.io.IOException;
 import java.io.InputStream;

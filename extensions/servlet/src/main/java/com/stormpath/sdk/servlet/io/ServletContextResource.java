@@ -1,6 +1,6 @@
-package com.stormpath.sdk.servlet.lang;
+package com.stormpath.sdk.servlet.io;
 
-import com.stormpath.sdk.impl.lang.AbstractResource;
+import com.stormpath.sdk.impl.io.AbstractResource;
 import com.stormpath.sdk.lang.Assert;
 
 import javax.servlet.ServletContext;

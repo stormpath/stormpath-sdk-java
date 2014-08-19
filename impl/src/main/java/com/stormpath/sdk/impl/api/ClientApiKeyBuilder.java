@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.api;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
-import com.stormpath.sdk.impl.lang.FileResource;
+import com.stormpath.sdk.impl.io.FileResource;
 import com.stormpath.sdk.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

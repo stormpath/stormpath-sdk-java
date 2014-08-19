@@ -3,12 +3,36 @@
          xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-    
+
     <context-param>
-        <param-name>stormpath.application.href</param-name>
-        <!-- Change this URL to your own application's Stormpath HREF: -->
-        <param-value>https://api.stormpath.com/v1/applications/295wLwTPf2T3zOEXosMvHy</param-value>
+        <param-name>stormpath.properties.sources</param-name>
+        <param-value>
+            envvars
+            classpath:stormpath.properties
+            /WEB-INF/stormpath.properties
+            initparam
+            sysprops
+        </param-value>
     </context-param>
+
+    <context-param>
+        <param-name>stormpath.properties</param-name>
+        <param-value>
+            # Change this URL to your own application's Stormpath HREF:
+            stormpath.application.href = https://api.stormpath.com/v1/applications/295wLwTPf2T3zOEXosMvHy
+
+            stormpath.proxy.host = 192.168.1.1
+            stormpath.proxy.port / username / password
+            stormpath.authentication.scheme = basic
+
+            stormpath.cache.tti = 3600
+            stormpath.cache.ttl = 3600
+
+            stormpath.cache.com.stormpath.sdk.account.Account.tti = 3600
+            stormpath.cache.com.stormpath.sdk.account.Account.ttl = 36600
+        </param-value>
+    </context-param>
+
     <listener>
         <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
     </listener>
