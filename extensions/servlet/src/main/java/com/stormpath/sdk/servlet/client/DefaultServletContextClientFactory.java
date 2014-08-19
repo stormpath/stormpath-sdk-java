@@ -46,6 +46,8 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
     public static final String STORMPATH_PROXY_USERNAME = "stormpath.proxy.username";
     public static final String STORMAPTH_PROXY_PASSWORD = "stormpath.proxy.password";
 
+    public static final String STORMPATH_APPLICATION_HREF = "stormpath.application.href";
+
     private final ServletContextPropertiesFactory servletContextPropertiesFactory =
         new DefaultServletContextPropertiesFactory();
 
@@ -67,7 +69,20 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
         applyCacheManager(builder, props, servletContext);
 
+        //not strictly a client operation, but we do it here anyway:
+        applyApplicationHref(props, servletContext);
+
         return builder.build();
+    }
+
+    private void applyApplicationHref(Properties props, ServletContext servletContext) {
+
+        String appHref = props.getProperty(STORMPATH_APPLICATION_HREF);
+
+        if (Strings.hasText(appHref)) {
+            //set it as a servlet context attribute:
+            servletContext.setAttribute(STORMPATH_APPLICATION_HREF, appHref);
+        }
     }
 
     protected void applyCacheManager(ClientBuilder builder, Properties props, ServletContext servletContext) {

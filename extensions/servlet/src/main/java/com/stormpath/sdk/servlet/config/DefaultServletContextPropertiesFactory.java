@@ -26,10 +26,10 @@ public class DefaultServletContextPropertiesFactory implements ServletContextPro
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
 
-    public static final  String ENVVARS_TOKEN   = "envvars";
-    public static final  String SYSPROPS_TOKEN  = "sysprops";
-    public static final  String INITPARAM_TOKEN = "initparam";
-    private static final String NL              = "\n";
+    public static final  String ENVVARS_TOKEN       = "envvars";
+    public static final  String SYSPROPS_TOKEN      = "sysprops";
+    public static final  String CONTEXT_PARAM_TOKEN = "contextParam";
+    private static final String NL                  = "\n";
 
     private static final String REQUIRED_TOKEN = "(required)";
 
@@ -37,7 +37,7 @@ public class DefaultServletContextPropertiesFactory implements ServletContextPro
         ENVVARS_TOKEN + NL +
         ClasspathResource.SCHEME_PREFIX + STORMPATH_PROPERTIES + NL +
         "/WEB-INF/stormpath.properties" + NL +
-        INITPARAM_TOKEN + NL +
+        CONTEXT_PARAM_TOKEN + NL +
         SYSPROPS_TOKEN;
 
     private static final EnvVarNameConverter envVarNameConverter = new DefaultEnvVarNameConverter();
@@ -97,7 +97,7 @@ public class DefaultServletContextPropertiesFactory implements ServletContextPro
                             return null;
                         }
                     }));
-            } else if (INITPARAM_TOKEN.equalsIgnoreCase(line)) {
+            } else if (CONTEXT_PARAM_TOKEN.equalsIgnoreCase(line)) {
                 String value = servletContext.getInitParameter(STORMPATH_PROPERTIES);
                 if (Strings.hasText(value)) {
                     sources.add(new ResourcePropertiesSource(new StringResource(value)));
