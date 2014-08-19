@@ -5,6 +5,7 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
     <listener>
+        <!-- Load the Stormpath client w/ caching enabled. Customize client config in /WEB-INF/stormpath.properties: -->
         <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
     </listener>
 
