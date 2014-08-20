@@ -48,6 +48,10 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     public static final String STORMPATH_APPLICATION_HREF = "stormpath.application.href";
 
+    //not configurable by end-users - always reflects the 'effective' or 'merged' view of all properties discovered
+    //at startup
+    public static final String STORMPATH_CONFIG_PROPERTIES = "stormpath.config.properties";
+
     private final ServletContextPropertiesFactory servletContextPropertiesFactory =
         new DefaultServletContextPropertiesFactory();
 
@@ -69,20 +73,10 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
         applyCacheManager(builder, props, servletContext);
 
-        //not strictly a client operation, but we do it here anyway:
-        applyApplicationHref(props, servletContext);
+        //allow access to config values by other components later:
+        servletContext.setAttribute(STORMPATH_CONFIG_PROPERTIES, props);
 
         return builder.build();
-    }
-
-    private void applyApplicationHref(Properties props, ServletContext servletContext) {
-
-        String appHref = props.getProperty(STORMPATH_APPLICATION_HREF);
-
-        if (Strings.hasText(appHref)) {
-            //set it as a servlet context attribute:
-            servletContext.setAttribute(STORMPATH_APPLICATION_HREF, appHref);
-        }
     }
 
     protected void applyCacheManager(ClientBuilder builder, Properties props, ServletContext servletContext) {

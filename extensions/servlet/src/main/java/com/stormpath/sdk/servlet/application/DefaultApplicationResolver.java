@@ -7,8 +7,11 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.client.DefaultClientResolver;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
+import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
+import com.stormpath.sdk.servlet.config.PropertiesResolver;
 
 import javax.servlet.ServletContext;
+import java.util.Properties;
 
 public class DefaultApplicationResolver implements ApplicationResolver {
 
@@ -24,6 +27,8 @@ public class DefaultApplicationResolver implements ApplicationResolver {
 
     private final ClientResolver CLIENT_RESOLVER = new DefaultClientResolver();
 
+    private final PropertiesResolver CONFIG_RESOLVER = new DefaultPropertiesResolver();
+
     @Override
 
     public Application getApplication(final ServletContext servletContext) {
@@ -33,9 +38,11 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         //get the client:
         Client client = CLIENT_RESOLVER.getClient(servletContext);
 
-        Object attr = servletContext.getAttribute(STORMPATH_APPLICATION_HREF);
+        Properties config = CONFIG_RESOLVER.getConfig(servletContext);
 
-        if (attr == null) {
+        String href = config.getProperty(STORMPATH_APPLICATION_HREF);
+
+        if (href == null) {
 
             //no stormpath.application.href property was configured.  Let's try to find their application:
 
@@ -43,7 +50,7 @@ public class DefaultApplicationResolver implements ApplicationResolver {
 
             Application single = null;
 
-            for(Application app : apps) {
+            for (Application app : apps) {
                 if (app.getName().equalsIgnoreCase("Stormpath")) { //ignore the admin app
                     continue;
                 }
@@ -63,9 +70,6 @@ public class DefaultApplicationResolver implements ApplicationResolver {
             return single;
 
         } else {
-            Assert.isInstanceOf(String.class, attr, STORMPATH_APPLICATION_HREF +
-                                                    " Servlet Context attribute value must be a String.");
-            String href = (String)attr;
             Assert.hasText(href, "The specified " + STORMPATH_APPLICATION_HREF + " property value cannot be empty.");
 
             //now lookup the app (will be cached when caching is turned on in the SDK):
