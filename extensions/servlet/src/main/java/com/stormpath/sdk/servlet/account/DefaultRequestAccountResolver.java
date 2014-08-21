@@ -5,7 +5,7 @@ import com.stormpath.sdk.lang.Assert;
 
 import javax.servlet.ServletRequest;
 
-public class DefaultAccountResolver implements AccountResolver {
+public class DefaultRequestAccountResolver implements RequestAccountResolver {
 
     public static final String REQUEST_ATTR_NAME = Account.class.getName();
 

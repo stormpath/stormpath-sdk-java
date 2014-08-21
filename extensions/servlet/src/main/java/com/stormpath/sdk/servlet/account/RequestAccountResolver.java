@@ -4,7 +4,7 @@ import com.stormpath.sdk.account.Account;
 
 import javax.servlet.ServletRequest;
 
-public interface AccountResolver {
+public interface RequestAccountResolver {
 
     boolean hasAccount(ServletRequest request);
 

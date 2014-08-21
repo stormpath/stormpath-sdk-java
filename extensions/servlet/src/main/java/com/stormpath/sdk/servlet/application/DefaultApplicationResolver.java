@@ -38,9 +38,14 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         //get the client:
         Client client = CLIENT_RESOLVER.getClient(servletContext);
 
-        Properties config = CONFIG_RESOLVER.getConfig(servletContext);
+        //this is a local cached href value that we use in case we have to query applications (see below):
+        String href = (String)servletContext.getAttribute(STORMPATH_APPLICATION_HREF);
 
-        String href = config.getProperty(STORMPATH_APPLICATION_HREF);
+        if (href == null) {
+            //no cached value = try config:
+            Properties config = CONFIG_RESOLVER.getConfig(servletContext);
+            href = config.getProperty(STORMPATH_APPLICATION_HREF);
+        }
 
         if (href == null) {
 

@@ -6,10 +6,13 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
+import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
+import com.stormpath.sdk.servlet.account.RequestAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
@@ -29,8 +32,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathHttpServletRequest.class.getName());
 
-    public static final String REMOTE_USER_STRATEGY    = "stormpath.request.remoteUser.strategy";
-    public static final String USER_PRINCIPAL_STRATEGY = "stormpath.request.userPrincipal.strategy";
+    public static final String REMOTE_USER_STRATEGY    = "stormpath.servlet.request.remoteUser.strategy";
+    public static final String USER_PRINCIPAL_STRATEGY = "stormpath.servlet.request.userPrincipal.strategy";
 
     public static final String EMAIL      = "email";
     public static final String USERNAME   = "username";
@@ -38,9 +41,10 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     public static final String HREF       = "href";
     public static final String BYPASS     = "bypass";
 
-    private static boolean remoteUserWarned = false; //static on purpose - we only want to print this once.
+    private static boolean remoteUserWarned    = false; //static on purpose - we only want to print this once.
+    private static boolean userPrincipalWarned = false; //static on purpose - we only want to print this once.
 
-    private static final AccountResolver ACCOUNT_RESOLVER = new DefaultAccountResolver();
+    private static final RequestAccountResolver ACCOUNT_RESOLVER = new DefaultRequestAccountResolver();
 
     private static final ApplicationResolver APPLICATION_RESOLVER = new DefaultApplicationResolver();
 
@@ -60,7 +64,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return super.getRemoteUser();
         }
 
-        if (ACCOUNT_RESOLVER.hasAccount(this)) {
+        if (!ACCOUNT_RESOLVER.hasAccount(this)) {
             return null;
         }
 
@@ -76,6 +80,10 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         if (GIVEN_NAME.equals(strategy)) {
             return account.getGivenName();
+        }
+
+        if (HREF.equals(strategy)) {
+            return account.getHref();
         }
 
         //strategy not recognized - warn and return:
@@ -99,7 +107,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return super.getUserPrincipal();
         }
 
-        if (ACCOUNT_RESOLVER.hasAccount(this)) {
+        if (!ACCOUNT_RESOLVER.hasAccount(this)) {
             return null;
         }
 
@@ -117,12 +125,16 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return new GivenNamePrincipal(account.getGivenName());
         }
 
+        if (HREF.equals(strategy)) {
+            return new HrefPrincipal(account.getHref());
+        }
+
         //strategy not recognized - warn and return:
-        if (!remoteUserWarned) {
+        if (!userPrincipalWarned) {
             String msg = "Unrecognized " + USER_PRINCIPAL_STRATEGY + " value [" + strategy + "].  Ignoring and " +
                          "defaulting to [" + USERNAME + "].  Please check your configuration.";
             log.warn(msg);
-            remoteUserWarned = true;
+            userPrincipalWarned = true;
         }
 
         return new UsernamePrincipal(account.getUsername());
@@ -131,30 +143,33 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public boolean isUserInRole(String role) {
 
-        //TODO: complete implementation
-        throw new UnsupportedOperationException("Not yet implemented!");
-
-        /*
-
-        //todo: make this a little more configurable, i.e. AccountRoleResolver
-
         if (!ACCOUNT_RESOLVER.hasAccount(this)) {
             return false;
         }
 
+        Assert.hasText(role, "Role name cannot be null or empty.");
+
         Account account = ACCOUNT_RESOLVER.getAccount(this);
 
+        //todo: make this customizable, i.e. AccountRoleResolver
+
+        //TODO: enable account->groups collection caching to keep this fast
+
         GroupList groups = account.getGroups();
-
-
         for(Group group : groups) {
-
+            if (role.equals(group.getName())) {
+                return true;
+            }
         }
-        */
+
+        return false;
     }
 
     @Override
     public String getAuthType() {
+
+
+
         //TODO: complete implementation
         return super.getAuthType();
     }
@@ -188,7 +203,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         }
 
         Account account = result.getAccount();
-        setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
+        setAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME, account);
 
         return true;
     }
@@ -215,7 +230,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         }
 
         Account account = result.getAccount();
-        setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
+        setAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME, account);
     }
 
     protected AuthenticationRequest createAuthenticationRequest(String username, String password, Application application) {
@@ -228,6 +243,6 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public void logout() throws ServletException {
-        removeAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME);
+        removeAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME);
     }
 }
