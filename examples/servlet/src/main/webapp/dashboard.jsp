@@ -75,7 +75,7 @@
                         <br/>
                         <br/>
 
-                        <form method="post" class="bs-example form-horizontal" action="">
+                        <form method="post" class="bs-example form-horizontal" action="${pageContext.request.contextPath}/dashboard">
                             <div class="form-group">
                                 <label for="birthday" class="col-lg-2 control-label">Birthday</label>
 
