@@ -17,6 +17,7 @@
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.*
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
@@ -24,13 +25,17 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.directory.DefaultCustomData
+import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
@@ -66,7 +71,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 10)
+        assertEquals( propertyDescriptors.size(), 11)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -78,6 +83,8 @@ class DefaultApplicationTest {
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("passwordResetTokens") instanceof CollectionReference && propertyDescriptors.get("passwordResetTokens").getType().equals(PasswordResetTokenList))
         assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
+        //since 1.0.0
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
     }
 
     @Test
@@ -373,7 +380,8 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
                 defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
                 defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
-                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"],
+                customData: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/customData"]
         ]
 
         def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
@@ -386,7 +394,12 @@ class DefaultApplicationTest {
         def iterator = createStrictMock(Iterator)
         def accountStoreMapping = createStrictMock(AccountStoreMapping)
         def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+        def customData = new DefaultCustomData(dataStore)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKey = createStrictMock(ApiKey)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
 
+        expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
@@ -401,7 +414,8 @@ class DefaultApplicationTest {
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
-        def modifiedApp = new DefaultApplication(null, newPropertiesState)
+        newPropertiesState.put("customData", customData);
+        def modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -410,7 +424,7 @@ class DefaultApplicationTest {
         expect(newAccountStoreMapping.save())
 
         newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -424,17 +438,17 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.save())
 
         newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultAccountStore(group)
         app.setDefaultAccountStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
     }
 
     //@since 1.0.RC
@@ -448,7 +462,8 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
                 defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
                 defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
-                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"],
+                customData: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/customData"]
         ]
 
         def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
@@ -461,7 +476,12 @@ class DefaultApplicationTest {
         def iterator = createStrictMock(Iterator)
         def accountStoreMapping = createStrictMock(AccountStoreMapping)
         def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+        def customData = new DefaultCustomData(dataStore)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKey = createStrictMock(ApiKey)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
 
+        expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
@@ -476,7 +496,8 @@ class DefaultApplicationTest {
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
-        def modifiedApp = new DefaultApplication(null, newPropertiesState)
+        newPropertiesState.put("customData", customData);
+        def modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -485,7 +506,7 @@ class DefaultApplicationTest {
         expect(newAccountStoreMapping.save())
 
         newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -499,17 +520,17 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.save())
 
         newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultGroupStore(group)
         app.setDefaultGroupStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
     }
 
     //@since 1.0.beta

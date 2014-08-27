@@ -52,4 +52,12 @@ public class DefaultTenantOptions extends DefaultOptions<TenantOptions> implemen
     public TenantOptions withDirectories(int limit, int offset) {
         return expand(DefaultTenant.DIRECTORIES, limit, offset);
     }
+
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    public TenantOptions withCustomData() {
+        return expand(DefaultTenant.CUSTOM_DATA);
+    }
 }

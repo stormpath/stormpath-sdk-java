@@ -50,4 +50,12 @@ public class DefaultDirectoryOptions extends DefaultOptions<DirectoryOptions> im
     public DirectoryOptions withTenant() {
         return expand(DefaultDirectory.TENANT);
     }
+
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    public DirectoryOptions withCustomData() {
+        return expand(DefaultDirectory.CUSTOM_DATA);
+    }
 }

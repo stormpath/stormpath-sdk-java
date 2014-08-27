@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.directory
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryStatus
 import com.stormpath.sdk.group.Group
@@ -52,7 +53,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 8)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -61,6 +62,8 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("provider") instanceof ResourceReference && propertyDescriptors.get("provider").getType().equals(Provider))
+        //since 1.0.0
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
     }
 
 

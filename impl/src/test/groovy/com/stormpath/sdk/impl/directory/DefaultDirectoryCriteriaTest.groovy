@@ -48,6 +48,7 @@ class DefaultDirectoryCriteriaTest {
                 .orderByDescription().descending()
                 .orderByStatus()
                 .withTenant()
+                .withCustomData()
                 .withAccounts(30, 50)
                 .withGroups(25, 100)
                 .offsetBy(120)
@@ -65,11 +66,12 @@ class DefaultDirectoryCriteriaTest {
                 'name asc, description desc, status asc ' +
                 'offset 120 ' +
                 'limit 20 ' +
-                'expand tenant, accounts(offset:50,limit:30), groups(offset:100,limit:25)'
+                'expand tenant, customData, accounts(offset:50,limit:30), groups(offset:100,limit:25)'
 
         def expectedQueryString = 'description=b*' + AND +
                 'expand=' +
                 'tenant' + COMMA +
+                'customData' + COMMA +
                 'accounts' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 30 + CLOSE_PAREN + COMMA +
                 'groups' + OPEN_PAREN + 'offset' + COLON + 100 + COMMA + 'limit' + COLON + 25 + CLOSE_PAREN + AND +
                 'limit=20' + AND +

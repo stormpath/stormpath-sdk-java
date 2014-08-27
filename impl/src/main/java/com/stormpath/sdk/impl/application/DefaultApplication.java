@@ -25,11 +25,7 @@ import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -52,12 +48,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
@@ -77,7 +68,7 @@ import java.util.Set;
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 
 /** @since 0.2 */
-public class DefaultApplication extends AbstractInstanceResource implements Application {
+public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
 
     private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
         "com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator";
@@ -158,7 +149,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -553,4 +544,5 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequestClass.getName(),
                                                          HTTP_REQUEST_SUPPORTED_CLASSES.toString()));
     }
+
 }
