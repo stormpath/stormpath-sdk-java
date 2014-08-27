@@ -1,4 +1,4 @@
-package com.stormpath.sdk.servlet.http;
+package com.stormpath.sdk.servlet.http.impl;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
@@ -17,6 +17,10 @@ import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
 import com.stormpath.sdk.servlet.config.PropertiesResolver;
+import com.stormpath.sdk.servlet.http.EmailPrincipal;
+import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
+import com.stormpath.sdk.servlet.http.HrefPrincipal;
+import com.stormpath.sdk.servlet.http.UsernamePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Properties;
@@ -52,6 +57,21 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     public StormpathHttpServletRequest(HttpServletRequest request) {
         super(request);
+    }
+
+    @Override
+    public HttpSession getSession(boolean create) {
+        //need to wrap the session so get/setAttribute and get/putValue implementations handle Resources efficiently:
+        HttpSession session = super.getSession(create);
+        if (session != null) {
+            session = new StormpathHttpSession(session);
+        }
+        return session;
+    }
+
+    @Override
+    public HttpSession getSession() {
+        return getSession(true);
     }
 
     @Override
@@ -167,9 +187,6 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public String getAuthType() {
-
-
-
         //TODO: complete implementation
         return super.getAuthType();
     }

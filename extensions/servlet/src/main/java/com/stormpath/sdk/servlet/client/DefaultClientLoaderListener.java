@@ -26,18 +26,18 @@ import javax.servlet.ServletContextListener;
  *
  * <h3>Usage</h3>
  *
+ * <ol>
+ * <li>
  * <p>Define the following in {@code web.xml}:</p>
- *
  * <pre>
  * &lt;listener&gt;
  *     &lt;listener-class&gt;<code>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</code>&lt;/listener-class&gt;
  * &lt;/listener&gt;
- * &lt;context-param&gt;
- *     &lt;param-name&gt;stormpath.properties&lt;/param-name&gt;
- *     &lt;!-- Replace this next value with your web <a href="http://docs.stormpath.com/rest/product-guide/#locate-an-applications-rest-url">application's Stormpath HREF value</a> --&gt;
- *     &lt;param-value&gt;stormpath.application.href = <b>CHANGE_ME_TO_YOUR_APP_STORMPATH_HREF</b>&lt;/param-value&gt;
- * &lt;/context-param&gt;
  * </pre>
+ * </li>
+ * <li>Add a <code>/WEB-INF/stormpath.properties</code> config file in your .war, or alternatively put a
+ * <code>stormpath.properties</code> at the root of the classpath.</code></li>
+ * </ol>
  *
  * @see ClientLoader
  * @since 1.0

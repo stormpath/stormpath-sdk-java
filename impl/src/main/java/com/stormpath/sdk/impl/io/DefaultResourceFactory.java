@@ -12,7 +12,9 @@ public class DefaultResourceFactory implements ResourceFactory {
             return new ClasspathResource(location);
         }
 
-        if (location.startsWith(UrlResource.SCHEME_PREFIX)) {
+        String lcase = location.toLowerCase();
+
+        if (location.startsWith(UrlResource.SCHEME_PREFIX) || lcase.startsWith("http:") || lcase.startsWith("https:")) {
             return new UrlResource(location);
         }
 
