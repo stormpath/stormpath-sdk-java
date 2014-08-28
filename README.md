@@ -20,6 +20,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 #### Resolved Issues ####
 
+- [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
 - [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
 means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
