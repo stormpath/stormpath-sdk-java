@@ -167,6 +167,7 @@ class DirectoryIT extends ClientIT {
             assertEquals(dir.getCustomData().size(), 4)
         }
         assertEquals(count, 1)
+
     }
 
 }
