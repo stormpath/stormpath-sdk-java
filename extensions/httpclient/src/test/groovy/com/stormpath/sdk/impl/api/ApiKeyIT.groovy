@@ -102,6 +102,7 @@ class ApiKeyIT extends ClientIT {
     void testListApiKeysWithDeletion() {
 
         def application = createTempApp()
+
         def acct = client.instantiate(Account)
 
         def password = 'Changeme1!'
