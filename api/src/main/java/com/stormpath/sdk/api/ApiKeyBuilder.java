@@ -31,67 +31,98 @@ import java.util.Properties;
  * information loaded from an external {@code .properties} file (or Properties instance) to ensure the API Key secret
  * (password) does not reside in plaintext in code.</p>
  *
- * <p>Assuming you stored your API Key in your home directory per Stormpath's instructions, you would create your
- * api key object as follows:</p>
+ * <h3>Usage</h3>
+ *
+ * <p>The simplest usage is to just call the {@link #build() build()} method, which will automatically attempt to find
+ * your API Key values in a number of default/conventional locations.  For example:</p>
  *
  * <pre>
- * String location = System.getProperty("user.home") + "/.stormpath/apiKey.properties";
- *
- * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().setFileLocation(location).build();
+ * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder().{@link #build() build()};
  * </pre>
  *
- * <p>Then, you will create your {@link Client} instance as follows:</p>
+ * <p>Without any other configuration, the following locations will be each be checked, in order:</p>
+ *
+ * <ol>
+ *     <li>The default apiKey.properties file location of
+ *         <code>System.getProperty("user.home") + "/.stormpath/apiKey.properties"</code> as
+ *         recommended/documented in the <a href="https://docs.stormpath.com/java/quickstart/">Stormpath Java
+ *         Quickstart</a>.</li>
+ *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
+ *         these values are present, they override any values found in the default apiKey.properties file.</li>
+ *     <li>The system properties {@code stormpath.apiKey.id} and {@code stormpath.apiKey.secret}.  If either of
+ *         these values are present, they override any previously discovered values.</li>
+ * </ol>
+ *
+ * <p><b>SECURITY NOTICE:</b> While System properties may be used to represent your API Key Secret as mentioned above,
+ * this is not recommended: process listings on a machine will expose process arguments (like system properties) and
+ * expose the secret value to anyone that can read process listings.  As always, secret values should never be exposed
+ * to anyone other than the person that owns the API Key.</p>
+ *
+ * <p>While an API Key ID may be configured anywhere (and be visible by anyone), it is recommended to use a private
+ * read-only file or an environment variable to represent API Key secrets.  <b>Never</b> commit secrets to source code
+ * or version control.</p>
+ *
+ * <h4>Explicit Configuration</h4>
+ *
+ * <p>If the above default locations do not meet your needs, or you would like to override any of the discovered values,
+ * you can configure id and secret values via specific builder properties:</p>
+ *
+ * <ul>
+ *     <li>{@link #setFileLocation(String) fileLocation}:  Any properties discovered in this .properties file
+ *         will override any previously automatically discovered values.  The {@code fileLocation} String can be an
+ *         absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+ *         {@code classpath:} prefixes respectively.</li>
+ *     <li>{@link #setInputStream(java.io.InputStream) inputStream}: Properties discovered after reading the input
+ *         stream will override any previously discovered values.</li>
+ *     <li>{@link #setReader(java.io.Reader) reader}: Properties discovered after reading the Reader will override any
+ *         previously discovered values.</li>
+ *     <li>{@link #setProperties(java.util.Properties) properties} instance: Properties discovered in the instance
+ *         will override any previously discovered values.</li>
+ *     <li>Directly specified {@link #setId(String) id} and {@link #setSecret(String) secret} property values.
+ *         If specified, they will override any previously discovered value.</li>
+ * </ul>
+ *
+ * <h3>Supporting the ClientBuilder</h3>
+ *
+ * <p>Once you have built your {@code ApiKey} instance, you can then build your {@link Client} instance that you
+ * can use during your application's lifecycle.  For example:</p>
  *
  * <pre>
+ * ApiKey apiKey = {@link ApiKeys ApiKeys}.builder()
+ *                 //optional specific configuration
+ *                 .{@link #build build()};
+ *
+ * //use this same Client instance everywhere in your application:
  * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
  * </pre>
  *
- * <p>You may load files from the filesystem, classpath, or URLs by prefixing the path with
- * {@code file:}, {@code classpath:}, or {@code url:} respectively.  See
- * {@link #setFileLocation(String)} for more information.</p>
- *
  * @see #setFileLocation(String)
- * @see ClientBuilder#setApiKey(com.stormpath.sdk.client.ApiKey)
+ * @see ClientBuilder#setApiKey(com.stormpath.sdk.api.ApiKey)
  * @since 1.0.RC
  */
 public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ // temporarily extending the client package's ApiKeyBuilder before deleting it
 
     /**
-     * Allows specifying the client's API Key {@code id} value directly instead of reading it
-     * from a stream-based resource (e.g. File, Reader, Properties or InputStream).
+     * Allows specifying the client's API Key {@code id} value directly instead of relying on the
+     * default location + override/fallback behavior defined in the {@link ApiKeyBuilder documentation above}.
+     *
+     * @param id the {@link com.stormpath.sdk.api.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
+     * @return the ApiKeyBuilder instance for method chaining.
+     * @see ClientBuilder#setApiKey(com.stormpath.sdk.api.ApiKey)
+     */
+    ApiKeyBuilder setId(String id);
+
+    /**
+     * Allows specifying the client's API Key {@code secret} value directly instead of relying on the
+     * default location + override/fallback behavior defined in the {@link ApiKeyBuilder documentation above}.
+     *
      * <h3>Usage Warning</h3>
-     * It is almost always advisable to NOT use this method and instead use methods that accept a
-     * stream-based resource (File, Reader, Properties or InputStream): these other methods would ideally acquire the
-     * API Key from a secure and private {@code apiKey.properties} file that is readable only by the process that
-     * uses the Stormpath SDK.
-     * <p/>
-     * This builder method is provided however for environments that do not have access to stream resources or files,
-     * such as in certain application hosting providers or Platform-as-a-Service environments like Heroku.
-     * <h4>Environment Variables</h4>
-     * In these restricted environments, the ApiKey {@code id} and {@code secret} would almost always be obtained from
-     * environment variables, for example:
-     * <pre>
-     * String id = System.getenv("STORMPATH_API_KEY_ID");
-     * String secret = System.getenv("STORMPATH_API_KEY_SECRET");
-     * ApiKey apiKey = {@link com.stormpath.sdk.client.ApiKeys ApiKeys}.builder().setId(id).setSecret(secret).build();
-     * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
-     * </pre>
-     * <h4>System Properties</h4>
-     * It is <em>not</em> recommended to load the ApiKey id and secret from a system property, for example:
-     * <p/>
-     * <span color="red"><b>THIS IS NOT RECOMMENDED. THIS COULD BE A SECURITY RISK:</b></span>
-     * <pre color="red">
-     * String apiKeySecret = System.getProperty("STORMPATH_API_KEY_SECRET");
-     * </pre>
-     * This is not recommended because System properties are visible in process listings, e.g. on Unix/Linux/MacOS:
-     * <pre><code>
-     * $ ps aux
-     * </code></pre>
-     * You do not want your API Key Secret visible by anyone who can do a process listing!
-     * <h4>Hard Coding</h4>
-     * It is <b>NEVER</b> recommended to embed the raw ApiKey values in source code that would be committed to
-     * version control (like Git or Subversion):
-     * <p/>
+     *
+     * <p>It is strongly recommended that you never embed raw API Key secret values in source code!  API Key Secret
+     * values are tied to an individual <em>person</em> and should never be shared with anyone or embedded in source
+     * code that can be viewed by multiple people.  For example:</p>
+     *
+     * <p>
      * <span color="red"><b>THIS IS AN ANTI-PATTERN! DO NOT DO THIS! THIS IS A SECURITY RISK!</b></span>
      * <pre color="red">
      * String id = "myRawApiKeyId";
@@ -99,32 +130,33 @@ public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ /
      * ApiKey apiKey = ApiKeys.builder().setId(id).setSecret(secret).build();
      * Client client = Clients.builder().setApiKey(apiKey).build();
      * </pre>
+     * </p>
      *
-     * @param id the {@link com.stormpath.sdk.client.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
-     * @return the ApiKeyBuilder instance for method chaining.
-     * @see ClientBuilder#setApiKey(com.stormpath.sdk.client.ApiKey)
-     */
-    ApiKeyBuilder setId(String id);
-
-    /**
-     * Allows specifying the client's API Key {@code secret} value directly instead of reading it
-     * from a stream-based resource (e.g. File, Reader, Properties or InputStream).
-     * <p/>
-     * For usage instructions and security precautions see {@link #setId(String)}
+     * <p>Because of this, it is recommended to rely on the default location + override/fallback behavior defined in
+     * the {@link ApiKeyBuilder documentation above}.  However, if the default environment variable or system property
+     * names are not suitable, and you would prefer to use your own names, or you would prefer to obtain your secret
+     * value in a different secure manner, setting this property explicitly can be useful.  For example:</p>
      *
-     * @param secret the {@link com.stormpath.sdk.client.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
+     * <pre>
+     * String id = System.getenv("MY_STORMPATH_API_KEY_ID"); //alternative (non-default) env var name
+     * String secret = System.getenv("MY_STORMPATH_API_KEY_SECRET"); //alternative (non-default) env var name
+     * ApiKey apiKey = {@link com.stormpath.sdk.api.ApiKeys ApiKeys}.builder().setId(id).setSecret(secret).build();
+     * Client client = {@link Clients Clients}.builder().setApiKey(apiKey).build();
+     * </pre>
+     *
+     * @param secret the {@link com.stormpath.sdk.api.ApiKey#getId() ApiKey id} to use when communicating with Stormpath.
      * @return the ApiKeyBuilder instance for method chaining.
      * @see #setId(String)
-     * @see ClientBuilder#setApiKey(com.stormpath.sdk.client.ApiKey)
+     * @see ClientBuilder#setApiKey(com.stormpath.sdk.api.ApiKey)
      */
     ApiKeyBuilder setSecret(String secret);
 
     /**
      * Allows usage of a Properties instance instead of loading a {@code .properties} file via
      * {@link #setFileLocation(String) fileLocation} configuration.
-     * <p/>
-     * The {@code Properties} contents and property name overrides function the same as described in the
-     * {@link #setFileLocation(String) setFileLocation} JavaDoc.
+     *
+     * <p>The {@code Properties} contents and property name overrides function the same as described in the
+     * {@link #setFileLocation(String) setFileLocation} JavaDoc.</p>
      *
      * @param properties the properties instance to use to load the API Key ID and Secret.
      * @return the ApiKeyBuilder instance for method chaining.
@@ -134,9 +166,9 @@ public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ /
     /**
      * Creates an API Key Properties instance based on the specified Reader instead of loading a {@code .properties}
      * file via  {@link #setFileLocation(String) fileLocation} configuration.
-     * <p/>
-     * The constructed {@code Properties} contents and property name overrides function the same as described in the
-     * {@link #setFileLocation(String) setFileLocation} JavaDoc.
+     *
+     * <p>The constructed {@code Properties} contents and property name overrides function the same as described in the
+     * {@link #setFileLocation(String) setFileLocation} JavaDoc.</p>
      *
      * @param reader the reader to use to construct a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
@@ -147,9 +179,9 @@ public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ /
      * Creates an API Key Properties instance based on the specified InputStream
      * instead of loading a {@code .properties} file via
      * {@link #setFileLocation(String) fileLocation} configuration.
-     * <p/>
-     * The constructed {@code Properties} contents and property name overrides function the same as described in the
-     * {@link #setFileLocation(String) setFileLocation} JavaDoc.
+     *
+     * <p>The constructed {@code Properties} contents and property name overrides function the same as described in the
+     * {@link #setFileLocation(String) setFileLocation} JavaDoc.</p>
      *
      * @param is the InputStream to use to construct a Properties instance.
      * @return the ApiKeyBuilder instance for method chaining.
@@ -244,7 +276,31 @@ public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ /
     ApiKeyBuilder setSecretPropertyName(String secretPropertyName);
 
     /**
-     * Constructs a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.
+     * Constructs a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.  This method
+     * loads ID and secret values from the following locations, in order:
+     *
+     * <ol>
+     *     <li>The default apiKey.properties file location of
+     *         <code>System.getProperty("user.home") + "/.stormpath/apiKey.properties"</code> as
+     *         recommended/documented in the <a href="https://docs.stormpath.com/java/quickstart/">Stormpath Java
+     *         Quickstart</a>.</li>
+     *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
+     *         these values are present, they override any values found in the default apiKey.properties file.</li>
+     *     <li>The system properties {@code stormpath.apiKey.id} and {@code stormpath.apiKey.secret}.  If either of
+     *         these values are present, they override any previously discovered values.</li>
+     *     <li>A specified {@link #setFileLocation(String) fileLocation}:  Any properties discovered in this .properties
+     *         file will override any previously automatically discovered values.  The {@code fileLocation} String can
+     *         be an absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+     *         {@code classpath:} prefixes respectively.</li>
+     *     <li>A specified {@link #setInputStream(java.io.InputStream) inputStream}: Properties discovered while
+     *         reading the input stream will override any previously discovered values.</li>
+     *     <li>A specified {@link #setReader(java.io.Reader) reader}: Properties discovered after reading the Reader
+     *         will override any previously discovered values.</li>
+     *     <li>A specified {@link #setProperties(java.util.Properties) properties} instance: Properties discovered in
+     *         the instance will override any previously discovered values.</li>
+     *     <li>Directly specified {@link #setId(String) id} and {@link #setSecret(String) secret} property values.
+     *         If specified, they will override any previously discovered value.</li>
+     * </ol>
      *
      * @return a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.
      */

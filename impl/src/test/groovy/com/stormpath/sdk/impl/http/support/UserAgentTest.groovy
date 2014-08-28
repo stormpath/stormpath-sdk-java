@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.client
+package com.stormpath.sdk.impl.http.support
 
-import com.stormpath.sdk.impl.api.ClientApiKeyBuilder
+import com.stormpath.sdk.lang.Assert
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertTrue
-
 /**
- * @since 1.0.beta
+ * @since 1.0.0
  */
-public class ApiKeysTest {
+class UserAgentTest {
+
+    private static final String VERSION_SEPARATOR = "/";
+    private static final String ENTRY_SEPARATOR = " ";
 
     @Test
-    void testBuilder() {
-        def builder = ApiKeys.builder();
-        assertTrue(builder instanceof ClientApiKeyBuilder)
+    void testGetUserAgentString() {
+        String userAgent = UserAgent.getUserAgentString()
+        Assert.hasText(userAgent)
+        Assert.isTrue(userAgent.contains("stormpath-sdk-java" + VERSION_SEPARATOR + Version.getClientVersion() + ENTRY_SEPARATOR))
+        Assert.isTrue(userAgent.contains("java" + VERSION_SEPARATOR + System.getProperty("java.version") + ENTRY_SEPARATOR))
     }
-
-
 }

@@ -35,7 +35,7 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
-import com.stormpath.sdk.impl.http.support.Version;
+import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
@@ -92,7 +92,7 @@ public class DefaultDataStore implements InternalDataStore {
     private final ApiKey apiKey;
     private final PropertiesFilterProcessor resourceDataFilterProcessor;
     private final PropertiesFilterProcessor queryStringFilterProcessor;
-    
+
     /**
      * @since 0.9
      */
@@ -103,6 +103,11 @@ public class DefaultDataStore implements InternalDataStore {
     private final QueryStringFactory queryStringFactory;
 
     private final CacheMapInitializer cacheMapInitializer;
+
+    /**
+     * @since 1.0.0
+     */
+    public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
     public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
         this(requestExecutor, DEFAULT_API_VERSION, apiKey);
@@ -915,7 +920,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+        request.getHeaders().set("User-Agent", USER_AGENT_STRING);
         if (request.getBody() != null) {
             //this data store currently only deals with JSON messages:
             request.getHeaders().setContentType(MediaType.APPLICATION_JSON);

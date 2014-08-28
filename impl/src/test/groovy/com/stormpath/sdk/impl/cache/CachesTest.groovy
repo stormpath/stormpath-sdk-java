@@ -21,8 +21,7 @@ import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
-import static com.stormpath.sdk.cache.Caches.named
-import static com.stormpath.sdk.cache.Caches.newCacheManager
+import static com.stormpath.sdk.cache.Caches.*
 import static org.testng.Assert.*
 
 /**
@@ -64,5 +63,14 @@ class CachesTest {
 
         assertEquals cache.timeToLive, defaultTtl
         assertEquals cache.timeToIdle, defaultTti
+    }
+
+    @Test
+    void testNewDisabledCacheManager() {
+
+        CacheManager cm = newDisabledCacheManager();
+
+        assertNotNull cm
+        assertTrue cm instanceof DisabledCacheManager
     }
 }
