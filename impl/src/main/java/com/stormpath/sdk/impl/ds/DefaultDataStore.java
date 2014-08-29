@@ -374,7 +374,13 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+
+        //@since 1.0.0
+        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
+            in.setProperties(toEnlistment(props));
+        } else {
+            in.setProperties(props);
+        }
 
         return (T) in;
     }

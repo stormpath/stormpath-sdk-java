@@ -202,6 +202,17 @@ public class Enlistment implements Map<String, Object> {
 
     @Override
     public boolean equals(Object o) {
+        //ApiKeys obtained via Application#getApiKey(String) are retrieved from an internal CollectionResource (ApiKeyList).
+        //Resources inside a collection are not shared among resources with same href. Therefore, when comparing ApiKeys,
+        //we can be receiving an api key whose properties do not reside inside and Enlistment object, therefore we need to
+        //compare Map vs Map instead of Enlistment vs Enlistment
+        //This fixes the failing tests: ApplicationIT#testGetApiKeyById and ApplicationIT#testGetApiKeyByIdCacheDisabled
+        if (o instanceof Map && !(o instanceof Enlistment) && (((String)((Map)o).get("href")).contains("/apiKeys/"))) {
+            return o.equals(this);
+        }
+        if( ! (o instanceof Enlistment)) {
+            return false;
+        }
         Enlistment other = (Enlistment) o;
         readLock.lock();
         try {
