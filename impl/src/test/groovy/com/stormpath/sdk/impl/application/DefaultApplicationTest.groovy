@@ -692,7 +692,7 @@ class DefaultApplicationTest {
         }
     }
 
-    //@since 1.0.RC
+    //@since 1.0.0
     private void setNewValue(Class clazz, Object object, String fieldName, Object value){
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)

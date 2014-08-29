@@ -303,13 +303,13 @@ class AccountIT extends ClientIT {
         directory.save();
 
         account.getDirectory().getName();
-        Assert.assertEquals(directory.getName(), account.getDirectory().getName());
+        assertEquals(directory.getName(), account.getDirectory().getName());
 
         directory.setName(app.getName() + "YYYYY");
         directory.save();
 
         //Before fixing issue #47, this assertion failed
-        Assert.assertEquals(directory.getName(), account.getDirectory().getName());
+        assertEquals(directory.getName(), account.getDirectory().getName());
     }
 
     // @since 1.0.0
@@ -333,14 +333,14 @@ class AccountIT extends ClientIT {
         customData.save();
 
         //CustomData content obtained from Account is in sync with the content obtained from the CustomData Resource
-        Assert.assertEquals("aValue01", customData.get("aKey"));
-        Assert.assertEquals("aValue01", account.getCustomData().get("aKey"));
+        assertEquals("aValue01", customData.get("aKey"));
+        assertEquals("aValue01", account.getCustomData().get("aKey"));
 
         customData.put("aKey", "aValue02");
         customData.save();
 
         //Before fixing issue #47, this assertion failed
-        Assert.assertEquals(customData.get("aKey"), account.getCustomData().get("aKey")); // assertion fails
+        assertEquals(customData.get("aKey"), account.getCustomData().get("aKey")); // assertion fails
     }
 
     //@since 1.0.0
@@ -420,7 +420,7 @@ class AccountIT extends ClientIT {
         assertEquals(dirtyProperties01.size(), 0)
         assertEquals(properties02.size(), 16)
         assertEquals(dirtyProperties02.size(), 1)
-        account01.save()
+
         assertEquals(account01.getMiddleName(), null)
         assertEquals(account02.getMiddleName(), "New Middle Name for Account02")
         assertEquals(properties01.size(), 16)

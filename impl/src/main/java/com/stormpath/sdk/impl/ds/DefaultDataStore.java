@@ -346,7 +346,13 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+
+        //@since 1.0.0
+        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
+            in.setProperties(toEnlistment(props));
+        } else {
+            in.setProperties(props);
+        }
 
         return (T) in;
     }
@@ -490,9 +496,9 @@ public class DefaultDataStore implements InternalDataStore {
             cacheNestedCustomData(href, props);
         }
 
-        //@since 1.0.RC
-        if (!Collections.isEmpty(responseBody) && responseBody.get("href") != null) {
-            responseBody = toEnlistment(responseBody);
+        //@since 1.0.0
+        if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
+            returnResponseBody = toEnlistment(returnResponseBody);
         }
 
         //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response

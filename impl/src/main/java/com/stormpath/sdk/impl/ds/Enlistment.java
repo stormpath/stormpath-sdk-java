@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * operations.
  *
  * @see {@link DefaultDataStore}
- * @since 1.0.RC
+ * @since 1.0.0
  */
 public class Enlistment implements Map<String, Object> {
 

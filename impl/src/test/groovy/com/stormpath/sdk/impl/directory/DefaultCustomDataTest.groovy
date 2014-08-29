@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.directory
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -114,7 +115,7 @@ class DefaultCustomDataTest {
 
     }
 
-    //@since 1.0.RC
+    //@since 1.0.0
     @Test
     void testMapManipulation() {
         def ds = createStrictMock(InternalDataStore)
@@ -214,13 +215,13 @@ class DefaultCustomDataTest {
 
 }
 
-// @since 1.0.RC
+// @since 1.0.0
 private class DefaultDataStoreDelegateTo extends DefaultDataStore {
 
     private CustomData customData;
 
     DefaultDataStoreDelegateTo(RequestExecutor requestExecutor, CustomData customData) {
-        super(requestExecutor)
+        super(requestExecutor, "https://api.stormpath.com/v1", createNiceMock(ApiKey))
         this.customData = customData
     }
 

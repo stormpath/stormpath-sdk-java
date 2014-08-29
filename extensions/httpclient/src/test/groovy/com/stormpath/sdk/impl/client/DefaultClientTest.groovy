@@ -24,10 +24,10 @@ import com.stormpath.sdk.application.CreateApplicationRequest
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.ds.ResourceFactory
-import com.stormpath.sdk.impl.http.HttpMethod
 import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
@@ -138,7 +138,7 @@ class DefaultClientTest {
         assertEquals(client.getDataStore().baseUrl, baseUrl)
     }
 
-    //@since 1.0.RC
+    //@since 1.0.0
     @Test
     void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
         def apiKey = createNiceMock(ApiKey)
@@ -177,7 +177,7 @@ class DefaultClientTest {
         InputStream is02 = new ByteArrayInputStream(mapMarshaller.marshal(properties).getBytes());
         InputStream is01AfterSave = new ByteArrayInputStream(mapMarshaller.marshal(propertiesAfterSave).getBytes());
 
-        def dataStore = new DefaultDataStore(requestExecutor)
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", createNiceMock(ApiKey))
 
         //Server call for Resource01
         expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.GET, properties.href))))).andReturn(response)
@@ -230,7 +230,7 @@ class DefaultClientTest {
         verify requestExecutor, response, resourceFactory
     }
 
-    //@since 1.0.RC
+    //@since 1.0.0
     static class RequestMatcher implements IArgumentMatcher {
 
         private Request expected
@@ -360,7 +360,7 @@ class DefaultClientTest {
     /**
      * Allows to set a new value to a final property
      *
-     * @since 1.0.RC
+     * @since 1.0.0
      */
     private void setNewValue(Object object, String fieldName, Object value){
         Field field = object.class.getDeclaredField(fieldName);
