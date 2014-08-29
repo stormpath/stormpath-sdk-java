@@ -20,6 +20,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 #### Resolved Issues ####
 
+- [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
 - [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
 - [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
@@ -56,6 +57,10 @@ method (for redirecting end-users to your ID Site) and the
 method (for hanling the return reply from your ID Site) for code examples!
 
 ### 1.0.RC ###
+
+- [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters.
+- [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call.
+- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
 
 Stormpath Java SDK 1.0 Release Candidate
 

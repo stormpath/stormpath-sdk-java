@@ -35,6 +35,7 @@ import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
@@ -50,6 +51,9 @@ import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -400,8 +404,8 @@ class DefaultApplicationTest {
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
-        newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         def modifiedApp = new DefaultApplication(null, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [accountStoreMappings: accountStoreMappings])
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -409,8 +413,8 @@ class DefaultApplicationTest {
         expect(newAccountStoreMapping.setDefaultAccountStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
-        newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
         modifiedApp = new DefaultApplication(null, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultAccountStoreMapping: newAccountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -423,8 +427,8 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.setDefaultAccountStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
-        newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
         modifiedApp = new DefaultApplication(null, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultAccountStoreMapping: accountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -475,8 +479,8 @@ class DefaultApplicationTest {
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
-        newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         def modifiedApp = new DefaultApplication(null, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [accountStoreMappings: accountStoreMappings])
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -484,8 +488,8 @@ class DefaultApplicationTest {
         expect(newAccountStoreMapping.setDefaultGroupStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
-        newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
         modifiedApp = new DefaultApplication(null, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultGroupStoreMapping: newAccountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -498,8 +502,8 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.setDefaultGroupStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
-        newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
         modifiedApp = new DefaultApplication(null, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultGroupStoreMapping: accountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -680,12 +684,19 @@ class DefaultApplicationTest {
                 return false;
             }
             Application actual = (Application) o
-            return (Objects.nullSafeEquals(expected, actual))
+            return expected.toString().equals(actual.toString())
         }
 
         void appendTo(StringBuffer stringBuffer) {
             stringBuffer.append(expected.toString())
         }
+    }
+
+    //@since 1.0.0
+    private void setNewValue(Class clazz, Object object, String fieldName, Object value){
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        field.set(object, value)
     }
 
 }
