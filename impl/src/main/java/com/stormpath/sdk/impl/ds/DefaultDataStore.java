@@ -34,8 +34,9 @@ import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
-import com.stormpath.sdk.impl.http.support.Version;
+import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -93,7 +94,8 @@ public class DefaultDataStore implements InternalDataStore {
     private final ApiKey apiKey;
     private final PropertiesFilterProcessor resourceDataFilterProcessor;
     private final PropertiesFilterProcessor queryStringFilterProcessor;
-    
+    private volatile Map<String, Enlistment> hrefMapStore;
+
     /**
      * @since 0.9
      */
@@ -104,6 +106,11 @@ public class DefaultDataStore implements InternalDataStore {
     private final QueryStringFactory queryStringFactory;
 
     private final CacheMapInitializer cacheMapInitializer;
+
+    /**
+     * @since 1.0.0
+     */
+    public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
     public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
         this(requestExecutor, DEFAULT_API_VERSION, apiKey);
@@ -125,6 +132,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
         this.referenceFactory = new ReferenceFactory();
+        this.hrefMapStore = new SoftHashMap<String, Enlistment>();
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
         resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor();
@@ -200,6 +208,11 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
+        //@since 1.0.0
+        if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) && data.get("href") != null) {
+            data = toEnlistment(data);
+        }
+
         if (CollectionResource.class.isAssignableFrom(clazz)) {
             //only collections can support a query string constructor argument:
             return this.resourceFactory.instantiate(clazz, data, qs);
@@ -240,6 +253,11 @@ public class DefaultDataStore implements InternalDataStore {
         href = ensureFullyQualified(href);
 
         Map<String, ?> data = retrieveResponseValue(href, parent, qs);
+
+        //@since 1.0.0
+        if (!Collections.isEmpty(data) && data.get("href") != null && !CollectionResource.class.isAssignableFrom(parent)) {
+            data = toEnlistment(data);
+        }
 
         if (Collections.isEmpty(data)) {
             throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
@@ -329,7 +347,13 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+
+        //@since 1.0.0
+        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
+            in.setProperties(toEnlistment(props));
+        } else {
+            in.setProperties(props);
+        }
 
         return (T) in;
     }
@@ -351,7 +375,13 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+
+        //@since 1.0.0
+        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
+            in.setProperties(toEnlistment(props));
+        } else {
+            in.setProperties(props);
+        }
 
         return (T) in;
     }
@@ -477,6 +507,11 @@ public class DefaultDataStore implements InternalDataStore {
         //a dependency in case we choose to implement a cleaner way later.
         if (resource instanceof AbstractDirectoryEntity && isCacheUpdateEnabled(CustomData.class)) {
             cacheNestedCustomData(href, props);
+        }
+
+        //@since 1.0.0
+        if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
+            returnResponseBody = toEnlistment(returnResponseBody);
         }
 
         //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
@@ -922,7 +957,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+        request.getHeaders().set("User-Agent", USER_AGENT_STRING);
         if (request.getBody() != null) {
             //this data store currently only deals with JSON messages:
             request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -980,5 +1015,23 @@ public class DefaultDataStore implements InternalDataStore {
     private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
 
         return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());
+    }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all
+     * Resource instances referencing the same Href.
+     * @since 1.0.0
+     */
+    private Enlistment toEnlistment(Map data) {
+        Enlistment enlistment;
+        Object responseHref = data.get("href");
+        if (this.hrefMapStore.containsKey(responseHref)) {
+            enlistment = this.hrefMapStore.get(responseHref);
+            enlistment.setProperties((Map<String, Object>) data);
+        } else {
+            enlistment = new Enlistment((Map<String, Object>) data);
+            this.hrefMapStore.put((String) responseHref, enlistment);
+        }
+        return enlistment;
     }
 }
