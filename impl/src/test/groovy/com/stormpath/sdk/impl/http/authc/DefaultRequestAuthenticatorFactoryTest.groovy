@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc. and contributors.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.9.3

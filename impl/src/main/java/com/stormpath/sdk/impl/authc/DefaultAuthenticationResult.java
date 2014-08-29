@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
@@ -31,7 +32,7 @@ public class DefaultAuthenticationResult extends AbstractResource implements Aut
 
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
 
-    private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCOUNT);
 
     public DefaultAuthenticationResult(InternalDataStore dataStore) {
         super(dataStore);
@@ -49,5 +50,10 @@ public class DefaultAuthenticationResult extends AbstractResource implements Aut
     @Override
     public Account getAccount() {
         return getResourceProperty(ACCOUNT);
+    }
+
+    @Override
+    public void accept(AuthenticationResultVisitor visitor) {
+        visitor.visit(this);
     }
 }

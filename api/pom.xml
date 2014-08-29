@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,8 +29,8 @@
     <name>Stormpath Java SDK :: API</name>
     <description>
         The Stormpath Java SDK API .jar provides a Java API that your code can use to make calls to the Stormpath
-        API.  This .jar is the only compile-time dependency within the Stormpath SDK project that your code should
-        depend on.  Implementations of this API (implementation .jars) should be runtime dependencies only.
+        API. This .jar is the only compile-time dependency within the Stormpath SDK project that your code should
+        depend on. Implementations of this API (implementation .jars) should be runtime dependencies only.
     </description>
     <packaging>jar</packaging>
 

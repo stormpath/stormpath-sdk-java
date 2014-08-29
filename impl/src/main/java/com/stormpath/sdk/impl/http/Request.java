@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.http;
 
+import com.stormpath.sdk.http.HttpMethod;
+
 import java.io.InputStream;
 import java.net.URI;
 

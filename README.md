@@ -2,7 +2,7 @@
 
 # Stormpath Java SDK #
 
-Copyright &copy; 2013 Stormpath, Inc. and contributors.
+Copyright &copy; 2013-2014 Stormpath, Inc. and contributors.
 
 This project is open-source via the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
@@ -10,18 +10,132 @@ For all additional information, please see the full [Project Documentation](http
 
 ### Build Instructions ###
 
-This project requires Maven 3.0.3 to build.  Run the following:
+This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 `> mvn install`
 
 ## Change Log ##
 
-### 1.0.RC ###
+### 1.0.0 ###
+
+#### Resolved Issues ####
 
 - [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
+- [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
+- [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
+- [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
+means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
+better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
+recognize how to implement a fix.
+
+### 1.0.RC2 ###
+
+Stormpath Java SDK 1.0 Release Candidate 2
+
+#### ID Site Functionality! ####
+
+This is one of the big features that we wanted to ensure was supported in the SDK before 1.0 final: your own hosted
+white-labeled Identity Site, what we call an 'ID Site'!
+
+You can have a 100% customizable white-labeled site, for example, `https://id.awesomeapp.com` or
+`https://my.awesomeapp.com`, hosted and served securely by Stormpath.  Your ID Site provides your end-users with a
+hosted and secure registration, login, and password reset functionality, and **completely hands-off integration with
+Google and Facebook!**.
+
+Your white-labeled ID Site is beautiful and 'just works' out-of-the box and requires no development effort, but if you
+want to customize it in any way, you can easily fork our default GitHub repo and customize it as you desire, and we'll
+serve your fork securely just the same.
+
+All that is required for this to work is that your application redirects your end-user to your secure ID Site URL and,
+when the user is done, can receive a redirect back to your application.  This 1.0.RC2 release includes these two
+additional functions so you don't have to code that yourself.
+
+See the [Application](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html)
+interface's **[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteUrlBuilder())**
+method (for redirecting end-users to your ID Site) and the
+**[newIdSiteCallbackHandler](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteCallbackHandler(java.lang.Object))**
+method (for hanling the return reply from your ID Site) for code examples!
+
+### 1.0.RC ###
+
 - [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters.
 - [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call.
 - [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
+
+Stormpath Java SDK 1.0 Release Candidate
+
+1.0 final will be released after this release.
+
+#### New Features & Enhancements ####
+
+##### Secure your REST API using OAuth 2! #####
+
+The Stormpath Java SDK can now act as an OAuth 2 Provider with full API Key management support!
+
+You can now use the Java SDK to create and manage API Keys for your end-users so they can authenticate with your own
+REST API.  You can create, delete, enable/disable as many API Keys as you want for each of your end-user `Account`
+resources.  See the `Account` interface's `createApiKey*` and `getApiKeys*` methods.
+
+Now for the _really_ powerful stuff: the Stormpath Java SDK implements OAuth2 provider functionality. Your end-users can
+use these API Keys to make OAuth 2 requests to your REST API, and the Stormpath Java SDK will authenticate the requests
+via OAuth as you wish.  This includes both OAuth 2 access token requests (e.g. the `/oauth/token` endpoint) as well as
+resource requests (e.g. `/movies/1234`).  **At no point do you ever need to see, touch, or write OAuth code!**
+The Stormpath SDK does it for you.
+
+See the `Application` interface's `authenticateApiRequest` and `authenticateOauthRequest` methods for lots of detailed
+information.
+
+##### Resource method chaining #####
+
+All resource mutator methods can now be chained for less verbose object construction.  For example, instead of:
+
+```java
+Account account = client.instantiate(Account.class);
+account.setGivenName("John");
+account.setGivenName("Smith");
+account.setEmail("jsmith@gmail.com");
+account.save();
+```
+one might choose to write instead:
+
+```java
+client.instantiate(Account.class)
+  .setGivenName("John").setSurname("Smith").setEmail("jsmith@gmail.com").save();
+```
+
+##### Client Tenant Actions #####
+
+The `Client` and `Tenant` interfaces now both extend a new `TenantActions` interface that represents common
+tenant behavior.  This allows you to perform this common tenant behavior directly via a `Client` instance without
+having to call the intermediate `client.getCurrentTenant()` method first.
+
+For example, instead of:
+
+```java
+client.getCurrentTenant().createApplication(anApp);
+```
+you may now write:
+
+```java
+client.createApplication(anApp);
+```
+
+which is likely more intuitive.
+
+##### Password Reset Cleanup #####
+
+Resetting an end-user's password via password reset token can now be done in a single method call.  Just provide the
+reset token and the new password, and that's it.
+
+#### Resolved Issues ####
+
+- [Issue 46](https://github.com/stormpath/stormpath-sdk-java/issues/46): Application#setDefault*StoreMapping IT failure
+- [Issue 48](https://github.com/stormpath/stormpath-sdk-java/issues/48): OAuth provider support with API Key management!
+- [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters
+- [Issue 54](https://github.com/stormpath/stormpath-sdk-java/issues/54): AuthenticationResult must not extend Resource
+- [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call
+- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
+- [Issue 58](https://github.com/stormpath/stormpath-sdk-java/issues/58): Allow a `Client` instance to directly perform common `Tenant` actions.
 
 ### 1.0.beta ###
 

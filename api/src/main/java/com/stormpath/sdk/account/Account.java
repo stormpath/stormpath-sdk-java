@@ -15,6 +15,10 @@
  */
 package com.stormpath.sdk.account;
 
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -47,11 +51,11 @@ public interface Account extends Resource, Saveable, Deletable {
     String getUsername();
 
     /**
-     * Sets the account's username, which must be unique among all other accounts within a Directory.  If you do not have
-     * need of a username, it is best to set the username to equal the {@link #getEmail()}.
-     * </p>
-     * An attempt to set a username that is in use when creating or saving the account will result in a
-     * {@link com.stormpath.sdk.error.Error Error}
+     * Sets the account's username, which must be unique among all other accounts within a Directory.  If you do not
+     * have need of a username, it is best to set the username to equal the {@link #getEmail()}.
+     *
+     * <p>An attempt to set a username that is in use when creating or saving the account will result in a
+     * {@link com.stormpath.sdk.error.Error Error}</p>
      *
      * @param username the account's username, which must be unique among all other accounts within a Directory.
      * @return this instance for method chaining.
@@ -67,9 +71,9 @@ public interface Account extends Resource, Saveable, Deletable {
 
     /**
      * Sets the account's email address, which must be unique among all other accounts within a Directory.
-     * </p>
-     * An attempt to set an email that is in use when creating or saving the account will result in a
-     * {@link com.stormpath.sdk.error.Error Error}
+     *
+     * <p>An attempt to set an email that is in use when creating or saving the account will result in a
+     * {@link com.stormpath.sdk.error.Error Error}</p>
      *
      * @param email the account's email address, which must be unique among all other accounts within a Directory.
      * @return this instance for method chaining.
@@ -80,8 +84,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * Sets (changes) the account's password to the specified raw (plaintext) password.  ONLY call this method if you
      * legitimately want to set the account password directly.  It is usually more advisable to use Stormpath's
      * account password reset email workflow (when possible).
-     * <p/>
-     * After calling this method, you must call {@link #save()} to propagate the change to the Stormpath servers.
+     *
+     * <p>After calling this method, you must call {@link #save()} to propagate the change to the Stormpath
+     * servers.</p>
      *
      * @param password the account's new raw (plaintext) password.
      * @return this instance for method chaining.
@@ -135,11 +140,11 @@ public interface Account extends Resource, Saveable, Deletable {
 
     /**
      * Returns the account's 'full name', per Western cultural conventions.
-     * <p/>
-     * This is <em>NOT</em> a persistent/settable property.  It is a convenience computed property
+     *
+     * <p>This is <em>NOT</em> a persistent/settable/queryable property.  It is a convenience computed property
      * combining the {@link #getGivenName() givenName} (aka 'first name' in Western cultures) followed by the
      * {@link #getMiddleName() middleName} (if any) followed by the {@link #getSurname() surname} (aka 'last name' in
-     * Western cultures).
+     * Western cultures).</p>
      *
      * @return the account's 'full name', per Western cultural conventions.
      * @since 0.8
@@ -165,11 +170,11 @@ public interface Account extends Resource, Saveable, Deletable {
 
     /**
      * Returns a paginated list of the account's assigned groups.
-     * <p/>
-     * Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and
+     *
+     * <p>Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and
      * practical) to execute a search for one or more of the account's groups using the
-     * {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} or {@link #getGroups(java.util.Map)} methods instead of
-     * this one.
+     * {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} or {@link #getGroups(java.util.Map)} methods instead
+     * of this one.</p>
      *
      * @return a paginated list of all groups assigned to the Account.
      * @see #getGroups(com.stormpath.sdk.group.GroupCriteria)
@@ -179,9 +184,10 @@ public interface Account extends Resource, Saveable, Deletable {
 
     /**
      * Returns a paginated list of the account's assigned groups that match the specified query criteria.
-     * <p/>
-     * This method is mostly provided as a non-type-safe alternative to the
-     * {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} method which might be useful in dynamic languages on the
+     *
+     * <p>This method is mostly provided as a non-type-safe alternative to the
+     * {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} method which might be useful in dynamic languages on
+     * the
      * JVM (for example, with Groovy):
      * <pre>
      * def groups = account.getGroups([description: '*foo*', orderBy: 'name desc', limit: 50])
@@ -193,8 +199,9 @@ public interface Account extends Resource, Saveable, Deletable {
      * <pre>
      * .../accounts/accountId/groups?param1=value1&param2=value2&...
      * </pre>
-     * <p/>
-     * If in doubt, use {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} as all possible query options are available
+     * </p>
+     * If in doubt, use {@link #getGroups(com.stormpath.sdk.group.GroupCriteria)} as all possible query options are
+     * available
      * via type-safe guarantees that can be auto-completed by most IDEs.
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
@@ -282,9 +289,9 @@ public interface Account extends Resource, Saveable, Deletable {
 
     /**
      * Assigns this account to the specified Group.
-     * <p/>
-     * <b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()} afterwards.
-     * This method will interact with the server immediately.
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will interact with the server immediately.</p>
      *
      * @return the new GroupMembership resource created reflecting the account-to-group association.
      * @since 0.4
@@ -303,7 +310,6 @@ public interface Account extends Resource, Saveable, Deletable {
      * Returns the Stormpath CustomData owned by this Account resource.
      *
      * @return the Stormpath CustomData owned by  this Account resource.
-     *
      * @since 0.9
      */
     CustomData getCustomData();
@@ -315,17 +321,18 @@ public interface Account extends Resource, Saveable, Deletable {
      *
      * @param responseOptions The {@code AccountOptions} to use to customize the Account resource returned in the save
      *                        response.
-     *
      * @return this instance for method chaining.
      * @since 0.9
      */
     Account saveWithResponseOptions(AccountOptions responseOptions);
 
     /**
-     * Returns true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.
+     * Returns true if the account belongs to a group whose name or href is (case insensitive) equal to the specified
+     * hrefOrName value, false otherwise.
      *
      * @param hrefOrName the href or name of the group being sought.
-     * @return true if the account belongs to a group whose name or href is (case insensitive) equal to the specified hrefOrName value, false otherwise.
+     * @return true if the account belongs to a group whose name or href is (case insensitive) equal to the specified
+     *         hrefOrName value, false otherwise.
      * @since 0.9.3
      */
     boolean isMemberOfGroup(String hrefOrName);
@@ -334,9 +341,117 @@ public interface Account extends Resource, Saveable, Deletable {
      * Returns the ProviderData Resource belonging to the account.
      *
      * @return the ProviderData Resource belonging to the account.
-     *
      * @since 1.0.beta
      */
     ProviderData getProviderData();
 
+    /**
+     * Returns all {@link ApiKey}s that belong to this account.  The account can use any of these
+     * ApiKeys (that are {@link com.stormpath.sdk.api.ApiKey#getStatus() enabled}) to communicate with your
+     * Application's API (e.g. REST API). See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(request)} and
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(request)} for more information.
+     *
+     * @return all {@link ApiKey}s that belong to this account.
+     * @since 1.0.RC
+     */
+    ApiKeyList getApiKeys();
+
+    /**
+     * Returns a paginated list of the account's api keys that match the specified query criteria.  The account can use
+     * any of these ApiKeys (that are {@link com.stormpath.sdk.api.ApiKey#getStatus() enabled}) to communicate with your
+     * Application's API (e.g. REST API). See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(request)} and
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(request)} for more information.
+     *
+     * <p>This method is mostly provided as a non-type-safe alternative to the
+     * {@link #getApiKeys(com.stormpath.sdk.api.ApiKeyCriteria)} method which might be useful in dynamic languages on
+     * the
+     * JVM (for example, with Groovy):
+     * <pre>
+     * def apiKeys = account.getApiKeys([expand: 'tenant'])
+     * </pre>
+     * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/apiKeys?param1=value1&param2=value2&...
+     * </pre>
+     * </p>
+     * If in doubt, use {@link #getApiKeys(com.stormpath.sdk.api.ApiKeyCriteria)} as all possible query options are
+     * available via type-safe guarantees that can be auto-completed by most IDEs.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the account's api keys that match the specified query criteria.
+     * @since 1.0.RC
+     */
+    ApiKeyList getApiKeys(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's api keys that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.api.ApiKeys ApiKeys} utility class is available to help construct the criteria DSL -
+     * most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy query-building experience.
+     * For example:
+     * <pre>
+     * account.getApiKeys(ApiKeys.criteria().offsetBy(50).withTenant());
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.api.ApiKeys.*;
+     *
+     * ...
+     *
+     * account.getApiKeys(criteria().offsetBy(50).withTenant());
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's api keys that match the specified query criteria.
+     * @since 1.0.RC
+     */
+    ApiKeyList getApiKeys(ApiKeyCriteria criteria);
+
+    /**
+     * Creates a new {@link ApiKey} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the ApiKey to communicate with your Application's API (e.g. REST API).
+     * See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(request)} and
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(request)} for more information.
+     *
+     * <h3>Security Notice</h3>
+     *
+     * <p>The returned ApiKey's {@link com.stormpath.sdk.api.ApiKey#getSecret() secret} is considered
+     * <em>extremely</em> sensitive.  Stormpath strongly recommends that you make newly generated ApiKeys accessible
+     * to your accounts via a File download that stays secure on their file system.
+     * </p>
+     *
+     * @return the newly created {@link ApiKey}.
+     * @since 1.0.RC
+     */
+    ApiKey createApiKey();
+
+    /**
+     * Creates a new {@link ApiKey} assigned to this account in the Stormpath server and ensures the returned
+     * {@link ApiKey} reflects the specified {@link ApiKeyOptions}.
+     * The account can then use the ApiKey to communicate with your Application's API (e.g. REST API).
+     * See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(request)} and
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(request)} for more information.
+     *
+     * <h3>Security Notice</h3>
+     *
+     * <p>The returned ApiKey's {@link com.stormpath.sdk.api.ApiKey#getSecret() secret} is considered
+     * <em>extremely</em> sensitive.  Stormpath strongly recommends that you make newly generated ApiKeys accessible
+     * to your accounts via a File download that stays secure on their file system.
+     * </p>
+     *
+     * @param options The {@link ApiKeyOptions} to use to customize the ApiKey resource returned in the create
+     *                response.
+     * @since 1.0.RC
+     */
+    ApiKey createApiKey(ApiKeyOptions options);
 }

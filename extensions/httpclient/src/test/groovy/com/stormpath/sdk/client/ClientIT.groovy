@@ -32,7 +32,6 @@ abstract class ClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
-    String apiKeyFileLocation = System.getProperty('user.home') + "/.stormpath/apiKey.properties"
     String baseUrl = 'https://api.stormpath.com/v1'
     Client client
 
@@ -72,22 +71,10 @@ abstract class ClientIT {
     Client buildClient(boolean enableCaching=true) {
 
         def builder = Clients.builder()
-        def apiKeyBuilder = ApiKeys.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
-        //see if the api key file exists first - if so, use it:
-        def file = new File(apiKeyFileLocation)
-        if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKey(apiKeyBuilder.setFileLocation(apiKeyFileLocation).build())
-        } else {
-            //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
-            String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
-            String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).setSecret(apiKeySecret).build())
-        }
-
-        if (enableCaching) {
-            builder.setCacheManager(Caches.newCacheManager().build())
+        if (!enableCaching) {
+            builder.setCacheManager(Caches.newDisabledCacheManager())
         }
 
         return builder.build()
@@ -96,19 +83,7 @@ abstract class ClientIT {
     Client buildClient(AuthenticationScheme authenticationScheme) {
 
         def builder = Clients.builder()
-        def apiKeyBuilder = ApiKeys.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
-
-        //see if the api key file exists first - if so, use it:
-        def file = new File(apiKeyFileLocation)
-        if (file.exists() && file.isFile() && file.canRead()) {
-            builder.setApiKey(apiKeyBuilder.setFileLocation(apiKeyFileLocation).build())
-        } else {
-            //no file - check env vars.  This is mostly just so we can pick up encrypted env vars when running on Travis CI:
-            String apiKeyId = System.getenv('STORMPATH_API_KEY_ID')
-            String apiKeySecret = System.getenv('STORMPATH_API_KEY_SECRET')
-            builder.setApiKey(apiKeyBuilder.setId(apiKeyId).setSecret(apiKeySecret).build())
-        }
 
         builder.setAuthenticationScheme(authenticationScheme)
 

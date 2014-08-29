@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2014 Stormpath, Inc.
  *
@@ -30,6 +31,7 @@ import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper
@@ -542,6 +544,23 @@ class DefaultApplicationTest {
         assertNotNull(accountResult)
 
         verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testCreateSsoRedirectUrl() {
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj"]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        def ssoRedirectUrlBuilder = defaultApplication.newIdSiteUrlBuilder()
+
+        assertTrue(ssoRedirectUrlBuilder instanceof DefaultIdSiteUrlBuilder)
+        assertEquals(ssoRedirectUrlBuilder.internalDataStore, internalDataStore)
+        assertEquals(ssoRedirectUrlBuilder.applicationHref, properties.href)
     }
 
     /**
