@@ -474,6 +474,19 @@ public class DefaultDataStore implements InternalDataStore {
         Response response = executeRequestGetFullResponse(request);
         Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
 
+        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
+        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
+        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
+        //"is new" status
+        int responseStatus = response.getHttpStatus();
+        if (ProviderAccountResult.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
+            if(responseStatus == 200) { //is not a new account
+                responseBody.put("isNewAccount", false);
+            } else {
+                responseBody.put("isNewAccount", true);
+            }
+        }
+
         // Transitory filters serve the purpose of filtering the resource properties to return to the user,
         // based on the current request.
         // For example: decrypting the api key secret to return to the user
@@ -512,19 +525,6 @@ public class DefaultDataStore implements InternalDataStore {
         //@since 1.0.0
         if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
             returnResponseBody = toEnlistment(returnResponseBody);
-        }
-
-        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
-        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
-        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
-        //"is new" status
-        int responseStatus = response.getHttpStatus();
-        if (ProviderAccountResult.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
-            if(responseStatus == 200) { //is not a new account
-                responseBody.put("isNewAccount", false);
-            } else {
-                responseBody.put("isNewAccount", true);
-            }
         }
 
         return resourceFactory.instantiate(returnType, returnResponseBody);
