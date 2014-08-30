@@ -43,7 +43,14 @@ public class DefaultProviderAccountResult extends AbstractResource implements Pr
     }
 
     public DefaultProviderAccountResult(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+        super(dataStore);
+
+        if (properties != null) {
+            setProperty(NEW_ACCOUNT, properties.get(NEW_ACCOUNT.getName()));
+            properties.remove(NEW_ACCOUNT.getName());
+            Account account = getDataStore().instantiate(Account.class, properties);
+            setProperty(ACCOUNT, account);
+        }
     }
 
     @Override
@@ -59,6 +66,13 @@ public class DefaultProviderAccountResult extends AbstractResource implements Pr
     @Override
     public boolean isNewAccount() {
         return getBoolean(NEW_ACCOUNT);
+    }
+
+    //@since 1.0.0
+    @Override
+    public String getHref() {
+        throw new UnsupportedOperationException("Although this class implements the Resource interface, it is technically " +
+                "not a Resource and therefore does not have an href property");
     }
 
 }

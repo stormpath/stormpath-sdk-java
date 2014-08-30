@@ -27,6 +27,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
 recognize how to implement a fix.
+- [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
 
 ### 1.0.RC2 ###
 

@@ -37,7 +37,6 @@ import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
-import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -49,7 +48,9 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
@@ -473,6 +474,19 @@ public class DefaultDataStore implements InternalDataStore {
         Response response = executeRequestGetFullResponse(request);
         Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
 
+        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
+        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
+        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
+        //"is new" status
+        int responseStatus = response.getHttpStatus();
+        if (ProviderAccountResult.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
+            if(responseStatus == 200) { //is not a new account
+                responseBody.put("isNewAccount", false);
+            } else {
+                responseBody.put("isNewAccount", true);
+            }
+        }
+
         // Transitory filters serve the purpose of filtering the resource properties to return to the user,
         // based on the current request.
         // For example: decrypting the api key secret to return to the user
@@ -489,7 +503,13 @@ public class DefaultDataStore implements InternalDataStore {
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
         if (isCacheUpdateEnabled(returnType)) {
-            cache(returnType, responseBody, filteredQs);
+            //@since 1.0.0: Let's first check if the response is an actual Resource (meaning, that it has an href property)
+            if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
+                //@since 1.0.0: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+                if (!returnType.isAssignableFrom(ProviderAccountResult.class)) {
+                    cache(returnType, responseBody, filteredQs);
+                }
+            }
         }
 
         //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
@@ -505,19 +525,6 @@ public class DefaultDataStore implements InternalDataStore {
         //@since 1.0.0
         if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
             returnResponseBody = toEnlistment(returnResponseBody);
-        }
-
-        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
-        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
-        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
-        //"is new" status
-        int responseStatus = response.getHttpStatus();
-        if (ProviderAccountResultHelper.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
-            if(response.getHttpStatus() == 200) { //is not a new account
-                responseBody.put("isNewAccount", false);
-            } else {
-                responseBody.put("isNewAccount", true);
-            }
         }
 
         return resourceFactory.instantiate(returnType, returnResponseBody);
