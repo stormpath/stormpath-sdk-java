@@ -442,6 +442,7 @@ class ApplicationIT extends ClientIT {
     @Test
     void testCreateSsoLogout() {
         def app = createTempApp()
+
         def ssoRedirectUrlBuilder = app.newIdSiteUrlBuilder()
 
         def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").forLogout().build()
