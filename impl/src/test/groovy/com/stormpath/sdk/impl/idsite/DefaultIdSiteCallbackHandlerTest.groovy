@@ -138,6 +138,7 @@ class DefaultIdSiteCallbackHandlerTest {
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
+
         AccountResult accountResult = callbackHandler.getAccountResult()
         assertEquals(accountResult.account, accountResultFromListener.account)
         assertEquals(accountResult.newAccount, accountResultFromListener.newAccount)
