@@ -26,7 +26,6 @@ import com.stormpath.sdk.idsite.IdSiteResultListener
 import com.stormpath.sdk.idsite.LogoutResult
 import com.stormpath.sdk.idsite.RegistrationResult
 import com.stormpath.sdk.impl.ds.DefaultDataStore
-import org.easymock.EasyMock
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.jwt.JwtConstants.JWR_RESPONSE_PARAM_NAME
@@ -139,6 +138,7 @@ class DefaultIdSiteCallbackHandlerTest {
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
+
         AccountResult accountResult = callbackHandler.getAccountResult()
         assertEquals(accountResult.account, accountResultFromListener.account)
         assertEquals(accountResult.newAccount, accountResultFromListener.newAccount)
