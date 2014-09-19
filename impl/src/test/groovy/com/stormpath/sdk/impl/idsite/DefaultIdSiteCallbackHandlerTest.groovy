@@ -15,14 +15,17 @@
  */
 package com.stormpath.sdk.impl.idsite
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
 import com.stormpath.sdk.idsite.AccountResult
+import com.stormpath.sdk.idsite.AuthenticationResult
 import com.stormpath.sdk.idsite.IdSiteResultListener
+import com.stormpath.sdk.idsite.LogoutResult
+import com.stormpath.sdk.idsite.RegistrationResult
 import com.stormpath.sdk.impl.ds.DefaultDataStore
-import org.easymock.EasyMock
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.jwt.JwtConstants.JWR_RESPONSE_PARAM_NAME
@@ -70,10 +73,11 @@ class DefaultIdSiteCallbackHandlerTest {
         def request = createStrictMock(HttpRequest)
         def listener = createStrictMock(IdSiteResultListener)
         def apiKey = createStrictMock(ApiKey)
+        def account = createStrictMock(Account)
         String apiKeyId = "2EV70AHRTYF0JOA7OEFO3SM29"
         String apiKeySecret = "goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8"
 
-        def accountResultFromListener = null
+        AccountResult accountResultFromListener = null
 
         expect(request.getMethod()).andReturn(HttpMethod.GET)
         expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
@@ -81,62 +85,65 @@ class DefaultIdSiteCallbackHandlerTest {
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(dataStore.isCachingEnabled()).andReturn(false).times(2)
+        expect(dataStore.instantiate(Account, [href:"https://api.stormpath.com/v1/accounts/7Ora8KfVDEIQP38KzrYdAs"])).andReturn(account) times 2
 
         if (expectedListenerMethod.equals(IdSiteResultStatus.REGISTERED)) {
             expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
                 @Override
-                public void onRegistered(AccountResult accountResult) {
-                    accountResultFromListener = accountResult
+                public void onRegistered(RegistrationResult result) {
+                    accountResultFromListener = result
                 }
                 @Override
-                public void onAuthenticated(AccountResult accountResult) {
+                public void onAuthenticated(AuthenticationResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
                 @Override
-                public void onLogout(AccountResult accountResult) {
+                public void onLogout(LogoutResult Result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
             })
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.AUTHENTICATED)) {
             expect(listener.onAuthenticated(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
                 @Override
-                public void onRegistered(AccountResult accountResult) {
+                public void onRegistered(RegistrationResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
                 @Override
-                public void onAuthenticated(AccountResult accountResult) {
-                    accountResultFromListener = accountResult
+                public void onAuthenticated(AuthenticationResult result) {
+                    accountResultFromListener = result
                 }
                 @Override
-                public void onLogout(AccountResult accountResult) {
+                public void onLogout(LogoutResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
             })
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.LOGOUT)) {
             expect(listener.onLogout(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
                 @Override
-                public void onRegistered(AccountResult accountResult) {
+                public void onRegistered(RegistrationResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
                 @Override
-                public void onAuthenticated(AccountResult accountResult) {
+                public void onAuthenticated(AuthenticationResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
                 @Override
-                public void onLogout(AccountResult accountResult) {
-                    accountResultFromListener = accountResult
+                public void onLogout(LogoutResult result) {
+                    accountResultFromListener = result
                 }
             })
         }
 
-        replay dataStore, application, request, listener, apiKey
+        replay dataStore, application, request, listener, apiKey, account
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
         AccountResult accountResult = callbackHandler.getAccountResult()
-        assertEquals(accountResult, accountResultFromListener)
+        assertEquals(accountResult.account, accountResultFromListener.account)
+        assertEquals(accountResult.newAccount, accountResultFromListener.newAccount)
+        assertEquals(accountResult.state, accountResultFromListener.state)
 
-        verify dataStore, application, request, listener, apiKey
+        verify dataStore, application, request, listener, apiKey, account
 
     }
 

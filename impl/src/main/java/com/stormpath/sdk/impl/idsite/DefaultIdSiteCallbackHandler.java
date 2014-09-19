@@ -20,11 +20,11 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.AccountResult;
-import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
-import com.stormpath.sdk.idsite.IdSiteResultListener;
-import com.stormpath.sdk.idsite.NonceStore;
+import com.stormpath.sdk.idsite.*;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
+import com.stormpath.sdk.impl.account.DefaultAuthenticationResult;
+import com.stormpath.sdk.impl.account.DefaultLogoutResult;
+import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -127,7 +127,10 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
         //@since 1.0.0
-        dispatchResponseStatus(accountResult);
+        if(this.resultListener != null) {
+            IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
+            dispatchResponseStatus(resultStatus, properties);
+        }
 
         return accountResult;
     }
@@ -217,33 +220,32 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     /**
      * Notifies the {@link com.stormpath.sdk.idsite.IdSiteResultListener} about the actual operation of the Id Site invocation:
      * <ul>
-     *     <li> Registered -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(AccountResult)} ()}</>
-     *     <li> Authenticated -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated(AccountResult)} </>
-     *     <li> Logout -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onLogout(AccountResult)} </>
+     *     <li> Registered -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(com.stormpath.sdk.idsite.RegistrationResult) IdSiteResultListener#onRegistered(RegistrationResult)}</li>
+     *     <li> Authenticated -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated(com.stormpath.sdk.idsite.AuthenticationResult) IdSiteResultListener#onAuthenticated(AuthenticationResult)} </li>
+     *     <li> Logout -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onLogout(com.stormpath.sdk.idsite.LogoutResult) IdSiteResultListener#onLogout(LogoutResult)} </li>
      * </ul>
      *
+     * @param status describing the operation executed at Id Site: registration, authentication or logout.
+     * @param properties a map of attributes extracted from the JSON Payload that is used to create the specific Account Result sub-class:
+     *                   like: {@link RegistrationResult}, {@link AuthenticationResult} or {@ling LogoutResult}.
      * @throws IllegalArgumentException if the result status is unknown.
      * @since 1.0.0
      */
-    private void dispatchResponseStatus(AccountResult accountResult) {
-        if(this.resultListener != null) {
-            JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
-            Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
-            IdSiteResultStatus status = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
-            switch (status) {
-                case REGISTERED:
-                    this.resultListener.onRegistered(accountResult);
-                    break;
-                case AUTHENTICATED:
-                    this.resultListener.onAuthenticated(accountResult);
-                    break;
-                case LOGOUT:
-                    resultListener.onLogout(accountResult);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Encountered unknown IdSite result status: " + status);
-            }
+    private void dispatchResponseStatus(IdSiteResultStatus status, Map<String, Object> properties) {
+        switch (status) {
+            case REGISTERED:
+                this.resultListener.onRegistered(new DefaultRegistrationResult(dataStore, properties));
+                break;
+            case AUTHENTICATED:
+                this.resultListener.onAuthenticated(new DefaultAuthenticationResult(dataStore, properties));
+                break;
+            case LOGOUT:
+                resultListener.onLogout(new DefaultLogoutResult(dataStore, properties));
+                break;
+            default:
+                throw new IllegalArgumentException("Encountered unknown IdSite result status: " + status);
         }
     }
+
 }
 

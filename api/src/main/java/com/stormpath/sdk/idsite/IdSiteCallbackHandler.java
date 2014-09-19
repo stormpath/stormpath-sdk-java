@@ -88,17 +88,17 @@ public interface IdSiteCallbackHandler {
      * IdSiteCallbackHandler callbackHandler = application.newIdSiteCallbackHandler(request);
      * callbackHandler.setResultListener(new IdSiteResultListener() {
      *      {@literal@}Override
-     *      public void onRegistered() {
+     *      public void onRegistered(RegistrationResult result) {
      *          System.out.println("Successful Id Site registration");
      *      }
      *
      *      {@literal@}Override
-     *      public void onAuthenticated() {
+     *      public void onAuthenticated(AuthenticationResult result) {
      *          System.out.println("Successful Id Site authentication");
      *      }
      *
      *      {@literal@}Override
-     *      public void onLogout() {
+     *      public void onLogout(LogoutResult result) {
      *          System.out.println("Successful Id Site logout");
      *      }
      * });
