@@ -25,14 +25,10 @@ import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.*;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -553,4 +549,66 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequestClass.getName(),
                                                          HTTP_REQUEST_SUPPORTED_CLASSES.toString()));
     }
+
+    /** @since 1.0.0 */
+    @Override
+    public AccountStoreMapping addDirectory(Directory directory) {
+        Assert.notNull(directory);
+        String dirHref = directory.getHref();
+        String dirName = directory.getName();
+        Assert.isTrue(dirHref != null || dirName != null, "Either the Directory's href or name must be provided.");
+        if (dirHref != null) {
+            return addAccountStore(directory);
+        } else {
+            Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+            DirectoryList directories = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName)));
+            Directory foundDirectory = null;
+            //There cannot be more than one dir with the same name in a single tenant. Thus, the dir list will have either
+            //zero or one items, never more.
+            for (Directory dir : directories) {
+                foundDirectory = dir;
+                break;
+            }
+            if (foundDirectory != null) {
+                return addAccountStore(foundDirectory);
+            }
+        }
+        //No directory matching the given information could be found; therefore no account store can be added. We return null...
+        return null;
+    }
+
+    /** @since 1.0.0 */
+    @Override
+    public AccountStoreMapping addGroup(Group group) {
+        Assert.notNull(group);
+        String groupHref = group.getHref();
+        String groupName = group.getName();
+        Assert.isTrue(groupHref != null || groupName != null, "Either the Group's href or name must be provided.");
+        if (groupHref != null) {
+            return addAccountStore(group);
+        } else {
+            GroupCriteria groupCriteria = Groups.where(Groups.name().eqIgnoreCase(groupName));
+            Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+            DirectoryList directories = tenant.getDirectories();
+            Group foundGroup = null;
+            for(Directory directory : directories) {
+                GroupList groups = directory.getGroups(groupCriteria);
+                //There cannot be more than one group with the same name in a single tenant. Thus, the group list will have either
+                //zero or one items, never more.
+                for (Group grp : groups) {
+                    foundGroup = grp;
+                    break;
+                }
+                if (foundGroup != null) {
+                    break;
+                }
+            }
+            if (foundGroup != null) {
+                return addAccountStore(foundGroup);
+            }
+        }
+        //No group matching the given information could be found; therefore no account store can be added. We return null...
+        return null;
+    }
+
 }

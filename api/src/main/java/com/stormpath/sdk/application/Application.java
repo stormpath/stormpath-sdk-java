@@ -25,6 +25,7 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -229,7 +230,14 @@ public interface Application extends Resource, Saveable, Deletable {
     Account createAccount(CreateAccountRequest request) throws ResourceException;
 
     /**
-     * Returns all Groups accessible to the application (based on the Application's associated Account stores).
+     * Returns all Groups accessible to the application. It will not only return any group associated directly as an
+     * {@link AccountStore} but also every group that exists inside every directory associated as an account store.
+     * <p/>
+     * These groups can be used role-based access control checks, for example, 'if a user is in the admin group, allow
+     * them to delete a user'.
+     * <p/>
+     * If you want to control which accounts can login to an application, you control that via the application's AccountStoreMappings
+     * collection, not this method.
      * <p/>
      * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
      * for one or more groups using the {@link #getGroups(java.util.Map)} method instead of this one.
@@ -1252,4 +1260,69 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.0.RC2
      */
     IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
+
+    /**
+     * Convenience method to add a {@link Directory} as an {@link AccountStore} to this application.
+     * <p/>
+     * The given directory must have either its href or name property set. Having that information, this method will
+     * look for a directory in this {@link Tenant} that matches either the href or the name given. Once it is found, it will
+     * then delegate the creation to {@link #addAccountStore(AccountStore)} with the found directory in order to fulfill its task.
+     * </p>
+     * Example providing a Directory href:
+     * <p/>
+     * <pre>
+     *      Directory directory = client.getResource("https://api.stormpath.com/v1/directory/3xwt06QyMt6u2DhKLfzvie", Directory.class);
+     *      AccountStoreMapping accountStoreMapping = application.addDirectory(directory);
+     * </pre>
+     * Example providing a Directory name:
+     * <p/>
+     * <pre>
+     *      Directory directory = client.instantiate(Directory.class);
+     *      directory.setName("Foo Directory");
+     *      AccountStoreMapping accountStoreMapping = application.addDirectory(directory);
+     * </pre>
+     * <b>Usage NOTE:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
+     *
+     * @param directory the given {@link Directory} instance having either the href or the name specified.
+     * @return the {@link AccountStoreMapping} created after finding the actual directory pertaining to this tenant
+     *          that matches either the given Href or name. It returns null if there is no directory matching the href or name.
+     * @throws ResourceException if the given directory already exists as an account store in this application.
+     * @since 1.0.0
+     */
+    AccountStoreMapping addDirectory(Directory directory);
+
+    /**
+     * Convenience method to add a {@link Group} as an {@link AccountStore} to this application.
+     * <p/>
+     * The given group must have either its href or name property set. Having that information, this method will
+     * look for a group iterating through every {@link Directory} existing in this {@link Tenant}. Once a matching group
+     * is found, it will then delegate the creation to {@link #addAccountStore(AccountStore)} in order to fulfill its task.
+     * </p>
+     * Example providing a Group href:
+     * <p/>
+     * <pre>
+     *      Group group = client.getResource("https://api.stormpath.com/v1/groups/2rwq022yMt4u2DwKLfzriP", Group.class);
+     *      AccountStoreMapping accountStoreMapping = application.adGroup(group);
+     * </pre>
+     * Example providing a Group name:
+     * <p/>
+     * <pre>
+     *      Group group = client.instantiate(Group.class);
+     *      group.setName("Foo Group");
+     *      AccountStoreMapping accountStoreMapping = application.addGroup(group);
+     * </pre>
+     * <b>USAGE NOTE 1: When the Group's name is used, this method will iterate over every directory existing in this tenant.
+     * In contrast, providing the Group's href is much more efficient as no actual search operation needs to be carried out.
+     * </b>
+     * <b>Usage NOTE 2:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
+     *
+     * @param group the given {@link Group} instance having either the href or the name specified.
+     * @return the {@link AccountStoreMapping} created after finding the actual group being sought. It returns null if
+     * there is no group matching the href or name given.
+     * @throws ResourceException if the given group already exists as an account store in this application.
+     * @since 1.0.0
+     */
+    AccountStoreMapping addGroup(Group group);
 }

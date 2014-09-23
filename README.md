@@ -28,6 +28,7 @@ means of the User-Agent http header. The primary purpose of this is for us at St
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
 recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
+- [Issue 103](https://github.com/stormpath/stormpath-sdk-java/issues/103): We have added two convenience methods to simplify the addition of Account Stores by just providing a Dir' or Group's href or name: app.addDirectory(Directory) and app.addGroup(Group). 
 
 ### 1.0.RC2 ###
 

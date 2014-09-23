@@ -24,12 +24,18 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
+import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.group.DefaultGroup
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
@@ -45,6 +51,7 @@ import com.stormpath.sdk.provider.FacebookProviderData
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountResult
 import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.query.Criteria
 import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
@@ -666,6 +673,330 @@ class DefaultApplicationTest {
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddDirectoryWithHref() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def dirs = createStrictMock(DirectoryList)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        def dir = createStrictMock(Directory)
+        def dirHref = "https://api.stormpath.com/v1/directories/enEIX1Ozsewi2Pdwm65OE"
+
+        Application application = createMockBuilder(DefaultApplication.class)
+                .withConstructor(InternalDataStore, Map)
+                .withArgs(internalDataStore, properties)
+                .addMockedMethod("addAccountStore", AccountStore)
+                .createMock();
+
+        expect(dir.getHref()).andReturn(dirHref)
+        expect(dir.getName()).andReturn(null)
+        expect(application.addAccountStore(dir)).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(dir)
+
+        replay internalDataStore, dirs, accountStoreMapping, application, dir
+
+        def returnedAccountStoreMapping = application.addDirectory(dir)
+        assertNotNull(returnedAccountStoreMapping)
+        assertSame(returnedAccountStoreMapping.getAccountStore(), dir)
+
+        verify internalDataStore, dirs, accountStoreMapping, application, dir
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddDirectoryWithName() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def tenant = createStrictMock(Tenant)
+        def dirs = createStrictMock(DirectoryList)
+        def dirsIterator = createStrictMock(Iterator)
+        def foundDir = createStrictMock(Directory)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        DirectoryCriteria criteria = Directories.where(Directories.name().eqIgnoreCase("dirBeingSought"));
+
+        Application application = createMockBuilder(DefaultApplication.class)
+                .withConstructor(InternalDataStore, Map)
+                .withArgs(internalDataStore, properties)
+                .addMockedMethod("addAccountStore", AccountStore)
+                .createMock();
+
+        expect(internalDataStore.getResource("/tenants/current", Tenant)).andReturn(tenant)
+        expect(tenant.getDirectories((DirectoryCriteria) reportMatcher(new CriteriaMatcher(criteria)))).andReturn(dirs)
+        expect(dirs.iterator()).andReturn(dirsIterator)
+        expect(dirsIterator.hasNext()).andReturn(true)
+        expect(dirsIterator.next()).andReturn(foundDir)
+
+        expect(application.addAccountStore(foundDir)).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(foundDir)
+
+        replay internalDataStore, tenant, dirs, dirsIterator, foundDir, accountStoreMapping, application
+
+        Directory dir = new DefaultDirectory(internalDataStore)
+        dir.setName("dirBeingSought")
+        def returnedAccountStoreMapping = application.addDirectory(dir)
+        assertNotNull(returnedAccountStoreMapping)
+        assertSame(returnedAccountStoreMapping.getAccountStore(), foundDir)
+
+        verify internalDataStore, tenant, dirs, dirsIterator, foundDir, accountStoreMapping, application
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddDirectoryWithNameNotFound() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def tenant = createStrictMock(Tenant)
+        def dirs = createStrictMock(DirectoryList)
+        def dirIterator = createStrictMock(Iterator)
+
+        DirectoryCriteria criteria = Directories.where(Directories.name().eqIgnoreCase("dirBeingSought"));
+
+        Application application = createMockBuilder(DefaultApplication.class)
+                .withConstructor(InternalDataStore, Map)
+                .withArgs(internalDataStore, properties)
+                .addMockedMethod("addAccountStore", AccountStore)
+                .createMock();
+
+        expect(internalDataStore.getResource("/tenants/current", Tenant)).andReturn(tenant)
+        expect(tenant.getDirectories((DirectoryCriteria) reportMatcher(new CriteriaMatcher(criteria)))).andReturn(dirs)
+        expect(dirs.iterator()).andReturn(dirIterator)
+        expect(dirIterator.hasNext()).andReturn(false)
+
+        replay internalDataStore, tenant, dirs, dirIterator, application
+
+        Directory dir = new DefaultDirectory(internalDataStore)
+        dir.setName("dirBeingSought")
+        def returnedAccountStoreMapping = application.addDirectory(dir)
+        assertNull(returnedAccountStoreMapping)
+
+        verify internalDataStore, tenant, dirs, dirIterator, application
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testAddDirectoryNullHrefAndName() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def dir = createStrictMock(Directory)
+
+        expect(dir.getHref()).andReturn(null)
+        expect(dir.getName()).andReturn(null)
+
+        replay internalDataStore, dir
+
+        def application = new DefaultApplication(internalDataStore, properties)
+        application.addDirectory(dir)
+
+        verify internalDataStore, dir
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddGroupWithHref() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def groups = createStrictMock(GroupList)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        def group = createStrictMock(Group)
+        def groupHref = "https://api.stormpath.com/v1/groups/edPIX1Ozsewi2Pdwmp2Oq"
+
+        Application application = createMockBuilder(DefaultApplication.class)
+                .withConstructor(InternalDataStore, Map)
+                .withArgs(internalDataStore, properties)
+                .addMockedMethod("addAccountStore", AccountStore)
+                .createMock();
+
+        expect(group.getHref()).andReturn(groupHref)
+        expect(group.getName()).andReturn(null)
+        expect(application.addAccountStore(group)).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(group)
+
+        replay internalDataStore, groups, accountStoreMapping, application, group
+
+        def returnedAccountStoreMapping = application.addGroup(group)
+        assertNotNull(returnedAccountStoreMapping)
+        assertSame(returnedAccountStoreMapping.getAccountStore(), group)
+
+        verify internalDataStore, groups, accountStoreMapping, application, group
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddGroupWithName() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def tenant = createStrictMock(Tenant)
+        def dirs = createStrictMock(DirectoryList)
+        def dirIterator = createStrictMock(Iterator)
+        def dir = createStrictMock(Directory)
+        def groups = createStrictMock(GroupList)
+        def groupIterator = createStrictMock(Iterator)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        def foundGroup = createStrictMock(Group)
+        GroupCriteria groupCriteria = Groups.where(Groups.name().eqIgnoreCase("groupBeingSought"));
+
+        Application application = createMockBuilder(DefaultApplication.class)
+                .withConstructor(InternalDataStore, Map)
+                .withArgs(internalDataStore, properties)
+                .addMockedMethod("addAccountStore", AccountStore)
+                .createMock();
+
+        expect(internalDataStore.getResource("/tenants/current", Tenant)).andReturn(tenant)
+        expect(tenant.getDirectories()).andReturn(dirs)
+        expect(dirs.iterator()).andReturn(dirIterator)
+        expect(dirIterator.hasNext()).andReturn(true)
+        expect(dirIterator.next()).andReturn(dir)
+        expect(dir.getGroups((GroupCriteria) reportMatcher(new CriteriaMatcher(groupCriteria)))).andReturn(groups)
+        expect(groups.iterator()).andReturn(groupIterator)
+        expect(groupIterator.hasNext()).andReturn(true)
+        expect(groupIterator.next()).andReturn(foundGroup)
+
+        expect(application.addAccountStore(foundGroup)).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.getAccountStore()).andReturn(foundGroup)
+
+        replay internalDataStore, tenant, dirs, dirIterator, dir, groups, groupIterator, accountStoreMapping,
+                foundGroup, application
+
+        Group group = new DefaultGroup(internalDataStore)
+        group.setName("groupBeingSought")
+        def returnedAccountStoreMapping = application.addGroup(group)
+        assertNotNull(returnedAccountStoreMapping)
+        assertSame(returnedAccountStoreMapping.getAccountStore(), foundGroup)
+
+        verify internalDataStore, tenant, dirs, dirIterator, dir, groups, groupIterator, accountStoreMapping,
+                foundGroup, application
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddGroupWithNameNotFound() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def tenant = createStrictMock(Tenant)
+        def dirs = createStrictMock(DirectoryList)
+        def dirIterator = createStrictMock(Iterator)
+        def dir = createStrictMock(Directory)
+        def groups = createStrictMock(GroupList)
+        def groupIterator = createStrictMock(Iterator)
+        def accountStoreMapping = createStrictMock(AccountStoreMapping)
+        GroupCriteria groupCriteria = Groups.where(Groups.name().eqIgnoreCase("groupBeingSought"));
+
+        Application application = createMockBuilder(DefaultApplication.class)
+                .withConstructor(InternalDataStore, Map)
+                .withArgs(internalDataStore, properties)
+                .addMockedMethod("addAccountStore", AccountStore)
+                .createMock();
+
+        expect(internalDataStore.getResource("/tenants/current", Tenant)).andReturn(tenant)
+        expect(tenant.getDirectories()).andReturn(dirs)
+        expect(dirs.iterator()).andReturn(dirIterator)
+        expect(dirIterator.hasNext()).andReturn(true)
+        expect(dirIterator.next()).andReturn(dir)
+        expect(dir.getGroups((GroupCriteria) reportMatcher(new CriteriaMatcher(groupCriteria)))).andReturn(groups)
+        expect(groups.iterator()).andReturn(groupIterator)
+        expect(groupIterator.hasNext()).andReturn(false)
+        expect(dirIterator.hasNext()).andReturn(true)
+        expect(dirIterator.next()).andReturn(dir)
+        expect(dir.getGroups((GroupCriteria) reportMatcher(new CriteriaMatcher(groupCriteria)))).andReturn(groups)
+        expect(groups.iterator()).andReturn(groupIterator)
+        expect(groupIterator.hasNext()).andReturn(false)
+        expect(dirIterator.hasNext()).andReturn(false)
+
+        replay internalDataStore, tenant, dirs, dirIterator, dir, groups, groupIterator, accountStoreMapping,
+                application
+
+        Group group = new DefaultGroup(internalDataStore)
+        group.setName("groupBeingSought")
+        def returnedAccountStoreMapping = application.addGroup(group)
+        assertNull(returnedAccountStoreMapping)
+
+        verify internalDataStore, tenant, dirs, dirIterator, dir, groups, groupIterator, accountStoreMapping,
+                application
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testAddGroupNullHrefAndName() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def group = createStrictMock(Group)
+
+        expect(group.getHref()).andReturn(null)
+        expect(group.getName()).andReturn(null)
+
+        replay internalDataStore, group
+
+        def application = new DefaultApplication(internalDataStore, properties)
+        application.addGroup(group)
+
+        verify internalDataStore, group
+    }
+
     //@since 1.0.RC
     static class ApplicationMatcher implements IArgumentMatcher {
 
@@ -680,6 +1011,28 @@ class DefaultApplicationTest {
                 return false;
             }
             Application actual = (Application) o
+            return expected.toString().equals(actual.toString())
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append(expected.toString())
+        }
+    }
+
+    //@since 1.0.0
+    private class CriteriaMatcher implements IArgumentMatcher {
+
+        private Criteria expected
+
+        CriteriaMatcher(Criteria criteria) {
+            expected = criteria;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! Criteria.isInstance(o)) {
+                return false;
+            }
+            Criteria actual = (Criteria) o
             return expected.toString().equals(actual.toString())
         }
 

@@ -532,4 +532,38 @@ class ApplicationIT extends ClientIT {
         assertNotNull appList.href
     }
 
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddAccountStore_ConvienceMethods() {
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testAddDirectory")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = uniquify("Java SDK: ApplicationIT.testAddDirectory")
+        dir.createGroup(group)
+
+        def app = createTempApp()
+
+        def groupToFind = client.instantiate(Group)
+        groupToFind.setName(group.name)
+
+        //Convenience method for group
+        def retrievedAccountStoreMappingForGroup = app.addGroup(group)
+        assertNotNull(retrievedAccountStoreMappingForGroup)
+        assertEquals(retrievedAccountStoreMappingForGroup.getAccountStore(), group)
+
+        def dirToFind = client.instantiate(Directory)
+        dirToFind.setName(dir.name)
+
+        //Convenience method for dir
+        def retrievedAccountStoreMappingForDir = app.addDirectory(dirToFind)
+        assertNotNull(retrievedAccountStoreMappingForDir)
+        assertEquals(retrievedAccountStoreMappingForDir.getAccountStore(), dir)
+    }
+
 }
