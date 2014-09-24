@@ -537,7 +537,6 @@ class ApplicationIT extends ClientIT {
      */
     @Test
     void testAddAccountStore_ConvienceMethods() {
-
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: ApplicationIT.testAddDirectory")
         dir = client.currentTenant.createDirectory(dir);
