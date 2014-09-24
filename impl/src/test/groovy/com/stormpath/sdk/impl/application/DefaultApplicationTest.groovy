@@ -937,7 +937,6 @@ class DefaultApplicationTest {
         def groupIterator = createStrictMock(Iterator)
         def accountStoreMapping = createStrictMock(AccountStoreMapping)
         GroupCriteria groupCriteria = Groups.where(Groups.name().eqIgnoreCase("groupBeingSought"));
-
         Application application = createMockBuilder(DefaultApplication.class)
                 .withConstructor(InternalDataStore, Map)
                 .withArgs(internalDataStore, properties)
