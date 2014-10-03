@@ -171,6 +171,10 @@ import com.stormpath.sdk.cache.CacheManager;
  * Client client = {@link com.stormpath.sdk.client.Clients Clients}.builder().setCacheManager(cacheManager).build();
  * </pre>
  *
+ * <p><b>NOTE</b>: it should be noted that <a href="http://memcached.org/">Memcache</a> <em>DOES NOT</em> guarantee cache
+ * coherency.  It is strongly recommended that you do not use Memcache as your clustered caching solution (memcache
+ * is fine for caching files, etc, but not data that is expected to be coherent across multiple cluster nodes).</p>
+ *
  * <h4>Disable Caching</h4>
  *
  * <p>While production applications will usually enable a working CacheManager as described above, you might wish to disable caching
@@ -182,10 +186,6 @@ import com.stormpath.sdk.cache.CacheManager;
  *     <b><code>Caches.newDisabledCacheManager()</code></b>
  * ).build();
  * </pre>
- *
- * <p>NOTE: it should be noted that <a href="http://memcached.org/">Memcache</a> <em>DOES NOT</em> guarantee cache
- * coherency.  It is strongly recommended that you do not use Memcache as your clustered caching solution (memcache
- * is fine for caching files, etc, but not data that is expected to be coherent across a cluster).</p>
  *
  * <h3>Single Instance</h3>
  *
@@ -200,7 +200,7 @@ import com.stormpath.sdk.cache.CacheManager;
  * result in exposing stale data to your application and could data errors.</p>
  *
  * <p>If you must have multiple {@code Client} instances in your application, you should ensure that each client
- * references the same {@code CacheManager} instance to guarantee cache coherency.</p>
+ * references the same exact {@code CacheManager} instance to guarantee cache coherency.</p>
  *
  * @see com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder
  * @since 1.0.beta
@@ -211,9 +211,12 @@ public interface ClientBuilder {
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the
      * default location + override/fallback behavior defined in the {@link ClientBuilder documentation above}.
      *
+     * <p>Consider using an {@link com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder} to construct your
+     * {@code ApiKey} instance.</p>
+     *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
-     * @see com.stormpath.sdk.api.ApiKeyBuilder#setId(String) ApiKeyBuilder.setId(String)
+     * @see com.stormpath.sdk.api.ApiKeyBuilder
      * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
      */
     @Deprecated
@@ -223,9 +226,12 @@ public interface ClientBuilder {
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the
      * default location + override/fallback behavior defined in the {@link ClientBuilder documentation above}.
      *
+     * <p>Consider using an {@link com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder} to construct your
+     * {@code ApiKey} instance.</p>
+     *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
-     * @see com.stormpath.sdk.api.ApiKeyBuilder#setId(String) ApiKeyBuilder.setId(String)
+     * @see com.stormpath.sdk.api.ApiKeyBuilder
      */
     ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey);
 

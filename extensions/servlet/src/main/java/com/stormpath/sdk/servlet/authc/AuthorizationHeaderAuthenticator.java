@@ -58,27 +58,24 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
     }
 
     @Override
-    public HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response)
-        throws AuthenticationException {
+    public HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response) {
 
-        //spec says there can only be one value, no need to check for multiple values:
-
+        //HTTP spec says there can only be one value, no need to check for multiple values:
         String headerValue = request.getHeader(AUTHORIZATION);
 
-        HttpCredentials credentials = parser.parse(headerValue);
+        HttpCredentials creds = parser.parse(headerValue);
 
-        String schemeName = Strings.clean(credentials.getSchemeName());
+        String schemeName = Strings.clean(creds.getSchemeName());
 
         if (schemeName != null) {
 
-            HttpAuthenticationScheme scheme = this.schemes.get(credentials.getSchemeName().toLowerCase());
+            HttpAuthenticationScheme scheme = this.schemes.get(creds.getSchemeName().toLowerCase());
 
-            String schemeValue = credentials.getSchemeValue();
+            String schemeValue = creds.getSchemeValue();
 
             if (schemeValue != null) {
 
-                HttpAuthenticationAttempt attempt =
-                    new DefaultHttpAuthenticationAttempt(request, response, credentials);
+                HttpAuthenticationAttempt attempt = new DefaultHttpAuthenticationAttempt(request, response, creds);
 
                 try {
                     return scheme.authenticate(attempt);
@@ -92,7 +89,9 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
             }
         }
 
+        //authc was not successful - send challenge:
         sendChallenge(request, response);
+
         return new DefaultHttpAuthenticationResult(request, response, null, false);
     }
 
@@ -110,7 +109,7 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
         }
     }
 
-    protected String createWwwAuthenticateHeaderValue(HttpAuthenticationScheme scheme, String appName) {
-        return scheme.getName() + " realm=\"" + appName + "\"";
+    protected String createWwwAuthenticateHeaderValue(HttpAuthenticationScheme scheme, String realmName) {
+        return scheme.getName() + " realm=\"" + realmName + "\"";
     }
 }

@@ -32,7 +32,7 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
     }
 
     @Override
-    public HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt) throws AuthenticationException {
+    public HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt) {
 
         Assert.notNull(attempt, "attempt cannot be null.");
         Assert.notNull(attempt.getCredentials(), "credentials cannot be null.");
@@ -43,7 +43,7 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
         byte[] bytes = DatatypeConverter.parseBase64Binary(schemeValue);
         String decoded = new String(bytes, UTF8);
 
-        String username = null;
+        String usernameOrEmail = null;
 
         StringBuilder sb = new StringBuilder();
 
@@ -53,8 +53,8 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
             char c = decoded.charAt(i);
 
-            if (username == null && c == ':') {
-                username = sb.toString();
+            if (usernameOrEmail == null && c == ':') {
+                usernameOrEmail = sb.toString();
                 sb = new StringBuilder(len - i + 1);
             } else {
                 sb.append(c);
@@ -63,6 +63,6 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
         String password = sb.length() > 0 ? sb.toString() : null;
 
-        return authenticate(attempt, username, password);
+        return authenticate(attempt, usernameOrEmail, password);
     }
 }

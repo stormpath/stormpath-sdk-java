@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 
@@ -31,21 +30,18 @@ public abstract class AbstractAuthenticationScheme implements HttpAuthentication
     public AbstractAuthenticationScheme() {
     }
 
-    protected HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt, String username, String password)
-        throws AuthenticationException {
+    protected HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt,
+                                                    String usernameOrEmail, String password) {
 
-        UsernamePasswordRequest request =
-            new UsernamePasswordRequest(username, password, attempt.getRequest().getRemoteHost());
+        String remoteHost = attempt.getRequest().getRemoteHost();
+
+        UsernamePasswordRequest request = new UsernamePasswordRequest(usernameOrEmail, password, remoteHost);
 
         Application app = getApplication(attempt.getRequest());
 
-        try {
-            AuthenticationResult result = app.authenticateAccount(request);
-            return new DefaultHttpAuthenticationResult(attempt.getRequest(), attempt.getResponse(), result, true);
-        } catch (ResourceException e) {
-            String msg = "Unable to authenticate account with login '" + username + "': " + e.getDeveloperMessage();
-            throw new AuthenticationException(msg, e);
-        }
+        AuthenticationResult result = app.authenticateAccount(request);
+
+        return new DefaultHttpAuthenticationResult(attempt.getRequest(), attempt.getResponse(), result, true);
     }
 
     protected final Application getApplication(HttpServletRequest request) {

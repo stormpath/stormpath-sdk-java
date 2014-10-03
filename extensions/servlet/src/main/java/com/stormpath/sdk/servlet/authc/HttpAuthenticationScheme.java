@@ -24,5 +24,5 @@ public interface HttpAuthenticationScheme {
      */
     String getName();
 
-    HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt) throws AuthenticationException;
+    HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt);
 }
