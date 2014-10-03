@@ -18,8 +18,6 @@ package com.stormpath.sdk.examples.servlet;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
-import com.stormpath.sdk.servlet.account.RequestAccountResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,8 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class DashboardController extends HttpServlet {
-
-    private final RequestAccountResolver ACCT_RESOLVER = new DefaultRequestAccountResolver();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

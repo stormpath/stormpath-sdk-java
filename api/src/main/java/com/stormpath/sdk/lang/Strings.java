@@ -147,6 +147,24 @@ public abstract class Strings {
     }
 
     /**
+     * Trim leading and trailing whitespace from the given String.  If the resulting string is the empty string, return
+     * null otherwise return the trimmed string.
+     *
+     * @param s th string to clean
+     * @return the cleaned string
+     */
+    public static String clean(String s) {
+        if (s == null) {
+            return null;
+        }
+        String value = trimWhitespace(s);
+        if (value == null || "".equals(value)) {
+            return null;
+        }
+        return value;
+    }
+
+    /**
      * Trim leading and trailing whitespace from the given String.
      * @param str the String to check
      * @return the trimmed String

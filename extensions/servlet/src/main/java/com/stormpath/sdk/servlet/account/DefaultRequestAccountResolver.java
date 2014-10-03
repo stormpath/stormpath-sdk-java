@@ -20,7 +20,7 @@ public class DefaultRequestAccountResolver implements RequestAccountResolver {
     public Account getAccount(ServletRequest request) {
         Assert.notNull(request, "ServletRequest argument cannot be null.");
         Assert.isTrue(hasAccount(request), "The current request does not reflect an authenticated user.  " +
-                                           "Call 'hasRequest' to check if an authenticated user exists before " +
+                                           "Call 'hasAccount' to check if an authenticated user exists before " +
                                            "calling this method.");
 
         Object value = request.getAttribute(REQUEST_ATTR_NAME);

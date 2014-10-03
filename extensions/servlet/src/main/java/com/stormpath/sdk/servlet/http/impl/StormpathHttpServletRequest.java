@@ -17,6 +17,7 @@ import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
 import com.stormpath.sdk.servlet.config.PropertiesResolver;
+import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
 import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
 import com.stormpath.sdk.servlet.http.HrefPrincipal;
@@ -40,6 +41,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     public static final String REMOTE_USER_STRATEGY    = "stormpath.servlet.request.remoteUser.strategy";
     public static final String USER_PRINCIPAL_STRATEGY = "stormpath.servlet.request.userPrincipal.strategy";
 
+    public static final String ACCOUNT    = "account";
     public static final String EMAIL      = "email";
     public static final String USERNAME   = "username";
     public static final String GIVEN_NAME = "givenName";
@@ -137,6 +139,10 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return new UsernamePrincipal(account.getUsername());
         }
 
+        if (ACCOUNT.equals(strategy)) {
+            return new AccountPrincipal(account);
+        }
+
         if (EMAIL.equals(strategy)) {
             return new EmailPrincipal(account.getEmail());
         }
@@ -211,12 +217,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         try {
             result = application.authenticateApiRequest(this);
-        } catch (IllegalArgumentException e) {
-            // Should *never* happen since the argument is this object
-            // (guaranteed to be non null and an HttpServletRequest)
-            throw new ServletException("Unable to authenticate API request.", e);
-        } catch (ResourceException e) {
-            throw new ServletException("Unable to authenticate API request.", e);
+        } catch (Throwable t) {
+            throw new ServletException("Unable to authenticate API request.", t);
         }
 
         Account account = result.getAccount();
