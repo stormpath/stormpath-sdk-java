@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.authc;
+package com.stormpath.sdk.servlet.http.authc;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
+public interface AuthorizationHeaderParser {
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-public interface HttpAuthenticationResult {
-
-    HttpServletRequest getRequest();
-
-    HttpServletResponse getResponse();
-
-    AuthenticationResult getAuthenticationResult();
-
-    boolean isContinueRequest();
+    HttpCredentials parse(String headerValue);
 
 }

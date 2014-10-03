@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.authc;
+package com.stormpath.sdk.servlet.http.authc;
 
-public interface HttpAuthenticationScheme {
+public interface HttpCredentials {
 
-    /**
-     * Returns the HTTP Authentication Scheme's name, such as {@code Basic}, {@code Bearer}, {@code OAuth}, etc.
-     *
-     * @return the HTTP Authentication Scheme's name, such as {@code Basic}, {@code Bearer}, {@code OAuth}, etc.
-     */
-    String getName();
+    String getSchemeName();
 
-    HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt);
+    String getSchemeValue();
 }
