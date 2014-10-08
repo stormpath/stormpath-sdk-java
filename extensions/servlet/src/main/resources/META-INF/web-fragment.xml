@@ -1,0 +1,52 @@
+<!--
+  ~ Copyright 2014 Stormpath, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<web-fragment metadata-complete="true" version="3.0"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd">
+
+    <name>stormpath</name>
+
+    <ordering>
+        <after>
+            <name>shiro</name>
+        </after>
+        <before>
+            <others/>
+        </before>
+    </ordering>
+
+    <listener>
+        <!-- Load the Stormpath client w/ caching enabled. Customize client config in /WEB-INF/stormpath.properties: -->
+        <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
+    </listener>
+    <filter>
+        <filter-name>StormpathFilter</filter-name>
+        <filter-class>com.stormpath.sdk.servlet.filter.StormpathFilter</filter-class>
+    </filter>
+    <!-- Make sure any request you want accessible to Stormpath is filtered. /* catches all
+        requests.  This filter mapping is usually defined in front of other filters to ensure
+        that Stormpath authentication can work in subsequent filters in the filter chain: -->
+    <filter-mapping>
+        <filter-name>StormpathFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+
+</web-fragment>

@@ -4,27 +4,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
-    <listener>
-        <!-- Load the Stormpath client w/ caching enabled. Customize client config in /WEB-INF/stormpath.properties: -->
-        <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
-    </listener>
-    <filter>
-        <filter-name>StormpathFilter</filter-name>
-        <filter-class>com.stormpath.sdk.servlet.http.HttpFilter</filter-class>
-    </filter>
-    <!-- Make sure any request you want accessible to Stormpath is filtered. /* catches all
-        requests.  This filter mapping is usually defined in front of other filters to ensure
-        that Stormpath authentication can work in subsequent filters in the filter chain: -->
-    <filter-mapping>
-        <filter-name>StormpathFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
-        <dispatcher>ERROR</dispatcher>
-    </filter-mapping>
-
-    <!-- Things below here are relevant for this particular sample app only - do not copy into your own project: -->
     <servlet>
         <servlet-name>WelcomeController</servlet-name>
         <servlet-class>com.stormpath.sdk.examples.servlet.WelcomeController</servlet-class>
@@ -57,15 +36,6 @@
         <servlet-name>DashboardController</servlet-name>
         <url-pattern>/dashboard</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>LogoutController</servlet-name>
-        <servlet-class>com.stormpath.sdk.examples.servlet.LogoutController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LogoutController</servlet-name>
-        <url-pattern>/logout</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/assets/*</url-pattern>
