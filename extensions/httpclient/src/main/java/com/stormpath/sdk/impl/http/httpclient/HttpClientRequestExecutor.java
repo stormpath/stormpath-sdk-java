@@ -49,6 +49,7 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -400,7 +401,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         //ensure that the content has been fully acquired before closing the http stream
         if (body != null) {
-            String stringBody = toString(body);
+            String stringBody = EntityUtils.toString(entity, "UTF-8");
             body = new StringInputStream(stringBody);
         }
 

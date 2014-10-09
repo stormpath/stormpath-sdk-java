@@ -26,9 +26,11 @@ import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
+import com.stormpath.sdk.impl.account.DefaultEmailVerificationRequest
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
@@ -642,6 +644,72 @@ class DefaultApplicationTest {
             assertEquals(e.getMessage(), "newPassword cannot be empty or null.")
         }
 
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testResendEmailVerificationToken() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        EmailVerificationRequest emailVerificationRequest = createStrictMock(EmailVerificationRequest)
+        def accountStore = createStrictMock(AccountStore)
+
+        expect(emailVerificationRequest.getLogin()).andReturn("fooUsername")
+        expect(emailVerificationRequest.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(internalDataStore.create(defaultApplication.getHref() + "/verificationEmails", emailVerificationRequest, EmailVerificationRequest.class)).andReturn(null)
+
+        replay internalDataStore, emailVerificationRequest, accountStore
+
+        defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+
+        verify internalDataStore, emailVerificationRequest, accountStore
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testResendEmailVerificationTokenInvalidData() {
+
+        def defaultApplication = new DefaultApplication(null)
+
+        def emailVerificationRequest = new DefaultEmailVerificationRequest(null)
+
+        try {
+            defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "emailVerificationRequest's email property is required.")
+        }
+
+        emailVerificationRequest.setLogin(null)
+        try {
+            defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "emailVerificationRequest's email property is required.")
+        }
+
+        def dir = new DefaultDirectory(null)
+        emailVerificationRequest.setLogin("fooUsername")
+        emailVerificationRequest.setAccountStore(dir)
+        try {
+            defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "emailVerificationRequest's accountStore has been specified but its href is null.")
+        }
     }
 
     //@since 1.0.beta

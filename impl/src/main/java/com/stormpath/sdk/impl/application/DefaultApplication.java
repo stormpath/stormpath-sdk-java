@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.EmailVerificationRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
@@ -539,6 +540,22 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         validateHttpRequest(httpRequest);
 
         return new DefaultIdSiteCallbackHandler(getDataStore(), this, httpRequest);
+    }
+
+    /** @since 1.0.0 */
+    public void sendEmailVerificationToken(EmailVerificationRequest emailVerificationRequest) {
+        Assert.notNull(emailVerificationRequest, "emailVerificationRequest must not be null.");
+        Assert.hasText(emailVerificationRequest.getLogin(), "emailVerificationRequest's email property is required.");
+
+        AccountStore accountStore = emailVerificationRequest.getAccountStore();
+        if(accountStore != null && accountStore.getHref() == null) {
+            throw new IllegalArgumentException("emailVerificationRequest's accountStore has been specified but its href is null.");
+        }
+
+        String href = getHref() + "/verificationEmails";
+        //We are passing a dummy return type (EmailVerificationRequest). It is not actually needed, but if we use the
+        //the two-parameters create(...) operation, we get an exception caused by an empty response body from the backend
+        getDataStore().create(href, emailVerificationRequest, EmailVerificationRequest.class);
     }
 
     @SuppressWarnings("unchecked")

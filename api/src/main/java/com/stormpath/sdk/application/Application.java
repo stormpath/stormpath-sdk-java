@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.EmailVerificationRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -1252,4 +1253,33 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.0.RC2
      */
     IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
+
+    /**
+     * Triggers the delivery of a new verification token for the specified account.
+     * <p/>
+     * This method is useful in scenarios where the <a href="http://docs.stormpath.com/console/product-guide/#workflow-automations">
+     * Account Registration and Verification workflow</a> is enabled. If the welcome email has not been received by
+     * a newly registered account, then the user will not be able to login until the account is verified with the received token.
+     * <p/>
+     * This method re-sends such email and allows the account to be verified with the received token.
+     * <p/>
+     * The {@link com.stormpath.sdk.account.EmailVerificationRequest EmailVerificationRequest} resource must contain the email or the
+     * username identifying the account. If the optional {@link com.stormpath.sdk.directory.AccountStore AccountStore} is
+     * also specified, the desired Account will be sought only in that specific AccountStore.
+     * Sample code:
+     * <p/>
+     * <pre>
+     *      EmailVerificationRequest emailVerificationRequest = client.instantiate(EmailVerificationRequest.class);
+     *      emailVerificationRequest.setLogin("myaccountemail@mycompany.com");
+     *      Directory dir = client.getResource("http://localhost:8080/v1/directories/7WcyHGlDa0V2Nk11Vum3Zd", Directory.class);
+     *      emailVerificationRequest.setAccountStore(dir);
+     *      application.resendEmailVerificationToken(emailVerificationRequest);
+     * </pre>
+     *
+     * @param emailVerificationRequest contains the required information fot eh verification email to be sent. The login property
+     *                                 can be either the username or password of the account. The {@link AccountStore} is an optional
+     *                                 property specifying the directory or group where the account must be searched.
+     * @since 1.0.0
+     */
+    public void sendEmailVerificationToken(EmailVerificationRequest emailVerificationRequest);
 }

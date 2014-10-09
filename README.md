@@ -28,6 +28,7 @@ means of the User-Agent http header. The primary purpose of this is for us at St
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
 recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
+- [Issue 107](https://github.com/stormpath/stormpath-sdk-java/issues/107): Added the ability to resend Account Verification Emails.
 
 ### 1.0.RC2 ###
 
