@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
-import com.stormpath.sdk.servlet.config.ConfigValueReader;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +36,13 @@ public class LoginFilter extends PathMatchingFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
-    public static final String LOGIN_URL_PROP_NAME = "stormpath.web.login.url";
-    public static final String DEFAULT_LOGIN_URL   = "/login";
-
     /**
      * Returns the context-relative URL where a user can be redirected to login.
      *
      * @return the context-relative URL where a user can be redirected to login.
      */
     public String getLoginUrl() {
-        return ConfigValueReader.DEFAULT.readValue(getServletContext(), LOGIN_URL_PROP_NAME, DEFAULT_LOGIN_URL);
+        return getConfig().getLoginUrl();
     }
 
     @Override

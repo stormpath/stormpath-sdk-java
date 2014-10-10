@@ -113,12 +113,16 @@ public abstract class HttpFilter implements Filter {
         return name;
     }
 
+    protected Config getConfig(ServletContext sc) {
+        return ConfigResolver.INSTANCE.getConfig(sc);
+    }
+
     @Override
     public final void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
         this.servletContext = filterConfig.getServletContext();
         this.name = filterConfig.getFilterName();
-        this.config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        this.config = getConfig(servletContext);
         onInit();
     }
 

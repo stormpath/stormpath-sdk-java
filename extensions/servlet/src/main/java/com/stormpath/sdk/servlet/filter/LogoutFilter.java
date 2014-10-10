@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.ConfigValueReader;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.FilterChain;
@@ -27,10 +26,13 @@ import javax.servlet.http.HttpSession;
 
 public class LogoutFilter extends PathMatchingFilter {
 
-    public static final String LOGOUT_URL_PROP_NAME = "stormpath.web.logout.url";
-    public static final String DEFAULT_LOGOUT_URL = "/logout";
-    public static final String LOGOUT_NEXT_URL_PROP_NAME = "stormpath.web.logout.nextUrl";
-    public static final String DEFAULT_LOGOUT_NEXT_URL = "/";
+    protected String getLogoutUrl() {
+        return getConfig().getLogoutUrl();
+    }
+
+    protected String getLogoutNextUrl() {
+        return getConfig().getLogoutNextUrl();
+    }
 
     @Override
     protected void onInit() throws ServletException {
@@ -44,10 +46,6 @@ public class LogoutFilter extends PathMatchingFilter {
             logoutUrlPattern = logoutUrlPattern.substring(0, i);
         }
         this.pathPatterns.add(logoutUrlPattern);
-    }
-
-    protected String getLogoutUrl() {
-        return ConfigValueReader.DEFAULT.readValue(getServletContext(), LOGOUT_URL_PROP_NAME, DEFAULT_LOGOUT_URL);
     }
 
     @Override
@@ -65,7 +63,7 @@ public class LogoutFilter extends PathMatchingFilter {
         String next = request.getParameter("next");
 
         if (!Strings.hasText(next)) {
-            next = ConfigValueReader.DEFAULT.readValue(getServletContext(), LOGOUT_NEXT_URL_PROP_NAME, DEFAULT_LOGOUT_NEXT_URL);
+            next = getLogoutNextUrl();
         }
 
         ServletUtils.issueRedirect(request, response, next, null, true, true);

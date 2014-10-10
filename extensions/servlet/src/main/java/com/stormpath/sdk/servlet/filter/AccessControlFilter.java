@@ -15,15 +15,10 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.config.ConfigValueReader;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public abstract class AccessControlFilter extends PathMatchingFilter {
-
-    public static final  String             LOGIN_URL_PROP_NAME = "stormpath.web.login.url";
-    public static final  String             DEFAULT_LOGIN_URL   = "/login";
 
     /**
      * Returns the context-relative URL where a user can be redirected to login.
@@ -31,7 +26,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      * @return the context-relative URL where a user can be redirected to login.
      */
     public String getLoginUrl() {
-        return ConfigValueReader.DEFAULT.readValue(getServletContext(), LOGIN_URL_PROP_NAME, DEFAULT_LOGIN_URL);
+        return getConfig().getLoginUrl();
     }
 
     /**
