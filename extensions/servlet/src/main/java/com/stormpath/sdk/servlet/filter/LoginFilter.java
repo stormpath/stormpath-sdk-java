@@ -17,7 +17,11 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
+import com.stormpath.sdk.servlet.form.DefaultField;
+import com.stormpath.sdk.servlet.form.DefaultForm;
+import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,10 @@ public class LoginFilter extends PathMatchingFilter {
      */
     public String getLoginUrl() {
         return getConfig().getLoginUrl();
+    }
+
+    public String getLoginNextUrl() {
+        return getConfig().getLoginNextUrl();
     }
 
     @Override
@@ -75,22 +83,80 @@ public class LoginFilter extends PathMatchingFilter {
     }
 
     protected void addConfigProperties(HttpServletRequest request) {
-        for(Map.Entry<String,String> entry : getConfig().entrySet()) {
+        for (Map.Entry<String, String> entry : getConfig().entrySet()) {
             request.setAttribute(entry.getKey(), entry.getValue());
         }
+    }
+
+    private void setForm(HttpServletRequest request, Form form) {
+        request.setAttribute("form", form);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Form createForm(HttpServletRequest request, boolean retainPassword) {
+
+        DefaultForm form = new DefaultForm();
+
+        String value = Strings.clean(request.getParameter("csrfToken"));
+        value = value != null ? value : UUID.randomUUID().toString().replace("-", ""); //TODO add to cache
+        form.setCsrfToken(value);
+
+        value = Strings.clean(request.getParameter("next"));
+        if (value != null) {
+            form.setNext(value);
+        }
+
+        String[] fieldNames = new String[]{"login", "password"};
+
+        for (String fieldName : fieldNames) {
+
+            DefaultField field = new DefaultField();
+            field.setName(fieldName);
+            field.setRequired(true);
+            field.setType("text");
+            String param = request.getParameter(fieldName);
+            field.setValue(param != null ? param : "");
+
+            String label;
+
+            if ("login".equals(fieldName)) {
+                label = "Email";
+            } else if ("password".equals(fieldName)) {
+                field.setType("password");
+                label = "Password";
+                if (!retainPassword) {
+                    field.setValue("");
+                }
+            } else {
+                //unrecognized property
+                continue;
+            }
+
+            field.setLabel(label).setPlaceholder(label);
+
+            form.addField(field);
+        }
+
+        form.autofocus();
+
+        return form;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
         addConfigProperties(request);
-        addCsrfToken(request);
+        Form form = createForm(request, false);
+        setForm(request, form);
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
+
+        Form form = createForm(request, true);
+
         try {
-            login(request, response);
+            login(request, response, form);
         } catch (Exception e) {
             log.debug("Unable to login user.", e);
 
@@ -99,28 +165,26 @@ public class LoginFilter extends PathMatchingFilter {
             request.setAttribute("errors", errors);
 
             addConfigProperties(request);
-            addCsrfToken(request);
+
+            //do not retain submitted password (not save to have in the DOM text):
+            ((DefaultField) form.getField("password")).setValue("");
+            setForm(request, form);
 
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
-    }
-
-    protected void addCsrfToken(HttpServletRequest request) {
-        //TODO: use JWT for this?
-        request.setAttribute("csrfToken", UUID.randomUUID().toString().replace("-", ""));
     }
 
     protected Account getAccount(HttpServletRequest req) {
         return RequestAccountResolver.INSTANCE.getAccount(req);
     }
 
-    protected void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void login(HttpServletRequest req, HttpServletResponse resp, Form form)
+        throws ServletException, IOException {
 
-        String csrfToken = req.getParameter("_csrf");
-        Assert.hasText(csrfToken, "CSRF Token must be specified."); //TODO check cache
+        Assert.hasText(form.getCsrfToken(), "CSRF Token must be specified."); //TODO check cache
 
-        String usernameOrEmail = req.getParameter("email");
-        String password = req.getParameter("password");
+        String usernameOrEmail = form.getFieldValue("login");
+        String password = form.getFieldValue("password");
 
         req.login(usernameOrEmail, password);
 
@@ -131,7 +195,12 @@ public class LoginFilter extends PathMatchingFilter {
         //put the account in the session for easy retrieval later:
         req.getSession().setAttribute("account", account);
 
-        //Now show the user their account/dashboard view:
-        req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
+        String next = form.getNext();
+
+        if (!Strings.hasText(next)) {
+            next = getLoginNextUrl();
+        }
+
+        ServletUtils.issueRedirect(req, resp, next, null, true, true);
     }
 }

@@ -24,9 +24,9 @@ import java.util.Set;
 
 public class DefaultConfig implements Config {
 
-    private final Map<String,String> props;
+    private final Map<String, String> props;
 
-    public DefaultConfig(Map<String,String> props) {
+    public DefaultConfig(Map<String, String> props) {
         Assert.notNull(props, "Properties argument cannot be null.");
         this.props = Collections.unmodifiableMap(props);
     }
@@ -37,6 +37,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public String getLoginNextUrl() {
+        return props.get(LOGIN_NEXT_URL);
+    }
+
+    @Override
     public String getLogoutUrl() {
         return props.get(LOGOUT_URL);
     }
@@ -44,6 +49,16 @@ public class DefaultConfig implements Config {
     @Override
     public String getLogoutNextUrl() {
         return props.get(LOGOUT_NEXT_URL);
+    }
+
+    @Override
+    public String getRegisterUrl() {
+        return props.get(REGISTER_URL);
+    }
+
+    @Override
+    public String getRegisterNextUrl() {
+        return props.get(REGISTER_NEXT_URL);
     }
 
     @Override

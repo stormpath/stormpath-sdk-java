@@ -18,25 +18,25 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:page>
-    <jsp:attribute name="title">Login</jsp:attribute>
-    <jsp:attribute name="bodyCssClass">login</jsp:attribute>
+    <jsp:attribute name="title">Register</jsp:attribute>
+    <jsp:attribute name="bodyCssClass">register</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
 
             <div class="va-wrapper">
 
-                <div class="view login-view container">
+                <div class="view registration-view container">
 
                     <div class="box row">
 
-                        <div class="email-password-area col-xs-12 <c:out value="${social ? 'small col-sm-8' : 'large col-sm-12'}"/>">
+                        <div class="col-sm-12">
 
                             <div class="header">
-                                <span>Log In or <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.register.url']}">Create Account</a></span>
+                                <span>Create Account</span>
                             </div>
 
                             <c:if test="${!empty errors}">
-                                <div class="alert alert-dismissable alert-danger bad-login">
+                                <div class="alert alert-dismissable alert-danger">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                                     <c:forEach items="${errors}" var="error">
                                         <p>${error}</p>
@@ -44,15 +44,13 @@
                                 </div>
                             </c:if>
 
-                            <form method="post" role="form" class="login-form form-horizontal">
-                                <c:if test="${!empty form.next}">
-                                <input name="next" type="hidden" value="${form.next}">
-                                </c:if>
+                            <form method="post" role="form" class="registration-form form-horizontal sp-form">
+
                                 <input name="csrfToken" type="hidden" value="${form.csrfToken}">
 
                                 <c:forEach items="${form.fields}" var="field">
                                     <div form-group="true" class="form-group group-${field.name}">
-                                        <label class="<c:out value="${social ? 'col-sm-12' : 'col-sm-4'}"/>">${field.label}</label>
+                                        <label class="col-sm-4">${field.label}</label>
                                         <div class="col-sm-8">
                                             <input name="${field.name}" value="${field.value}" type="${field.type}"
                                                    placeholder="${field.placeholder}"
@@ -63,19 +61,18 @@
                                     </div>
                                 </c:forEach>
 
-                                <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green">Log In</button>
-                                </div>
+                                <button type="submit" class="btn btn-register btn-sp-green">Create Account</button>
+
                             </form>
 
                         </div>
 
                     </div>
 
-                </div>
-
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.url']}" class="to-login">Back to Log In</a></div>
             </div>
 
         </div>
+
     </jsp:body>
 </t:page>

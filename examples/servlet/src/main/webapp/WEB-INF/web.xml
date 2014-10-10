@@ -13,22 +13,6 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>LoginController</servlet-name>
-        <servlet-class>com.stormpath.sdk.examples.servlet.LoginController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LoginController</servlet-name>
-        <url-pattern>/login</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>RegisterController</servlet-name>
-        <servlet-class>com.stormpath.sdk.examples.servlet.RegisterController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>RegisterController</servlet-name>
-        <url-pattern>/register</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>DashboardController</servlet-name>
         <servlet-class>com.stormpath.sdk.examples.servlet.DashboardController</servlet-class>
     </servlet>
