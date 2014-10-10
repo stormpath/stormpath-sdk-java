@@ -15,20 +15,17 @@
  */
 package com.stormpath.sdk.servlet.config;
 
-import com.stormpath.sdk.lang.Strings;
+import java.util.Map;
 
-import javax.servlet.ServletContext;
+public interface Config extends Map<String, String> {
 
-public class DefaultConfigValueReader implements ConfigValueReader {
+    public static final String LOGIN_URL       = "stormpath.web.login.url";
+    public static final String LOGOUT_URL      = "stormpath.web.logout.url";
+    public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUrl";
 
-    protected Config getConfig(ServletContext sc) {
-        return ConfigResolver.INSTANCE.getConfig(sc);
-    }
+    String getLoginUrl();
 
-    @Override
-    public String readValue(ServletContext sc, String name, String defaultValue) {
-        Config config = getConfig(sc);
-        String value = config.get(name);
-        return Strings.hasText(value) ? value : defaultValue;
-    }
+    String getLogoutUrl();
+
+    String getLogoutNextUrl();
 }

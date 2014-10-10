@@ -29,11 +29,12 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.cache.CacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.DefaultCacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.ServletContextAttributeCacheManager;
-import com.stormpath.sdk.servlet.config.DefaultServletContextPropertiesFactory;
-import com.stormpath.sdk.servlet.config.ServletContextPropertiesFactory;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.DefaultServletContextConfigFactory;
+import com.stormpath.sdk.servlet.config.ServletContextConfigFactory;
 
 import javax.servlet.ServletContext;
-import java.util.Properties;
+import java.util.Map;
 
 /** Default {@link ServletContextClientFactory} implementation. */
 public class DefaultServletContextClientFactory implements ServletContextClientFactory {
@@ -50,10 +51,10 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     //not configurable by end-users - always reflects the 'effective' or 'merged' view of all properties discovered
     //at startup
-    public static final String STORMPATH_CONFIG_PROPERTIES = "stormpath.config.properties";
+    public static final String STORMPATH_CONFIG = "stormpath.config";
 
-    private final ServletContextPropertiesFactory servletContextPropertiesFactory =
-        new DefaultServletContextPropertiesFactory();
+    private final ServletContextConfigFactory servletContextConfigFactory =
+        new DefaultServletContextConfigFactory();
 
     private final CacheManagerFactory cacheManagerFactory = new DefaultCacheManagerFactory();
 
@@ -61,27 +62,27 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     public Client createClient(ServletContext servletContext) {
 
-        Properties props = servletContextPropertiesFactory.getProperties(servletContext);
+        Config config = servletContextConfigFactory.getConfig(servletContext);
 
         ClientBuilder builder = Clients.builder();
 
-        applyApiKey(builder, props, servletContext);
+        applyApiKey(builder, config, servletContext);
 
-        applyProxy(builder, props, servletContext);
+        applyProxy(builder, config, servletContext);
 
-        applyAuthenticationScheme(builder, props, servletContext);
+        applyAuthenticationScheme(builder, config, servletContext);
 
-        applyCacheManager(builder, props, servletContext);
+        applyCacheManager(builder, config, servletContext);
 
         //allow access to config values by other components later:
-        servletContext.setAttribute(STORMPATH_CONFIG_PROPERTIES, props);
+        servletContext.setAttribute(STORMPATH_CONFIG, config);
 
         return builder.build();
     }
 
-    protected void applyCacheManager(ClientBuilder builder, Properties props, ServletContext servletContext) {
+    protected void applyCacheManager(ClientBuilder builder, Config config, ServletContext servletContext) {
 
-        CacheManager cacheManager = cacheManagerFactory.createCacheManager(props);
+        CacheManager cacheManager = cacheManagerFactory.createCacheManager(config);
 
         if (cacheManager == null) {
             // no cache manager config was specified, assume a default, but allow the app developer to specify one
@@ -96,28 +97,27 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         builder.setCacheManager(cacheManager);
     }
 
-    protected void applyApiKey(ClientBuilder clientBuilder, Properties props, ServletContext servletContext) {
-        ApiKey apiKey = createApiKey(props, servletContext);
+    protected void applyApiKey(ClientBuilder clientBuilder, Config config, ServletContext servletContext) {
+        ApiKey apiKey = createApiKey(config, servletContext);
         clientBuilder.setApiKey(apiKey);
     }
 
-    protected ApiKey createApiKey(final Properties props,
-                                  @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
+    protected ApiKey createApiKey(final Config config, @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
 
         ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
 
-        String value = props.getProperty("stormpath.apiKey.id");
+        String value = config.get("stormpath.apiKey.id");
         if (Strings.hasText(value)) {
             apiKeyBuilder.setId(value);
         }
 
         //check for API Key ID embedded in the properties configuration
-        value = props.getProperty("stormpath.apiKey.secret");
+        value = config.get("stormpath.apiKey.secret");
         if (Strings.hasText(value)) {
             apiKeyBuilder.setSecret(value);
         }
 
-        value = props.getProperty(STORMPATH_API_KEY_FILE);
+        value = config.get(STORMPATH_API_KEY_FILE);
         if (Strings.hasText(value)) {
             apiKeyBuilder.setFileLocation(value);
         }
@@ -125,10 +125,10 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         return apiKeyBuilder.build();
     }
 
-    protected void applyProxy(ClientBuilder builder, final Properties props,
+    protected void applyProxy(ClientBuilder builder, final Config config,
                               @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
 
-        String proxyHost = props.getProperty(STORMPATH_PROXY_HOST);
+        String proxyHost = config.get(STORMPATH_PROXY_HOST);
         if (!Strings.hasText(proxyHost)) {
             return;
         }
@@ -138,13 +138,13 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         Proxy proxy;
 
         int port = 80; //default
-        String portValue = props.getProperty(STORMPATH_PROXY_PORT);
+        String portValue = config.get(STORMPATH_PROXY_PORT);
         if (Strings.hasText(portValue)) {
             port = Integer.parseInt(portValue);
         }
 
-        String proxyUsername = props.getProperty(STORMPATH_PROXY_USERNAME);
-        String proxyPassword = props.getProperty(STORMAPTH_PROXY_PASSWORD);
+        String proxyUsername = config.get(STORMPATH_PROXY_USERNAME);
+        String proxyPassword = config.get(STORMAPTH_PROXY_PASSWORD);
 
         if (Strings.hasText(proxyUsername) || Strings.hasText(proxyPassword)) {
             proxy = new Proxy(proxyHost, port, proxyUsername, proxyPassword);
@@ -155,9 +155,9 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         builder.setProxy(proxy);
     }
 
-    protected void applyAuthenticationScheme(ClientBuilder builder, Properties props,
+    protected void applyAuthenticationScheme(ClientBuilder builder, Map<String,String> props,
                                              @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
-        String schemeName = props.getProperty(STORMPATH_AUTHENTICATION_SCHEME);
+        String schemeName = props.get(STORMPATH_AUTHENTICATION_SCHEME);
         if (Strings.hasText(schemeName)) {
             AuthenticationScheme scheme = AuthenticationScheme.valueOf(schemeName.toUpperCase());
             builder.setAuthenticationScheme(scheme);

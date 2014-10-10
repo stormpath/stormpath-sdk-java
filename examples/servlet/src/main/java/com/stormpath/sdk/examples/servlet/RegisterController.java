@@ -18,9 +18,7 @@ package com.stormpath.sdk.examples.servlet;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import com.stormpath.sdk.servlet.client.ClientResolver;
-import com.stormpath.sdk.servlet.client.DefaultClientResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,10 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class RegisterController extends HttpServlet {
-
-    //these are both thread-safe and can be made a constant if desired:
-    private static final ApplicationResolver APP_RESOLVER    = new DefaultApplicationResolver();
-    private static final ClientResolver      CLIENT_RESOLVER = new DefaultClientResolver();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -55,7 +49,7 @@ public class RegisterController extends HttpServlet {
         String password = req.getParameter("password");
 
         //Create a new Account instance that will represent the submitted user information:
-        Account account = CLIENT_RESOLVER.getClient(req.getServletContext()).instantiate(Account.class);
+        Account account = ClientResolver.INSTANCE.getClient(req.getServletContext()).instantiate(Account.class);
         account.setEmail(email);
         account.setPassword(password);
 
@@ -65,7 +59,7 @@ public class RegisterController extends HttpServlet {
         account.setSurname("UNSPECIFIED");
 
         //Get the Stormpath Application instance corresponding to this web app:
-        Application app = APP_RESOLVER.getApplication(req.getServletContext());
+        Application app = ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
 
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);

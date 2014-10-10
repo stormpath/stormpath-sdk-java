@@ -1,9 +1,9 @@
 package com.stormpath.sdk.impl.config;
 
-import java.util.Properties;
+import java.util.Map;
 
 public interface PropertiesSource {
 
-    Properties getProperties();
+    Map<String,String> getProperties();
 
 }

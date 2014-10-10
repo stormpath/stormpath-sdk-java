@@ -16,7 +16,7 @@
 package com.stormpath.sdk.examples.servlet;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
+import com.stormpath.sdk.servlet.account.RequestAccountResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,6 +42,10 @@ public class LoginController extends HttpServlet {
         }
     }
 
+    protected Account getAccount(HttpServletRequest req) {
+        return RequestAccountResolver.INSTANCE.getAccount(req);
+    }
+
     protected void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String usernameOrEmail = req.getParameter("email");
@@ -50,7 +54,7 @@ public class LoginController extends HttpServlet {
         req.login(usernameOrEmail, password);
 
         //Login was successful - get the Account that just logged in:
-        Account account = new DefaultRequestAccountResolver().getAccount(req);
+        Account account = getAccount(req);
 
         //put the account in the session for easy retrieval later:
         req.getSession().setAttribute("account", account);

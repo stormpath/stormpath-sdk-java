@@ -18,10 +18,11 @@ import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
 import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 
-public class DefaultServletContextPropertiesFactory implements ServletContextPropertiesFactory {
+public class DefaultServletContextConfigFactory implements ServletContextConfigFactory {
 
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
@@ -34,6 +35,8 @@ public class DefaultServletContextPropertiesFactory implements ServletContextPro
     private static final String REQUIRED_TOKEN = "(required)";
 
     public static final String DEFAULT_STORMPATH_PROPERTIES_SOURCES =
+        //MUST always be first:
+        ClasspathResource.SCHEME_PREFIX + "META-INF/com/stormpath/sdk/servlet/default." + STORMPATH_PROPERTIES + NL +
         ENVVARS_TOKEN + NL +
         ClasspathResource.SCHEME_PREFIX + STORMPATH_PROPERTIES + NL +
         "/WEB-INF/stormpath.properties" + NL +
@@ -43,7 +46,7 @@ public class DefaultServletContextPropertiesFactory implements ServletContextPro
     private static final EnvVarNameConverter envVarNameConverter = new DefaultEnvVarNameConverter();
 
     @Override
-    public Properties getProperties(ServletContext servletContext) {
+    public Config getConfig(ServletContext servletContext) {
 
         ResourceFactory resourceFactory = new ServletContainerResourceFactory(servletContext);
 
@@ -112,13 +115,13 @@ public class DefaultServletContextPropertiesFactory implements ServletContextPro
             }
         }
 
-        Properties properties = new Properties();
+        Map<String,String> props = new LinkedHashMap<String, String>();
 
         for(PropertiesSource source : sources) {
-            Properties srcProps = source.getProperties();
-            properties.putAll(srcProps);
+            Map<String,String> srcProps = source.getProperties();
+            props.putAll(srcProps);
         }
 
-        return properties;
+        return new DefaultConfig(props);
     }
 }

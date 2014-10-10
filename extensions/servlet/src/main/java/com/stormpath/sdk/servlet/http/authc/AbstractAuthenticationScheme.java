@@ -19,13 +19,10 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 
 import javax.servlet.http.HttpServletRequest;
 
 public abstract class AbstractAuthenticationScheme implements HttpAuthenticationScheme {
-
-    private static final ApplicationResolver APPLICATION_RESOLVER = new DefaultApplicationResolver();
 
     public AbstractAuthenticationScheme() {
     }
@@ -44,7 +41,7 @@ public abstract class AbstractAuthenticationScheme implements HttpAuthentication
         return new DefaultHttpAuthenticationResult(attempt.getRequest(), attempt.getResponse(), result, true);
     }
 
-    protected final Application getApplication(HttpServletRequest request) {
-        return APPLICATION_RESOLVER.getApplication(request.getServletContext());
+    protected Application getApplication(HttpServletRequest request) {
+        return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
     }
 }

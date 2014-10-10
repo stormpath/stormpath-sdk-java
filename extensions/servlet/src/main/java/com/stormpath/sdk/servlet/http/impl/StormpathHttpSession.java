@@ -21,7 +21,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.servlet.client.ClientResolver;
-import com.stormpath.sdk.servlet.client.DefaultClientResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -31,13 +30,15 @@ import java.util.Enumeration;
 @SuppressWarnings("deprecation")
 public class StormpathHttpSession implements HttpSession {
 
-    private static final ClientResolver CLIENT_RESOLVER = new DefaultClientResolver();
-
     private final HttpSession session;
 
     public StormpathHttpSession(HttpSession session) {
         Assert.notNull(session, "Session argument cannot be null.");
         this.session = session;
+    }
+
+    protected Client getClient() {
+        return ClientResolver.INSTANCE.getClient(getServletContext());
     }
 
     @Override
@@ -85,7 +86,7 @@ public class StormpathHttpSession implements HttpSession {
             ResourceReference ref = (ResourceReference) o;
             String href = ref.getHref();
             Class clazz = Classes.forName(ref.getResourceClassName());
-            Client client = CLIENT_RESOLVER.getClient(getServletContext());
+            Client client = getClient();
             o = client.getResource(href, clazz);
         }
         return o;
@@ -98,10 +99,10 @@ public class StormpathHttpSession implements HttpSession {
 
         Object o = session.getValue(name);
         if (o instanceof ResourceReference) {
-            ResourceReference ref = (ResourceReference)o;
+            ResourceReference ref = (ResourceReference) o;
             String href = ref.getHref();
             Class clazz = Classes.forName(ref.getResourceClassName());
-            Client client = CLIENT_RESOLVER.getClient(getServletContext());
+            Client client = getClient();
             o = client.getResource(href, clazz);
         }
         return o;
@@ -126,7 +127,7 @@ public class StormpathHttpSession implements HttpSession {
         //clustered.
 
         if (value instanceof Resource) {
-            Resource resource = (Resource)value;
+            Resource resource = (Resource) value;
             Class ifaceClass = DefaultResourceFactory.getInterfaceClass(resource.getClass());
             value = new ResourceReference(ifaceClass.getName(), resource.getHref());
         }
@@ -142,7 +143,7 @@ public class StormpathHttpSession implements HttpSession {
         //clustered.
 
         if (value instanceof Resource) {
-            Resource resource = (Resource)value;
+            Resource resource = (Resource) value;
             Class ifaceClass = DefaultResourceFactory.getInterfaceClass(resource.getClass());
             value = new ResourceReference(ifaceClass.getName(), resource.getHref());
         }

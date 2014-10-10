@@ -22,21 +22,21 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StormpathFilter extends HttpFilter {
 
     private final List<Filter> filters;
 
     public StormpathFilter() {
-        this.filters = new CopyOnWriteArrayList<Filter>();
+        this.filters = new ArrayList<Filter>();
     }
 
     @Override
     protected void onInit() throws ServletException {
-        Map<String,Filter> defaults = DefaultFilter.createInstanceMap(getServletContext());
+        Map<String, Filter> defaults = DefaultFilter.createInstanceMap(getServletContext());
         this.filters.addAll(defaults.values());
     }
 

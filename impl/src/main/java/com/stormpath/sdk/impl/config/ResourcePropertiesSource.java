@@ -4,10 +4,7 @@ import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.lang.Assert;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.Properties;
+import java.util.Map;
 
 public class ResourcePropertiesSource implements PropertiesSource {
 
@@ -19,14 +16,11 @@ public class ResourcePropertiesSource implements PropertiesSource {
     }
 
     @Override
-    public Properties getProperties() {
-        Properties props = new Properties();
+    public Map<String, String> getProperties() {
         try {
-            InputStream is = resource.getInputStream();
-            props.load(new InputStreamReader(is, Charset.forName("UTF-8")));
+            return new DefaultPropertiesParser().parse(resource);
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to read resource [" + resource + "]", e);
+            throw new IllegalArgumentException("Unable to read resource [" + resource + "]: " + e.getMessage(), e);
         }
-        return props;
     }
 }

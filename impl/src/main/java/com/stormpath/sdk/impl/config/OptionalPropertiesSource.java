@@ -4,7 +4,8 @@ import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class OptionalPropertiesSource implements PropertiesSource {
 
@@ -18,12 +19,12 @@ public class OptionalPropertiesSource implements PropertiesSource {
     }
 
     @Override
-    public Properties getProperties() {
+    public Map<String,String> getProperties() {
         try {
             return propertiesSource.getProperties();
         } catch (Exception e) {
             log.debug("Unable to obtain properties from optional properties source {}", propertiesSource);
         }
-        return new Properties();
+        return new LinkedHashMap<String, String>();
     }
 }

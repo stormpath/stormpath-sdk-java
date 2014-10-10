@@ -5,13 +5,11 @@ import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.client.ClientResolver;
-import com.stormpath.sdk.servlet.client.DefaultClientResolver;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
-import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
-import com.stormpath.sdk.servlet.config.PropertiesResolver;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 
 import javax.servlet.ServletContext;
-import java.util.Properties;
 
 public class DefaultApplicationResolver implements ApplicationResolver {
 
@@ -25,26 +23,29 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         " # in stormpath.properties:\n" +
         " " + STORMPATH_APPLICATION_HREF + " = YOUR_STORMPATH_APPLICATION_HREF_HERE\n";
 
-    private final ClientResolver CLIENT_RESOLVER = new DefaultClientResolver();
+    protected Client getClient(ServletContext sc) {
+        return ClientResolver.INSTANCE.getClient(sc);
+    }
 
-    private final PropertiesResolver CONFIG_RESOLVER = new DefaultPropertiesResolver();
+    protected Config getConfig(ServletContext servletContext) {
+        return ConfigResolver.INSTANCE.getConfig(servletContext);
+    }
 
     @Override
-
     public Application getApplication(final ServletContext servletContext) {
 
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
 
         //get the client:
-        Client client = CLIENT_RESOLVER.getClient(servletContext);
+        Client client = getClient(servletContext);
 
         //this is a local cached href value that we use in case we have to query applications (see below):
-        String href = (String)servletContext.getAttribute(STORMPATH_APPLICATION_HREF);
+        String href = (String) servletContext.getAttribute(STORMPATH_APPLICATION_HREF);
 
         if (href == null) {
             //no cached value = try config:
-            Properties config = CONFIG_RESOLVER.getConfig(servletContext);
-            href = config.getProperty(STORMPATH_APPLICATION_HREF);
+            Config config = getConfig(servletContext);
+            href = config.get(STORMPATH_APPLICATION_HREF);
         }
 
         if (href == null) {

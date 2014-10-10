@@ -18,8 +18,8 @@ package com.stormpath.sdk.servlet.util;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
-import com.stormpath.sdk.servlet.client.DefaultClientResolver;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,7 +237,7 @@ public class ServletUtils {
     }
 
     public static Client getClient(ServletContext sc) {
-        return new DefaultClientResolver().getClient(sc);
+        return ClientResolver.INSTANCE.getClient(sc);
     }
 
     public static Application getApplication(ServletRequest request) {
@@ -245,7 +245,7 @@ public class ServletUtils {
     }
 
     public static Application getApplication(ServletContext sc) {
-        return new DefaultApplicationResolver().getApplication(sc);
+        return ApplicationResolver.INSTANCE.getApplication(sc);
     }
 
     /**
@@ -270,7 +270,12 @@ public class ServletUtils {
                 log.warn("Could not decode request string [" + source + "] with encoding '" + enc +
                          "': falling back to platform default encoding; exception message: " + ex.getMessage());
             }
-            return URLDecoder.decode(source);
+            try {
+                return URLDecoder.decode(source, "ISO-8859-1");
+            } catch (UnsupportedEncodingException e) {
+                String msg = "ISO-8859-1 encoding is not available as a fallback." + e.getMessage();
+                throw new IllegalStateException(msg, e);
+            }
         }
     }
 
@@ -310,7 +315,7 @@ public class ServletUtils {
         throws IOException {
 
         String targetUrl = new RedirectUrlBuilder(request).setUrl(url).setQueryParameters(queryParams)
-            .setContextRelative(contextRelative).build();
+                                                          .setContextRelative(contextRelative).build();
 
         if (http10Compatible) {
             // Always send status code 302.
@@ -331,7 +336,8 @@ public class ServletUtils {
      * @param url      the URL to redirect the user to.
      * @throws java.io.IOException if thrown by response methods.
      */
-    public static void issueRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
+    public static void issueRedirect(HttpServletRequest request, HttpServletResponse response, String url)
+        throws IOException {
         issueRedirect(request, response, url, null, true, true);
     }
 
@@ -345,7 +351,8 @@ public class ServletUtils {
      * @param queryParams a map of parameters that should be set as request parameters for the new request.
      * @throws java.io.IOException if thrown by response methods.
      */
-    public static void issueRedirect(HttpServletRequest request, HttpServletResponse response, String url, Map queryParams)
+    public static void issueRedirect(HttpServletRequest request, HttpServletResponse response, String url,
+                                     Map queryParams)
         throws IOException {
         issueRedirect(request, response, url, queryParams, true, true);
     }
@@ -361,7 +368,8 @@ public class ServletUtils {
      * @param contextRelative true if the URL is relative to the servlet context path, or false if the URL is absolute.
      * @throws java.io.IOException if thrown by response methods.
      */
-    public static void issueRedirect(HttpServletRequest request, HttpServletResponse response, String url, Map queryParams,
+    public static void issueRedirect(HttpServletRequest request, HttpServletResponse response, String url,
+                                     Map queryParams,
                                      boolean contextRelative) throws IOException {
         issueRedirect(request, response, url, queryParams, contextRelative, true);
     }

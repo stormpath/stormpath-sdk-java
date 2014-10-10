@@ -32,6 +32,7 @@ import java.util.Map;
  */
 public enum DefaultFilter {
 
+    login(LoginFilter.class),
     logout(LogoutFilter.class);
 
     private final Class<? extends Filter> filterClass;

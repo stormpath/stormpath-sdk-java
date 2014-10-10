@@ -16,8 +16,6 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.config.ConfigValueReader;
-import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
-import com.stormpath.sdk.servlet.config.PropertiesResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +24,6 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
 
     public static final  String             LOGIN_URL_PROP_NAME = "stormpath.web.login.url";
     public static final  String             DEFAULT_LOGIN_URL   = "/login";
-    private static final PropertiesResolver propsResolver       = new DefaultPropertiesResolver();
 
     /**
      * Returns the context-relative URL where a user can be redirected to login.

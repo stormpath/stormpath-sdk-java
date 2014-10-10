@@ -7,8 +7,8 @@ import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.lang.Strings;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -32,11 +32,11 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
     }
 
     @Override
-    public CacheManager createCacheManager(Properties props) {
+    public CacheManager createCacheManager(Map<String,String> config) {
 
-        props = (props != null ? props : new Properties());
+        config = (config != null ? config : new LinkedHashMap<String, String>());
 
-        Set keys = props.keySet();
+        Set keys = config.keySet();
 
         CacheManagerBuilder builder = Caches.newCacheManager();
         boolean configured = false;
@@ -47,7 +47,7 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
             final String sKey = (String) key;
 
             if (STORMPATH_CACHE_ENABLED.equals(sKey)) {
-                String value = props.getProperty(sKey);
+                String value = config.get(sKey);
                 boolean enabled = true;
 
                 if (Strings.hasText(value)) {
@@ -70,21 +70,21 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
 
             } else if (STORMPATH_CACHE_TTI.equals(sKey)) {
 
-                String value = props.getProperty(sKey);
+                String value = config.get(sKey);
                 long tti = parseLong(sKey, value);
                 builder.withDefaultTimeToIdle(tti, TimeUnit.MILLISECONDS);
                 configured = true;
 
             } else if (STORMPATH_CACHE_TTL.equals(sKey)) {
 
-                String value = props.getProperty(sKey);
+                String value = config.get(sKey);
                 long ttl = parseLong(sKey, value);
                 builder.withDefaultTimeToLive(ttl, TimeUnit.MILLISECONDS);
                 configured = true;
 
             } else if (sKey.startsWith(STORMPATH_CACHE_CONFIG_PREFIX)) {
 
-                String value = props.getProperty(sKey);
+                String value = config.get(sKey);
                 String suffix = sKey.substring(STORMPATH_CACHE_CONFIG_PREFIX.length());
 
                 String regionName;

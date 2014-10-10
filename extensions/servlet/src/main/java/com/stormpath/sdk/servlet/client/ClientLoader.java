@@ -29,7 +29,7 @@ import javax.servlet.ServletContext;
  * available in the {@code ServletContext} at application startup.  Once in the {@code ServletContext}, the
  * {@code Client} is available to any application component that needs to interact with Stormpath; these components can
  * can access the {@code client} instance easily by using a {@link ClientResolver} implementation, for example,
- * {@link DefaultClientResolver}.
+ * {@link com.stormpath.sdk.servlet.client.ClientResolver#INSTANCE}.
  *
  * <h3>Usage</h3>
  *

@@ -14,9 +14,8 @@ import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
-import com.stormpath.sdk.servlet.config.DefaultPropertiesResolver;
-import com.stormpath.sdk.servlet.config.PropertiesResolver;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
 import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
@@ -32,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Properties;
 
 public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
@@ -51,14 +49,20 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     private static boolean remoteUserWarned    = false; //static on purpose - we only want to print this once.
     private static boolean userPrincipalWarned = false; //static on purpose - we only want to print this once.
 
-    private static final RequestAccountResolver ACCOUNT_RESOLVER = new DefaultRequestAccountResolver();
-
-    private static final ApplicationResolver APPLICATION_RESOLVER = new DefaultApplicationResolver();
-
-    private static final PropertiesResolver CONFIG_RESOLVER = new DefaultPropertiesResolver();
-
     public StormpathHttpServletRequest(HttpServletRequest request) {
         super(request);
+    }
+
+    protected Config getConfig() {
+        return ConfigResolver.INSTANCE.getConfig(getServletContext());
+    }
+
+    protected boolean hasAccount() {
+        return RequestAccountResolver.INSTANCE.hasAccount(this);
+    }
+
+    protected Account getAccount() {
+        return RequestAccountResolver.INSTANCE.getAccount(this);
     }
 
     @Override
@@ -79,18 +83,18 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public String getRemoteUser() {
 
-        Properties properties = CONFIG_RESOLVER.getConfig(getServletContext());
-        String strategy = properties.getProperty(REMOTE_USER_STRATEGY);
+        Config config = getConfig();
+        String strategy = config.get(REMOTE_USER_STRATEGY);
 
         if (BYPASS.equals(strategy)) {
             return super.getRemoteUser();
         }
 
-        if (!ACCOUNT_RESOLVER.hasAccount(this)) {
+        if (!hasAccount()) {
             return null;
         }
 
-        Account account = ACCOUNT_RESOLVER.getAccount(this);
+        Account account = getAccount();
 
         if (!Strings.hasText(strategy) || USERNAME.equals(strategy)) {
             return account.getUsername();
@@ -122,18 +126,18 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public Principal getUserPrincipal() {
 
-        Properties properties = CONFIG_RESOLVER.getConfig(getServletContext());
-        String strategy = properties.getProperty(USER_PRINCIPAL_STRATEGY);
+        Config config = getConfig();
+        String strategy = config.get(USER_PRINCIPAL_STRATEGY);
 
         if (BYPASS.equals(strategy)) {
             return super.getUserPrincipal();
         }
 
-        if (!ACCOUNT_RESOLVER.hasAccount(this)) {
+        if (!hasAccount()) {
             return null;
         }
 
-        Account account = ACCOUNT_RESOLVER.getAccount(this);
+        Account account = getAccount();
 
         if (!Strings.hasText(strategy) || USERNAME.equals(strategy)) {
             return new UsernamePrincipal(account.getUsername());
@@ -169,20 +173,20 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public boolean isUserInRole(String role) {
 
-        if (!ACCOUNT_RESOLVER.hasAccount(this)) {
+        if (!hasAccount()) {
             return false;
         }
 
         Assert.hasText(role, "Role name cannot be null or empty.");
 
-        Account account = ACCOUNT_RESOLVER.getAccount(this);
+        Account account = getAccount();
 
         //todo: make this customizable, i.e. AccountRoleResolver
 
         //TODO: enable account->groups collection caching to keep this fast
 
         GroupList groups = account.getGroups();
-        for(Group group : groups) {
+        for (Group group : groups) {
             if (role.equals(group.getName())) {
                 return true;
             }
@@ -199,8 +203,9 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-        if (ACCOUNT_RESOLVER.hasAccount(this)) {
-            Account account = ACCOUNT_RESOLVER.getAccount(this);
+
+        if (hasAccount()) {
+            Account account = getAccount();
             String msg = "The current request is already associated with an authenticated user [" + account.getEmail()
                          + "].  Authentication attempt for the current request is denied.";
             throw new ServletException(msg);
@@ -229,8 +234,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public void login(String username, String password) throws ServletException {
-        if (ACCOUNT_RESOLVER.hasAccount(this)) {
-            Account account = ACCOUNT_RESOLVER.getAccount(this);
+        if (hasAccount()) {
+            Account account = getAccount();
             String msg = "The current request is already associated with an authenticated user [" + account.getEmail()
                          + "].  Login attempt for submitted username [" + username + "] is denied.";
             throw new ServletException(msg);
@@ -252,12 +257,13 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         setAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME, account);
     }
 
-    protected AuthenticationRequest createAuthenticationRequest(String username, String password, Application application) {
+    protected AuthenticationRequest createAuthenticationRequest(String username, String password,
+                                                                Application application) {
         return new UsernamePasswordRequest(username, password, getRemoteHost());
     }
 
     protected Application getApplication() {
-        return APPLICATION_RESOLVER.getApplication(getServletContext());
+        return ApplicationResolver.INSTANCE.getApplication(getServletContext());
     }
 
     @Override

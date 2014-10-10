@@ -19,7 +19,6 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +38,6 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
     private static final String AUTHENTICATE_HEADER = "WWW-Authenticate";
 
     private static final String AUTHORIZATION = "Authorization";
-
-    private final ApplicationResolver applicationResolver = new DefaultApplicationResolver();
 
     private final AuthorizationHeaderParser parser = new DefaultAuthorizationHeaderParser();
 
@@ -95,9 +92,13 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
         return new DefaultHttpAuthenticationResult(request, response, null, false);
     }
 
+    protected Application getApplication(HttpServletRequest req) {
+        return ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
+    }
+
     protected void sendChallenge(HttpServletRequest request, HttpServletResponse response) {
 
-        Application application = applicationResolver.getApplication(request.getServletContext());
+        Application application = getApplication(request);
 
         String appName = application.getName();
 
