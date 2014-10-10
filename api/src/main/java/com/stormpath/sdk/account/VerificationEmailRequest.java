@@ -19,37 +19,28 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * The EmailVerificationRequest is used in scenarios where the <a href="http://docs.stormpath.com/console/product-guide/#workflow-automations">
+ * The VerificationEmailRequest is used in scenarios where the <a href="http://docs.stormpath.com/console/product-guide/#workflow-automations">
  * Account Registration and Verification workflow</a> is enabled. If the welcome email has not been received by
  * a newly registered account, then the user will not be able to login until the account is verified with the received token.
  * <p/>
  * After providing the username or email identifying the desired account, a call to {@link
- * com.stormpath.sdk.application.Application#sendEmailVerificationToken(EmailVerificationRequest) Application#sendEmailVerificationToken(EmailVerificationRequest)}
+ * com.stormpath.sdk.application.Application#sendVerificationEmail(VerificationEmailRequest) Application#sendVerificationEmail(VerificationEmailRequest)}
  * will trigger the delivery of a new verification token for the specified account.
  * <p/>
  * Although the {@link AccountStore} property is optional it should also be provided when the account's AccountStore is already
  * known since it will speed-up the backend execution time.
  *
- * @see {@link com.stormpath.sdk.application.Application#sendEmailVerificationToken(EmailVerificationRequest)}
+ * @see {@link com.stormpath.sdk.application.Application#sendVerificationEmail(VerificationEmailRequest)}
  * @since 1.0.0
  */
-public interface EmailVerificationRequest extends Resource {
+public interface VerificationEmailRequest {
 
     /**
-     * Returns the username or email set.
+     * Returns the username or email.
      *
-     * @return The provided username or email.
+     * @return the username or email.
      */
     String getLogin();
-
-    /**
-     * Setter for the account login information: username or email.
-     *
-     * @param usernameOrEmail the username or email identifying the account that will receive the verification email.
-     * @return this instance for method chaining.
-     * @since 1.0.0
-     */
-    EmailVerificationRequest setLogin(String usernameOrEmail);
 
     /**
      * Returns the {@link AccountStore} set.
@@ -57,16 +48,5 @@ public interface EmailVerificationRequest extends Resource {
      * @return The provided AccountStore.
      */
     AccountStore getAccountStore();
-
-    /**
-     * Setter for the {@link AccountStore} where the specified account must be searched. Although this is an optional
-     * property it should to be provided when the account's AccountStore is already known since it will speed-up the
-     * backend execution time.
-     *
-     * @param accountStore the {@link AccountStore} where the account must be searched by the backend.
-     * @return this instance for method chaining.
-     * @since 1.0.0
-     */
-    EmailVerificationRequest setAccountStore(AccountStore accountStore);
 
 }

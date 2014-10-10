@@ -26,8 +26,8 @@ import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
-import com.stormpath.sdk.impl.account.DefaultEmailVerificationRequest
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
+import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.directory.DefaultDirectory
@@ -650,7 +650,7 @@ class DefaultApplicationTest {
      * @since 1.0.RC
      */
     @Test
-    void testResendEmailVerificationToken() {
+    void testSendVerificationEmailToken() {
 
         def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
                           tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
@@ -661,54 +661,54 @@ class DefaultApplicationTest {
         def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultApplication = new DefaultApplication(internalDataStore, properties)
-        EmailVerificationRequest emailVerificationRequest = createStrictMock(EmailVerificationRequest)
+        VerificationEmailRequest verificationEmailRequest = createStrictMock(DefaultVerificationEmailRequest)
         def accountStore = createStrictMock(AccountStore)
 
-        expect(emailVerificationRequest.getLogin()).andReturn("fooUsername")
-        expect(emailVerificationRequest.getAccountStore()).andReturn(accountStore)
+        expect(verificationEmailRequest.getLogin()).andReturn("fooUsername")
+        expect(verificationEmailRequest.getAccountStore()).andReturn(accountStore)
         expect(accountStore.getHref()).andReturn(accountStoreHref)
-        expect(internalDataStore.create(defaultApplication.getHref() + "/verificationEmails", emailVerificationRequest, EmailVerificationRequest.class)).andReturn(null)
+        expect(internalDataStore.create(defaultApplication.getHref() + "/verificationEmails", verificationEmailRequest, DefaultVerificationEmailRequest.class)).andReturn(null)
 
-        replay internalDataStore, emailVerificationRequest, accountStore
+        replay internalDataStore, verificationEmailRequest, accountStore
 
-        defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+        defaultApplication.sendVerificationEmail(verificationEmailRequest)
 
-        verify internalDataStore, emailVerificationRequest, accountStore
+        verify internalDataStore, verificationEmailRequest, accountStore
     }
 
     /**
      * @since 1.0.0
      */
     @Test
-    void testResendEmailVerificationTokenInvalidData() {
+    void testSendVerificationEmailTokenInvalidData() {
 
         def defaultApplication = new DefaultApplication(null)
 
-        def emailVerificationRequest = new DefaultEmailVerificationRequest(null)
+        def verificationEmailRequest = new DefaultVerificationEmailRequest(null)
 
         try {
-            defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "emailVerificationRequest's email property is required.")
+            assertEquals(e.getMessage(), "verificationEmailRequest's email property is required.")
         }
 
-        emailVerificationRequest.setLogin(null)
+        verificationEmailRequest.setLogin(null)
         try {
-            defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "emailVerificationRequest's email property is required.")
+            assertEquals(e.getMessage(), "verificationEmailRequest's email property is required.")
         }
 
         def dir = new DefaultDirectory(null)
-        emailVerificationRequest.setLogin("fooUsername")
-        emailVerificationRequest.setAccountStore(dir)
+        verificationEmailRequest.setLogin("fooUsername")
+        verificationEmailRequest.setAccountStore(dir)
         try {
-            defaultApplication.sendEmailVerificationToken(emailVerificationRequest)
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "emailVerificationRequest's accountStore has been specified but its href is null.")
+            assertEquals(e.getMessage(), "verificationEmailRequest's accountStore has been specified but its href is null.")
         }
     }
 
