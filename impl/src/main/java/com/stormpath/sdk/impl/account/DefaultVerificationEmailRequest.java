@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.EmailVerificationRequest;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * @since 1.0.0
  */
-public class DefaultEmailVerificationRequest extends AbstractResource implements EmailVerificationRequest {
+public class DefaultVerificationEmailRequest extends AbstractResource implements VerificationEmailRequest {
 
     // SIMPLE PROPERTIES
     static final StringProperty LOGIN = new StringProperty("login");
@@ -38,11 +38,11 @@ public class DefaultEmailVerificationRequest extends AbstractResource implements
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(LOGIN, ACCOUNT_STORE);
 
-    public DefaultEmailVerificationRequest(InternalDataStore dataStore) {
+    public DefaultVerificationEmailRequest(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultEmailVerificationRequest(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultVerificationEmailRequest(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -56,8 +56,7 @@ public class DefaultEmailVerificationRequest extends AbstractResource implements
         return getString(LOGIN);
     }
 
-    @Override
-    public EmailVerificationRequest setLogin(String usernameOrEmail) {
+    public VerificationEmailRequest setLogin(String usernameOrEmail) {
         setProperty(LOGIN, usernameOrEmail);
         return this;
     }
@@ -67,8 +66,7 @@ public class DefaultEmailVerificationRequest extends AbstractResource implements
         return getResourceProperty(ACCOUNT_STORE);
     }
 
-    @Override
-    public EmailVerificationRequest setAccountStore(AccountStore accountStore) {
+    public VerificationEmailRequest setAccountStore(AccountStore accountStore) {
         setProperty(ACCOUNT_STORE, accountStore);
         return this;
     }

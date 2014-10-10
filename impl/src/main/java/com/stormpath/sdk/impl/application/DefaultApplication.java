@@ -15,13 +15,8 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.EmailVerificationRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -543,19 +538,19 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
     }
 
     /** @since 1.0.0 */
-    public void sendEmailVerificationToken(EmailVerificationRequest emailVerificationRequest) {
-        Assert.notNull(emailVerificationRequest, "emailVerificationRequest must not be null.");
-        Assert.hasText(emailVerificationRequest.getLogin(), "emailVerificationRequest's email property is required.");
+    public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest) {
+        Assert.notNull(verificationEmailRequest, "verificationEmailRequest must not be null.");
+        Assert.hasText(verificationEmailRequest.getLogin(), "verificationEmailRequest's email property is required.");
 
-        AccountStore accountStore = emailVerificationRequest.getAccountStore();
+        AccountStore accountStore = verificationEmailRequest.getAccountStore();
         if(accountStore != null && accountStore.getHref() == null) {
-            throw new IllegalArgumentException("emailVerificationRequest's accountStore has been specified but its href is null.");
+            throw new IllegalArgumentException("verificationEmailRequest's accountStore has been specified but its href is null.");
         }
 
         String href = getHref() + "/verificationEmails";
-        //We are passing a dummy return type (EmailVerificationRequest). It is not actually needed, but if we use the
+        //We are passing a dummy return type (VerificationEmailRequest). It is not actually needed, but if we use the
         //the two-parameters create(...) operation, we get an exception caused by an empty response body from the backend
-        getDataStore().create(href, emailVerificationRequest, EmailVerificationRequest.class);
+        getDataStore().create(href, verificationEmailRequest, VerificationEmailRequest.class);
     }
 
     @SuppressWarnings("unchecked")

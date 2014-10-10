@@ -24,18 +24,18 @@ import static org.testng.Assert.assertSame
 /**
  * @since 1.0.0
  */
-class DefaultEmailVerificationRequestTest {
+class DefaultVerificationEmailRequestTest {
 
     @Test
     void testAll() {
         def accountStore = createStrictMock(AccountStore)
-        def emailVerificationRequest = new DefaultEmailVerificationRequest(null)
+        def verificationEmailRequest = new DefaultVerificationEmailRequest(null)
 
         String email = "email@domain.com"
-        emailVerificationRequest.setLogin(email)
-        emailVerificationRequest.setAccountStore(accountStore)
+        verificationEmailRequest.setLogin(email)
+        verificationEmailRequest.setAccountStore(accountStore)
 
-        assertSame(emailVerificationRequest.getLogin(), email)
-        assertSame(emailVerificationRequest.getAccountStore(), accountStore)
+        assertSame(verificationEmailRequest.getLogin(), email)
+        assertSame(verificationEmailRequest.getAccountStore(), accountStore)
     }
 }
