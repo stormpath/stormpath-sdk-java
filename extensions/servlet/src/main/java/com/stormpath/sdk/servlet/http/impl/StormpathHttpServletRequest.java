@@ -31,6 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Set;
 
 public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
@@ -51,6 +54,41 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     public StormpathHttpServletRequest(HttpServletRequest request) {
         super(request);
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        Object o = super.getAttribute(name);
+        if (o != null) {
+            return o;
+        }
+        if (name.startsWith("stormpath.")) {
+            return getConfig().get(name);
+        }
+        return null;
+    }
+
+    @Override
+    public Enumeration<String> getAttributeNames() {
+
+        final Enumeration<String> enumeration = super.getAttributeNames();
+        final Set<String> keys = getConfig().keySet();
+        final Iterator<String> configIterator = keys.iterator();
+
+        return new Enumeration<String>() {
+            @Override
+            public boolean hasMoreElements() {
+                return enumeration.hasMoreElements() || configIterator.hasNext();
+            }
+
+            @Override
+            public String nextElement() {
+                if (enumeration.hasMoreElements()) {
+                    return enumeration.nextElement();
+                }
+                return configIterator.next();
+            }
+        };
     }
 
     protected Config getConfig() {

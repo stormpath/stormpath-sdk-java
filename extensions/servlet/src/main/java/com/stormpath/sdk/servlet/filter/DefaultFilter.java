@@ -34,7 +34,8 @@ public enum DefaultFilter {
 
     login(LoginFilter.class),
     logout(LogoutFilter.class),
-    register(RegisterFilter.class);
+    register(RegisterFilter.class),
+    verify(VerifyFilter.class);
 
     private final Class<? extends Filter> filterClass;
 

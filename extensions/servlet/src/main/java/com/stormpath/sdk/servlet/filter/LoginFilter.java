@@ -21,6 +21,7 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
+import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class LoginFilter extends PathMatchingFilter {
@@ -82,11 +82,13 @@ public class LoginFilter extends PathMatchingFilter {
         }
     }
 
+    /*
     protected void addConfigProperties(HttpServletRequest request) {
         for (Map.Entry<String, String> entry : getConfig().entrySet()) {
             request.setAttribute(entry.getKey(), entry.getValue());
         }
     }
+    */
 
     private void setForm(HttpServletRequest request, Form form) {
         request.setAttribute("form", form);
@@ -144,9 +146,13 @@ public class LoginFilter extends PathMatchingFilter {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
-        addConfigProperties(request);
+        //addConfigProperties(request);
         Form form = createForm(request, false);
         setForm(request, form);
+        String status = Strings.clean(request.getParameter("status"));
+        if (status != null) {
+            request.setAttribute("status", status);
+        }
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
@@ -164,7 +170,7 @@ public class LoginFilter extends PathMatchingFilter {
             errors.add("Invalid username or password.");
             request.setAttribute("errors", errors);
 
-            addConfigProperties(request);
+            //addConfigProperties(request);
 
             //do not retain submitted password (not save to have in the DOM text):
             ((DefaultField) form.getField("password")).setValue("");
@@ -178,10 +184,28 @@ public class LoginFilter extends PathMatchingFilter {
         return RequestAccountResolver.INSTANCE.getAccount(req);
     }
 
+    protected void validate(Form form) throws ServletException, IOException {
+
+        //validate CSRF
+        Assert.hasText(form.getCsrfToken(), "CSRF Token must be specified."); //TODO check cache
+
+        //ensure required fields are present:
+        List<Field> fields = form.getFields();
+        for(Field field : fields) {
+            if (field.isRequired()) {
+                String value = Strings.clean(field.getValue());
+                if (value == null) {
+                    //TODO: i18n
+                    throw new IllegalArgumentException(Strings.capitalize(field.getName()) + " is required.");
+                }
+            }
+        }
+    }
+
     protected void login(HttpServletRequest req, HttpServletResponse resp, Form form)
         throws ServletException, IOException {
 
-        Assert.hasText(form.getCsrfToken(), "CSRF Token must be specified."); //TODO check cache
+        validate(form);
 
         String usernameOrEmail = form.getFieldValue("login");
         String password = form.getFieldValue("password");

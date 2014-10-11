@@ -62,6 +62,16 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public String getVerifyUrl() {
+        return props.get(VERIFY_URL);
+    }
+
+    @Override
+    public String getVerifyNextUrl() {
+        return props.get(VERIFY_NEXT_URL);
+    }
+
+    @Override
     public int size() {
         return props.size();
     }

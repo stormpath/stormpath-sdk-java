@@ -35,6 +35,13 @@
                                 <span>Log In or <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.register.url']}">Create Account</a></span>
                             </div>
 
+                            <c:if test="${!empty status && status == 'verified'}">
+                                <div class="alert alert-dismissable alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <p>You have successfully verified your account. You may now login.</p>
+                                </div>
+                            </c:if>
+
                             <c:if test="${!empty errors}">
                                 <div class="alert alert-dismissable alert-danger bad-login">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>

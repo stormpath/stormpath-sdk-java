@@ -20,6 +20,8 @@
 <%@attribute name="title" required="false" %>
 <%@attribute name="description" required="false" %>
 <%@attribute name="bodyCssClass" required="false" %>
+<%@attribute name="timedRedirectSeconds" required="false" %>
+<%@attribute name="timedRedirectUrl" required="false" %>
 
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -30,6 +32,7 @@
 <meta charset="utf-8">
 <c:if test="${!empty title}"><title>${title}</title></c:if>
 <c:if test="${!empty description}"><meta name="description" content="${description}"></c:if>
+<c:if test="${!empty timedRedirectUrl}"><meta http-equiv="refresh" content="${timedRedirectSeconds};url=${timedRedirectUrl}"/></c:if>
 <meta content="width=device-width" name="viewport">
 <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
       rel="stylesheet" type="text/css">

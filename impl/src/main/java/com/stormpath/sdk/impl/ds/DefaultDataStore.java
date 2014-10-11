@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
@@ -458,7 +460,10 @@ public class DefaultDataStore implements InternalDataStore {
         //asserts invariant given that we should have returned if the responseBody is null or empty:
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
-        if (isCacheUpdateEnabled(returnType)) {
+        //since 1.0.0 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
+        boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+
+        if (isCacheUpdateEnabled(returnType) && !emailVerification) {
             cache(returnType, responseBody, filteredQs);
         }
 

@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -39,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class RegisterFilter extends PathMatchingFilter {
@@ -90,15 +90,17 @@ public class RegisterFilter extends PathMatchingFilter {
         }
     }
 
+    /*
     protected void addConfigProperties(HttpServletRequest request) {
         for (Map.Entry<String, String> entry : getConfig().entrySet()) {
             request.setAttribute(entry.getKey(), entry.getValue());
         }
     }
+    */
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
-        addConfigProperties(request);
+        //addConfigProperties(request);
         Form form = createForm(request, false);
         setForm(request, form);
         request.getRequestDispatcher("/register.jsp").forward(request, response);
@@ -119,7 +121,7 @@ public class RegisterFilter extends PathMatchingFilter {
 
         Config config = getConfig();
 
-        for(String key : config.keySet()) {
+        for (String key : config.keySet()) {
 
             if (key.startsWith(FIELD_CONFIG_NAME_PREFIX) &&
                 !key.equals("stormpath.web.register.url") && !key.equals("stormpath.web.register.nextUrl")) {
@@ -186,12 +188,12 @@ public class RegisterFilter extends PathMatchingFilter {
         } catch (Exception e) {
             log.debug("Unable to register account.", e);
 
-            addConfigProperties(request);
+            //addConfigProperties(request);
 
             List<String> errors = new ArrayList<String>();
 
             if (e instanceof ResourceException) {
-                errors.add(((ResourceException)e).getStormpathError().getMessage());
+                errors.add(((ResourceException) e).getStormpathError().getMessage());
             } else {
                 errors.add("Oops! Unable to register you!  Please contact support.");
                 log.warn("Unable to resister user account: " + e.getMessage(), e);
@@ -199,7 +201,7 @@ public class RegisterFilter extends PathMatchingFilter {
             request.setAttribute("errors", errors);
 
             //do not retain submitted password (not save to have in the DOM text):
-            ((DefaultField)form.getField("password")).setValue("");
+            ((DefaultField) form.getField("password")).setValue("");
             setForm(request, form);
 
             request.getRequestDispatcher("/register.jsp").forward(request, response);
@@ -217,19 +219,40 @@ public class RegisterFilter extends PathMatchingFilter {
     protected String getValue(Form form, String fieldName) {
         Field field = form.getField(fieldName);
         if (field != null) {
-            return Strings.clean(field.getValue());
+            return getValue(field);
         }
         return null;
     }
 
-    protected void register(HttpServletRequest req, HttpServletResponse resp, Form form) throws ServletException, IOException {
+    protected String getValue(Field field) {
+        return Strings.clean(field.getValue());
+    }
 
+    protected void validate(Form form) throws ServletException, IOException {
+
+        //validate CSRF
         Assert.hasText(form.getCsrfToken(), "CSRF Token must be specified."); //TODO check cache
+
+        //ensure required fields are present:
+        List<Field> fields = form.getFields();
+        for (Field field : fields) {
+            if (field.isRequired()) {
+                String value = getValue(field);
+                if (value == null) {
+                    //TODO: i18n
+                    throw new IllegalArgumentException(Strings.capitalize(field.getName()) + " is required.");
+                }
+            }
+        }
+    }
+
+    protected void register(HttpServletRequest req, HttpServletResponse resp, Form form)
+        throws ServletException, IOException {
+
+        validate(form);
 
         //Create a new Account instance that will represent the submitted user information:
         Account account = newAccount(req.getServletContext());
-
-        //TODO: ensure that fields configured to be required are populated before submitting to Stormpath
 
         String value = getValue(form, "email");
         if (value != null) {
@@ -262,6 +285,15 @@ public class RegisterFilter extends PathMatchingFilter {
 
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);
+
+        if (account.getStatus() == AccountStatus.UNVERIFIED) {
+            // the user needs to verify their email address first:
+            req.setAttribute("account", account);
+            req.getRequestDispatcher("/verifyEmail.jsp").forward(req, resp);
+            return;
+        }
+
+        //otherwise, continue:
 
         //TODO: session use should be configurable.  USE JWT when not.
         //put the account in the session for easy retrieval later:
