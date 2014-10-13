@@ -21,7 +21,7 @@ import com.stormpath.sdk.resource.Resource;
 /**
  * The VerificationEmailRequest is used in scenarios where the <a href="http://docs.stormpath.com/console/product-guide/#workflow-automations">
  * Account Registration and Verification workflow</a> is enabled. If the welcome email has not been received by
- * a newly registered account, then the user will not be able to login until the account is verified with the received token.
+ * a newly registered account, then the user will not be able to login until the account is verified with the received email.
  * <p/>
  * After providing the username or email identifying the desired account, a call to {@link
  * com.stormpath.sdk.application.Application#sendVerificationEmail(VerificationEmailRequest) Application#sendVerificationEmail(VerificationEmailRequest)}

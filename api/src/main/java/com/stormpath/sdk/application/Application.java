@@ -1274,7 +1274,7 @@ public interface Application extends Resource, Saveable, Deletable {
      *      application.sendVerificationEmail(verificationEmailRequest);
      * </pre>
      *
-     * @param verificationEmailRequest contains the required information fot the verification email to be sent.
+     * @param verificationEmailRequest contains the required information for the verification email to be sent.
      * @since 1.0.0
      */
     public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest);
