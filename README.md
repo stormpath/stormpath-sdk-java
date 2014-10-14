@@ -28,7 +28,8 @@ means of the User-Agent http header. The primary purpose of this is for us at St
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
 recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
-
+- [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
+                                                                                                 
 ### 1.0.RC2 ###
 
 Stormpath Java SDK 1.0 Release Candidate 2
