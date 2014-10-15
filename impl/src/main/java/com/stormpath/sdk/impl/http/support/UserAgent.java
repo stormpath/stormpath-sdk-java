@@ -17,9 +17,11 @@ package com.stormpath.sdk.impl.http.support;
 
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * This class is in charge of constructing the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43">
@@ -42,7 +44,7 @@ import java.lang.reflect.Method;
  * {@link com.stormpath.sdk.impl.http.support.UserAgent#getUserAgentString() UserAgent.getUserAgentString()}.
  * <p/>
  * This is a sample User-Agent string:
- * <i>stormpath-spring-security/1.0.0 stormpath-sdk-java/1.0.0 spring/4.0.4.RELEASE java/1.7.0_45 Mac OS X/10.9.2 (spring-security/3.2.0.RELEASE jetty/8.1.5.v20120716)</i>
+ * <i>stormpath-spring-security/0.7.0 stormpath-sdk-java/1.0.0 spring/4.0.4.RELEASE java/1.7.0_45 Mac OS X/10.9.2 (spring-security/3.2.0.RELEASE jetty/8.1.5.v20120716)</i>
  *
  * @since 1.0.0
  */
@@ -120,11 +122,14 @@ public class UserAgent {
     }
 
     private static String getIntegrationString() {
-        if (Classes.isAvailable(INTEGRATION_SHIRO_CLASS)) {
-            return INTEGRATION_SHIRO_ID + VERSION_SEPARATOR + Version.getClientVersion() + ENTRY_SEPARATOR;
+        String integrationString;
+        integrationString = getFullEntryStringUsingPomProperties(INTEGRATION_SHIRO_CLASS, INTEGRATION_SHIRO_ID);
+        if(Strings.hasText(integrationString)) {
+            return integrationString;
         }
-        if (Classes.isAvailable(INTEGRATION_SPRING_SECURITY_CLASS)) {
-            return INTEGRATION_SPRING_SECURITY_ID + VERSION_SEPARATOR + Version.getClientVersion() + ENTRY_SEPARATOR;
+        integrationString = getFullEntryStringUsingPomProperties(INTEGRATION_SPRING_SECURITY_CLASS, INTEGRATION_SPRING_SECURITY_ID);
+        if(Strings.hasText(integrationString)) {
+            return integrationString;
         }
         return "";
     }
@@ -134,10 +139,10 @@ public class UserAgent {
     }
 
     private static String getIntegrationRuntimeString() {
-        String webServerString;
-        webServerString = getFullEntryString(INTEGRATION_RUNTIME_SPRING_SECURITY_CLASS, INTEGRATION_RUNTIME_SPRING_SECURITY_ID);
-        if(Strings.hasText(webServerString)) {
-            return webServerString;
+        String integrationRuntimeString;
+        integrationRuntimeString = getFullEntryStringUsingManifest(INTEGRATION_RUNTIME_SPRING_SECURITY_CLASS, INTEGRATION_RUNTIME_SPRING_SECURITY_ID);
+        if(Strings.hasText(integrationRuntimeString)) {
+            return integrationRuntimeString;
         }
         return "";
     }
@@ -152,11 +157,11 @@ public class UserAgent {
 
     private static String getSecurityFrameworkString() {
         String securityFrameworkString;
-        securityFrameworkString = getFullEntryString(SECURITY_FRAMEWORK_SHIRO_CLASS, SECURITY_FRAMEWORK_SHIRO_ID);
+        securityFrameworkString = getFullEntryStringUsingManifest(SECURITY_FRAMEWORK_SHIRO_CLASS, SECURITY_FRAMEWORK_SHIRO_ID);
         if(Strings.hasText(securityFrameworkString)) {
             return securityFrameworkString;
         }
-        securityFrameworkString = getFullEntryString(SECURITY_FRAMEWORK_SPRING_SECURITY_CLASS, SECURITY_FRAMEWORK_SPRING_SECURITY_ID);
+        securityFrameworkString = getFullEntryStringUsingManifest(SECURITY_FRAMEWORK_SPRING_SECURITY_CLASS, SECURITY_FRAMEWORK_SPRING_SECURITY_ID);
         if(Strings.hasText(securityFrameworkString)) {
             return securityFrameworkString;
         }
@@ -166,23 +171,23 @@ public class UserAgent {
     private static String getWebServerString() {
         String webServerString;
         //Glassfish uses Tomcat internally, therefore the Glassfish check must be carried out before Tomcat's
-        webServerString = getFullEntryString(WEB_SERVER_GLASSFISH_CLASS, WEB_SERVER_GLASSFISH_ID);
+        webServerString = getFullEntryStringUsingManifest(WEB_SERVER_GLASSFISH_CLASS, WEB_SERVER_GLASSFISH_ID);
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
-        webServerString = getFullEntryString(WEB_SERVER_TOMCAT_BOOTSTRAP_CLASS, WEB_SERVER_TOMCAT_ID);
+        webServerString = getFullEntryStringUsingManifest(WEB_SERVER_TOMCAT_BOOTSTRAP_CLASS, WEB_SERVER_TOMCAT_ID);
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
-        webServerString = getFullEntryString(WEB_SERVER_TOMCAT_EMBEDDED_CLASS, WEB_SERVER_TOMCAT_ID);
+        webServerString = getFullEntryStringUsingManifest(WEB_SERVER_TOMCAT_EMBEDDED_CLASS, WEB_SERVER_TOMCAT_ID);
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
-        webServerString = getFullEntryString(WEB_SERVER_JETTY_CLASS, WEB_SERVER_JETTY_ID);
+        webServerString = getFullEntryStringUsingManifest(WEB_SERVER_JETTY_CLASS, WEB_SERVER_JETTY_ID);
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
-        webServerString = getFullEntryString(WEB_SERVER_JBOSS_CLASS, WEB_SERVER_JBOSS_ID);
+        webServerString = getFullEntryStringUsingManifest(WEB_SERVER_JBOSS_CLASS, WEB_SERVER_JBOSS_ID);
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
@@ -198,7 +203,14 @@ public class UserAgent {
         return "";
     }
 
-    private static String getFullEntryString(String fqcn, String entryId) {
+    private static String getFullEntryStringUsingPomProperties(String fqcn, String entryId) {
+        if (Classes.isAvailable(fqcn)) {
+            return entryId + VERSION_SEPARATOR + getVersionInfoFromPomProperties(fqcn) + ENTRY_SEPARATOR;
+        }
+        return null;
+    }
+
+    private static String getFullEntryStringUsingManifest(String fqcn, String entryId) {
         if (Classes.isAvailable(fqcn)) {
             return entryId + VERSION_SEPARATOR + getVersionInfoInManifest(fqcn) + ENTRY_SEPARATOR;
         }
@@ -217,6 +229,45 @@ public class UserAgent {
             return WEB_SERVER_WEBLOGIC_ID + VERSION_SEPARATOR + getWebLogicVersion() + ENTRY_SEPARATOR;
         }
         return null;
+    }
+
+    /**
+     * WARNING: This method must never be invoked unless we already know that the class identified by the parameter <code>fqcn</code>
+     * really exists in the classpath. For example, we first need to assure that <code>Classes.isAvailable(fqcn))</code> is <code>TRUE</code>
+     */
+    private static String getVersionInfoFromPomProperties(String fqcn) {
+        String version = "unknown";
+        try{
+            Class clazz = Classes.forName(fqcn);
+            String className = clazz.getSimpleName() + ".class";
+            String classPath = clazz.getResource(className).toString();
+
+            //Let's remove "jar:file:" from the beginning and also the className
+            String jarPath = classPath.subSequence(9, classPath.lastIndexOf("!")).toString();
+            JarFile jarFile = new JarFile(jarPath);
+            Enumeration<JarEntry> enumeration = jarFile.entries();
+            String pomPropertiesPath = null;
+            while (enumeration.hasMoreElements()) {
+                JarEntry entry = enumeration.nextElement();
+                if (entry.getName().endsWith("pom.properties")) {
+                    pomPropertiesPath = entry.getName();
+                    break;
+                }
+            }
+            if (pomPropertiesPath != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clazz.getResourceAsStream("/" + pomPropertiesPath)));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("version=")) {
+                        version = line.split("=")[1];
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            //Either the jar file or the internal "pom.properties" file could not be read, there is nothing we can do...
+        }
+        return version;
     }
 
     /**
