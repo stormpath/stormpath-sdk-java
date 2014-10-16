@@ -23,7 +23,9 @@ import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.resource.AbstractResource
 import java.lang.reflect.Field
 import com.stormpath.sdk.impl.api.ApiKeyParameter
@@ -627,6 +629,57 @@ class AccountIT extends ClientIT {
         assertNull(customData02.get("aKey"))
 
     }
+
+    /**
+     * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
+     * @since 1.0.0
+     */
+    @Test
+    void testGetCroupsWithLimitAndOffset() {
+        def app = createTempApp()
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('Stormpath-SDK-Test-App-Acct1'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@nowhere.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        def group01 = client.instantiate(Group)
+        group01.name = uniquify("My Group01")
+        group01 = app.createGroup(group01)
+        deleteOnTeardown(group01)
+
+        def group02 = client.instantiate(Group)
+        group02.name = uniquify("My Group02")
+        group02 = app.createGroup(group02)
+        deleteOnTeardown(group02)
+
+        account.addGroup(group01)
+        account.addGroup(group02)
+
+        GroupList groups = account.getGroups(Groups.criteria().limitTo(1).orderByName().ascending());
+        assertEquals(1, groups.getLimit());
+        assertEquals(0, groups.getOffset());
+
+        Group firstGroupWithOffset0 = groups.iterator().next();
+
+        assertNotNull(firstGroupWithOffset0);
+        assertEquals(firstGroupWithOffset0.getHref(), group01.getHref());
+
+        groups = account.getGroups(Groups.criteria().offsetBy(1).orderByName().ascending());
+        assertEquals(25, groups.getLimit());
+        assertEquals(1, groups.getOffset());
+
+        Group firstGroupWithOffset1 = groups.iterator().next();
+
+        assertNotNull(firstGroupWithOffset1);
+        assertEquals(firstGroupWithOffset1.getHref(), group02.getHref());
+
+        assertTrue(firstGroupWithOffset0.getHref() != firstGroupWithOffset1.getHref());
+    }
+
 
     //@since 1.0.0
     private Object getValue(Class clazz, Object object, String fieldName) {
