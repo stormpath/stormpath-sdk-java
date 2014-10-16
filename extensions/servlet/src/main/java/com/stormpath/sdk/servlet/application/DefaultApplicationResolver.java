@@ -19,7 +19,7 @@ public class DefaultApplicationResolver implements ApplicationResolver {
     private static final String APP_HREF_ERROR =
         "The application's stormpath.properties configuration does not have a " + STORMPATH_APPLICATION_HREF +
         " property defined.  This property is required required when looking up an application by ServletContext and " +
-        "you have more than one application in Stormpath.  For example:\n\n" +
+        "you have more than one application registered in Stormpath.  For example:\n\n" +
         " # in stormpath.properties:\n" +
         " " + STORMPATH_APPLICATION_HREF + " = YOUR_STORMPATH_APPLICATION_HREF_HERE\n";
 

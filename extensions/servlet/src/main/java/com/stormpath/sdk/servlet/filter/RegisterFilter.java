@@ -46,7 +46,7 @@ public class RegisterFilter extends PathMatchingFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterFilter.class);
 
-    public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.";
+    public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
 
     /**
      * Returns the context-relative URL where a user can be redirected to login.
@@ -123,8 +123,7 @@ public class RegisterFilter extends PathMatchingFilter {
 
         for (String key : config.keySet()) {
 
-            if (key.startsWith(FIELD_CONFIG_NAME_PREFIX) &&
-                !key.equals("stormpath.web.register.url") && !key.equals("stormpath.web.register.nextUrl")) {
+            if (key.startsWith(FIELD_CONFIG_NAME_PREFIX)) {
 
                 value = config.get(key);
 
