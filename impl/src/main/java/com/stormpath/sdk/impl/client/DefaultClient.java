@@ -16,6 +16,8 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
@@ -30,6 +32,8 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
@@ -313,4 +317,65 @@ public class DefaultClient implements Client {
     public Account verifyAccountEmail(String token) {
         return getCurrentTenant().verifyAccountEmail(token);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.0
+     */
+    @Override
+    public AccountList getAccounts() {
+        return getCurrentTenant().getAccounts();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.0
+     */
+    @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        return getCurrentTenant().getAccounts(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.0
+     */
+    @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        return getCurrentTenant().getAccounts(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.0
+     */
+    @Override
+    public GroupList getGroups() {
+        return getCurrentTenant().getGroups();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.0
+     */
+    @Override
+    public GroupList getGroups(GroupCriteria criteria) {
+        return getCurrentTenant().getGroups(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.0
+     */
+    @Override
+    public GroupList getGroups(Map<String, Object> queryParams) {
+        return getCurrentTenant().getGroups(queryParams);
+    }
+
 }

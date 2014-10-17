@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
@@ -115,6 +113,8 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
             postedProperties.remove(propertyName)
 
         }
+
+        assertValidCustomData(customData.getHref(), postedProperties, customData)
 
         updateCustomDataProperties = createDataForUpdate()
 
