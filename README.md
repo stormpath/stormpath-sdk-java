@@ -16,6 +16,10 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 ## Change Log ##
 
+### 1.0.RC2.1 ###
+
+This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
+
 ### 1.0.RC2 ###
 
 Stormpath Java SDK 1.0 Release Candidate 2
@@ -43,10 +47,6 @@ interface's **[newIdSiteUrlBuilder](http://docs.stormpath.com/java/apidocs/com/s
 method (for redirecting end-users to your ID Site) and the
 **[newIdSiteCallbackHandler](http://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/Application.html#newIdSiteCallbackHandler(java.lang.Object))**
 method (for hanling the return reply from your ID Site) for code examples!
-
-### 1.0.RC2.1 ###
-
-This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
 
 ### 1.0.RC ###
 
