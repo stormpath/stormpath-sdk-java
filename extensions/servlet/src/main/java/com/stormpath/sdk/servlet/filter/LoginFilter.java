@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class LoginFilter extends PathMatchingFilter {
+public class LoginFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
@@ -54,20 +54,6 @@ public class LoginFilter extends PathMatchingFilter {
     }
 
     @Override
-    protected void onInit() throws ServletException {
-        String pattern = getLoginUrl();
-        int i = pattern.indexOf('?');
-        if (i != -1) {
-            pattern = pattern.substring(0, i);
-        }
-        i = pattern.indexOf(';');
-        if (i != -1) {
-            pattern = pattern.substring(0, i);
-        }
-        this.pathPatterns.add(pattern);
-    }
-
-    @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
 
@@ -81,14 +67,6 @@ public class LoginFilter extends PathMatchingFilter {
             ServletUtils.issueRedirect(request, response, getLoginUrl(), null, true, true);
         }
     }
-
-    /*
-    protected void addConfigProperties(HttpServletRequest request) {
-        for (Map.Entry<String, String> entry : getConfig().entrySet()) {
-            request.setAttribute(entry.getKey(), entry.getValue());
-        }
-    }
-    */
 
     private void setForm(HttpServletRequest request, Form form) {
         request.setAttribute("form", form);
@@ -108,7 +86,7 @@ public class LoginFilter extends PathMatchingFilter {
             form.setNext(value);
         }
 
-        String[] fieldNames = new String[]{"login", "password"};
+        String[] fieldNames = new String[]{ "login", "password" };
 
         for (String fieldName : fieldNames) {
 
@@ -191,7 +169,7 @@ public class LoginFilter extends PathMatchingFilter {
 
         //ensure required fields are present:
         List<Field> fields = form.getFields();
-        for(Field field : fields) {
+        for (Field field : fields) {
             if (field.isRequired()) {
                 String value = Strings.clean(field.getValue());
                 if (value == null) {

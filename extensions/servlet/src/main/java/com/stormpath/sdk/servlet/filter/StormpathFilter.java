@@ -15,38 +15,144 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.UriCleaner;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class StormpathFilter extends HttpFilter {
 
-    private final List<Filter> filters;
+    public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.routes.";
+
+    private FilterChainResolver filterChainResolver;
 
     public StormpathFilter() {
-        this.filters = new ArrayList<Filter>();
     }
 
     @Override
     protected void onInit() throws ServletException {
-        Map<String, Filter> defaults = DefaultFilter.createInstanceMap(getServletContext());
-        this.filters.addAll(defaults.values());
+
+        PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(getServletContext());
+        this.filterChainResolver = resolver;
+
+        //now register any configured chains:
+        Config config = getConfig();
+
+        //Ensure handlers are registered:
+        String loginUrl = config.getLoginUrl();
+        String loginUrlPattern = UriCleaner.INSTANCE.clean(loginUrl);
+        boolean loginChainSpecified = false;
+
+        String logoutUrl = config.getLogoutUrl();
+        String logoutUrlPattern = UriCleaner.INSTANCE.clean(logoutUrl);
+        boolean logoutChainSpecified = false;
+
+        String registerUrl = config.getRegisterUrl();
+        String registerUrlPattern = UriCleaner.INSTANCE.clean(registerUrl);
+        boolean registerChainSpecified = false;
+
+        String verifyUrl = config.getVerifyUrl();
+        String verifyUrlPattern = UriCleaner.INSTANCE.clean(verifyUrl);
+        boolean verifyChainSpecified = false;
+
+        //uriPattern-to-chainDefinition:
+        Map<String, String> patternChains = new LinkedHashMap<String, String>();
+
+        for (String key : config.keySet()) {
+
+            if (key.startsWith(ROUTE_CONFIG_NAME_PREFIX)) {
+
+                String uriPattern = key.substring(ROUTE_CONFIG_NAME_PREFIX.length());
+                String chainDefinition = config.get(key);
+
+                if (uriPattern.startsWith(loginUrlPattern)) {
+                    loginChainSpecified = true;
+
+                    //did they specify the login filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.login.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+
+                } else if (uriPattern.startsWith(logoutUrlPattern)) {
+                    logoutChainSpecified = true;
+
+                    //did they specify the logout filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.logout.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+
+                } else if (uriPattern.startsWith(registerUrlPattern)) {
+                    registerChainSpecified = true;
+
+                    //did they specify the register filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.register.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(verifyUrlPattern)) {
+                    verifyChainSpecified = true;
+
+                    //did they specify the register filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.verify.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                }
+
+                patternChains.put(uriPattern, chainDefinition);
+            }
+        }
+
+        //register configured request handlers if not yet specified:
+        FilterChainManager fcManager = resolver.getFilterChainManager();
+
+        if (!loginChainSpecified) {
+            fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
+        }
+        if (!logoutChainSpecified) {
+            fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+        }
+        if (!registerChainSpecified) {
+            fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
+        }
+        if (!verifyChainSpecified) {
+            fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
+        }
+
+        //register all specified chains:
+        for (String pattern : patternChains.keySet()) {
+            String chainDefinition = patternChains.get(pattern);
+            resolver.getFilterChainManager().createChain(pattern, chainDefinition);
+        }
     }
 
     @Override
-    public void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
+    public void filter(HttpServletRequest request, HttpServletResponse response, final FilterChain chain)
+        throws Exception {
+
+        Assert.notNull(filterChainResolver,
+                       "Filter has not yet been initialized. init(FilterConfig) must be called before use.");
+
         //wrap:
         request = new StormpathHttpServletRequest(request);
-        chain = new ProxiedFilterChain(chain, this.filters);
+
+        FilterChain target = filterChainResolver.getChain(request, response, chain);
+
+        if (target == null) {
+            target = chain;
+        }
 
         //continue:
-        chain.doFilter(request, response);
+        target.doFilter(request, response);
     }
 }

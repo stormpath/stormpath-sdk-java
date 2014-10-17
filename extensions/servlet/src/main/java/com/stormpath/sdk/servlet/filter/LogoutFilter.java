@@ -19,33 +19,14 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class LogoutFilter extends PathMatchingFilter {
-
-    protected String getLogoutUrl() {
-        return getConfig().getLogoutUrl();
-    }
+public class LogoutFilter extends HttpFilter {
 
     protected String getLogoutNextUrl() {
         return getConfig().getLogoutNextUrl();
-    }
-
-    @Override
-    protected void onInit() throws ServletException {
-        String logoutUrlPattern = getLogoutUrl();
-        int i = logoutUrlPattern.indexOf('?');
-        if (i != -1) {
-            logoutUrlPattern = logoutUrlPattern.substring(0, i);
-        }
-        i = logoutUrlPattern.indexOf(';');
-        if (i != -1) {
-            logoutUrlPattern = logoutUrlPattern.substring(0, i);
-        }
-        this.pathPatterns.add(logoutUrlPattern);
     }
 
     @Override

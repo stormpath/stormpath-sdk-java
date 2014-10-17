@@ -67,22 +67,22 @@ public class ServletUtils {
     public static final String DEFAULT_CHARACTER_ENCODING = "ISO-8859-1";
 
     /**
-     * Return the context-relative path within the web application for the given request.  This implementation will
+     * Return the context-relative URI within the web application for the given request.  This implementation will
      * properly detect include request URLs if called within a RequestDispatcher include.
      *
      * <p>For example, for an application deployed with a base context of {@code /myapp} and a request URL of
      * <code>http://www.somehost.com/myapp/my/url.jsp</code>, this method would return <code>/my/url.jsp</code></p>
      *
      * @param request current HTTP request
-     * @return the path within the web application
+     * @return the context-relative URI within the web application
      */
-    public static String getContextRelativePath(HttpServletRequest request) {
+    public static String getContextRelativeUri(HttpServletRequest request) {
         String contextPath = getContextPath(request);
         String requestUri = getRequestUri(request);
         if (Strings.startsWithIgnoreCase(requestUri, contextPath)) {
             // Normal case: URI contains context path.
-            String path = requestUri.substring(contextPath.length());
-            return (Strings.hasText(path) ? path : "/");
+            String contextRelativeUri = requestUri.substring(contextPath.length());
+            return (Strings.hasText(contextRelativeUri) ? contextRelativeUri : "/");
         } else {
             // Special case: rather unusual.
             return requestUri;

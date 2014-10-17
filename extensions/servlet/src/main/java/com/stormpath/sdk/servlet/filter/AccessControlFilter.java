@@ -18,16 +18,7 @@ package com.stormpath.sdk.servlet.filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public abstract class AccessControlFilter extends PathMatchingFilter {
-
-    /**
-     * Returns the context-relative URL where a user can be redirected to login.
-     *
-     * @return the context-relative URL where a user can be redirected to login.
-     */
-    public String getLoginUrl() {
-        return getConfig().getLoginUrl();
-    }
+public abstract class AccessControlFilter extends HttpFilter {
 
     /**
      * Returns <code>true</code> if the request is allowed to proceed through the filter normally, or

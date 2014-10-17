@@ -28,6 +28,11 @@ public interface Config extends Map<String, String> {
     public static final String VERIFY_URL        = "stormpath.web.verify.url";
     public static final String VERIFY_NEXT_URL   = "stormpath.web.verify.nextUrl";
 
+    /**
+     * Returns the context-relative URL of the login view.
+     *
+     * @return the context-relative URL of the login view.
+     */
     String getLoginUrl();
 
     String getLoginNextUrl();

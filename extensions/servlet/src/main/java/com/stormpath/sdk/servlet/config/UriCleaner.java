@@ -15,11 +15,10 @@
  */
 package com.stormpath.sdk.servlet.config;
 
-public interface UrlFeature {
+public interface UriCleaner {
 
-    boolean isEnabled();
+    public static final UriCleaner INSTANCE = new DefaultUriCleaner();
 
-    String getUrl();
+    String clean(String uri);
 
-    String getNextUrl();
 }

@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 
 import javax.servlet.Filter;
@@ -32,6 +33,8 @@ import java.util.Map;
  */
 public enum DefaultFilter {
 
+    anon(AnonymousFilter.class),
+    authc(AuthenticationFilter.class),
     login(LoginFilter.class),
     logout(LogoutFilter.class),
     register(RegisterFilter.class),
@@ -52,6 +55,7 @@ public enum DefaultFilter {
     }
 
     public static Map<String, Filter> createInstanceMap(final ServletContext servletContext) throws ServletException {
+        Assert.notNull(servletContext, "ServletContext argument cannot be null.");
 
         Map<String, Filter> filters = new LinkedHashMap<String, Filter>(values().length);
 

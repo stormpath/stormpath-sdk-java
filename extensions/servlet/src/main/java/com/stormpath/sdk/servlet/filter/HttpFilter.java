@@ -147,7 +147,7 @@ public abstract class HttpFilter implements Filter {
      */
     @SuppressWarnings({"UnusedParameters"})
     protected boolean isEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return isEnabled();
+        return true;
     }
 
     /**

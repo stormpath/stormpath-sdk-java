@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class RegisterFilter extends PathMatchingFilter {
+public class RegisterFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterFilter.class);
 
@@ -62,20 +62,6 @@ public class RegisterFilter extends PathMatchingFilter {
     }
 
     @Override
-    protected void onInit() throws ServletException {
-        String pattern = getRegisterUrl();
-        int i = pattern.indexOf('?');
-        if (i != -1) {
-            pattern = pattern.substring(0, i);
-        }
-        i = pattern.indexOf(';');
-        if (i != -1) {
-            pattern = pattern.substring(0, i);
-        }
-        this.pathPatterns.add(pattern);
-    }
-
-    @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
 
@@ -89,14 +75,6 @@ public class RegisterFilter extends PathMatchingFilter {
             ServletUtils.issueRedirect(request, response, getRegisterUrl(), null, true, true);
         }
     }
-
-    /*
-    protected void addConfigProperties(HttpServletRequest request) {
-        for (Map.Entry<String, String> entry : getConfig().entrySet()) {
-            request.setAttribute(entry.getKey(), entry.getValue());
-        }
-    }
-    */
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {

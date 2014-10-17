@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class VerifyFilter extends PathMatchingFilter {
+public class VerifyFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(VerifyFilter.class);
 
@@ -44,20 +44,6 @@ public class VerifyFilter extends PathMatchingFilter {
 
     public String getVerifyNextUrl() {
         return getConfig().getVerifyNextUrl();
-    }
-
-    @Override
-    protected void onInit() throws ServletException {
-        String pattern = getVerifyUrl();
-        int i = pattern.indexOf('?');
-        if (i != -1) {
-            pattern = pattern.substring(0, i);
-        }
-        i = pattern.indexOf(';');
-        if (i != -1) {
-            pattern = pattern.substring(0, i);
-        }
-        this.pathPatterns.add(pattern);
     }
 
     @Override
@@ -79,7 +65,8 @@ public class VerifyFilter extends PathMatchingFilter {
         String sptoken = Strings.clean(request.getParameter("sptoken"));
 
         if (sptoken == null) {
-            String url = getConfig().getLogoutUrl(); //safest thing to do if token is not specified (could be illegal access)
+            String url =
+                getConfig().getLogoutUrl(); //safest thing to do if token is not specified (could be illegal access)
             ServletUtils.issueRedirect(request, response, url, null, true, true);
             return;
         }
@@ -88,7 +75,8 @@ public class VerifyFilter extends PathMatchingFilter {
             verify(request, response, sptoken);
         } catch (Exception e) {
             //TODO: set up an error view
-            String url = getConfig().getLogoutUrl(); //safest thing to do if token is invalid or if there is an error (could be illegal access)
+            String url = getConfig()
+                .getLogoutUrl(); //safest thing to do if token is invalid or if there is an error (could be illegal access)
             ServletUtils.issueRedirect(request, response, url, null, true, true);
         }
     }

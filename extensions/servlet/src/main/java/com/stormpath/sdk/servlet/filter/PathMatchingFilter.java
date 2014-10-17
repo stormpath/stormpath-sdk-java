@@ -51,26 +51,26 @@ public abstract class PathMatchingFilter extends HttpFilter {
      * Returns the context path within the application based on the specified <code>request</code>.
      * <p/>
      * This implementation merely delegates to
-     * {@link com.stormpath.sdk.servlet.util.ServletUtils#getContextRelativePath(javax.servlet.http.HttpServletRequest)
+     * {@link com.stormpath.sdk.servlet.util.ServletUtils#getContextRelativeUri(javax.servlet.http.HttpServletRequest)
      * ServletUtils.getContextRelativePath(request)},
      * but can be overridden by subclasses for custom logic.
      *
      * @param request the incoming <code>ServletRequest</code>
      * @return the context path within the application.
      */
-    protected String getContextRelativePath(HttpServletRequest request) {
-        return ServletUtils.getContextRelativePath(request);
+    protected String getContextRelativeUri(HttpServletRequest request) {
+        return ServletUtils.getContextRelativeUri(request);
     }
 
     /**
      * Returns <code>true</code> if the incoming <code>request</code> matches the specified <code>path</code> pattern,
      * <code>false</code> otherwise.
      * <p/>
-     * The default implementation acquires the <code>request</code>'s path within the application and determines
-     * if that matches:
+     * The default implementation acquires the <code>request</code>'s context-relative URI within the application and
+     * determines if that matches:
      * <p/>
-     * <code>String relativePath = {@link #getContextRelativePath(javax.servlet.http.HttpServletRequest)};<br/>
-     * return {@link #pathsMatch(String, String) pathsMatch(path,relativePath)}</code>
+     * <code>String relativeUri = {@link #getContextRelativeUri(javax.servlet.http.HttpServletRequest)};<br/>
+     * return {@link #pathsMatch(String, String) pathsMatch(path,relativeUri)}</code>
      *
      * @param pathPattern the configured url pattern to check the incoming request against.
      * @param request     the incoming ServletRequest
@@ -78,7 +78,7 @@ public abstract class PathMatchingFilter extends HttpFilter {
      * <code>false</code> otherwise.
      */
     protected boolean pathsMatch(String pathPattern, HttpServletRequest request) {
-        String requestUri = getContextRelativePath(request);
+        String requestUri = getContextRelativeUri(request);
         log.trace("Attempting to match pattern '{}' with current requestUri '{}'...", pathPattern, requestUri);
         return pathsMatch(pathPattern, requestUri);
     }
