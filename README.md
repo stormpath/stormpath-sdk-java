@@ -30,6 +30,10 @@ recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
                                                                                                  
+### 1.0.RC2.1 ###
+
+This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
+
 ### 1.0.RC2 ###
 
 Stormpath Java SDK 1.0 Release Candidate 2
@@ -65,8 +69,6 @@ method (for hanling the return reply from your ID Site) for code examples!
 - [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
 
 Stormpath Java SDK 1.0 Release Candidate
-
-1.0 final will be released after this release.
 
 #### New Features & Enhancements ####
 
