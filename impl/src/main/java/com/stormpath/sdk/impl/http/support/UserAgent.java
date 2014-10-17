@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.http.support;
 
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;

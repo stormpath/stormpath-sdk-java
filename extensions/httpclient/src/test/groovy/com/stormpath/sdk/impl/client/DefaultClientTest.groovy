@@ -24,6 +24,11 @@ import com.stormpath.sdk.application.CreateApplicationRequest
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.directory.CreateDirectoryRequest
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
+import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
@@ -32,13 +37,8 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
-import org.easymock.IArgumentMatcher
-import com.stormpath.sdk.directory.CreateDirectoryRequest
-import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryCriteria
-import com.stormpath.sdk.directory.DirectoryList
-import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.tenant.Tenant
+import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field

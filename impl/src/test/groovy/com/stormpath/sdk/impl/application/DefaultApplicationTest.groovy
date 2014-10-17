@@ -34,11 +34,7 @@ import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
-import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.impl.resource.CollectionReference
-import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
-import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.resource.*
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.FacebookProviderData

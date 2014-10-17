@@ -28,8 +28,6 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 import static org.testng.Assert.*
 
