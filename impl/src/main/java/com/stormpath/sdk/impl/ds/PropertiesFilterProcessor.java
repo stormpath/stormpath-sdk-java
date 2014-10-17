@@ -15,45 +15,26 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- *     This interface defines the methods used to process the added {@link PropertiesFilter}s by
- *     calling their {@link PropertiesFilter#filter(Class, Map)} method and returning
- *     the result of processing all configured filters.
- * </p>
- * @since 1.0.RC
+ * This interface defines the methods used to process the added {@link PropertiesFilter}s by calling their {@link
+ * PropertiesFilter#filter(Class, Map)} method and returning the result of processing all configured filters.
+ *
  * @see DefaultPropertiesFilterProcessor
+ * @since 1.0.RC
  */
 public interface PropertiesFilterProcessor<T extends Map, F extends PropertiesFilter, C extends Class> {
 
     /**
      * Processes the filters based on the provided {@code clazz} type and {@code properties} parameters.
      *
-     * @param clazz the provided class type.
+     * @param clazz      the provided class type.
      * @param properties the properties {@link Map} to be filtered.
      * @return the filtered {@link Map}.
      */
     T process(C clazz, T properties);
 
-    /**
-     * Adds a {@link PropertiesFilter} to be processed every time the {@link #process(Class, Map)} method is called.
-     *
-     * @param propertiesFilter the filter to be added.
-     */
-    void add(F propertiesFilter);
-
-    /**
-     * <p>
-     * Adds a {@link PropertiesFilter} that will only be executed in the next call to
-     * the {@link #process(Class,Map)} method. After the next call to {@link #process(Class,Map)}, all filters added by this method
-     * will be removed.
-     * </p>
-     *
-     * @param propertiesFilter the {@link PropertiesFilter} that will only be executed in the next call to
-     * the {@link #process(Class,Map)} method. After the next call to {@link #process(Class,Map)}, all filters added by this method
-     * will be removed.
-     */
-    void addTransitoryFilter(F propertiesFilter);
+    List<PropertiesFilter> getFilters();
 }
