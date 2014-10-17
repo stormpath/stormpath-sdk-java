@@ -126,13 +126,13 @@ public class DefaultDataStore implements InternalDataStore {
         this.referenceFactory = new ReferenceFactory();
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
-        resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor();
+
+        this.resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyCachePropertiesFilter(apiKey)));
         // Adding another processor for query strings because we don't want to mix
         // the processing (filtering) of the query strings with the processing of the resource properties,
         // even though they're both (resource properties and query string objects) Maps that might apply
         // to the be added to the same filter. This separation also improves requests performance.
-        queryStringFilterProcessor = new DefaultPropertiesFilterProcessor();
-        initFilterProcessors();
+        this.queryStringFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyQueryPropertiesFilter()));
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -279,9 +279,7 @@ public class DefaultDataStore implements InternalDataStore {
                             .setItemsMap(apiKeyData);
                     data = builder.build();
                 }
-
             } else {
-
                 data = getCachedValue(href, clazz);
             }
         }
@@ -304,8 +302,11 @@ public class DefaultDataStore implements InternalDataStore {
             // For example: decrypting the api key secret to return to the user
             // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
             // be added when initializing the filter (they depend on the current request).
-            resourceDataFilterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
-            returnResponseBody = resourceDataFilterProcessor.process(clazz, data);
+            List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
+            List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
+            filters.add(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
+            PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
+            returnResponseBody = processor.process(clazz, data);
         }
 
         return returnResponseBody;
@@ -443,13 +444,15 @@ public class DefaultDataStore implements InternalDataStore {
         Response response = executeRequestGetFullResponse(request);
         Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
 
-        // Transitory filters serve the purpose of filtering the resource properties to return to the user,
-        // based on the current request.
+        // Filter resource properties to return to the user, based on the current request.
         // For example: decrypting the api key secret to return to the user
         // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
         // be added when initializing the filter (they depend on the current request).
-        resourceDataFilterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
-        Map<String, ?> returnResponseBody = resourceDataFilterProcessor.process(returnType, responseBody);
+        List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
+        List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
+        filters.add(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
+        PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
+        Map<String,?> returnResponseBody = processor.process(returnType, responseBody);
 
         if (Collections.isEmpty(responseBody)) {
             return null;
@@ -955,23 +958,10 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     /**
-     * Initializes the filter processors with the filters that should always be present when calling
-     * {@link PropertiesFilterProcessor#process(Class,Map)}.
-     *
-     * @since 1.0.RC
-     */
-    protected void initFilterProcessors() {
-
-        resourceDataFilterProcessor.add(new ApiKeyCachePropertiesFilter(apiKey));
-        queryStringFilterProcessor.add(new ApiKeyQueryPropertiesFilter());
-    }
-
-    /**
      *
      * @since 1.0.RC
      */
     private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
-
         return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());
     }
 }

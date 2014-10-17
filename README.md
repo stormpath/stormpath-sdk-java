@@ -16,6 +16,10 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 ## Change Log ##
 
+### 1.0.RC2.1 ###
+
+This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
+
 ### 1.0.RC2 ###
 
 Stormpath Java SDK 1.0 Release Candidate 2
@@ -47,8 +51,6 @@ method (for hanling the return reply from your ID Site) for code examples!
 ### 1.0.RC ###
 
 Stormpath Java SDK 1.0 Release Candidate
-
-1.0 final will be released after this release.
 
 #### New Features & Enhancements ####
 
