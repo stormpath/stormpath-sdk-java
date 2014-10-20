@@ -131,7 +131,7 @@ public class DefaultCriteria<T extends Criteria<T>, O extends Options> implement
     }
 
     public boolean isEmpty() {
-        return options.isEmpty() && criterionEntries.isEmpty() && orderEntries.isEmpty();
+        return options.isEmpty() && criterionEntries.isEmpty() && orderEntries.isEmpty() && (offset == null || offset == 0) && (limit == null || limit == 0);
     }
 
     @Override
