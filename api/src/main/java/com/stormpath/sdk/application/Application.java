@@ -1266,7 +1266,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * Sample code:
      * <p/>
      * <pre>
-     *      Directory dir = client.getResource("http://localhost:8080/v1/directories/7WcyHGlDa0V2Nk11Vum3Zd", Directory.class);
+     *      Directory dir = client.getResource("https://api.stormpath.com/v1/directories/7WcyHGlDa0V2Nk11Vum3Zd", Directory.class);
      *      VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
      *                                          .setLogin("myaccountemail@mycompany.com")
      *                                          .setAccountStore(dir)
