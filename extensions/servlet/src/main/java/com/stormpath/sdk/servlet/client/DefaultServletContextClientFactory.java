@@ -51,7 +51,7 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     //not configurable by end-users - always reflects the 'effective' or 'merged' view of all properties discovered
     //at startup
-    public static final String STORMPATH_CONFIG = "stormpath.config";
+    public static final String STORMPATH_CONFIG = "stormpath.config.properties";
 
     private final ServletContextConfigFactory servletContextConfigFactory =
         new DefaultServletContextConfigFactory();

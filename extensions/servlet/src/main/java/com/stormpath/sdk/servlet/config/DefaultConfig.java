@@ -24,6 +24,16 @@ import java.util.Set;
 
 public class DefaultConfig implements Config {
 
+    public static final String LOGIN_URL = "stormpath.web.login.url";
+    public static final String LOGIN_NEXT_URL = "stormpath.web.login.nextUrl";
+    public static final String LOGOUT_URL = "stormpath.web.logout.url";
+    public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUrl";
+    public static final String REGISTER_URL = "stormpath.web.register.url";
+    public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUrl";
+    public static final String VERIFY_URL = "stormpath.web.verify.url";
+    public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUrl";
+    public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
+
     private final Map<String, String> props;
 
     public DefaultConfig(Map<String, String> props) {
