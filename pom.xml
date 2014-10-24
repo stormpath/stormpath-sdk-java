@@ -360,6 +360,17 @@
 
     <profiles>
         <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
+                     clean up the HTML source in JavaDoc comments: -->
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+        <profile>
             <id>stormpath-signature</id>
             <build>
                 <plugins>
@@ -433,11 +444,6 @@
 <!-- Optimizely -->
 <script src="//cdn.optimizely.com/js/225847041.js"></script>
                                 ]]></top>
-
-                            <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
-                                 clean up the HTML source in JavaDoc comments: -->
-                            <additionalparam>-Xdoclint:none</additionalparam>
-
                         </configuration>
                     </plugin>
                     <plugin>
