@@ -27,7 +27,7 @@ class IdentityProviderTypeTest {
 
     @Test
     void testMaps() {
-        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), 3)
+        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), 4)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
         assertEquals(item.getNameKey(), "stormpath")
         assertEquals(item.getProviderClass(), Provider.class)
@@ -40,16 +40,22 @@ class IdentityProviderTypeTest {
         assertEquals(item.getNameKey(), "google")
         assertEquals(item.getProviderClass(), GoogleProvider.class)
         assertEquals(item.getProviderDataClass(), GoogleProviderData.class)
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("github");
+        assertEquals(item.getNameKey(), "github")
+        assertEquals(item.getProviderClass(), GithubProvider.class)
+        assertEquals(item.getProviderDataClass(), GithubProviderData.class)
 
-        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), 3)
+        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), 4)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("google"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("github"))
 
-        assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), 3)
+        assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), 4)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("google"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("github"))
     }
 
     @Test
@@ -57,6 +63,7 @@ class IdentityProviderTypeTest {
         assertSame(IdentityProviderType.fromNameKey("STormPATh"), IdentityProviderType.STORMPATH)
         assertSame(IdentityProviderType.fromNameKey("facebook"), IdentityProviderType.FACEBOOK)
         assertSame(IdentityProviderType.fromNameKey("GOOGLE"), IdentityProviderType.GOOGLE)
+        assertSame(IdentityProviderType.fromNameKey("GitHUB"), IdentityProviderType.GITHUB)
     }
 
     @Test

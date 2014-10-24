@@ -30,6 +30,7 @@ recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
+- [Issue 117](https://github.com/stormpath/stormpath-sdk-java/issues/117): Added support for Github OAuth.
                                                                                                  
 ### 1.0.RC2.1 ###
 

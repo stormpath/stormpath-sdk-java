@@ -42,6 +42,7 @@ import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.FacebookProviderData
+import com.stormpath.sdk.provider.GithubProviderData
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountResult
 import com.stormpath.sdk.provider.Providers
@@ -642,6 +643,34 @@ class DefaultApplicationTest {
             assertEquals(e.getMessage(), "newPassword cannot be empty or null.")
         }
 
+    }
+
+    //@since 1.0.0
+    @Test
+    void testGetAccountGithub() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def providerAccountResult = createStrictMock(ProviderAccountResult)
+        ProviderAccountRequest request = Providers.GITHUB.account().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
+
+        def providerAccountAccess = new DefaultProviderAccountAccess<GithubProviderData>(internalDataStore);
+        providerAccountAccess.setProviderData(request.getProviderData())
+
+        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
+
+        replay(internalDataStore, providerAccountResult)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        ProviderAccountResult accountResult = defaultApplication.getAccount(request)
+        assertNotNull(accountResult)
+
+        verify(internalDataStore, providerAccountResult)
     }
 
     //@since 1.0.beta

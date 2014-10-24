@@ -60,5 +60,13 @@ public final class Providers {
      */
     public static final FacebookRequestFactory FACEBOOK = (FacebookRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookRequestFactory");
 
+    /**
+     * Returns a new {@link GithubRequestFactory} instance, used to construct Github requests, like Github Account creation and retrieval.
+     *
+     * @return a new {@link GithubRequestFactory} instance, used to construct Girhub requests, like Github Account creation and retrieval.
+     * @since 1.0.0
+     */
+    public static final GithubRequestFactory GITHUB = (GithubRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGithubRequestFactory");
+
 }
 
