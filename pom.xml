@@ -102,6 +102,8 @@
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
 
+        <skipITs>false</skipITs>
+
     </properties>
 
     <dependencies>
