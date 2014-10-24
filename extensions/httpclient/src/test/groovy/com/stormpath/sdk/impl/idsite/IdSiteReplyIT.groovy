@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.idsite
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
@@ -26,7 +27,6 @@ import com.stormpath.sdk.idsite.AccountResult
 import com.stormpath.sdk.impl.http.QueryString
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner
 import com.stormpath.sdk.lang.Strings
-import org.codehaus.jackson.map.ObjectMapper
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 

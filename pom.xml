@@ -94,7 +94,7 @@
         <slf4j.version>1.6.6</slf4j.version>
         <hazelcast.version>3.2.4</hazelcast.version>
         <httpClient.version>4.2.2</httpClient.version>
-        <jackson.version>1.9.11</jackson.version>
+        <jackson.version>2.4.3</jackson.version>
         <oltu.version>1.0.0</oltu.version>
 
         <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
@@ -195,8 +195,15 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-mapper-asl</artifactId>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <!-- Runtime only - replaces commons-logging runtime need for HTTPClient: -->
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
