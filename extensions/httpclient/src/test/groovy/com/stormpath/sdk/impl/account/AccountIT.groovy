@@ -23,7 +23,9 @@ import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.resource.AbstractResource
@@ -629,6 +631,128 @@ class AccountIT extends ClientIT {
         assertNull(customData02.get("aKey"))
 
     }
+
+    /**
+     * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
+     * @since 1.0.0
+     */
+    @Test
+    void testGetGroupsWithLimitAndOffset() {
+        def app = createTempApp()
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('Stormpath-SDK-Test-App-Acct1'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@nowhere.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        def group01 = client.instantiate(Group)
+        group01.name = uniquify("My Group01")
+        group01 = app.createGroup(group01)
+        deleteOnTeardown(group01)
+
+        def group02 = client.instantiate(Group)
+        group02.name = uniquify("My Group02")
+        group02 = app.createGroup(group02)
+        deleteOnTeardown(group02)
+
+        account.addGroup(group01)
+        account.addGroup(group02)
+
+        //Let's check with have 2 groups
+        def groups = account.getGroups(Groups.criteria().orderByName().ascending());
+        assertEquals(25, groups.getLimit());
+        assertEquals(2, groups.getProperty("items").size);
+
+        //Let's retrieve 1 group per page
+        groups = account.getGroups(Groups.criteria().limitTo(1).orderByName().ascending());
+        assertEquals(1, groups.getLimit());
+        assertEquals(1, groups.getProperty("items").size);
+        assertEquals(0, groups.getOffset());
+
+        Group firstGroupWithOffset0 = groups.iterator().next();
+
+        assertNotNull(firstGroupWithOffset0);
+        assertEquals(firstGroupWithOffset0.getHref(), group01.getHref());
+
+        //Since we have 2 groups and offset = 1 here, then this page should only have 1 group, the last one
+        groups = account.getGroups(Groups.criteria().offsetBy(1).orderByName().ascending());
+        assertEquals(25, groups.getLimit());
+        assertEquals(1, groups.getProperty("items").size);
+        assertEquals(1, groups.getOffset());
+
+        Group firstGroupWithOffset1 = groups.iterator().next();
+
+        assertNotNull(firstGroupWithOffset1);
+        assertEquals(firstGroupWithOffset1.getHref(), group02.getHref());
+
+        assertTrue(firstGroupWithOffset0.getHref() != firstGroupWithOffset1.getHref());
+    }
+
+    /**
+     * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
+     * @since 1.0.0
+     */
+    @Test
+    void testGetGroupswithAccountMembershipsLimitAndOffset() {
+        def app = createTempApp()
+        def account01 = client.instantiate(Account)
+                .setUsername(uniquify('Stormpath-SDK-Test-App-Acct01'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account01.setEmail(account01.getUsername() + "@nowhere.com")
+        account01 = app.createAccount(Accounts.newCreateRequestFor(account01).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account01)
+
+        def account02 = client.instantiate(Account)
+                .setUsername(uniquify('Stormpath-SDK-Test-App-Acct02'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account02.setEmail(account02.getUsername() + "@nowhere.com")
+        account02 = app.createAccount(Accounts.newCreateRequestFor(account02).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account02)
+
+        def group = client.instantiate(Group)
+        group.name = uniquify("My Group01")
+        group = app.createGroup(group)
+        deleteOnTeardown(group)
+
+        account01.addGroup(group)
+        account02.addGroup(group)
+
+        GroupList groups = account01.getGroups(Groups.criteria().withAccountMemberships().orderByName().ascending());
+
+        Group groupFromCollecion = groups.iterator().next()
+
+        assertEquals(25, groupFromCollecion.getProperty("accountMemberships").get("limit"))
+        assertEquals(2, groupFromCollecion.getProperty("accountMemberships").get("items").size)
+
+        groups = account01.getGroups(Groups.criteria().withAccountMemberships(1).orderByName().ascending());
+
+        groupFromCollecion = groups.iterator().next()
+
+        assertEquals(1, groupFromCollecion.getProperty("accountMemberships").get("limit"))
+        assertEquals(1, groupFromCollecion.getProperty("accountMemberships").get("items").size)
+
+        def accountHrefFromGroupCollectionWithLimit1 = groupFromCollecion.getProperty("accountMemberships").get("items").get(0).get("href")
+
+        groups = account01.getGroups(Groups.criteria().withAccountMemberships(25, 1).orderByName().ascending());
+
+        groupFromCollecion = groups.iterator().next()
+
+        assertEquals(25, groupFromCollecion.getProperty("accountMemberships").get("limit"))
+        assertEquals(1, groupFromCollecion.getProperty("accountMemberships").get("items").size)
+
+        def accountHrefFromGroupCollectionWithOffset1 = groupFromCollecion.getProperty("accountMemberships").get("items").get(0).get("href")
+
+        //Since we set offset = 1 in the second collection, the account must be different than the one obtained in the first collection
+        assertNotEquals(accountHrefFromGroupCollectionWithLimit1, accountHrefFromGroupCollectionWithOffset1)
+    }
+
 
     //@since 1.0.0
     private Object getValue(Class clazz, Object object, String fieldName) {

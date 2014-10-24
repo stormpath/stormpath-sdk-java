@@ -107,6 +107,8 @@
         <logback.version>1.0.7</logback.version>
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
+        <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
+        <skipITs>true</skipITs>
 
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
@@ -317,6 +319,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.16</version>
                 <configuration>
+                    <skipITs>${skipITs}</skipITs>
                     <includes>
                         <include>**/*IT.java</include>
                         <include>**/*IT.groovy</include>
@@ -368,6 +371,17 @@
                 <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
                      clean up the HTML source in JavaDoc comments: -->
                 <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+        <profile>
+            <id>it</id>
+            <activation>
+                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
+                the REST api unnecessarily. -->
+                <jdk>1.6</jdk>
+            </activation>
+            <properties>
+                <skipITs>false</skipITs>
             </properties>
         </profile>
         <profile>
