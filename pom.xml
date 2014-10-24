@@ -279,6 +279,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.16</version>
                 <configuration>
+                    <skipITs>${skipITs}</skipITs>
                     <includes>
                         <include>**/*IT.java</include>
                         <include>**/*IT.groovy</include>
@@ -321,6 +322,28 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
+                     clean up the HTML source in JavaDoc comments: -->
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+        <profile>
+            <id>it</id>
+            <activation>
+                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
+                the REST api unnecessarily. -->
+                <jdk>1.6</jdk>
+            </activation>
+            <properties>
+                <skipITs>true</skipITs>
+            </properties>
+        </profile>
         <profile>
             <id>stormpath-signature</id>
             <build>
