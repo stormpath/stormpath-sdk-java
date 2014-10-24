@@ -19,29 +19,34 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
 
-/**
- * @since 1.0.RC
- */
+/** @since 1.0.RC */
 public class ClientApiKeyBuilder implements ApiKeyBuilder {
 
+    private static final Logger log = LoggerFactory.getLogger(ClientApiKeyBuilder.class);
+
+    public static final String DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION =
+        System.getProperty("user.home") + File.separatorChar + ".stormpath" + File.separatorChar + "apiKey.properties";
+
     //private ApiKey apiKey;
-    private String apiKeyId;
-    private String apiKeySecret;
-    private String apiKeyFileLocation;
+    private String      apiKeyId;
+    private String      apiKeySecret;
+    private String      apiKeyFileLocation;
     private InputStream apiKeyInputStream;
-    private Reader apiKeyReader;
-    private Properties apiKeyProperties;
-    private String apiKeyIdPropertyName = "apiKey.id";
+    private Reader      apiKeyReader;
+    private Properties  apiKeyProperties;
+    private String apiKeyIdPropertyName     = "apiKey.id";
     private String apiKeySecretPropertyName = "apiKey.secret";
 
     @Override
@@ -92,59 +97,140 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         return this;
     }
 
+    protected Properties getDefaultApiKeyFileProperties() {
+        Properties props = new Properties();
+
+        try {
+            Reader reader = createFileReader(DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION);
+            props = toProperties(reader);
+        } catch (IOException ignored) {
+            log.debug("Unable to find or load default api key properties file [" +
+                      DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION + "].  This can be safely ignored as this is a " +
+                      "fallback location - other more specific locations will be checked.", ignored);
+        }
+        return props;
+    }
+
+    protected Properties getEnvironmentVariableProperties() {
+        Properties props = new Properties();
+
+        String value = System.getenv("STORMPATH_API_KEY_ID");
+        if (Strings.hasText(value)) {
+            props.put(this.apiKeyIdPropertyName, value);
+        }
+
+        value = System.getenv("STORMPATH_API_KEY_SECRET");
+        if (Strings.hasText(value)) {
+            props.put(this.apiKeySecretPropertyName, value);
+        }
+
+        return props;
+    }
+
+    protected Properties getSystemProperties() {
+        Properties props = new Properties();
+
+        String value = System.getProperty("stormpath.apiKey.id");
+        if (Strings.hasText(value)) {
+            props.put(this.apiKeyIdPropertyName, value);
+        }
+
+        value = System.getProperty("stormpath.apiKey.secret");
+        if (Strings.hasText(value)) {
+            props.put(this.apiKeySecretPropertyName, value);
+        }
+
+        return props;
+    }
+
     @Override
     public ApiKey build() {
 
-        ApiKey apiKey;
+        //Issue 82 heuristics (see: https://github.com/stormpath/stormpath-sdk-java/labels/enhancement)
 
-        if (Strings.hasText(apiKeyId) && Strings.hasText(apiKeySecret)) {
-            apiKey = new ClientApiKey(apiKeyId, apiKeySecret);
-        } else {
-            apiKey = loadApiKey();
-        }
+        //1. Try to load the default api key properties file.  All other config options have higher priority than this:
+        Properties props = getDefaultApiKeyFileProperties();
 
-        return apiKey;
-    }
+        String id = getPropertyValue(props, this.apiKeyIdPropertyName);
+        String secret = getPropertyValue(props, this.apiKeySecretPropertyName);
 
-    //since 0.8
-    protected ApiKey loadApiKey() {
+        //2. Try environment variables:
+        props = getEnvironmentVariableProperties();
+        id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+        secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
 
-        Properties properties = loadApiKeyProperties();
+        //3. Try system properties:
+        props = getSystemProperties();
+        id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+        secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
 
-        String apiKeyId = getRequiredPropertyValue(properties, this.apiKeyIdPropertyName, "apiKeyId");
-
-        String apiKeySecret = getRequiredPropertyValue(properties, this.apiKeySecretPropertyName, "apiKeySecret");
-
-        return createApiKey(apiKeyId, apiKeySecret);
-    }
-
-    //since 0.8
-    protected Properties loadApiKeyProperties() {
-
-        Properties properties = this.apiKeyProperties;
-
-        if (properties == null || properties.isEmpty()) {
-
-            //need to load the properties file:
-
-            Reader reader = getAvailableReader();
-
-            if (reader == null) {
-                String msg = "No API Key properties could be found or loaded from a file location.  Please " +
-                        "configure the 'apiKeyFileLocation' property or alternatively configure a " +
-                        "Properties, Reader or InputStream instance.";
-                throw new IllegalArgumentException(msg);
-            }
-
-            properties = new Properties();
+        //4. Try any configured properties files:
+        if (Strings.hasText(this.apiKeyFileLocation)) {
             try {
-                properties.load(reader);
+                Reader reader = createFileReader(this.apiKeyFileLocation);
+                props = toProperties(reader);
             } catch (IOException e) {
-                throw new IllegalArgumentException("Unable to load apiKey properties file.", e);
+                String msg = "Unable to read properties from specified apiKeyFileLocation [" + this.apiKeyFileLocation + "].";
+                throw new IllegalArgumentException(msg, e);
             }
+
+            id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+            secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
         }
 
-        return properties;
+        if (this.apiKeyInputStream != null) {
+            try {
+                Reader reader = toReader(this.apiKeyInputStream);
+                props = toProperties(reader);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Unable to read properties from specified apiKeyInputStream.", e);
+            }
+
+            id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+            secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
+        }
+
+        if (this.apiKeyReader != null) {
+            try {
+                props = toProperties(this.apiKeyReader);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Unable to read properties from specified apiKeyReader.", e);
+            }
+
+            id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+            secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
+        }
+
+        if (this.apiKeyProperties != null && !this.apiKeyProperties.isEmpty()) {
+            id = getPropertyValue(this.apiKeyProperties, this.apiKeyIdPropertyName, id);
+            secret = getPropertyValue(this.apiKeyProperties, this.apiKeySecretPropertyName, secret);
+        }
+
+        //5. Explicitly-configured values always take precedence:
+        id = valueOf(this.apiKeyId, id);
+        secret = valueOf(this.apiKeySecret, secret);
+
+        if (!Strings.hasText(id)) {
+            String msg = "Unable to find an API Key 'id', either from explicit configuration (" +
+                         getClass().getSimpleName() + ".setApiKeyId) or from fallback locations " +
+                         "1) the system property 'stormpath.apiKey.id', 2) environment variable " +
+                         "'STORMPATH_API_KEY_ID' or 3) in the default apiKey.properties file location " +
+                         DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION + ".  Please ensure you manually configure an " +
+                         "API Key ID or ensure that it exists in one of these fallback locations.";
+            throw new IllegalStateException(msg);
+        }
+
+        if (!Strings.hasText(secret)) {
+            String msg = "Unable to find an API Key 'secret', either from explicit configuration (" +
+                         getClass().getSimpleName() + ".setApiKeySecret) or from fallback locations " +
+                         "1) the system property 'stormpath.apiKey.secret', 2) environment variable " +
+                         "'STORMPATH_API_KEY_SECRET' or 3) in the default apiKey.properties file location " +
+                         DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION + ".  Please ensure you manually configure an " +
+                         "API Key secret or ensure that it exists in one of these fallback locations.";
+            throw new IllegalStateException(msg);
+        }
+
+        return createApiKey(id, secret);
     }
 
     //since 0.5
@@ -152,7 +238,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         return new ClientApiKey(id, secret);
     }
 
-    private String getPropertyValue(Properties properties, String propName) {
+    private static String getPropertyValue(Properties properties, String propName) {
         String value = properties.getProperty(propName);
         if (value != null) {
             value = value.trim();
@@ -163,71 +249,44 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         return value;
     }
 
-    private String getRequiredPropertyValue(Properties props, String propName, String masterName) {
-        String value = getPropertyValue(props, propName);
-        if (value == null) {
-            String msg = "There is no '" + propName + "' property in the " +
-                    "configured apiKey properties.  You can either specify that property or " +
-                    "configure the " + masterName + "PropertyName value on the ClientBuilder to specify a " +
-                    "custom property name.";
-            throw new IllegalArgumentException(msg);
+    private static String valueOf(String discoveredValue, String defaultValue) {
+        if (!Strings.hasText(discoveredValue)) {
+            return defaultValue;
         }
-        return value;
+        return discoveredValue;
+
     }
 
-    private Reader getAvailableReader() {
-        if (this.apiKeyReader != null) {
-            return this.apiKeyReader;
-        }
-
-        InputStream is = this.apiKeyInputStream;
-
-        if (is == null && this.apiKeyFileLocation != null) {
-            try {
-                is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
-            } catch (IOException e) {
-                String msg = "Unable to load API Key using apiKeyFileLocation '" + this.apiKeyFileLocation + "'.  " +
-                        "Please check and ensure that file exists or use the 'setFileLocation' method to specify " +
-                        "a valid location.";
-                throw new IllegalStateException(msg, e);
-            }
-        }
-
-        if (is != null) {
-            return toReader(is);
-        }
-
-        //no configured input, just return null to indicate this:
-        return null;
+    private static String getPropertyValue(Properties properties, String propName, String defaultValue) {
+        String value = getPropertyValue(properties, propName);
+        return valueOf(value, defaultValue);
     }
 
-    private Reader toReader(InputStream is) {
-        try {
-            return new InputStreamReader(is, "ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("ISO-8859-1 character set is not available on the current JVM.  " +
-                    "This is required to read a Java-compatible Properties file. ", e);
-        }
+    protected Reader createFileReader(String apiKeyFileLocation) throws IOException {
+        InputStream is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
+        return toReader(is);
+    }
+
+    private static Reader toReader(InputStream is) throws IOException {
+        return new InputStreamReader(is, "ISO-8859-1");
+    }
+
+    private static Properties toProperties(Reader reader) throws IOException {
+        Properties properties = new Properties();
+        properties.load(reader);
+        return properties;
     }
 
     private static class ResourceUtils {
 
-        /**
-         * Resource path prefix that specifies to load from a classpath location, value is <b>{@code classpath:}</b>
-         */
+        /** Resource path prefix that specifies to load from a classpath location, value is <b>{@code classpath:}</b> */
         public static final String CLASSPATH_PREFIX = "classpath:";
-        /**
-         * Resource path prefix that specifies to load from a url location, value is <b>{@code url:}</b>
-         */
-        public static final String URL_PREFIX = "url:";
-        /**
-         * Resource path prefix that specifies to load from a file location, value is <b>{@code file:}</b>
-         */
-        public static final String FILE_PREFIX = "file:";
+        /** Resource path prefix that specifies to load from a url location, value is <b>{@code url:}</b> */
+        public static final String URL_PREFIX       = "url:";
+        /** Resource path prefix that specifies to load from a file location, value is <b>{@code file:}</b> */
+        public static final String FILE_PREFIX      = "file:";
 
-        /**
-         * Prevent instantiation.
-         */
+        /** Prevent instantiation. */
         private ResourceUtils() {
         }
 
@@ -244,9 +303,9 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         @SuppressWarnings({"UnusedDeclaration"})
         public static boolean hasResourcePrefix(String resourcePath) {
             return resourcePath != null &&
-                    (resourcePath.startsWith(CLASSPATH_PREFIX) ||
-                            resourcePath.startsWith(URL_PREFIX) ||
-                            resourcePath.startsWith(FILE_PREFIX));
+                   (resourcePath.startsWith(CLASSPATH_PREFIX) ||
+                    resourcePath.startsWith(URL_PREFIX) ||
+                    resourcePath.startsWith(FILE_PREFIX));
         }
 
         /**
@@ -301,6 +360,5 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
             return resourcePath.substring(resourcePath.indexOf(":") + 1);
         }
     }
-
 
 }

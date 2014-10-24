@@ -79,7 +79,6 @@ class ProviderAccountResolverTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def request = createStrictMock(ProviderAccountRequest)
         def providerData = createStrictMock(ProviderData)
-        def providerAccountResultHelper = createStrictMock(ProviderAccountResultHelper)
         def providerAccountResult = createStrictMock(ProviderAccountResult)
 
         def href = "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj"
@@ -88,17 +87,13 @@ class ProviderAccountResolverTest {
         providerAccountAccess.setProviderData(providerData)
 
         expect(request.getProviderData()).andReturn(providerData) times 2
-        expect(internalDataStore.create(eq(href + "/accounts"), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResultHelper))).andReturn(providerAccountResultHelper)
-        expect(providerAccountResultHelper.getProviderAccountResult()).andReturn(providerAccountResult)
+        expect(internalDataStore.create(eq(href + "/accounts"), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
 
-        replay(internalDataStore, request, providerData, providerAccountResultHelper, providerAccountResult)
-
-//        def returnedProviderAccountResult = new ProviderAccountAccessRequester(internalDataStore).requestAccess(href, request)
-//        assertEquals(returnedProviderAccountResult, providerAccountResult)
+        replay(internalDataStore, request, providerData, providerAccountResult)
 
         new ProviderAccountResolver(internalDataStore).resolveProviderAccount(href, request)
 
-        verify(internalDataStore, request, providerData, providerAccountResultHelper, providerAccountResult)
+        verify(internalDataStore, request, providerData, providerAccountResult)
     }
 
     static class ProviderAccountAccessEquals implements IArgumentMatcher {

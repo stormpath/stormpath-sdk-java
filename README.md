@@ -16,6 +16,21 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 ## Change Log ##
 
+### 1.0.0 ###
+
+#### Resolved Issues ####
+
+- [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
+- [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
+- [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
+- [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
+means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
+better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
+recognize how to implement a fix.
+- [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
+- [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
+- [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
+                                                                                                 
 ### 1.0.RC2.1 ###
 
 This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
@@ -49,6 +64,10 @@ method (for redirecting end-users to your ID Site) and the
 method (for hanling the return reply from your ID Site) for code examples!
 
 ### 1.0.RC ###
+
+- [Issue 52](https://github.com/stormpath/stormpath-sdk-java/issues/52): Removed unnecessary Provider setters.
+- [Issue 55](https://github.com/stormpath/stormpath-sdk-java/issues/55): Account's password can now be reset along with the password reset token, in one API call.
+- [Issue 56](https://github.com/stormpath/stormpath-sdk-java/issues/56): Method chaining for Resources.
 
 Stormpath Java SDK 1.0 Release Candidate
 

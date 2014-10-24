@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.cache
 import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.impl.util.Duration
 import groovy.json.JsonSlurper
-import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -30,9 +30,9 @@ import static org.testng.Assert.*
  */
 class DefaultCacheManagerTest {
 
-    DefaultCacheManager mgr;
+    private DefaultCacheManager mgr;
 
-    @BeforeMethod
+    @BeforeTest
     void setUp() {
         this.mgr = new DefaultCacheManager();
     }
@@ -70,17 +70,18 @@ class DefaultCacheManagerTest {
 
     @Test
     void testDefaultTtl() {
+        mgr = new DefaultCacheManager()
         Duration ttl = new Duration(30, TimeUnit.SECONDS)
         mgr.setDefaultTimeToLive(ttl)
 
         def cache = mgr.getCache('foo')
-        assertEquals cache.timeToLive, ttl
+        assertEquals cache.timeToLive, new Duration(30, TimeUnit.SECONDS)
     }
 
     @Test
     void testDefaultTtlSeconds() {
         mgr.setDefaultTimeToLiveSeconds(30)
-        assertEquals new Duration(30, TimeUnit.SECONDS), mgr.defaultTimeToLive
+        assertEquals mgr.defaultTimeToLive, new Duration(30, TimeUnit.SECONDS)
     }
 
     @Test
@@ -89,7 +90,7 @@ class DefaultCacheManagerTest {
         mgr.setDefaultTimeToIdle(tti)
 
         def cache = mgr.getCache('foo')
-        assertEquals cache.timeToIdle, tti
+        assertEquals cache.timeToIdle, new Duration(20, TimeUnit.SECONDS)
     }
 
     @Test
@@ -100,6 +101,8 @@ class DefaultCacheManagerTest {
 
     @Test
     void testToString() {
+
+        mgr = new DefaultCacheManager()
 
         mgr.getCache('foo')
         mgr.getCache('bar')

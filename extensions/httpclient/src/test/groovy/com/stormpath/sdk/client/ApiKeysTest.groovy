@@ -18,7 +18,7 @@ package com.stormpath.sdk.client
 import com.stormpath.sdk.impl.api.ClientApiKeyBuilder
 import org.testng.annotations.Test
 
-import static junit.framework.Assert.assertTrue
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.beta

@@ -17,12 +17,8 @@ package com.stormpath.sdk.impl.jwt.signer;
 
 import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
-import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * DefaultJwtSigner is the default impl of the JwtSigner interface
@@ -42,18 +38,7 @@ public class DefaultJwtSigner implements JwtSigner {
     private static final String SHA256_ALGORITHM = "HmacSHA256";
 
     static {
-        Map<String, String> signHeaderMap = new HashMap<String, String>();
-        signHeaderMap.put("typ", "JWT");
-        signHeaderMap.put("alg", "HS256");
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            JWT_SIGN_HEADER = mapper.writeValueAsString(signHeaderMap);
-        } catch (IOException e) {
-            throw new IllegalStateException("Unexpected error occurred while creating JwtHeader.", e);
-        }
-
+        JWT_SIGN_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
         BASE64_URL_JWT_SIGN_HEADER = Base64.encodeBase64URLSafeString(JWT_SIGN_HEADER.getBytes(UTF_8));
     }
 
@@ -77,14 +62,15 @@ public class DefaultJwtSigner implements JwtSigner {
         String signature = calculateSignature(BASE64_URL_JWT_SIGN_HEADER, base64UrlJsonPayload);
 
         return new StringBuilder(BASE64_URL_JWT_SIGN_HEADER).append(JWT_TOKEN_SEPARATOR)
-                .append(base64UrlJsonPayload).append(JWT_TOKEN_SEPARATOR).append(signature).toString();
+                                                            .append(base64UrlJsonPayload).append(JWT_TOKEN_SEPARATOR)
+                                                            .append(signature).toString();
     }
 
     @Override
     public String calculateSignature(String base64Header, String base64JsonPayload) {
 
         String jwsInput = new StringBuilder(base64Header).append(JWT_TOKEN_SEPARATOR)
-                .append(base64JsonPayload).toString();
+                                                         .append(base64JsonPayload).toString();
 
         byte[] hmac = sha256HmacGenerator.computeHmac(jwsInput, signingKey);
 

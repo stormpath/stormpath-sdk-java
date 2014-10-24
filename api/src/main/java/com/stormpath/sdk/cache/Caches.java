@@ -21,14 +21,16 @@ import com.stormpath.sdk.resource.Resource;
 /**
  * Static utility/helper <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s for
  * building {@link CacheManager}s and their associated cache regions, suitable for <b>SINGLE-JVM APPLICATIONS</b>.
- * <p/>
- * If your application is deployed on multiple JVMs (e.g. a distributed/clustered web app), you might not want to
+ *
+ * <p>If your application is deployed on multiple JVMs (e.g. a distributed/clustered web app), you might not want to
  * use the builders here and instead implement the {@link CacheManager} API directly to use your distributed/clustered
- * cache technology of choice.
- * <p/>
- * See the {@link CacheManagerBuilder} JavaDoc for more information the effects of caching in
- * single-jvm vs distributed-jvm applications.
+ * cache technology of choice.</p>
+ *
+ * <p>See the {@link CacheManagerBuilder} JavaDoc for more information the effects of caching in
+ * single-jvm vs distributed-jvm applications.</p>
+ *
  * <h3>Usage Example</h3>
+ *
  * <pre>
  * import static com.stormpath.sdk.cache.Caches.*;
  *
@@ -42,10 +44,14 @@ import com.stormpath.sdk.resource.Resource;
  *         .withTimeToIdle(30, TimeUnit.MINUTES))
  *     .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Group.class) //Group-specific cache settings
  *         .withTimeToLive(2, TimeUnit.HOURS))
- *     .build() //build the CacheManager
+ *
+ *     // ... etc ...
+ *
+ *     .build(); //build the CacheManager
  * </pre>
- * <em>The above TTL and TTI times are just examples showing API usage - the times themselves are not
- * recommendations.  Choose TTL and TTI times based on your application requirements.</em>
+ *
+ * <p><em>The above TTL and TTI times are just examples showing API usage - the times themselves are not
+ * recommendations.  Choose TTL and TTI times based on your application requirements.</em></p>
  *
  * @since 0.8
  */
@@ -56,9 +62,9 @@ public class Caches {
      * is deployed on multiple JVMs (e.g. for a distributed/clustered web app), you might not want to use this method
      * and instead implement the {@link CacheManager} API directly to use your distributed/clustered cache technology
      * of choice.
-     * <p/>
-     * See the {@link CacheManagerBuilder} JavaDoc for more information the effects of caching in
-     * single-jvm vs distributed-jvm applications.
+     *
+     * <p>See the {@link CacheManagerBuilder} JavaDoc for more information the effects of caching in
+     * single-jvm vs distributed-jvm applications.</p>
      *
      * @return a new {@code CacheManagerBuilder} suitable for <b>SINGLE-JVM APPLICATIONS</b>.
      */
@@ -67,11 +73,31 @@ public class Caches {
     }
 
     /**
+     * Instantiates a new {@code CacheManager} that disables caching entirely.  While production applications
+     * will usually enable a working CacheManager, you might configure a disabled CacheManager for
+     * your Client when testing or debugging to remove 'moving parts' for better clarity into request/response
+     * behavior.  For example:
+     *
+     * <pre>
+     * Client client = {@link com.stormpath.sdk.client.Clients Clients}.builder().setCacheManager(
+     *     <b><code>Caches.newDisabledCacheManager()</code></b>
+     * ).build();
+     * </pre>
+     *
+     * @return a new disabled {@code CacheManager} instance.  All caching
+     * @since 1.0.0
+     */
+    public static CacheManager newDisabledCacheManager() {
+        return (CacheManager) Classes.newInstance("com.stormpath.sdk.impl.cache.DisabledCacheManager");
+    }
+
+    /**
      * Returns a new {@link CacheConfigurationBuilder} to configure a cache region that will store data for instances
      * of type {@code clazz}.
-     * <p/>
-     * This is a convenience method equivalent to {@link #named(String) named(clazz.getName())}, but it could help
-     * with readability, for example:
+     *
+     * <p>This is a convenience method equivalent to {@link #named(String) named(clazz.getName())}, but it could help
+     * with readability, for example:</p>
+     *
      * <pre>
      * import static com.stormpath.sdk.cache.Caches.*
      * ...
@@ -92,6 +118,7 @@ public class Caches {
     /**
      * Returns a new {@link CacheConfigurationBuilder} used to configure a cache region with the specified name.  For
      * example:
+     *
      * <pre>
      * import static com.stormpath.sdk.cache.Caches.*
      * ...

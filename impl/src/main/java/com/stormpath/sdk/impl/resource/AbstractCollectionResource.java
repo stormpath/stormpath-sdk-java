@@ -19,14 +19,8 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 0.2
@@ -138,8 +132,9 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         private int currentItemIndex;
 
         private PaginatedIterator(AbstractCollectionResource<T> resource) {
-            this.resource = resource;
-            this.currentPage = resource.getCurrentPage();
+            //We get a new resource in order to have different iterator instances: issue 62 (https://github.com/stormpath/stormpath-sdk-java/issues/62)
+            this.resource = getDataStore().getResource(resource.getHref(), resource.getClass(), resource.queryParams);
+            this.currentPage = this.resource.getCurrentPage();
             this.currentPageIterator = this.currentPage.getItems().iterator();
             this.currentItemIndex = 0;
         }

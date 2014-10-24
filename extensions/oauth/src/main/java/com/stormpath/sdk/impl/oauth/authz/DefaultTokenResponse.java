@@ -110,6 +110,7 @@ public class DefaultTokenResponse implements TokenResponse {
 
         public Builder scope(String scope) {
             this.scope = scope;
+            tokenResponseBuilder.setScope(scope);
             return this;
         }
 

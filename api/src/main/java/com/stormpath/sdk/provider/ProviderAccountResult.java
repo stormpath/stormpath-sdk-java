@@ -16,6 +16,7 @@
 package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.resource.Resource;
 
 /**
  * Represents the result of the attempt to access the Provider's account. Stormpath maps common fields of the
@@ -27,7 +28,7 @@ import com.stormpath.sdk.account.Account;
  * @see com.stormpath.sdk.application.Application#getAccount(ProviderAccountRequest)
  * @since 1.0.beta
  */
-public interface ProviderAccountResult {
+public interface ProviderAccountResult extends Resource {
 
     /**
      * Getter for the {@link Account} Resource containing common fields of the Provider user in Stormpath.

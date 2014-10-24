@@ -30,6 +30,7 @@
 
     <modules>
         <module>oauth</module>
+        <module>hazelcast</module>
         <module>httpclient</module>
     </modules>
 

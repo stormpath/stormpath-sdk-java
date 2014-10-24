@@ -91,6 +91,7 @@
     <properties>
 
         <slf4j.version>1.6.6</slf4j.version>
+        <hazelcast.version>3.2.4</hazelcast.version>
         <httpClient.version>4.2.2</httpClient.version>
         <jackson.version>1.9.11</jackson.version>
         <oltu.version>1.0.0</oltu.version>
@@ -197,6 +198,11 @@
                 <groupId>org.apache.oltu.oauth2</groupId>
                 <artifactId>org.apache.oltu.oauth2.resourceserver</artifactId>
                 <version>${oltu.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${hazelcast.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -419,6 +425,11 @@
 <!-- Optimizely -->
 <script src="//cdn.optimizely.com/js/225847041.js"></script>
                                 ]]></top>
+
+                            <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
+                                 clean up the HTML source in JavaDoc comments: -->
+                            <additionalparam>-Xdoclint:none</additionalparam>
+
                         </configuration>
                     </plugin>
                     <plugin>

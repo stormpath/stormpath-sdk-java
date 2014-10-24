@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.impl.http.support;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * @since 1.0.alpha
@@ -34,14 +31,33 @@ public class Version {
     private static String lookupClientVersion() {
         Class clazz = Version.class;
         String filePath = "/com/stormpath/sdk/version.properties";
-
+        InputStream inputStream = null;
+        BufferedReader reader = null;
         try {
-            InputStream inputStream = clazz.getResourceAsStream(filePath);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            return reader.readLine();
+            inputStream = clazz.getResourceAsStream(filePath);
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line = null;
+            do {
+                line = reader.readLine();
+            } while (line.startsWith("#") || line.isEmpty());
+            return line;
         } catch (IOException e) {
-            throw new RuntimeException("Unable to obtain version from ["+ filePath + "].");
+            throw new RuntimeException("Unable to obtain version from [" + filePath + "].");
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Exception while trying to close file [" + filePath + "].");
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Exception while trying to close file [" + filePath + "].");
+                }
+            }
         }
     }
-
 }
