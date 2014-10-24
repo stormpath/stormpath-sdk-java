@@ -15,19 +15,15 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class AuthenticationFilter extends AccessControlFilter {
+public class UnauthorizedFilter extends HttpFilter {
 
     @Override
-    protected boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return request.getRemoteUser() != null; //non null if authenticated
-        //TODO: what about remember me? remoteUser might be populated, but rememberMe != authenticated
-    }
-
-    @Override
-    protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return redirectToLogin(request, response, "authcReqd");
+    protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws Exception {
+        request.getRequestDispatcher("/unauthorized.jsp").forward(request, response);
     }
 }

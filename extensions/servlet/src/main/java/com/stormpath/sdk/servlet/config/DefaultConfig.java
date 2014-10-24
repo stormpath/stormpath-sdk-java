@@ -72,6 +72,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public String getUnauthorizedUrl() {
+        return props.get(UNAUTHORIZED_URL);
+    }
+
+    @Override
     public int size() {
         return props.size();
     }

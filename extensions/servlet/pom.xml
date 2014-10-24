@@ -55,6 +55,11 @@
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
         </dependency>
+        <!-- *Only* pull in the expression language parser.  This does not import Spring DI or any other part of Spring: -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

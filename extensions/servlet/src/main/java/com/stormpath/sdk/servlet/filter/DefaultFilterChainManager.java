@@ -25,7 +25,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +32,9 @@ import java.util.Set;
 
 /**
  * Default {@link FilterChainManager} implementation maintaining a map of {@link javax.servlet.Filter Filter} instances
- * (key: filter name, value: Filter) as well as a map of chains created from these
- * {@code Filter}s (key: filter chain name, value: List&lt;Filter&gt;).  The {@code NamedFilterList} is essentially a
- * {@link javax.servlet.FilterChain} that also has a name property by which it can be looked up.
+ * (key: filter name, value: Filter) as well as a map of chains created from these {@code Filter}s (key: filter chain
+ * name, value: List&lt;Filter&gt;).  The {@code NamedFilterList} is essentially a {@link javax.servlet.FilterChain}
+ * that also has a name property by which it can be looked up.
  *
  * @since 1.0
  */
@@ -43,40 +42,31 @@ public class DefaultFilterChainManager implements FilterChainManager {
 
     private static transient final Logger log = LoggerFactory.getLogger(DefaultFilterChainManager.class);
 
-    private final Map<String, Filter> filters; //pool of filters available for creating chains
-
     private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
+
+    private final ServletContext servletContext;
 
     public DefaultFilterChainManager(ServletContext servletContext) throws ServletException {
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
-        this.filters = new LinkedHashMap<String, Filter>(); //iteration order is important
+        this.servletContext = servletContext;
         this.filterChains = new LinkedHashMap<String, List<Filter>>(); //iteration order is important
-
-        Map<String,Filter> defaultFilters = DefaultFilter.createInstanceMap(servletContext);
-        this.filters.putAll(defaultFilters);
     }
 
-    public Map<String, Filter> getFilters() {
-        return filters;
-    }
+    protected Filter createFilter(String name, String config) throws ServletException {
 
-    public Map<String, List<Filter>> getFilterChains() {
-        return filterChains;
-    }
+        Class<? extends Filter> clazz = DefaultFilter.forName(name).getFilterClass();
 
-    public Filter getFilter(String name) {
-        return this.filters.get(name);
-    }
+        FilterBuilder builder =
+            new DefaultFilterBuilder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
 
-    public void addFilter(String name, Filter filter) {
-        Filter existing = getFilter(name);
-        if (existing != null) {
-            throw new IllegalArgumentException("Filter '" + name + "' already exists.");
+        if (Strings.hasText(config)) {
+            builder.setPathConfig(config);
         }
-        this.filters.put(name, filter);
+
+        return builder.build();
     }
 
-    public void createChain(String chainName, String chainDefinition) {
+    public void createChain(String chainName, String chainDefinition) throws ServletException {
         if (!Strings.hasText(chainName)) {
             throw new NullPointerException("chainName cannot be null or empty.");
         }
@@ -92,21 +82,21 @@ public class DefaultFilterChainManager implements FilterChainManager {
         //
         //e.g. for a value of
         //
-        //     "authc, roles[admin,user], perms[file:edit]"
+        //     "authc, roles(admin,user), perms(file:edit)"
         //
         // the resulting token array would equal
         //
-        //     { "authc", "roles[admin,user]", "perms[file:edit]" }
+        //     { "authc", "roles(admin,user)", "perms(file:edit)" }
         //
         String[] filterTokens = splitChainDefinition(chainDefinition);
 
         //each token is specific to each filter.
-        //strip the name and extract any filter-specific config between brackets [ ]
+        //strip the name and extract any filter-specific config between parenthesis ( )
         for (String token : filterTokens) {
             String[] nameConfigPair = toNameConfigPair(token);
 
             //now we have the filter name, path and (possibly null) path-specific config.  Let's apply them:
-            addToChain(chainName, nameConfigPair[0]);
+            addToChain(chainName, nameConfigPair[0], nameConfigPair[1]);
         }
     }
 
@@ -114,13 +104,13 @@ public class DefaultFilterChainManager implements FilterChainManager {
      * Splits the comma-delimited filter chain definition line into individual filter definition tokens. <p/> Example
      * Input:
      * <pre>
-     *     foo, bar[baz], blah[x, y]
+     *     foo, bar(baz), blah(x, y)
      * </pre>
      * Resulting Output:
      * <pre>
      *     output[0] == foo
-     *     output[1] == bar[baz]
-     *     output[2] == blah[x, y]
+     *     output[1] == bar(baz)
+     *     output[2] == blah(x, y)
      * </pre>
      *
      * @param chainDefinition the comma-delimited filter chain definition.
@@ -128,14 +118,14 @@ public class DefaultFilterChainManager implements FilterChainManager {
      * @see <a href="https://issues.apache.org/jira/browse/SHIRO-205">SHIRO-205</a>
      */
     protected String[] splitChainDefinition(String chainDefinition) {
-        return Strings.split(chainDefinition, Strings.DEFAULT_DELIMITER_CHAR, '[', ']', true, true);
+        return Strings.split(chainDefinition, Strings.DEFAULT_DELIMITER_CHAR, '(', ')', true, true);
     }
 
     /**
-     * Based on the given filter chain definition token (e.g. 'foo' or 'foo[bar, baz]'), this will return the token as a
-     * name/value pair, removing any brackets as necessary.  Examples: <table> <tr> <th>Input</th> <th>Result</th> </tr>
+     * Based on the given filter chain definition token (e.g. 'foo' or 'foo(bar, baz)'), this will return the token as a
+     * name/value pair, removing parenthesis as necessary.  Examples: <table> <tr> <th>Input</th> <th>Result</th> </tr>
      * <tr> <td>{@code foo}</td> <td>returned[0] == {@code foo}<br/>returned[1] == {@code null}</td> </tr> <tr>
-     * <td>{@code foo[bar, baz]}</td> <td>returned[0] == {@code foo}<br/>returned[1] == {@code bar, baz}</td> </tr>
+     * <td>{@code foo(bar, baz)}</td> <td>returned[0] == {@code foo}<br/>returned[1] == {@code bar, baz}</td> </tr>
      * </table>
      *
      * @param token the filter chain definition token
@@ -145,7 +135,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
     protected String[] toNameConfigPair(String token) throws IllegalArgumentException {
 
         try {
-            String[] pair = token.split("\\[", 2);
+            String[] pair = token.split("\\(", 2);
             String name = Strings.clean(pair[0]);
 
             if (name == null) {
@@ -158,25 +148,6 @@ public class DefaultFilterChainManager implements FilterChainManager {
                 //if there was an open bracket, it assumed there is a closing bracket, so strip it too:
                 config = config.substring(0, config.length() - 1);
                 config = Strings.clean(config);
-
-                //backwards compatibility prior to implementing SHIRO-205:
-                //prior to SHIRO-205 being implemented, it was common for end-users to quote the config inside brackets
-                //if that config required commas.  We need to strip those quotes to get to the interior quoted definition
-                //to ensure any existing quoted definitions still function for end users:
-                if (config != null && config.startsWith("\"") && config.endsWith("\"")) {
-                    String stripped = config.substring(1, config.length() - 1);
-                    stripped = Strings.clean(stripped);
-
-                    //if the stripped value does not have any internal quotes, we can assume that the entire config was
-                    //quoted and we can use the stripped value.
-                    if (stripped != null && stripped.indexOf('"') == -1) {
-                        config = stripped;
-                    }
-                    //else:
-                    //the remaining config does have internal quotes, so we need to assume that each comma delimited
-                    //pair might be quoted, in which case we need the leading and trailing quotes that we stripped
-                    //So we ignore the stripped value.
-                }
             }
 
             return new String[]{ name, config };
@@ -187,19 +158,12 @@ public class DefaultFilterChainManager implements FilterChainManager {
         }
     }
 
-    public void addToChain(String chainName, String filterName) {
-
+    public void addToChain(String chainName, String filterName, String config) throws ServletException {
         if (!Strings.hasText(chainName)) {
             throw new IllegalArgumentException("chainName cannot be null or empty.");
         }
-        Filter filter = getFilter(filterName);
-        if (filter == null) {
-            throw new IllegalArgumentException("There is no filter with name '" + filterName +
-                                               "' to apply to chain [" + chainName +
-                                               "] in the pool of available Filters.  Ensure a " +
-                                               "filter with that name/path has first been registered with the addFilter method(s).");
-        }
 
+        Filter filter = createFilter(filterName, config);
         List<Filter> chain = ensureChain(chainName);
         chain.add(filter);
     }
@@ -222,8 +186,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
     }
 
     public Set<String> getChainNames() {
-        //noinspection unchecked
-        return this.filterChains != null ? this.filterChains.keySet() : Collections.EMPTY_SET;
+        return this.filterChains.keySet();
     }
 
     public FilterChain proxy(FilterChain original, String chainName) {

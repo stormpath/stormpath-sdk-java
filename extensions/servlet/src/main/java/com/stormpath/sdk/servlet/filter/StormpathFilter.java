@@ -37,6 +37,10 @@ public class StormpathFilter extends HttpFilter {
     public StormpathFilter() {
     }
 
+    protected String cleanUri(String uri) {
+        return UriCleaner.INSTANCE.clean(uri);
+    }
+
     @Override
     protected void onInit() throws ServletException {
 
@@ -48,20 +52,24 @@ public class StormpathFilter extends HttpFilter {
 
         //Ensure handlers are registered:
         String loginUrl = config.getLoginUrl();
-        String loginUrlPattern = UriCleaner.INSTANCE.clean(loginUrl);
+        String loginUrlPattern = cleanUri(loginUrl);
         boolean loginChainSpecified = false;
 
         String logoutUrl = config.getLogoutUrl();
-        String logoutUrlPattern = UriCleaner.INSTANCE.clean(logoutUrl);
+        String logoutUrlPattern = cleanUri(logoutUrl);
         boolean logoutChainSpecified = false;
 
         String registerUrl = config.getRegisterUrl();
-        String registerUrlPattern = UriCleaner.INSTANCE.clean(registerUrl);
+        String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
 
         String verifyUrl = config.getVerifyUrl();
-        String verifyUrlPattern = UriCleaner.INSTANCE.clean(verifyUrl);
+        String verifyUrlPattern = cleanUri(verifyUrl);
         boolean verifyChainSpecified = false;
+
+        String unauthorizedUrl = config.getUnauthorizedUrl();
+        String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
+        boolean unauthorizedChainSpecified = false;
 
         //uriPattern-to-chainDefinition:
         Map<String, String> patternChains = new LinkedHashMap<String, String>();
@@ -107,6 +115,14 @@ public class StormpathFilter extends HttpFilter {
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+                } else if (uriPattern.startsWith(unauthorizedUrlPattern)) {
+                    unauthorizedChainSpecified = true;
+
+                    //did they specify the unauthorized filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.unauthorized.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
                 }
 
                 patternChains.put(uriPattern, chainDefinition);
@@ -116,6 +132,9 @@ public class StormpathFilter extends HttpFilter {
         //register configured request handlers if not yet specified:
         FilterChainManager fcManager = resolver.getFilterChainManager();
 
+        if (!unauthorizedChainSpecified) {
+            fcManager.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
+        }
         if (!loginChainSpecified) {
             fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
         }

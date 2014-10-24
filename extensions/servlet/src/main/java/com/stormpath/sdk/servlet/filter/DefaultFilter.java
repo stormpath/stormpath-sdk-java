@@ -15,16 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-
 import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Enum representing all of the default Stormpath Filter instances available to web applications.
@@ -33,10 +24,12 @@ import java.util.Map;
  */
 public enum DefaultFilter {
 
+    account(AccountAuthorizationFilter.class),
     anon(AnonymousFilter.class),
     authc(AuthenticationFilter.class),
     login(LoginFilter.class),
     logout(LogoutFilter.class),
+    unauthorized(UnauthorizedFilter.class),
     register(RegisterFilter.class),
     verify(VerifyFilter.class);
 
@@ -46,67 +39,18 @@ public enum DefaultFilter {
         this.filterClass = filterClass;
     }
 
-    public Filter newInstance() {
-        return Classes.newInstance(this.filterClass);
-    }
-
     public Class<? extends Filter> getFilterClass() {
         return this.filterClass;
     }
 
-    public static Map<String, Filter> createInstanceMap(final ServletContext servletContext) throws ServletException {
-        Assert.notNull(servletContext, "ServletContext argument cannot be null.");
-
-        Map<String, Filter> filters = new LinkedHashMap<String, Filter>(values().length);
-
-        for (final DefaultFilter defaultFilter : values()) {
-
-            final String name = defaultFilter.name();
-
-            final Filter filter = defaultFilter.newInstance();
-
-            FilterConfig config = new FilterConfig() {
-                @Override
-                public String getFilterName() {
-                    return name;
-                }
-
-                @Override
-                public ServletContext getServletContext() {
-                    return servletContext;
-                }
-
-                @Override
-                public String getInitParameter(String name) {
-                    return null;
-                }
-
-                @Override
-                public Enumeration<String> getInitParameterNames() {
-                    return new Enumeration<String>() {
-                        @Override
-                        public boolean hasMoreElements() {
-                            return false;
-                        }
-
-                        @Override
-                        public String nextElement() {
-                            return null;
-                        }
-                    };
-                }
-            };
-
-            try {
-                filter.init(config);
-            } catch (ServletException e) {
-                String msg = "Unable to initialize default filter '" + name + "': " + e.getMessage();
-                throw new ServletException(msg, e);
+    public static DefaultFilter forName(String name) {
+        for(DefaultFilter filter : values()) {
+            if (filter.name().equalsIgnoreCase(name)) {
+                return filter;
             }
-
-            filters.put(defaultFilter.name(), filter);
-
         }
-        return filters;
+
+        String msg = "There is no default filter available with name '" + name + "'.";
+        throw new IllegalArgumentException(msg);
     }
 }
