@@ -23,6 +23,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 - [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
 - [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
+- [Issue 76](https://github.com/stormpath/stormpath-sdk-java/issues/76): SSO/Logout Support and Result Listener for ID Site.
 - [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
 means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
@@ -35,6 +36,24 @@ recognize how to implement a fix.
 ### 1.0.RC2.1 ###
 
 This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
+
+#### ID Site Logout Functionality ####
+
+A user who has an open session with ID Site wanting to logout from it will add the <code>forLogoout()</code> method when
+constructing the {@code callbackUri} using the `IdSiteUrlBuilder`. For example:
+
+```java
+String callbackUri = application.newIdSiteUrlBuilder().setCallbackUri("http://localhost:8080/index.jsp").forLogout().build();
+response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+response.setHeader("Pragma", "no-cache");
+response.sendRedirect(callbackUri);
+```
+
+To execute this operation the application will create a signed request to the internal logout endpoint in Stormpath (i.e. <code>/sso/logout</code>).
+If successfully executed, the user will be redirected to the {@code callbackUri} indicating that the account has been properly logged out.
+
+When users logs out, their session with the ID Site is no longer valid for every application pertaining to this domain. They will
+be required to log in again when trying to access any of those applications.
 
 ### 1.0.RC2 ###
 

@@ -38,6 +38,7 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
     public static final String SSO_ENDPOINT = "http://api.stormpath.com/sso";
+    public static final String SSO_LOGOUT_ENDPOINT = SSO_ENDPOINT + "/logout";
 
     private final InternalDataStore internalDataStore;
 
@@ -48,6 +49,8 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
     private String state;
 
     private String path;
+
+    private boolean logout = false;
 
     public DefaultIdSiteUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
@@ -72,6 +75,12 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
     @Override
     public IdSiteUrlBuilder setPath(String path) {
         this.path = path;
+        return this;
+    }
+
+    @Override
+    public IdSiteUrlBuilder forLogout() {
+        this.logout = true;
         return this;
     }
 
@@ -109,8 +118,16 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
             QueryString queryString = new QueryString();
             queryString.put(JWR_REQUEST_PARAM_NAME, jwt);
 
+            String endpoint;
+
+            if (logout) {
+                endpoint = SSO_LOGOUT_ENDPOINT;
+            } else {
+                endpoint = SSO_ENDPOINT;
+            }
+
             @SuppressWarnings("StringBufferReplaceableByString")
-            StringBuilder urlBuilder = new StringBuilder(SSO_ENDPOINT).append('?').append(queryString.toString());
+            StringBuilder urlBuilder = new StringBuilder(endpoint).append('?').append(queryString.toString());
 
             return urlBuilder.toString();
 

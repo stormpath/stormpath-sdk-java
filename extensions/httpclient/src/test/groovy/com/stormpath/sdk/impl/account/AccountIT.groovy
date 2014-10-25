@@ -26,15 +26,17 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.resource.AbstractResource
-import java.lang.reflect.Field
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
+import org.testng.annotations.Test
+
+import java.lang.reflect.Field
+
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
 import static org.testng.Assert.*
-import org.testng.annotations.Test
 
 /**
  * @since 0.9.3
