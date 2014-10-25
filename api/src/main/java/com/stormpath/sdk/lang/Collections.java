@@ -82,6 +82,23 @@ public abstract class Collections {
     }
 
     /**
+     * a new List that contains the specified elements or an empty collection if the elements are null or empty.
+     *
+     * @param elements the elements to put in the list.
+     * @param <T> the type of elements in the collection
+     * @return a new List that contains the specified elements or an empty collection if the elements are null or empty.
+     * @since 1.0.0
+     */
+    public static <T> List<T> toList(T... elements) {
+        if (elements == null || elements.length == 0) {
+            return java.util.Collections.emptyList();
+        }
+        List<T> list = new ArrayList<T>(elements.length);
+        java.util.Collections.addAll(list, elements);
+        return list;
+    }
+
+    /**
      * Merge the given array into the given Collection.
      * @param array the array to merge (may be <code>null</code>)
      * @param collection the target Collection to merge the array into
