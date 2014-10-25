@@ -15,12 +15,12 @@
  */
 package com.stormpath.sdk.impl.resource;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.Resource;
-import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

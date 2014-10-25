@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.idsite;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -23,7 +24,6 @@ import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -109,6 +109,7 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
             QueryString queryString = new QueryString();
             queryString.put(JWR_REQUEST_PARAM_NAME, jwt);
 
+            @SuppressWarnings("StringBufferReplaceableByString")
             StringBuilder urlBuilder = new StringBuilder(SSO_ENDPOINT).append('?').append(queryString.toString());
 
             return urlBuilder.toString();
