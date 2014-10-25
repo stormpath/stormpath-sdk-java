@@ -108,9 +108,10 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * {@link #getAccounts() account collection}.
      *
      * @param account the account instance to create in the directory.
+     * @return the newly created Account.
      * @see #createAccount(com.stormpath.sdk.account.Account, boolean)
      */
-    void createAccount(Account account);
+    Account createAccount(Account account);
 
     /**
      * Creates a new account instance in the directory with an explicit registration workflow directive.
@@ -128,11 +129,12 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * Therefore, this method is a convenience: it automatically issues a create with the directory's
      * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} argument.
      *
-     * @param account                     account the account instance to create in the directory.
+     * @param account account the account instance to create in the directory.
+     * @return the newly created Account.
      * @param registrationWorkflowEnabled whether or not the account registration workflow will be triggered, no matter
      *                                    what the Directory configuration is.
      */
-    void createAccount(Account account, boolean registrationWorkflowEnabled);
+    Account createAccount(Account account, boolean registrationWorkflowEnabled);
 
     /**
      * Creates a new account instance in the directory with options to override the registration workflow directive
@@ -162,9 +164,10 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * {@link #getAccounts() account collection} using the specified {@code registrationWorkflowEnabled} argument.
      *
      * @param request the account creation request.
+     * @return the newly created Account.
      * @since 0.9
      */
-    void createAccount(CreateAccountRequest request);
+    Account createAccount(CreateAccountRequest request);
 
     /**
      * Returns a paginated list of all accounts in the Directory.
@@ -307,9 +310,10 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * {@link #getGroups() group collection}.
      *
      * @param group the group instance to create in the directory.
+     * @return the newly created Group.
      * @since 0.6
      */
-    void createGroup(Group group);
+    Group createGroup(Group group);
 
     /**
      * Creates a new group instance in the directory, with the option to retrieve groups references in the group
@@ -330,9 +334,10 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * {@link #getGroups() group collection}.
      *
      * @param request the group creation request
+     * @return the newly created Group.
      * @since 0.9
      */
-    void createGroup(CreateGroupRequest request);
+    Group createGroup(CreateGroupRequest request);
 
     /**
      * Returns the {@link Provider} of this Directory.
