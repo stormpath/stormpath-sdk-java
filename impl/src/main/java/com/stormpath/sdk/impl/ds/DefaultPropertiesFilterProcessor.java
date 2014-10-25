@@ -15,78 +15,46 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- *     This class is used to process the added {@link PropertiesFilter}s by
- *     calling their {@link PropertiesFilter#filter(Class, Map)} method and returning
- *     the result of processing all configured filters.
- * </p>
- * @since 1.0.RC
+ * This class is used to process the added {@link PropertiesFilter}s by calling their {@link
+ * PropertiesFilter#filter(Class, Map)} method and returning the result of processing all configured filters. </p>
+ *
  * @see PropertiesFilter
+ * @since 1.0.RC
  */
-public class DefaultPropertiesFilterProcessor implements PropertiesFilterProcessor<Map<String, ?>, PropertiesFilter, Class>{
+public class DefaultPropertiesFilterProcessor
+    implements PropertiesFilterProcessor<Map<String, ?>, PropertiesFilter, Class> {
 
-    private final LinkedList<PropertiesFilter> filters = new LinkedList<PropertiesFilter>();
-    private final LinkedList<PropertiesFilter> transitoryFilters = new LinkedList<PropertiesFilter>();
+    private final List<PropertiesFilter> filters;
+
+    public DefaultPropertiesFilterProcessor(List<? extends PropertiesFilter> filters) {
+        this.filters = java.util.Collections.unmodifiableList(filters);
+    }
 
     /**
-     * <p>
-     * Calls {@link PropertiesFilter#filter(Class, Map)} on all the existing filters, including the transitory ones
-     * added by {@link #addTransitoryFilter(PropertiesFilter)}, and returns the result of calling all the filters.
-     * </p>
-     * <p>
-     * A call to this method removes all transitory filters added by {@link #addTransitoryFilter(PropertiesFilter)}
-     * after they are processed.
-     * </p>
+     * Calls {@link PropertiesFilter#filter(Class, Map)} on all the existing filters and returns the result of
+     * calling all the filters.
      *
-     * @param clazz the provided class type.
+     * @param clazz              the provided class type.
      * @param resourceProperties the resource properties that will be filtered by the added filters contained.
-     *
      * @return a {@link Map} containing the result of calling all the filters.
      * @see PropertiesFilter#filter(Class, Map)
-     * @see #addTransitoryFilter(PropertiesFilter)
      */
     @Override
-    public Map<String, ?> process(Class clazz,  Map<String, ?> resourceProperties) {
-
+    public Map<String, ?> process(Class clazz, Map<String, ?> resourceProperties) {
         Map<String, ?> result = resourceProperties;
         for (PropertiesFilter filter : filters) {
-
-            result = filter.filter(clazz, resourceProperties);
+            result = filter.filter(clazz, result);
         }
-
-        for (PropertiesFilter filter : transitoryFilters) {
-
-            result = filter.filter(clazz, resourceProperties);
-        }
-
-        transitoryFilters.clear();
 
         return result;
     }
 
-    /**
-     * <p>
-     * Adds a {@link PropertiesFilter} that will only be executed in the next call to
-     * the {@link #process(Class, Map)} method. After the next call to {@link #process(Class,Map)}, all filters added by this method
-     * will be removed.
-     * </p>
-     *
-     * @param filter the {@link PropertiesFilter} that will only be executed in the next call to
-     * the {@link #process(Class, Map)} method. After the next call to {@link #process(Class,Map)}, all filters added by this method
-     * will be removed.
-     *
-     * @see #process(Class,Map)
-     */
-    public void addTransitoryFilter(PropertiesFilter filter) {
-        transitoryFilters.add(filter);
-    }
-
     @Override
-    public void add(PropertiesFilter propertiesFilter) {
-        filters.add(propertiesFilter);
+    public List<PropertiesFilter> getFilters() {
+        return this.filters;
     }
 }

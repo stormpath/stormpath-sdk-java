@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
@@ -39,7 +40,6 @@ import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
-import org.codehaus.jackson.map.ObjectMapper
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
