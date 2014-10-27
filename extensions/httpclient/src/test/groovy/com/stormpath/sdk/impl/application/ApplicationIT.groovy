@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
@@ -39,7 +40,6 @@ import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
-import org.codehaus.jackson.map.ObjectMapper
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -436,6 +436,46 @@ class ApplicationIT extends ClientIT {
         assertEquals jsonPayload.sub, app.href
         assertEquals jsonPayload.state, "anyState"
         assertEquals jsonPayload.path, "/mypath"
+    }
+
+    // @since 1.0.0
+    @Test
+    void testCreateSsoLogout() {
+        def app = createTempApp()
+        def ssoRedirectUrlBuilder = app.newIdSiteUrlBuilder()
+
+        def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").forLogout().build()
+
+        assertNotNull ssoURL
+
+        String[] ssoUrlPath = ssoURL.split("jwtRequest=")
+
+        assertEquals 2, ssoUrlPath.length
+
+        StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
+
+        //Expected JWT token 'base64Header'.'base64JsonPayload'.'base64Signature'
+        assertEquals tokenizer.countTokens(), 3
+
+        def base64Header = tokenizer.nextToken()
+        def base64JsonPayload = tokenizer.nextToken()
+        def base64Signature = tokenizer.nextToken()
+
+
+        def objectMapper = new ObjectMapper()
+
+        assertTrue Base64.isBase64(base64Header)
+        assertTrue Base64.isBase64(base64JsonPayload)
+        assertTrue Base64.isBase64(base64Signature)
+
+        byte[] decodedJsonPayload = Base64.decodeBase64(base64JsonPayload)
+
+        def jsonPayload = objectMapper.readValue(decodedJsonPayload, Map)
+
+        assertTrue ssoURL.startsWith(ssoRedirectUrlBuilder.SSO_ENDPOINT + "/logout?jwtRequest=")
+        assertEquals jsonPayload.cb_uri, "https://mycallbackuri.com/path"
+        assertEquals jsonPayload.iss, client.dataStore.apiKey.id
+        assertEquals jsonPayload.sub, app.href
     }
 
     def Account createTestAccount(Application app) {
