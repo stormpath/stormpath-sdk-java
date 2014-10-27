@@ -59,7 +59,7 @@ class IdSiteReplyIT extends ClientIT {
         String apiKeyId = client.dataStore.apiKey.id
         String apiKeySecret = client.dataStore.apiKey.secret
 
-        String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "anState")
+        String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "anState", IdSiteResultStatus.AUTHENTICATED)
 
         QueryString queryString = new QueryString()
         queryString.put("jwtResponse", jwtResponseValue)
@@ -69,7 +69,7 @@ class IdSiteReplyIT extends ClientIT {
 
         assertAccountResult(httpRequest, "anState")
 
-        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, null)
+        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, null, IdSiteResultStatus.REGISTERED)
 
         queryString = new QueryString()
         queryString.put("jwtResponse", jwtResponseValue)
@@ -86,7 +86,7 @@ class IdSiteReplyIT extends ClientIT {
         String apiKeyId = client.dataStore.apiKey.id
         String apiKeySecret = client.dataStore.apiKey.secret
 
-        String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "thisIs the expected state")
+        String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "thisIs the expected state", IdSiteResultStatus.AUTHENTICATED)
 
         assertHandleSsoError(jwtResponseValue, IllegalArgumentException, null)
 
@@ -109,7 +109,7 @@ class IdSiteReplyIT extends ClientIT {
         assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.ALREADY_USED_JWT_ERROR)
 
         //Let the jwtExpired (ttl 2 seconds)
-        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 2, "thisIs will expire")
+        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 2, "thisIs will expire", IdSiteResultStatus.AUTHENTICATED)
         queryString.put("jwtResponse", jwtResponseValue)
 
         //Wait 3 seconds
@@ -120,7 +120,7 @@ class IdSiteReplyIT extends ClientIT {
 
         assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.EXPIRED_JWT_ERROR)
 
-        jwtResponseValue = buildSsoResponse("this-is-an-invalid-key-id", apiKeySecret, "https://myapplication.com", 2, "thisIs will expire")
+        jwtResponseValue = buildSsoResponse("this-is-an-invalid-key-id", apiKeySecret, "https://myapplication.com", 2, "thisIs will expire", IdSiteResultStatus.AUTHENTICATED)
         queryString.put("jwtResponse", jwtResponseValue)
 
         httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml"))
@@ -128,7 +128,7 @@ class IdSiteReplyIT extends ClientIT {
 
         assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.JWT_RESPONSE_INVALID_APIKEY_ID_ERROR)
 
-        jwtResponseValue = buildSsoResponse(apiKeyId, "invalid-secret", "https://myapplication.com", 2, "thisIs will expire")
+        jwtResponseValue = buildSsoResponse(apiKeyId, "invalid-secret", "https://myapplication.com", 2, "thisIs will expire", IdSiteResultStatus.LOGOUT)
         queryString.put("jwtResponse", jwtResponseValue)
 
         httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml"))
@@ -137,7 +137,7 @@ class IdSiteReplyIT extends ClientIT {
         assertHandleSsoError(httpRequest, InvalidJwtException, InvalidJwtException.INVALID_JWT_SIGNATURE_ERROR)
 
         //Missing issuer parameter
-        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "", 2, "thisIs will expire")
+        jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "", 2, "thisIs will expire", IdSiteResultStatus.LOGOUT)
         queryString.put("jwtResponse", jwtResponseValue)
 
         httpRequest = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders("application/xml"))
@@ -180,13 +180,13 @@ class IdSiteReplyIT extends ClientIT {
         assertFalse result.newAccount
     }
 
-    String buildSsoResponse(String apiKeyId, String apiKeySecret, String issuer, int ttl, String state) {
+    String buildSsoResponse(String apiKeyId, String apiKeySecret, String issuer, int ttl, String state, IdSiteResultStatus status) {
 
         def expired = (System.currentTimeMillis() / 1000) + ttl
 
         def nonce = UUID.randomUUID().toString()
 
-        def map = [sub: account.href, isNewSub: false, exp: expired, irt: nonce]
+        def map = [sub: account.href, isNewSub: false, exp: expired, irt: nonce, status: status]
 
         if (Strings.hasText(apiKeyId)) {
             map.aud = apiKeyId

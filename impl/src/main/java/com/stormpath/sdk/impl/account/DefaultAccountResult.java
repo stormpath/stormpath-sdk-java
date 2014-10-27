@@ -12,7 +12,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import java.util.Map;
 
 /**
- * DefaultAccountResult is the default implementation of the {@link AccountResult accountResult} interface.
+ * DefaultAccountResult is the default implementation of the {@link AccountResult AccountResult} interface.
  *
  * @since 1.0.RC
  */

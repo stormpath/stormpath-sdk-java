@@ -60,14 +60,59 @@ public interface IdSiteCallbackHandler {
      *
      * @param nonceStore the {@link NonceStore} implementation to use during the process to execute this request.
      * @throws IllegalArgumentException when the {@code nonceStore} argument is {@code null}.
+     * @return this instance for method chaining
      */
-    void setNonceStore(NonceStore nonceStore);
+    IdSiteCallbackHandler setNonceStore(NonceStore nonceStore);
 
     /**
      * Actually processes the request and returns an {@code AccountResult} object that reflects the account that
      * logged in or registered.
+     * <p/>
+     * During the execution of this method, the {@link IdSiteResultListener result listener} (if any) will be notified
+     * about the actual operation of the ID Site invocation: registration, authentication or logout.
      *
      * @return the resolved identity in the form of an {@link AccountResult}
      */
     AccountResult getAccountResult();
+
+    /**
+     * Sets the {@link IdSiteResultListener listener} that will be notified about the actual operation of the Id Site invocation:
+     * registration, authentication or logout.
+     * <p/>
+     * The listener must be set before the method {@link #getAccountResult()} is invoked since this the actual operation that
+     * will trigger the notification to the specified listener.
+     * <p/>
+     * Example:
+     * <pre
+     * <code>
+     * IdSiteCallbackHandler callbackHandler = application.newIdSiteCallbackHandler(request);
+     * callbackHandler.setResultListener(new IdSiteResultListener() {
+     *      {@literal@}Override
+     *      public void onRegistered(RegistrationResult result) {
+     *          System.out.println("Successful Id Site registration");
+     *      }
+     *
+     *      {@literal@}Override
+     *      public void onAuthenticated(AuthenticationResult result) {
+     *          System.out.println("Successful Id Site authentication");
+     *      }
+     *
+     *      {@literal@}Override
+     *      public void onLogout(LogoutResult result) {
+     *          System.out.println("Successful Id Site logout");
+     *      }
+     * });
+     * Account account = callbackHandler.getAccountResult().getAccount();
+     * </code>
+     * </pre
+     *
+     * @param resultListener the {@link IdSiteResultListener} that will be notified about the actual operation of the ID Site
+     *                       invocation: registration, authentication or logout. If <code>resultListener<code/> is null, no notification
+     *                       will be sent.
+     * @return this instance for method chaining
+     * @see IdSiteResultListener
+     * @since 1.0.0
+     */
+    IdSiteCallbackHandler setResultListener(IdSiteResultListener resultListener);
+
 }
