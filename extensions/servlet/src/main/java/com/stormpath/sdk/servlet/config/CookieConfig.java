@@ -15,33 +15,20 @@
  */
 package com.stormpath.sdk.servlet.config;
 
-import java.util.Map;
+public interface CookieConfig {
 
-public interface Config extends Map<String, String> {
+    String getName();
 
-    /**
-     * Returns the context-relative URL of the login view.
-     *
-     * @return the context-relative URL of the login view.
-     */
-    String getLoginUrl();
+    String getComment();
 
-    String getLoginNextUrl();
+    String getDomain();
 
-    String getLogoutUrl();
+    int getMaxAge();
 
-    String getLogoutNextUrl();
+    String getPath();
 
-    String getRegisterUrl();
+    boolean isSecure();
 
-    String getRegisterNextUrl();
-
-    String getVerifyUrl();
-
-    String getVerifyNextUrl();
-
-    String getUnauthorizedUrl();
-
-    CookieConfig getAccountCookieConfig();
+    boolean isHttpOnly();
 
 }

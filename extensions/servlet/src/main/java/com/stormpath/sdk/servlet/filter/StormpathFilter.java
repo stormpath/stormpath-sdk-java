@@ -21,11 +21,14 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.UriCleaner;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StormpathFilter extends HttpFilter {
@@ -33,6 +36,8 @@ public class StormpathFilter extends HttpFilter {
     public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.routes.";
 
     private FilterChainResolver filterChainResolver;
+
+    private List<Filter> immediateExecutionFilters;
 
     public StormpathFilter() {
     }
@@ -49,6 +54,13 @@ public class StormpathFilter extends HttpFilter {
 
         //now register any configured chains:
         Config config = getConfig();
+
+        //ensure the always-on AccountUnmarshallerFilter is available:
+        Filter accountFilter = new DefaultFilterBuilder().setServletContext(getServletContext())
+            .setName("accountUnmarshallerFilter")
+            .setFilterClass(AccountUnmarshallerFilter.class)
+            .build();
+        this.immediateExecutionFilters = Arrays.asList(accountFilter);
 
         //Ensure handlers are registered:
         String loginUrl = config.getLoginUrl();
@@ -170,6 +182,9 @@ public class StormpathFilter extends HttpFilter {
         if (target == null) {
             target = chain;
         }
+
+        //The account resolver filter always executes before any other configured filters in the chain:
+        target = new ProxiedFilterChain(target, this.immediateExecutionFilters);
 
         //continue:
         target.doFilter(request, response);

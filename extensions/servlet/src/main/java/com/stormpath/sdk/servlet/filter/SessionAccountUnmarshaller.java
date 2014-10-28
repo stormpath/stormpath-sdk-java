@@ -13,35 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.filter;
 
-import java.util.Map;
+import com.stormpath.sdk.account.Account;
 
-public interface Config extends Map<String, String> {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-    /**
-     * Returns the context-relative URL of the login view.
-     *
-     * @return the context-relative URL of the login view.
-     */
-    String getLoginUrl();
+public class SessionAccountUnmarshaller implements Unmarshaller<Account> {
 
-    String getLoginNextUrl();
+    @Override
+    public Account unmarshall(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
 
-    String getLogoutUrl();
+        if (session == null) {
+            return null;
+        }
 
-    String getLogoutNextUrl();
-
-    String getRegisterUrl();
-
-    String getRegisterNextUrl();
-
-    String getVerifyUrl();
-
-    String getVerifyNextUrl();
-
-    String getUnauthorizedUrl();
-
-    CookieConfig getAccountCookieConfig();
-
+        return (Account) session.getAttribute(Account.class.getName());
+    }
 }

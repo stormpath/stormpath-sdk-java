@@ -13,35 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.filter;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public interface Config extends Map<String, String> {
+public interface Marshaller<T> {
 
-    /**
-     * Returns the context-relative URL of the login view.
-     *
-     * @return the context-relative URL of the login view.
-     */
-    String getLoginUrl();
-
-    String getLoginNextUrl();
-
-    String getLogoutUrl();
-
-    String getLogoutNextUrl();
-
-    String getRegisterUrl();
-
-    String getRegisterNextUrl();
-
-    String getVerifyUrl();
-
-    String getVerifyNextUrl();
-
-    String getUnauthorizedUrl();
-
-    CookieConfig getAccountCookieConfig();
+    void marshall(HttpServletRequest request, HttpServletResponse response, T instance);
 
 }

@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,11 +35,75 @@ public class DefaultConfig implements Config {
     public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUrl";
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
 
+    public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
+    public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
+    public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
+    public static final String ACCOUNT_COOKIE_MAX_AGE = "stormpath.web.account.cookie.maxAge";
+    public static final String ACCOUNT_COOKIE_PATH = "stormpath.web.account.cookie.path";
+    public static final String ACCOUNT_COOKIE_SECURE = "stormpath.web.account.cookie.secure";
+    public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
+
     private final Map<String, String> props;
 
-    public DefaultConfig(Map<String, String> props) {
-        Assert.notNull(props, "Properties argument cannot be null.");
-        this.props = Collections.unmodifiableMap(props);
+    private final CookieConfig ACCOUNT_COOKIE_CONFIG;
+
+    public DefaultConfig(Map<String, String> configProps) {
+        Assert.notNull(configProps, "Properties argument cannot be null.");
+        this.props = Collections.unmodifiableMap(configProps);
+
+        final int maxAge;
+        String val = props.get(ACCOUNT_COOKIE_MAX_AGE);
+        if (Strings.hasText(val)) {
+            try {
+                int i = Integer.parseInt(val);
+                maxAge = Math.max(-1, i);
+            } catch (NumberFormatException e) {
+                String msg = "Configured " + ACCOUNT_COOKIE_MAX_AGE + " value must be an integer.";
+                throw new IllegalArgumentException(msg, e);
+            }
+        } else {
+            maxAge = Integer.MIN_VALUE;
+        }
+
+        final boolean httpOnly = !"false".equalsIgnoreCase(props.get(ACCOUNT_COOKIE_HTTP_ONLY));
+        final boolean secure = !"false".equalsIgnoreCase(props.get(ACCOUNT_COOKIE_SECURE));
+
+        this.ACCOUNT_COOKIE_CONFIG = new CookieConfig() {
+            @Override
+            public String getName() {
+                return props.get(ACCOUNT_COOKIE_NAME);
+            }
+
+            @Override
+            public String getComment() {
+                return props.get(ACCOUNT_COOKIE_COMMENT);
+            }
+
+            @Override
+            public String getDomain() {
+                return props.get(ACCOUNT_COOKIE_DOMAIN);
+            }
+
+            @Override
+            public int getMaxAge() {
+                return maxAge;
+            }
+
+            @Override
+            public String getPath() {
+                return props.get(ACCOUNT_COOKIE_PATH);
+            }
+
+            @Override
+            public boolean isSecure() {
+                return secure;
+            }
+
+            @Override
+            public boolean isHttpOnly() {
+                return httpOnly;
+            }
+        };
     }
 
     @Override
@@ -84,6 +149,11 @@ public class DefaultConfig implements Config {
     @Override
     public String getUnauthorizedUrl() {
         return props.get(UNAUTHORIZED_URL);
+    }
+
+    @Override
+    public CookieConfig getAccountCookieConfig() {
+        return this.ACCOUNT_COOKIE_CONFIG;
     }
 
     @Override
