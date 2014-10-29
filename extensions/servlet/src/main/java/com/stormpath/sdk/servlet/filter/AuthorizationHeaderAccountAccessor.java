@@ -25,15 +25,14 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class AuthorizationHeaderAccountUnmarshaller implements Unmarshaller<Account> {
+public class AuthorizationHeaderAccountAccessor implements Accessor<Account> {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthorizationHeaderAccountUnmarshaller.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationHeaderAccountAccessor.class);
 
     public static final String AUTHENTICATION_RESULT_REQUEST_ATTRIBUTE_NAME = AuthenticationResult.class.getName();
 
     @Override
-    public Account unmarshall(HttpServletRequest request, HttpServletResponse response) {
-        request.getAuthType();
+    public Account get(HttpServletRequest request, HttpServletResponse response) {
 
         String authzHeaderValue = request.getHeader("Authorization");
 

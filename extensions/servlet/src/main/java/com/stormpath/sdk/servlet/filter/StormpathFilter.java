@@ -55,10 +55,10 @@ public class StormpathFilter extends HttpFilter {
         //now register any configured chains:
         Config config = getConfig();
 
-        //ensure the always-on AccountUnmarshallerFilter is available:
+        //ensure the always-on AccountAccessorFilter is available:
         Filter accountFilter = new DefaultFilterBuilder().setServletContext(getServletContext())
-            .setName("accountUnmarshallerFilter")
-            .setFilterClass(AccountUnmarshallerFilter.class)
+            .setName(Strings.uncapitalize(AccountAccessorFilter.class.getSimpleName()))
+            .setFilterClass(AccountAccessorFilter.class)
             .build();
         this.immediateExecutionFilters = Arrays.asList(accountFilter);
 

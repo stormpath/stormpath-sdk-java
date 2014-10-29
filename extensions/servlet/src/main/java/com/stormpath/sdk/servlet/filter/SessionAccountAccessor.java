@@ -15,11 +15,22 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.account.Account;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-public interface Unmarshaller<T> {
+public class SessionAccountAccessor implements Accessor<Account> {
 
-    T unmarshall(HttpServletRequest request, HttpServletResponse response);
+    @Override
+    public Account get(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
 
+        if (session == null) {
+            return null;
+        }
+
+        return (Account) session.getAttribute(Account.class.getName());
+    }
 }

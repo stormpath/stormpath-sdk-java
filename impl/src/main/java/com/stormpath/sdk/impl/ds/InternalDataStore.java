@@ -58,9 +58,14 @@ public interface InternalDataStore extends DataStore {
     //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
 
     /**
+     * Returns the ApiKey used by the client to authenticate requests sent to the Stormpath API server.  The API Key
+     * secret can also be used to create digital signatures.
+     *
+     * @return the ApiKey used to authenticate requests to the Stormpath API server.
      * @since 1.0.RC
      */
     ApiKey getApiKey();
+
     /**
      * @since 1.0.beta
      */

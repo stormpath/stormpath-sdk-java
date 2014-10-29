@@ -29,57 +29,57 @@ import java.util.Collections;
 import java.util.List;
 
 //not a configurable filter - always executes immediately after the StormpathFilter but before other user-configured filters.
-public class AccountUnmarshallerFilter extends HttpFilter {
+public class AccountAccessorFilter extends HttpFilter {
 
-    private static final String ACCOUNT_UNMARSHALLER_CONFIG_NAME = "stormpath.web.account.discovery";
+    private static final String ACCOUNT_ACCESSOR_CONFIG_PROP_NAME = "stormpath.web.account.discovery";
 
-    private static final Unmarshaller<Account> COOKIE_ACCOUNT_UNMARSHALLER = new CookieAccountUnmarshaller();
-    private static final Unmarshaller<Account> HEADER_ACCOUNT_UNMARSHALLER = new AuthorizationHeaderAccountUnmarshaller();
-    private static final Unmarshaller<Account> SESSION_ACCOUNT_UNMARSHALLER = new SessionAccountUnmarshaller();
+    private static final Accessor<Account> COOKIE_ACCOUNT_ACCESSOR = new CookieAccountAccessor();
+    private static final Accessor<Account> HEADER_ACCOUNT_ACCESSOR = new AuthorizationHeaderAccountAccessor();
+    private static final Accessor<Account> SESSION_ACCOUNT_ACCESSOR = new SessionAccountAccessor();
 
     //not strictly thread-safe, but it is only really manipulated by a single thread startup:
-    private List<Unmarshaller<Account>> unmarshallers;
+    private List<Accessor<Account>> accessors;
 
     @Override
     protected void onInit() throws ServletException {
 
         Config config = getConfig();
 
-        String value = config.get(ACCOUNT_UNMARSHALLER_CONFIG_NAME);
+        String value = config.get(ACCOUNT_ACCESSOR_CONFIG_PROP_NAME);
 
-        String[] unmarshallerNames = Strings.commaDelimitedListToStringArray(value);
+        String[] accessorNames = Strings.commaDelimitedListToStringArray(value);
 
-        List<Unmarshaller<Account>> unmarshallers = new ArrayList<Unmarshaller<Account>>(unmarshallerNames.length);
+        List<Accessor<Account>> accessors = new ArrayList<Accessor<Account>>(accessorNames.length);
 
-        for(String name : unmarshallerNames) {
+        for(String name : accessorNames) {
 
-            Unmarshaller<Account> unmarshaller;
+            Accessor<Account> accessor;
 
             if ("header".equalsIgnoreCase(name)) {
-                unmarshaller = HEADER_ACCOUNT_UNMARSHALLER;
+                accessor = HEADER_ACCOUNT_ACCESSOR;
             } else if ("cookie".equalsIgnoreCase(name)) {
-                unmarshaller = COOKIE_ACCOUNT_UNMARSHALLER;
+                accessor = COOKIE_ACCOUNT_ACCESSOR;
             } else if ("session".equalsIgnoreCase(name)) {
-                unmarshaller = SESSION_ACCOUNT_UNMARSHALLER;
+                accessor = SESSION_ACCOUNT_ACCESSOR;
             } else {
-                String msg = "Unrecognized " + ACCOUNT_UNMARSHALLER_CONFIG_NAME + " config value: " + name;
+                String msg = "Unrecognized " + ACCOUNT_ACCESSOR_CONFIG_PROP_NAME + " config value: " + name;
                 throw new IllegalArgumentException(msg);
             }
 
-            if (!unmarshallers.contains(unmarshaller)) {
-                unmarshallers.add(unmarshaller);
+            if (!accessors.contains(accessor)) {
+                accessors.add(accessor);
             }
         }
 
-        this.unmarshallers = Collections.unmodifiableList(unmarshallers);
+        this.accessors = Collections.unmodifiableList(accessors);
     }
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
 
-        for(Unmarshaller<Account> unmarshaller : unmarshallers) {
-            Account account = unmarshaller.unmarshall(request, response);
+        for(Accessor<Account> accessor : accessors) {
+            Account account = accessor.get(request, response);
             if (account != null) {
                 request.setAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME, account);
                 break;

@@ -15,11 +15,36 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.lang.Assert;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface Marshaller<T> {
+public class CookieAccessor implements Accessor<Cookie> {
 
-    void marshall(HttpServletRequest request, HttpServletResponse response, T instance);
+    private final String name;
 
+    public CookieAccessor(String name) {
+        Assert.hasText(name, "cookie name argument cannot be null or empty.");
+        this.name = name;
+    }
+
+    @Override
+    public Cookie get(HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return null;
+        }
+
+        for (Cookie cookie : cookies) {
+            if (this.name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+
+        return null;
+    }
 }
