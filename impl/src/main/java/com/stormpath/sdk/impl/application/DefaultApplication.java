@@ -552,26 +552,57 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.0 */
     @Override
-    public AccountStoreMapping addDirectory(Directory directory) {
-        Assert.notNull(directory);
-        String dirHref = directory.getHref();
-        String dirName = directory.getName();
-        Assert.isTrue(dirHref != null || dirName != null, "Either the Directory's href or name must be provided.");
-        if (dirHref != null) {
+    public AccountStoreMapping addAccountStore(String hrefOrName) {
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
+        AccountStore accountStore = null;
+
+        //Let's check if hrefOrName looks like an href. If so, we will also identify whether it refers to directory or a group
+        String[] splitHrefOrName = hrefOrName.split("/");
+        if (splitHrefOrName.length > 4) {
+            Class<? extends AccountStore> accountStoreType = null;
+            String[] splitApplicationHref = getHref().split("/");
+            if (splitHrefOrName.length == splitApplicationHref.length) {
+                if (splitHrefOrName[4].equals("directories")) {
+                    accountStoreType = Directory.class;
+                } else if (splitHrefOrName[4].equals("groups")) {
+                    accountStoreType = Group.class;
+                }
+            }
+            if (accountStoreType != null) {
+                try {
+                    //Let's check if the provided value is an actual href for an existent resource
+                    accountStore = getDataStore().getResource(hrefOrName, accountStoreType);
+                } catch (ResourceException e) {
+                    //Although hrefOrName seemed to be an actual href value no Resource was found in the backend. So maybe
+                    //this is actually a name rather than an href. Let's try to find a resource by name now...
+                }
+            }
+        }
+        if (accountStore == null) {
+            //Let's try to find both a Directory and a Group with the given name
+            Directory directory = getSingleTenantDirectory(Directories.where(Directories.name().eqIgnoreCase(hrefOrName)));
+            Group group = getSingleTenantGroup(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
+            if (directory != null && group != null) {
+                //The provided criteria matched more than one Groups in the tenant, we will throw
+                throw new IllegalArgumentException("There are both a Directory and a Group matching the provided name in the current tenant. " +
+                        "Please provide the href of the intended Resource instead of its name in order to univocally identify it.");
+            }
+            accountStore = (directory != null) ? directory : group;
+        }
+        if(accountStore != null) {
+            return addAccountStore(accountStore);
+        }
+        //We could not find any resource matching the hrefOrName value; we return null
+        return null;
+    }
+
+    /** @since 1.0.0 */
+    @Override
+    public AccountStoreMapping addAccountStore(DirectoryCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Directory directory = getSingleTenantDirectory(criteria);
+        if (directory != null) {
             return addAccountStore(directory);
-        } else {
-            Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
-            DirectoryList directories = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName)));
-            Directory foundDirectory = null;
-            //There cannot be more than one dir with the same name in a single tenant. Thus, the dir list will have either
-            //zero or one items, never more.
-            for (Directory dir : directories) {
-                foundDirectory = dir;
-                break;
-            }
-            if (foundDirectory != null) {
-                return addAccountStore(foundDirectory);
-            }
         }
         //No directory matching the given information could be found; therefore no account store can be added. We return null...
         return null;
@@ -579,36 +610,59 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /** @since 1.0.0 */
     @Override
-    public AccountStoreMapping addGroup(Group group) {
-        Assert.notNull(group);
-        String groupHref = group.getHref();
-        String groupName = group.getName();
-        Assert.isTrue(groupHref != null || groupName != null, "Either the Group's href or name must be provided.");
-        if (groupHref != null) {
+    public AccountStoreMapping addAccountStore(GroupCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Group group = getSingleTenantGroup(criteria);
+        if (group != null) {
             return addAccountStore(group);
-        } else {
-            GroupCriteria groupCriteria = Groups.where(Groups.name().eqIgnoreCase(groupName));
-            Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
-            DirectoryList directories = tenant.getDirectories();
-            Group foundGroup = null;
-            for(Directory directory : directories) {
-                GroupList groups = directory.getGroups(groupCriteria);
-                //There cannot be more than one group with the same name in a single tenant. Thus, the group list will have either
-                //zero or one items, never more.
-                for (Group grp : groups) {
-                    foundGroup = grp;
-                    break;
-                }
-                if (foundGroup != null) {
-                    break;
-                }
-            }
-            if (foundGroup != null) {
-                return addAccountStore(foundGroup);
-            }
         }
         //No group matching the given information could be found; therefore no account store can be added. We return null...
         return null;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @since 1.0.0
+     */
+    private Directory getSingleTenantDirectory(DirectoryCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        DirectoryList directories = tenant.getDirectories(criteria);
+
+        Directory foundDirectory = null;
+        for (Directory dir : directories) {
+            if (foundDirectory != null) {
+                //The provided criteria matched more than one Directory in the tenant, we will throw
+                throw new IllegalArgumentException("The provided criteria matched more than one Directory in the current Tenant.");
+            }
+            foundDirectory = dir;
+        }
+        return foundDirectory;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @since 1.0.0
+     * */
+    private Group getSingleTenantGroup(GroupCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        DirectoryList directories = tenant.getDirectories();
+        Group foundGroup = null;
+        for (Directory directory : directories) {
+            GroupList groups = directory.getGroups(criteria);
+            //There cannot be more than one group with the same name in a single tenant. Thus, the group list will have either
+            //zero or one items, never more.
+            for (Group grp : groups) {
+                if(foundGroup != null) {
+                    //The provided criteria matched more than one Groups in the tenant, we will throw
+                    throw new IllegalArgumentException("The provided criteria matched more than one Group in the current Tenant.");
+                }
+                foundGroup = grp;
+            }
+        }
+        return foundGroup;
     }
 
 }
