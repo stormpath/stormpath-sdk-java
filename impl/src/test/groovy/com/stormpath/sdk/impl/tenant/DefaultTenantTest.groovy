@@ -20,11 +20,13 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.provider.DefaultGoogleProvider
-import com.stormpath.sdk.lang.Objects
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.provider.Providers
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -65,11 +67,7 @@ class DefaultTenantTest {
                 directories: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/directories"]
         ]
 
-        def providerProperties = [providerId: "google",
-                clientId: "aClientId999",
-                clientSecret: "aClientSecret111",
-                redirectUri: "http://someUrl:99999"
-        ]
+        def providerProperties = [providerId: "google"]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultDirectory = createStrictMock(DefaultDirectory)
@@ -77,6 +75,7 @@ class DefaultTenantTest {
         def defaultTenant = new DefaultTenant(internalDataStore, properties)
 
         def defaultProvider = new DefaultGoogleProvider(null, providerProperties)
+        defaultProvider.setClientId("aClientId999").setClientSecret("aClientSecret111").setRedirectUri("http://someUrl:99999")
 
         expect(internalDataStore.create("/directories", defaultDirectory)).andReturn(returnedDirectory)
         expect(defaultDirectory.setProvider((Provider) reportMatcher(new ProviderEquals(defaultProvider)))).andReturn(defaultDirectory)
@@ -139,16 +138,25 @@ class DefaultTenantTest {
                 return false;
             }
             Provider actual = (Provider) o
-            return (Objects.nullSafeEquals(expected, actual))
+            Map actualProperties = getValue(AbstractResource, actual, "properties")
+            Map actualDirtyProperties = getValue(AbstractResource, actual, "dirtyProperties")
+            Map expectedProperties = getValue(AbstractResource, expected, "properties")
+            Map expectedDirtyProperties = getValue(AbstractResource, expected, "dirtyProperties")
+            assertEquals(actualProperties, expectedProperties)
+            assertEquals(actualDirtyProperties, expectedDirtyProperties)
+            return true
         }
 
         void appendTo(StringBuffer stringBuffer) {
-            stringBuffer.append("provider: " + expected.toString())
+            stringBuffer.append(expected.toString())
+        }
+
+        private Object getValue(Class clazz, Object object, String fieldName){
+            Field field = clazz.getDeclaredField(fieldName)
+            field.setAccessible(true)
+            return field.get(object)
         }
     }
-
-
-
 
 
 }

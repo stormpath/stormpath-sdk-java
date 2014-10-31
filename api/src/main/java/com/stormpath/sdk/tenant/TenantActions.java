@@ -16,6 +16,8 @@
 package com.stormpath.sdk.tenant;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
@@ -24,6 +26,8 @@ import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Map;
@@ -210,7 +214,7 @@ public interface TenantActions {
      * the criteria DSL.  For example:
      * <pre>
      * client.getDirectories(Directories
-     *     .where(Directories.description().containsIgnoreText("foo"))
+     *     .where(Directories.description().containsIgnoreCase("foo"))
      *     .and(Directories.name().startsWithIgnoreCase("bar"))
      *     .orderByName().descending()
      *     .withAccounts(10, 10)
@@ -218,8 +222,8 @@ public interface TenantActions {
      *     .limitTo(25));
      * </pre>
      *
-     * @param criteria the  the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the Tenant's applications that match the specified query criteria.
+     * @param criteria the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's directories that match the specified query criteria.
      * @since 0.8
      */
     DirectoryList getDirectories(DirectoryCriteria criteria);
@@ -242,6 +246,103 @@ public interface TenantActions {
      * @since 0.4
      */
     Account verifyAccountEmail(String token);
+
+    /**
+     * Returns a paginated list of all of the current tenant's {@link com.stormpath.sdk.account.Account Account}
+     * instances.
+     * <p/>
+     * Tip: Instead of iterating over all accounts, it might be more convenient (and practical) to execute a search
+     * for one or more accounts using the {@link #getAccounts(AccountCriteria)} method instead of this one.
+     *
+     * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.account.Account Account} instances.
+     * @see #getAccounts(com.stormpath.sdk.account.AccountCriteria)
+     * @see #getAccounts(java.util.Map)
+     * @since 1.0.0
+     */
+    AccountList getAccounts();
+
+    /**
+     * Returns a paginated list of the current tenant's accounts that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * client.getAccounts(Accounts
+     *     .where(Accounts.givenName().containsIgnoreCase("foo"))
+     *     .and(Accounts.surname().startsWithIgnoreCase("bar"))
+     *     .orderBySurname().descending()
+     *     .withGroups(10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's accounts that match the specified query criteria.
+     * @since 1.0.0
+     */
+    AccountList getAccounts(AccountCriteria criteria);
+
+    /**
+     * Returns a paginated list of the current tenant's accounts that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../tenants/tenantId/accounts?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's accounts that match the specified query criteria.
+     * @since 1.0.0
+     */
+    AccountList getAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of all of the current tenant's {@link com.stormpath.sdk.group.Group Group}
+     * instances.
+     * <p/>
+     * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
+     * for one or more groups using the {@link #getGroups(GroupCriteria)} method instead of this one.
+     *
+     * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.group.Group Group} instances.
+     * @see #getGroups(com.stormpath.sdk.group.GroupCriteria)
+     * @see #getGroups(java.util.Map)
+     * @since 1.0.0
+     */
+    GroupList getGroups();
+
+    /**
+     * Returns a paginated list of the current tenant's groups that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.group.Groups Groups} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * client.getGroups(Groups.where(Groups.name().containsIgnoreCase("foo"))
+     *      .and(Groups.description().startsWithIgnoreCase("bar"))
+     *      .orderByName().descending()
+     *      .withAccounts(10)
+     *      .offsetBy(20)
+     *      .limitTo(25);
+     * </pre>
+     *
+     * @param criteria the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's groups that match the specified query criteria.
+     * @since 1.0.0
+     */
+    GroupList getGroups(GroupCriteria criteria);
+
+    /**
+     * Returns a paginated list of the current tenant's groups that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../tenants/tenantId/groups?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's groups that match the specified query criteria.
+     * @since 1.0.0
+     */
+    GroupList getGroups(Map<String, Object> queryParams);
 
 }
 

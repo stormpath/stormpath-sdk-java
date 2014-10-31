@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.provider;
-
-import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.Resource;
+package com.stormpath.sdk.idsite;
 
 /**
- * Since {@link ProviderAccountResult} is not a resource per-se we use this helper class which is in charge of
- * instantiating the result of an (e.g. {@link com.stormpath.sdk.application.Application#getAccount(com.stormpath.sdk.provider.ProviderAccountRequest)
- * account access request} obtained from Stormpath.
+ * Holder for Registration-specific data that will be received on the {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(RegistrationResult)
+ * IdSiteResultListener#onRegistered(RegistrationResult)} method.
  *
- * @since 1.0.beta
+ * @since 1.0.0
  */
-public interface ProviderAccountResultHelper extends Resource {
-
-    ProviderAccountResult getProviderAccountResult();
-
+public interface RegistrationResult extends AccountResult {
 }

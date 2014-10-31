@@ -5,6 +5,7 @@ jdk:
   - openjdk6
   - openjdk7
   - oraclejdk7
+  - oraclejdk8
 
 install: echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
 script: mvn install
