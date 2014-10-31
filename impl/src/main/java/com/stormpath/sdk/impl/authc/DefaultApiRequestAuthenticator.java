@@ -24,8 +24,6 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 
-import java.lang.reflect.Constructor;
-
 /**
  * @since 1.0.RC
  */
@@ -33,54 +31,38 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
-    private static final String HTTP_SERVLET_REQUEST_WRAPPER_FQCN = "com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper";
-
-    private static final Class<? extends HttpServletRequestWrapper> HTTP_SERVLET_REQUEST_WRAPPER_CLASS;
-
-    static {
-        if (Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN)) {
-            HTTP_SERVLET_REQUEST_WRAPPER_CLASS = Classes.forName(HTTP_SERVLET_REQUEST_WRAPPER_FQCN);
-        } else {
-            HTTP_SERVLET_REQUEST_WRAPPER_CLASS = null;
-        }
-    }
-
-    private final HttpServletRequestWrapper httpServletRequestWrapper;
-
-    private final HttpRequest httpRequest;
+    private static final ApiAuthenticationRequestFactory FACTORY = new ApiAuthenticationRequestFactory();
 
     private final Application application;
 
-    public DefaultApiRequestAuthenticator(Application application, Object httpRequest) {
-        Assert.notNull(httpRequest);
-        Assert.notNull(application, "application cannot be null.");
+    private final HttpRequest httpRequest;
 
+    public DefaultApiRequestAuthenticator(Application application, Object httpRequest) {
+
+        Assert.notNull(application, "application argument cannot be null.");
+        Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
         this.application = application;
+
         if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
             this.httpRequest = (HttpRequest) httpRequest;
-            this.httpServletRequestWrapper = null;
         } else {
-            //This must never happen, if the object request is of HttpServlet request type the HTTP_SERVLET_REQUEST_WRAPPER_CLASS
-            //must be already loaded and therefor cannot be null.
-            if (HTTP_SERVLET_REQUEST_WRAPPER_CLASS == null) {
-                throw new RuntimeException("");
-            }
-            this.httpRequest = null;
-            Constructor<? extends HttpServletRequestWrapper> ctor = Classes.getConstructor(HTTP_SERVLET_REQUEST_WRAPPER_CLASS, Object.class);
-            httpServletRequestWrapper = Classes.instantiate(ctor, httpRequest);
+            Assert.isTrue(Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN),
+                          "The " + HTTP_SERVLET_REQUEST_FQCN + " class must be in the runtime classpath.");
+
+            Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
+                                "The specified httpRequest argument must be an instance of " +
+            HttpRequest.class.getName() + " or " + HTTP_SERVLET_REQUEST_FQCN);
+
+            javax.servlet.http.HttpServletRequest httpServletRequest =
+                new javax.servlet.http.HttpServletRequestWrapper((javax.servlet.http.HttpServletRequest)httpRequest);
+
+            this.httpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpServletRequest);
         }
     }
 
     @Override
     public ApiAuthenticationResult execute() {
-        AuthenticationRequest request;
-
-        if (httpServletRequestWrapper != null) {
-            request = new ApiAuthenticationRequestFactory().createFrom(httpServletRequestWrapper);
-        } else {
-            request = new ApiAuthenticationRequestFactory().createFrom(httpRequest);
-        }
-
+        AuthenticationRequest request = FACTORY.createFrom(httpRequest);
         AuthenticationResult result = application.authenticateAccount(request);
         Assert.isInstanceOf(ApiAuthenticationResult.class, result);
         return (ApiAuthenticationResult) result;
