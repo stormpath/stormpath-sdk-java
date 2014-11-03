@@ -31,6 +31,7 @@ public abstract class JwtConstants {
 
     public static final String EXPIRE_PARAM_NAME = "exp";
 
+    public static final String STATUS_PARAM_NAME = "status";
 
     private JwtConstants() {
     }

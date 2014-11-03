@@ -15,10 +15,10 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -35,7 +35,7 @@ public class JacksonMapMarshaller implements MapMarshaller {
 
     public JacksonMapMarshaller() {
         this.objectMapper = new ObjectMapper();
-        this.objectMapper.configure(DeserializationConfig.Feature.USE_BIG_DECIMAL_FOR_FLOATS, true);
+        this.objectMapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
     }
 
     public ObjectMapper getObjectMapper() {
@@ -47,13 +47,11 @@ public class JacksonMapMarshaller implements MapMarshaller {
     }
 
     public boolean isPrettyPrint() {
-        return this.objectMapper.getSerializationConfig().isEnabled(SerializationConfig.Feature.INDENT_OUTPUT);
+        return this.objectMapper.getSerializationConfig().isEnabled(SerializationFeature.INDENT_OUTPUT);
     }
 
     public void setPrettyPrint(boolean prettyPrint) {
-        this.objectMapper.setSerializationConfig(
-                this.objectMapper.getSerializationConfig().with(SerializationConfig.Feature.INDENT_OUTPUT)
-        );
+        this.objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
     }
 
     @Override

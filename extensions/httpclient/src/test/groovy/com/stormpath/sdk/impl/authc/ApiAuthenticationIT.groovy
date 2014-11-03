@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.authc
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.api.ApiAuthenticationResult
@@ -32,7 +33,6 @@ import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.oauth.*
-import org.codehaus.jackson.map.ObjectMapper
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 

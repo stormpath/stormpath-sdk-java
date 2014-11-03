@@ -117,9 +117,14 @@ class DefaultCacheManagerTest {
 
         def names = ['foo', 'bar']
 
-        for(int i = 0; i < names.size(); i++) {
-            def cache = json.caches.get(i)
-            assertTrue names.contains(cache.name)
+        def caches = [:]
+        for( def cache : json.caches) {
+            caches.put(cache.name, cache)
+        }
+
+        for(def name : names) {
+            def cache = caches.get(name)
+            assertEquals cache.name, name
             assertEquals cache.size, 0
             assertEquals cache.accessCount, 0
             assertEquals cache.hitCount, 0
