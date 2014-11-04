@@ -54,7 +54,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
             HttpRequest.class.getName() + " or " + HTTP_SERVLET_REQUEST_FQCN);
 
             javax.servlet.http.HttpServletRequest httpServletRequest =
-                new javax.servlet.http.HttpServletRequestWrapper((javax.servlet.http.HttpServletRequest)httpRequest);
+                (javax.servlet.http.HttpServletRequest)httpRequest;
 
             this.httpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpServletRequest);
         }

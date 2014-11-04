@@ -18,8 +18,6 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.UriCleaner;
-import com.stormpath.sdk.servlet.util.AntPathMatcher;
-import com.stormpath.sdk.servlet.util.PatternMatcher;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.ServletException;
@@ -30,7 +28,6 @@ import java.net.URLEncoder;
 public abstract class AccessControlFilter extends HttpFilter {
 
     protected String loginUrl;
-    private static final PatternMatcher PATTERN_MATCHER = new AntPathMatcher();
 
     @Override
     protected void onInit() throws ServletException {

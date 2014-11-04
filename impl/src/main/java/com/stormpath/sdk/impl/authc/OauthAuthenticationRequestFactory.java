@@ -60,8 +60,7 @@ public class OauthAuthenticationRequestFactory {
 
         Class<AuthenticationRequest> clazz = Classes.forName(BASIC_OAUTH_REQUEST_FQCN);
 
-        Constructor<AuthenticationRequest> constructor =
-            Classes.getConstructor(clazz, HttpRequest.class, RequestLocation[].class);
+        Constructor<AuthenticationRequest> constructor = Classes.getConstructor(clazz, HttpRequest.class);
 
         return instantiate(constructor, request);
     }

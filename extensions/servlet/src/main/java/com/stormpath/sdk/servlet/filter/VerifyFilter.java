@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.client.ClientResolver;
@@ -86,13 +85,7 @@ public class VerifyFilter extends HttpFilter {
 
         Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
 
-        Account account = client.verifyAccountEmail(sptoken);
-
-        /*
-        //TODO: session use should be configurable.  USE JWT when not.
-        //put the account in the session for easy retrieval later:
-        request.getSession().setAttribute("account", account);
-        */
+        client.verifyAccountEmail(sptoken);
 
         String next = Strings.clean(request.getParameter("next"));
 
