@@ -122,6 +122,6 @@ public class DefaultServletContextConfigFactory implements ServletContextConfigF
             props.putAll(srcProps);
         }
 
-        return new DefaultConfig(props);
+        return new DefaultConfig(servletContext, props);
     }
 }

@@ -16,9 +16,9 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.DefaultConfig;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,8 +30,6 @@ import java.util.List;
 
 //not a configurable filter - always executes immediately after the StormpathFilter but before other user-configured filters.
 public class AccountAccessorFilter extends HttpFilter {
-
-    private static final String ACCOUNT_ACCESSOR_CONFIG_PROP_NAME = "stormpath.web.account.discovery";
 
     private static final Accessor<Account> COOKIE_ACCOUNT_ACCESSOR = new CookieAccountAccessor();
     private static final Accessor<Account> HEADER_ACCOUNT_ACCESSOR = new AuthorizationHeaderAccountAccessor();
@@ -45,11 +43,9 @@ public class AccountAccessorFilter extends HttpFilter {
 
         Config config = getConfig();
 
-        String value = config.get(ACCOUNT_ACCESSOR_CONFIG_PROP_NAME);
+        List<String> accessorNames = config.getAccountDiscovery();
 
-        String[] accessorNames = Strings.commaDelimitedListToStringArray(value);
-
-        List<Accessor<Account>> accessors = new ArrayList<Accessor<Account>>(accessorNames.length);
+        List<Accessor<Account>> accessors = new ArrayList<Accessor<Account>>(accessorNames.size());
 
         for(String name : accessorNames) {
 
@@ -62,7 +58,7 @@ public class AccountAccessorFilter extends HttpFilter {
             } else if ("session".equalsIgnoreCase(name)) {
                 accessor = SESSION_ACCOUNT_ACCESSOR;
             } else {
-                String msg = "Unrecognized " + ACCOUNT_ACCESSOR_CONFIG_PROP_NAME + " config value: " + name;
+                String msg = "Unrecognized " + DefaultConfig.ACCOUNT_DISCOVERY + " config value: " + name;
                 throw new IllegalArgumentException(msg);
             }
 

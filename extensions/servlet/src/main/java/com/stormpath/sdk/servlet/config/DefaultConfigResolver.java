@@ -13,7 +13,7 @@ public class DefaultConfigResolver implements ConfigResolver {
     public Config getConfig(ServletContext servletContext) {
         Object value = servletContext.getAttribute(ATTR_NAME);
         if (value == null) {
-            return new DefaultConfig(new LinkedHashMap<String, String>());
+            return new DefaultConfig(servletContext, new LinkedHashMap<String, String>());
         }
 
         Assert.isInstanceOf(Config.class, value, "ServletContext attribute '" + ATTR_NAME + "' must be a " +

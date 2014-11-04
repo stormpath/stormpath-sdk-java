@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import java.util.List;
 import java.util.Map;
 
 public interface Config extends Map<String, String> {
@@ -42,6 +43,11 @@ public interface Config extends Map<String, String> {
 
     String getUnauthorizedUrl();
 
+    List<String> getAccountDiscovery();
+
+    List<String> getAccountStore();
+
     CookieConfig getAccountCookieConfig();
 
+    int getAccountCookieJwtTtl();
 }

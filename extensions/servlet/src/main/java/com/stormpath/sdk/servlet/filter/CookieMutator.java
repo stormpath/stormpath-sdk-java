@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 
 import javax.servlet.http.Cookie;
@@ -34,8 +35,10 @@ public class CookieMutator implements Mutator<String> {
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, String value) {
 
-        if (value == null) {
-            value = ""; //null means 'delete the cookie', which is done by setting an empty value
+        boolean delete = !Strings.hasText(value); //null means 'delete the cookie', which is done by setting an empty value
+
+        if (delete) {
+            value = "";
         }
 
         CookieConfig cfg = this.config;
@@ -53,14 +56,14 @@ public class CookieMutator implements Mutator<String> {
         }
 
         val = cfg.getPath();
-        if (val == null) {
+        if (val == null || delete) {
             val = "/";
         }
         cookie.setPath(val);
         cookie.setSecure(cfg.isSecure());
         cookie.setHttpOnly(cfg.isHttpOnly());
 
-        int maxAge = Math.max(-1, cfg.getMaxAge());
+        int maxAge = delete ? 0 : Math.max(-1, cfg.getMaxAge());
         cookie.setMaxAge(maxAge);
 
         response.addCookie(cookie);

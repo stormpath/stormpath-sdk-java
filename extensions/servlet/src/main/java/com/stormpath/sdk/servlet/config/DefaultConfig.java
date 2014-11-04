@@ -18,8 +18,11 @@ package com.stormpath.sdk.servlet.config;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
+import javax.servlet.ServletContext;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +38,9 @@ public class DefaultConfig implements Config {
     public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUrl";
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
 
+    public static final String ACCOUNT_DISCOVERY = "stormpath.web.account.discovery";
+    public static final String ACCOUNT_STORE = "stormpath.web.account.store";
+
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
@@ -42,118 +48,109 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_PATH = "stormpath.web.account.cookie.path";
     public static final String ACCOUNT_COOKIE_SECURE = "stormpath.web.account.cookie.secure";
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
+    public static final String ACCOUNT_COOKIE_JWT_TTL = "stormpath.web.account.cookie.jwt.ttl";
 
+    private final ConfigReader CFG;
     private final Map<String, String> props;
 
+    private final List<String> ACCOUNT_DISCOVERY_LOCATIONS;
+    private final List<String> ACCOUNT_STORE_LOCATIONS;
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
+    private final int _ACCOUNT_COOKIE_JWT_TTL;
 
-    public DefaultConfig(Map<String, String> configProps) {
+
+    public DefaultConfig(final ServletContext servletContext, Map<String, String> configProps) {
+        Assert.notNull(servletContext, "servletContext argument cannot be null.");
         Assert.notNull(configProps, "Properties argument cannot be null.");
         this.props = Collections.unmodifiableMap(configProps);
+        this.CFG = new ExpressionConfigReader(servletContext, this.props);
 
-        final int maxAge;
-        String val = props.get(ACCOUNT_COOKIE_MAX_AGE);
+        this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
+
+        String val = CFG.getString(ACCOUNT_DISCOVERY);
+        //String val = props.get(ACCOUNT_DISCOVERY);
         if (Strings.hasText(val)) {
-            try {
-                int i = Integer.parseInt(val);
-                maxAge = Math.max(-1, i);
-            } catch (NumberFormatException e) {
-                String msg = "Configured " + ACCOUNT_COOKIE_MAX_AGE + " value must be an integer.";
-                throw new IllegalArgumentException(msg, e);
-            }
+            String[] locs = Strings.split(val);
+            ACCOUNT_DISCOVERY_LOCATIONS = Arrays.asList(locs);
         } else {
-            maxAge = Integer.MIN_VALUE;
+            ACCOUNT_DISCOVERY_LOCATIONS = Collections.emptyList();
         }
 
-        final boolean httpOnly = !"false".equalsIgnoreCase(props.get(ACCOUNT_COOKIE_HTTP_ONLY));
-        final boolean secure = !"false".equalsIgnoreCase(props.get(ACCOUNT_COOKIE_SECURE));
+        val = CFG.getString(ACCOUNT_STORE);
+        //val = props.get(ACCOUNT_STORE);
+        if (Strings.hasText(val)) {
+            String[] locs = Strings.split(val);
+            ACCOUNT_STORE_LOCATIONS = Arrays.asList(locs);
+        } else {
+            ACCOUNT_STORE_LOCATIONS = Collections.emptyList();
+        }
 
-        this.ACCOUNT_COOKIE_CONFIG = new CookieConfig() {
-            @Override
-            public String getName() {
-                return props.get(ACCOUNT_COOKIE_NAME);
-            }
-
-            @Override
-            public String getComment() {
-                return props.get(ACCOUNT_COOKIE_COMMENT);
-            }
-
-            @Override
-            public String getDomain() {
-                return props.get(ACCOUNT_COOKIE_DOMAIN);
-            }
-
-            @Override
-            public int getMaxAge() {
-                return maxAge;
-            }
-
-            @Override
-            public String getPath() {
-                return props.get(ACCOUNT_COOKIE_PATH);
-            }
-
-            @Override
-            public boolean isSecure() {
-                return secure;
-            }
-
-            @Override
-            public boolean isHttpOnly() {
-                return httpOnly;
-            }
-        };
+        this._ACCOUNT_COOKIE_JWT_TTL = CFG.getInt(ACCOUNT_COOKIE_JWT_TTL);
     }
 
     @Override
     public String getLoginUrl() {
-        return props.get(LOGIN_URL);
+        return CFG.getString(LOGIN_URL);
     }
 
     @Override
     public String getLoginNextUrl() {
-        return props.get(LOGIN_NEXT_URL);
+        return CFG.getString(LOGIN_NEXT_URL);
     }
 
     @Override
     public String getLogoutUrl() {
-        return props.get(LOGOUT_URL);
+        return CFG.getString(LOGOUT_URL);
     }
 
     @Override
     public String getLogoutNextUrl() {
-        return props.get(LOGOUT_NEXT_URL);
+        return CFG.getString(LOGOUT_NEXT_URL);
     }
 
     @Override
     public String getRegisterUrl() {
-        return props.get(REGISTER_URL);
+        return CFG.getString(REGISTER_URL);
     }
 
     @Override
     public String getRegisterNextUrl() {
-        return props.get(REGISTER_NEXT_URL);
+        return CFG.getString(REGISTER_NEXT_URL);
     }
 
     @Override
     public String getVerifyUrl() {
-        return props.get(VERIFY_URL);
+        return CFG.getString(VERIFY_URL);
     }
 
     @Override
     public String getVerifyNextUrl() {
-        return props.get(VERIFY_NEXT_URL);
+        return CFG.getString(VERIFY_NEXT_URL);
     }
 
     @Override
     public String getUnauthorizedUrl() {
-        return props.get(UNAUTHORIZED_URL);
+        return CFG.getString(UNAUTHORIZED_URL);
+    }
+
+    @Override
+    public List<String> getAccountDiscovery() {
+        return ACCOUNT_DISCOVERY_LOCATIONS;
+    }
+
+    @Override
+    public List<String> getAccountStore() {
+        return ACCOUNT_STORE_LOCATIONS;
     }
 
     @Override
     public CookieConfig getAccountCookieConfig() {
         return this.ACCOUNT_COOKIE_CONFIG;
+    }
+
+    @Override
+    public int getAccountCookieJwtTtl() {
+        return _ACCOUNT_COOKIE_JWT_TTL;
     }
 
     @Override

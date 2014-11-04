@@ -52,7 +52,8 @@ public class AccountToJwtConverter implements Function<Account,String> {
                    .signWith(SignatureAlgorithm.HS256, secret);
 
         if (this.ttlSeconds >= 0) {
-            long expMillis = nowMillis + ttlSeconds;
+            long ttlMillis = ttlSeconds * 1000; //JWT requires times to be in seconds (not millis) since epoch
+            long expMillis = nowMillis + ttlMillis;
             Date exp = new Date(expMillis);
             builder.setExpiration(exp);
         }

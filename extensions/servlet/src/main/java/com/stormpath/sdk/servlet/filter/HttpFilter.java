@@ -218,7 +218,7 @@ public abstract class HttpFilter implements Filter {
             try {
                 if (isEnabled() && isEnabled(request, response)) {
                     if (isContinue(request, response)) {
-                        log.debug("Filter '{}' is enabled and will filter the request.", this.name);
+                        log.trace("Filter '{}' is enabled and will filter the request.", this.name);
                         filter(request, response, chain);
                     } else {
                         //else the filter chain should not continue because isContinue rendered the response directly

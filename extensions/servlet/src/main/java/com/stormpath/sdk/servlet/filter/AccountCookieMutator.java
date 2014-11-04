@@ -20,11 +20,12 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 
-import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AccountCookieMutator extends AccountCookieHandler implements Mutator<AuthenticationResult> {
+
+    public static final Mutator<AuthenticationResult> INSTANCE = new AccountCookieMutator();
 
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
@@ -39,14 +40,10 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
             Client client = getClient(request);
             String secret = ClientApiKeyResolver.INSTANCE.apply(client).getSecret();
 
-            SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
+            int jwtTtl = getConfig(request).getAccountCookieJwtTtl();
 
-            int maxAge = cfg.getMaxAge();
-            if (maxAge == Integer.MIN_VALUE) { //fall back to session config if any:
-                maxAge = sessionCookieConfig.getMaxAge();
-            }
+            AccountToJwtConverter converter = new AccountToJwtConverter(secret, jwtTtl);
 
-            AccountToJwtConverter converter = new AccountToJwtConverter(secret, maxAge);
             jwt = converter.apply(value.getAccount());
         }
 

@@ -20,6 +20,14 @@
         <servlet-name>DashboardController</servlet-name>
         <url-pattern>/dashboard</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>AjaxLoginController</servlet-name>
+        <servlet-class>com.stormpath.sdk.examples.servlet.AjaxLoginController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AjaxLoginController</servlet-name>
+        <url-pattern>/ajaxLogin</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/assets/*</url-pattern>

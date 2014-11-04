@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.client.ClientResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 
@@ -24,12 +25,16 @@ import javax.servlet.http.HttpServletRequest;
 
 public abstract class AccountCookieHandler {
 
+    protected Config getConfig(HttpServletRequest request) {
+        return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
+    }
+
     protected Client getClient(HttpServletRequest request) {
         return ClientResolver.INSTANCE.getClient(request.getServletContext());
     }
 
     protected CookieConfig getAccountCookieConfig(HttpServletRequest request) {
-        return ConfigResolver.INSTANCE.getConfig(request.getServletContext()).getAccountCookieConfig();
+        return getConfig(request).getAccountCookieConfig();
     }
 
 }

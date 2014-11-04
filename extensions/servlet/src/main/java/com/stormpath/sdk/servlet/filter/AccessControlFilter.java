@@ -17,13 +17,26 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.UriCleaner;
+import com.stormpath.sdk.servlet.util.AntPathMatcher;
+import com.stormpath.sdk.servlet.util.PatternMatcher;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public abstract class AccessControlFilter extends HttpFilter {
+
+    protected String loginUrl;
+    private static final PatternMatcher PATTERN_MATCHER = new AntPathMatcher();
+
+    @Override
+    protected void onInit() throws ServletException {
+        super.onInit();
+        this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginUrl());
+    }
 
     /**
      * Returns <code>true</code> if the request is allowed to proceed through the filter normally, or
@@ -60,6 +73,11 @@ public abstract class AccessControlFilter extends HttpFilter {
     @Override
     protected boolean isContinue(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return isAccessAllowed(request, response) || onAccessDenied(request, response);
+    }
+
+    protected boolean isLoginRequest(HttpServletRequest request) {
+        String contextRelativeUri = ServletUtils.getContextRelativeUri(request);
+        return loginUrl.equals(contextRelativeUri);
     }
 
     protected boolean redirectToLogin(HttpServletRequest request, HttpServletResponse response, String status) throws Exception {

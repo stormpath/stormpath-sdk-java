@@ -29,9 +29,4 @@
         <path>/META-INF/tags/page.tag</path>
     </tag-file>
 
-    <tag-file>
-        <name>afterBodyJs</name>
-        <path>/META-INF/tags/afterBodyJs.tag</path>
-    </tag-file>
-
 </taglib>

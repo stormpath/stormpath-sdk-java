@@ -22,12 +22,20 @@ public class AuthenticationFilter extends AccessControlFilter {
 
     @Override
     protected boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return request.getRemoteUser() != null; //non null if authenticated
+        return request.getRemoteUser() != null //non-null if authenticated
+               || isLoginRequest(request); //allow them to visit the login URL otherwise they might not be able to login :)
         //TODO: what about remember me? remoteUser might be populated, but rememberMe != authenticated
     }
 
     @Override
     protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return redirectToLogin(request, response, "authcReqd");
+        UserAgent ua = new DefaultUserAgent(request);
+        if (ua.isRestClient()) {
+            //return 401
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        } else {
+            return redirectToLogin(request, response, "authcReqd");
+        }
     }
 }

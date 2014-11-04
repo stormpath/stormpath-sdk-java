@@ -41,6 +41,7 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
 
     @Override
     protected void onInit() throws ServletException {
+        super.onInit();
         String pathConfig = Strings.clean(getPathConfig());
         if (pathConfig != null) {
             try {
@@ -103,14 +104,26 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
 
     @Override
     protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (request.getRemoteUser() == null) {
-            //not authenticated, redirect to login:
-            return redirectToLogin(request, response, "unauthorized");
+
+        UserAgent ua = new DefaultUserAgent(request);
+
+        if (request.getRemoteUser() == null) { //not authenticated - can't determine access control rights:
+            if (ua.isRestClient()) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return false;
+            } else {
+                return redirectToLogin(request, response, "unauthorized");
+            }
         }
 
         //authenticated but still not allowed to proceed:
-        String url = getUnauthorizedUrl();
-        ServletUtils.issueRedirect(request, response, url, null, true, true);
+        if (ua.isRestClient()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            String url = getUnauthorizedUrl();
+            ServletUtils.issueRedirect(request, response, url, null, true, true);
+        }
+
         return false;
     }
 }
