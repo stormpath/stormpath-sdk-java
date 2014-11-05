@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.client.ClientResolver;

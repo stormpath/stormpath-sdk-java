@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.CookieConfig;
 
 import javax.servlet.ServletContext;
 import java.util.Arrays;

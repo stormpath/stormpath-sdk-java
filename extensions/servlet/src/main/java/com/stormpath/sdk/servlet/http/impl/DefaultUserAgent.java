@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.http.impl;
 
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.http.UserAgent;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;

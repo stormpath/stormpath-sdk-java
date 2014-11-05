@@ -1,7 +1,9 @@
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 
 import javax.servlet.ServletContext;
 import java.util.LinkedHashMap;

@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import org.slf4j.Logger;
@@ -57,7 +59,6 @@ public abstract class HttpFilter implements Filter {
 
     private FilterConfig   filterConfig;
     private ServletContext servletContext;
-    private Config         config;
     private String         name;
 
     /**
@@ -105,16 +106,16 @@ public abstract class HttpFilter implements Filter {
         return servletContext;
     }
 
-    public Config getConfig() {
-        return this.config;
-    }
-
     public String getName() {
         return name;
     }
 
-    protected Config getConfig(ServletContext sc) {
-        return ConfigResolver.INSTANCE.getConfig(sc);
+    public Config getConfig() {
+        return ConfigResolver.INSTANCE.getConfig(this.servletContext);
+    }
+
+    protected Client getClient() {
+        return ClientResolver.INSTANCE.getClient(this.servletContext);
     }
 
     @Override
@@ -122,7 +123,6 @@ public abstract class HttpFilter implements Filter {
         this.filterConfig = filterConfig;
         this.servletContext = filterConfig.getServletContext();
         this.name = filterConfig.getFilterName();
-        this.config = getConfig(servletContext);
         onInit();
     }
 

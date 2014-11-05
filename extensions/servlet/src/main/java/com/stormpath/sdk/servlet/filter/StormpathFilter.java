@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.UriCleaner;
+import com.stormpath.sdk.servlet.filter.account.AccountAccessorFilter;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
 import javax.servlet.Filter;
@@ -56,7 +57,7 @@ public class StormpathFilter extends HttpFilter {
         Config config = getConfig();
 
         //ensure the always-on AccountAccessorFilter is available:
-        Filter accountFilter = new DefaultFilterBuilder().setServletContext(getServletContext())
+        Filter accountFilter = Filters.builder().setServletContext(getServletContext())
             .setName(Strings.uncapitalize(AccountAccessorFilter.class.getSimpleName()))
             .setFilterClass(AccountAccessorFilter.class)
             .build();

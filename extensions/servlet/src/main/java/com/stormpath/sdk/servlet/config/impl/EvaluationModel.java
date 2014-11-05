@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.lang.Assert;
 

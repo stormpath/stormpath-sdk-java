@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.http.Accessor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

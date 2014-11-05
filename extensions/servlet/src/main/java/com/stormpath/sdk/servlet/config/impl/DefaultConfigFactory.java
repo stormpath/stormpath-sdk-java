@@ -1,4 +1,4 @@
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.impl.config.DefaultEnvVarNameConverter;
 import com.stormpath.sdk.impl.config.EnvVarNameConverter;
@@ -13,6 +13,8 @@ import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
 import com.stormpath.sdk.impl.io.StringResource;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigFactory;
 import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
 
 import javax.servlet.ServletContext;
@@ -22,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class DefaultServletContextConfigFactory implements ServletContextConfigFactory {
+public class DefaultConfigFactory implements ConfigFactory {
 
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";

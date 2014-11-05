@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public interface ConfigReader {
 
-public interface Accessor<T> {
+    String getString(String name);
 
-    T get(HttpServletRequest request, HttpServletResponse response);
+    int getInt(String name);
+
+    boolean getBoolean(String name);
 
 }

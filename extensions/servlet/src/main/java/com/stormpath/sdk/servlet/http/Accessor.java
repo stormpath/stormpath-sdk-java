@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.http;
 
-import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public interface ConfigValueReader {
+public interface Accessor<T> {
 
-    public static final ConfigValueReader DEFAULT = new DefaultConfigValueReader();
+    T get(HttpServletRequest request, HttpServletResponse response);
 
-    String readValue(ServletContext sc, String name, String defaultValue);
 }

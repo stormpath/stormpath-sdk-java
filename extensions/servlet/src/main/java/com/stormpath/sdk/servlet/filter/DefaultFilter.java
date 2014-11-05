@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.servlet.filter.account.AccountAuthorizationFilter;
+
 import javax.servlet.Filter;
 
 /**

@@ -13,22 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.config.impl;
 
-import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.UriCleaner;
 
-import javax.servlet.ServletContext;
-
-public class DefaultConfigValueReader implements ConfigValueReader {
-
-    protected Config getConfig(ServletContext sc) {
-        return ConfigResolver.INSTANCE.getConfig(sc);
-    }
+public class DefaultUriCleaner implements UriCleaner {
 
     @Override
-    public String readValue(ServletContext sc, String name, String defaultValue) {
-        Config config = getConfig(sc);
-        String value = config.get(name);
-        return Strings.hasText(value) ? value : defaultValue;
+    public String clean(String uri) {
+
+        //remove any query:
+        int i = uri.indexOf('?');
+        if (i != -1) {
+            uri = uri.substring(0, i);
+        }
+
+        //remove any uri params:
+        i = uri.indexOf(';');
+        if (i != -1) {
+            uri = uri.substring(0, i);
+        }
+
+        //remove any uri fragment:
+
+        i = uri.indexOf('#');
+        if (i != -1) {
+            uri = uri.substring(0, i);
+        }
+
+        return uri;
     }
 }

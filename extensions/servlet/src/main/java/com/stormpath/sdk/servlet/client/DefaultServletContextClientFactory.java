@@ -30,8 +30,8 @@ import com.stormpath.sdk.servlet.cache.CacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.DefaultCacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.ServletContextAttributeCacheManager;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.DefaultServletContextConfigFactory;
-import com.stormpath.sdk.servlet.config.ServletContextConfigFactory;
+import com.stormpath.sdk.servlet.config.ConfigFactory;
+import com.stormpath.sdk.servlet.config.impl.DefaultConfigFactory;
 
 import javax.servlet.ServletContext;
 import java.util.Map;
@@ -53,16 +53,15 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
     //at startup
     public static final String STORMPATH_CONFIG = "stormpath.config.properties";
 
-    private final ServletContextConfigFactory servletContextConfigFactory =
-        new DefaultServletContextConfigFactory();
+    private final ConfigFactory configFactory =
+        new DefaultConfigFactory();
 
     private final CacheManagerFactory cacheManagerFactory = new DefaultCacheManagerFactory();
 
     @Override
-
     public Client createClient(ServletContext servletContext) {
 
-        Config config = servletContextConfigFactory.getConfig(servletContext);
+        Config config = configFactory.getConfig(servletContext);
 
         ClientBuilder builder = Clients.builder();
 

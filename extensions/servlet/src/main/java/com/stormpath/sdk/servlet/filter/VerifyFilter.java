@@ -17,7 +17,6 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,7 @@ public class VerifyFilter extends HttpFilter {
     protected void verify(HttpServletRequest request, HttpServletResponse response, String sptoken)
         throws ServletException, IOException {
 
-        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+        Client client = getClient();
 
         client.verifyAccountEmail(sptoken);
 

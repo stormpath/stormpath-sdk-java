@@ -118,7 +118,7 @@ public class ClientLoader {
      */
     public static final String CLIENT_FACTORY_CLASS_PARAM = "stormpathServletContextClientFactoryClass";
 
-    public static final String CLIENT_ATTRIBUTE_KEY = ClientLoader.class.getName() + ".CLIENT_ATTRIBUTE_KEY";
+    public static final String CLIENT_ATTRIBUTE_KEY = Client.class.getName();
 
     private static final Logger log = LoggerFactory.getLogger(ClientLoader.class);
 

@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.filter.ClientApiKeyAccessor;
+import com.stormpath.sdk.servlet.http.CookieMutator;
+import com.stormpath.sdk.servlet.http.Mutator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +41,7 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
             jwt = ((AccessTokenResult) value).getTokenResponse().getAccessToken();
         } else {
             Client client = getClient(request);
-            String secret = ClientApiKeyResolver.INSTANCE.apply(client).getSecret();
+            String secret = ClientApiKeyAccessor.INSTANCE.getApiKey(client).getSecret();
 
             int jwtTtl = getConfig(request).getAccountCookieJwtTtl();
 

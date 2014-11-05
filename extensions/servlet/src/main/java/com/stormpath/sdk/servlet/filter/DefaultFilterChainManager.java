@@ -56,8 +56,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
 
         Class<? extends Filter> clazz = DefaultFilter.forName(name).getFilterClass();
 
-        FilterBuilder builder =
-            new DefaultFilterBuilder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
+        FilterBuilder builder = Filters.builder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
 
         if (Strings.hasText(config)) {
             builder.setPathConfig(config);

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.http.Accessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

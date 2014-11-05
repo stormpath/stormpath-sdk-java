@@ -33,8 +33,9 @@ import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.client.ClientResolver;
-import com.stormpath.sdk.servlet.config.DefaultConfig;
+import com.stormpath.sdk.servlet.config.impl.DefaultConfig;
+import com.stormpath.sdk.servlet.filter.account.AccountCookieMutator;
+import com.stormpath.sdk.servlet.filter.account.AccountToJwtConverter;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
@@ -162,10 +163,11 @@ public class LoginFilter extends HttpFilter {
 
         final Account account = result.getAccount();
 
-        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+
+        Client client = getClient();
         Application application = ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
 
-        ApiKey apiKey = ClientApiKeyResolver.INSTANCE.apply(client);
+        ApiKey apiKey = ClientApiKeyAccessor.INSTANCE.getApiKey(client);
         String secret = apiKey.getSecret();
 
         int ttl = getConfig().getAccountCookieJwtTtl();

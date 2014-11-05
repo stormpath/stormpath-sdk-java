@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
+import com.stormpath.sdk.servlet.filter.AccessControlFilter;
+import com.stormpath.sdk.servlet.http.UserAgent;
+import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelCompilerMode;

@@ -15,11 +15,20 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import org.springframework.util.Assert;
 
-public interface Mutator<T> {
+public class ClientApiKeyAccessor {
 
-    void set(HttpServletRequest request, HttpServletResponse response, T value);
+    public static final ClientApiKeyAccessor INSTANCE = new ClientApiKeyAccessor();
 
+    public ApiKey getApiKey(Client client) {
+        DataStore ds = client.getDataStore();
+        Assert.isInstanceOf(InternalDataStore.class, ds);
+        InternalDataStore ids = (InternalDataStore) ds;
+        return ids.getApiKey();
+    }
 }

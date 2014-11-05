@@ -26,10 +26,14 @@ import java.io.IOException;
 
 public class WelcomeController extends HttpServlet {
 
+    protected Application getApplication(HttpServletRequest request) {
+        return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        Application app = ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
+        Application app = getApplication(req);
 
         req.setAttribute("app", app);
 

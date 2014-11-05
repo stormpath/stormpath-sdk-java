@@ -18,11 +18,11 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -189,8 +188,9 @@ public class RegisterFilter extends HttpFilter {
         request.setAttribute("form", form);
     }
 
-    protected Account newAccount(ServletContext sc) {
-        return ClientResolver.INSTANCE.getClient(sc).instantiate(Account.class);
+    protected Account newAccount(HttpServletRequest request) {
+        Client client = getClient();
+        return client.instantiate(Account.class);
     }
 
     protected String getValue(Form form, String fieldName) {
@@ -229,7 +229,7 @@ public class RegisterFilter extends HttpFilter {
         validate(form);
 
         //Create a new Account instance that will represent the submitted user information:
-        Account account = newAccount(req.getServletContext());
+        Account account = newAccount(req);
 
         String value = getValue(form, "email");
         if (value != null) {

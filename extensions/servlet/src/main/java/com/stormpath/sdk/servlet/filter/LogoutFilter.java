@@ -17,6 +17,8 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.http.CookieMutator;
+import com.stormpath.sdk.servlet.http.Mutator;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.FilterChain;

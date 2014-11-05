@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.stormpath.sdk.servlet.config.impl.DefaultUriCleaner;
+
 public interface UriCleaner {
 
     public static final UriCleaner INSTANCE = new DefaultUriCleaner();

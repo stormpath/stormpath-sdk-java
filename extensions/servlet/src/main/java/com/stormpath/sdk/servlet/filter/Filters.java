@@ -15,19 +15,16 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-/**
- * Extraordinarily simple representation of an HTTP User agent that supplies only the features needed by the
- * default filter implementations.
- */
-public interface UserAgent {
+public final class Filters {
 
     /**
-     * Returns true if the user agent is a REST client, false otherwise.  A REST client in this context is defined as
-     * an HTTP User Agent that prefers JSON content over HTML content.  This is determined by looking at the
-     * request {@code Accept} header and seeing if {@code application/json} appears before
-     * {@code application/html}.
+     * Returns a new {@link com.stormpath.sdk.servlet.filter.FilterBuilder FilterBuilder} instance.
      *
-     * @return true if the user agent is a REST client, false otherwise.
+     * @return a new {@link com.stormpath.sdk.servlet.filter.FilterBuilder FilterBuilder} instance.
      */
-    boolean isRestClient();
+    public static FilterBuilder builder() {
+        return new DefaultFilterBuilder();
+    }
 }
+
+

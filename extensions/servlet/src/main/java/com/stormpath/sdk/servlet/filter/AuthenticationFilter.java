@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.servlet.http.UserAgent;
+import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

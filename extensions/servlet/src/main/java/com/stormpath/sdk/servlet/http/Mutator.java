@@ -13,32 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.http;
 
-public class DefaultUriCleaner implements UriCleaner {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-    @Override
-    public String clean(String uri) {
+public interface Mutator<T> {
 
-        //remove any query:
-        int i = uri.indexOf('?');
-        if (i != -1) {
-            uri = uri.substring(0, i);
-        }
+    void set(HttpServletRequest request, HttpServletResponse response, T value);
 
-        //remove any uri params:
-        i = uri.indexOf(';');
-        if (i != -1) {
-            uri = uri.substring(0, i);
-        }
-
-        //remove any uri fragment:
-
-        i = uri.indexOf('#');
-        if (i != -1) {
-            uri = uri.substring(0, i);
-        }
-
-        return uri;
-    }
 }

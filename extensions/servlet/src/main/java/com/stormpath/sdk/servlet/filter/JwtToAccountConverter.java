@@ -33,12 +33,13 @@ public class JwtToAccountConverter implements Function<String,Account> {
     @Override
     public Account apply(String s) {
 
-        String secret = ClientApiKeyResolver.INSTANCE.apply(client).getSecret();
+        String secret = ClientApiKeyAccessor.INSTANCE.getApiKey(client).getSecret();
 
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(s).getBody();
 
         String accountHref = claims.getSubject();
 
+        //will hit the cache:
         return this.client.getResource(accountHref, Account.class);
     }
 }

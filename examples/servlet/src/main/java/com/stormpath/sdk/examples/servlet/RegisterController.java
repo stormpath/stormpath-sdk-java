@@ -17,6 +17,7 @@ package com.stormpath.sdk.examples.servlet;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 
@@ -44,12 +45,21 @@ public class RegisterController extends HttpServlet {
         }
     }
 
+    protected Client getClient(HttpServletRequest request) {
+        return ClientResolver.INSTANCE.getClient(request.getServletContext());
+    }
+
+    protected Account newAccountInstance(HttpServletRequest request) {
+        Client client = getClient(request);
+        return client.instantiate(Account.class);
+    }
+
     protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
         //Create a new Account instance that will represent the submitted user information:
-        Account account = ClientResolver.INSTANCE.getClient(req.getServletContext()).instantiate(Account.class);
+        Account account = newAccountInstance(req);
         account.setEmail(email);
         account.setPassword(password);
 
