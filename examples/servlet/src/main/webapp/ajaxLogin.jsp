@@ -22,7 +22,7 @@
     <jsp:body>
         <div class="jumbotron" id="welcome">
 
-            <form id="ajaxLoginForm" method="post" action="${pageContext.request.contextPath}/login" role="form" class="login-form form-horizontal">
+            <form id="ajaxLoginForm" method="post" action="${pageContext.request.contextPath}/oauth/token" role="form" class="login-form form-horizontal">
 
                 <div form-group="true" class="form-group group-username">
                     <label class="<c:out value="col-sm-4"/>">Username</label>

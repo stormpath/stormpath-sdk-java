@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.filter.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.JwtToAccountConverter;
 import com.stormpath.sdk.servlet.http.Accessor;
 import com.stormpath.sdk.servlet.http.CookieAccessor;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
             Client client = getClient(request);
             JwtToAccountConverter converter = new JwtToAccountConverter(client);
 
-            return converter.apply(val);
+            return converter.convert(val);
 
         } catch (Exception e) {
             String msg = "Encountered invalid JWT in account cookie.  Ignoring and deleting the cookie for safety.";

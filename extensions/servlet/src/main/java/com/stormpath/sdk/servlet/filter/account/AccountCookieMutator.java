@@ -16,10 +16,9 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.CookieConfig;
-import com.stormpath.sdk.servlet.filter.ClientApiKeyAccessor;
 import com.stormpath.sdk.servlet.http.CookieMutator;
 import com.stormpath.sdk.servlet.http.Mutator;
 
@@ -30,26 +29,23 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
 
     public static final Mutator<AuthenticationResult> INSTANCE = new AccountCookieMutator();
 
+    protected AccountJwtFactory getAccountJwtFactory(HttpServletRequest request) {
+        String accountJwtFactoryClassName = getConfig(request).get("stormpath.web.account.jwt.factory");
+        return Classes.newInstance(accountJwtFactoryClassName);
+    }
+
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
 
         String jwt;
 
-        CookieConfig cfg = getAccountCookieConfig(request);
-
         if (value instanceof AccessTokenResult) {
             jwt = ((AccessTokenResult) value).getTokenResponse().getAccessToken();
         } else {
-            Client client = getClient(request);
-            String secret = ClientApiKeyAccessor.INSTANCE.getApiKey(client).getSecret();
-
-            int jwtTtl = getConfig(request).getAccountCookieJwtTtl();
-
-            AccountToJwtConverter converter = new AccountToJwtConverter(secret, jwtTtl);
-
-            jwt = converter.apply(value.getAccount());
+            jwt = getAccountJwtFactory(request).createAccountJwt(request, response, value.getAccount());
         }
 
+        CookieConfig cfg = getAccountCookieConfig(request);
         Mutator<String> mutator = new CookieMutator(cfg);
         mutator.set(request, response, jwt);
     }

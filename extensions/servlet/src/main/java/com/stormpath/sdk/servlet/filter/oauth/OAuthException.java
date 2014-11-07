@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.filter.oauth;
 
-public interface Function<T,R> {
+public class OAuthException extends RuntimeException {
 
-    R apply(T t);
-
+    public OAuthException(String s) {
+        super(s);
+    }
 }

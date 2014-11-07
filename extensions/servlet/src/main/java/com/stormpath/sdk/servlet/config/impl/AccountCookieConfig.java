@@ -39,12 +39,13 @@ public class AccountCookieConfig implements CookieConfig {
     public AccountCookieConfig(ConfigReader configReader) {
         Assert.notNull(configReader);
         this.name = configReader.getString(NAME);
+        Assert.hasText(this.name, NAME + " cannot be null or empty.");
         this.comment = configReader.getString(COMMENT);
         this.domain = configReader.getString(DOMAIN);
         this.path = configReader.getString(PATH);
         this.secure = configReader.getBoolean(SECURE);
         this.httpOnly = configReader.getBoolean(HTTP_ONLY);
-        this.maxAge = configReader.getInt(MAX_AGE);
+        this.maxAge = Math.max(-1, configReader.getInt(MAX_AGE));
     }
 
     @Override

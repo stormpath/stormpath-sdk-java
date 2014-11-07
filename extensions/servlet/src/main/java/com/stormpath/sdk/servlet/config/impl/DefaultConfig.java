@@ -39,9 +39,10 @@ public class DefaultConfig implements Config {
     public static final String VERIFY_URL = "stormpath.web.verify.url";
     public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUrl";
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
+    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
 
     public static final String ACCOUNT_DISCOVERY = "stormpath.web.account.discovery";
-    public static final String ACCOUNT_STORE = "stormpath.web.account.store";
+    public static final String ACCOUNT_STATE_STORE_LOCATIONS = "stormpath.web.account.state.store.locations";
 
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
@@ -50,7 +51,7 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_PATH = "stormpath.web.account.cookie.path";
     public static final String ACCOUNT_COOKIE_SECURE = "stormpath.web.account.cookie.secure";
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
-    public static final String ACCOUNT_COOKIE_JWT_TTL = "stormpath.web.account.cookie.jwt.ttl";
+    public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
 
     private final ConfigReader CFG;
     private final Map<String, String> props;
@@ -58,7 +59,7 @@ public class DefaultConfig implements Config {
     private final List<String> ACCOUNT_DISCOVERY_LOCATIONS;
     private final List<String> ACCOUNT_STORE_LOCATIONS;
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
-    private final int _ACCOUNT_COOKIE_JWT_TTL;
+    private final int _ACCOUNT_JWT_TTL;
 
 
     public DefaultConfig(final ServletContext servletContext, Map<String, String> configProps) {
@@ -78,8 +79,8 @@ public class DefaultConfig implements Config {
             ACCOUNT_DISCOVERY_LOCATIONS = Collections.emptyList();
         }
 
-        val = CFG.getString(ACCOUNT_STORE);
-        //val = props.get(ACCOUNT_STORE);
+        val = CFG.getString(ACCOUNT_STATE_STORE_LOCATIONS);
+        //val = props.get(ACCOUNT_STATE_STORE_LOCATIONS);
         if (Strings.hasText(val)) {
             String[] locs = Strings.split(val);
             ACCOUNT_STORE_LOCATIONS = Arrays.asList(locs);
@@ -87,7 +88,17 @@ public class DefaultConfig implements Config {
             ACCOUNT_STORE_LOCATIONS = Collections.emptyList();
         }
 
-        this._ACCOUNT_COOKIE_JWT_TTL = CFG.getInt(ACCOUNT_COOKIE_JWT_TTL);
+        int accountJwtTtl = CFG.getInt(ACCOUNT_JWT_TTL);
+        Assert.isTrue(accountJwtTtl > 0, ACCOUNT_JWT_TTL + " value must be a positive integer.");
+
+        int accountCookieMaxAge = this.ACCOUNT_COOKIE_CONFIG.getMaxAge();
+
+        if (accountCookieMaxAge > 0 && accountCookieMaxAge > accountJwtTtl) {
+            String msg = ACCOUNT_JWT_TTL + " must be greater than or equal to " + ACCOUNT_COOKIE_MAX_AGE;
+            throw new IllegalArgumentException(msg);
+        }
+
+        this._ACCOUNT_JWT_TTL = accountJwtTtl;
     }
 
     @Override
@@ -131,6 +142,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public String getAccessTokenUrl() {
+        return CFG.getString(ACCESS_TOKEN_URL);
+    }
+
+    @Override
     public String getUnauthorizedUrl() {
         return CFG.getString(UNAUTHORIZED_URL);
     }
@@ -141,7 +157,7 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public List<String> getAccountStore() {
+    public List<String> getAccountStoreLocations() {
         return ACCOUNT_STORE_LOCATIONS;
     }
 
@@ -151,8 +167,8 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public int getAccountCookieJwtTtl() {
-        return _ACCOUNT_COOKIE_JWT_TTL;
+    public int getAccountJwtTtl() {
+        return _ACCOUNT_JWT_TTL;
     }
 
     @Override

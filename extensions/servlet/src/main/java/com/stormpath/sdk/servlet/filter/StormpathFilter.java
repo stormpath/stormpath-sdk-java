@@ -35,6 +35,7 @@ import java.util.Map;
 public class StormpathFilter extends HttpFilter {
 
     public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.routes.";
+    public static final String FILTER_CONFIG_NAME_PREFIX = "stormpath.servlet.filter.";
 
     private FilterChainResolver filterChainResolver;
 
@@ -63,6 +64,9 @@ public class StormpathFilter extends HttpFilter {
             .build();
         this.immediateExecutionFilters = Arrays.asList(accountFilter);
 
+        //Too much copy-and-paste. YUCK.
+        //TODO: refactor this method to be more generic
+
         //Ensure handlers are registered:
         String loginUrl = config.getLoginUrl();
         String loginUrlPattern = cleanUri(loginUrl);
@@ -79,6 +83,10 @@ public class StormpathFilter extends HttpFilter {
         String verifyUrl = config.getVerifyUrl();
         String verifyUrlPattern = cleanUri(verifyUrl);
         boolean verifyChainSpecified = false;
+
+        String accessTokenUrl = config.getAccessTokenUrl();
+        String accessTokenUrlPattern = cleanUri(accessTokenUrl);
+        boolean accessTokenChainSpecified = false;
 
         String unauthorizedUrl = config.getUnauthorizedUrl();
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
@@ -97,7 +105,7 @@ public class StormpathFilter extends HttpFilter {
                 if (uriPattern.startsWith(loginUrlPattern)) {
                     loginChainSpecified = true;
 
-                    //did they specify the login filter as a handler in the chain?  If not, append it:
+                    //did they specify the filter as a handler in the chain?  If not, append it:
                     String filterName = DefaultFilter.login.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
@@ -106,7 +114,7 @@ public class StormpathFilter extends HttpFilter {
                 } else if (uriPattern.startsWith(logoutUrlPattern)) {
                     logoutChainSpecified = true;
 
-                    //did they specify the logout filter as a handler in the chain?  If not, append it:
+                    //did they specify the filter as a handler in the chain?  If not, append it:
                     String filterName = DefaultFilter.logout.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
@@ -115,7 +123,7 @@ public class StormpathFilter extends HttpFilter {
                 } else if (uriPattern.startsWith(registerUrlPattern)) {
                     registerChainSpecified = true;
 
-                    //did they specify the register filter as a handler in the chain?  If not, append it:
+                    //did they specify the filter as a handler in the chain?  If not, append it:
                     String filterName = DefaultFilter.register.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
@@ -123,11 +131,20 @@ public class StormpathFilter extends HttpFilter {
                 } else if (uriPattern.startsWith(verifyUrlPattern)) {
                     verifyChainSpecified = true;
 
-                    //did they specify the register filter as a handler in the chain?  If not, append it:
+                    //did they specify the filter as a handler in the chain?  If not, append it:
                     String filterName = DefaultFilter.verify.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+
+                } else if (uriPattern.startsWith(accessTokenUrlPattern)) {
+                    accessTokenChainSpecified = true;
+
+                    String filterName = DefaultFilter.accessToken.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+
                 } else if (uriPattern.startsWith(unauthorizedUrlPattern)) {
                     unauthorizedChainSpecified = true;
 
@@ -159,6 +176,9 @@ public class StormpathFilter extends HttpFilter {
         }
         if (!verifyChainSpecified) {
             fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
+        }
+        if (!accessTokenChainSpecified) {
+            fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
 
         //register all specified chains:

@@ -20,7 +20,6 @@ import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.impl.DefaultConfig;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.sdk.servlet.filter.SessionAccountAccessor;
 import com.stormpath.sdk.servlet.http.Accessor;
 
 import javax.servlet.FilterChain;

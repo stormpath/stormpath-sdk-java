@@ -16,7 +16,10 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +28,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,23 +44,77 @@ import java.util.Set;
  */
 public class DefaultFilterChainManager implements FilterChainManager {
 
+    public static final String FILTER_CONFIG_PREFIX = "stormpath.servlet.filter.";
+
     private static transient final Logger log = LoggerFactory.getLogger(DefaultFilterChainManager.class);
 
     private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
 
     private final ServletContext servletContext;
 
+    private final Map<String, Class<? extends Filter>> configuredFilterClasses;
+
     public DefaultFilterChainManager(ServletContext servletContext) throws ServletException {
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
         this.servletContext = servletContext;
         this.filterChains = new LinkedHashMap<String, List<Filter>>(); //iteration order is important
+
+        Map<String, Class<? extends Filter>> configuredFilterClasses =
+            new LinkedHashMap<String, Class<? extends Filter>>();
+
+        //add the defaults:
+        for (DefaultFilter defaultFilter : DefaultFilter.values()) {
+            configuredFilterClasses.put(defaultFilter.name(), defaultFilter.getFilterClass());
+        }
+
+        //pick up any user-configured filter classes and allow them to override the defaults:
+
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+
+        for (String key : config.keySet()) {
+
+            if (key.startsWith(FILTER_CONFIG_PREFIX)) {
+
+                String filterName = key.substring(FILTER_CONFIG_PREFIX.length());
+
+                //if there are any periods in the remainder, then the property is not a filter
+                //class name - it is a filter-specific config property, so just ignore it:
+                int i = filterName.indexOf('.');
+                if (i >= 0) {
+                    continue;
+                }
+
+                String className = config.get(key);
+
+                try {
+                    Class<? extends Filter> clazz = Classes.forName(className);
+                    Assert.isTrue(Filter.class.isAssignableFrom(clazz));
+                    configuredFilterClasses.put(filterName, clazz);
+                } catch (Exception e) {
+                    String msg = key + " value [" + className + "] is not a valid Filter class.";
+                    throw new IllegalArgumentException(msg, e);
+                }
+            }
+        }
+
+        this.configuredFilterClasses = Collections.unmodifiableMap(configuredFilterClasses);
+    }
+
+    protected Config getConfig() {
+        return ConfigResolver.INSTANCE.getConfig(this.servletContext);
     }
 
     protected Filter createFilter(String name, String config) throws ServletException {
 
-        Class<? extends Filter> clazz = DefaultFilter.forName(name).getFilterClass();
+        Class<? extends Filter> clazz = configuredFilterClasses.get(name);
 
-        FilterBuilder builder = Filters.builder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
+        if (clazz == null) {
+            String msg = "There is no configured filter class for filter name [" + name + "].";
+            throw new IllegalArgumentException(msg);
+        }
+
+        FilterBuilder builder =
+            Filters.builder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
 
         if (Strings.hasText(config)) {
             builder.setPathConfig(config);

@@ -33,6 +33,8 @@ public interface Config extends Map<String, String> {
 
     String getLogoutNextUrl();
 
+    String getAccessTokenUrl();
+
     String getRegisterUrl();
 
     String getRegisterNextUrl();
@@ -45,9 +47,9 @@ public interface Config extends Map<String, String> {
 
     List<String> getAccountDiscovery();
 
-    List<String> getAccountStore();
+    List<String> getAccountStoreLocations();
 
     CookieConfig getAccountCookieConfig();
 
-    int getAccountCookieJwtTtl();
+    int getAccountJwtTtl();
 }
