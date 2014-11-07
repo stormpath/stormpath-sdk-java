@@ -46,9 +46,9 @@ public class LoginFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
-    protected static final String ACCOUNT_STATE_STORE = "stormpath.web.account.state.store";
+    protected static final String ACCOUNT_SAVER = "stormpath.web.account.saver";
 
-    private Mutator<AuthenticationResult> accountStateStore;
+    private Mutator<AuthenticationResult> accountSaver;
 
     /**
      * Returns the context-relative URL where a user can be redirected to login.
@@ -63,15 +63,15 @@ public class LoginFilter extends HttpFilter {
         return getConfig().getLoginNextUrl();
     }
 
-    public Mutator<AuthenticationResult> getAccountStateStore() {
-        return this.accountStateStore;
+    public Mutator<AuthenticationResult> getAccountSaver() {
+        return this.accountSaver;
     }
 
     @Override
     protected void onInit() throws ServletException {
-        String className = getConfig().get(ACCOUNT_STATE_STORE);
-        Assert.hasText(className, ACCOUNT_STATE_STORE + " class name value is required.");
-        this.accountStateStore = Classes.newInstance(className);
+        String className = getConfig().get(ACCOUNT_SAVER);
+        Assert.hasText(className, ACCOUNT_SAVER + " class name value is required.");
+        this.accountSaver = Classes.newInstance(className);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class LoginFilter extends HttpFilter {
     }
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
-        getAccountStateStore().set(request, response, result);
+        getAccountSaver().set(request, response, result);
     }
 
     private void setForm(HttpServletRequest request, Form form) {

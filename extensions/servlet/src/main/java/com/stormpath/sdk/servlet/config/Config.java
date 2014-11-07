@@ -45,9 +45,9 @@ public interface Config extends Map<String, String> {
 
     String getUnauthorizedUrl();
 
-    List<String> getAccountDiscovery();
+    List<String> getAccountLocatorLocations();
 
-    List<String> getAccountStoreLocations();
+    List<String> getAccountSaverLocations();
 
     CookieConfig getAccountCookieConfig();
 

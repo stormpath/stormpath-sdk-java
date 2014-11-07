@@ -49,12 +49,15 @@ public class AccessTokenFilter extends HttpFilter {
     protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER =
         "stormpath.servlet.filter.accessToken.requestAuthorizer";
 
-    protected static final String ACCOUNT_STATE_STORE = "stormpath.web.account.state.store";
+    protected static final String ACCOUNT_SAVER = "stormpath.web.account.saver";
+
+    protected static final String SECURE = "stormpath.servlet.filter.accessToken.secure";
 
     private AccessTokenRequestAuthorizer requestAuthorizer;
     private AccessTokenAuthenticationRequestFactory authenticationRequestFactory;
     private AccessTokenResultFactory resultFactory;
-    private Mutator<AuthenticationResult> accountStateStore;
+    private Mutator<AuthenticationResult> accountSaver;
+    private boolean secure = true;
 
     public AccessTokenRequestAuthorizer getRequestAuthorizer() {
         return this.requestAuthorizer;
@@ -68,28 +71,31 @@ public class AccessTokenFilter extends HttpFilter {
         return this.resultFactory;
     }
 
-    public Mutator<AuthenticationResult> getAccountStateStore() {
-        return this.accountStateStore;
+    public Mutator<AuthenticationResult> getAccountSaver() {
+        return this.accountSaver;
     }
 
     @Override
     protected void onInit() throws ServletException {
 
-        String className = getConfig().get(ACCESS_TOKEN_REQUEST_AUTHORIZER);
-        Assert.hasText(className, ACCESS_TOKEN_REQUEST_AUTHORIZER + " class name value is required.");
-        this.requestAuthorizer = Classes.newInstance(className);
+        String val = getConfig().get(ACCESS_TOKEN_REQUEST_AUTHORIZER);
+        Assert.hasText(val, ACCESS_TOKEN_REQUEST_AUTHORIZER + " class name value is required.");
+        this.requestAuthorizer = Classes.newInstance(val);
 
-        className = getConfig().get(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
-        Assert.hasText(className, ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY + " class name value is required.");
-        this.authenticationRequestFactory = Classes.newInstance(className);
+        val = getConfig().get(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+        Assert.hasText(val, ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY + " class name value is required.");
+        this.authenticationRequestFactory = Classes.newInstance(val);
 
-        className = getConfig().get(ACCESS_TOKEN_RESULT_FACTORY);
-        Assert.hasText(className, ACCESS_TOKEN_RESULT_FACTORY + " class name value is required.");
-        this.resultFactory = Classes.newInstance(className);
+        val = getConfig().get(ACCESS_TOKEN_RESULT_FACTORY);
+        Assert.hasText(val, ACCESS_TOKEN_RESULT_FACTORY + " class name value is required.");
+        this.resultFactory = Classes.newInstance(val);
 
-        className = getConfig().get(ACCOUNT_STATE_STORE);
-        Assert.hasText(className, ACCOUNT_STATE_STORE + " class name value is required.");
-        this.accountStateStore = Classes.newInstance(className);
+        val = getConfig().get(ACCOUNT_SAVER);
+        Assert.hasText(val, ACCOUNT_SAVER + " class name value is required.");
+        this.accountSaver = Classes.newInstance(val);
+
+        val = getConfig().get(SECURE);
+        this.secure = Boolean.parseBoolean(val);
     }
 
     @Override
@@ -123,7 +129,7 @@ public class AccessTokenFilter extends HttpFilter {
 
         } catch (AccessTokenRequestException e) {
 
-            log.debug("Unable to process OAuth token request.", e);
+            log.debug("OAuth Access Token request failed.", e);
 
             json = toJson(e);
 
@@ -146,8 +152,9 @@ public class AccessTokenFilter extends HttpFilter {
         }
 
         //Secure connections are required: https://tools.ietf.org/html/rfc6749#section-3.2
-        if (!request.isSecure()) {
-            String msg = "A secure HTTPS connection is required.";
+        if (isSecureConnectionRequired(request) && !request.isSecure()) {
+            String msg = "A secure HTTPS connection is required for token requests - this is " +
+                         "a requirement of the OAuth 2 specification.";
             throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_REQUEST, msg, null);
         }
 
@@ -159,6 +166,23 @@ public class AccessTokenFilter extends HttpFilter {
         }
 
         getRequestAuthorizer().assertAuthorizedAccessTokenRequest(request);
+    }
+
+    //allow localhost development to not require an SSL certificate:
+    protected boolean isSecureConnectionRequired(HttpServletRequest request) {
+
+        if (!secure) {
+            return false;
+        }
+
+        String serverName = request.getServerName();
+
+        boolean localhost = serverName.equalsIgnoreCase("localhost") ||
+                            serverName.equals("127.0.0.1") ||
+                            serverName.equals("::1") ||
+                            serverName.equals("0:0:0:0:0:0:0:1");
+
+        return !localhost;
     }
 
     protected Application getApplication(HttpServletRequest request) {
@@ -205,6 +229,6 @@ public class AccessTokenFilter extends HttpFilter {
     }
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
-        getAccountStateStore().set(request, response, result);
+        getAccountSaver().set(request, response, result);
     }
 }

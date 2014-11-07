@@ -19,7 +19,6 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,27 +34,11 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
         //this is asserted in the AccessTokenFilter so it should never be null/empty here:
         Assert.hasText(grantType, "grant_type must not be null or empty.");
 
-        assertAuthorized(request);
-
         if ("password".equals(grantType)) {
             return createUsernamePasswordRequest(request);
         }
 
         throw new AccessTokenRequestException(AccessTokenErrorCode.UNSUPPORTED_GRANT_TYPE);
-    }
-
-    protected void assertAuthorized(HttpServletRequest request) throws AccessTokenRequestException {
-
-        //TODO: THIS MUST ONLY BE ACCEPTED BY CLIENTS WITH KNOWN/TRUSTED JAVASCRIPT ORIGIN URIs
-        String origin = request.getHeader("Origin");
-        if (!Strings.hasText(origin)) {
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_CLIENT, "Missing Origin header.", null);
-        }
-
-        String uri = ServerUriResolver.INSTANCE.getServerUri(request);
-        if (!origin.startsWith(uri)) {
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_CLIENT, "Unauthorized Origin.", null);
-        }
     }
 
     protected UsernamePasswordRequest createUsernamePasswordRequest(HttpServletRequest request)

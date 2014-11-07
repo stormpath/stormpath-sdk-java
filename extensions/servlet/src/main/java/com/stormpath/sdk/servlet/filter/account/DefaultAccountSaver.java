@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-public class DefaultAccountStateStore implements Mutator<AuthenticationResult> {
+public class DefaultAccountSaver implements Mutator<AuthenticationResult> {
 
     protected Config getConfig(HttpServletRequest request) {
         return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
@@ -35,7 +35,7 @@ public class DefaultAccountStateStore implements Mutator<AuthenticationResult> {
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
 
-        List<String> locations = getConfig(request).getAccountStoreLocations();
+        List<String> locations = getConfig(request).getAccountSaverLocations();
 
         if (locations.contains("disabled")) {
             return;
@@ -48,7 +48,7 @@ public class DefaultAccountStateStore implements Mutator<AuthenticationResult> {
                 HttpSession session = request.getSession();
                 session.setAttribute("account", result.getAccount());
             } else {
-                String msg = "Unrecognized " + DefaultConfig.ACCOUNT_STATE_STORE_LOCATIONS + " config value: " + location;
+                String msg = "Unrecognized " + DefaultConfig.ACCOUNT_SAVER_LOCATIONS + " config value: " + location;
                 throw new IllegalArgumentException(msg);
             }
         }

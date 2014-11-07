@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.UriCleaner;
-import com.stormpath.sdk.servlet.filter.account.AccountAccessorFilter;
+import com.stormpath.sdk.servlet.filter.account.AccountLocatorFilter;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
 import javax.servlet.Filter;
@@ -57,10 +57,10 @@ public class StormpathFilter extends HttpFilter {
         //now register any configured chains:
         Config config = getConfig();
 
-        //ensure the always-on AccountAccessorFilter is available:
+        //ensure the always-on AccountLocatorFilter is available:
         Filter accountFilter = Filters.builder().setServletContext(getServletContext())
-            .setName(Strings.uncapitalize(AccountAccessorFilter.class.getSimpleName()))
-            .setFilterClass(AccountAccessorFilter.class)
+            .setName(Strings.uncapitalize(AccountLocatorFilter.class.getSimpleName()))
+            .setFilterClass(AccountLocatorFilter.class)
             .build();
         this.immediateExecutionFilters = Arrays.asList(accountFilter);
 

@@ -50,6 +50,7 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
         try {
 
             Client client = getClient(request);
+
             JwtToAccountConverter converter = new JwtToAccountConverter(client);
 
             return converter.convert(val);

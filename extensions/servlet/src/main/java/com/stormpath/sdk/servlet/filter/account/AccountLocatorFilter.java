@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 //not a configurable filter - always executes immediately after the StormpathFilter but before other user-configured filters.
-public class AccountAccessorFilter extends HttpFilter {
+public class AccountLocatorFilter extends HttpFilter {
 
     private static final Accessor<Account> COOKIE_ACCOUNT_ACCESSOR = new CookieAccountAccessor();
     private static final Accessor<Account> HEADER_ACCOUNT_ACCESSOR = new AuthorizationHeaderAccountAccessor();
@@ -45,7 +45,7 @@ public class AccountAccessorFilter extends HttpFilter {
 
         Config config = getConfig();
 
-        List<String> accessorNames = config.getAccountDiscovery();
+        List<String> accessorNames = config.getAccountLocatorLocations();
 
         List<Accessor<Account>> accessors = new ArrayList<Accessor<Account>>(accessorNames.size());
 
@@ -60,7 +60,7 @@ public class AccountAccessorFilter extends HttpFilter {
             } else if ("session".equalsIgnoreCase(name)) {
                 accessor = SESSION_ACCOUNT_ACCESSOR;
             } else {
-                String msg = "Unrecognized " + DefaultConfig.ACCOUNT_DISCOVERY + " config value: " + name;
+                String msg = "Unrecognized " + DefaultConfig.ACCOUNT_LOCATOR_LOCATIONS + " config value: " + name;
                 throw new IllegalArgumentException(msg);
             }
 

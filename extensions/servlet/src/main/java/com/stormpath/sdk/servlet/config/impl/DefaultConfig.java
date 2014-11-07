@@ -41,8 +41,8 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
 
-    public static final String ACCOUNT_DISCOVERY = "stormpath.web.account.discovery";
-    public static final String ACCOUNT_STATE_STORE_LOCATIONS = "stormpath.web.account.state.store.locations";
+    public static final String ACCOUNT_LOCATOR_LOCATIONS = "stormpath.web.account.locator.locations";
+    public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.web.account.saver.locations";
 
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
@@ -56,8 +56,8 @@ public class DefaultConfig implements Config {
     private final ConfigReader CFG;
     private final Map<String, String> props;
 
-    private final List<String> ACCOUNT_DISCOVERY_LOCATIONS;
-    private final List<String> ACCOUNT_STORE_LOCATIONS;
+    private final List<String> _ACCOUNT_LOCATOR_LOCATIONS;
+    private final List<String> _ACCOUNT_SAVER_LOCATIONS;
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
     private final int _ACCOUNT_JWT_TTL;
 
@@ -70,22 +70,20 @@ public class DefaultConfig implements Config {
 
         this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
 
-        String val = CFG.getString(ACCOUNT_DISCOVERY);
-        //String val = props.get(ACCOUNT_DISCOVERY);
+        String val = CFG.getString(ACCOUNT_LOCATOR_LOCATIONS);
         if (Strings.hasText(val)) {
             String[] locs = Strings.split(val);
-            ACCOUNT_DISCOVERY_LOCATIONS = Arrays.asList(locs);
+            _ACCOUNT_LOCATOR_LOCATIONS = Arrays.asList(locs);
         } else {
-            ACCOUNT_DISCOVERY_LOCATIONS = Collections.emptyList();
+            _ACCOUNT_LOCATOR_LOCATIONS = Collections.emptyList();
         }
 
-        val = CFG.getString(ACCOUNT_STATE_STORE_LOCATIONS);
-        //val = props.get(ACCOUNT_STATE_STORE_LOCATIONS);
+        val = CFG.getString(ACCOUNT_SAVER_LOCATIONS);
         if (Strings.hasText(val)) {
             String[] locs = Strings.split(val);
-            ACCOUNT_STORE_LOCATIONS = Arrays.asList(locs);
+            _ACCOUNT_SAVER_LOCATIONS = Arrays.asList(locs);
         } else {
-            ACCOUNT_STORE_LOCATIONS = Collections.emptyList();
+            _ACCOUNT_SAVER_LOCATIONS = Collections.emptyList();
         }
 
         int accountJwtTtl = CFG.getInt(ACCOUNT_JWT_TTL);
@@ -152,13 +150,13 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public List<String> getAccountDiscovery() {
-        return ACCOUNT_DISCOVERY_LOCATIONS;
+    public List<String> getAccountLocatorLocations() {
+        return _ACCOUNT_LOCATOR_LOCATIONS;
     }
 
     @Override
-    public List<String> getAccountStoreLocations() {
-        return ACCOUNT_STORE_LOCATIONS;
+    public List<String> getAccountSaverLocations() {
+        return _ACCOUNT_SAVER_LOCATIONS;
     }
 
     @Override

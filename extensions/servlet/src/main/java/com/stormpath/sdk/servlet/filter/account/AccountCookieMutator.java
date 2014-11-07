@@ -29,11 +29,6 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
 
     public static final Mutator<AuthenticationResult> INSTANCE = new AccountCookieMutator();
 
-    protected AccountJwtFactory getAccountJwtFactory(HttpServletRequest request) {
-        String accountJwtFactoryClassName = getConfig(request).get("stormpath.web.account.jwt.factory");
-        return Classes.newInstance(accountJwtFactoryClassName);
-    }
-
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
 
@@ -45,8 +40,77 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
             jwt = getAccountJwtFactory(request).createAccountJwt(request, response, value.getAccount());
         }
 
-        CookieConfig cfg = getAccountCookieConfig(request);
-        Mutator<String> mutator = new CookieMutator(cfg);
+        Mutator<String> mutator = getCookieMutator(request);
+
         mutator.set(request, response, jwt);
+    }
+
+    protected AccountJwtFactory getAccountJwtFactory(HttpServletRequest request) {
+        String accountJwtFactoryClassName = getConfig(request).get("stormpath.web.account.jwt.factory");
+        return Classes.newInstance(accountJwtFactoryClassName);
+    }
+
+    protected Mutator<String> getCookieMutator(HttpServletRequest request) {
+        CookieConfig cfg = getAccountCookieConfig(request);
+        return new CookieMutator(cfg);
+    }
+
+    @Override
+    protected CookieConfig getAccountCookieConfig(HttpServletRequest request) {
+        final CookieConfig config = super.getAccountCookieConfig(request);
+
+        //should always be true, but allow for localhost development testing:
+        final boolean secure = isSecureConnectionRequired(request) && config.isSecure();
+
+        //wrap it to allow for access during development:
+        return new CookieConfig() {
+            @Override
+            public String getName() {
+                return config.getName();
+            }
+
+            @Override
+            public String getComment() {
+                return config.getComment();
+            }
+
+            @Override
+            public String getDomain() {
+                return config.getDomain();
+            }
+
+            @Override
+            public int getMaxAge() {
+                return config.getMaxAge();
+            }
+
+            @Override
+            public String getPath() {
+                return config.getPath();
+            }
+
+            @Override
+            public boolean isSecure() {
+                return secure;
+            }
+
+            @Override
+            public boolean isHttpOnly() {
+                return config.isHttpOnly();
+            }
+        };
+    }
+
+    //allow localhost development to not require an SSL certificate:
+    protected boolean isSecureConnectionRequired(HttpServletRequest request) {
+
+        String serverName = request.getServerName();
+
+        boolean localhost = serverName.equalsIgnoreCase("localhost") ||
+                            serverName.equals("127.0.0.1") ||
+                            serverName.equals("::1") ||
+                            serverName.equals("0:0:0:0:0:0:0:1");
+
+        return !localhost;
     }
 }

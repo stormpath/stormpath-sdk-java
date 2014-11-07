@@ -17,7 +17,7 @@ package com.stormpath.sdk.servlet.filter.oauth;
 
 import com.stormpath.sdk.lang.Assert;
 
-public class AccessTokenRequestException extends OAuthException {
+public class AccessTokenRequestException extends RuntimeException {
 
     private final AccessTokenErrorCode errorCode;
     private final String description;
