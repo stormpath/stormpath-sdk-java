@@ -15,24 +15,22 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.http.Accessor;
+import com.stormpath.sdk.servlet.config.CookieConfig;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-public class SessionAccountAccessor implements Accessor<Account> {
+public class LocalhostAccountCookieSecureEvaluator implements AccountCookieSecureEvaluator {
 
     @Override
-    public Account get(HttpServletRequest request, HttpServletResponse response) {
+    public boolean isAccountCookieSecure(HttpServletRequest request, CookieConfig accountCookieConfig) {
 
-        HttpSession session = request.getSession(false);
+        String serverName = request.getServerName();
 
-        if (session == null) {
-            return null;
-        }
+        boolean localhost = serverName.equalsIgnoreCase("localhost") ||
+                            serverName.equals("127.0.0.1") ||
+                            serverName.equals("::1") ||
+                            serverName.equals("0:0:0:0:0:0:0:1");
 
-        return (Account) session.getAttribute(Account.class.getName());
+        return !localhost;
     }
 }

@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter.login;
+package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.RequestAccountResolver;
-import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
@@ -50,6 +48,11 @@ public class LoginFilter extends HttpFilter {
 
     private Mutator<AuthenticationResult> accountSaver;
 
+    @Override
+    protected void onInit() throws ServletException {
+        this.accountSaver = getConfig().getInstance(ACCOUNT_SAVER);
+    }
+
     /**
      * Returns the context-relative URL where a user can be redirected to login.
      *
@@ -65,13 +68,6 @@ public class LoginFilter extends HttpFilter {
 
     public Mutator<AuthenticationResult> getAccountSaver() {
         return this.accountSaver;
-    }
-
-    @Override
-    protected void onInit() throws ServletException {
-        String className = getConfig().get(ACCOUNT_SAVER);
-        Assert.hasText(className, ACCOUNT_SAVER + " class name value is required.");
-        this.accountSaver = Classes.newInstance(className);
     }
 
     @Override

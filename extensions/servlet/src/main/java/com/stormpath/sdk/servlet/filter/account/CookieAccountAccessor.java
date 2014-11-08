@@ -34,8 +34,8 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
     @Override
     public Account get(HttpServletRequest request, HttpServletResponse response) {
 
-        String cookieName = getAccountCookieConfig(request).getName();
-        Accessor<Cookie> accessor = new CookieAccessor(cookieName);
+        Accessor<Cookie> accessor = getCookieAccessor(request);
+
         Cookie cookie = accessor.get(request, response);
 
         if (cookie == null) {
@@ -48,24 +48,37 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
         }
 
         try {
-
-            Client client = getClient(request);
-
-            JwtToAccountConverter converter = new JwtToAccountConverter(client);
-
-            return converter.convert(val);
-
+            return getAccount(request, val);
         } catch (Exception e) {
             String msg = "Encountered invalid JWT in account cookie.  Ignoring and deleting the cookie for safety.";
             log.debug(msg, e);
-            if (!response.isCommitted()) {
-                cookie.setValue("");
-                cookie.setPath("/");
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
-            }
+            deleteCookie(request, response, cookie);
         }
 
         return null;
+    }
+
+    protected Accessor<Cookie> getCookieAccessor(HttpServletRequest request) {
+        String cookieName = getAccountCookieConfig(request).getName();
+        return new CookieAccessor(cookieName);
+    }
+
+    protected Account getAccount(HttpServletRequest request, String jwt) {
+        JwtToAccountConverter converter = getJwtToAccountConverter(request);
+        return converter.convert(jwt);
+    }
+
+    protected JwtToAccountConverter getJwtToAccountConverter(HttpServletRequest request) {
+        Client client = getClient(request);
+        return new JwtToAccountConverter(client);
+    }
+
+    protected void deleteCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {
+        if (!response.isCommitted()) {
+            cookie.setValue("");
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 }

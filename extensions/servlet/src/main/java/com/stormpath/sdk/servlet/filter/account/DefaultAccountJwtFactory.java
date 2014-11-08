@@ -34,21 +34,6 @@ import java.util.UUID;
 
 public class DefaultAccountJwtFactory implements AccountJwtFactory {
 
-    protected String getJwtSubject(HttpServletRequest request, Account account) {
-        return account.getHref();
-    }
-
-    protected String getJwtSigningKey(HttpServletRequest request, Account account) {
-        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
-        ApiKey apiKey = ClientApiKeyAccessor.INSTANCE.getApiKey(client);
-        return apiKey.getSecret();
-    }
-
-    protected int getJwtTtlSeconds(HttpServletRequest request, Account account) {
-        Config config = ConfigResolver.INSTANCE.getConfig(request.getServletContext());
-        return config.getAccountJwtTtl();
-    }
-
     @Override
     public String createAccountJwt(HttpServletRequest request, HttpServletResponse response, Account account) {
 
@@ -74,5 +59,20 @@ public class DefaultAccountJwtFactory implements AccountJwtFactory {
         }
 
         return builder.compact();
+    }
+
+    protected String getJwtSubject(HttpServletRequest request, Account account) {
+        return account.getHref();
+    }
+
+    protected String getJwtSigningKey(HttpServletRequest request, Account account) {
+        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+        ApiKey apiKey = ClientApiKeyAccessor.INSTANCE.getApiKey(client);
+        return apiKey.getSecret();
+    }
+
+    protected int getJwtTtlSeconds(HttpServletRequest request, Account account) {
+        Config config = ConfigResolver.INSTANCE.getConfig(request.getServletContext());
+        return config.getAccountJwtTtl();
     }
 }

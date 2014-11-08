@@ -20,8 +20,6 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
@@ -29,31 +27,45 @@ import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.filter.account.AccountJwtFactory;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import org.apache.oltu.oauth2.common.message.types.TokenType;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory {
+public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory, ServletContextInitializable {
 
     protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
 
-    protected Config getConfig(HttpServletRequest request) {
-        return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
+    private Config config;
+    private Client client;
+    private Application application;
+    private AccountJwtFactory accountJwtFactory;
+
+    @Override
+    public void init(ServletContext servletContext) throws ServletException {
+        this.config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        this.client = ClientResolver.INSTANCE.getClient(servletContext);
+        this.application = ApplicationResolver.INSTANCE.getApplication(servletContext);
+        this.accountJwtFactory = config.getInstance(ACCOUNT_JWT_FACTORY);
     }
 
-    protected Client getClient(HttpServletRequest request) {
-        return ClientResolver.INSTANCE.getClient(request.getServletContext());
+    protected Config getConfig() {
+        return this.config;
     }
 
-    protected AccountJwtFactory getAccountJwtFactory(HttpServletRequest request) {
-        String className = getConfig(request).get(ACCOUNT_JWT_FACTORY);
-        Assert.hasText(className, ACCOUNT_JWT_FACTORY + " class name value is required.");
-        return Classes.newInstance(className);
+    public Client getClient() {
+        return client;
     }
 
-    protected Application getApplication(HttpServletRequest request) {
-        return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
+    protected Application getApplication() {
+        return this.application;
+    }
+
+    public AccountJwtFactory getAccountJwtFactory() {
+        return accountJwtFactory;
     }
 
     @Override
@@ -63,13 +75,13 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
 
         final Account account = result.getAccount();
 
-        AccountJwtFactory factory = getAccountJwtFactory(request);
+        AccountJwtFactory factory = getAccountJwtFactory();
 
         String jwt = factory.createAccountJwt(request, response, account);
 
-        int ttl = getConfig(request).getAccountJwtTtl();
+        Application application = getApplication();
 
-        Application application = getApplication(request);
+        int ttl = getConfig().getAccountJwtTtl();
 
         final TokenResponse tokenResponse = DefaultTokenResponse
             .tokenType(TokenType.BEARER)

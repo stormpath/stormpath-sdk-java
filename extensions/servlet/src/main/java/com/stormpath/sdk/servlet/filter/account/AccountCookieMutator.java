@@ -16,18 +16,42 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.http.CookieMutator;
 import com.stormpath.sdk.servlet.http.Mutator;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class AccountCookieMutator extends AccountCookieHandler implements Mutator<AuthenticationResult> {
+public class AccountCookieMutator extends AccountCookieHandler
+    implements Mutator<AuthenticationResult>, ServletContextInitializable {
 
-    public static final Mutator<AuthenticationResult> INSTANCE = new AccountCookieMutator();
+    protected static final String ACCOUNT_COOKIE_SECURE_EVALUATOR = "stormpath.web.account.cookie.secure.evaluator";
+    protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
+
+    private AccountCookieSecureEvaluator accountCookieSecureEvaluator;
+    private AccountJwtFactory accountJwtFactory;
+
+    @Override
+    public void init(ServletContext servletContext) throws ServletException {
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        this.accountCookieSecureEvaluator = config.getInstance(ACCOUNT_COOKIE_SECURE_EVALUATOR);
+        this.accountJwtFactory = config.getInstance(ACCOUNT_JWT_FACTORY);
+    }
+
+    public AccountCookieSecureEvaluator getAccountCookieSecureEvaluator() {
+        return accountCookieSecureEvaluator;
+    }
+
+    public AccountJwtFactory getAccountJwtFactory() {
+        return accountJwtFactory;
+    }
 
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
@@ -37,17 +61,12 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
         if (value instanceof AccessTokenResult) {
             jwt = ((AccessTokenResult) value).getTokenResponse().getAccessToken();
         } else {
-            jwt = getAccountJwtFactory(request).createAccountJwt(request, response, value.getAccount());
+            jwt = getAccountJwtFactory().createAccountJwt(request, response, value.getAccount());
         }
 
         Mutator<String> mutator = getCookieMutator(request);
 
         mutator.set(request, response, jwt);
-    }
-
-    protected AccountJwtFactory getAccountJwtFactory(HttpServletRequest request) {
-        String accountJwtFactoryClassName = getConfig(request).get("stormpath.web.account.jwt.factory");
-        return Classes.newInstance(accountJwtFactoryClassName);
     }
 
     protected Mutator<String> getCookieMutator(HttpServletRequest request) {
@@ -59,8 +78,9 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
     protected CookieConfig getAccountCookieConfig(HttpServletRequest request) {
         final CookieConfig config = super.getAccountCookieConfig(request);
 
-        //should always be true, but allow for localhost development testing:
-        final boolean secure = isSecureConnectionRequired(request) && config.isSecure();
+        //should always be true in prod, but allow for localhost development testing:
+        final boolean secure = config.isSecure() &&
+                               getAccountCookieSecureEvaluator().isAccountCookieSecure(request, config);
 
         //wrap it to allow for access during development:
         return new CookieConfig() {
@@ -99,18 +119,5 @@ public class AccountCookieMutator extends AccountCookieHandler implements Mutato
                 return config.isHttpOnly();
             }
         };
-    }
-
-    //allow localhost development to not require an SSL certificate:
-    protected boolean isSecureConnectionRequired(HttpServletRequest request) {
-
-        String serverName = request.getServerName();
-
-        boolean localhost = serverName.equalsIgnoreCase("localhost") ||
-                            serverName.equals("127.0.0.1") ||
-                            serverName.equals("::1") ||
-                            serverName.equals("0:0:0:0:0:0:0:1");
-
-        return !localhost;
     }
 }

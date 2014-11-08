@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.account.AccountAuthorizationFilter;
-import com.stormpath.sdk.servlet.filter.login.LoginFilter;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenFilter;
 
 import javax.servlet.Filter;
@@ -28,14 +27,14 @@ import javax.servlet.Filter;
  */
 public enum DefaultFilter {
 
+    accessToken(AccessTokenFilter.class),
     account(AccountAuthorizationFilter.class),
     anon(AnonymousFilter.class),
     authc(AuthenticationFilter.class),
     login(LoginFilter.class),
     logout(LogoutFilter.class),
-    accessToken(AccessTokenFilter.class),
-    unauthorized(UnauthorizedFilter.class),
     register(RegisterFilter.class),
+    unauthorized(UnauthorizedFilter.class),
     verify(VerifyFilter.class);
 
     private final Class<? extends Filter> filterClass;

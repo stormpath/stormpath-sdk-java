@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import javax.servlet.ServletException;
 import java.util.List;
 import java.util.Map;
 
@@ -52,4 +53,6 @@ public interface Config extends Map<String, String> {
     CookieConfig getAccountCookieConfig();
 
     int getAccountJwtTtl();
+
+    <T> T getInstance(String classPropertyName) throws ServletException;
 }

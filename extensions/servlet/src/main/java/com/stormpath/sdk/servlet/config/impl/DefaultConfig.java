@@ -16,14 +16,18 @@
 package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +57,7 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
     public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
 
+    private final ServletContext servletContext;
     private final ConfigReader CFG;
     private final Map<String, String> props;
 
@@ -61,12 +66,15 @@ public class DefaultConfig implements Config {
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
     private final int _ACCOUNT_JWT_TTL;
 
+    private final Map<String, Object> SINGLETONS;
 
     public DefaultConfig(final ServletContext servletContext, Map<String, String> configProps) {
         Assert.notNull(servletContext, "servletContext argument cannot be null.");
         Assert.notNull(configProps, "Properties argument cannot be null.");
+        this.servletContext = servletContext;
         this.props = Collections.unmodifiableMap(configProps);
         this.CFG = new ExpressionConfigReader(servletContext, this.props);
+        this.SINGLETONS = new LinkedHashMap<String, Object>();
 
         this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
 
@@ -167,6 +175,50 @@ public class DefaultConfig implements Config {
     @Override
     public int getAccountJwtTtl() {
         return _ACCOUNT_JWT_TTL;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getInstance(String classPropertyName) throws ServletException {
+        T instance = (T) SINGLETONS.get(classPropertyName);
+        if (instance == null) {
+            instance = newInstance(classPropertyName);
+            SINGLETONS.put(classPropertyName, instance);
+        }
+        return instance;
+    }
+
+    protected <T> T newInstance(String classPropertyName) throws ServletException {
+
+        if (!containsKey(classPropertyName)) {
+            String msg = "Unable to instantiate class: there is no configuration property named " + classPropertyName;
+            throw new ServletException(msg);
+        }
+
+        String val = get(classPropertyName);
+
+        Assert.hasText(val, classPropertyName + " class name value is required.");
+
+        T instance;
+        try {
+            instance = Classes.newInstance(val);
+        } catch (Exception e) {
+            String msg = "Unable to instantiate " + classPropertyName + " class name " +
+                         val + ": " + e.getMessage();
+            throw new ServletException(msg, e);
+        }
+
+        if (instance instanceof ServletContextInitializable) {
+            try {
+                ((ServletContextInitializable) instance).init(this.servletContext);
+            } catch (ServletException e) {
+                String msg = "Unable to initialize " + classPropertyName + " instance of type " +
+                             val + ": " + e.getMessage();
+                throw new ServletException(msg, e);
+            }
+        }
+
+        return instance;
     }
 
     @Override

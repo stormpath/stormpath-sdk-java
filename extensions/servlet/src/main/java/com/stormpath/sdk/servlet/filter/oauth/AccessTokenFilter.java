@@ -19,12 +19,11 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.sdk.servlet.http.Mutator;
 import org.slf4j.Logger;
@@ -77,24 +76,13 @@ public class AccessTokenFilter extends HttpFilter {
 
     @Override
     protected void onInit() throws ServletException {
+        Config config = getConfig();
+        this.requestAuthorizer = config.getInstance(ACCESS_TOKEN_REQUEST_AUTHORIZER);
+        this.authenticationRequestFactory = config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+        this.resultFactory = config.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
+        this.accountSaver = config.getInstance(ACCOUNT_SAVER);
 
-        String val = getConfig().get(ACCESS_TOKEN_REQUEST_AUTHORIZER);
-        Assert.hasText(val, ACCESS_TOKEN_REQUEST_AUTHORIZER + " class name value is required.");
-        this.requestAuthorizer = Classes.newInstance(val);
-
-        val = getConfig().get(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
-        Assert.hasText(val, ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY + " class name value is required.");
-        this.authenticationRequestFactory = Classes.newInstance(val);
-
-        val = getConfig().get(ACCESS_TOKEN_RESULT_FACTORY);
-        Assert.hasText(val, ACCESS_TOKEN_RESULT_FACTORY + " class name value is required.");
-        this.resultFactory = Classes.newInstance(val);
-
-        val = getConfig().get(ACCOUNT_SAVER);
-        Assert.hasText(val, ACCOUNT_SAVER + " class name value is required.");
-        this.accountSaver = Classes.newInstance(val);
-
-        val = getConfig().get(SECURE);
+        String val = getConfig().get(SECURE);
         this.secure = Boolean.parseBoolean(val);
     }
 
