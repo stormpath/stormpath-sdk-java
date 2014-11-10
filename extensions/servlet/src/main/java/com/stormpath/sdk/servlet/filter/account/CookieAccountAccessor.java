@@ -16,20 +16,38 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.Accessor;
 import com.stormpath.sdk.servlet.http.CookieAccessor;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CookieAccountAccessor extends AccountCookieHandler implements Accessor<Account> {
+public class CookieAccountAccessor extends AccountCookieHandler implements Accessor<Account>, ServletContextInitializable {
 
     private static final Logger log = LoggerFactory.getLogger(CookieAccountAccessor.class);
+
+    protected static final String JWT_ACCOUNT_RESOLVER = "stormpath.web.account.jwt.resolver";
+
+    private JwtAccountResolver jwtAccountResolver;
+
+    @Override
+    public void init(ServletContext servletContext) throws ServletException {
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        this.jwtAccountResolver = config.getInstance(JWT_ACCOUNT_RESOLVER);
+    }
+
+    protected JwtAccountResolver getJwtAccountResolver() {
+        return jwtAccountResolver;
+    }
 
     @Override
     public Account get(HttpServletRequest request, HttpServletResponse response) {
@@ -48,7 +66,7 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
         }
 
         try {
-            return getAccount(request, val);
+            return getAccount(request, response, val);
         } catch (Exception e) {
             String msg = "Encountered invalid JWT in account cookie.  Ignoring and deleting the cookie for safety.";
             log.debug(msg, e);
@@ -63,14 +81,8 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
         return new CookieAccessor(cookieName);
     }
 
-    protected Account getAccount(HttpServletRequest request, String jwt) {
-        JwtToAccountConverter converter = getJwtToAccountConverter(request);
-        return converter.convert(jwt);
-    }
-
-    protected JwtToAccountConverter getJwtToAccountConverter(HttpServletRequest request) {
-        Client client = getClient(request);
-        return new JwtToAccountConverter(client);
+    protected Account getAccount(HttpServletRequest request, HttpServletResponse response, String jwt) {
+        return getJwtAccountResolver().getAccountByJwt(request, response, jwt);
     }
 
     protected void deleteCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {

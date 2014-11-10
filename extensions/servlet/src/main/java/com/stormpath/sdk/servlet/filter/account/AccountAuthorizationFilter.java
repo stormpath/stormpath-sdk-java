@@ -115,7 +115,7 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             } else {
-                return redirectToLogin(request, response, "unauthorized");
+                return redirectToLoginPage(request, response, "unauthorized");
             }
         }
 

@@ -28,34 +28,33 @@ import java.net.URLEncoder;
 public abstract class AccessControlFilter extends HttpFilter {
 
     protected String loginUrl;
+    protected String accessTokenUrl;
 
     @Override
     protected void onInit() throws ServletException {
         super.onInit();
         this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginUrl());
+        this.accessTokenUrl = UriCleaner.INSTANCE.clean(getConfig().getAccessTokenUrl());
     }
 
     /**
-     * Returns <code>true</code> if the request is allowed to proceed through the filter normally, or
-     * <code>false</code>
-     * if the request should be handled by the
-     * {@link #onAccessDenied(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     * onAccessDenied}
-     * method instead.
+     * Returns <code>true</code> if the request is allowed to proceed through the filter normally, or <code>false</code>
+     * if the request should be handled by the {@link #onAccessDenied(javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse) onAccessDenied} method instead.
      *
      * @param request  the incoming <code>ServletRequest</code>
      * @param response the outgoing <code>ServletResponse</code>
      * @return <code>true</code> if the request should proceed through the filter normally, <code>false</code> if the
-     * request should be processed by this filter's
-     * {@link #onAccessDenied(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     * onAccessDenied} method instead.
+     * request should be processed by this filter's {@link #onAccessDenied(javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse) onAccessDenied} method instead.
      * @throws Exception if an error occurs during processing.
      */
-    protected abstract boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception;
+    protected abstract boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response)
+        throws Exception;
 
     /**
-     * Processes requests where the subject was denied access as determined by the
-     * {@link #isAccessAllowed(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * Processes requests where the subject was denied access as determined by the {@link
+     * #isAccessAllowed(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      * isAccessAllowed}.
      *
      * @param request  the incoming <code>ServletRequest</code>
@@ -65,7 +64,8 @@ public abstract class AccessControlFilter extends HttpFilter {
      * @throws Exception if there is an error processing the request.
      * @since 1.0
      */
-    protected abstract boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception;
+    protected abstract boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response)
+        throws Exception;
 
     @Override
     protected boolean isContinue(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -74,10 +74,11 @@ public abstract class AccessControlFilter extends HttpFilter {
 
     protected boolean isLoginRequest(HttpServletRequest request) {
         String contextRelativeUri = ServletUtils.getContextRelativeUri(request);
-        return loginUrl.equals(contextRelativeUri);
+        return loginUrl.equals(contextRelativeUri) || accessTokenUrl.equals(contextRelativeUri);
     }
 
-    protected boolean redirectToLogin(HttpServletRequest request, HttpServletResponse response, String status) throws Exception {
+    protected boolean redirectToLoginPage(HttpServletRequest request, HttpServletResponse response, String status)
+        throws Exception {
 
         Assert.notNull(status, "status argument cannot be null.");
 
@@ -94,7 +95,7 @@ public abstract class AccessControlFilter extends HttpFilter {
             if (i == redirectUrl.length() - 1) {
                 query = Strings.EMPTY_STRING;
             } else {
-                query = redirectUrl.substring(i+1);
+                query = redirectUrl.substring(i + 1);
             }
         }
 

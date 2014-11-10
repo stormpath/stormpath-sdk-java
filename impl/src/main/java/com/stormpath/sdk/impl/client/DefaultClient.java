@@ -57,6 +57,7 @@ import java.util.Map;
  */
 public class DefaultClient implements Client {
 
+    private final ApiKey apiKey;
     private final DataStore dataStore;
 
     private String currentTenantHref;
@@ -77,6 +78,7 @@ public class DefaultClient implements Client {
      */
     public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
+        this.apiKey = apiKey;
         Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme);
         DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey);
 
@@ -109,6 +111,11 @@ public class DefaultClient implements Client {
         Tenant current = this.dataStore.getResource(href, Tenant.class);
         this.currentTenantHref = current.getHref();
         return current;
+    }
+
+    @Override
+    public ApiKey getApiKey() {
+        return this.apiKey;
     }
 
     @Override

@@ -27,7 +27,6 @@ public class AuthenticationFilter extends AccessControlFilter {
     protected boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return request.getRemoteUser() != null //non-null if authenticated
                || isLoginRequest(request); //allow them to visit the login URL otherwise they might not be able to login :)
-        //TODO: what about remember me? remoteUser might be populated, but rememberMe != authenticated
     }
 
     @Override
@@ -38,7 +37,7 @@ public class AuthenticationFilter extends AccessControlFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         } else {
-            return redirectToLogin(request, response, "authcReqd");
+            return redirectToLoginPage(request, response, "authcReqd");
         }
     }
 }

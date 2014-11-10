@@ -17,29 +17,31 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.filter.ClientApiKeyAccessor;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-public class JwtToAccountConverter {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-    private final Client client;
+public class DefaultJwtAccountResolver implements JwtAccountResolver {
 
-    public JwtToAccountConverter(Client client) {
-        Assert.notNull(client, "client cannot be null");
-        this.client = client;
+    protected Client getClient(HttpServletRequest request) {
+        return ClientResolver.INSTANCE.getClient(request.getServletContext());
     }
 
-    public Account convert(String s) {
+    @Override
+    public Account getAccountByJwt(HttpServletRequest request, HttpServletResponse response, String jwt) {
 
-        String secret = ClientApiKeyAccessor.INSTANCE.getApiKey(client).getSecret();
+        Client client = getClient(request);
 
-        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(s).getBody();
+        String secret = client.getApiKey().getSecret();
+
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
 
         String accountHref = claims.getSubject();
 
         //will hit the cache:
-        return this.client.getResource(accountHref, Account.class);
+        return client.getResource(accountHref, Account.class);
     }
 }

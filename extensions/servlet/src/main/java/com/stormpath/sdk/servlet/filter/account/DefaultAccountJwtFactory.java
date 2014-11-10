@@ -22,7 +22,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.filter.ClientApiKeyAccessor;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -67,7 +66,7 @@ public class DefaultAccountJwtFactory implements AccountJwtFactory {
 
     protected String getJwtSigningKey(HttpServletRequest request, Account account) {
         Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
-        ApiKey apiKey = ClientApiKeyAccessor.INSTANCE.getApiKey(client);
+        ApiKey apiKey = client.getApiKey();
         return apiKey.getSecret();
     }
 

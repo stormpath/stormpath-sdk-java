@@ -21,8 +21,10 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.impl.DefaultConfig;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.sdk.servlet.http.Accessor;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +44,8 @@ public class AccountLocatorFilter extends HttpFilter {
 
     @Override
     protected void onInit() throws ServletException {
+
+        ServletContext sc = getServletContext();
 
         Config config = getConfig();
 
@@ -65,6 +69,11 @@ public class AccountLocatorFilter extends HttpFilter {
             }
 
             if (!accessors.contains(accessor)) {
+
+                if (accessor instanceof ServletContextInitializable) {
+                    ((ServletContextInitializable)accessor).init(sc);
+                }
+
                 accessors.add(accessor);
             }
         }
