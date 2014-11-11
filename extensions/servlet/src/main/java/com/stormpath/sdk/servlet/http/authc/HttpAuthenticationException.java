@@ -15,17 +15,13 @@
  */
 package com.stormpath.sdk.servlet.http.authc;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
+public class HttpAuthenticationException extends RuntimeException {
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+    public HttpAuthenticationException(String s) {
+        super(s);
+    }
 
-public interface HttpAuthenticationResult {
-
-    HttpServletRequest getRequest();
-
-    HttpServletResponse getResponse();
-
-    AuthenticationResult getAuthenticationResult();
-
+    public HttpAuthenticationException(String s, Throwable throwable) {
+        super(s, throwable);
+    }
 }

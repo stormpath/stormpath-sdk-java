@@ -17,10 +17,10 @@ package com.stormpath.sdk.servlet.http.impl;
 
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.http.UserAgent;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 
 public class DefaultUserAgent implements UserAgent {
 
@@ -32,22 +32,27 @@ public class DefaultUserAgent implements UserAgent {
     }
 
     @Override
-    public boolean isRestClient() {
+    public boolean isHtmlPreferred() {
 
-        Enumeration<String> acceptValues = request.getHeaders("Accept");
+        String header = request.getHeader("Accept");
 
-        if (acceptValues != null) {
+        if (Strings.hasText(header)) {
 
-            while (acceptValues.hasMoreElements()) {
-                String acceptedContentType = acceptValues.nextElement();
+            //TODO: support relative quality factor ('q' media type param)
+            String[] acceptValues = Strings.split(header);
 
-                if (acceptedContentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-                    return true;
-                }
+            if (acceptValues != null && acceptValues.length > 0) {
 
-                if (acceptedContentType.startsWith(MediaType.TEXT_HTML_VALUE) ||
-                    acceptedContentType.startsWith(MediaType.APPLICATION_XHTML_XML_VALUE)) {
-                    return false;
+                for(String acceptedContentType : acceptValues) {
+
+                    if (acceptedContentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+                        return false;
+                    }
+
+                    if (acceptedContentType.startsWith(MediaType.TEXT_HTML_VALUE) ||
+                        acceptedContentType.startsWith(MediaType.APPLICATION_XHTML_XML_VALUE)) {
+                        return true;
+                    }
                 }
             }
         }

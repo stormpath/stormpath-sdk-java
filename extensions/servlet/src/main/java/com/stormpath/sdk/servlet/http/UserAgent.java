@@ -22,12 +22,12 @@ package com.stormpath.sdk.servlet.http;
 public interface UserAgent {
 
     /**
-     * Returns true if the user agent is a REST client, false otherwise.  A REST client in this context is defined as
-     * an HTTP User Agent that prefers JSON content over HTML content.  This is determined by looking at the
-     * request {@code Accept} header and seeing if {@code application/json} appears before
-     * {@code application/html}.
+     * Returns {@code true} if the user agent prefers HTML (or XHTML) content, {@code false} otherwise.  HTML preference
+     * in this context is determined by looking at the {@code Accept} header and seeing if
+     * {@code application/html} or {@code application/xhtml+xml} are listed first before
+     * {@code application/json}.
      *
-     * @return true if the user agent is a REST client, false otherwise.
+     * @return {@code true} if the user agent prefers HTML (or XHTML) content, {@code false} otherwise.
      */
-    boolean isRestClient();
+    boolean isHtmlPreferred();
 }

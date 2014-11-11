@@ -20,5 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface HttpAuthenticator {
 
-    HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response);
+    HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response)
+        throws HttpAuthenticationException;
+
+    void sendChallenge(HttpServletRequest request, HttpServletResponse response);
 }

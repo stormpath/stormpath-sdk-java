@@ -42,10 +42,12 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
     private final AuthorizationHeaderParser parser = new DefaultAuthorizationHeaderParser();
 
     private final Map<String, HttpAuthenticationScheme> schemes; //supported schemes - iteration order retained
+    private final boolean sendChallengeOnFailure;
 
-    public AuthorizationHeaderAuthenticator(List<HttpAuthenticationScheme> schemes) {
+    public AuthorizationHeaderAuthenticator(List<HttpAuthenticationScheme> schemes, boolean sendChallengeOnFailure) {
 
         Assert.notEmpty(schemes, "AuthenticationScheme list cannot be null or empty.");
+        this.sendChallengeOnFailure = sendChallengeOnFailure;
 
         this.schemes = new LinkedHashMap<String, HttpAuthenticationScheme>(schemes.size());
 
@@ -86,28 +88,33 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
             }
         }
 
-        //authc was not successful - send challenge:
-        sendChallenge(request, response);
+        if (sendChallengeOnFailure) {
+            //authc was not successful - send challenge:
+            sendChallenge(request, response);
+        }
 
-        return new DefaultHttpAuthenticationResult(request, response, null, false);
+        throw new HttpAuthenticationException("Unable to successfully authenticate request with Authorization header.");
     }
 
     protected Application getApplication(HttpServletRequest req) {
         return ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
     }
 
-    protected void sendChallenge(HttpServletRequest request, HttpServletResponse response) {
+    public void sendChallenge(HttpServletRequest request, HttpServletResponse response) {
 
-        Application application = getApplication(request);
-
-        String appName = application.getName();
+        String realmName = getRealmName(request);
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         for (HttpAuthenticationScheme scheme : this.schemes.values()) {
-            String authcHeader = createWwwAuthenticateHeaderValue(scheme, appName);
+            String authcHeader = createWwwAuthenticateHeaderValue(scheme, realmName);
             response.addHeader(AUTHENTICATE_HEADER, authcHeader);
         }
+    }
+
+    protected String getRealmName(HttpServletRequest request) {
+        Application application = getApplication(request);
+        return application.getName();
     }
 
     protected String createWwwAuthenticateHeaderValue(HttpAuthenticationScheme scheme, String realmName) {

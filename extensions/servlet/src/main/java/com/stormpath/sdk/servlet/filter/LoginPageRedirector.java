@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.http.authc;
-
-import com.stormpath.sdk.authc.AuthenticationResult;
+package com.stormpath.sdk.servlet.filter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface HttpAuthenticationResult {
+public interface LoginPageRedirector {
 
-    HttpServletRequest getRequest();
+    public static final LoginPageRedirector INSTANCE = new DefaultLoginPageRedirector();
 
-    HttpServletResponse getResponse();
-
-    AuthenticationResult getAuthenticationResult();
-
+    void redirectToLoginPage(HttpServletRequest request, HttpServletResponse response, String status) throws Exception;
 }

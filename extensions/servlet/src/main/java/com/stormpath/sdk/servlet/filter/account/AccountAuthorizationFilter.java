@@ -107,24 +107,19 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
 
     @Override
     protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        UserAgent ua = new DefaultUserAgent(request);
-
         if (request.getRemoteUser() == null) { //not authenticated - can't determine access control rights:
-            if (ua.isRestClient()) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
-            } else {
-                return redirectToLoginPage(request, response, "unauthorized");
-            }
+            return getUnauthenticatedHandler().onAuthenticationRequired(request, response);
         }
 
         //authenticated but still not allowed to proceed:
-        if (ua.isRestClient()) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        } else {
+        UserAgent ua = new DefaultUserAgent(request);
+        if (ua.isHtmlPreferred()) {
             String url = getUnauthorizedUrl();
             ServletUtils.issueRedirect(request, response, url, null, true, true);
+        } else {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("Pragma", "no-cache");
         }
 
         return false;

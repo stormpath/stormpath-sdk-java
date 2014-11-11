@@ -16,10 +16,10 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
+import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,33 +68,14 @@ public class DefaultFilterChainManager implements FilterChainManager {
         }
 
         //pick up any user-configured filter classes and allow them to override the defaults:
-
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
 
-        for (String key : config.keySet()) {
+        Map<String,Class<Filter>> foundClasses =
+            new ImplementationClassResolver<Filter>(config, FILTER_CONFIG_PREFIX, Filter.class)
+                .findImplementationClasses();
 
-            if (key.startsWith(FILTER_CONFIG_PREFIX)) {
-
-                String filterName = key.substring(FILTER_CONFIG_PREFIX.length());
-
-                //if there are any periods in the remainder, then the property is not a filter
-                //class name - it is a filter-specific config property, so just ignore it:
-                int i = filterName.indexOf('.');
-                if (i >= 0) {
-                    continue;
-                }
-
-                String className = config.get(key);
-
-                try {
-                    Class<? extends Filter> clazz = Classes.forName(className);
-                    Assert.isTrue(Filter.class.isAssignableFrom(clazz));
-                    configuredFilterClasses.put(filterName, clazz);
-                } catch (Exception e) {
-                    String msg = key + " value [" + className + "] is not a valid Filter class.";
-                    throw new IllegalArgumentException(msg, e);
-                }
-            }
+        if (!com.stormpath.sdk.lang.Collections.isEmpty(foundClasses)) {
+            configuredFilterClasses.putAll(foundClasses);
         }
 
         this.configuredFilterClasses = Collections.unmodifiableMap(configuredFilterClasses);

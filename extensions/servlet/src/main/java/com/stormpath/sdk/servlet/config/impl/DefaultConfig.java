@@ -20,6 +20,7 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -184,6 +185,10 @@ public class DefaultConfig implements Config {
         if (instance == null) {
             instance = newInstance(classPropertyName);
             SINGLETONS.put(classPropertyName, instance);
+        }
+
+        if (instance instanceof Factory) {
+            instance = ((Factory<T>)instance).getInstance();
         }
         return instance;
     }

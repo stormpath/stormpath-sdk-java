@@ -15,26 +15,31 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.UriCleaner;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
 
 public abstract class AccessControlFilter extends HttpFilter {
 
     protected String loginUrl;
     protected String accessTokenUrl;
 
+    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.servlet.filter.authc.unauthenticatedHandler";
+    private UnauthenticatedHandler unauthenticatedHandler;
+
     @Override
     protected void onInit() throws ServletException {
         super.onInit();
         this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginUrl());
         this.accessTokenUrl = UriCleaner.INSTANCE.clean(getConfig().getAccessTokenUrl());
+        this.unauthenticatedHandler = getConfig().getInstance(UNAUTHENTICATED_HANDLER);
+    }
+
+    public UnauthenticatedHandler getUnauthenticatedHandler() {
+        return unauthenticatedHandler;
     }
 
     /**
@@ -75,57 +80,5 @@ public abstract class AccessControlFilter extends HttpFilter {
     protected boolean isLoginRequest(HttpServletRequest request) {
         String contextRelativeUri = ServletUtils.getContextRelativeUri(request);
         return loginUrl.equals(contextRelativeUri) || accessTokenUrl.equals(contextRelativeUri);
-    }
-
-    protected boolean redirectToLoginPage(HttpServletRequest request, HttpServletResponse response, String status)
-        throws Exception {
-
-        Assert.notNull(status, "status argument cannot be null.");
-
-        //not authenticated, so we'll redirect the user the login url and the 'next' parameter will be equal
-        //to the currently requested URL *if* the request is a GET request.  POST requests are rarely safe to
-        //automatically execute automatically (not idempotent, etc), so we just return to the default login 'nextUrl'
-        //if not a GET
-
-        String redirectUrl = getConfig().getLoginUrl();
-        String query = null;
-
-        int i = redirectUrl.indexOf('?');
-        if (i != -1) {
-            if (i == redirectUrl.length() - 1) {
-                query = Strings.EMPTY_STRING;
-            } else {
-                query = redirectUrl.substring(i + 1);
-            }
-        }
-
-        if (query == null) {
-            redirectUrl += "?status=" + status;
-        } else if (!query.contains("status")) {
-
-            if (!query.equals(Strings.EMPTY_STRING)) {
-                redirectUrl += "&";
-            }
-
-            redirectUrl += "status=" + status;
-        }
-
-        String method = request.getMethod();
-        if (method.equalsIgnoreCase("GET")) {
-
-            String currentUrlString = request.getRequestURL().toString();
-            query = request.getQueryString();
-            if (query != null) {
-                currentUrlString += "?" + query;
-            }
-
-            String encodedCurrentUrlString = URLEncoder.encode(currentUrlString, "UTF-8");
-
-            redirectUrl += "&next=" + encodedCurrentUrlString;
-        }
-
-        ServletUtils.issueRedirect(request, response, redirectUrl, null, true, true);
-
-        return false;
     }
 }

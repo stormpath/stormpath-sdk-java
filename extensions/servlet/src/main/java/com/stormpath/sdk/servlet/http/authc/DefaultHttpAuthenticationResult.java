@@ -26,17 +26,15 @@ public class DefaultHttpAuthenticationResult implements HttpAuthenticationResult
     private final HttpServletRequest   request;
     private final HttpServletResponse  response;
     private final AuthenticationResult result;
-    private final boolean              isContinue;
 
     public DefaultHttpAuthenticationResult(HttpServletRequest request, HttpServletResponse response,
-                                           AuthenticationResult result, boolean isContinue) {
+                                           AuthenticationResult result) {
         Assert.notNull(request, "request cannot be null.");
         Assert.notNull(response, "response cannot be null.");
         Assert.notNull(result, "AuthenticationResult cannot be null.");
         this.request = request;
         this.response = response;
         this.result = result;
-        this.isContinue = isContinue;
     }
 
     @Override
@@ -54,8 +52,4 @@ public class DefaultHttpAuthenticationResult implements HttpAuthenticationResult
         return result;
     }
 
-    @Override
-    public boolean isContinueRequest() {
-        return isContinue;
-    }
 }

@@ -38,7 +38,7 @@ public abstract class AbstractAuthenticationScheme implements HttpAuthentication
 
         AuthenticationResult result = app.authenticateAccount(request);
 
-        return new DefaultHttpAuthenticationResult(attempt.getRequest(), attempt.getResponse(), result, true);
+        return new DefaultHttpAuthenticationResult(attempt.getRequest(), attempt.getResponse(), result);
     }
 
     protected Application getApplication(HttpServletRequest request) {

@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.http.authc;
-
-import com.stormpath.sdk.authc.AuthenticationResult;
+package com.stormpath.sdk.servlet.filter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface HttpAuthenticationResult {
+public interface UnauthenticatedHandler {
 
-    HttpServletRequest getRequest();
-
-    HttpServletResponse getResponse();
-
-    AuthenticationResult getAuthenticationResult();
+    boolean onAuthenticationRequired(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

@@ -15,17 +15,15 @@
  */
 package com.stormpath.sdk.servlet.http.authc;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public interface HttpAuthenticatorBuilder {
 
-public interface HttpAuthenticationResult {
+    HttpAuthenticatorBuilder addScheme(HttpAuthenticationScheme scheme);
 
-    HttpServletRequest getRequest();
+    HttpAuthenticatorBuilder addSchemes(List<HttpAuthenticationScheme> schemes);
 
-    HttpServletResponse getResponse();
+    HttpAuthenticatorBuilder sendChallenge(boolean sendChallengeOnFailure);
 
-    AuthenticationResult getAuthenticationResult();
-
+    public HttpAuthenticator build();
 }

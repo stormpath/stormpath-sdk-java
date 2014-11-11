@@ -15,9 +15,6 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,13 +28,6 @@ public class AuthenticationFilter extends AccessControlFilter {
 
     @Override
     protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        UserAgent ua = new DefaultUserAgent(request);
-        if (ua.isRestClient()) {
-            //return 401
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
-        } else {
-            return redirectToLoginPage(request, response, "authcReqd");
-        }
+        return getUnauthenticatedHandler().onAuthenticationRequired(request, response);
     }
 }
