@@ -32,7 +32,8 @@ recognize how to implement a fix.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 106](https://github.com/stormpath/stormpath-sdk-java/issues/106): Creating an account or group from a Directory now returns the created resource.
-                                                                                                 
+- [Issue 119](https://github.com/stormpath/stormpath-sdk-java/issues/119): Added support for LinkedIn OAuth.
+
 ### 1.0.RC2.1 ###
 
 This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.

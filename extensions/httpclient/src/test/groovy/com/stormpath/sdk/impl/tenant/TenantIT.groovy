@@ -25,6 +25,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.provider.FacebookProvider
 import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -172,6 +173,35 @@ class TenantIT extends ClientIT {
         assertTrue(FacebookProvider.isAssignableFrom(provider.getClass()))
         assertEquals(((FacebookProvider)provider).getClientId(), clientId)
         assertEquals(((FacebookProvider)provider).getClientSecret(), clientSecret)
+    }
+
+    //@since 1.0.0
+    @Test
+    void testCreateDirWithLinkedInProvider() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testCreateDirWithLinkedInProvider")
+        def clientId = uniquify("999999911111111")
+        def clientSecret = uniquify("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0")
+
+        def request = Directories.newCreateRequestFor(dir).
+                forProvider(Providers.LINKEDIN.builder()
+                        .setClientId(clientId)
+                        .setClientSecret(clientSecret)
+                        .build()
+                ).build()
+
+        dir = client.currentTenant.createDirectory(request)
+        deleteOnTeardown(dir)
+
+        def provider = dir.getProvider()
+
+        assertEquals(provider.getHref(), dir.getHref() + "/provider")
+        assertEquals(provider.getProviderId(), "linkedin")
+        assertNotNull(provider.getCreatedAt())
+        assertNotNull(provider.getModifiedAt())
+        assertTrue(LinkedInProvider.isAssignableFrom(provider.getClass()))
+        assertEquals(((LinkedInProvider)provider).getClientId(), clientId)
+        assertEquals(((LinkedInProvider)provider).getClientSecret(), clientSecret)
     }
 
     //@since 1.0.0

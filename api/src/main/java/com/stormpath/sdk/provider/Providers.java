@@ -60,5 +60,13 @@ public final class Providers {
      */
     public static final FacebookRequestFactory FACEBOOK = (FacebookRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultFacebookRequestFactory");
 
+    /**
+     * Returns a new {@link LinkedInRequestFactory} instance, used to construct LinkedIn requests, like LinkedIn Account creation and retrieval.
+     *
+     * @return a new {@link LinkedInRequestFactory} instance, used to construct LinkedIn requests, like LinkedIn Account creation and retrieval.
+     * @since 1.0.0
+     */
+    public static final LinkedInRequestFactory LINKEDIN = (LinkedInRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultLinkedInRequestFactory");
+
 }
 
