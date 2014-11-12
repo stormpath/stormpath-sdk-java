@@ -15,13 +15,16 @@
  */
 package com.stormpath.sdk.servlet.i18n;
 
+import com.stormpath.sdk.servlet.http.Resolver;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 
-public class AcceptHeaderLocaleAccessor implements LocaleAccessor {
+public class AcceptHeaderLocaleResolver implements Resolver<Locale> {
 
     @Override
-    public Locale getLocale(HttpServletRequest request) {
+    public Locale get(HttpServletRequest request, HttpServletResponse response) {
         return request.getLocale();
     }
 }

@@ -47,7 +47,6 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
 
-    public static final String ACCOUNT_RESOLVER_LOCATIONS = "stormpath.web.account.resolver.locations";
     public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.web.account.saver.locations";
 
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
@@ -63,7 +62,6 @@ public class DefaultConfig implements Config {
     private final ConfigReader CFG;
     private final Map<String, String> props;
 
-    private final List<String> _ACCOUNT_RESOLVER_LOCATIONS;
     private final List<String> _ACCOUNT_SAVER_LOCATIONS;
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
     private final int _ACCOUNT_JWT_TTL;
@@ -80,15 +78,7 @@ public class DefaultConfig implements Config {
 
         this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
 
-        String val = CFG.getString(ACCOUNT_RESOLVER_LOCATIONS);
-        if (Strings.hasText(val)) {
-            String[] locs = Strings.split(val);
-            _ACCOUNT_RESOLVER_LOCATIONS = Arrays.asList(locs);
-        } else {
-            _ACCOUNT_RESOLVER_LOCATIONS = Collections.emptyList();
-        }
-
-        val = CFG.getString(ACCOUNT_SAVER_LOCATIONS);
+        String val = CFG.getString(ACCOUNT_SAVER_LOCATIONS);
         if (Strings.hasText(val)) {
             String[] locs = Strings.split(val);
             _ACCOUNT_SAVER_LOCATIONS = Arrays.asList(locs);
@@ -160,11 +150,6 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public List<String> getAccountResolverLocations() {
-        return _ACCOUNT_RESOLVER_LOCATIONS;
-    }
-
-    @Override
     public List<String> getAccountSaverLocations() {
         return _ACCOUNT_SAVER_LOCATIONS;
     }
@@ -188,8 +173,40 @@ public class DefaultConfig implements Config {
             SINGLETONS.put(classPropertyName, instance);
         }
 
-        if (instance instanceof Factory) {
-            instance = ((Factory<T>)instance).getInstance();
+        try {
+            if (instance instanceof Factory) {
+                instance = ((Factory<T>)instance).getInstance();
+            }
+        } catch (Exception e) {
+            String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();
+            throw new ServletException(msg);
+        }
+        return instance;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getInstance(String classPropertyName, Class<T> expectedType) throws ServletException {
+        Assert.notNull(expectedType, "expectedType argument cannot be null.");
+
+        T instance = (T) SINGLETONS.get(classPropertyName);
+        if (instance == null) {
+            instance = newInstance(classPropertyName);
+            SINGLETONS.put(classPropertyName, instance);
+        }
+
+        if (!expectedType.isInstance(instance)) {
+            String msg = "Configured " + classPropertyName + " class name must be an instance of " +
+                         expectedType.getName();
+            throw new ServletException(msg);
+        }
+
+        try {
+            if (instance instanceof Factory) {
+                instance = ((Factory<T>)instance).getInstance();
+            }
+        } catch (Exception e) {
+            String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();
+            throw new ServletException(msg);
         }
         return instance;
     }
@@ -206,7 +223,7 @@ public class DefaultConfig implements Config {
             String name = entry.getKey();
             Class<T> clazz = entry.getValue();
 
-            T instance = newInstance(propertyNamePrefix + name, clazz);
+            T instance = getInstance(propertyNamePrefix + name, clazz);
 
             instances.put(name, instance);
         }
@@ -237,32 +254,9 @@ public class DefaultConfig implements Config {
         if (instance instanceof ServletContextInitializable) {
             try {
                 ((ServletContextInitializable) instance).init(this.servletContext);
-            } catch (ServletException e) {
+            } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
                              val + ": " + e.getMessage();
-                throw new ServletException(msg, e);
-            }
-        }
-
-        return instance;
-    }
-
-    protected <T> T newInstance(String classPropertyName, Class<T> clazz) throws ServletException {
-        T instance;
-        try {
-            instance = Classes.newInstance(clazz);
-        } catch (Exception e) {
-            String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                         clazz.getName() + ": " + e.getMessage();
-            throw new ServletException(msg, e);
-        }
-
-        if (instance instanceof ServletContextInitializable) {
-            try {
-                ((ServletContextInitializable) instance).init(this.servletContext);
-            } catch (ServletException e) {
-                String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                             clazz.getName() + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }

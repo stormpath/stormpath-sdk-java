@@ -15,10 +15,13 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.config.impl.DefaultConfig;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
@@ -26,53 +29,59 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class AuthenticationResultSaver implements Saver<AuthenticationResult>, ServletContextInitializable {
 
-    public static final String COOKIE_ACCOUNT_SAVER = "stormpath.servlet.filter.authc.saver.cookie";
+    public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.servlet.filter.authc.saver.savers";
+    public static final String ACCOUNT_SAVER_PROPERTY_PREFIX = "stormpath.servlet.filter.authc.saver.savers.";
 
-    private Config config;
-    private Saver<AuthenticationResult> accountCookieSaver;
+    private List<Saver<AuthenticationResult>> savers;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void init(ServletContext servletContext) throws ServletException {
-        this.config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.accountCookieSaver = this.config.getInstance(COOKIE_ACCOUNT_SAVER);
-    }
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
 
-    public Config getConfig() {
-        return this.config;
-    }
+        List<String> locations = null;
+        String val = config.get(ACCOUNT_SAVER_LOCATIONS);
+        if (Strings.hasText(val)) {
+            String[] locs = Strings.split(val);
+            locations = Arrays.asList(locs);
+        }
 
-    public Saver<AuthenticationResult> getAccountCookieSaver() {
-        return accountCookieSaver;
-    }
+        Assert.notEmpty(locations, "At least one " + ACCOUNT_SAVER_LOCATIONS + " value must be specified.");
+        assert locations != null;
 
-    protected List<String> getAccountSaverLocations() {
-        return this.config.getAccountSaverLocations();
+        Map<String,Saver> saverMap = config.getInstances(ACCOUNT_SAVER_PROPERTY_PREFIX, Saver.class);
+
+        List<Saver<AuthenticationResult>> savers = new ArrayList<Saver<AuthenticationResult>>(saverMap.size());
+
+        for(String location : locations) {
+
+            Saver resolver = saverMap.get(location);
+            Assert.notNull(resolver, "There is no configured AuthenticationResult Saver named " + location);
+
+            Saver<AuthenticationResult> accountResolver = (Saver<AuthenticationResult>)resolver;
+            savers.add(accountResolver);
+        }
+
+        this.savers = Collections.unmodifiableList(savers);
     }
 
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
-
-        List<String> locations = getAccountSaverLocations();
-
-        if (locations.contains("disabled")) {
-            return;
+        for(Saver<AuthenticationResult> saver : savers) {
+            saver.set(request, response, result);
         }
 
-        for (String location : locations) {
-            if ("cookie".equalsIgnoreCase(location)) {
-                getAccountCookieSaver().set(request, response, result);
-            } else if ("session".equalsIgnoreCase(location)) {
-                HttpSession session = request.getSession();
-                session.setAttribute("account", result.getAccount());
-            } else {
-                String msg = "Unrecognized " + DefaultConfig.ACCOUNT_SAVER_LOCATIONS + " config value: " + location;
-                throw new IllegalArgumentException(msg);
-            }
-        }
+        Account account = result.getAccount();
+        //store under both names - can be convenient depending on how it is accessed:
+        request.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
+        request.setAttribute(Account.class.getName(), account);
     }
 }

@@ -21,6 +21,8 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.UriCleaner;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 public class StormpathFilter extends HttpFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(StormpathFilter.class);
 
     public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.routes.";
     public static final String FILTER_CONFIG_NAME_PREFIX = "stormpath.servlet.filter.";
@@ -50,6 +54,19 @@ public class StormpathFilter extends HttpFilter {
 
     @Override
     protected void onInit() throws ServletException {
+        try {
+            doInit();
+        } catch (ServletException e) {
+            log.error("Unable to initialize StormpathFilter.", e);
+            throw e;
+        } catch (Exception e) {
+            String msg = "Unable to initialize StormpathFilter: " + e.getMessage();
+            log.error(msg, e);
+            throw new ServletException(msg);
+        }
+    }
+
+    protected void doInit() throws ServletException {
 
         PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(getServletContext());
         this.filterChainResolver = resolver;

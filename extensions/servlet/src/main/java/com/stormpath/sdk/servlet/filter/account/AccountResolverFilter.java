@@ -36,7 +36,7 @@ import java.util.Map;
 //not an orderable filter - always executes immediately after the StormpathFilter but before other user-configured filters.
 public class AccountResolverFilter extends HttpFilter {
 
-    public static final String ACCOUNT_RESOLVER_LOCATIONS = "stormpath.web.account.resolver.locations";
+    public static final String ACCOUNT_RESOLVER_LOCATIONS = "stormpath.servlet.filter.accountResolver.resolvers";
     public static final String ACCOUNT_RESOLVER_PROPERTY_PREFIX = "stormpath.servlet.filter.accountResolver.resolvers.";
 
     private List<Resolver<Account>> resolvers;
@@ -54,8 +54,7 @@ public class AccountResolverFilter extends HttpFilter {
             locations = Arrays.asList(locs);
         }
 
-        Assert.notEmpty(locations, "At least one " + ACCOUNT_RESOLVER_LOCATIONS +
-                                           " location must be specified required.");
+        Assert.notEmpty(locations, "At least one " + ACCOUNT_RESOLVER_LOCATIONS + " must be specified.");
         assert locations != null;
 
         Map<String,Resolver> resolverMap = config.getInstances(ACCOUNT_RESOLVER_PROPERTY_PREFIX, Resolver.class);
@@ -65,7 +64,7 @@ public class AccountResolverFilter extends HttpFilter {
         for(String location : locations) {
 
             Resolver resolver = resolverMap.get(location);
-            Assert.notNull(resolver, "There is no resolver named " + location);
+            Assert.notNull(resolver, "There is no configured Account Resolver named " + location);
 
             Resolver<Account> accountResolver = (Resolver<Account>)resolver;
             resolvers.add(accountResolver);
