@@ -37,7 +37,7 @@ import java.util.Map;
 public class HttpAuthenticatorFactory implements Factory<HttpAuthenticator>, ServletContextInitializable {
 
     public static final String CHALLENGE_PROPERTY_NAME = "stormpath.servlet.http.authc.challenge";
-    public static final String SCHEME_PROPERTY_NAME_PREFIX = "stormpath.servlet.http.authc.scheme.";
+    public static final String SCHEME_PROPERTY_NAME_PREFIX = "stormpath.servlet.http.authc.schemes.";
 
     private HttpAuthenticator authenticator;
 
@@ -52,6 +52,15 @@ public class HttpAuthenticatorFactory implements Factory<HttpAuthenticator>, Ser
             new LinkedHashMap<String, Class<? extends HttpAuthenticationScheme>>();
 
         //add defaults:
+
+        // https://tools.ietf.org/html/rfc7235#section-2.1 recommends that Basic be listed before
+        // other less common schemes:
+        //
+        //    Note: Many clients fail to parse a challenge that contains an
+        //    unknown scheme.  A workaround for this problem is to list well-
+        //    supported schemes (such as "basic") first.
+        //
+        //
         configuredSchemes.put("basic", BasicAuthenticationScheme.class);
         configuredSchemes.put("bearer", BearerAuthenticationScheme.class);
 

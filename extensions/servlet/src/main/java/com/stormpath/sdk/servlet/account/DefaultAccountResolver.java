@@ -7,7 +7,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-public class DefaultRequestAccountResolver implements RequestAccountResolver {
+public class DefaultAccountResolver implements AccountResolver {
 
     public static final String REQUEST_ATTR_NAME = "account";
 

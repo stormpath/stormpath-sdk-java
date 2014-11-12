@@ -17,8 +17,8 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.CookieConfig;
-import com.stormpath.sdk.servlet.http.CookieMutator;
-import com.stormpath.sdk.servlet.http.Mutator;
+import com.stormpath.sdk.servlet.http.CookieSaver;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.FilterChain;
@@ -46,8 +46,8 @@ public class LogoutFilter extends HttpFilter {
 
         //clear out any account cookie:
         CookieConfig accountCookieConfig = getConfig().getAccountCookieConfig();
-        Mutator<String> mutator = new CookieMutator(accountCookieConfig);
-        mutator.set(request, response, null); //null value == delete the cookie
+        Saver<String> saver = new CookieSaver(accountCookieConfig);
+        saver.set(request, response, null); //null value == delete the cookie
 
         String next = request.getParameter("next");
 

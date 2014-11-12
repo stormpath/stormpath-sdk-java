@@ -23,11 +23,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CookieMutator implements Mutator<String> {
+public class CookieSaver implements Saver<String> {
 
     private final CookieConfig config;
 
-    public CookieMutator(CookieConfig config) {
+    public CookieSaver(CookieConfig config) {
         Assert.notNull(config, "config cannot be null.");
         this.config = config;
     }

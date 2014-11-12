@@ -19,8 +19,8 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.http.Accessor;
-import com.stormpath.sdk.servlet.http.CookieAccessor;
+import com.stormpath.sdk.servlet.http.CookieResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +31,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CookieAccountAccessor extends AccountCookieHandler implements Accessor<Account>, ServletContextInitializable {
+public class CookieAccountResolver extends AccountCookieHandler
+    implements Resolver<Account>, ServletContextInitializable {
 
-    private static final Logger log = LoggerFactory.getLogger(CookieAccountAccessor.class);
+    private static final Logger log = LoggerFactory.getLogger(CookieAccountResolver.class);
 
     protected static final String JWT_ACCOUNT_RESOLVER = "stormpath.web.account.jwt.resolver";
 
@@ -52,9 +53,8 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
     @Override
     public Account get(HttpServletRequest request, HttpServletResponse response) {
 
-        Accessor<Cookie> accessor = getCookieAccessor(request);
-
-        Cookie cookie = accessor.get(request, response);
+        Resolver<Cookie> resolver = getCookieResolver(request);
+        Cookie cookie = resolver.get(request, response);
 
         if (cookie == null) {
             return null;
@@ -76,9 +76,9 @@ public class CookieAccountAccessor extends AccountCookieHandler implements Acces
         return null;
     }
 
-    protected Accessor<Cookie> getCookieAccessor(HttpServletRequest request) {
+    protected Resolver<Cookie> getCookieResolver(HttpServletRequest request) {
         String cookieName = getAccountCookieConfig(request).getName();
-        return new CookieAccessor(cookieName);
+        return new CookieResolver(cookieName);
     }
 
     protected Account getAccount(HttpServletRequest request, HttpServletResponse response, String jwt) {

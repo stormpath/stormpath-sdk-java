@@ -25,7 +25,7 @@ import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.sdk.servlet.http.Mutator;
+import com.stormpath.sdk.servlet.http.Saver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +48,14 @@ public class AccessTokenFilter extends HttpFilter {
     protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER =
         "stormpath.servlet.filter.accessToken.requestAuthorizer";
 
-    protected static final String ACCOUNT_SAVER = "stormpath.web.account.saver";
+    protected static final String ACCOUNT_SAVER = "stormpath.servlet.filter.authc.saver";
 
     protected static final String SECURE = "stormpath.servlet.filter.accessToken.secure";
 
     private AccessTokenRequestAuthorizer requestAuthorizer;
     private AccessTokenAuthenticationRequestFactory authenticationRequestFactory;
     private AccessTokenResultFactory resultFactory;
-    private Mutator<AuthenticationResult> accountSaver;
+    private Saver<AuthenticationResult> accountSaver;
     private boolean secure = true;
 
     public AccessTokenRequestAuthorizer getRequestAuthorizer() {
@@ -70,7 +70,7 @@ public class AccessTokenFilter extends HttpFilter {
         return this.resultFactory;
     }
 
-    public Mutator<AuthenticationResult> getAccountSaver() {
+    public Saver<AuthenticationResult> getAccountSaver() {
         return this.accountSaver;
     }
 

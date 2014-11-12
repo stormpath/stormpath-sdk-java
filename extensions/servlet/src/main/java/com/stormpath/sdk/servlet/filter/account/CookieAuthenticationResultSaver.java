@@ -20,8 +20,8 @@ import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.CookieConfig;
-import com.stormpath.sdk.servlet.http.CookieMutator;
-import com.stormpath.sdk.servlet.http.Mutator;
+import com.stormpath.sdk.servlet.http.CookieSaver;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -29,8 +29,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class AccountCookieMutator extends AccountCookieHandler
-    implements Mutator<AuthenticationResult>, ServletContextInitializable {
+public class CookieAuthenticationResultSaver extends AccountCookieHandler
+    implements Saver<AuthenticationResult>, ServletContextInitializable {
 
     protected static final String ACCOUNT_COOKIE_SECURE_EVALUATOR = "stormpath.web.account.cookie.secure.evaluator";
     protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
@@ -64,14 +64,14 @@ public class AccountCookieMutator extends AccountCookieHandler
             jwt = getAccountJwtFactory().createAccountJwt(request, response, value.getAccount());
         }
 
-        Mutator<String> mutator = getCookieMutator(request);
+        Saver<String> saver = getCookieSaver(request);
 
-        mutator.set(request, response, jwt);
+        saver.set(request, response, jwt);
     }
 
-    protected Mutator<String> getCookieMutator(HttpServletRequest request) {
+    protected Saver<String> getCookieSaver(HttpServletRequest request) {
         CookieConfig cfg = getAccountCookieConfig(request);
-        return new CookieMutator(cfg);
+        return new CookieSaver(cfg);
     }
 
     @Override

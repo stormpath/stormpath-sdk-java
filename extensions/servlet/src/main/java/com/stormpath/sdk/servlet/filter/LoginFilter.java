@@ -21,12 +21,12 @@ import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.account.RequestAccountResolver;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
-import com.stormpath.sdk.servlet.http.Mutator;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +44,13 @@ public class LoginFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
-    protected static final String ACCOUNT_SAVER = "stormpath.web.account.saver";
+    protected static final String AUTHENTICATION_RESULT_SAVER = "stormpath.servlet.filter.authc.saver";
 
-    private Mutator<AuthenticationResult> accountSaver;
+    private Saver<AuthenticationResult> authenticationResultSaver;
 
     @Override
     protected void onInit() throws ServletException {
-        this.accountSaver = getConfig().getInstance(ACCOUNT_SAVER);
+        this.authenticationResultSaver = getConfig().getInstance(AUTHENTICATION_RESULT_SAVER);
     }
 
     /**
@@ -66,8 +66,8 @@ public class LoginFilter extends HttpFilter {
         return getConfig().getLoginNextUrl();
     }
 
-    public Mutator<AuthenticationResult> getAccountSaver() {
-        return this.accountSaver;
+    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+        return this.authenticationResultSaver;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class LoginFilter extends HttpFilter {
     }
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
-        getAccountSaver().set(request, response, result);
+        getAuthenticationResultSaver().set(request, response, result);
     }
 
     private void setForm(HttpServletRequest request, Form form) {
@@ -180,7 +180,7 @@ public class LoginFilter extends HttpFilter {
     }
 
     protected Account getAccount(HttpServletRequest req) {
-        return RequestAccountResolver.INSTANCE.getAccount(req);
+        return AccountResolver.INSTANCE.getAccount(req);
     }
 
     protected void validate(Form form) throws ServletException, IOException {

@@ -15,15 +15,28 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.UserAgent;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
 import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
+public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler, ServletContextInitializable {
+
+    protected static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
+    private HttpAuthenticator httpAuthenticator;
+
+    @Override
+    public void init(ServletContext servletContext) throws ServletException {
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        this.httpAuthenticator = config.getInstance(HTTP_AUTHENTICATOR);
+    }
 
     @Override
     public boolean onAuthenticationRequired(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -31,25 +44,7 @@ public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
         if (isHtmlPreferred(request)) {
             LoginPageRedirector.INSTANCE.redirectToLoginPage(request, response, "authcReqd");
         } else {
-            //return 401
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            String realmName = getRealmName(request);
-            String realmSuffix = "realm=\"" + realmName + "\"";
-
-            // https://tools.ietf.org/html/rfc7235#section-2.1 recommends that Basic be listed before
-            // other less common schemes:
-            //
-            //    Note: Many clients fail to parse a challenge that contains an
-            //    unknown scheme.  A workaround for this problem is to list well-
-            //    supported schemes (such as "basic") first.
-            //
-            //
-            response.setHeader("WWW-Authenticate", "Basic " + realmSuffix);
-            response.setHeader("WWW-Authenticate", "Bearer " + realmSuffix);
-
-            response.setHeader("Cache-Control", "no-store");
-            response.setHeader("Pragma", "no-cache");
+            this.httpAuthenticator.sendChallenge(request, response);
         }
 
         return false;
@@ -58,10 +53,5 @@ public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
     protected boolean isHtmlPreferred(HttpServletRequest request) {
         UserAgent ua = new DefaultUserAgent(request);
         return ua.isHtmlPreferred();
-    }
-
-    protected String getRealmName(HttpServletRequest request) {
-        Application application = ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
-        return application.getName();
     }
 }

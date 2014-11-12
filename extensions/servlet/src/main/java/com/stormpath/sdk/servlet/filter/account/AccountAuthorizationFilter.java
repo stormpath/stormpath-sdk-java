@@ -17,7 +17,7 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.account.RequestAccountResolver;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.AccessControlFilter;
 import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
@@ -75,7 +75,7 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
         if (request.getRemoteUser() != null) {
 
             //an account is present, let's ensure that they are authorized according to the expression:
-            final Account requestAccount = RequestAccountResolver.INSTANCE.getAccount(request);
+            final Account requestAccount = AccountResolver.INSTANCE.getAccount(request);
 
             //ensure that the expression can't modify the account:
             final Account account = new ImmutableAccount(requestAccount);

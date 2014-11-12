@@ -11,8 +11,8 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver;
-import com.stormpath.sdk.servlet.account.RequestAccountResolver;
+import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
@@ -96,11 +96,11 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     protected boolean hasAccount() {
-        return RequestAccountResolver.INSTANCE.hasAccount(this);
+        return AccountResolver.INSTANCE.hasAccount(this);
     }
 
     protected Account getAccount() {
-        return RequestAccountResolver.INSTANCE.getAccount(this);
+        return AccountResolver.INSTANCE.getAccount(this);
     }
 
     @Override
@@ -265,7 +265,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         }
 
         Account account = result.getAccount();
-        setAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME, account);
+        setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
 
         return true;
     }
@@ -292,7 +292,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         }
 
         Account account = result.getAccount();
-        setAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME, account);
+        setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
     }
 
     protected AuthenticationRequest createAuthenticationRequest(String username, String password,
@@ -306,6 +306,6 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public void logout() throws ServletException {
-        removeAttribute(DefaultRequestAccountResolver.REQUEST_ATTR_NAME);
+        removeAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME);
     }
 }

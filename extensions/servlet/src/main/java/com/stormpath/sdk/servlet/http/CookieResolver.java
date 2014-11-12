@@ -15,11 +15,36 @@
  */
 package com.stormpath.sdk.servlet.http;
 
+import com.stormpath.sdk.lang.Assert;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface Mutator<T> {
+public class CookieResolver implements Resolver<Cookie> {
 
-    void set(HttpServletRequest request, HttpServletResponse response, T value);
+    private final String name;
 
+    public CookieResolver(String name) {
+        Assert.hasText(name, "cookie name argument cannot be null or empty.");
+        this.name = name;
+    }
+
+    @Override
+    public Cookie get(HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return null;
+        }
+
+        for (Cookie cookie : cookies) {
+            if (this.name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+
+        return null;
+    }
 }

@@ -46,7 +46,7 @@ public interface Config extends Map<String, String> {
 
     String getUnauthorizedUrl();
 
-    List<String> getAccountLocatorLocations();
+    List<String> getAccountResolverLocations();
 
     List<String> getAccountSaverLocations();
 
@@ -55,4 +55,6 @@ public interface Config extends Map<String, String> {
     int getAccountJwtTtl();
 
     <T> T getInstance(String classPropertyName) throws ServletException;
+
+    <T> Map<String,T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;
 }

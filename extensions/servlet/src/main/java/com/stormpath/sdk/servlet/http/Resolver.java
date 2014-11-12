@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter.account;
-
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.http.Accessor;
+package com.stormpath.sdk.servlet.http;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-public class SessionAccountAccessor implements Accessor<Account> {
+/**
+ * An http {@code Resolver} is able to resolve (locate) a value by inspecting a request.
+ *
+ * @param <T> the type of value returned by the resolver
+ * @since 1.0.RC3
+ */
+public interface Resolver<T> {
 
-    @Override
-    public Account get(HttpServletRequest request, HttpServletResponse response) {
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null) {
-            return null;
-        }
-
-        return (Account) session.getAttribute(Account.class.getName());
-    }
+    /**
+     * Returns the discovered value or {@code null} if the value could not be discovered.
+     *
+     * @param request  the inbound request
+     * @param response the outbound response
+     * @return the discovered value or {@code null} if the value could not be discovered.
+     */
+    T get(HttpServletRequest request, HttpServletResponse response);
 }

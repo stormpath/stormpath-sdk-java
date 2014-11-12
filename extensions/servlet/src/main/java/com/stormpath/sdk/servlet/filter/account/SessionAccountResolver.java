@@ -13,13 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.http;
+package com.stormpath.sdk.servlet.filter.account;
+
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-public interface Accessor<T> {
+public class SessionAccountResolver implements Resolver<Account> {
 
-    T get(HttpServletRequest request, HttpServletResponse response);
+    @Override
+    public Account get(HttpServletRequest request, HttpServletResponse response) {
 
+        HttpSession session = request.getSession(false);
+
+        if (session == null) {
+            return null;
+        }
+
+        return (Account) session.getAttribute(Account.class.getName());
+    }
 }

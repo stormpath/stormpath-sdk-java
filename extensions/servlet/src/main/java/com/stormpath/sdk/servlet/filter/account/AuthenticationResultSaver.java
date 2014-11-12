@@ -19,7 +19,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.impl.DefaultConfig;
-import com.stormpath.sdk.servlet.http.Mutator;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -29,30 +29,25 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-public class DefaultAccountSaver implements Mutator<AuthenticationResult>, ServletContextInitializable {
+public class AuthenticationResultSaver implements Saver<AuthenticationResult>, ServletContextInitializable {
+
+    public static final String COOKIE_ACCOUNT_SAVER = "stormpath.servlet.filter.authc.saver.cookie";
 
     private Config config;
-    private Mutator<AuthenticationResult> accountCookieMutator;
+    private Saver<AuthenticationResult> accountCookieSaver;
 
     @Override
     public void init(ServletContext servletContext) throws ServletException {
         this.config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.accountCookieMutator = createAccountCookieMutator(servletContext);
-    }
-
-    protected Mutator<AuthenticationResult> createAccountCookieMutator(ServletContext servletContext)
-        throws ServletException {
-        AccountCookieMutator mutator = new AccountCookieMutator();
-        mutator.init(servletContext);
-        return mutator;
+        this.accountCookieSaver = this.config.getInstance(COOKIE_ACCOUNT_SAVER);
     }
 
     public Config getConfig() {
         return this.config;
     }
 
-    public Mutator<AuthenticationResult> getAccountCookieMutator() {
-        return accountCookieMutator;
+    public Saver<AuthenticationResult> getAccountCookieSaver() {
+        return accountCookieSaver;
     }
 
     protected List<String> getAccountSaverLocations() {
@@ -70,7 +65,7 @@ public class DefaultAccountSaver implements Mutator<AuthenticationResult>, Servl
 
         for (String location : locations) {
             if ("cookie".equalsIgnoreCase(location)) {
-                getAccountCookieMutator().set(request, response, result);
+                getAccountCookieSaver().set(request, response, result);
             } else if ("session".equalsIgnoreCase(location)) {
                 HttpSession session = request.getSession();
                 session.setAttribute("account", result.getAccount());

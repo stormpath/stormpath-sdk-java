@@ -4,13 +4,13 @@ import com.stormpath.sdk.account.Account;
 
 import javax.servlet.ServletRequest;
 
-public interface RequestAccountResolver {
+public interface AccountResolver {
 
     /**
      * A thread-safe instance to use as desired.  The implementation is a
-     * {@link com.stormpath.sdk.servlet.account.DefaultRequestAccountResolver DefaultRequestAccountResolver}.
+     * {@link DefaultAccountResolver DefaultAccountResolver}.
      */
-    public static final RequestAccountResolver INSTANCE = new DefaultRequestAccountResolver();
+    public static final AccountResolver INSTANCE = new DefaultAccountResolver();
 
     boolean hasAccount(ServletRequest request);
 
