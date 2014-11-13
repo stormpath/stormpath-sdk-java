@@ -63,6 +63,24 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
         String password = sb.length() > 0 ? sb.toString() : null;
 
-        return authenticate(attempt, usernameOrEmail, password);
+        //heuristics to determine if the basic authentication is a username/password-based authentication
+        //or an api key-based authentication:
+        boolean apiKey = isApiKeyAuthenticatedRequest(attempt, usernameOrEmail, password);
+
+        if (apiKey) {
+            return authenticateApiKey(attempt);
+        } else {
+            return authenticate(attempt, usernameOrEmail, password);
+        }
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    protected boolean isApiKeyAuthenticatedRequest(HttpAuthenticationAttempt attempt, String usernameOrEmail,
+                                                   String password) {
+        return usernameOrEmail != null &&
+               usernameOrEmail.length() == 26 && //Stormpath-generated API Key IDs are 26 characters long
+               password != null && password.length() == 44 &&
+               //Stormpath-generated API Key Secrets are 44 characters long
+               usernameOrEmail.indexOf('@') < 0; //@ char indicates a likely email - not an API Key ID
     }
 }

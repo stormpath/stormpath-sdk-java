@@ -21,24 +21,55 @@ import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public abstract class AbstractAuthenticationScheme implements HttpAuthenticationScheme {
 
     public AbstractAuthenticationScheme() {
     }
 
-    protected HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt,
-                                                    String usernameOrEmail, String password) {
+    protected HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt, String usernameOrEmail,
+                                                    String password) {
 
-        String remoteHost = attempt.getRequest().getRemoteHost();
+        HttpServletRequest request;
+        HttpServletResponse response;
+        AuthenticationResult result;
+        try {
+            request = attempt.getRequest();
+            response = attempt.getResponse();
 
-        UsernamePasswordRequest request = new UsernamePasswordRequest(usernameOrEmail, password, remoteHost);
+            String remoteHost = attempt.getRequest().getRemoteHost();
 
-        Application app = getApplication(attempt.getRequest());
+            UsernamePasswordRequest upRequest = new UsernamePasswordRequest(usernameOrEmail, password, remoteHost);
 
-        AuthenticationResult result = app.authenticateAccount(request);
+            Application app = getApplication(attempt.getRequest());
 
-        return new DefaultHttpAuthenticationResult(attempt.getRequest(), attempt.getResponse(), result);
+            result = app.authenticateAccount(upRequest);
+        } catch (Exception e) {
+            String msg = "Unable to authenticate usernameOrEmail and password-based request for usernameOrEmail [" +
+                         usernameOrEmail + "]: " + e.getMessage();
+            throw new HttpAuthenticationException(msg, e);
+        }
+
+        return new DefaultHttpAuthenticationResult(request, response, result);
+    }
+
+    protected HttpAuthenticationResult authenticateApiKey(HttpAuthenticationAttempt attempt) {
+
+        HttpServletRequest request;
+        HttpServletResponse response;
+        AuthenticationResult result;
+        try {
+            request = attempt.getRequest();
+            response = attempt.getResponse();
+            Application app = getApplication(request);
+            result = app.authenticateApiRequest(request);
+        } catch (Exception e) {
+            String msg = "Unable to authenticate request: " + e.getMessage();
+            throw new HttpAuthenticationException(msg, e);
+        }
+
+        return new DefaultHttpAuthenticationResult(request, response, result);
     }
 
     protected Application getApplication(HttpServletRequest request) {

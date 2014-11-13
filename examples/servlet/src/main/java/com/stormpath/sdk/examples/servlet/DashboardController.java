@@ -18,6 +18,7 @@ package com.stormpath.sdk.examples.servlet;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +34,7 @@ public class DashboardController extends HttpServlet {
         String birthday = "";
         String color = "";
 
-        Account account = (Account)req.getSession().getAttribute("account");
+        Account account = AccountResolver.INSTANCE.getAccount(req);
         if (account != null) {
             CustomData data = account.getCustomData();
             birthday = (String)data.get("birthday");
@@ -52,7 +53,7 @@ public class DashboardController extends HttpServlet {
         String color = req.getParameter("color");
 
         //get the currently-logged-in account:
-        Account account = (Account)req.getSession().getAttribute("account");
+        Account account = AccountResolver.INSTANCE.getAccount(req);
         if (account != null) {
 
             CustomData data = account.getCustomData();

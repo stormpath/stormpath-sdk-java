@@ -41,8 +41,7 @@ import java.util.Map;
  *
  * @since 1.0.0
  */
-//package protected on purpose
-class ImmutableAccount implements Account {
+public class ImmutableAccount implements Account {
 
     private static final String IMMUTABLE_MSG = "Immutable account references cannot be modified.";
 

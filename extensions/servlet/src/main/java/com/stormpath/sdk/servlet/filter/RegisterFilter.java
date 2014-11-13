@@ -18,16 +18,20 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +50,15 @@ public class RegisterFilter extends HttpFilter {
     private static final Logger log = LoggerFactory.getLogger(RegisterFilter.class);
 
     public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
+    private static final String ACCOUNT_SAVER_PROP = "stormpath.servlet.filter.authc.saver";
+
+    //only used if account does not need email verification:
+    private Saver<AuthenticationResult> authenticationResultSaver;
+
+    @Override
+    protected void onInit() throws ServletException {
+        this.authenticationResultSaver = getConfig().getInstance(ACCOUNT_SAVER_PROP);
+    }
 
     /**
      * Returns the context-relative URL where a user can be redirected to login.
@@ -263,18 +276,52 @@ public class RegisterFilter extends HttpFilter {
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);
 
-        if (account.getStatus() == AccountStatus.UNVERIFIED) {
-            // the user needs to verify their email address first:
-            req.setAttribute("account", account);
+        AccountStatus status = account.getStatus();
+
+        if (status == AccountStatus.ENABLED) {
+
+            //the user does not need to verify their email address, so just assume they are authenticated
+            //(since they specified their password during registration):
+
+            final Account theAccount = account;
+            this.authenticationResultSaver.set(req, resp, new AuthenticationResult() {
+                @Override
+                public Account getAccount() {
+                    return theAccount;
+                }
+
+                @Override
+                public void accept(AuthenticationResultVisitor visitor) {
+                    visitor.visit(this);
+
+                }
+
+                @Override
+                public String getHref() {
+                    return null;
+                }
+            });
+
+        } else if (status == AccountStatus.UNVERIFIED) {
+
+            // The user must verify their email address:
+            //
+            // NOTE: we don't use the authenticationResultSaver here because we don't want the identity
+            // to be retained after this request.  To avoid security attack vectors, the end-user must
+            // verify their email address and then explicitly authenticate after doing so.  At that time,
+            // the authentication state will be saved appropriately via the login filter.
+            //
+            // We set the account as a request attribute here only for the remainder of the request in case the
+            // verifyEmail.jsp view wants to use it to render a user-specific message, for example,
+            //
+            // 'Thanks for registering Joe!  Almost done - please verify your email...'
+            //
+            req.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
             req.getRequestDispatcher("/verifyEmail.jsp").forward(req, resp);
             return;
         }
 
-        //otherwise, continue:
-
-        //TODO: session use should be configurable.  USE JWT when not.
-        //put the account in the session for easy retrieval later:
-        req.getSession().setAttribute("account", account);
+        //finish up by showing the 'post register' view:
 
         String next = form.getNext();
 

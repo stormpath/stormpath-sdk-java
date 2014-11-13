@@ -72,19 +72,18 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        if (request.getRemoteUser() != null) {
-
-            //an account is present, let's ensure that they are authorized according to the expression:
-            final Account requestAccount = AccountResolver.INSTANCE.getAccount(request);
-
-            //ensure that the expression can't modify the account:
-            final Account account = new ImmutableAccount(requestAccount);
+        if (AccountResolver.INSTANCE.hasAccount(request)) {
 
             if (this.expression != null) {
 
+                //an account is present, let's ensure that they are authorized according to the expression:
+                final Account requestAccount = AccountResolver.INSTANCE.getAccount(request);
+
+                //ensure that the expression can't modify the account and that other http attributes are available
+                //during expression evaluation:
+                final HttpImmutableAccount account = new HttpImmutableAccount(requestAccount, request, response);
+
                 StandardEvaluationContext ctx = new StandardEvaluationContext(account);
-                ctx.setVariable("request", request);
-                ctx.setVariable("response", response);
 
                 Object value = this.expression.getValue(ctx);
 
@@ -107,7 +106,9 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
 
     @Override
     protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (request.getRemoteUser() == null) { //not authenticated - can't determine access control rights:
+
+        if (!AccountResolver.INSTANCE.hasAccount(request)) {
+            //not authenticated - can't determine access control rights:
             return getUnauthenticatedHandler().onAuthenticationRequired(request, response);
         }
 

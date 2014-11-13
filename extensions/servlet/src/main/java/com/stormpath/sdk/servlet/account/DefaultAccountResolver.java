@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 
 public class DefaultAccountResolver implements AccountResolver {
 
-    public static final String REQUEST_ATTR_NAME = "account";
+    public static final String REQUEST_ATTR_NAME = Account.class.getName();
 
     @Override
     public boolean hasAccount(ServletRequest request) {

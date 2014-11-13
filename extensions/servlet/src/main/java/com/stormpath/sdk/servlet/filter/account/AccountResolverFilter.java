@@ -89,7 +89,7 @@ public class AccountResolverFilter extends HttpFilter {
             if (account != null) {
                 //store under both names - can be convenient depending on how it is accessed:
                 request.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
-                request.setAttribute(Account.class.getName(), account);
+                request.setAttribute("account", account);
                 break;
             }
         }

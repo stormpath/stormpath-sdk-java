@@ -15,14 +15,12 @@
  */
 package com.stormpath.sdk.servlet.http.authc.config;
 
-import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.Factory;
-import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderAuthenticator;
-import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
-import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
@@ -30,14 +28,15 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class HttpAuthenticatorFactory implements Factory<HttpAuthenticator>, ServletContextInitializable {
 
     public static final String CHALLENGE_PROPERTY_NAME = "stormpath.servlet.http.authc.challenge";
-    public static final String SCHEME_PROPERTY_NAME_PREFIX = "stormpath.servlet.http.authc.schemes.";
+    public static final String SCHEMES_PROP = "stormpath.servlet.http.authc.schemes";
+    public static final String SCHEME_PROPERTY_NAME_PREFIX = SCHEMES_PROP + ".";
 
     private HttpAuthenticator authenticator;
 
@@ -46,43 +45,29 @@ public class HttpAuthenticatorFactory implements Factory<HttpAuthenticator>, Ser
 
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
 
-        boolean challenge = Boolean.parseBoolean(config.get(CHALLENGE_PROPERTY_NAME));
-
-        Map<String,Class<? extends HttpAuthenticationScheme>> configuredSchemes =
-            new LinkedHashMap<String, Class<? extends HttpAuthenticationScheme>>();
-
-        //add defaults:
-
-        // https://tools.ietf.org/html/rfc7235#section-2.1 recommends that Basic be listed before
-        // other less common schemes:
-        //
-        //    Note: Many clients fail to parse a challenge that contains an
-        //    unknown scheme.  A workaround for this problem is to list well-
-        //    supported schemes (such as "basic") first.
-        //
-        //
-        configuredSchemes.put("basic", BasicAuthenticationScheme.class);
-        configuredSchemes.put("bearer", BearerAuthenticationScheme.class);
-
-        //find any configured ones (which may or may not override the defaults):
-        Map<String,Class<HttpAuthenticationScheme>> foundClasses =
-            new ImplementationClassResolver<HttpAuthenticationScheme>(
-                config, SCHEME_PROPERTY_NAME_PREFIX, HttpAuthenticationScheme.class)
-            .findImplementationClasses();
-
-        if (!com.stormpath.sdk.lang.Collections.isEmpty(foundClasses)) {
-            configuredSchemes.putAll(foundClasses);
+        List<String> schemeNames = null;
+        String val = config.get(SCHEMES_PROP);
+        if (Strings.hasText(val)) {
+            String[] locs = Strings.split(val);
+            schemeNames = Arrays.asList(locs);
         }
 
-        List<HttpAuthenticationScheme> schemes = new ArrayList<HttpAuthenticationScheme>(configuredSchemes.size());
+        Assert.notEmpty(schemeNames, "At least one " + SCHEMES_PROP + " value must be specified.");
+        assert schemeNames != null;
 
-        for(Class<? extends HttpAuthenticationScheme> schemeClass : configuredSchemes.values()) {
-            HttpAuthenticationScheme scheme = Classes.newInstance(schemeClass);
-            if (scheme instanceof ServletContextInitializable) {
-                ((ServletContextInitializable)scheme).init(servletContext);
-            }
+        Map<String, HttpAuthenticationScheme> schemeMap =
+            config.getInstances(SCHEME_PROPERTY_NAME_PREFIX, HttpAuthenticationScheme.class);
+
+        List<HttpAuthenticationScheme> schemes = new ArrayList<HttpAuthenticationScheme>(schemeMap.size());
+
+        for (String schemeName : schemeNames) {
+
+            HttpAuthenticationScheme scheme = schemeMap.get(schemeName);
+            Assert.notNull(scheme, "There is no configured HttpAuthenticationScheme named " + schemeName);
             schemes.add(scheme);
         }
+
+        boolean challenge = Boolean.parseBoolean(config.get(CHALLENGE_PROPERTY_NAME));
 
         this.authenticator = new AuthorizationHeaderAuthenticator(schemes, challenge);
     }
