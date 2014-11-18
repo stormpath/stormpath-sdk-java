@@ -23,15 +23,15 @@ import javax.servlet.http.HttpServletRequest;
 public class OriginAccessTokenRequestAuthorizer implements AccessTokenRequestAuthorizer {
 
     @Override
-    public void assertAuthorizedAccessTokenRequest(HttpServletRequest request) throws AccessTokenRequestException {
+    public void assertAuthorizedAccessTokenRequest(HttpServletRequest request) throws OauthException {
         String origin = request.getHeader("Origin");
         if (!Strings.hasText(origin)) {
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_CLIENT, "Missing Origin header.", null);
+            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "Missing Origin header.", null);
         }
 
         String uri = ServerUriResolver.INSTANCE.getServerUri(request);
         if (!origin.startsWith(uri)) {
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_CLIENT, "Unauthorized Origin.", null);
+            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "Unauthorized Origin.", null);
         }
     }
 }

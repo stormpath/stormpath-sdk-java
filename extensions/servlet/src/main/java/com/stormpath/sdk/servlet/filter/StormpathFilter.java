@@ -15,8 +15,12 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.UriCleaner;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
@@ -212,8 +216,15 @@ public class StormpathFilter extends HttpFilter {
         Assert.notNull(filterChainResolver,
                        "Filter has not yet been initialized. init(FilterConfig) must be called before use.");
 
+        //ensure the Client and Application are conveniently available to all request filters/handlers:
+        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+        request.setAttribute(Client.class.getName(), client);
+
+        Application application = ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
+        request.setAttribute(Application.class.getName(), application);
+
         //wrap:
-        request = new StormpathHttpServletRequest(request);
+        request = new StormpathHttpServletRequest(request, response);
 
         FilterChain target = filterChainResolver.getChain(request, response, chain);
 

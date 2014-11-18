@@ -20,6 +20,7 @@ import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
 import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
 import com.stormpath.sdk.servlet.http.HrefPrincipal;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UsernamePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,10 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathHttpServletRequest.class.getName());
 
+    public static final String AUTH_TYPE_REQUEST_ATTRIBUTE_NAME = StormpathHttpServletRequest.class.getName() + "authType";
+
+    public static final String AUTH_TYPE_BEARER = "Bearer";
+
     public static final String REMOTE_USER_STRATEGY    = "stormpath.servlet.request.remoteUser.strategy";
     public static final String USER_PRINCIPAL_STRATEGY = "stormpath.servlet.request.userPrincipal.strategy";
 
@@ -52,8 +57,11 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     private static boolean remoteUserWarned    = false; //static on purpose - we only want to print this once.
     private static boolean userPrincipalWarned = false; //static on purpose - we only want to print this once.
 
-    public StormpathHttpServletRequest(HttpServletRequest request) {
+    private final HttpServletResponse response; //response paired with the request.
+
+    public StormpathHttpServletRequest(HttpServletRequest request, HttpServletResponse response) {
         super(request);
+        this.response = response;
     }
 
     @Override
@@ -235,8 +243,19 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public String getAuthType() {
-        //TODO: complete implementation
-        return super.getAuthType();
+        if (hasAccount()) {
+            Object value = getAttribute(AUTH_TYPE_REQUEST_ATTRIBUTE_NAME);
+            String sval = null;
+            if (value != null) {
+                sval = String.valueOf(value);
+            }
+            Assert.hasText(sval, "An authenticated account must be represented with a specific request authType.  " +
+                                 "This must be set by a Resolver<Account> on account discovery or immediately after " +
+                                 "login.  This is an implementation bug and should be reported.");
+            return sval;
+        }
+
+        return null;
     }
 
     @Override
@@ -264,6 +283,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             throw new ServletException("Unable to authenticate API request.", t);
         }
 
+        setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, "AUTHENTICATE_METHOD");
+
         Account account = result.getAccount();
         setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
 
@@ -272,6 +293,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public void login(String username, String password) throws ServletException {
+
         if (hasAccount()) {
             Account account = getAccount();
             String msg = "The current request is already associated with an authenticated user [" + account.getEmail()
@@ -291,6 +313,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             throw new ServletException(msg, e);
         }
 
+        setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, "LOGIN_METHOD");
+
         Account account = result.getAccount();
         setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
     }
@@ -306,6 +330,9 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public void logout() throws ServletException {
-        removeAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME);
+        //remove authc state:
+        Saver<AuthenticationResult> saver = getConfig().getInstance("stormpath.servlet.filter.authc.saver");
+        saver.set(this, response, null);
+        removeAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME);
     }
 }

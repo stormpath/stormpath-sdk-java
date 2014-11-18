@@ -61,6 +61,20 @@ public class DefaultAccountJwtFactory implements AccountJwtFactory {
     }
 
     protected String getJwtSubject(HttpServletRequest request, Account account) {
+
+        // If the account was authenticated by HTTP Basic authentication using an API Key, the
+        // com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme implementation will indicate this by exposing
+        // the API Key used as a request attribute.  So we check for the presence of this attribute to know if the JWT
+        // should retain knowledge of how the account was authenticated.
+
+        ApiKey apiKey = (ApiKey)request.getAttribute(ApiKey.class.getName());
+        if (apiKey != null) {
+            //request was authenticated with an API Key (and not username/password authentication):
+            return apiKey.getHref();
+        }
+
+        // otherwise the request was authenticated with username/password authentication, so just represent the account
+        // directly:
         return account.getHref();
     }
 

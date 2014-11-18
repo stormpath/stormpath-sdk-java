@@ -15,8 +15,19 @@
  */
 package com.stormpath.sdk.servlet.http.authc;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.api.ApiAuthenticationResult;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
 
@@ -43,7 +54,7 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
         byte[] bytes = DatatypeConverter.parseBase64Binary(schemeValue);
         String decoded = new String(bytes, UTF8);
 
-        String usernameOrEmail = null;
+        String submittedPrincipal = null;
 
         StringBuilder sb = new StringBuilder();
 
@@ -53,34 +64,132 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
             char c = decoded.charAt(i);
 
-            if (usernameOrEmail == null && c == ':') {
-                usernameOrEmail = sb.toString();
+            if (submittedPrincipal == null && c == ':') {
+                submittedPrincipal = sb.toString();
                 sb = new StringBuilder(len - i + 1);
             } else {
                 sb.append(c);
             }
         }
 
-        String password = sb.length() > 0 ? sb.toString() : null;
+        String submittedCredentials = sb.length() > 0 ? sb.toString() : null;
 
         //heuristics to determine if the basic authentication is a username/password-based authentication
         //or an api key-based authentication:
-        boolean apiKey = isApiKeyAuthenticatedRequest(attempt, usernameOrEmail, password);
+        boolean isApiKey = isApiKeyAuthenticatedRequest(attempt, submittedPrincipal, submittedCredentials);
 
-        if (apiKey) {
-            return authenticateApiKey(attempt);
+        if (isApiKey) {
+            return authenticateApiKey(attempt, submittedPrincipal, submittedCredentials);
         } else {
-            return authenticate(attempt, usernameOrEmail, password);
+            return authenticateUsernamePassword(attempt, submittedPrincipal, submittedCredentials);
         }
     }
 
-    @SuppressWarnings("UnusedParameters")
-    protected boolean isApiKeyAuthenticatedRequest(HttpAuthenticationAttempt attempt, String usernameOrEmail,
-                                                   String password) {
-        return usernameOrEmail != null &&
-               usernameOrEmail.length() == 26 && //Stormpath-generated API Key IDs are 26 characters long
-               password != null && password.length() == 44 &&
-               //Stormpath-generated API Key Secrets are 44 characters long
-               usernameOrEmail.indexOf('@') < 0; //@ char indicates a likely email - not an API Key ID
+    protected boolean isApiKeyAuthenticatedRequest(HttpAuthenticationAttempt attempt, String submittedPrincipal,
+                                                   String submittedCredentials) {
+
+        String grantType = attempt.getRequest().getParameter("grant_type");
+
+        return
+            //oauth api key authentication for an access token:
+            (Strings.hasText(grantType) && grantType.equals("client_credentials")) ||
+
+            //Stormpath-generated API Key IDs are 25 characters long:
+            submittedPrincipal != null && submittedPrincipal.length() == 25 &&
+
+            //Stormpath-generated API Key Secrets are 43 characters long
+            submittedCredentials != null && submittedCredentials.length() == 43 &&
+
+            //Stormpath-generated API Key IDs don't use the '@' character; likely to be an email address:
+            submittedPrincipal.indexOf('@') < 0;
     }
+
+    protected HttpAuthenticationResult authenticateUsernamePassword(HttpAuthenticationAttempt attempt,
+                                                                    String usernameOrEmail, String password) {
+
+        HttpServletRequest request;
+        HttpServletResponse response;
+        AuthenticationResult result;
+        try {
+            request = attempt.getRequest();
+            response = attempt.getResponse();
+
+            String remoteHost = attempt.getRequest().getRemoteHost();
+
+            UsernamePasswordRequest upRequest = new UsernamePasswordRequest(usernameOrEmail, password, remoteHost);
+
+            Application app = getApplication(attempt.getRequest());
+
+            result = app.authenticateAccount(upRequest);
+        } catch (Exception e) {
+            String msg = "Unable to authenticate usernameOrEmail and password-based request for usernameOrEmail [" +
+                         usernameOrEmail + "]: " + e.getMessage();
+            throw new HttpAuthenticationException(msg, e);
+        }
+
+        request
+            .setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, HttpServletRequest.BASIC_AUTH);
+
+        return new DefaultHttpAuthenticationResult(request, response, result);
+    }
+
+    protected HttpAuthenticationResult authenticateApiKey(HttpAuthenticationAttempt attempt, String submittedApiKeyId,
+                                                          String submittedApiKeySecret)
+        throws HttpAuthenticationException {
+
+        HttpServletRequest request;
+        HttpServletResponse response;
+
+        ApiAuthenticationResult authcResult;
+
+        try {
+            request = attempt.getRequest();
+            response = attempt.getResponse();
+
+            final ApiKey apiKey = getEnabledApiKey(request, submittedApiKeyId);
+
+            if (!submittedApiKeySecret.equals(apiKey.getSecret())) {
+                throw new HttpAuthenticationException("Submitted API Key secret does not match stored API Key secret.");
+            }
+
+            final Account account = apiKey.getAccount();
+
+            authcResult = new ApiAuthenticationResult() {
+                @Override
+                public ApiKey getApiKey() {
+                    return apiKey;
+                }
+
+                @Override
+                public Account getAccount() {
+                    return account;
+                }
+
+                @Override
+                public void accept(AuthenticationResultVisitor visitor) {
+                    visitor.visit(this);
+
+                }
+
+                @Override
+                public String getHref() {
+                    return null;
+                }
+            };
+
+            //retain the ApiKey in case downstream components need to reference it:
+            request.setAttribute(ApiKey.class.getName(), apiKey);
+
+        } catch (Exception e) {
+            String msg = "Unable to authenticate request: " + e.getMessage();
+            throw new HttpAuthenticationException(msg, e);
+        }
+
+        request
+            .setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, HttpServletRequest.BASIC_AUTH);
+
+        return new DefaultHttpAuthenticationResult(request, response, authcResult);
+    }
+
+
 }

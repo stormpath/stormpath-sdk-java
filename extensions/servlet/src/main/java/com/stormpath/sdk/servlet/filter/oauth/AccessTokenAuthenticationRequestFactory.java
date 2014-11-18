@@ -22,5 +22,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface AccessTokenAuthenticationRequestFactory {
 
     AuthenticationRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
-        throws AccessTokenRequestException;
+        throws OauthException;
 }

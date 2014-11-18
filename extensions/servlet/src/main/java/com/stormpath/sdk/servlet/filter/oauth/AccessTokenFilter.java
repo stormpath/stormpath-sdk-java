@@ -104,7 +104,7 @@ public class AccessTokenFilter extends HttpFilter {
                 ar = app.authenticateAccount(authcRequest);
             } catch (ResourceException e) {
                 log.debug("Unable to authenticate access token request: " + e.getMessage(), e);
-                throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_CLIENT);
+                throw new OauthException(OauthErrorCode.INVALID_CLIENT);
             }
 
             AccessTokenResult result = createAccessTokenResult(request, response, ar);
@@ -115,11 +115,11 @@ public class AccessTokenFilter extends HttpFilter {
 
             response.setStatus(HttpServletResponse.SC_OK);
 
-        } catch (AccessTokenRequestException e) {
+        } catch (OauthException e) {
 
             log.debug("OAuth Access Token request failed.", e);
 
-            json = toJson(e);
+            json = e.toJson();
 
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -136,21 +136,21 @@ public class AccessTokenFilter extends HttpFilter {
         //POST is required: https://tools.ietf.org/html/rfc6749#section-3.2
         if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
             String msg = "HTTP POST is required.";
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_REQUEST, msg, null);
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
         }
 
         //Secure connections are required: https://tools.ietf.org/html/rfc6749#section-3.2
         if (isSecureConnectionRequired(request) && !request.isSecure()) {
             String msg = "A secure HTTPS connection is required for token requests - this is " +
                          "a requirement of the OAuth 2 specification.";
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_REQUEST, msg, null);
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
         }
 
         //grant_type is always required for all token requests:
         String grantType = Strings.clean(request.getParameter(GRANT_TYPE_PARAM_NAME));
         if (grantType == null) {
             String msg = "Missing grant_type value.";
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_REQUEST, msg, null);
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
         }
 
         getRequestAuthorizer().assertAuthorizedAccessTokenRequest(request);
@@ -177,36 +177,8 @@ public class AccessTokenFilter extends HttpFilter {
         return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
     }
 
-    protected String toJson(AccessTokenRequestException e) {
-
-        String json = "{" + toJson("error", e.getErrorCode());
-
-        String val = e.getDescription();
-        if (Strings.hasText(val)) {
-            json += "," + toJson("error_description", val);
-        }
-
-        val = e.getUri();
-        if (Strings.hasText(val)) {
-            json += "," + toJson("error_uri", val);
-        }
-
-        json += "}";
-
-        return json;
-    }
-
-    protected static String toJson(String name, Object value) {
-        String stringValue = String.valueOf(value);
-        return quote(name) + ":" + quote(stringValue);
-    }
-
-    protected static String quote(String val) {
-        return "\"" + val + "\"";
-    }
-
     protected AuthenticationRequest createTokenAuthenticationRequest(HttpServletRequest request)
-        throws AccessTokenRequestException {
+        throws OauthException {
         return getAuthenticationRequestFactory().createAccessTokenAuthenticationRequest(request);
     }
 

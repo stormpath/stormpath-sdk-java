@@ -56,6 +56,11 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
 
+        if (value == null) {
+            remove(request, response);
+            return;
+        }
+
         String jwt;
 
         if (value instanceof AccessTokenResult) {
@@ -67,6 +72,11 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler
         Saver<String> saver = getCookieSaver(request);
 
         saver.set(request, response, jwt);
+    }
+
+    protected void remove(HttpServletRequest request, HttpServletResponse response) {
+        Saver<String> saver = getCookieSaver(request);
+        saver.set(request, response, null);
     }
 
     protected Saver<String> getCookieSaver(HttpServletRequest request) {

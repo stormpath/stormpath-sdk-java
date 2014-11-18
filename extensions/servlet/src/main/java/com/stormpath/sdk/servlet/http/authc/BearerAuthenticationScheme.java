@@ -15,14 +15,37 @@
  */
 package com.stormpath.sdk.servlet.http.authc;
 
-import com.stormpath.sdk.api.ApiAuthenticationResult;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.client.ClientResolver;
+import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
+import com.stormpath.sdk.servlet.filter.oauth.OauthException;
+import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
+
+    private static final Logger log = LoggerFactory.getLogger(BearerAuthenticationScheme.class);
 
     private static final String NAME = "Bearer";
 
@@ -49,10 +72,146 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
         final String token = attempt.getCredentials().getSchemeValue();
         Assert.hasText(token, "Cannot authenticate empty Bearer value.");
 
-        Application application = getApplication(request);
+        try {
 
-        ApiAuthenticationResult result = application.authenticateApiRequest(request);
+            HttpAuthenticationResult result = authenticate(request, response, token);
 
-        return new DefaultHttpAuthenticationResult(request, response, result);
+            request.setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME,
+                                 StormpathHttpServletRequest.AUTH_TYPE_BEARER);
+
+            return result;
+
+        } catch (OauthException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json;charset=UTF-8");
+            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("Pragma", "no-cache");
+
+            try {
+                response.getWriter().print(e.toJson());
+                response.getWriter().flush();
+            } catch (IOException e1) {
+                throw new HttpAuthenticationException("Unable to render OAuth error response body: " + e1.getMessage());
+            }
+
+            throw new HttpAuthenticationException("OAuth request authentication failed: " + e.getMessage(), e);
+        }
+    }
+
+    protected HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response,
+                                                    String token) {
+
+        Jws<Claims> jws;
+
+        try {
+            String signingKey = getJwtSigningKey(request);
+            jws = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token);
+            return authenticate(request, response, jws);
+        } catch (ExpiredJwtException e) {
+            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
+        } catch (OauthException e) {
+            throw e;
+        } catch (Exception e) {
+            log.debug("JWT verification failed.", e);
+            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is invalid.", null, e);
+        }
+    }
+
+    protected String getJwtSigningKey(HttpServletRequest request) {
+        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+        ApiKey apiKey = client.getApiKey();
+        return apiKey.getSecret();
+    }
+
+    protected HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response,
+                                                    Jws<Claims> jws) throws OauthException {
+
+        String href = jws.getBody().getSubject();
+
+        AuthenticationResult authcResult;
+
+        if (href.contains("apiKeys")) {
+
+            int i = href.lastIndexOf('/');
+            String id = href.substring(i + 1);
+            final ApiKey apiKey = getTokenApiKey(request, id);
+
+            authcResult = new OauthAuthenticationResult() {
+                @Override
+                public Set<String> getScope() {
+                    return Collections.emptySet();
+                }
+
+                @Override
+                public ApiKey getApiKey() {
+                    return apiKey;
+                }
+
+                @Override
+                public Account getAccount() {
+                    return apiKey.getAccount();
+                }
+
+                @Override
+                public void accept(AuthenticationResultVisitor visitor) {
+                    visitor.visit(this);
+
+                }
+
+                @Override
+                public String getHref() {
+                    //there is no href of this result itself (account href != result href)
+                    return null;
+                }
+            };
+        } else {
+
+            Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+
+            final Account account = client.getResource(href, Account.class);
+
+            if (account.getStatus() != AccountStatus.ENABLED) {
+                throw new OauthException(OauthErrorCode.INVALID_CLIENT, "account is disabled.", null);
+            }
+
+            authcResult = new AuthenticationResult() {
+                @Override
+                public Account getAccount() {
+                    return account;
+                }
+
+                @Override
+                public void accept(AuthenticationResultVisitor visitor) {
+                    visitor.visit(this);
+
+                }
+
+                @Override
+                public String getHref() {
+                    //there is no href of this result itself (account href != result href)
+                    return null;
+                }
+            };
+        }
+
+        return new DefaultHttpAuthenticationResult(request, response, authcResult);
+    }
+
+    /**
+     * Retrieves the {@link ApiKey} instance pointed by this {@code apiKeyId} and accessible from the {@code
+     * application} <p/> The ApiKey is retrieved from the {@link Application} passed as argument. <p/> This method
+     * asserts that the ApiKey retrieved status is {@link ApiKeyStatus#ENABLED} and also that the status of the account
+     * owner is {@link AccountStatus#ENABLED}
+     *
+     * @param apiKeyId - The id of the {@link ApiKey} embedded in the access token.
+     */
+    protected ApiKey getTokenApiKey(HttpServletRequest request, String apiKeyId) throws OauthException {
+        try {
+            return getEnabledApiKey(request, apiKeyId);
+        } catch (ResourceException e) {
+            OauthErrorCode err = OauthErrorCode.INVALID_CLIENT;
+            String msg = e.getStormpathError().getDeveloperMessage();
+            throw new OauthException(err, msg, null, e);
+        }
     }
 }

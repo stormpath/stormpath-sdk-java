@@ -28,7 +28,7 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
     @Override
     public AuthenticationRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
-        throws AccessTokenRequestException {
+        throws OauthException {
 
         String grantType = Strings.clean(request.getParameter(GRANT_TYPE_PARAM_NAME));
         //this is asserted in the AccessTokenFilter so it should never be null/empty here:
@@ -38,20 +38,20 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
             return createUsernamePasswordRequest(request);
         }
 
-        throw new AccessTokenRequestException(AccessTokenErrorCode.UNSUPPORTED_GRANT_TYPE);
+        throw new OauthException(OauthErrorCode.UNSUPPORTED_GRANT_TYPE);
     }
 
     protected UsernamePasswordRequest createUsernamePasswordRequest(HttpServletRequest request)
-        throws AccessTokenRequestException {
+        throws OauthException {
 
         String username = Strings.clean(request.getParameter("username"));
         if (username == null) {
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_REQUEST, "Missing username value.", null);
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Missing username value.", null);
         }
 
         String password = Strings.clean(request.getParameter("password"));
         if (password == null) {
-            throw new AccessTokenRequestException(AccessTokenErrorCode.INVALID_REQUEST, "Missing password value.", null);
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Missing password value.", null);
         }
 
         return new UsernamePasswordRequest(username, password, request.getRemoteHost());

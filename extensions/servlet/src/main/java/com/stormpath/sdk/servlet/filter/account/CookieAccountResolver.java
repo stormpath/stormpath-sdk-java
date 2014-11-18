@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.CookieResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,13 @@ public class CookieAccountResolver extends AccountCookieHandler
     }
 
     protected Account getAccount(HttpServletRequest request, HttpServletResponse response, String jwt) {
+
+        Account account = getJwtAccountResolver().getAccountByJwt(request, response, jwt);
+
+        if (account != null) {
+            request.setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, HttpServletRequest.FORM_AUTH);
+        }
+
         return getJwtAccountResolver().getAccountByJwt(request, response, jwt);
     }
 

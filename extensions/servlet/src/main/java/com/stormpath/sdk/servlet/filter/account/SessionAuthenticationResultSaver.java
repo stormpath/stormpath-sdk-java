@@ -54,12 +54,26 @@ public class SessionAuthenticationResultSaver implements Saver<AuthenticationRes
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
 
+        if (result == null) {
+            remove(request);
+            return;
+        }
+
         Account account = result.getAccount();
 
         HttpSession session = request.getSession();
 
         for(String name : this.sessionAttributeNames) {
             session.setAttribute(name, account);
+        }
+    }
+
+    protected void remove(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            for(String name : this.sessionAttributeNames) {
+                session.removeAttribute(name);
+            }
         }
     }
 }

@@ -75,8 +75,15 @@ public class AuthenticationResultSaver implements Saver<AuthenticationResult>, S
 
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
+
         for(Saver<AuthenticationResult> saver : savers) {
             saver.set(request, response, result);
+        }
+
+        if (result == null) {
+            request.removeAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME);
+            request.removeAttribute("account");
+            return;
         }
 
         Account account = result.getAccount();

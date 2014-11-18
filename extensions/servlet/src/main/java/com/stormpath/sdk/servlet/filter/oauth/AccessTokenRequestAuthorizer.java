@@ -19,5 +19,5 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface AccessTokenRequestAuthorizer {
 
-    void assertAuthorizedAccessTokenRequest(HttpServletRequest request) throws AccessTokenRequestException;
+    void assertAuthorizedAccessTokenRequest(HttpServletRequest request) throws OauthException;
 }

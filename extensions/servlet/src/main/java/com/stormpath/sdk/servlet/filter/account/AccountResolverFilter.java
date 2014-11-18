@@ -87,9 +87,18 @@ public class AccountResolverFilter extends HttpFilter {
             }
 
             if (account != null) {
+
                 //store under both names - can be convenient depending on how it is accessed:
                 request.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
                 request.setAttribute("account", account);
+
+                //NOTE: the next two lines *must* execute after the above two request.setAttribute* calls
+                //this is because the request.getAuthType() implementation relies on the attribute being set:
+
+                //assert authType value is available as required by the Servlet API:
+                String authType = request.getAuthType();
+                Assert.hasText(authType, "Account Resolver must set a request authType value.");
+
                 break;
             }
         }
