@@ -33,26 +33,17 @@
     <dependencies>
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-sdk-servlet</artifactId>
+            <artifactId>stormpath-web-fragment</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-sdk-httpclient</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Runtime dependency to replace commons-logging needed by HTTPClient: -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

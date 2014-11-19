@@ -179,6 +179,11 @@
                 <artifactId>stormpath-sdk-httpclient</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-web-fragment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- 3rd party dependencies: -->
             <dependency>

@@ -16,24 +16,32 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>stormpath-sdk-extensions</artifactId>
-    <name>Stormpath Java SDK :: Extensions</name>
-    <packaging>pom</packaging>
+    <artifactId>stormpath-web-fragment</artifactId>
+    <name>Stormpath Java SDK :: Extensions :: Stormpath Web Fragment</name>
+    <description>
+        Automatically deploys Stormpath support in a servlet container-based web application.
+    </description>
+    <packaging>jar</packaging>
 
-    <modules>
-        <module>oauth</module>
-        <module>hazelcast</module>
-        <module>servlet</module>
-        <module>web-fragment</module>
-        <module>httpclient</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-httpclient</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 
 </project>
