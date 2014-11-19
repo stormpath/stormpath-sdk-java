@@ -44,6 +44,8 @@ public class LoginFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
+    private static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/login.jsp";
+
     protected static final String AUTHENTICATION_RESULT_SAVER = "stormpath.servlet.filter.authc.saver";
 
     private Saver<AuthenticationResult> authenticationResultSaver;
@@ -152,7 +154,7 @@ public class LoginFilter extends HttpFilter {
         if (status != null) {
             request.setAttribute("status", status);
         }
-        request.getRequestDispatcher("/login.jsp").forward(request, response);
+        request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
     }
 
     protected void handleFormSubmission(HttpServletRequest request, HttpServletResponse response)
@@ -175,7 +177,7 @@ public class LoginFilter extends HttpFilter {
             ((DefaultField) form.getField("password")).setValue("");
             setForm(request, form);
 
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
         }
     }
 

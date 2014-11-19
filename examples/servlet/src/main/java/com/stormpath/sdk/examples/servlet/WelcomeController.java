@@ -26,6 +26,8 @@ import java.io.IOException;
 
 public class WelcomeController extends HttpServlet {
 
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/welcome.jsp";
+
     protected Application getApplication(HttpServletRequest request) {
         return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
     }
@@ -37,6 +39,6 @@ public class WelcomeController extends HttpServlet {
 
         req.setAttribute("app", app);
 
-        req.getRequestDispatcher("/welcome.jsp").forward(req, resp);
+        req.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(req, resp);
     }
 }

@@ -51,6 +51,8 @@ public class RegisterFilter extends HttpFilter {
 
     public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
     private static final String ACCOUNT_SAVER_PROP = "stormpath.servlet.filter.authc.saver";
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/register.jsp";
+    public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/verifyEmail.jsp";
 
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
@@ -93,7 +95,7 @@ public class RegisterFilter extends HttpFilter {
         //addConfigProperties(request);
         Form form = createForm(request, false);
         setForm(request, form);
-        request.getRequestDispatcher("/register.jsp").forward(request, response);
+        request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
     }
 
     protected Form createForm(HttpServletRequest request, boolean retainPassword) {
@@ -193,7 +195,7 @@ public class RegisterFilter extends HttpFilter {
             ((DefaultField) form.getField("password")).setValue("");
             setForm(request, form);
 
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
         }
     }
 
@@ -317,7 +319,7 @@ public class RegisterFilter extends HttpFilter {
             // 'Thanks for registering Joe!  Almost done - please verify your email...'
             //
             req.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
-            req.getRequestDispatcher("/verifyEmail.jsp").forward(req, resp);
+            req.getRequestDispatcher(VERIFY_EMAIL_VIEW_TEMPLATE_PATH).forward(req, resp);
             return;
         }
 

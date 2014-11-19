@@ -28,6 +28,8 @@ import java.io.IOException;
 
 public class DashboardController extends HttpServlet {
 
+    private static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/dashboard.jsp";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -43,7 +45,7 @@ public class DashboardController extends HttpServlet {
 
         req.setAttribute("birthday", birthday);
         req.setAttribute("color", color);
-        req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
+        req.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(req, resp);
     }
 
     @Override
@@ -75,6 +77,6 @@ public class DashboardController extends HttpServlet {
 
         req.setAttribute("birthday", birthday);
         req.setAttribute("color", color);
-        req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
+        req.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(req, resp);
     }
 }

@@ -23,8 +23,10 @@ import java.io.IOException;
 
 public class AjaxLoginController extends HttpServlet {
 
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/ajaxLogin.jsp";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/ajaxLogin.jsp").forward(req, resp);
+        req.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(req, resp);
     }
 }

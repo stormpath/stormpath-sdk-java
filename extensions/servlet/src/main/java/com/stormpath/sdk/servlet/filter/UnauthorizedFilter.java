@@ -21,9 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public class UnauthorizedFilter extends HttpFilter {
 
+    public static final String VIEW_TEMPLATE_PATH = "/unauthorized.jsp";
+
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
-        request.getRequestDispatcher("/unauthorized.jsp").forward(request, response);
+        request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
     }
 }
