@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
@@ -29,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +41,24 @@ public class AccountResolverFilter extends HttpFilter {
 
     private List<Resolver<Account>> resolvers;
 
+    public List<Resolver<Account>> getResolvers() {
+        return resolvers;
+    }
+
+    public void setResolvers(List<Resolver<Account>> resolvers) {
+        this.resolvers = resolvers;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected void onInit() throws ServletException {
+
+        if (!Collections.isEmpty(this.resolvers)) {
+            //configured programatically (e.g. w/ Spring), so just return:
+            return;
+        }
+
+        //not configured programatically - fall back to properties - based configuration
 
         Config config = getConfig();
 
@@ -70,14 +85,15 @@ public class AccountResolverFilter extends HttpFilter {
             resolvers.add(accountResolver);
         }
 
-        this.resolvers = Collections.unmodifiableList(resolvers);
+        resolvers = java.util.Collections.unmodifiableList(resolvers);
+        setResolvers(resolvers);
     }
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
 
-        for(Resolver<Account> resolver : resolvers) {
+        for(Resolver<Account> resolver : getResolvers()) {
 
             Account account = resolver.get(request, response);
 

@@ -120,7 +120,7 @@ public class ExpressionConfigReader implements ConfigReader {
 
     private boolean isExpression(String val) {
         return val != null &&
-               val.startsWith(PARSER_CONTEXT.getExpressionPrefix()) &&
-               val.endsWith(PARSER_CONTEXT.getExpressionSuffix());
+               val.contains(PARSER_CONTEXT.getExpressionPrefix()) &&
+               val.contains(PARSER_CONTEXT.getExpressionSuffix());
     }
 }
