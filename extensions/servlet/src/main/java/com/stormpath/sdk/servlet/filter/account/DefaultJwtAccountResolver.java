@@ -37,6 +37,8 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver {
 
         String secret = client.getApiKey().getSecret();
 
+        //TODO: cleanup when JJWT releases SigningKeyResolver functionality
+
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
 
         String accountHref = claims.getSubject();

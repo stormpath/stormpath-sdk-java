@@ -66,7 +66,7 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler
         if (value instanceof AccessTokenResult) {
             jwt = ((AccessTokenResult) value).getTokenResponse().getAccessToken();
         } else {
-            jwt = getAccountJwtFactory().createAccountJwt(request, response, value.getAccount());
+            jwt = getAccountJwtFactory().createAccountJwt(request, response, value);
         }
 
         Saver<String> saver = getCookieSaver(request);

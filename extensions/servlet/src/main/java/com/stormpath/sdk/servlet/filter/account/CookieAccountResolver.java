@@ -90,7 +90,7 @@ public class CookieAccountResolver extends AccountCookieHandler
             request.setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, HttpServletRequest.FORM_AUTH);
         }
 
-        return getJwtAccountResolver().getAccountByJwt(request, response, jwt);
+        return account;
     }
 
     protected void deleteCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {

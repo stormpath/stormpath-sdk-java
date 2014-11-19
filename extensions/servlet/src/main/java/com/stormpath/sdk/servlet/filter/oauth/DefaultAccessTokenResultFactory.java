@@ -77,7 +77,7 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
 
         AccountJwtFactory factory = getAccountJwtFactory();
 
-        String jwt = factory.createAccountJwt(request, response, account);
+        String jwt = factory.createAccountJwt(request, response, result);
 
         Application application = getApplication();
 

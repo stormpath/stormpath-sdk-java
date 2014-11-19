@@ -62,7 +62,7 @@ public class AuthorizationHeaderAccountResolver implements Resolver<Account>, Se
 
                 if (log.isDebugEnabled()) {
                     String msg = "Unable to authenticate HTTP request Authorization header: " + e.getMessage();
-                    msg += " This is normal: the header will be ignored and not be used to identify a request account.";
+                    msg += " The header will be ignored and not be used to identify a request account.";
                     log.debug(msg, e);
                 }
 

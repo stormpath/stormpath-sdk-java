@@ -15,41 +15,60 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.UUID;
 
-public class DefaultAccountJwtFactory implements AccountJwtFactory {
+public class DefaultAccountJwtFactory implements AccountJwtFactory, ServletContextInitializable {
+
+    private JwtSigningKeyResolver jwtSigningKeyResolver;
+    private int jwtTtl;
 
     @Override
-    public String createAccountJwt(HttpServletRequest request, HttpServletResponse response, Account account) {
+    public void init(ServletContext servletContext) throws ServletException {
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        this.jwtSigningKeyResolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
+        this.jwtTtl = config.getAccountJwtTtl();
+    }
 
-        String id = UUID.randomUUID().toString();
+    protected JwtSigningKeyResolver getJwtSigningKeyResolver() {
+        return jwtSigningKeyResolver;
+    }
+
+    protected int getJwtTtl() {
+        return jwtTtl;
+    }
+
+    @Override
+    public String createAccountJwt(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
+
+        String id = createJwtId(request, response, result);
 
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
 
-        String sub = getJwtSubject(request, account);
+        String sub = getJwtSubject(request, response, result);
         Assert.hasText(sub, "JWT subject value cannot be null or empty.");
 
-        String signingKey = getJwtSigningKey(request, account);
+        String signingKey = getJwtSigningKey(request, response, result);
 
         JwtBuilder builder =
             Jwts.builder().setId(id).setIssuedAt(now).setSubject(sub).signWith(SignatureAlgorithm.HS256, signingKey);
 
-        int ttl = getJwtTtlSeconds(request, account);
+        int ttl = getJwtTtlSeconds(request, response, result);
         if (ttl >= 0) {
             long ttlMillis = ttl * 1000; //JWT requires times to be in seconds (not millis) since epoch
             long expMillis = nowMillis + ttlMillis;
@@ -60,7 +79,13 @@ public class DefaultAccountJwtFactory implements AccountJwtFactory {
         return builder.compact();
     }
 
-    protected String getJwtSubject(HttpServletRequest request, Account account) {
+    @SuppressWarnings("UnusedParameters")
+    protected String createJwtId(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
+        return UUID.randomUUID().toString();
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    protected String getJwtSubject(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
 
         // If the account was authenticated by HTTP Basic authentication using an API Key, the
         // com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme implementation will indicate this by exposing
@@ -75,17 +100,15 @@ public class DefaultAccountJwtFactory implements AccountJwtFactory {
 
         // otherwise the request was authenticated with username/password authentication, so just represent the account
         // directly:
-        return account.getHref();
+        return result.getAccount().getHref();
     }
 
-    protected String getJwtSigningKey(HttpServletRequest request, Account account) {
-        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
-        ApiKey apiKey = client.getApiKey();
-        return apiKey.getSecret();
+    protected String getJwtSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
+        return getJwtSigningKeyResolver().getSigningKey(request, response, result);
     }
 
-    protected int getJwtTtlSeconds(HttpServletRequest request, Account account) {
-        Config config = ConfigResolver.INSTANCE.getConfig(request.getServletContext());
-        return config.getAccountJwtTtl();
+    @SuppressWarnings("UnusedParameters")
+    protected int getJwtTtlSeconds(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
+        return getJwtTtl();
     }
 }

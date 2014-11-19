@@ -16,12 +16,18 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface AccountJwtFactory {
+public interface JwtSigningKeyResolver {
 
-    String createAccountJwt(HttpServletRequest request, HttpServletResponse response, AuthenticationResult account);
+    String getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result);
+
+    //TODO: invoke this method when JJWT releases SigningKeyResolver functionality:
+    String getSigningKey(HttpServletRequest request, HttpServletResponse response,
+                         JwsHeader jwsHeader, Claims claims);
 
 }
