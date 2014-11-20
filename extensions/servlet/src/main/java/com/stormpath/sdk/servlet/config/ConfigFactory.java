@@ -4,6 +4,6 @@ import javax.servlet.ServletContext;
 
 public interface ConfigFactory {
 
-    Config getConfig(ServletContext servletContext);
+    Config createConfig(ServletContext servletContext);
 
 }

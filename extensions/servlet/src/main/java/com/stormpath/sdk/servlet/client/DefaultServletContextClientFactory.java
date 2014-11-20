@@ -25,13 +25,12 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.cache.CacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.DefaultCacheManagerFactory;
 import com.stormpath.sdk.servlet.cache.ServletContextAttributeCacheManager;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigFactory;
-import com.stormpath.sdk.servlet.config.impl.DefaultConfigFactory;
 
 import javax.servlet.ServletContext;
 import java.util.Map;
@@ -49,19 +48,14 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     public static final String STORMPATH_APPLICATION_HREF = "stormpath.application.href";
 
-    //not configurable by end-users - always reflects the 'effective' or 'merged' view of all properties discovered
-    //at startup
-    public static final String STORMPATH_CONFIG = "stormpath.config.properties";
-
-    private final ConfigFactory configFactory =
-        new DefaultConfigFactory();
-
     private final CacheManagerFactory cacheManagerFactory = new DefaultCacheManagerFactory();
 
     @Override
     public Client createClient(ServletContext servletContext) {
 
-        Config config = configFactory.getConfig(servletContext);
+        Config config = (Config)servletContext.getAttribute(Config.class.getName());
+        Assert.notNull(config, "Stormpath Config instance is not available in the ServletContext.  Ensure the " +
+                               "ConfigLoader ServletContext Listener is defined before the ClientLoader Listener.");
 
         ClientBuilder builder = Clients.builder();
 
@@ -72,9 +66,6 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         applyAuthenticationScheme(builder, config, servletContext);
 
         applyCacheManager(builder, config, servletContext);
-
-        //allow access to config values by other components later:
-        servletContext.setAttribute(STORMPATH_CONFIG, config);
 
         return builder.build();
     }

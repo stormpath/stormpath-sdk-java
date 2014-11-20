@@ -48,7 +48,7 @@ public class DefaultConfigFactory implements ConfigFactory {
     private static final EnvVarNameConverter envVarNameConverter = new DefaultEnvVarNameConverter();
 
     @Override
-    public Config getConfig(ServletContext servletContext) {
+    public Config createConfig(ServletContext servletContext) {
 
         ResourceFactory resourceFactory = new ServletContainerResourceFactory(servletContext);
 

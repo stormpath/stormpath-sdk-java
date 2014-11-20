@@ -30,6 +30,10 @@
     </ordering>
 
     <listener>
+        <!-- Load the Stormpath config. Config is most likely defined in /WEB-INF/stormpath.properties: -->
+        <listener-class>com.stormpath.sdk.servlet.config.DefaultConfigLoaderListener</listener-class>
+    </listener>
+    <listener>
         <!-- Load the Stormpath client w/ caching enabled. Customize client config in /WEB-INF/stormpath.properties: -->
         <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
     </listener>

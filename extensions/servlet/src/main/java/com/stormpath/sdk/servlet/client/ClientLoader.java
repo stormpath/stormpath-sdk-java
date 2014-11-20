@@ -114,7 +114,7 @@ public class ClientLoader {
 
     /**
      * Servlet Context config param for specifying the {@link Client} implementation class to use:
-     * {@code shiroEnvironmentClass}
+     * {@code stormpathServletContextClientFactoryClass}
      */
     public static final String CLIENT_FACTORY_CLASS_PARAM = "stormpathServletContextClientFactoryClass";
 
@@ -131,7 +131,7 @@ public class ClientLoader {
      *
      * @param servletContext current servlet context
      * @return the new Stormpath {@code Client} instance.
-     * @throws IllegalStateException if an existing WebEnvironment has already been initialized and associated with
+     * @throws IllegalStateException if an existing Client has already been initialized and associated with
      *                               the specified {@code ServletContext}.
      */
     public Client createClient(ServletContext servletContext) throws IllegalStateException {
