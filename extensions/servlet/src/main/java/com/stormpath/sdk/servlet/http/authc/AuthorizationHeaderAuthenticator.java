@@ -18,7 +18,7 @@ package com.stormpath.sdk.servlet.http.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public class AuthorizationHeaderAuthenticator implements HttpAuthenticator {
     }
 
     protected Application getApplication(HttpServletRequest req) {
-        return ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
+        return Servlets.getApplication(req);
     }
 
     public void sendChallenge(HttpServletRequest request, HttpServletResponse response) {

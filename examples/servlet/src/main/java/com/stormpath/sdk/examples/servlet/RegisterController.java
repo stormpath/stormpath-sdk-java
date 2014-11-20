@@ -18,7 +18,7 @@ package com.stormpath.sdk.examples.servlet;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 
 import javax.servlet.ServletException;
@@ -69,7 +69,7 @@ public class RegisterController extends HttpServlet {
         account.setSurname("UNSPECIFIED");
 
         //Get the Stormpath Application instance corresponding to this web app:
-        Application app = ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
+        Application app = getApplication(req);
 
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);
@@ -79,5 +79,9 @@ public class RegisterController extends HttpServlet {
 
         //login was successful, show the dashboard:
         resp.sendRedirect(req.getContextPath() + "/dashboard");
+    }
+
+    protected Application getApplication(HttpServletRequest request) {
+        return Servlets.getApplication(request);
     }
 }

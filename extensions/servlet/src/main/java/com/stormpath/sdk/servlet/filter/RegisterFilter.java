@@ -25,7 +25,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
@@ -203,6 +202,7 @@ public class RegisterFilter extends HttpFilter {
         request.setAttribute("form", form);
     }
 
+    @SuppressWarnings("UnusedParameters")
     protected Account newAccount(HttpServletRequest request) {
         Client client = getClient();
         return client.instantiate(Account.class);
@@ -273,7 +273,7 @@ public class RegisterFilter extends HttpFilter {
         account.setSurname(value != null ? value : "UNSPECIFIED");
 
         //Get the Stormpath Application instance corresponding to this web app:
-        Application app = ApplicationResolver.INSTANCE.getApplication(req.getServletContext());
+        Application app = (Application)req.getServletContext().getAttribute(Application.class.getName());
 
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);

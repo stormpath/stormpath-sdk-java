@@ -37,6 +37,10 @@
         <!-- Load the Stormpath client w/ caching enabled. Customize client config in /WEB-INF/stormpath.properties: -->
         <listener-class>com.stormpath.sdk.servlet.client.DefaultClientLoaderListener</listener-class>
     </listener>
+    <listener>
+        <!-- Load the webapp's Stormpath Application resource, referenced during various request flows: -->
+        <listener-class>com.stormpath.sdk.servlet.application.DefaultApplicationLoaderListener</listener-class>
+    </listener>
     <filter>
         <filter-name>StormpathFilter</filter-name>
         <filter-class>com.stormpath.sdk.servlet.filter.StormpathFilter</filter-class>

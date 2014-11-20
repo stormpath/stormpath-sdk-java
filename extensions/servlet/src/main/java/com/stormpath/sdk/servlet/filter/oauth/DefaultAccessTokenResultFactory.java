@@ -22,8 +22,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.TokenResponse;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.client.ClientResolver;
+import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.filter.account.AccountJwtFactory;
@@ -47,8 +46,8 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
     @Override
     public void init(ServletContext servletContext) throws ServletException {
         this.config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.client = ClientResolver.INSTANCE.getClient(servletContext);
-        this.application = ApplicationResolver.INSTANCE.getApplication(servletContext);
+        this.client = Servlets.getClient(servletContext);
+        this.application = Servlets.getApplication(servletContext);
         this.accountJwtFactory = config.getInstance(ACCOUNT_JWT_FACTORY);
     }
 

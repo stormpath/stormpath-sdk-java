@@ -16,7 +16,7 @@
 package com.stormpath.sdk.examples.servlet;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.Servlets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +29,7 @@ public class WelcomeController extends HttpServlet {
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/welcome.jsp";
 
     protected Application getApplication(HttpServletRequest request) {
-        return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
+        return Servlets.getApplication(request);
     }
 
     @Override

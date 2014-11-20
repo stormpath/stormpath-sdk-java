@@ -4,10 +4,8 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 
 import javax.servlet.ServletContext;
 
@@ -24,11 +22,17 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         " " + STORMPATH_APPLICATION_HREF + " = YOUR_STORMPATH_APPLICATION_HREF_HERE\n";
 
     protected Client getClient(ServletContext sc) {
-        return ClientResolver.INSTANCE.getClient(sc);
+        Client client = (Client)sc.getAttribute(Client.class.getName());
+        Assert.notNull(client, "Stormpath Client instance is not available in the ServletContext.  Ensure the " +
+                               "ClientLoaderListener is defined before the ApplicationLoaderListener.");
+        return client;
     }
 
     protected Config getConfig(ServletContext servletContext) {
-        return ConfigResolver.INSTANCE.getConfig(servletContext);
+        Config config = (Config)servletContext.getAttribute(Config.class.getName());
+        Assert.notNull(config, "Stormpath Config instance is not available in the ServletContext.  Ensure the " +
+                               "ConfigLoaderListener is defined before the ApplicationLoaderListener.");
+        return config;
     }
 
     @Override

@@ -11,9 +11,9 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.AccountPrincipal;
@@ -325,7 +325,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     protected Application getApplication() {
-        return ApplicationResolver.INSTANCE.getApplication(getServletContext());
+        return Servlets.getApplication(getServletContext());
     }
 
     @Override

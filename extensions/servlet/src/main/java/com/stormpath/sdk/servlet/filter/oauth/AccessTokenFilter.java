@@ -22,7 +22,7 @@ import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -174,7 +174,7 @@ public class AccessTokenFilter extends HttpFilter {
     }
 
     protected Application getApplication(HttpServletRequest request) {
-        return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
+        return Servlets.getApplication(request);
     }
 
     protected AuthenticationRequest createTokenAuthenticationRequest(HttpServletRequest request)

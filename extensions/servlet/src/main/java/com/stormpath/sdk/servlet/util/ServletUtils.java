@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.util;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,7 +244,7 @@ public class ServletUtils {
     }
 
     public static Application getApplication(ServletContext sc) {
-        return ApplicationResolver.INSTANCE.getApplication(sc);
+        return (Application)sc.getAttribute(Application.class.getName());
     }
 
     /**

@@ -24,7 +24,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.error.authc.DisabledAccountException;
 import com.stormpath.sdk.error.authc.DisabledApiKeyException;
 import com.stormpath.sdk.error.authc.InvalidApiKeyException;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.Servlets;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,7 +34,7 @@ public abstract class AbstractAuthenticationScheme implements HttpAuthentication
     }
 
     protected Application getApplication(HttpServletRequest request) {
-        return ApplicationResolver.INSTANCE.getApplication(request.getServletContext());
+        return Servlets.getApplication(request);
     }
 
     protected ApiKey getEnabledApiKey(HttpServletRequest request, String apiKeyId)

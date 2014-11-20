@@ -17,8 +17,6 @@ package com.stormpath.sdk.servlet;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -27,7 +25,7 @@ import javax.servlet.ServletRequest;
 public final class Servlets {
 
     public static Client getClient(ServletContext servletContext) {
-        return ClientResolver.INSTANCE.getClient(servletContext);
+        return (Client)servletContext.getAttribute(Client.class.getName());
     }
 
     public static Client getClient(ServletRequest request) {
@@ -35,7 +33,7 @@ public final class Servlets {
     }
 
     public static Application getApplication(ServletContext servletContext) {
-        return ApplicationResolver.INSTANCE.getApplication(servletContext);
+        return (Application)servletContext.getAttribute(Application.class.getName());
     }
 
     public static Application getApplication(ServletRequest servletRequest) {
