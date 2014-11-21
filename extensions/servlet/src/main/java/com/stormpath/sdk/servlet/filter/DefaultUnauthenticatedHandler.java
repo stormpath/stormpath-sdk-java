@@ -15,27 +15,21 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
 import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler, ServletContextInitializable {
+public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
 
-    protected static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
     private HttpAuthenticator httpAuthenticator;
 
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.httpAuthenticator = config.getInstance(HTTP_AUTHENTICATOR);
+    public DefaultUnauthenticatedHandler(HttpAuthenticator httpAuthenticator) {
+        Assert.notNull(httpAuthenticator, "HttpAuthenticator cannot be null.");
+        this.httpAuthenticator = httpAuthenticator;
     }
 
     @Override

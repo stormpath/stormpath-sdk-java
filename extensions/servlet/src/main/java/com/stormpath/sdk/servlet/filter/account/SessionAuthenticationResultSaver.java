@@ -18,37 +18,20 @@ package com.stormpath.sdk.servlet.filter.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class SessionAuthenticationResultSaver implements Saver<AuthenticationResult>, ServletContextInitializable {
+public class SessionAuthenticationResultSaver implements Saver<AuthenticationResult> {
 
-    private static final String ACCOUNT_SESSION_ATTRIBUTE_NAMES_PROP = "stormpath.web.account.session.attribute.names";
+    private final Set<String> sessionAttributeNames;
 
-    private Set<String> sessionAttributeNames;
-
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-
-        String val = config.get(ACCOUNT_SESSION_ATTRIBUTE_NAMES_PROP);
-        Assert.hasText(val, ACCOUNT_SESSION_ATTRIBUTE_NAMES_PROP + " value is required.");
-
-        String[] logs = Strings.split(val);
-
-        this.sessionAttributeNames = new LinkedHashSet<String>(Collections.toList(logs));
+    public SessionAuthenticationResultSaver(Set<String> sessionAttributeNames) {
+        Assert.notEmpty(sessionAttributeNames, "Session attribute names Set cannot be null or empty.");
+        this.sessionAttributeNames = sessionAttributeNames;
     }
 
     @Override

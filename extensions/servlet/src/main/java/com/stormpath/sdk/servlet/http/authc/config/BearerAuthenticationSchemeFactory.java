@@ -17,32 +17,18 @@ package com.stormpath.sdk.servlet.http.authc.config;
 
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.config.Factory;
+import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
-public class BearerAuthenticationSchemeFactory
-    implements ServletContextInitializable, Factory<BearerAuthenticationScheme> {
-
-    private BearerAuthenticationScheme instance;
+public class BearerAuthenticationSchemeFactory extends ConfigSingletonFactory<BearerAuthenticationScheme> {
 
     @Override
-    public void init(ServletContext servletContext) throws ServletException {
-
+    protected BearerAuthenticationScheme createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-
         JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
-
-        this.instance = new BearerAuthenticationScheme(resolver);
+        return new BearerAuthenticationScheme(resolver);
     }
-
-    @Override
-    public BearerAuthenticationScheme getInstance() {
-        return this.instance;
-    }
-
 }

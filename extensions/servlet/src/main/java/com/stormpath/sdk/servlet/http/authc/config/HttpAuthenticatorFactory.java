@@ -19,30 +19,25 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.config.Factory;
+import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class HttpAuthenticatorFactory implements Factory<HttpAuthenticator>, ServletContextInitializable {
+public class HttpAuthenticatorFactory extends ConfigSingletonFactory<HttpAuthenticator> {
 
     public static final String CHALLENGE_PROPERTY_NAME = "stormpath.servlet.http.authc.challenge";
     public static final String SCHEMES_PROP = "stormpath.servlet.http.authc.schemes";
     public static final String SCHEME_PROPERTY_NAME_PREFIX = SCHEMES_PROP + ".";
 
-    private HttpAuthenticator authenticator;
-
     @Override
-    public void init(ServletContext servletContext) throws ServletException {
-
+    protected HttpAuthenticator createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
 
         List<String> schemeNames = null;
@@ -69,11 +64,6 @@ public class HttpAuthenticatorFactory implements Factory<HttpAuthenticator>, Ser
 
         boolean challenge = Boolean.parseBoolean(config.get(CHALLENGE_PROPERTY_NAME));
 
-        this.authenticator = new AuthorizationHeaderAuthenticator(schemes, challenge);
-    }
-
-    @Override
-    public HttpAuthenticator getInstance() {
-        return this.authenticator;
+        return new AuthorizationHeaderAuthenticator(schemes, challenge);
     }
 }

@@ -15,26 +15,21 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.Servlets;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 
 import javax.servlet.http.HttpServletRequest;
 
 public abstract class AccountCookieHandler {
 
-    protected Config getConfig(HttpServletRequest request) {
-        return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
-    }
+    private final CookieConfig accountCookieConfig;
 
-    protected Client getClient(HttpServletRequest request) {
-        return Servlets.getClient(request);
+    protected AccountCookieHandler(CookieConfig accountCookieConfig) {
+        Assert.notNull(accountCookieConfig, "Account CookieConfig cannot be null.");
+        this.accountCookieConfig = accountCookieConfig;
     }
 
     protected CookieConfig getAccountCookieConfig(HttpServletRequest request) {
-        return getConfig(request).getAccountCookieConfig();
+        return this.accountCookieConfig;
     }
-
 }

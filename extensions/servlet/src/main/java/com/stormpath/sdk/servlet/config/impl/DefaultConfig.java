@@ -173,14 +173,6 @@ public class DefaultConfig implements Config {
             SINGLETONS.put(classPropertyName, instance);
         }
 
-        try {
-            if (instance instanceof Factory) {
-                instance = ((Factory<T>)instance).getInstance();
-            }
-        } catch (Exception e) {
-            String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();
-            throw new ServletException(msg);
-        }
         return instance;
     }
 
@@ -200,14 +192,6 @@ public class DefaultConfig implements Config {
             throw new ServletException(msg);
         }
 
-        try {
-            if (instance instanceof Factory) {
-                instance = ((Factory<T>)instance).getInstance();
-            }
-        } catch (Exception e) {
-            String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();
-            throw new ServletException(msg);
-        }
         return instance;
     }
 
@@ -221,9 +205,9 @@ public class DefaultConfig implements Config {
         for(Map.Entry<String,Class<T>> entry : classes.entrySet()) {
 
             String name = entry.getKey();
-            Class<T> clazz = entry.getValue();
 
-            T instance = getInstance(propertyNamePrefix + name, clazz);
+            T instance = getInstance(propertyNamePrefix + name);
+            Assert.isInstanceOf(expectedType, instance);
 
             instances.put(name, instance);
         }
@@ -231,6 +215,7 @@ public class DefaultConfig implements Config {
         return instances;
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T newInstance(String classPropertyName) throws ServletException {
 
         if (!containsKey(classPropertyName)) {
@@ -259,6 +244,15 @@ public class DefaultConfig implements Config {
                              val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
+        }
+
+        try {
+            if (instance instanceof Factory) {
+                instance = ((Factory<T>)instance).getInstance();
+            }
+        } catch (Exception e) {
+            String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();
+            throw new ServletException(msg);
         }
 
         return instance;

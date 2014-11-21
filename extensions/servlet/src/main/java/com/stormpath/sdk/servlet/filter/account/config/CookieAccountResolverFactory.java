@@ -19,21 +19,22 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
+import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.filter.account.CookieAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
 
 import javax.servlet.ServletContext;
 
-public class AuthorizationHeaderAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
+public class CookieAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
 
-    public static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
+    protected static final String JWT_ACCOUNT_RESOLVER = "stormpath.web.account.jwt.resolver";
 
     @Override
     protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        HttpAuthenticator httpAuthenticator = config.getInstance(HTTP_AUTHENTICATOR);
-        return new AuthorizationHeaderAccountResolver(httpAuthenticator);
+        CookieConfig cookieConfig = config.getAccountCookieConfig();
+        JwtAccountResolver resolver = config.getInstance(JWT_ACCOUNT_RESOLVER);
+        return new CookieAccountResolver(cookieConfig, resolver);
     }
-
 }

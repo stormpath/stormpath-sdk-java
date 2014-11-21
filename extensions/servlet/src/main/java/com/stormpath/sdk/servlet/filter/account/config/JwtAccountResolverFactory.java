@@ -15,25 +15,20 @@
  */
 package com.stormpath.sdk.servlet.filter.account.config;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
+import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 
 import javax.servlet.ServletContext;
 
-public class AuthorizationHeaderAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
-
-    public static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
+public class JwtAccountResolverFactory extends ConfigSingletonFactory<JwtAccountResolver> {
 
     @Override
-    protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        HttpAuthenticator httpAuthenticator = config.getInstance(HTTP_AUTHENTICATOR);
-        return new AuthorizationHeaderAccountResolver(httpAuthenticator);
+    protected JwtAccountResolver createInstance(ServletContext servletContext) throws Exception {
+        Config config = (Config) servletContext.getAttribute(Config.class.getName());
+        JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
+        return new DefaultJwtAccountResolver(resolver);
     }
-
 }

@@ -18,58 +18,45 @@ package com.stormpath.sdk.servlet.filter.oauth;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.TokenResponse;
-import com.stormpath.sdk.servlet.Servlets;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.filter.account.AccountJwtFactory;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import org.apache.oltu.oauth2.common.message.types.TokenType;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory, ServletContextInitializable {
+public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory {
 
-    protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
+    private final AccountJwtFactory accountJwtFactory;
+    private final Application application;
+    private final int accountJwtTtl;
 
-    private Config config;
-    private Client client;
-    private Application application;
-    private AccountJwtFactory accountJwtFactory;
-
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        this.config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.client = Servlets.getClient(servletContext);
-        this.application = Servlets.getApplication(servletContext);
-        this.accountJwtFactory = config.getInstance(ACCOUNT_JWT_FACTORY);
-    }
-
-    protected Config getConfig() {
-        return this.config;
-    }
-
-    public Client getClient() {
-        return client;
+    public DefaultAccessTokenResultFactory(Application application, AccountJwtFactory accountJwtFactory,
+                                           int accountJwtTtl) {
+        Assert.notNull(application, "Application argument cannot be null.");
+        Assert.notNull(accountJwtFactory, "AccountJwtFactory cannot be null.");
+        this.application = application;
+        this.accountJwtFactory = accountJwtFactory;
+        this.accountJwtTtl = accountJwtTtl;
     }
 
     protected Application getApplication() {
         return this.application;
     }
 
-    public AccountJwtFactory getAccountJwtFactory() {
+    protected AccountJwtFactory getAccountJwtFactory() {
         return accountJwtFactory;
     }
 
+    protected int getAccountJwtTtl() {
+        return this.accountJwtTtl;
+    }
+
     @Override
-    public AccessTokenResult createAccessTokenResult(HttpServletRequest request,
-                                                     HttpServletResponse response,
+    public AccessTokenResult createAccessTokenResult(HttpServletRequest request, HttpServletResponse response,
                                                      AuthenticationResult result) {
 
         final Account account = result.getAccount();
@@ -80,14 +67,11 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
 
         Application application = getApplication();
 
-        int ttl = getConfig().getAccountJwtTtl();
+        int ttl = getAccountJwtTtl();
 
-        final TokenResponse tokenResponse = DefaultTokenResponse
-            .tokenType(TokenType.BEARER)
-            .accessToken(jwt)
-            .applicationHref(application.getHref())
-            .expiresIn(String.valueOf(ttl))
-            .build();
+        final TokenResponse tokenResponse =
+            DefaultTokenResponse.tokenType(TokenType.BEARER).accessToken(jwt).applicationHref(application.getHref())
+                                .expiresIn(String.valueOf(ttl)).build();
 
         return new PasswordGrantAccessTokenResult(account, tokenResponse);
     }

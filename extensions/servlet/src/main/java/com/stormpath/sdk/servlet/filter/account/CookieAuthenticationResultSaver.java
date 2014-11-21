@@ -16,33 +16,28 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CookieAuthenticationResultSaver extends AccountCookieHandler
-    implements Saver<AuthenticationResult>, ServletContextInitializable {
-
-    protected static final String ACCOUNT_COOKIE_SECURE_EVALUATOR = "stormpath.web.account.cookie.secure.evaluator";
-    protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
+public class CookieAuthenticationResultSaver extends AccountCookieHandler implements Saver<AuthenticationResult> {
 
     private AccountCookieSecureEvaluator accountCookieSecureEvaluator;
     private AccountJwtFactory accountJwtFactory;
 
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.accountCookieSecureEvaluator = config.getInstance(ACCOUNT_COOKIE_SECURE_EVALUATOR);
-        this.accountJwtFactory = config.getInstance(ACCOUNT_JWT_FACTORY);
+    public CookieAuthenticationResultSaver(CookieConfig accountCookieConfig,
+                                           AccountCookieSecureEvaluator evaluator,
+                                           AccountJwtFactory accountJwtFactory) {
+        super(accountCookieConfig);
+        Assert.notNull(evaluator, "AccountCookieSecureEvaluator cannot be null.");
+        Assert.notNull(accountJwtFactory, "AccountJwtFactory cannot be null.");
+        this.accountCookieSecureEvaluator = evaluator;
+        this.accountJwtFactory = accountJwtFactory;
     }
 
     public AccountCookieSecureEvaluator getAccountCookieSecureEvaluator() {

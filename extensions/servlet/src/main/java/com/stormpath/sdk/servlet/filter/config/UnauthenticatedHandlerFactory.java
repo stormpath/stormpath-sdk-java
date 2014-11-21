@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter.account.config;
+package com.stormpath.sdk.servlet.filter.config;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.filter.DefaultUnauthenticatedHandler;
+import com.stormpath.sdk.servlet.filter.UnauthenticatedHandler;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
 
 import javax.servlet.ServletContext;
 
-public class AuthorizationHeaderAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
+public class UnauthenticatedHandlerFactory extends ConfigSingletonFactory<UnauthenticatedHandler> {
 
-    public static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
+    protected static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
 
     @Override
-    protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {
+    protected UnauthenticatedHandler createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        HttpAuthenticator httpAuthenticator = config.getInstance(HTTP_AUTHENTICATOR);
-        return new AuthorizationHeaderAccountResolver(httpAuthenticator);
+        HttpAuthenticator authenticator = config.getInstance(HTTP_AUTHENTICATOR);
+        return new DefaultUnauthenticatedHandler(authenticator);
     }
-
 }

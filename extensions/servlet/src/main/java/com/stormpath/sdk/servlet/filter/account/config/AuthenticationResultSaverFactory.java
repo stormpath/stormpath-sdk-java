@@ -20,29 +20,24 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.config.Factory;
+import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class AuthenticationResultSaverFactory
-    implements Factory<AuthenticationResultSaver>, ServletContextInitializable {
+public class AuthenticationResultSaverFactory extends ConfigSingletonFactory<AuthenticationResultSaver> {
 
     public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.servlet.filter.authc.saver.savers";
     public static final String ACCOUNT_SAVER_PROPERTY_PREFIX = "stormpath.servlet.filter.authc.saver.savers.";
 
-    private AuthenticationResultSaver instance;
-
-    @SuppressWarnings("unchecked")
     @Override
-    public void init(ServletContext servletContext) throws ServletException {
+    protected AuthenticationResultSaver createInstance(ServletContext servletContext) throws Exception {
+
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
 
         List<String> locations = null;
@@ -68,11 +63,6 @@ public class AuthenticationResultSaverFactory
             savers.add(accountResolver);
         }
 
-        this.instance = new AuthenticationResultSaver(savers);
-    }
-
-    @Override
-    public AuthenticationResultSaver getInstance() {
-        return this.instance;
+        return new AuthenticationResultSaver(savers);
     }
 }

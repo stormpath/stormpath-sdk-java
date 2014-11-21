@@ -17,35 +17,25 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.Servlets;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.SigningKeyResolverAdapter;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-public class DefaultJwtAccountResolver implements JwtAccountResolver, ServletContextInitializable {
+public class DefaultJwtAccountResolver implements JwtAccountResolver {
 
-    private Client client;
-    private JwtSigningKeyResolver jwtSigningKeyResolver;
+    private final JwtSigningKeyResolver jwtSigningKeyResolver;
 
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        this.client = Servlets.getClient(servletContext);
-        Config config = (Config) servletContext.getAttribute(Config.class.getName());
-        this.jwtSigningKeyResolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
-    }
-
-    protected Client getClient() {
-        return this.client;
+    public DefaultJwtAccountResolver(JwtSigningKeyResolver jwtSigningKeyResolver) {
+        Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
+        this.jwtSigningKeyResolver = jwtSigningKeyResolver;
     }
 
     protected JwtSigningKeyResolver getJwtSigningKeyResolver() {
@@ -70,7 +60,7 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver, ServletCon
         String accountHref = claims.getSubject();
 
         //will hit the cache:
-        Client client = getClient();
+        Client client = Servlets.getClient(request);
         return client.getResource(accountHref, Account.class);
     }
 }
