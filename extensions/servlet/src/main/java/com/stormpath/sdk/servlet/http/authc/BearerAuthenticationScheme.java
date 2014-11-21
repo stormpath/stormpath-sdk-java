@@ -27,13 +27,10 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.Servlets;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OauthException;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -44,8 +41,6 @@ import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
@@ -53,7 +48,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-public class BearerAuthenticationScheme extends AbstractAuthenticationScheme implements ServletContextInitializable {
+public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private static final Logger log = LoggerFactory.getLogger(BearerAuthenticationScheme.class);
 
@@ -61,10 +56,9 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme imp
 
     private JwtSigningKeyResolver jwtSigningKeyResolver;
 
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        this.jwtSigningKeyResolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
+    public BearerAuthenticationScheme(JwtSigningKeyResolver jwtSigningKeyResolver) {
+        Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
+        this.jwtSigningKeyResolver = jwtSigningKeyResolver;
     }
 
     @Override

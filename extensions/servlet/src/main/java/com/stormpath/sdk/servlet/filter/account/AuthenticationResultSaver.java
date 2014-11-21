@@ -18,65 +18,27 @@ package com.stormpath.sdk.servlet.filter.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-public class AuthenticationResultSaver implements Saver<AuthenticationResult>, ServletContextInitializable {
-
-    public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.servlet.filter.authc.saver.savers";
-    public static final String ACCOUNT_SAVER_PROPERTY_PREFIX = "stormpath.servlet.filter.authc.saver.savers.";
+public class AuthenticationResultSaver implements Saver<AuthenticationResult> {
 
     private List<Saver<AuthenticationResult>> savers;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-
-        List<String> locations = null;
-        String val = config.get(ACCOUNT_SAVER_LOCATIONS);
-        if (Strings.hasText(val)) {
-            String[] locs = Strings.split(val);
-            locations = Arrays.asList(locs);
-        }
-
-        Assert.notEmpty(locations, "At least one " + ACCOUNT_SAVER_LOCATIONS + " value must be specified.");
-        assert locations != null;
-
-        Map<String,Saver> saverMap = config.getInstances(ACCOUNT_SAVER_PROPERTY_PREFIX, Saver.class);
-
-        List<Saver<AuthenticationResult>> savers = new ArrayList<Saver<AuthenticationResult>>(saverMap.size());
-
-        for(String location : locations) {
-
-            Saver resolver = saverMap.get(location);
-            Assert.notNull(resolver, "There is no configured AuthenticationResult Saver named " + location);
-
-            Saver<AuthenticationResult> accountResolver = (Saver<AuthenticationResult>)resolver;
-            savers.add(accountResolver);
-        }
-
+    public AuthenticationResultSaver(List<Saver<AuthenticationResult>> savers) {
+        Assert.notEmpty(savers, "At least one Saver<AuthenticationResult> must be specified.");
         this.savers = Collections.unmodifiableList(savers);
     }
 
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
 
-        for(Saver<AuthenticationResult> saver : savers) {
+        for (Saver<AuthenticationResult> saver : savers) {
             saver.set(request, response, result);
         }
 

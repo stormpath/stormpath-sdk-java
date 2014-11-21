@@ -57,7 +57,8 @@ public class ImplementationClassResolver<T> {
 
                 try {
                     Class<T> clazz = Classes.forName(className);
-                    Assert.isTrue(EXPECTED_TYPE.isAssignableFrom(clazz));
+                    Assert.isTrue(EXPECTED_TYPE.isAssignableFrom(clazz) ||
+                                  Factory.class.isAssignableFrom(clazz));
                     classes.put(instanceName, clazz);
                 } catch (Exception e) {
                     String msg = key + " value [" + className + "] is not a valid " + EXPECTED_TYPE.getName() + " class.";
