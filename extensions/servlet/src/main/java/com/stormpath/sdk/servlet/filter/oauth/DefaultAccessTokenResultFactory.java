@@ -22,7 +22,7 @@ import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.TokenResponse;
-import com.stormpath.sdk.servlet.filter.account.AccountJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import org.apache.oltu.oauth2.common.message.types.TokenType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,16 +30,16 @@ import javax.servlet.http.HttpServletResponse;
 
 public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory {
 
-    private final AccountJwtFactory accountJwtFactory;
+    private final AuthenticationJwtFactory authenticationJwtFactory;
     private final Application application;
     private final int accountJwtTtl;
 
-    public DefaultAccessTokenResultFactory(Application application, AccountJwtFactory accountJwtFactory,
+    public DefaultAccessTokenResultFactory(Application application, AuthenticationJwtFactory authenticationJwtFactory,
                                            int accountJwtTtl) {
         Assert.notNull(application, "Application argument cannot be null.");
-        Assert.notNull(accountJwtFactory, "AccountJwtFactory cannot be null.");
+        Assert.notNull(authenticationJwtFactory, "AuthenticationJwtFactory cannot be null.");
         this.application = application;
-        this.accountJwtFactory = accountJwtFactory;
+        this.authenticationJwtFactory = authenticationJwtFactory;
         this.accountJwtTtl = accountJwtTtl;
     }
 
@@ -47,8 +47,8 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
         return this.application;
     }
 
-    protected AccountJwtFactory getAccountJwtFactory() {
-        return accountJwtFactory;
+    protected AuthenticationJwtFactory getAuthenticationJwtFactory() {
+        return authenticationJwtFactory;
     }
 
     protected int getAccountJwtTtl() {
@@ -61,7 +61,7 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
 
         final Account account = result.getAccount();
 
-        AccountJwtFactory factory = getAccountJwtFactory();
+        AuthenticationJwtFactory factory = getAuthenticationJwtFactory();
 
         String jwt = factory.createAccountJwt(request, response, result);
 

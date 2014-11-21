@@ -20,7 +20,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface AccountJwtFactory {
+public interface AuthenticationJwtFactory {
 
     String createAccountJwt(HttpServletRequest request, HttpServletResponse response, AuthenticationResult account);
 

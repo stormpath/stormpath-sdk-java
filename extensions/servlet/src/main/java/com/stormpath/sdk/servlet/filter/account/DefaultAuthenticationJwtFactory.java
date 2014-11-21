@@ -27,12 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.UUID;
 
-public class DefaultAccountJwtFactory implements AccountJwtFactory {
+public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory {
 
     private final JwtSigningKeyResolver jwtSigningKeyResolver;
     private final int jwtTtl;
 
-    public DefaultAccountJwtFactory(JwtSigningKeyResolver jwtSigningKeyResolver, int jwtTtl) {
+    public DefaultAuthenticationJwtFactory(JwtSigningKeyResolver jwtSigningKeyResolver, int jwtTtl) {
         Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
         this.jwtSigningKeyResolver = jwtSigningKeyResolver;
         this.jwtTtl = jwtTtl;

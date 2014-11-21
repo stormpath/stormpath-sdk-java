@@ -18,19 +18,19 @@ package com.stormpath.sdk.servlet.filter.account.config;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.account.AccountJwtFactory;
-import com.stormpath.sdk.servlet.filter.account.DefaultAccountJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.DefaultAuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 
 import javax.servlet.ServletContext;
 
-public class AccountJwtFactoryFactory extends ConfigSingletonFactory<AccountJwtFactory> {
+public class AuthenticationJwtFactoryFactory extends ConfigSingletonFactory<AuthenticationJwtFactory> {
 
     @Override
-    protected AccountJwtFactory createInstance(ServletContext servletContext) throws Exception {
+    protected AuthenticationJwtFactory createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
         int ttl = config.getAccountJwtTtl();
-        return new DefaultAccountJwtFactory(resolver, ttl);
+        return new DefaultAuthenticationJwtFactory(resolver, ttl);
     }
 }

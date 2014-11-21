@@ -21,7 +21,7 @@ import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.filter.account.AccountCookieSecureEvaluator;
-import com.stormpath.sdk.servlet.filter.account.AccountJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.http.Saver;
 
@@ -37,7 +37,7 @@ public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFacto
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         CookieConfig cookieConfig = config.getAccountCookieConfig();
         AccountCookieSecureEvaluator evaluator = config.getInstance(ACCOUNT_COOKIE_SECURE_EVALUATOR);
-        AccountJwtFactory factory = config.getInstance(ACCOUNT_JWT_FACTORY);
+        AuthenticationJwtFactory factory = config.getInstance(ACCOUNT_JWT_FACTORY);
         return new CookieAuthenticationResultSaver(cookieConfig, evaluator, factory);
     }
 }

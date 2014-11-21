@@ -28,24 +28,24 @@ import javax.servlet.http.HttpServletResponse;
 public class CookieAuthenticationResultSaver extends AccountCookieHandler implements Saver<AuthenticationResult> {
 
     private AccountCookieSecureEvaluator accountCookieSecureEvaluator;
-    private AccountJwtFactory accountJwtFactory;
+    private AuthenticationJwtFactory authenticationJwtFactory;
 
     public CookieAuthenticationResultSaver(CookieConfig accountCookieConfig,
                                            AccountCookieSecureEvaluator evaluator,
-                                           AccountJwtFactory accountJwtFactory) {
+                                           AuthenticationJwtFactory authenticationJwtFactory) {
         super(accountCookieConfig);
         Assert.notNull(evaluator, "AccountCookieSecureEvaluator cannot be null.");
-        Assert.notNull(accountJwtFactory, "AccountJwtFactory cannot be null.");
+        Assert.notNull(authenticationJwtFactory, "AuthenticationJwtFactory cannot be null.");
         this.accountCookieSecureEvaluator = evaluator;
-        this.accountJwtFactory = accountJwtFactory;
+        this.authenticationJwtFactory = authenticationJwtFactory;
     }
 
     public AccountCookieSecureEvaluator getAccountCookieSecureEvaluator() {
         return accountCookieSecureEvaluator;
     }
 
-    public AccountJwtFactory getAccountJwtFactory() {
-        return accountJwtFactory;
+    public AuthenticationJwtFactory getAuthenticationJwtFactory() {
+        return authenticationJwtFactory;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
         if (value instanceof AccessTokenResult) {
             jwt = ((AccessTokenResult) value).getTokenResponse().getAccessToken();
         } else {
-            jwt = getAccountJwtFactory().createAccountJwt(request, response, value);
+            jwt = getAuthenticationJwtFactory().createAccountJwt(request, response, value);
         }
 
         Saver<String> saver = getCookieSaver(request);
