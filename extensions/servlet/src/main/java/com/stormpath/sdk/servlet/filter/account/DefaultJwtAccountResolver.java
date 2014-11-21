@@ -17,33 +17,60 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.client.ClientResolver;
+import com.stormpath.sdk.servlet.Servlets;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolver;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
-public class DefaultJwtAccountResolver implements JwtAccountResolver {
+public class DefaultJwtAccountResolver implements JwtAccountResolver, ServletContextInitializable {
 
-    protected Client getClient(HttpServletRequest request) {
-        return ClientResolver.INSTANCE.getClient(request.getServletContext());
+    private Client client;
+    private JwtSigningKeyResolver jwtSigningKeyResolver;
+
+    @Override
+    public void init(ServletContext servletContext) throws ServletException {
+        this.client = Servlets.getClient(servletContext);
+        Config config = (Config) servletContext.getAttribute(Config.class.getName());
+        this.jwtSigningKeyResolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
+    }
+
+    protected Client getClient() {
+        return this.client;
+    }
+
+    protected JwtSigningKeyResolver getJwtSigningKeyResolver() {
+        return this.jwtSigningKeyResolver;
     }
 
     @Override
-    public Account getAccountByJwt(HttpServletRequest request, HttpServletResponse response, String jwt) {
+    public Account getAccountByJwt(final HttpServletRequest request, final HttpServletResponse response, String jwt) {
 
-        Client client = getClient(request);
+        final JwtSigningKeyResolver resolver = getJwtSigningKeyResolver();
 
-        String secret = client.getApiKey().getSecret();
+        SigningKeyResolver signingKeyResolver = new SigningKeyResolverAdapter() {
+            @Override
+            public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
+                String base64Encoded = resolver.getSigningKey(request, response, header, claims);
+                return DatatypeConverter.parseBase64Binary(base64Encoded);
+            }
+        };
 
-        //TODO: cleanup when JJWT releases SigningKeyResolver functionality
-
-        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
+        Claims claims = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(jwt).getBody();
 
         String accountHref = claims.getSubject();
 
         //will hit the cache:
+        Client client = getClient();
         return client.getResource(accountHref, Account.class);
     }
 }

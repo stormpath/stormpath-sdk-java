@@ -26,7 +26,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.client.ClientResolver;
+import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
@@ -37,7 +37,10 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolver;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +48,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
@@ -116,15 +120,26 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme imp
         }
     }
 
-    protected HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response,
-                                                    String token) {
+    protected HttpAuthenticationResult authenticate(final HttpServletRequest request,
+                                                    final HttpServletResponse response, String token) {
 
         Jws<Claims> jws;
 
         try {
-            String signingKey = getJwtSigningKey(request, response, token);
-            jws = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token);
+            final JwtSigningKeyResolver resolver = getJwtSigningKeyResolver();
+
+            SigningKeyResolver signingKeyResolver = new SigningKeyResolverAdapter() {
+                @Override
+                public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
+                    String base64Encoded = resolver.getSigningKey(request, response, header, claims);
+                    return DatatypeConverter.parseBase64Binary(base64Encoded);
+                }
+            };
+
+            jws = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(token);
+
             return createAuthenticationResult(request, response, jws);
+
         } catch (ExpiredJwtException e) {
             throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
         } catch (OauthException e) {
@@ -133,13 +148,6 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme imp
             log.debug("JWT verification failed.", e);
             throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is invalid.", null, e);
         }
-    }
-
-    protected String getJwtSigningKey(HttpServletRequest request, HttpServletResponse response, String token) {
-        //TODO: cleanup when JJWT releases SigningKeyResolver functionality
-        Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
-        ApiKey apiKey = client.getApiKey();
-        return apiKey.getSecret();
     }
 
     protected HttpAuthenticationResult createAuthenticationResult(HttpServletRequest request,
@@ -186,7 +194,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme imp
             };
         } else {
 
-            Client client = ClientResolver.INSTANCE.getClient(request.getServletContext());
+            Client client = Servlets.getClient(request);
 
             final Account account = client.getResource(href, Account.class);
 

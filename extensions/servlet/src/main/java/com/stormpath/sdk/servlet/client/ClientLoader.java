@@ -28,8 +28,11 @@ import javax.servlet.ServletContext;
  * A {@code ClientLoader} is responsible for loading a web application's Stormpath {@link Client} instance and making it
  * available in the {@code ServletContext} at application startup.  Once in the {@code ServletContext}, the
  * {@code Client} is available to any application component that needs to interact with Stormpath; these components can
- * can access the {@code client} instance easily by using a {@link ClientResolver} implementation, for example,
- * {@link com.stormpath.sdk.servlet.client.ClientResolver#INSTANCE}.
+ * can access the {@code client} instance easily, for example:
+ *
+ * <pre>
+ * Servlets.getClient(aServletRequest);
+ * </pre>
  *
  * <h3>Usage</h3>
  *

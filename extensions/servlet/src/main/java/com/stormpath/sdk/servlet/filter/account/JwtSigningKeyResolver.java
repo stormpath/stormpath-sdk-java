@@ -26,8 +26,5 @@ public interface JwtSigningKeyResolver {
 
     String getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result);
 
-    //TODO: invoke this method when JJWT releases SigningKeyResolver functionality:
-    String getSigningKey(HttpServletRequest request, HttpServletResponse response,
-                         JwsHeader jwsHeader, Claims claims);
-
+    String getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims);
 }

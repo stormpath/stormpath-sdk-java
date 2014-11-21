@@ -19,7 +19,6 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.Servlets;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,7 +45,7 @@ public class RegisterController extends HttpServlet {
     }
 
     protected Client getClient(HttpServletRequest request) {
-        return ClientResolver.INSTANCE.getClient(request.getServletContext());
+        return Servlets.getClient(request);
     }
 
     protected Account newAccountInstance(HttpServletRequest request) {

@@ -95,7 +95,7 @@
         <hazelcast.version>3.2.4</hazelcast.version>
         <httpClient.version>4.2.2</httpClient.version>
         <jackson.version>2.4.3</jackson.version>
-        <jjwt.version>0.3</jjwt.version>
+        <jjwt.version>0.4</jjwt.version>
         <oltu.version>1.0.0</oltu.version>
 
         <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
