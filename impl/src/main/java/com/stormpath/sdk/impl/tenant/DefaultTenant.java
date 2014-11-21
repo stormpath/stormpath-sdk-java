@@ -31,7 +31,10 @@ import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 

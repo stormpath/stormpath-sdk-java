@@ -38,7 +38,13 @@ import com.stormpath.sdk.impl.http.support.Version;
 import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.CollectionProperties;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -64,8 +70,9 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.LIMIT;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.OFFSET;
 
 /**
  * @since 0.1
