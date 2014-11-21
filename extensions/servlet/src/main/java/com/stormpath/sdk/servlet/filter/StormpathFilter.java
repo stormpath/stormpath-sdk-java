@@ -20,38 +20,47 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.UriCleaner;
-import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class StormpathFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathFilter.class);
 
-    public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.routes.";
-    public static final String FILTER_CONFIG_NAME_PREFIX = "stormpath.servlet.filter.";
-
     private FilterChainResolver filterChainResolver;
-
-    private List<Filter> immediateExecutionFilters;
+    private Set<String> clientRequestAttributeNames;
+    private Set<String> applicationRequestAttributeNames;
 
     public StormpathFilter() {
+        this.clientRequestAttributeNames = java.util.Collections.emptySet();
+        this.applicationRequestAttributeNames = java.util.Collections.emptySet();
     }
 
-    protected String cleanUri(String uri) {
-        return UriCleaner.INSTANCE.clean(uri);
+    @SuppressWarnings("UnusedDeclaration")
+    public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
+        Assert.notNull(filterChainResolver, "FilterChainResolver cannot be null.");
+        this.filterChainResolver = filterChainResolver;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void setClientRequestAttributeNames(Set<String> clientRequestAttributeNames) {
+        this.clientRequestAttributeNames =
+            clientRequestAttributeNames != null ? clientRequestAttributeNames : new LinkedHashSet<String>();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void setApplicationRequestAttributeNames(Set<String> applicationRequestAttributeNames) {
+        this.applicationRequestAttributeNames =
+            applicationRequestAttributeNames != null ? applicationRequestAttributeNames : new LinkedHashSet<String>();
     }
 
     @Override
@@ -69,173 +78,76 @@ public class StormpathFilter extends HttpFilter {
     }
 
     protected void doInit() throws ServletException {
-
-        PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(getServletContext());
-        this.filterChainResolver = resolver;
-
-        //now register any configured chains:
         Config config = getConfig();
+        this.filterChainResolver = config.getInstance("stormpath.servlet.filter.chain.resolver");
 
-        //ensure the always-on AccountResolverFilter is available:
-        Filter accountFilter = Filters.builder().setServletContext(getServletContext())
-            .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
-            .setFilterClass(AccountResolverFilter.class)
-            .build();
-        this.immediateExecutionFilters = Arrays.asList(accountFilter);
-
-        //Too much copy-and-paste. YUCK.
-        //TODO: refactor this method to be more generic
-
-        //Ensure handlers are registered:
-        String loginUrl = config.getLoginUrl();
-        String loginUrlPattern = cleanUri(loginUrl);
-        boolean loginChainSpecified = false;
-
-        String logoutUrl = config.getLogoutUrl();
-        String logoutUrlPattern = cleanUri(logoutUrl);
-        boolean logoutChainSpecified = false;
-
-        String registerUrl = config.getRegisterUrl();
-        String registerUrlPattern = cleanUri(registerUrl);
-        boolean registerChainSpecified = false;
-
-        String verifyUrl = config.getVerifyUrl();
-        String verifyUrlPattern = cleanUri(verifyUrl);
-        boolean verifyChainSpecified = false;
-
-        String accessTokenUrl = config.getAccessTokenUrl();
-        String accessTokenUrlPattern = cleanUri(accessTokenUrl);
-        boolean accessTokenChainSpecified = false;
-
-        String unauthorizedUrl = config.getUnauthorizedUrl();
-        String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
-        boolean unauthorizedChainSpecified = false;
-
-        //uriPattern-to-chainDefinition:
-        Map<String, String> patternChains = new LinkedHashMap<String, String>();
-
-        for (String key : config.keySet()) {
-
-            if (key.startsWith(ROUTE_CONFIG_NAME_PREFIX)) {
-
-                String uriPattern = key.substring(ROUTE_CONFIG_NAME_PREFIX.length());
-                String chainDefinition = config.get(key);
-
-                if (uriPattern.startsWith(loginUrlPattern)) {
-                    loginChainSpecified = true;
-
-                    //did they specify the filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.login.name();
-                    if (!chainDefinition.contains(filterName)) {
-                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
-                    }
-
-                } else if (uriPattern.startsWith(logoutUrlPattern)) {
-                    logoutChainSpecified = true;
-
-                    //did they specify the filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.logout.name();
-                    if (!chainDefinition.contains(filterName)) {
-                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
-                    }
-
-                } else if (uriPattern.startsWith(registerUrlPattern)) {
-                    registerChainSpecified = true;
-
-                    //did they specify the filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.register.name();
-                    if (!chainDefinition.contains(filterName)) {
-                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
-                    }
-                } else if (uriPattern.startsWith(verifyUrlPattern)) {
-                    verifyChainSpecified = true;
-
-                    //did they specify the filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.verify.name();
-                    if (!chainDefinition.contains(filterName)) {
-                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
-                    }
-
-                } else if (uriPattern.startsWith(accessTokenUrlPattern)) {
-                    accessTokenChainSpecified = true;
-
-                    String filterName = DefaultFilter.accessToken.name();
-                    if (!chainDefinition.contains(filterName)) {
-                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
-                    }
-
-                } else if (uriPattern.startsWith(unauthorizedUrlPattern)) {
-                    unauthorizedChainSpecified = true;
-
-                    //did they specify the unauthorized filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.unauthorized.name();
-                    if (!chainDefinition.contains(filterName)) {
-                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
-                    }
-                }
-
-                patternChains.put(uriPattern, chainDefinition);
-            }
+        String val = config.get("stormpath.servlet.request.client.attributeNames");
+        if (Strings.hasText(val)) {
+            String[] vals = Strings.split(val);
+            this.clientRequestAttributeNames = new LinkedHashSet<String>(Arrays.asList(vals));
         }
 
-        //register configured request handlers if not yet specified:
-        FilterChainManager fcManager = resolver.getFilterChainManager();
+        val = config.get("stormpath.servlet.request.application.attributeNames");
+        if (Strings.hasText(val)) {
+            String[] vals = Strings.split(val);
+            this.applicationRequestAttributeNames = new LinkedHashSet<String>(Arrays.asList(vals));
+        }
+    }
 
-        if (!unauthorizedChainSpecified) {
-            fcManager.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
-        }
-        if (!loginChainSpecified) {
-            fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
-        }
-        if (!logoutChainSpecified) {
-            fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
-        }
-        if (!registerChainSpecified) {
-            fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
-        }
-        if (!verifyChainSpecified) {
-            fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
-        }
-        if (!accessTokenChainSpecified) {
-            fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
-        }
-
-        //register all specified chains:
-        for (String pattern : patternChains.keySet()) {
-            String chainDefinition = patternChains.get(pattern);
-            resolver.getFilterChainManager().createChain(pattern, chainDefinition);
-        }
+    protected FilterChainResolver getFilterChainResolver() {
+        return this.filterChainResolver;
     }
 
     @Override
     public void filter(HttpServletRequest request, HttpServletResponse response, final FilterChain chain)
         throws Exception {
 
-        Assert.notNull(filterChainResolver,
-                       "Filter has not yet been initialized. init(FilterConfig) must be called before use.");
+        FilterChainResolver resolver = getFilterChainResolver();
+        Assert.notNull(resolver, "Filter has not yet been configured. Explicitly call setFilterChainResolver or " +
+                                 "init(FilterConfig).");
 
-        //ensure the Client and Application are conveniently available to all request filters/handlers:
-        String name = Client.class.getName();
-        Client client = (Client)request.getServletContext().getAttribute(name);
-        request.setAttribute(name, client);
-
-        name = Application.class.getName();
-        Application application = (Application)request.getServletContext().getAttribute(name);
-        request.setAttribute(name, application);
+        setRequestAttributes(request);
 
         //wrap:
-        request = new StormpathHttpServletRequest(request, response);
+        request = wrapRequest(request, response);
 
-        FilterChain target = filterChainResolver.getChain(request, response, chain);
-
-        if (target == null) {
-            target = chain;
-        }
-
-        //The account resolver filter always executes before any other configured filters in the chain:
-        target = new ProxiedFilterChain(target, this.immediateExecutionFilters);
+        FilterChain target = resolver.getChain(request, response, chain);
 
         //continue:
         target.doFilter(request, response);
+    }
+
+    protected void setRequestAttributes(HttpServletRequest request) {
+        //ensure the Client and Application are conveniently available to all request filters/handlers:
+        setClientRequestAttributes(request);
+        setApplicationRequestAttributes(request);
+    }
+
+    protected void setClientRequestAttributes(HttpServletRequest request) {
+        String name = Client.class.getName();
+        Client client = (Client) request.getServletContext().getAttribute(name);
+        //value must always be set:
+        request.setAttribute(name, client);
+
+        //user customized values:
+        for (String aName : clientRequestAttributeNames) {
+            request.setAttribute(aName, client);
+        }
+    }
+
+    protected void setApplicationRequestAttributes(HttpServletRequest request) {
+        String name = Application.class.getName();
+        Application application = (Application) request.getServletContext().getAttribute(name);
+        //this must always be set:
+        request.setAttribute(name, application);
+
+        //user-customized values:
+        for (String aName : applicationRequestAttributeNames) {
+            request.setAttribute(aName, application);
+        }
+    }
+
+    protected HttpServletRequest wrapRequest(HttpServletRequest request, HttpServletResponse response) {
+        return new StormpathHttpServletRequest(request, response);
     }
 }
