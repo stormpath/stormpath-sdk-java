@@ -6,35 +6,39 @@ import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 
-class DefaultCacheManagerFactoryTest {
+class PropertiesCacheManagerFactoryTest {
 
     @Test
     void testWithNullArg() {
-        def factory = new DefaultCacheManagerFactory()
-        assertNull factory.createCacheManager(null);
+        def factory = new PropertiesCacheManagerFactory()
+        def cacheManager = factory.createCacheManager(null);
+        assertNotNull cacheManager
+        assertTrue cacheManager instanceof DefaultCacheManager
     }
 
     @Test
     void testWithEmptyArg() {
-        def factory = new DefaultCacheManagerFactory()
-        assertNull factory.createCacheManager(new HashMap<String, String>());
+        def factory = new PropertiesCacheManagerFactory()
+        def cacheManager = factory.createCacheManager(new HashMap<String, String>());
+        assertNotNull cacheManager
+        assertTrue cacheManager instanceof DefaultCacheManager
     }
 
     @Test
     void testDefaultCreatedWithNullArg() {
-        def factory = new DefaultCacheManagerFactory(true)
+        def factory = new PropertiesCacheManagerFactory()
         assertNotNull factory.createCacheManager();
     }
 
     @Test
     void testDefaultCreatedWithEmptyArg() {
-        def factory = new DefaultCacheManagerFactory(true)
+        def factory = new PropertiesCacheManagerFactory()
         assertNotNull factory.createCacheManager(new HashMap<String, String>());
     }
 
     @Test
     void testEnabledConfig() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         def mgr = factory.createCacheManager(['stormpath.cache.enabled': 'true']);
         assertNotNull mgr
         assertTrue mgr instanceof DefaultCacheManager
@@ -42,7 +46,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testDisabledConfig() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         def mgr = factory.createCacheManager(['stormpath.cache.enabled': 'false']);
         assertNotNull mgr
         assertTrue mgr instanceof DisabledCacheManager
@@ -50,7 +54,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testEnabledConfigWithInvalidValue() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         try {
             factory.createCacheManager(['stormpath.cache.enabled': 'whatever']);
             fail('expected IllegalArgumentException')
@@ -61,7 +65,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testWithDefaultTti() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         def mgr = factory.createCacheManager(['stormpath.cache.tti': '1001']);
         assertNotNull mgr
         assertEquals mgr.defaultTimeToIdle.value, 1001
@@ -69,7 +73,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testWithDefaultTtl() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         def mgr = factory.createCacheManager(['stormpath.cache.ttl': '2002']);
         assertNotNull mgr
         assertEquals mgr.defaultTimeToLive.value, 2002
@@ -77,7 +81,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testCacheRegionTtl() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         def mgr = factory.createCacheManager(['stormpath.cache.foo.ttl': '3003']);
         assertNotNull mgr
         def cache = mgr.getCache('foo');
@@ -87,7 +91,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testCacheRegionTtlWithNonLongValue() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         try {
             factory.createCacheManager(['stormpath.cache.foo.ttl': 'whatever']);
             fail('expected IllegalArgumentException')
@@ -98,7 +102,7 @@ class DefaultCacheManagerFactoryTest {
 
     @Test
     void testCacheRegionTti() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         def mgr = factory.createCacheManager(['stormpath.cache.foo.tti': '4004']);
         assertNotNull mgr
         def cache = mgr.getCache('foo');
@@ -108,13 +112,13 @@ class DefaultCacheManagerFactoryTest {
 
     @Test(expectedExceptions = IllegalArgumentException)
     void testCacheRegionWithNoSuffix() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         factory.createCacheManager(['stormpath.cache.foo': '4004']);
     }
 
     @Test(expectedExceptions = IllegalArgumentException)
     void testCacheRegionWithUnrecognizedSuffix() {
-        def factory = new DefaultCacheManagerFactory()
+        def factory = new PropertiesCacheManagerFactory()
         factory.createCacheManager(['stormpath.cache.foo.whatever': '4004']);
     }
 }

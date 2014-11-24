@@ -12,24 +12,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultCacheManagerFactory implements CacheManagerFactory {
+public class PropertiesCacheManagerFactory implements CacheManagerFactory {
 
     public static final String STORMPATH_CACHE_CONFIG_PREFIX = "stormpath.cache.";
+    public static final String STORMPATH_CACHE_MANAGER       = STORMPATH_CACHE_CONFIG_PREFIX + "manager";
     public static final String STORMPATH_CACHE_ENABLED       = STORMPATH_CACHE_CONFIG_PREFIX + "enabled";
     public static final String STORMPATH_CACHE_TTI_SUFFIX    = ".tti";
     public static final String STORMPATH_CACHE_TTL_SUFFIX    = ".ttl";
     public static final String STORMPATH_CACHE_TTI           = STORMPATH_CACHE_CONFIG_PREFIX + "tti";
     public static final String STORMPATH_CACHE_TTL           = STORMPATH_CACHE_CONFIG_PREFIX + "ttl";
-
-    private final boolean createDefault;
-
-    public DefaultCacheManagerFactory() {
-        this(false);
-    }
-
-    public DefaultCacheManagerFactory(boolean createDefault) {
-        this.createDefault = createDefault;
-    }
 
     @Override
     public CacheManager createCacheManager(Map<String,String> config) {
@@ -39,14 +30,21 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
         Set keys = config.keySet();
 
         CacheManagerBuilder builder = Caches.newCacheManager();
-        boolean configured = false;
 
         Map<String, CacheConfigurationBuilder> regionConfigs = new HashMap<String, CacheConfigurationBuilder>();
 
         for (final Object key : keys) {
+
             final String sKey = (String) key;
 
-            if (STORMPATH_CACHE_ENABLED.equals(sKey)) {
+            if (STORMPATH_CACHE_MANAGER.equals(sKey)) {
+                //this defines the cache manager bean itself (this object), so just skip
+                //(the Config mechanism already instantiated this instance)
+
+                //noinspection UnnecessaryContinue
+                continue;
+
+            } else if (STORMPATH_CACHE_ENABLED.equals(sKey)) {
                 String value = config.get(sKey);
                 boolean enabled = true;
 
@@ -61,8 +59,6 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
                     }
                 }
 
-                configured = true;
-
                 if (!enabled) {
                     //short circuit:
                     return Caches.newDisabledCacheManager();
@@ -73,14 +69,12 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
                 String value = config.get(sKey);
                 long tti = parseLong(sKey, value);
                 builder.withDefaultTimeToIdle(tti, TimeUnit.MILLISECONDS);
-                configured = true;
 
             } else if (STORMPATH_CACHE_TTL.equals(sKey)) {
 
                 String value = config.get(sKey);
                 long ttl = parseLong(sKey, value);
                 builder.withDefaultTimeToLive(ttl, TimeUnit.MILLISECONDS);
-                configured = true;
 
             } else if (sKey.startsWith(STORMPATH_CACHE_CONFIG_PREFIX)) {
 
@@ -104,8 +98,6 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
                         "the appropriate suffix (.tti or .ttl respectively).");
                 }
 
-                configured = true;
-
                 CacheConfigurationBuilder ccb = regionConfigs.get(regionName);
                 if (ccb == null) {
                     ccb = Caches.named(regionName);
@@ -120,10 +112,6 @@ public class DefaultCacheManagerFactory implements CacheManagerFactory {
                 }
             }
             //else not a stormpath.cache property - ignore it for CacheManager building purposes
-        }
-
-        if (!configured && !createDefault) {
-            return null;
         }
 
         for (CacheConfigurationBuilder ccb : regionConfigs.values()) {

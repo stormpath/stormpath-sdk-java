@@ -19,80 +19,93 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.cache.CacheManagerFactory;
-import com.stormpath.sdk.servlet.cache.DefaultCacheManagerFactory;
-import com.stormpath.sdk.servlet.cache.ServletContextAttributeCacheManager;
 import com.stormpath.sdk.servlet.config.Config;
 
 import javax.servlet.ServletContext;
-import java.util.Map;
+import javax.servlet.ServletException;
 
 /** Default {@link ServletContextClientFactory} implementation. */
 public class DefaultServletContextClientFactory implements ServletContextClientFactory {
 
-    public static final String STORMPATH_API_KEY_FILE          = "stormpath.apiKey.file";
+    public static final String STORMPATH_API_KEY_FILE = "stormpath.apiKey.file";
     public static final String STORMPATH_AUTHENTICATION_SCHEME = "stormpath.authentication.scheme";
 
-    public static final String STORMPATH_PROXY_HOST     = "stormpath.proxy.host";
-    public static final String STORMPATH_PROXY_PORT     = "stormpath.proxy.port";
+    public static final String STORMPATH_CACHE_MANAGER = "stormpath.cache.manager";
+
+    public static final String STORMPATH_PROXY_HOST = "stormpath.proxy.host";
+    public static final String STORMPATH_PROXY_PORT = "stormpath.proxy.port";
     public static final String STORMPATH_PROXY_USERNAME = "stormpath.proxy.username";
     public static final String STORMAPTH_PROXY_PASSWORD = "stormpath.proxy.password";
 
     public static final String STORMPATH_APPLICATION_HREF = "stormpath.application.href";
 
-    private final CacheManagerFactory cacheManagerFactory = new DefaultCacheManagerFactory();
+    private Config config;
+    private ServletContext servletContext;
+
+    protected Config getConfig() {
+        return config;
+    }
+
+    protected ServletContext getServletContext() {
+        return servletContext;
+    }
 
     @Override
     public Client createClient(ServletContext servletContext) {
+        Assert.notNull(servletContext, "ServletContext argument cannot be null.");
+        this.servletContext = servletContext;
 
-        Config config = (Config)servletContext.getAttribute(Config.class.getName());
+        Object object = servletContext.getAttribute(Config.class.getName());
+
+        Config config = (Config)object;
         Assert.notNull(config, "Stormpath Config instance is not available in the ServletContext.  Ensure the " +
                                "ConfigLoader ServletContext Listener is defined before the ClientLoader Listener.");
+        this.config = config;
 
         ClientBuilder builder = Clients.builder();
 
-        applyApiKey(builder, config, servletContext);
+        applyApiKey(builder);
 
-        applyProxy(builder, config, servletContext);
+        applyProxy(builder);
 
-        applyAuthenticationScheme(builder, config, servletContext);
+        applyAuthenticationScheme(builder);
 
-        applyCacheManager(builder, config, servletContext);
+        applyCacheManager(builder);
 
         return builder.build();
     }
 
-    protected void applyCacheManager(ClientBuilder builder, Config config, ServletContext servletContext) {
+    protected void applyCacheManager(ClientBuilder builder) {
 
-        CacheManager cacheManager = cacheManagerFactory.createCacheManager(config);
+        CacheManager cacheManager;
 
-        if (cacheManager == null) {
-            // no cache manager config was specified, assume a default, but allow the app developer to specify one
-            // at runtime via a ServletContext attribute:
-            cacheManager =
-                new ServletContextAttributeCacheManager(servletContext, Caches.newCacheManager().build(), true);
-        } else {
-            //cache manager config was specified - a runtime version should not also be specified
-            cacheManager = new ServletContextAttributeCacheManager(servletContext, cacheManager, false);
+        try {
+            cacheManager = config.getInstance(STORMPATH_CACHE_MANAGER);
+        } catch (ServletException e) {
+            String msg = "Unable to get CacheManager instance from Config: " + e.getMessage();
+            throw new IllegalStateException(msg, e);
         }
+
+        Assert.notNull(cacheManager, "Configured CacheManager cannot be null.  If you want to disable caching " +
+                                     "entirely, configure a " + DisabledCacheManager.class.getName() + " instead.");
 
         builder.setCacheManager(cacheManager);
     }
 
-    protected void applyApiKey(ClientBuilder clientBuilder, Config config, ServletContext servletContext) {
-        ApiKey apiKey = createApiKey(config, servletContext);
+    protected void applyApiKey(ClientBuilder clientBuilder) {
+        ApiKey apiKey = createApiKey();
         clientBuilder.setApiKey(apiKey);
     }
 
-    protected ApiKey createApiKey(final Config config, @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
+    protected ApiKey createApiKey() {
 
         ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
 
@@ -115,8 +128,7 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         return apiKeyBuilder.build();
     }
 
-    protected void applyProxy(ClientBuilder builder, final Config config,
-                              @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
+    protected void applyProxy(ClientBuilder builder) {
 
         String proxyHost = config.get(STORMPATH_PROXY_HOST);
         if (!Strings.hasText(proxyHost)) {
@@ -145,13 +157,11 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         builder.setProxy(proxy);
     }
 
-    protected void applyAuthenticationScheme(ClientBuilder builder, Map<String,String> props,
-                                             @SuppressWarnings("UnusedParameters") ServletContext servletContext) {
-        String schemeName = props.get(STORMPATH_AUTHENTICATION_SCHEME);
+    protected void applyAuthenticationScheme(ClientBuilder builder) {
+        String schemeName = config.get(STORMPATH_AUTHENTICATION_SCHEME);
         if (Strings.hasText(schemeName)) {
             AuthenticationScheme scheme = AuthenticationScheme.valueOf(schemeName.toUpperCase());
             builder.setAuthenticationScheme(scheme);
         }
     }
-
 }
