@@ -19,7 +19,7 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC3.preview.0</version>
+        <version>1.0.RC3.preview.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
