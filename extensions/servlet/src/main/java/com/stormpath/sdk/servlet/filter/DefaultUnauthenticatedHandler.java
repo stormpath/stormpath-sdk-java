@@ -38,6 +38,8 @@ public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
         if (isHtmlPreferred(request)) {
             LoginPageRedirector.INSTANCE.redirectToLoginPage(request, response, "authcReqd");
         } else {
+            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("Pragma", "no-cache");
             this.httpAuthenticator.sendChallenge(request, response);
         }
 
@@ -45,7 +47,11 @@ public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
     }
 
     protected boolean isHtmlPreferred(HttpServletRequest request) {
-        UserAgent ua = new DefaultUserAgent(request);
+        UserAgent ua = getUserAgent(request);
         return ua.isHtmlPreferred();
+    }
+
+    protected UserAgent getUserAgent(HttpServletRequest request) {
+        return new DefaultUserAgent(request);
     }
 }

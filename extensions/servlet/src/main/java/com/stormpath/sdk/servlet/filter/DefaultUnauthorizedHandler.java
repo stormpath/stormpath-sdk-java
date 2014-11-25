@@ -38,17 +38,11 @@ public class DefaultUnauthorizedHandler implements UnauthorizedHandler {
         return this.unauthorizedUrl;
     }
 
-    protected UserAgent getUserAgent(HttpServletRequest request) {
-        return new DefaultUserAgent(request);
-    }
-
     @Override
     public boolean onUnauthorized(HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
 
-        UserAgent ua = getUserAgent(request);
-
-        if (ua.isHtmlPreferred()) {
+        if (isHtmlPreferred(request)) {
             String url = getUnauthorizedUrl();
             try {
                 ServletUtils.issueRedirect(request, response, url, null, true, true);
@@ -63,5 +57,14 @@ public class DefaultUnauthorizedHandler implements UnauthorizedHandler {
         }
 
         return false;
+    }
+
+    protected boolean isHtmlPreferred(HttpServletRequest request) {
+        UserAgent userAgent = getUserAgent(request);
+        return userAgent.isHtmlPreferred();
+    }
+
+    protected UserAgent getUserAgent(HttpServletRequest request) {
+        return new DefaultUserAgent(request);
     }
 }
