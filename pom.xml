@@ -47,7 +47,7 @@
         <connection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</developerConnection>
         <url>git@github.com:stormpath/stormpath-sdk-java.git</url>
-        <tag>servlet-module</tag>
+        <tag>servlet-module-preview-release</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
