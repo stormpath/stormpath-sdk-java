@@ -26,6 +26,7 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
@@ -42,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class RegisterFilter extends HttpFilter {
 
@@ -50,15 +50,18 @@ public class RegisterFilter extends HttpFilter {
 
     public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
     private static final String ACCOUNT_SAVER_PROP = "stormpath.servlet.filter.authc.saver";
+    public static final String CSRF_TOKEN_MANAGER = "stormpath.servlet.csrf.manager";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/register.jsp";
     public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/verifyEmail.jsp";
 
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
+    private CsrfTokenManager csrfTokenManager;
 
     @Override
     protected void onInit() throws ServletException {
         this.authenticationResultSaver = getConfig().getInstance(ACCOUNT_SAVER_PROP);
+        this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
     }
 
     /**
@@ -93,6 +96,7 @@ public class RegisterFilter extends HttpFilter {
         throws IOException, ServletException {
         //addConfigProperties(request);
         Form form = createForm(request, false);
+        ((DefaultForm)form).setCsrfToken(csrfTokenManager.createCsrfToken(request, response));
         setForm(request, form);
         request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
     }
@@ -102,7 +106,6 @@ public class RegisterFilter extends HttpFilter {
         DefaultForm form = new DefaultForm();
 
         String value = Strings.clean(request.getParameter("csrfToken"));
-        value = value != null ? value : UUID.randomUUID().toString().replace("-", ""); //TODO add to cache
         form.setCsrfToken(value);
 
         value = Strings.clean(request.getParameter("next"));
@@ -178,8 +181,6 @@ public class RegisterFilter extends HttpFilter {
         } catch (Exception e) {
             log.debug("Unable to register account.", e);
 
-            //addConfigProperties(request);
-
             List<String> errors = new ArrayList<String>();
 
             if (e instanceof ResourceException) {
@@ -193,6 +194,9 @@ public class RegisterFilter extends HttpFilter {
             //do not retain submitted password (not save to have in the DOM text):
             ((DefaultField) form.getField("password")).setValue("");
             setForm(request, form);
+
+            //ensure new csrf token is used:
+            ((DefaultForm)form).setCsrfToken(csrfTokenManager.createCsrfToken(request, response));
 
             request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
         }
@@ -220,10 +224,10 @@ public class RegisterFilter extends HttpFilter {
         return Strings.clean(field.getValue());
     }
 
-    protected void validate(Form form) throws ServletException, IOException {
+    protected void validate(HttpServletRequest request, HttpServletResponse response, Form form)
+        throws ServletException, IOException {
 
-        //validate CSRF
-        Assert.hasText(form.getCsrfToken(), "CSRF Token must be specified."); //TODO check cache
+        validateCsrfToken(request, response, form);
 
         //ensure required fields are present:
         List<Field> fields = form.getFields();
@@ -238,10 +242,15 @@ public class RegisterFilter extends HttpFilter {
         }
     }
 
+    protected void validateCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) {
+        String csrfToken = form.getCsrfToken();
+        Assert.isTrue(csrfTokenManager.isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
+    }
+
     protected void register(HttpServletRequest req, HttpServletResponse resp, Form form)
         throws ServletException, IOException {
 
-        validate(form);
+        validate(req, resp, form);
 
         //Create a new Account instance that will represent the submitted user information:
         Account account = newAccount(req);

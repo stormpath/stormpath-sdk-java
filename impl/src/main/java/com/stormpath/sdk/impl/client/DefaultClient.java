@@ -119,6 +119,11 @@ public class DefaultClient implements Client {
     }
 
     @Override
+    public CacheManager getCacheManager() {
+        return this.dataStore.getCacheManager();
+    }
+
+    @Override
     public DataStore getDataStore() {
         return this.dataStore;
     }

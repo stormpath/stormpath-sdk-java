@@ -158,7 +158,12 @@ public class DefaultDataStore implements InternalDataStore {
     public ApiKey getApiKey() {
         return apiKey;
     }
-    
+
+    @Override
+    public CacheManager getCacheManager() {
+        return this.cacheManager;
+    }
+
     /* =====================================================================
        Resource Instantiation
        ===================================================================== */

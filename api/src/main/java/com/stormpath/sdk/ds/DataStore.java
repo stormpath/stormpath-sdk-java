@@ -16,6 +16,7 @@
 package com.stormpath.sdk.ds;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -59,5 +60,13 @@ public interface DataStore {
      * @since 1.0.RC3
      */
     ApiKey getApiKey();
+
+    /**
+     * Returns the CacheManager used to improve data store performance.
+     *
+     * @return the CacheManager used to improve data store performance.
+     * @since 1.0.RC3
+     */
+    CacheManager getCacheManager();
 
 }

@@ -22,6 +22,7 @@ import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
@@ -38,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class LoginFilter extends HttpFilter {
 
@@ -47,12 +47,15 @@ public class LoginFilter extends HttpFilter {
     private static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/login.jsp";
 
     protected static final String AUTHENTICATION_RESULT_SAVER = "stormpath.servlet.filter.authc.saver";
+    public static final String CSRF_TOKEN_MANAGER = "stormpath.servlet.csrf.manager";
 
     private Saver<AuthenticationResult> authenticationResultSaver;
+    private CsrfTokenManager csrfTokenManager;
 
     @Override
     protected void onInit() throws ServletException {
         this.authenticationResultSaver = getConfig().getInstance(AUTHENTICATION_RESULT_SAVER);
+        this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
     }
 
     /**
@@ -101,7 +104,6 @@ public class LoginFilter extends HttpFilter {
         DefaultForm form = new DefaultForm();
 
         String value = Strings.clean(request.getParameter("csrfToken"));
-        value = value != null ? value : UUID.randomUUID().toString().replace("-", ""); //TODO add to cache
         form.setCsrfToken(value);
 
         value = Strings.clean(request.getParameter("next"));
@@ -149,6 +151,7 @@ public class LoginFilter extends HttpFilter {
         throws IOException, ServletException {
         //addConfigProperties(request);
         Form form = createForm(request, false);
+        ((DefaultForm)form).setCsrfToken(csrfTokenManager.createCsrfToken(request, response));
         setForm(request, form);
         String status = Strings.clean(request.getParameter("status"));
         if (status != null) {
@@ -177,6 +180,9 @@ public class LoginFilter extends HttpFilter {
             ((DefaultField) form.getField("password")).setValue("");
             setForm(request, form);
 
+            //ensure new csrf token is used:
+            ((DefaultForm)form).setCsrfToken(csrfTokenManager.createCsrfToken(request, response));
+
             request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
         }
     }
@@ -185,10 +191,11 @@ public class LoginFilter extends HttpFilter {
         return AccountResolver.INSTANCE.getAccount(req);
     }
 
-    protected void validate(Form form) throws ServletException, IOException {
+    protected void validate(HttpServletRequest request, HttpServletResponse response, Form form)
+        throws ServletException, IOException {
 
         //validate CSRF
-        Assert.hasText(form.getCsrfToken(), "CSRF Token must be specified."); //TODO check cache
+        validateCsrfToken(request, response, form);
 
         //ensure required fields are present:
         List<Field> fields = form.getFields();
@@ -203,10 +210,15 @@ public class LoginFilter extends HttpFilter {
         }
     }
 
+    protected void validateCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) {
+        String csrfToken = form.getCsrfToken();
+        Assert.isTrue(csrfTokenManager.isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
+    }
+
     protected void login(HttpServletRequest req, HttpServletResponse resp, Form form)
         throws ServletException, IOException {
 
-        validate(form);
+        validate(req, resp, form);
 
         String usernameOrEmail = form.getFieldValue("login");
         String password = form.getFieldValue("password");
