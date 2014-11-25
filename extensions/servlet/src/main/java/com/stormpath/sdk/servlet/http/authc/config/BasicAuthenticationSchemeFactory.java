@@ -23,8 +23,7 @@ import javax.servlet.ServletContext;
 
 public class BasicAuthenticationSchemeFactory extends ConfigSingletonFactory<BasicAuthenticationScheme> {
 
-    public static final String USERNAME_PASSWORD_REQUEST_FACTORY =
-        "stormpath.servlet.filter.authc.usernamePasswordRequestFactory";
+    public static final String USERNAME_PASSWORD_REQUEST_FACTORY = "stormpath.web.authc.usernamePasswordRequestFactory";
 
     @Override
     protected BasicAuthenticationScheme createInstance(ServletContext servletContext) throws Exception {

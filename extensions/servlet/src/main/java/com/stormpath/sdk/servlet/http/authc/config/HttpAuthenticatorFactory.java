@@ -32,8 +32,8 @@ import java.util.Map;
 
 public class HttpAuthenticatorFactory extends ConfigSingletonFactory<HttpAuthenticator> {
 
-    public static final String CHALLENGE_PROPERTY_NAME = "stormpath.servlet.http.authc.challenge";
-    public static final String SCHEMES_PROP = "stormpath.servlet.http.authc.schemes";
+    public static final String CHALLENGE_PROPERTY_NAME = "stormpath.web.http.authc.challenge";
+    public static final String SCHEMES_PROP = "stormpath.web.http.authc.schemes";
     public static final String SCHEME_PROPERTY_NAME_PREFIX = SCHEMES_PROP + ".";
 
     @Override

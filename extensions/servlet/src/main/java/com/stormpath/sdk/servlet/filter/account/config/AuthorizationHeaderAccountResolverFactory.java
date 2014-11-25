@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
 
 public class AuthorizationHeaderAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
 
-    public static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
+    public static final String HTTP_AUTHENTICATOR = "stormpath.web.http.authc";
 
     @Override
     protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {

@@ -28,7 +28,7 @@ public class UsernamePasswordRequestFactoryFactory extends ConfigSingletonFactor
     protected UsernamePasswordRequestFactory createInstance(ServletContext servletContext) throws Exception {
 
         AuthenticationAccountStoreResolver resolver =
-            getConfig().getInstance("stormpath.servlet.http.authc.accountStoreResolver");
+            getConfig().getInstance("stormpath.web.http.authc.accountStoreResolver");
 
         return new DefaultUsernamePasswordRequestFactory(resolver);
     }

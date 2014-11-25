@@ -85,21 +85,21 @@ public class StormpathFilter extends HttpFilter {
 
     protected void doInit() throws ServletException {
         Config config = getConfig();
-        this.filterChainResolver = config.getInstance("stormpath.servlet.filter.chain.resolver");
+        this.filterChainResolver = config.getInstance("stormpath.web.filter.chain.resolver");
 
-        String val = config.get("stormpath.servlet.request.client.attributeNames");
+        String val = config.get("stormpath.web.request.client.attributeNames");
         if (Strings.hasText(val)) {
             String[] vals = Strings.split(val);
             this.clientRequestAttributeNames = new LinkedHashSet<String>(Arrays.asList(vals));
         }
 
-        val = config.get("stormpath.servlet.request.application.attributeNames");
+        val = config.get("stormpath.web.request.application.attributeNames");
         if (Strings.hasText(val)) {
             String[] vals = Strings.split(val);
             this.applicationRequestAttributeNames = new LinkedHashSet<String>(Arrays.asList(vals));
         }
 
-        this.factory = config.getInstance("stormpath.servlet.request.factory");
+        this.factory = config.getInstance("stormpath.web.request.factory");
     }
 
     protected FilterChainResolver getFilterChainResolver() {

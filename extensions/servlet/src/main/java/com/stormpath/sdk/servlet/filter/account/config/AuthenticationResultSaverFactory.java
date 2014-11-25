@@ -31,8 +31,8 @@ import java.util.Map;
 
 public class AuthenticationResultSaverFactory extends ConfigSingletonFactory<AuthenticationResultSaver> {
 
-    public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.servlet.filter.authc.saver.savers";
-    public static final String ACCOUNT_SAVER_PROPERTY_PREFIX = "stormpath.servlet.filter.authc.saver.savers.";
+    public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.web.authc.savers";
+    public static final String ACCOUNT_SAVER_PROPERTY_PREFIX = ACCOUNT_SAVER_LOCATIONS + ".";
 
     @Override
     protected AuthenticationResultSaver createInstance(ServletContext servletContext) throws Exception {

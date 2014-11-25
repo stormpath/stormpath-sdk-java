@@ -40,17 +40,16 @@ public class AccessTokenFilter extends HttpFilter {
 
     protected static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
-    protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.servlet.filter.accessToken.resultFactory";
+    protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.accessToken.resultFactory";
 
     protected static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-        "stormpath.servlet.filter.accessToken.authenticationRequestFactory";
+        "stormpath.web.accessToken.authenticationRequestFactory";
 
-    protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER =
-        "stormpath.servlet.filter.accessToken.requestAuthorizer";
+    protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER = "stormpath.web.accessToken.requestAuthorizer";
 
-    protected static final String ACCOUNT_SAVER = "stormpath.servlet.filter.authc.saver";
+    protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
 
-    protected static final String SECURE = "stormpath.servlet.filter.accessToken.secure";
+    protected static final String SECURE = "stormpath.web.accessToken.secure";
 
     private AccessTokenRequestAuthorizer requestAuthorizer;
     private AccessTokenAuthenticationRequestFactory authenticationRequestFactory;

@@ -29,7 +29,7 @@ public class AccessTokenAuthenticationRequestFactoryFactory
     protected AccessTokenAuthenticationRequestFactory createInstance(ServletContext sc) throws Exception {
 
         UsernamePasswordRequestFactory factory =
-            getConfig().getInstance("stormpath.servlet.filter.authc.usernamePasswordRequestFactory");
+            getConfig().getInstance("stormpath.web.authc.usernamePasswordRequestFactory");
 
         return new DefaultAccessTokenAuthenticationRequestFactory(factory);
     }

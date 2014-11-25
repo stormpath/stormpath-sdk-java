@@ -49,8 +49,8 @@ public class RegisterFilter extends HttpFilter {
     private static final Logger log = LoggerFactory.getLogger(RegisterFilter.class);
 
     public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
-    private static final String ACCOUNT_SAVER_PROP = "stormpath.servlet.filter.authc.saver";
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.servlet.csrf.manager";
+    private static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
+    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/register.jsp";
     public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/verifyEmail.jsp";
 

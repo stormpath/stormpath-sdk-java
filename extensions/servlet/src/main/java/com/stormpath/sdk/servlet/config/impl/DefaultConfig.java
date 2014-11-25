@@ -17,7 +17,6 @@ package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
@@ -26,11 +25,9 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,8 +44,6 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
 
-    public static final String ACCOUNT_SAVER_LOCATIONS = "stormpath.web.account.saver.locations";
-
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
@@ -62,7 +57,6 @@ public class DefaultConfig implements Config {
     private final ConfigReader CFG;
     private final Map<String, String> props;
 
-    private final List<String> _ACCOUNT_SAVER_LOCATIONS;
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
     private final int _ACCOUNT_JWT_TTL;
 
@@ -77,14 +71,6 @@ public class DefaultConfig implements Config {
         this.SINGLETONS = new LinkedHashMap<String, Object>();
 
         this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
-
-        String val = CFG.getString(ACCOUNT_SAVER_LOCATIONS);
-        if (Strings.hasText(val)) {
-            String[] locs = Strings.split(val);
-            _ACCOUNT_SAVER_LOCATIONS = Arrays.asList(locs);
-        } else {
-            _ACCOUNT_SAVER_LOCATIONS = Collections.emptyList();
-        }
 
         int accountJwtTtl = CFG.getInt(ACCOUNT_JWT_TTL);
         Assert.isTrue(accountJwtTtl > 0, ACCOUNT_JWT_TTL + " value must be a positive integer.");
@@ -147,11 +133,6 @@ public class DefaultConfig implements Config {
     @Override
     public String getUnauthorizedUrl() {
         return CFG.getString(UNAUTHORIZED_URL);
-    }
-
-    @Override
-    public List<String> getAccountSaverLocations() {
-        return _ACCOUNT_SAVER_LOCATIONS;
     }
 
     @Override

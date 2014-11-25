@@ -22,6 +22,9 @@ import io.jsonwebtoken.JwsHeader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Both method implementations <em>MUST</em> return the same signing key.
+ */
 public interface JwtSigningKeyResolver {
 
     String getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result);

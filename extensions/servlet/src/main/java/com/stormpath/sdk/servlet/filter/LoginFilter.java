@@ -46,8 +46,8 @@ public class LoginFilter extends HttpFilter {
 
     private static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/login.jsp";
 
-    protected static final String AUTHENTICATION_RESULT_SAVER = "stormpath.servlet.filter.authc.saver";
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.servlet.csrf.manager";
+    protected static final String AUTHENTICATION_RESULT_SAVER = "stormpath.web.authc.saver";
+    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
 
     private Saver<AuthenticationResult> authenticationResultSaver;
     private CsrfTokenManager csrfTokenManager;

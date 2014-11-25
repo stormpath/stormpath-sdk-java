@@ -36,8 +36,8 @@ import java.util.Map;
 //not an orderable filter - always executes immediately after the StormpathFilter but before other user-configured filters.
 public class AccountResolverFilter extends HttpFilter {
 
-    public static final String ACCOUNT_RESOLVER_LOCATIONS = "stormpath.servlet.filter.accountResolver.resolvers";
-    public static final String ACCOUNT_RESOLVER_PROPERTY_PREFIX = "stormpath.servlet.filter.accountResolver.resolvers.";
+    public static final String ACCOUNT_RESOLVER_LOCATIONS = "stormpath.web.account.resolvers";
+    public static final String ACCOUNT_RESOLVER_PROPERTY_PREFIX = ACCOUNT_RESOLVER_LOCATIONS + ".";
 
     private List<Resolver<Account>> resolvers;
 

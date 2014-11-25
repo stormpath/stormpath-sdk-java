@@ -28,8 +28,8 @@ import javax.servlet.ServletContext;
 
 public class CsrfTokenManagerFactory extends ConfigSingletonFactory<CsrfTokenManager> {
 
-    public static final String CSRF_TOKEN_TTL = "stormpath.servlet.csrf.token.ttl";
-    public static final String NONCE_CACHE_NAME = "stormpath.servlet.nonce.cache.name";
+    public static final String CSRF_TOKEN_TTL = "stormpath.web.csrf.token.ttl";
+    public static final String NONCE_CACHE_NAME = "stormpath.web.nonce.cache.name";
 
     @Override
     protected CsrfTokenManager createInstance(ServletContext servletContext) throws Exception {

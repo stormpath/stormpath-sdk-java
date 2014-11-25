@@ -27,8 +27,8 @@ public abstract class AccessControlFilter extends HttpFilter {
     protected String loginUrl;
     protected String accessTokenUrl;
 
-    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.servlet.filter.authc.unauthenticatedHandler";
-    protected static final String UNAUTHORIZED_HANDLER = "stormpath.servlet.filter.authz.unauthorizedHandler";
+    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.web.authc.unauthenticatedHandler";
+    protected static final String UNAUTHORIZED_HANDLER = "stormpath.web.authz.unauthorizedHandler";
     private UnauthenticatedHandler unauthenticatedHandler;
     private UnauthorizedHandler unauthorizedHandler;
 

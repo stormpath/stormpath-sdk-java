@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 
 public class UnauthenticatedHandlerFactory extends ConfigSingletonFactory<UnauthenticatedHandler> {
 
-    protected static final String HTTP_AUTHENTICATOR = "stormpath.servlet.http.authc";
+    protected static final String HTTP_AUTHENTICATOR = "stormpath.web.http.authc";
 
     @Override
     protected UnauthenticatedHandler createInstance(ServletContext servletContext) throws Exception {
