@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.servlet.filter.account.config;
 
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.DefaultAuthenticationJwtFactory;
@@ -28,9 +26,8 @@ public class AuthenticationJwtFactoryFactory extends ConfigSingletonFactory<Auth
 
     @Override
     protected AuthenticationJwtFactory createInstance(ServletContext servletContext) throws Exception {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
-        int ttl = config.getAccountJwtTtl();
+        JwtSigningKeyResolver resolver = getConfig().getInstance("stormpath.web.account.jwt.signingKey.resolver");
+        int ttl = getConfig().getAccountJwtTtl();
         return new DefaultAuthenticationJwtFactory(resolver, ttl);
     }
 }

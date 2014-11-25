@@ -17,14 +17,27 @@ package com.stormpath.sdk.servlet.filter.oauth;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.http.authc.AuthenticationAccountStoreResolver;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTokenAuthenticationRequestFactory {
 
     protected static final String GRANT_TYPE_PARAM_NAME = "grant_type";
+
+    private AuthenticationAccountStoreResolver authenticationAccountStoreResolver;
+
+    public DefaultAccessTokenAuthenticationRequestFactory(AuthenticationAccountStoreResolver resolver) {
+        Assert.notNull(resolver, "AuthenticationAccountStoreResolver cannot be null.");
+        this.authenticationAccountStoreResolver = resolver;
+    }
+
+    public AuthenticationAccountStoreResolver getAuthenticationAccountStoreResolver() {
+        return authenticationAccountStoreResolver;
+    }
 
     @Override
     public AuthenticationRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
@@ -54,6 +67,8 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
             throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Missing password value.", null);
         }
 
-        return new UsernamePasswordRequest(username, password, request.getRemoteHost());
+        AccountStore accountStore = getAuthenticationAccountStoreResolver().getAuthenticationAccountStore(request, null);
+
+        return new UsernamePasswordRequest(username, password, request.getRemoteHost(), accountStore);
     }
 }

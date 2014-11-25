@@ -17,8 +17,6 @@ package com.stormpath.sdk.servlet.filter.oauth.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.servlet.Servlets;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
@@ -32,10 +30,9 @@ public class AccessTokenResultFactoryFactory extends ConfigSingletonFactory<Acce
 
     @Override
     protected AccessTokenResultFactory createInstance(ServletContext servletContext) throws Exception {
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         Application application = Servlets.getApplication(servletContext);
-        AuthenticationJwtFactory factory = config.getInstance(ACCOUNT_JWT_FACTORY);
-        int ttl = config.getAccountJwtTtl();
+        AuthenticationJwtFactory factory = getConfig().getInstance(ACCOUNT_JWT_FACTORY);
+        int ttl = getConfig().getAccountJwtTtl();
         return new DefaultAccessTokenResultFactory(application, factory, ttl);
     }
 }

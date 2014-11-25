@@ -40,28 +40,50 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathHttpServletRequest.class.getName());
 
-    public static final String AUTH_TYPE_REQUEST_ATTRIBUTE_NAME = StormpathHttpServletRequest.class.getName() + "authType";
+    public static final String AUTH_TYPE_REQUEST_ATTRIBUTE_NAME =
+        StormpathHttpServletRequest.class.getName() + ".authType";
 
     public static final String AUTH_TYPE_BEARER = "Bearer";
 
-    public static final String REMOTE_USER_STRATEGY    = "stormpath.servlet.request.remoteUser.strategy";
-    public static final String USER_PRINCIPAL_STRATEGY = "stormpath.servlet.request.userPrincipal.strategy";
-
-    public static final String ACCOUNT    = "account";
-    public static final String EMAIL      = "email";
-    public static final String USERNAME   = "username";
+    public static final String ACCOUNT = "account";
+    public static final String EMAIL = "email";
+    public static final String USERNAME = "username";
     public static final String GIVEN_NAME = "givenName";
-    public static final String HREF       = "href";
-    public static final String BYPASS     = "bypass";
+    public static final String HREF = "href";
+    public static final String BYPASS = "bypass";
 
-    private static boolean remoteUserWarned    = false; //static on purpose - we only want to print this once.
+    private static boolean remoteUserWarned = false; //static on purpose - we only want to print this once.
     private static boolean userPrincipalWarned = false; //static on purpose - we only want to print this once.
 
     private final HttpServletResponse response; //response paired with the request.
 
-    public StormpathHttpServletRequest(HttpServletRequest request, HttpServletResponse response) {
+    private final Saver<AuthenticationResult> authenticationResultSaver;
+    private final String userPrincipalStrategyName;
+    private final String remoteUserStrategyName;
+
+    public StormpathHttpServletRequest(HttpServletRequest request, HttpServletResponse response,
+                                       Saver<AuthenticationResult> authenticationResultSaver,
+                                       String userPrincipalStrategyName, String remoteUserStrategyName) {
         super(request);
         this.response = response;
+        Assert.notNull(authenticationResultSaver, "AuthenticationResultSaver cannot be null.");
+        this.authenticationResultSaver = authenticationResultSaver;
+        Assert.hasText(userPrincipalStrategyName, "userPrincipalStrategyName argument cannot be null or empty.");
+        this.userPrincipalStrategyName = userPrincipalStrategyName;
+        Assert.hasText(remoteUserStrategyName, "remoteUserStrategyName argument cannot be null or empty.");
+        this.remoteUserStrategyName = remoteUserStrategyName;
+    }
+
+    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+        return authenticationResultSaver;
+    }
+
+    public String getUserPrincipalStrategyName() {
+        return userPrincipalStrategyName;
+    }
+
+    public String getRemoteUserStrategyName() {
+        return remoteUserStrategyName;
     }
 
     @Override
@@ -129,8 +151,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public String getRemoteUser() {
 
-        Config config = getConfig();
-        String strategy = config.get(REMOTE_USER_STRATEGY);
+        String strategy = getRemoteUserStrategyName();
 
         if (BYPASS.equals(strategy)) {
             return super.getRemoteUser();
@@ -160,7 +181,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         //strategy not recognized - warn and return:
         if (!remoteUserWarned) {
-            String msg = "Unrecognized " + REMOTE_USER_STRATEGY + " value [" + strategy + "].  Ignoring and " +
+            String msg = "Unrecognized remote user strategy name [" + strategy + "].  Ignoring and " +
                          "defaulting to [" + USERNAME + "].  Please check your configuration.";
             log.warn(msg);
             remoteUserWarned = true;
@@ -172,8 +193,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public Principal getUserPrincipal() {
 
-        Config config = getConfig();
-        String strategy = config.get(USER_PRINCIPAL_STRATEGY);
+        String strategy = getUserPrincipalStrategyName();
 
         if (BYPASS.equals(strategy)) {
             return super.getUserPrincipal();
@@ -207,7 +227,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         //strategy not recognized - warn and return:
         if (!userPrincipalWarned) {
-            String msg = "Unrecognized " + USER_PRINCIPAL_STRATEGY + " value [" + strategy + "].  Ignoring and " +
+            String msg = "Unrecognized user principal strategy name [" + strategy + "].  Ignoring and " +
                          "defaulting to [" + USERNAME + "].  Please check your configuration.";
             log.warn(msg);
             userPrincipalWarned = true;
@@ -263,8 +283,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         if (hasAccount()) {
             Account account = getAccount();
-            String msg = "The current request is already associated with an authenticated user [" + account.getEmail()
-                         + "].  Authentication attempt for the current request is denied.";
+            String msg = "The current request is already associated with an authenticated user [" + account.getEmail() +
+                         "].  Authentication attempt for the current request is denied.";
             throw new ServletException(msg);
         }
 
@@ -296,8 +316,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         if (hasAccount()) {
             Account account = getAccount();
-            String msg = "The current request is already associated with an authenticated user [" + account.getEmail()
-                         + "].  Login attempt for submitted username [" + username + "] is denied.";
+            String msg = "The current request is already associated with an authenticated user [" + account.getEmail() +
+                         "].  Login attempt for submitted username [" + username + "] is denied.";
             throw new ServletException(msg);
         }
 
@@ -331,7 +351,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public void logout() throws ServletException {
         //remove authc state:
-        Saver<AuthenticationResult> saver = getConfig().getInstance("stormpath.servlet.filter.authc.saver");
+        Saver<AuthenticationResult> saver = getAuthenticationResultSaver();
         saver.set(this, response, null);
         removeAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME);
     }

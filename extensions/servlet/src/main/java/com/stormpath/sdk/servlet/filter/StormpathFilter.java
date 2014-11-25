@@ -20,7 +20,6 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +38,7 @@ public class StormpathFilter extends HttpFilter {
     private FilterChainResolver filterChainResolver;
     private Set<String> clientRequestAttributeNames;
     private Set<String> applicationRequestAttributeNames;
+    private WrappedServletRequestFactory factory;
 
     public StormpathFilter() {
         this.clientRequestAttributeNames = java.util.Collections.emptySet();
@@ -61,6 +61,12 @@ public class StormpathFilter extends HttpFilter {
     public void setApplicationRequestAttributeNames(Set<String> applicationRequestAttributeNames) {
         this.applicationRequestAttributeNames =
             applicationRequestAttributeNames != null ? applicationRequestAttributeNames : new LinkedHashSet<String>();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void setWrappedServletRequestFactory(WrappedServletRequestFactory factory) {
+        Assert.notNull(factory, "WrappedServletRequestFactory cannot be null.");
+        this.factory = factory;
     }
 
     @Override
@@ -92,6 +98,8 @@ public class StormpathFilter extends HttpFilter {
             String[] vals = Strings.split(val);
             this.applicationRequestAttributeNames = new LinkedHashSet<String>(Arrays.asList(vals));
         }
+
+        this.factory = config.getInstance("stormpath.servlet.request.factory");
     }
 
     protected FilterChainResolver getFilterChainResolver() {
@@ -148,6 +156,6 @@ public class StormpathFilter extends HttpFilter {
     }
 
     protected HttpServletRequest wrapRequest(HttpServletRequest request, HttpServletResponse response) {
-        return new StormpathHttpServletRequest(request, response);
+        return this.factory.wrapHttpServletRequest(request, response);
     }
 }

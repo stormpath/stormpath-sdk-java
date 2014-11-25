@@ -19,7 +19,6 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -38,7 +37,7 @@ public class AuthenticationResultSaverFactory extends ConfigSingletonFactory<Aut
     @Override
     protected AuthenticationResultSaver createInstance(ServletContext servletContext) throws Exception {
 
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        Config config = getConfig();
 
         List<String> locations = null;
         String val = config.get(ACCOUNT_SAVER_LOCATIONS);

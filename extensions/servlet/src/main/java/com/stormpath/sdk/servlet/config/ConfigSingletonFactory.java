@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 public abstract class ConfigSingletonFactory<T> implements ServletContextInitializable, Factory<T> {
 
     private T instance;
+    private ServletContext servletContext;
 
     @Override
     public T getInstance() {
@@ -31,10 +32,16 @@ public abstract class ConfigSingletonFactory<T> implements ServletContextInitial
         return this.instance;
     }
 
+    protected Config getConfig() {
+        Assert.notNull(this.servletContext, "init must be called first before config can be obtained.");
+        return ConfigResolver.INSTANCE.getConfig(this.servletContext);
+    }
+
     protected abstract T createInstance(ServletContext servletContext) throws Exception;
 
     @Override
     public void init(ServletContext servletContext) throws ServletException {
+        this.servletContext = servletContext;
         T instance;
         try {
             instance = createInstance(servletContext);

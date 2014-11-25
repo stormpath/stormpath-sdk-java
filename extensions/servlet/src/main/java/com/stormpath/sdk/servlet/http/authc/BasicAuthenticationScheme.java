@@ -19,9 +19,11 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
@@ -37,9 +39,20 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private static final String NAME = "Basic";
 
+    private AuthenticationAccountStoreResolver authcAccountStoreResolver;
+
+    public BasicAuthenticationScheme(AuthenticationAccountStoreResolver resolver) {
+        Assert.notNull(resolver, "AuthenticationAccountStoreResolver cannot be null.");
+        this.authcAccountStoreResolver = resolver;
+    }
+
     @Override
     public String getName() {
         return NAME;
+    }
+
+    protected AuthenticationAccountStoreResolver getAuthenticationAccountStoreResolver() {
+        return this.authcAccountStoreResolver;
     }
 
     @Override
@@ -104,31 +117,37 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
             submittedPrincipal.indexOf('@') < 0;
     }
 
+    protected AuthenticationRequest createAuthenticationRequest(HttpAuthenticationAttempt attempt,
+                                                                String usernameOrEmail, String password) {
+
+        HttpServletRequest request = attempt.getRequest();
+
+        String httpHost = request.getRemoteHost();
+
+        AccountStore accountStore =
+            getAuthenticationAccountStoreResolver().getAuthenticationAccountStore(request, attempt.getResponse());
+
+        return new UsernamePasswordRequest(usernameOrEmail, password, httpHost, accountStore);
+    }
+
     protected HttpAuthenticationResult authenticateUsernamePassword(HttpAuthenticationAttempt attempt,
                                                                     String usernameOrEmail, String password) {
 
-        HttpServletRequest request;
-        HttpServletResponse response;
+        HttpServletRequest request = attempt.getRequest();
+        HttpServletResponse response = attempt.getResponse();
         AuthenticationResult result;
         try {
-            request = attempt.getRequest();
-            response = attempt.getResponse();
-
-            String remoteHost = attempt.getRequest().getRemoteHost();
-
-            UsernamePasswordRequest upRequest = new UsernamePasswordRequest(usernameOrEmail, password, remoteHost);
-
+            AuthenticationRequest authcRequest = createAuthenticationRequest(attempt, usernameOrEmail, password);
             Application app = getApplication(attempt.getRequest());
-
-            result = app.authenticateAccount(upRequest);
+            result = app.authenticateAccount(authcRequest);
         } catch (Exception e) {
             String msg = "Unable to authenticate usernameOrEmail and password-based request for usernameOrEmail [" +
                          usernameOrEmail + "]: " + e.getMessage();
             throw new HttpAuthenticationException(msg, e);
         }
 
-        request
-            .setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, HttpServletRequest.BASIC_AUTH);
+        attempt.getRequest().setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME,
+                                          HttpServletRequest.BASIC_AUTH);
 
         return new DefaultHttpAuthenticationResult(request, response, result);
     }
