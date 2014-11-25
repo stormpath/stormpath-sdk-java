@@ -20,7 +20,7 @@ import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.DefaultUnauthenticatedHandler;
 import com.stormpath.sdk.servlet.filter.UnauthenticatedHandler;
-import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
+import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 
 import javax.servlet.ServletContext;
 
@@ -31,7 +31,7 @@ public class UnauthenticatedHandlerFactory extends ConfigSingletonFactory<Unauth
     @Override
     protected UnauthenticatedHandler createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        HttpAuthenticator authenticator = config.getInstance(HTTP_AUTHENTICATOR);
+        HeaderAuthenticator authenticator = config.getInstance(HTTP_AUTHENTICATOR);
         return new DefaultUnauthenticatedHandler(authenticator);
     }
 }

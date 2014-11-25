@@ -18,8 +18,8 @@ package com.stormpath.sdk.servlet.http.authc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface HttpAuthenticator {
+public interface HeaderAuthenticator extends HttpAuthenticator {
 
-    HttpAuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response)
-        throws HttpAuthenticationException;
+    void sendChallenge(HttpServletRequest request, HttpServletResponse response);
+
 }
