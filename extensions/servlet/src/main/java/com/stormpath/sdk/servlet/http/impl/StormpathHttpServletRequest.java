@@ -5,7 +5,6 @@ import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Assert;
@@ -16,6 +15,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
 import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
@@ -57,21 +57,30 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     private final HttpServletResponse response; //response paired with the request.
 
+    private final UsernamePasswordRequestFactory usernamePasswordRequestFactory;
     private final Saver<AuthenticationResult> authenticationResultSaver;
     private final String userPrincipalStrategyName;
     private final String remoteUserStrategyName;
 
     public StormpathHttpServletRequest(HttpServletRequest request, HttpServletResponse response,
+                                       UsernamePasswordRequestFactory usernamePasswordRequestFactory,
                                        Saver<AuthenticationResult> authenticationResultSaver,
                                        String userPrincipalStrategyName, String remoteUserStrategyName) {
         super(request);
+        Assert.notNull(response, "HttpServletResponse cannot be null.");
         this.response = response;
+        Assert.notNull(usernamePasswordRequestFactory, "UsernamePasswordRequestFactory cannot be null.");
+        this.usernamePasswordRequestFactory = usernamePasswordRequestFactory;
         Assert.notNull(authenticationResultSaver, "AuthenticationResultSaver cannot be null.");
         this.authenticationResultSaver = authenticationResultSaver;
         Assert.hasText(userPrincipalStrategyName, "userPrincipalStrategyName argument cannot be null or empty.");
         this.userPrincipalStrategyName = userPrincipalStrategyName;
         Assert.hasText(remoteUserStrategyName, "remoteUserStrategyName argument cannot be null or empty.");
         this.remoteUserStrategyName = remoteUserStrategyName;
+    }
+
+    public UsernamePasswordRequestFactory getUsernamePasswordRequestFactory() {
+        return usernamePasswordRequestFactory;
     }
 
     public Saver<AuthenticationResult> getAuthenticationResultSaver() {
@@ -321,9 +330,9 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             throw new ServletException(msg);
         }
 
-        Application application = getApplication();
+        AuthenticationRequest authcRequest = createAuthenticationRequest(username, password);
 
-        AuthenticationRequest authcRequest = createAuthenticationRequest(username, password, application);
+        Application application = getApplication();
 
         AuthenticationResult result;
         try {
@@ -339,9 +348,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
     }
 
-    protected AuthenticationRequest createAuthenticationRequest(String username, String password,
-                                                                Application application) {
-        return new UsernamePasswordRequest(username, password, getRemoteHost());
+    protected AuthenticationRequest createAuthenticationRequest(String username, String password) {
+        return getUsernamePasswordRequestFactory().createUsernamePasswordRequest(this, response, username, password);
     }
 
     protected Application getApplication() {

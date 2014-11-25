@@ -22,10 +22,9 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,11 +38,11 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private static final String NAME = "Basic";
 
-    private AuthenticationAccountStoreResolver authcAccountStoreResolver;
+    private UsernamePasswordRequestFactory usernamePasswordRequestFactory;
 
-    public BasicAuthenticationScheme(AuthenticationAccountStoreResolver resolver) {
-        Assert.notNull(resolver, "AuthenticationAccountStoreResolver cannot be null.");
-        this.authcAccountStoreResolver = resolver;
+    public BasicAuthenticationScheme(UsernamePasswordRequestFactory factory) {
+        Assert.notNull(factory, "UsernamePasswordRequestFactory cannot be null.");
+        this.usernamePasswordRequestFactory = factory;
     }
 
     @Override
@@ -51,8 +50,8 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
         return NAME;
     }
 
-    protected AuthenticationAccountStoreResolver getAuthenticationAccountStoreResolver() {
-        return this.authcAccountStoreResolver;
+    public UsernamePasswordRequestFactory getUsernamePasswordRequestFactory() {
+        return usernamePasswordRequestFactory;
     }
 
     @Override
@@ -121,13 +120,10 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
                                                                 String usernameOrEmail, String password) {
 
         HttpServletRequest request = attempt.getRequest();
+        HttpServletResponse response = attempt.getResponse();
 
-        String httpHost = request.getRemoteHost();
-
-        AccountStore accountStore =
-            getAuthenticationAccountStoreResolver().getAuthenticationAccountStore(request, attempt.getResponse());
-
-        return new UsernamePasswordRequest(usernameOrEmail, password, httpHost, accountStore);
+        return getUsernamePasswordRequestFactory()
+            .createUsernamePasswordRequest(request, response, usernameOrEmail, password);
     }
 
     protected HttpAuthenticationResult authenticateUsernamePassword(HttpAuthenticationAttempt attempt,

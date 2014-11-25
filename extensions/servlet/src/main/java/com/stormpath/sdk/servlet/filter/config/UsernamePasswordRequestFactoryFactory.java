@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.http.authc.config;
+package com.stormpath.sdk.servlet.filter.config;
 
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
+import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
+import com.stormpath.sdk.servlet.http.authc.AuthenticationAccountStoreResolver;
 
 import javax.servlet.ServletContext;
 
-public class BasicAuthenticationSchemeFactory extends ConfigSingletonFactory<BasicAuthenticationScheme> {
-
-    public static final String USERNAME_PASSWORD_REQUEST_FACTORY =
-        "stormpath.servlet.filter.authc.usernamePasswordRequestFactory";
+public class UsernamePasswordRequestFactoryFactory extends ConfigSingletonFactory<UsernamePasswordRequestFactory> {
 
     @Override
-    protected BasicAuthenticationScheme createInstance(ServletContext servletContext) throws Exception {
-        UsernamePasswordRequestFactory factory = getConfig().getInstance(USERNAME_PASSWORD_REQUEST_FACTORY);
-        return new BasicAuthenticationScheme(factory);
+    protected UsernamePasswordRequestFactory createInstance(ServletContext servletContext) throws Exception {
+
+        AuthenticationAccountStoreResolver resolver =
+            getConfig().getInstance("stormpath.servlet.http.authc.accountStoreResolver");
+
+        return new DefaultUsernamePasswordRequestFactory(resolver);
     }
 }

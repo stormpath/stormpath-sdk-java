@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.filter.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.http.Saver;
 
@@ -27,11 +28,17 @@ public class StormpathServletRequestFactoryFactory extends ConfigSingletonFactor
 
     @Override
     protected WrappedServletRequestFactory createInstance(ServletContext sc) throws Exception {
-        Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance("stormpath.servlet.filter.authc.saver");
+
+        UsernamePasswordRequestFactory factory =
+            getConfig().getInstance("stormpath.servlet.filter.authc.usernamePasswordRequestFactory");
+
+        Saver<AuthenticationResult> authenticationResultSaver =
+            getConfig().getInstance("stormpath.servlet.filter.authc.saver");
+
         String remoteUserStrategyName = getConfig().get("stormpath.servlet.request.remoteUser.strategy");
         String userPrincipalStrategyName = getConfig().get("stormpath.servlet.request.userPrincipal.strategy");
 
-        return new DefaultWrappedServletRequestFactory(authenticationResultSaver, userPrincipalStrategyName,
-                                                         remoteUserStrategyName);
+        return new DefaultWrappedServletRequestFactory(factory, authenticationResultSaver, userPrincipalStrategyName,
+                                                       remoteUserStrategyName);
     }
 }

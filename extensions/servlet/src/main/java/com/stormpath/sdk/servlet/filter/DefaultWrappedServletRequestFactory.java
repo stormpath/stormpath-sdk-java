@@ -24,12 +24,15 @@ import javax.servlet.http.HttpServletResponse;
 
 public class DefaultWrappedServletRequestFactory implements WrappedServletRequestFactory {
 
+    private UsernamePasswordRequestFactory usernamePasswordRequestFactory;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private String userPrincipalStrategyName;
     private String remoteUserStrategyName;
 
-    public DefaultWrappedServletRequestFactory(Saver<AuthenticationResult> authenticationResultSaver,
+    public DefaultWrappedServletRequestFactory(UsernamePasswordRequestFactory factory,
+                                               Saver<AuthenticationResult> authenticationResultSaver,
                                                String userPrincipalStrategyName, String remoteUserStrategyName) {
+        this.usernamePasswordRequestFactory = factory;
         this.authenticationResultSaver = authenticationResultSaver;
         this.userPrincipalStrategyName = userPrincipalStrategyName;
         this.remoteUserStrategyName = remoteUserStrategyName;
@@ -37,8 +40,9 @@ public class DefaultWrappedServletRequestFactory implements WrappedServletReques
 
     @Override
     public HttpServletRequest wrapHttpServletRequest(HttpServletRequest request, HttpServletResponse response) {
-
-        return new StormpathHttpServletRequest(request, response, authenticationResultSaver,
+        return new StormpathHttpServletRequest(request, response,
+                                               usernamePasswordRequestFactory,
+                                               authenticationResultSaver,
                                                userPrincipalStrategyName, remoteUserStrategyName);
     }
 }

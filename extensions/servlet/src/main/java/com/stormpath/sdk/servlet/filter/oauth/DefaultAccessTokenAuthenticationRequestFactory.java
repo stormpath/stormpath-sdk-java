@@ -16,11 +16,9 @@
 package com.stormpath.sdk.servlet.filter.oauth;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.http.authc.AuthenticationAccountStoreResolver;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,15 +26,15 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
     protected static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
-    private AuthenticationAccountStoreResolver authenticationAccountStoreResolver;
+    private UsernamePasswordRequestFactory usernamePasswordRequestFactory;
 
-    public DefaultAccessTokenAuthenticationRequestFactory(AuthenticationAccountStoreResolver resolver) {
-        Assert.notNull(resolver, "AuthenticationAccountStoreResolver cannot be null.");
-        this.authenticationAccountStoreResolver = resolver;
+    public DefaultAccessTokenAuthenticationRequestFactory(UsernamePasswordRequestFactory factory) {
+        Assert.notNull(factory, "UsernamePasswordRequestFactory cannot be null.");
+        this.usernamePasswordRequestFactory = factory;
     }
 
-    public AuthenticationAccountStoreResolver getAuthenticationAccountStoreResolver() {
-        return authenticationAccountStoreResolver;
+    public UsernamePasswordRequestFactory getUsernamePasswordRequestFactory() {
+        return usernamePasswordRequestFactory;
     }
 
     @Override
@@ -54,8 +52,7 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
         throw new OauthException(OauthErrorCode.UNSUPPORTED_GRANT_TYPE);
     }
 
-    protected UsernamePasswordRequest createUsernamePasswordRequest(HttpServletRequest request)
-        throws OauthException {
+    protected AuthenticationRequest createUsernamePasswordRequest(HttpServletRequest request) throws OauthException {
 
         String username = Strings.clean(request.getParameter("username"));
         if (username == null) {
@@ -67,8 +64,6 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
             throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Missing password value.", null);
         }
 
-        AccountStore accountStore = getAuthenticationAccountStoreResolver().getAuthenticationAccountStore(request, null);
-
-        return new UsernamePasswordRequest(username, password, request.getRemoteHost(), accountStore);
+        return getUsernamePasswordRequestFactory().createUsernamePasswordRequest(request, null, username, password);
     }
 }
