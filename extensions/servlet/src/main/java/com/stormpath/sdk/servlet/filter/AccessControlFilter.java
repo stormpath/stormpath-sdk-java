@@ -28,7 +28,9 @@ public abstract class AccessControlFilter extends HttpFilter {
     protected String accessTokenUrl;
 
     protected static final String UNAUTHENTICATED_HANDLER = "stormpath.servlet.filter.authc.unauthenticatedHandler";
+    protected static final String UNAUTHORIZED_HANDLER = "stormpath.servlet.filter.authz.unauthorizedHandler";
     private UnauthenticatedHandler unauthenticatedHandler;
+    private UnauthorizedHandler unauthorizedHandler;
 
     @Override
     protected void onInit() throws ServletException {
@@ -36,10 +38,15 @@ public abstract class AccessControlFilter extends HttpFilter {
         this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginUrl());
         this.accessTokenUrl = UriCleaner.INSTANCE.clean(getConfig().getAccessTokenUrl());
         this.unauthenticatedHandler = getConfig().getInstance(UNAUTHENTICATED_HANDLER);
+        this.unauthorizedHandler = getConfig().getInstance(UNAUTHORIZED_HANDLER);
     }
 
     public UnauthenticatedHandler getUnauthenticatedHandler() {
-        return unauthenticatedHandler;
+        return this.unauthenticatedHandler;
+    }
+
+    public UnauthorizedHandler getUnauthorizedHandler() {
+        return this.unauthorizedHandler;
     }
 
     /**

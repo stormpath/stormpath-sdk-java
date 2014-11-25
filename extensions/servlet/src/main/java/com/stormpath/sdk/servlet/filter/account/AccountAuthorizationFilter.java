@@ -19,9 +19,6 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.AccessControlFilter;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
-import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
@@ -65,10 +62,6 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
         return parser.parseExpression(pathConfig);
     }
 
-    protected String getUnauthorizedUrl() {
-        return getConfig().getUnauthorizedUrl();
-    }
-
     @Override
     protected boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -108,21 +101,10 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
     protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         if (!AccountResolver.INSTANCE.hasAccount(request)) {
-            //not authenticated - can't determine access control rights:
+            //not authenticated - can't determine access control rights, ask to login first:
             return getUnauthenticatedHandler().onAuthenticationRequired(request, response);
         }
 
-        //authenticated but still not allowed to proceed:
-        UserAgent ua = new DefaultUserAgent(request);
-        if (ua.isHtmlPreferred()) {
-            String url = getUnauthorizedUrl();
-            ServletUtils.issueRedirect(request, response, url, null, true, true);
-        } else {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setHeader("Cache-Control", "no-store");
-            response.setHeader("Pragma", "no-cache");
-        }
-
-        return false;
+        return getUnauthorizedHandler().onUnauthorized(request, response);
     }
 }
