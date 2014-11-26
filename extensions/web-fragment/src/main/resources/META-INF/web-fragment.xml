@@ -20,15 +20,6 @@
 
     <name>stormpath</name>
 
-    <ordering>
-        <after>
-            <name>shiro</name>
-        </after>
-        <before>
-            <others/>
-        </before>
-    </ordering>
-
     <listener>
         <!-- Load the Stormpath config. Config is most likely defined in /WEB-INF/stormpath.properties: -->
         <listener-class>com.stormpath.sdk.servlet.config.DefaultConfigLoaderListener</listener-class>

@@ -41,6 +41,13 @@
                                     <p>You have successfully verified your account. You may now login.</p>
                                 </div>
                             </c:if>
+                            <c:if test="${!empty status && status == 'forgot'}">
+                                <div class="alert alert-dismissable alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <p>If you entered a valid account email address, you will see an email shortly.</p>
+                                    <p>Please check your email inbox to continue.</p>
+                                </div>
+                            </c:if>
 
                             <c:if test="${!empty errors}">
                                 <div class="alert alert-dismissable alert-danger bad-login">
@@ -78,6 +85,8 @@
                         </div>
 
                     </div>
+
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.forgot.url']}" class="to-login">Forgot Password?</a>
 
                 </div>
 

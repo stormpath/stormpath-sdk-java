@@ -28,6 +28,7 @@ import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -49,6 +50,7 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     private Config config;
     private ServletContext servletContext;
+    private ConfigResolver configResolver = ConfigResolver.INSTANCE;
 
     protected Config getConfig() {
         return config;
@@ -60,15 +62,11 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     @Override
     public Client createClient(ServletContext servletContext) {
+
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
         this.servletContext = servletContext;
 
-        Object object = servletContext.getAttribute(Config.class.getName());
-
-        Config config = (Config)object;
-        Assert.notNull(config, "Stormpath Config instance is not available in the ServletContext.  Ensure the " +
-                               "ConfigLoader ServletContext Listener is defined before the ClientLoader Listener.");
-        this.config = config;
+        this.config = configResolver.getConfig(servletContext);
 
         ClientBuilder builder = Clients.builder();
 

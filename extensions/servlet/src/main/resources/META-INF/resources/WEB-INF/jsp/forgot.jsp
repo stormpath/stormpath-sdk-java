@@ -18,25 +18,30 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:page>
-    <jsp:attribute name="title">Register</jsp:attribute>
-    <jsp:attribute name="bodyCssClass">register</jsp:attribute>
+    <jsp:attribute name="title">Forgot your password?</jsp:attribute>
+    <jsp:attribute name="description">Forgot your password?</jsp:attribute>
+    <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
 
             <div class="va-wrapper">
 
-                <div class="view registration-view container">
+                <div class="view login-view container">
 
                     <div class="box row">
 
-                        <div class="col-sm-12">
+                        <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span>Create Account</span>
+                                <span>Forgot your password?</span>
+
+                                <p>Enter your email address below to reset your password. You will
+                                    be sent an email which you will need to open to continue. You may
+                                    need to check your spam folder.</p>
                             </div>
 
                             <c:if test="${!empty errors}">
-                                <div class="alert alert-dismissable alert-danger">
+                                <div class="alert alert-dismissable alert-danger bad-login">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                                     <c:forEach items="${errors}" var="error">
                                         <p>${error}</p>
@@ -44,8 +49,10 @@
                                 </div>
                             </c:if>
 
-                            <form method="post" role="form" class="registration-form form-horizontal sp-form">
-
+                            <form method="post" role="form" class="login-form form-horizontal">
+                                <c:if test="${!empty form.next}">
+                                    <input name="next" type="hidden" value="${form.next}">
+                                </c:if>
                                 <input name="csrfToken" type="hidden" value="${form.csrfToken}">
 
                                 <c:forEach items="${form.fields}" var="field">
@@ -61,8 +68,9 @@
                                     </div>
                                 </c:forEach>
 
-                                <button type="submit" class="btn btn-register btn-sp-green">Create Account</button>
-
+                                <div>
+                                    <button type="submit" class="login btn btn-login btn-sp-green">Send Email</button>
+                                </div>
                             </form>
 
                         </div>
@@ -78,4 +86,5 @@
         </div>
 
     </jsp:body>
+
 </t:page>

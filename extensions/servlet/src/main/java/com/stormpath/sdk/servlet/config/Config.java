@@ -31,6 +31,10 @@ public interface Config extends Map<String, String> {
 
     String getLogoutUrl();
 
+    String getForgotPasswordUrl();
+
+    String getForgotPasswordNextUrl();
+
     String getLogoutNextUrl();
 
     String getAccessTokenUrl();

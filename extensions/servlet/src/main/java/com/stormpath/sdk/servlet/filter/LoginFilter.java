@@ -94,7 +94,7 @@ public class LoginFilter extends HttpFilter {
         getAuthenticationResultSaver().set(request, response, result);
     }
 
-    private void setForm(HttpServletRequest request, Form form) {
+    protected void setForm(HttpServletRequest request, Form form) {
         request.setAttribute("form", form);
     }
 

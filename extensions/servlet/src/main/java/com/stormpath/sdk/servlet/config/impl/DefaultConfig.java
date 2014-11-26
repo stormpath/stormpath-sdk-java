@@ -37,6 +37,8 @@ public class DefaultConfig implements Config {
     public static final String LOGIN_NEXT_URL = "stormpath.web.login.nextUrl";
     public static final String LOGOUT_URL = "stormpath.web.logout.url";
     public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUrl";
+    public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.url";
+    public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUrl";
     public static final String REGISTER_URL = "stormpath.web.register.url";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUrl";
     public static final String VERIFY_URL = "stormpath.web.verify.url";
@@ -103,6 +105,16 @@ public class DefaultConfig implements Config {
     @Override
     public String getLogoutNextUrl() {
         return CFG.getString(LOGOUT_NEXT_URL);
+    }
+
+    @Override
+    public String getForgotPasswordUrl() {
+        return CFG.getString(FORGOT_PASSWORD_URL);
+    }
+
+    @Override
+    public String getForgotPasswordNextUrl() {
+        return CFG.getString(FORGOT_PASSWORD_NEXT_URL);
     }
 
     @Override

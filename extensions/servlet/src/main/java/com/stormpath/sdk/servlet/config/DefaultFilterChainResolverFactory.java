@@ -99,6 +99,10 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String logoutUrlPattern = cleanUri(logoutUrl);
         boolean logoutChainSpecified = false;
 
+        String forgotUrl = config.getForgotPasswordUrl();
+        String forgotUrlPattern = cleanUri(forgotUrl);
+        boolean forgotChainSpecified = false;
+
         String registerUrl = config.getRegisterUrl();
         String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
@@ -142,7 +146,14 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+                } else if (uriPattern.startsWith(forgotUrlPattern)) {
+                    forgotChainSpecified = true;
 
+                    //did they specify the filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.forgot.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
                 } else if (uriPattern.startsWith(registerUrlPattern)) {
                     registerChainSpecified = true;
 
@@ -193,6 +204,9 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         }
         if (!logoutChainSpecified) {
             fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+        }
+        if (!forgotChainSpecified) {
+            fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
         }
         if (!registerChainSpecified) {
             fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
