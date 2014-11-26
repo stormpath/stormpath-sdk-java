@@ -103,6 +103,10 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String forgotUrlPattern = cleanUri(forgotUrl);
         boolean forgotChainSpecified = false;
 
+        String changeUrl = config.getChangePasswordUrl();
+        String changeUrlPattern = cleanUri(changeUrl);
+        boolean changeChainSpecified = false;
+
         String registerUrl = config.getRegisterUrl();
         String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
@@ -151,6 +155,14 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
 
                     //did they specify the filter as a handler in the chain?  If not, append it:
                     String filterName = DefaultFilter.forgot.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(changeUrlPattern)) {
+                    changeChainSpecified = true;
+
+                    //did they specify the filter as a handler in the chain?  If not, append it:
+                    String filterName = DefaultFilter.change.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
@@ -207,6 +219,9 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         }
         if (!forgotChainSpecified) {
             fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+        }
+        if (!changeChainSpecified) {
+            fcManager.createChain(changeUrlPattern, DefaultFilter.change.name());
         }
         if (!registerChainSpecified) {
             fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());

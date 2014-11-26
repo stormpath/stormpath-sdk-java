@@ -34,6 +34,7 @@ public enum DefaultFilter {
     login(LoginFilter.class),
     logout(LogoutFilter.class),
     forgot(ForgotPasswordFilter.class),
+    change(ChangePasswordFilter.class),
     register(RegisterFilter.class),
     unauthorized(UnauthorizedFilter.class),
     verify(VerifyFilter.class);

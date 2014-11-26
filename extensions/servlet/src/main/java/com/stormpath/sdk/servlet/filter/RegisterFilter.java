@@ -191,7 +191,7 @@ public class RegisterFilter extends HttpFilter {
             }
             request.setAttribute("errors", errors);
 
-            //do not retain submitted password (not save to have in the DOM text):
+            //do not retain submitted password (not safe to have in the DOM text):
             ((DefaultField) form.getField("password")).setValue("");
             setForm(request, form);
 

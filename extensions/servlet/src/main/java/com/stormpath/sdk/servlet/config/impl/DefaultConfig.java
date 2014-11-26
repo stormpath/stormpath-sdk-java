@@ -39,13 +39,15 @@ public class DefaultConfig implements Config {
     public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUrl";
     public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.url";
     public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUrl";
+    public static final String CHANGE_PASSWORD_URL = "stormpath.web.change.url";
+    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUrl";
     public static final String REGISTER_URL = "stormpath.web.register.url";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUrl";
     public static final String VERIFY_URL = "stormpath.web.verify.url";
     public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUrl";
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
-    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
 
+    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
@@ -115,6 +117,16 @@ public class DefaultConfig implements Config {
     @Override
     public String getForgotPasswordNextUrl() {
         return CFG.getString(FORGOT_PASSWORD_NEXT_URL);
+    }
+
+    @Override
+    public String getChangePasswordUrl() {
+        return CFG.getString(CHANGE_PASSWORD_URL);
+    }
+
+    @Override
+    public String getChangePasswordNextUrl() {
+        return CFG.getString(CHANGE_PASSWORD_NEXT_URL);
     }
 
     @Override
