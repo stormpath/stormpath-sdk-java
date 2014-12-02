@@ -16,9 +16,18 @@
 package com.stormpath.sdk.servlet.http.authc;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.Servlets;
+import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,17 +52,25 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
 
     private final Map<String, HttpAuthenticationScheme> schemes; //supported schemes - iteration order retained
     private final boolean sendChallengeOnFailure;
+    private final Publisher<RequestEvent> eventPublisher;
 
-    public AuthorizationHeaderAuthenticator(List<HttpAuthenticationScheme> schemes, boolean sendChallengeOnFailure) {
+    public AuthorizationHeaderAuthenticator(List<HttpAuthenticationScheme> schemes, boolean sendChallengeOnFailure,
+                                            Publisher<RequestEvent> eventPublisher) {
 
         Assert.notEmpty(schemes, "AuthenticationScheme list cannot be null or empty.");
+        Assert.notNull(eventPublisher, "Event Publisher cannot be null.");
         this.sendChallengeOnFailure = sendChallengeOnFailure;
+        this.eventPublisher = eventPublisher;
 
         this.schemes = new LinkedHashMap<String, HttpAuthenticationScheme>(schemes.size());
 
         for (HttpAuthenticationScheme scheme : schemes) {
             this.schemes.put(scheme.getName().toLowerCase(), scheme);
         }
+    }
+
+    protected Publisher<RequestEvent> getEventPublisher() {
+        return this.eventPublisher;
     }
 
     @Override
@@ -66,6 +83,8 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
 
         String schemeName = Strings.clean(creds.getSchemeName());
 
+        AuthenticationRequest authcRequest = null;
+
         if (schemeName != null) {
 
             HttpAuthenticationScheme scheme = this.schemes.get(creds.getSchemeName().toLowerCase());
@@ -76,14 +95,24 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
 
                 HttpAuthenticationAttempt attempt = new DefaultHttpAuthenticationAttempt(request, response, creds);
 
+                HttpAuthenticationResult result = null;
+
                 try {
-                    return scheme.authenticate(attempt);
+                    authcRequest = toAuthenticationRequest(attempt);
+                    result = scheme.authenticate(attempt);
                 } catch (Throwable t) {
                     //DO NOT log the scheme value - it could contain sensitive information (e.g. Basic authc) -
                     //log the scheme name only.
                     String msg = "Unable to authenticate request with authentication scheme '" + schemeName + "': " +
                                  t.getMessage() + "  Sending HTTP challenge response.";
                     log.debug(msg, t);
+                }
+
+                if (result != null) {
+                    SuccessfulAuthenticationRequestEvent e =
+                        createSuccessEvent(attempt, authcRequest, result.getAuthenticationResult());
+                    publish(e);
+                    return result;
                 }
             }
         }
@@ -93,7 +122,19 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
             sendChallenge(request, response);
         }
 
-        throw new HttpAuthenticationException("Unable to successfully authenticate request with Authorization header.");
+        HttpAuthenticationException ex =
+            new HttpAuthenticationException("Unable to successfully authenticate request with Authorization header.");
+
+        try {
+            FailedAuthenticationRequestEvent evt =
+                new DefaultFailedAuthenticationRequestEvent(request, response, authcRequest, ex);
+            publish(evt);
+        } catch (Throwable t) {
+            log.warn("Unable to publish failed authentication request event due to exception: {}.  " +
+                     "Ignoring and propagating original authentication exception {}.", t, ex);
+        }
+
+        throw ex;
     }
 
     protected Application getApplication(HttpServletRequest req) {
@@ -119,5 +160,45 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
 
     protected String createWwwAuthenticateHeaderValue(HttpAuthenticationScheme scheme, String realmName) {
         return scheme.getName() + " realm=\"" + realmName + "\"";
+    }
+
+    protected AuthenticationRequest toAuthenticationRequest(final HttpAuthenticationAttempt attempt) {
+
+        return new AuthenticationRequest() {
+            @Override
+            public Object getPrincipals() {
+                return attempt.getCredentials();
+            }
+
+            @Override
+            public Object getCredentials() {
+                return attempt.getCredentials();
+            }
+
+            @Override
+            public String getHost() {
+                return attempt.getRequest().getRemoteHost();
+            }
+
+            @Override
+            public void clear() {
+            }
+
+            @Override
+            public AccountStore getAccountStore() {
+                return null;
+            }
+        };
+    }
+
+    protected SuccessfulAuthenticationRequestEvent createSuccessEvent(HttpAuthenticationAttempt attempt,
+                                                                      AuthenticationRequest authcRequest,
+                                                                      AuthenticationResult result) {
+        return new DefaultSuccessfulAuthenticationRequestEvent(attempt.getRequest(), attempt.getResponse(),
+                                                               authcRequest, result);
+    }
+
+    protected void publish(RequestEvent e) {
+        getEventPublisher().publish(e);
     }
 }

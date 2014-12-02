@@ -17,6 +17,8 @@ package com.stormpath.sdk.servlet.filter.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
@@ -26,19 +28,22 @@ import javax.servlet.ServletContext;
 
 public class StormpathServletRequestFactoryFactory extends ConfigSingletonFactory<WrappedServletRequestFactory> {
 
+    public static final String REQUEST_EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+
     @Override
     protected WrappedServletRequestFactory createInstance(ServletContext sc) throws Exception {
 
         UsernamePasswordRequestFactory factory =
             getConfig().getInstance("stormpath.web.authc.usernamePasswordRequestFactory");
 
-        Saver<AuthenticationResult> authenticationResultSaver =
-            getConfig().getInstance("stormpath.web.authc.saver");
+        Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance("stormpath.web.authc.saver");
+
+        Publisher<RequestEvent> eventPublisher = getConfig().getInstance(REQUEST_EVENT_PUBLISHER);
 
         String remoteUserStrategyName = getConfig().get("stormpath.web.request.remoteUser.strategy");
         String userPrincipalStrategyName = getConfig().get("stormpath.web.request.userPrincipal.strategy");
 
-        return new DefaultWrappedServletRequestFactory(factory, authenticationResultSaver, userPrincipalStrategyName,
-                                                       remoteUserStrategyName);
+        return new DefaultWrappedServletRequestFactory(factory, authenticationResultSaver, eventPublisher,
+                                                       userPrincipalStrategyName, remoteUserStrategyName);
     }
 }

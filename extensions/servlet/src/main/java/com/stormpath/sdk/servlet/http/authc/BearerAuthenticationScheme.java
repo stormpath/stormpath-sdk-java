@@ -71,7 +71,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
     }
 
     @Override
-    public HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt) {
+    public HttpAuthenticationResult authenticate(HttpAuthenticationAttempt attempt) throws HttpAuthenticationException {
 
         Assert.notNull(attempt, "attempt cannot be null.");
 
@@ -106,8 +106,9 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             try {
                 response.getWriter().print(e.toJson());
                 response.getWriter().flush();
-            } catch (IOException e1) {
-                throw new HttpAuthenticationException("Unable to render OAuth error response body: " + e1.getMessage());
+            } catch (IOException e2) {
+                throw new HttpAuthenticationException("Unable to render OAuth error response body: " + e2.getMessage(),
+                                                      e2);
             }
 
             throw new HttpAuthenticationException("OAuth request authentication failed: " + e.getMessage(), e);

@@ -23,7 +23,13 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.Servlets;
+import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.sdk.servlet.http.Saver;
 import org.slf4j.Logger;
@@ -51,10 +57,13 @@ public class AccessTokenFilter extends HttpFilter {
 
     protected static final String SECURE = "stormpath.web.accessToken.secure";
 
+    protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+
     private AccessTokenRequestAuthorizer requestAuthorizer;
     private AccessTokenAuthenticationRequestFactory authenticationRequestFactory;
     private AccessTokenResultFactory resultFactory;
     private Saver<AuthenticationResult> accountSaver;
+    private Publisher<RequestEvent> eventPublisher;
     private boolean secure = true;
 
     public AccessTokenRequestAuthorizer getRequestAuthorizer() {
@@ -73,6 +82,10 @@ public class AccessTokenFilter extends HttpFilter {
         return this.accountSaver;
     }
 
+    public Publisher<RequestEvent> getEventPublisher() {
+        return eventPublisher;
+    }
+
     @Override
     protected void onInit() throws ServletException {
         Config config = getConfig();
@@ -80,9 +93,14 @@ public class AccessTokenFilter extends HttpFilter {
         this.authenticationRequestFactory = config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
         this.resultFactory = config.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
         this.accountSaver = config.getInstance(ACCOUNT_SAVER);
+        this.eventPublisher = config.getInstance(EVENT_PUBLISHER);
 
         String val = getConfig().get(SECURE);
         this.secure = Boolean.parseBoolean(val);
+    }
+
+    protected void publish(RequestEvent e) {
+        getEventPublisher().publish(e);
     }
 
     @Override
@@ -91,11 +109,12 @@ public class AccessTokenFilter extends HttpFilter {
 
         String json;
 
-        try {
+        AuthenticationRequest authcRequest = null;
 
+        try {
             assertAuthorizedAccessTokenRequest(request);
 
-            AuthenticationRequest authcRequest = createTokenAuthenticationRequest(request);
+            authcRequest = createTokenAuthenticationRequest(request);
 
             AuthenticationResult ar;
             try {
@@ -114,6 +133,9 @@ public class AccessTokenFilter extends HttpFilter {
 
             response.setStatus(HttpServletResponse.SC_OK);
 
+            SuccessfulAuthenticationRequestEvent e = createSuccessEvent(request, response, authcRequest, result);
+            publish(e);
+
         } catch (OauthException e) {
 
             log.debug("OAuth Access Token request failed.", e);
@@ -121,6 +143,15 @@ public class AccessTokenFilter extends HttpFilter {
             json = e.toJson();
 
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+            try {
+                FailedAuthenticationRequestEvent evt =
+                    new DefaultFailedAuthenticationRequestEvent(request, response, authcRequest, e);
+                publish(evt);
+            } catch (Throwable t) {
+                log.warn("Unable to publish failed authentication request event due to exception: {}.  " +
+                         "Ignoring and handling original authentication exception {}.", t, e);
+            }
         }
 
         response.setContentType("application/json;charset=UTF-8");
@@ -128,6 +159,13 @@ public class AccessTokenFilter extends HttpFilter {
         response.setHeader("Pragma", "no-cache");
         response.getWriter().print(json);
         response.getWriter().flush();
+    }
+
+    protected SuccessfulAuthenticationRequestEvent createSuccessEvent(HttpServletRequest request,
+                                                                      HttpServletResponse response,
+                                                                      AuthenticationRequest authcRequest,
+                                                                      AuthenticationResult result) {
+        return new DefaultSuccessfulAuthenticationRequestEvent(request, response, authcRequest, result);
     }
 
     protected void assertAuthorizedAccessTokenRequest(HttpServletRequest request) {

@@ -16,6 +16,8 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
@@ -26,14 +28,17 @@ public class DefaultWrappedServletRequestFactory implements WrappedServletReques
 
     private UsernamePasswordRequestFactory usernamePasswordRequestFactory;
     private Saver<AuthenticationResult> authenticationResultSaver;
+    private Publisher<RequestEvent> eventPublisher;
     private String userPrincipalStrategyName;
     private String remoteUserStrategyName;
 
     public DefaultWrappedServletRequestFactory(UsernamePasswordRequestFactory factory,
                                                Saver<AuthenticationResult> authenticationResultSaver,
+                                               Publisher<RequestEvent> eventPublisher,
                                                String userPrincipalStrategyName, String remoteUserStrategyName) {
         this.usernamePasswordRequestFactory = factory;
         this.authenticationResultSaver = authenticationResultSaver;
+        this.eventPublisher = eventPublisher;
         this.userPrincipalStrategyName = userPrincipalStrategyName;
         this.remoteUserStrategyName = remoteUserStrategyName;
     }
@@ -42,6 +47,7 @@ public class DefaultWrappedServletRequestFactory implements WrappedServletReques
     public HttpServletRequest wrapHttpServletRequest(HttpServletRequest request, HttpServletResponse response) {
         return new StormpathHttpServletRequest(request, response,
                                                usernamePasswordRequestFactory,
+                                               eventPublisher,
                                                authenticationResultSaver,
                                                userPrincipalStrategyName, remoteUserStrategyName);
     }

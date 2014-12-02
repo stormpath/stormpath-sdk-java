@@ -20,6 +20,8 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
@@ -32,6 +34,7 @@ import java.util.Map;
 
 public class HttpAuthenticatorFactory extends ConfigSingletonFactory<HttpAuthenticator> {
 
+    public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
     public static final String CHALLENGE_PROPERTY_NAME = "stormpath.web.http.authc.challenge";
     public static final String SCHEMES_PROP = "stormpath.web.http.authc.schemes";
     public static final String SCHEME_PROPERTY_NAME_PREFIX = SCHEMES_PROP + ".";
@@ -64,6 +67,8 @@ public class HttpAuthenticatorFactory extends ConfigSingletonFactory<HttpAuthent
 
         boolean challenge = Boolean.parseBoolean(config.get(CHALLENGE_PROPERTY_NAME));
 
-        return new AuthorizationHeaderAuthenticator(schemes, challenge);
+        Publisher<RequestEvent> publisher = config.getInstance(EVENT_PUBLISHER);
+
+        return new AuthorizationHeaderAuthenticator(schemes, challenge, publisher);
     }
 }

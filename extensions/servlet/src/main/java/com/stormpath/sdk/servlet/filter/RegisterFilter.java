@@ -25,8 +25,12 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
+import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
+import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
@@ -49,19 +53,22 @@ public class RegisterFilter extends HttpFilter {
     private static final Logger log = LoggerFactory.getLogger(RegisterFilter.class);
 
     public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
-    private static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
+    public static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
+    public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/register.jsp";
     public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/verifyEmail.jsp";
 
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
     private CsrfTokenManager csrfTokenManager;
+    private Publisher<RequestEvent> eventPublisher;
 
     @Override
     protected void onInit() throws ServletException {
         this.authenticationResultSaver = getConfig().getInstance(ACCOUNT_SAVER_PROP);
         this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
+        this.eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
     }
 
     /**
@@ -75,6 +82,10 @@ public class RegisterFilter extends HttpFilter {
 
     public String getRegisterNextUrl() {
         return getConfig().getRegisterNextUrl();
+    }
+
+    public Publisher<RequestEvent> getEventPublisher() {
+        return this.eventPublisher;
     }
 
     @Override
@@ -289,6 +300,9 @@ public class RegisterFilter extends HttpFilter {
 
         AccountStatus status = account.getStatus();
 
+        RequestEvent e = createRegisteredEvent(req, resp, account);
+        publish(e);
+
         if (status == AccountStatus.ENABLED) {
 
             //the user does not need to verify their email address, so just assume they are authenticated
@@ -333,7 +347,6 @@ public class RegisterFilter extends HttpFilter {
         }
 
         //finish up by showing the 'post register' view:
-
         String next = form.getNext();
 
         if (!Strings.hasText(next)) {
@@ -341,5 +354,20 @@ public class RegisterFilter extends HttpFilter {
         }
 
         ServletUtils.issueRedirect(req, resp, next, null, true, true);
+    }
+
+    protected RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
+                                                                  HttpServletResponse response,
+                                                                  Account account) {
+        return new DefaultRegisteredAccountRequestEvent(request, response, account);
+    }
+
+    protected void publish(RequestEvent e) throws ServletException {
+        try {
+            getEventPublisher().publish(e);
+        } catch (Exception ex) {
+            String msg = "Unable to publish registered account request event: " + ex.getMessage();
+            throw new ServletException(msg, ex);
+        }
     }
 }

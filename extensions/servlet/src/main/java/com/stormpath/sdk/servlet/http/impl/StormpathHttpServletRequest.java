@@ -1,7 +1,6 @@
 package com.stormpath.sdk.servlet.http.impl;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -13,8 +12,16 @@ import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
+import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
+import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
@@ -59,11 +66,13 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     private final UsernamePasswordRequestFactory usernamePasswordRequestFactory;
     private final Saver<AuthenticationResult> authenticationResultSaver;
+    private final Publisher<RequestEvent> eventPublisher;
     private final String userPrincipalStrategyName;
     private final String remoteUserStrategyName;
 
     public StormpathHttpServletRequest(HttpServletRequest request, HttpServletResponse response,
                                        UsernamePasswordRequestFactory usernamePasswordRequestFactory,
+                                       Publisher<RequestEvent> eventPublisher,
                                        Saver<AuthenticationResult> authenticationResultSaver,
                                        String userPrincipalStrategyName, String remoteUserStrategyName) {
         super(request);
@@ -73,6 +82,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         this.usernamePasswordRequestFactory = usernamePasswordRequestFactory;
         Assert.notNull(authenticationResultSaver, "AuthenticationResultSaver cannot be null.");
         this.authenticationResultSaver = authenticationResultSaver;
+        Assert.notNull(eventPublisher, "EventPublisher cannot be null.");
+        this.eventPublisher = eventPublisher;
         Assert.hasText(userPrincipalStrategyName, "userPrincipalStrategyName argument cannot be null or empty.");
         this.userPrincipalStrategyName = userPrincipalStrategyName;
         Assert.hasText(remoteUserStrategyName, "remoteUserStrategyName argument cannot be null or empty.");
@@ -289,48 +300,32 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-
-        if (hasAccount()) {
-            Account account = getAccount();
-            String msg = "The current request is already associated with an authenticated user [" + account.getEmail() +
-                         "].  Authentication attempt for the current request is denied.";
-            throw new ServletException(msg);
-        }
-
-        Application application = getApplication();
-
-        //TODO find out if the request is an API request or a user login request.
-
-        //TODO: discover if request submission represents a form submission to a known login URL or HTTP basic
-        //if so, this is a 'normal' user login, otherwise it probably represents an API or OAuth authentication.
-
-        ApiAuthenticationResult result;
-
-        try {
-            result = application.authenticateApiRequest(this);
-        } catch (Throwable t) {
-            throw new ServletException("Unable to authenticate API request.", t);
-        }
-
-        setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, "AUTHENTICATE_METHOD");
-
-        Account account = result.getAccount();
-        setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
-
-        return true;
+        throw new UnsupportedOperationException("The HttpServletRequest.authenticate(response) method is not " +
+                                                "supported.  Various HTTP-based authentication mechanisms " +
+                                                "(Basic, OAuth Bearer, Form-based authentication, etc) are supported " +
+                                                "via other url (path)-based mechanisms by the StormpathFilter " +
+                                                "automatically.  Ensure you use those instead of calling " +
+                                                "HttpServletRequest.authenticate(response) directly.");
     }
 
     @Override
     public void login(String username, String password) throws ServletException {
 
+        final AuthenticationRequest authcRequest = createAuthenticationRequest(username, password);
+
         if (hasAccount()) {
             Account account = getAccount();
             String msg = "The current request is already associated with an authenticated user [" + account.getEmail() +
                          "].  Login attempt for submitted username [" + username + "] is denied.";
-            throw new ServletException(msg);
-        }
 
-        AuthenticationRequest authcRequest = createAuthenticationRequest(username, password);
+            ServletException ex = new ServletException(msg);
+
+            FailedAuthenticationRequestEvent e = createEvent(authcRequest, ex);
+
+            publish(e);
+
+            throw ex;
+        }
 
         Application application = getApplication();
 
@@ -338,6 +333,9 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         try {
             result = application.authenticateAccount(authcRequest);
         } catch (ResourceException e) {
+            FailedAuthenticationRequestEvent evt = createEvent(authcRequest, e);
+            publish(evt);
+
             String msg = "Unable to authenticate account for submitted username [" + username + "].";
             throw new ServletException(msg, e);
         }
@@ -346,6 +344,33 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         Account account = result.getAccount();
         setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
+
+        SuccessfulAuthenticationRequestEvent e = createEvent(authcRequest, result);
+        publish(e);
+    }
+
+    protected FailedAuthenticationRequestEvent createEvent(AuthenticationRequest authcRequest, Exception ex) {
+        return new DefaultFailedAuthenticationRequestEvent(this, this.response, authcRequest, ex);
+    }
+
+    protected SuccessfulAuthenticationRequestEvent createEvent(AuthenticationRequest authcRequest,
+                                                               AuthenticationResult result) {
+        return new DefaultSuccessfulAuthenticationRequestEvent(this, this.response, authcRequest, result);
+    }
+
+    protected LogoutRequestEvent createLogoutEvent() {
+        Account account = hasAccount() ? getAccount() : null;
+        return new DefaultLogoutRequestEvent(this, this.response, account);
+    }
+
+    protected void publish(RequestEvent e) throws ServletException {
+
+        try {
+            this.eventPublisher.publish(e);
+        } catch (Exception ex) {
+            String msg = "Unable to publish request event: " + ex.getMessage();
+            throw new ServletException(msg, ex);
+        }
     }
 
     protected AuthenticationRequest createAuthenticationRequest(String username, String password) {
@@ -358,9 +383,23 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public void logout() throws ServletException {
+
+        LogoutRequestEvent e = createLogoutEvent();
+        publish(e);
+
         //remove authc state:
         Saver<AuthenticationResult> saver = getAuthenticationResultSaver();
         saver.set(this, response, null);
+
+        //clear out attributes such that getRemoteUser(), getAuthType() and getUserPrincipal() all return null
+        //per the Servlet spec:
         removeAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME);
+
+        removeAttribute(Account.class.getName());
+
+        HttpSession session = getSession(false);
+        if (session != null) {
+            session.removeAttribute(Account.class.getName());
+        }
     }
 }

@@ -15,8 +15,13 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
+import com.stormpath.sdk.servlet.account.event.impl.DefaultVerifiedAccountRequestEvent;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +36,15 @@ public class VerifyFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(VerifyFilter.class);
 
+    public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+
+    private Publisher<RequestEvent> eventPublisher;
+
+    @Override
+    protected void onInit() throws ServletException {
+        this.eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
+    }
+
     /**
      * Returns the context-relative URL where a user can be redirected to login.
      *
@@ -42,6 +56,10 @@ public class VerifyFilter extends HttpFilter {
 
     public String getVerifyNextUrl() {
         return getConfig().getVerifyNextUrl();
+    }
+
+    public Publisher<RequestEvent> getEventPublisher() {
+        return this.eventPublisher;
     }
 
     @Override
@@ -84,7 +102,10 @@ public class VerifyFilter extends HttpFilter {
 
         Client client = getClient();
 
-        client.verifyAccountEmail(sptoken);
+        Account account = client.verifyAccountEmail(sptoken);
+
+        RequestEvent e = createVerifiedEvent(request, response, account);
+        publish(e);
 
         String next = Strings.clean(request.getParameter("next"));
 
@@ -93,5 +114,19 @@ public class VerifyFilter extends HttpFilter {
         }
 
         ServletUtils.issueRedirect(request, response, next, null, true, true);
+    }
+
+    protected VerifiedAccountRequestEvent createVerifiedEvent(HttpServletRequest request, HttpServletResponse response,
+                                                              Account account) {
+        return new DefaultVerifiedAccountRequestEvent(request, response, account);
+    }
+
+    protected void publish(RequestEvent e) throws ServletException {
+        try {
+            getEventPublisher().publish(e);
+        } catch (Exception ex) {
+            String msg = "Unable to publish verified account request event: " + ex.getMessage();
+            throw new ServletException(msg, ex);
+        }
     }
 }
