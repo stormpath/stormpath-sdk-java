@@ -71,8 +71,9 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     }
 
     @Override
-    public void setAccountStore(AccountStore accountStore) {
+    public PasswordResetToken setAccountStore(AccountStore accountStore) {
         setResourceProperty(ACCOUNT_STORE, accountStore);
+        return this;
     }
 
     public AccountStore getAccountStore() {
@@ -83,8 +84,9 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
      * @since 1.0.RC
      */
     @Override
-    public void setPassword(String password) {
+    public PasswordResetToken setPassword(String password) {
         setProperty(PASSWORD, password);
+        return this;
     }
 
 }

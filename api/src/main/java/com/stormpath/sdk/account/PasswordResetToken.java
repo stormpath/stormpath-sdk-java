@@ -29,7 +29,7 @@ public interface PasswordResetToken extends Resource {
 
     Account getAccount();
 
-    void setAccountStore(AccountStore accountStore);
+    PasswordResetToken setAccountStore(AccountStore accountStore);
 
     /**
      * Setter for the new password that will be instantly applied if the reset token is correctly validated.
@@ -37,5 +37,5 @@ public interface PasswordResetToken extends Resource {
      * @param password the new password that will be applied if the reset token is correctly validated.
      * @since 1.0.RC
      */
-    void setPassword(String password);
+    PasswordResetToken setPassword(String password);
 }
