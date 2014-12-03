@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.account;
 
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -28,6 +29,8 @@ public interface PasswordResetToken extends Resource {
 
     Account getAccount();
 
+    void setAccountStore(AccountStore accountStore);
+
     /**
      * Setter for the new password that will be instantly applied if the reset token is correctly validated.
      *
@@ -35,5 +38,4 @@ public interface PasswordResetToken extends Resource {
      * @since 1.0.RC
      */
     void setPassword(String password);
-
 }

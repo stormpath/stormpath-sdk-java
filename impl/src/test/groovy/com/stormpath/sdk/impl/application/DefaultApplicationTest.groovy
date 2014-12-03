@@ -24,6 +24,7 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
@@ -34,11 +35,7 @@ import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
-import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.impl.resource.CollectionReference
-import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
-import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.resource.*
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.FacebookProviderData
@@ -173,6 +170,43 @@ class DefaultApplicationTest {
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
+    }
+
+    @Test
+    void testSendPasswordResetEmailWithAccountStore() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        def email = 'foo@bar.com'
+        def account = createStrictMock(Account)
+        def accountStore = createStrictMock(Directory)
+        def accountStoreHref = 'https://api.stormpath.com/v1/directories/dir123'
+        def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
+                               account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+        def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
+
+        expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
+        expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        replay internalDataStore, account, accountStore
+
+        def returnedAccount = defaultApplication.sendPasswordResetEmail(email, accountStore)
+
+        assertEquals(returnedAccount, account)
+
+        assertEquals(defaultPassResetToken.dirtyProperties.accountStore.href, accountStoreHref)
+
+        verify internalDataStore, account, accountStore
     }
 
     @Test
