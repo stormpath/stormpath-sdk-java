@@ -55,6 +55,9 @@ public class DefaultServerUriResolver implements ServerUriResolver {
         sb.append(scheme).append("://");
 
         String host = request.getHeader("Host");
+        if (host == null) { //HTTP 1.0?
+            host = request.getServerName();
+        }
         String port = null;
 
         int i = host.lastIndexOf(':');
