@@ -21,27 +21,28 @@ import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.util.RequestCondition;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class CookieAuthenticationResultSaver extends AccountCookieHandler implements Saver<AuthenticationResult> {
 
-    private AccountCookieSecureEvaluator accountCookieSecureEvaluator;
     private AuthenticationJwtFactory authenticationJwtFactory;
+    private RequestCondition secureCookieRequired;
 
     public CookieAuthenticationResultSaver(CookieConfig accountCookieConfig,
-                                           AccountCookieSecureEvaluator evaluator,
+                                           RequestCondition secureCookieRequired,
                                            AuthenticationJwtFactory authenticationJwtFactory) {
         super(accountCookieConfig);
-        Assert.notNull(evaluator, "AccountCookieSecureEvaluator cannot be null.");
+        Assert.notNull(secureCookieRequired, "secureCookieRequired RequestCondition cannot be null.");
         Assert.notNull(authenticationJwtFactory, "AuthenticationJwtFactory cannot be null.");
-        this.accountCookieSecureEvaluator = evaluator;
+        this.secureCookieRequired = secureCookieRequired;
         this.authenticationJwtFactory = authenticationJwtFactory;
     }
 
-    public AccountCookieSecureEvaluator getAccountCookieSecureEvaluator() {
-        return accountCookieSecureEvaluator;
+    public RequestCondition getSecureCookieRequired() {
+        return secureCookieRequired;
     }
 
     public AuthenticationJwtFactory getAuthenticationJwtFactory() {
@@ -79,13 +80,16 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
         return new CookieSaver(cfg);
     }
 
+    protected boolean isSecureCookieRequired(HttpServletRequest request) {
+        return getSecureCookieRequired().isTrue(request, null);
+    }
+
     @Override
     protected CookieConfig getAccountCookieConfig(HttpServletRequest request) {
         final CookieConfig config = super.getAccountCookieConfig(request);
 
         //should always be true in prod, but allow for localhost development testing:
-        final boolean secure = config.isSecure() &&
-                               getAccountCookieSecureEvaluator().isAccountCookieSecure(request, config);
+        final boolean secure = config.isSecure() && isSecureCookieRequired(request);
 
         //wrap it to allow for access during development:
         return new CookieConfig() {

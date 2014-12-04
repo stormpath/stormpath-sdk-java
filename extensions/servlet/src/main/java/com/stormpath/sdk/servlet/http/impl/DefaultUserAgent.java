@@ -32,6 +32,49 @@ public class DefaultUserAgent implements UserAgent {
     }
 
     @Override
+    public boolean isBrowser() {
+        String ua = request.getHeader("User-Agent");
+        if (ua == null) {
+            return false;
+        }
+
+        //logic copied from MIT-licensed code snippet here:
+        //https://github.com/stuartpb/user-agent-is-browser/blob/master/lib/user-agent-is-browser.js
+        
+               // Check the prefix used by 99% of browsers
+        return ua.startsWith("Mozilla/") ||
+
+               // Older versions of Opera
+               ua.startsWith("Opera/") ||
+
+               // Down the rabbit hole...
+               ua.startsWith("Lynx/") ||
+               ua.startsWith("Links ") ||
+               ua.startsWith("Elinks ") || ua.startsWith("ELinks ") ||
+               ua.startsWith("ELinks/") ||
+               ua.startsWith("Midori/") ||
+               ua.startsWith("w3m/") ||
+               ua.startsWith("Webkit/") ||
+               ua.startsWith("Vimprobable/") ||
+               ua.startsWith("Dooble/") ||
+               ua.startsWith("Dillo/") ||
+               ua.startsWith("Surf/") ||
+               ua.startsWith("NetSurf/") ||
+               ua.startsWith("Galaxy/") ||
+               ua.startsWith("Cyberdog/") ||
+               ua.startsWith("iCab/") ||
+               ua.startsWith("IBrowse/") ||
+               ua.startsWith("IBM WebExplorer /") ||
+               ua.startsWith("AmigaVoyager/") ||
+               ua.startsWith("HotJava/") ||
+               ua.startsWith("retawq/") ||
+               ua.startsWith("uzbl ") || ua.startsWith("Uzbl ") ||
+               ua.startsWith("NCSA Mosaic/") || ua.startsWith("NCSA_Mosaic/") ||
+               // And, finally, we test to see if they're using *the first browser ever*.
+               ua.startsWith("WorldWideweb (NEXT)");
+    }
+
+    @Override
     public boolean isHtmlPreferred() {
 
         String header = request.getHeader("Accept");

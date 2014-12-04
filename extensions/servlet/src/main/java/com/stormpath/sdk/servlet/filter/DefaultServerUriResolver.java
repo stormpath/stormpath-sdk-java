@@ -19,27 +19,64 @@ import javax.servlet.http.HttpServletRequest;
 
 public class DefaultServerUriResolver implements ServerUriResolver {
 
+    private boolean excludeSchemeDefaultPorts = true;
+
+    public boolean isExcludeSchemeDefaultPorts() {
+        return excludeSchemeDefaultPorts;
+    }
+
+    public void setExcludeSchemeDefaultPorts(boolean excludeSchemeDefaultPorts) {
+        this.excludeSchemeDefaultPorts = excludeSchemeDefaultPorts;
+    }
+
+    /**
+     * This will return:
+     * <ol>
+     *     <li>The http scheme such as {@code http} or {@code https}</li>
+     *     <li>The scheme separator {@code ://}</li>
+     *     <li>The server host name as specified in the {@code Host} header.</li>
+     *     <li>If the server port is specified in the {@code Host} header and the
+     *         port is a non-standard port for the specified http scheme:
+     *         <ol>
+     *             <li>colon character {@code :}</li>
+     *             <li>server port</li>
+     *         </ol>
+     *     </li>
+     * </ol>
+     * @param request http servlet request
+     * @return the root/base server URI for the specified request.
+     */
     @Override
     public String getServerUri(HttpServletRequest request) {
 
+        StringBuilder sb = new StringBuilder();
+
         String scheme = request.getScheme();
+        sb.append(scheme).append("://");
 
-        String serverName = request.getServerName();
+        String host = request.getHeader("Host");
+        String port = null;
 
-        int port = request.getServerPort();
+        int i = host.lastIndexOf(':');
+        if (i > -1) {
+            port = host.substring(i+1);
+            host = host.substring(0, i);
+        }
 
-        boolean includePort = true;
+        sb.append(host);
 
-        if ((scheme.equalsIgnoreCase("http") && port == 80) ||
-            (scheme.equalsIgnoreCase("https") && port == 443)) {
+        boolean includePort = port != null;
+
+        if (includePort && isExcludeSchemeDefaultPorts() &&
+            ((scheme.equalsIgnoreCase("http") && "80".equals(port)) ||
+            (scheme.equalsIgnoreCase("https") && "443".equals(port)))) {
             includePort = false;
         }
 
-        String uri = scheme + "://" + serverName;
         if (includePort) {
-            uri += ":" + port;
+            sb.append(':').append(port);
         }
 
-        return uri;
+        return sb.toString();
     }
 }

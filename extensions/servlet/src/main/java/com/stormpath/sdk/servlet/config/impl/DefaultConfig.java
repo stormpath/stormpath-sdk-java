@@ -53,7 +53,6 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
     public static final String ACCOUNT_COOKIE_MAX_AGE = "stormpath.web.account.cookie.maxAge";
     public static final String ACCOUNT_COOKIE_PATH = "stormpath.web.account.cookie.path";
-    public static final String ACCOUNT_COOKIE_SECURE = "stormpath.web.account.cookie.secure";
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
     public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
 

@@ -16,8 +16,9 @@
 package com.stormpath.sdk.servlet.filter.oauth;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public interface AccessTokenRequestAuthorizer {
 
-    void assertAuthorizedAccessTokenRequest(HttpServletRequest request) throws OauthException;
+    void assertAccessTokenRequestAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException;
 }

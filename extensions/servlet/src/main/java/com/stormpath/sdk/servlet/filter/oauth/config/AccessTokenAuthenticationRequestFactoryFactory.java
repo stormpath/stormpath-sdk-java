@@ -25,13 +25,11 @@ import javax.servlet.ServletContext;
 public class AccessTokenAuthenticationRequestFactoryFactory
     extends ConfigSingletonFactory<AccessTokenAuthenticationRequestFactory> {
 
+    public static final String USERNAME_PASSWORD_REQUEST_FACTORY = "stormpath.web.authc.usernamePasswordRequestFactory";
+
     @Override
     protected AccessTokenAuthenticationRequestFactory createInstance(ServletContext sc) throws Exception {
-
-        UsernamePasswordRequestFactory factory =
-            getConfig().getInstance("stormpath.web.authc.usernamePasswordRequestFactory");
-
+        UsernamePasswordRequestFactory factory = getConfig().getInstance(USERNAME_PASSWORD_REQUEST_FACTORY);
         return new DefaultAccessTokenAuthenticationRequestFactory(factory);
     }
-
 }

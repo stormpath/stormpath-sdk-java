@@ -18,8 +18,6 @@ package com.stormpath.sdk.servlet.filter.oauth;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.Servlets;
@@ -44,18 +42,14 @@ public class AccessTokenFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(AccessTokenFilter.class);
 
-    protected static final String GRANT_TYPE_PARAM_NAME = "grant_type";
-
     protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.accessToken.resultFactory";
 
     protected static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
         "stormpath.web.accessToken.authenticationRequestFactory";
 
-    protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER = "stormpath.web.accessToken.requestAuthorizer";
+    protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER = "stormpath.web.accessToken.authorizer";
 
     protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
-
-    protected static final String SECURE = "stormpath.web.accessToken.secure";
 
     protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 
@@ -64,7 +58,6 @@ public class AccessTokenFilter extends HttpFilter {
     private AccessTokenResultFactory resultFactory;
     private Saver<AuthenticationResult> accountSaver;
     private Publisher<RequestEvent> eventPublisher;
-    private boolean secure = true;
 
     public AccessTokenRequestAuthorizer getRequestAuthorizer() {
         return this.requestAuthorizer;
@@ -94,9 +87,6 @@ public class AccessTokenFilter extends HttpFilter {
         this.resultFactory = config.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
         this.accountSaver = config.getInstance(ACCOUNT_SAVER);
         this.eventPublisher = config.getInstance(EVENT_PUBLISHER);
-
-        String val = getConfig().get(SECURE);
-        this.secure = Boolean.parseBoolean(val);
     }
 
     protected void publish(RequestEvent e) {
@@ -112,7 +102,7 @@ public class AccessTokenFilter extends HttpFilter {
         AuthenticationRequest authcRequest = null;
 
         try {
-            assertAuthorizedAccessTokenRequest(request);
+            assertAuthorized(request, response);
 
             authcRequest = createTokenAuthenticationRequest(request);
 
@@ -168,54 +158,16 @@ public class AccessTokenFilter extends HttpFilter {
         return new DefaultSuccessfulAuthenticationRequestEvent(request, response, authcRequest, result);
     }
 
-    protected void assertAuthorizedAccessTokenRequest(HttpServletRequest request) {
-
-        //POST is required: https://tools.ietf.org/html/rfc6749#section-3.2
-        if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
-            String msg = "HTTP POST is required.";
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
-        }
-
-        //Secure connections are required: https://tools.ietf.org/html/rfc6749#section-3.2
-        if (isSecureConnectionRequired(request) && !request.isSecure()) {
-            String msg = "A secure HTTPS connection is required for token requests - this is " +
-                         "a requirement of the OAuth 2 specification.";
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
-        }
-
-        //grant_type is always required for all token requests:
-        String grantType = Strings.clean(request.getParameter(GRANT_TYPE_PARAM_NAME));
-        if (grantType == null) {
-            String msg = "Missing grant_type value.";
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
-        }
-
-        getRequestAuthorizer().assertAuthorizedAccessTokenRequest(request);
-    }
-
-    //allow localhost development to not require an SSL certificate:
-    protected boolean isSecureConnectionRequired(HttpServletRequest request) {
-
-        if (!secure) {
-            return false;
-        }
-
-        String serverName = request.getServerName();
-
-        boolean localhost = serverName.equalsIgnoreCase("localhost") ||
-                            serverName.equals("127.0.0.1") ||
-                            serverName.equals("::1") ||
-                            serverName.equals("0:0:0:0:0:0:0:1");
-
-        return !localhost;
+    protected void assertAuthorized(HttpServletRequest request, HttpServletResponse response)
+        throws OauthException {
+        getRequestAuthorizer().assertAccessTokenRequestAuthorized(request, response);
     }
 
     protected Application getApplication(HttpServletRequest request) {
         return Servlets.getApplication(request);
     }
 
-    protected AuthenticationRequest createTokenAuthenticationRequest(HttpServletRequest request)
-        throws OauthException {
+    protected AuthenticationRequest createTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
         return getAuthenticationRequestFactory().createAccessTokenAuthenticationRequest(request);
     }
 

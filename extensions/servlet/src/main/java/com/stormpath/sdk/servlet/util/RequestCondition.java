@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter.account;
-
-import com.stormpath.sdk.servlet.config.CookieConfig;
+package com.stormpath.sdk.servlet.util;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public interface AccountCookieSecureEvaluator {
+public interface RequestCondition {
 
-    boolean isAccountCookieSecure(HttpServletRequest request, CookieConfig accountCookieConfig);
-
+    boolean isTrue(HttpServletRequest request, HttpServletResponse response);
 }

@@ -22,6 +22,15 @@ package com.stormpath.sdk.servlet.http;
 public interface UserAgent {
 
     /**
+     * Returns {@code true} if the user agent is likely a web browser and not a library or command line client.  This
+     * is a best effort evaluation - it does not protect against user agents that spoof the {@code User-Agent} header
+     * of known browsers.
+     *
+     * @return {@code true} if the user agent is likely a web browser and not a library or command line client.
+     */
+    boolean isBrowser();
+
+    /**
      * Returns {@code true} if the user agent prefers HTML (or XHTML) content, {@code false} otherwise.  HTML preference
      * in this context is determined by looking at the {@code Accept} header and seeing if
      * {@code application/html} or {@code application/xhtml+xml} are listed first before

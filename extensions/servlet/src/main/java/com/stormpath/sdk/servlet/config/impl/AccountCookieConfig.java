@@ -25,7 +25,6 @@ public class AccountCookieConfig implements CookieConfig {
     private static final String DOMAIN = DefaultConfig.ACCOUNT_COOKIE_DOMAIN;
     private static final String MAX_AGE = DefaultConfig.ACCOUNT_COOKIE_MAX_AGE;
     private static final String PATH = DefaultConfig.ACCOUNT_COOKIE_PATH;
-    private static final String SECURE = DefaultConfig.ACCOUNT_COOKIE_SECURE;
     private static final String HTTP_ONLY = DefaultConfig.ACCOUNT_COOKIE_HTTP_ONLY;
 
     private final String name;
@@ -43,7 +42,7 @@ public class AccountCookieConfig implements CookieConfig {
         this.comment = configReader.getString(COMMENT);
         this.domain = configReader.getString(DOMAIN);
         this.path = configReader.getString(PATH);
-        this.secure = configReader.getBoolean(SECURE);
+        this.secure = true; //always true by default as this represents an identity cookie
         this.httpOnly = configReader.getBoolean(HTTP_ONLY);
         this.maxAge = Math.max(-1, configReader.getInt(MAX_AGE));
     }
