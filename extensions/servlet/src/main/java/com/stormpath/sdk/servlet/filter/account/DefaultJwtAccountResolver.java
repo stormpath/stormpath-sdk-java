@@ -26,7 +26,7 @@ import io.jsonwebtoken.SigningKeyResolverAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
+import java.security.Key;
 
 public class DefaultJwtAccountResolver implements JwtAccountResolver {
 
@@ -47,10 +47,10 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver {
         final JwtSigningKeyResolver resolver = getJwtSigningKeyResolver();
 
         SigningKeyResolver signingKeyResolver = new SigningKeyResolverAdapter() {
+
             @Override
-            public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
-                String base64Encoded = resolver.getSigningKey(request, response, header, claims);
-                return DatatypeConverter.parseBase64Binary(base64Encoded);
+            public Key resolveSigningKey(JwsHeader header, Claims claims) {
+                return resolver.getSigningKey(request, response, header, claims);
             }
         };
 

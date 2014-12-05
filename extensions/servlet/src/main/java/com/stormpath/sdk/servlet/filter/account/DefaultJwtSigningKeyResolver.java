@@ -20,26 +20,51 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.SignatureAlgorithm;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
+import java.security.Key;
 
 public class DefaultJwtSigningKeyResolver implements JwtSigningKeyResolver {
 
+    private static final String RSA_ERR_MSG = "RSA signatures are not currently supported by the " +
+                                              DefaultJwtSigningKeyResolver.class.getName() + " implementation.  You " +
+                                              "may want to implement your own JwtSigningKeyResolver implementation " +
+                                              "to support RSA keys.";
+
+    private static final String EC_ERR_MSG = "Elliptic Curve signatures are not currently supported by the " +
+                                             DefaultJwtSigningKeyResolver.class.getName() + " implementation.  You " +
+                                             "may want to implement your own JwtSigningKeyResolver implementation " +
+                                             "to support Elliptic Curve keys.";
+
     @Override
-    public String getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
-        return getSigningKey(request);
+    public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result,
+                             SignatureAlgorithm alg) {
+        Assert.isTrue(!alg.isRsa(), RSA_ERR_MSG);
+        Assert.isTrue(!alg.isEllipticCurve(), EC_ERR_MSG);
+        return getSigningKey(request, alg);
     }
 
     @Override
-    public String getSigningKey(HttpServletRequest request, HttpServletResponse response,
-                                JwsHeader jwsHeader, Claims claims) {
-        return getSigningKey(request);
+    public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader,
+                             Claims claims) {
+        return getSigningKey(request, SignatureAlgorithm.forName(jwsHeader.getAlgorithm()));
     }
 
-    protected String getSigningKey(HttpServletRequest request) {
-        Client client = (Client)request.getAttribute(Client.class.getName());
+    protected Key getSigningKey(HttpServletRequest request, SignatureAlgorithm alg) {
+
+        Client client = (Client) request.getAttribute(Client.class.getName());
         Assert.notNull(client, "Client must be accessible as a request attribute.");
-        return client.getApiKey().getSecret();
+
+        String apiKeySecret = client.getApiKey().getSecret();
+
+        //Stormpath API Keys are base-64-encoded secure random byte arrays:
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(apiKeySecret);
+
+        return new SecretKeySpec(apiKeySecretBytes, alg.getJcaName());
+
     }
 }

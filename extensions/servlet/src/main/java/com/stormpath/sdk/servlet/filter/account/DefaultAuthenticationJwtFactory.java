@@ -24,22 +24,32 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
 
 public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory {
 
     private final JwtSigningKeyResolver jwtSigningKeyResolver;
+    private final SignatureAlgorithm jwtSignatureAlgorithm;
     private final int jwtTtl;
 
-    public DefaultAuthenticationJwtFactory(JwtSigningKeyResolver jwtSigningKeyResolver, int jwtTtl) {
+    public DefaultAuthenticationJwtFactory(JwtSigningKeyResolver jwtSigningKeyResolver,
+                                           SignatureAlgorithm signatureAlgorithm, int jwtTtl) {
         Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
+        Assert.notNull(signatureAlgorithm, "JWT SignatureAlgorithm cannot be null.");
+        Assert.isTrue(signatureAlgorithm != SignatureAlgorithm.NONE, "SignatureAlgorithm 'none' is not allowed.");
         this.jwtSigningKeyResolver = jwtSigningKeyResolver;
+        this.jwtSignatureAlgorithm = signatureAlgorithm;
         this.jwtTtl = jwtTtl;
     }
 
     protected JwtSigningKeyResolver getJwtSigningKeyResolver() {
         return jwtSigningKeyResolver;
+    }
+
+    protected SignatureAlgorithm getJwtSignatureAlgorithm() {
+        return this.jwtSignatureAlgorithm;
     }
 
     protected int getJwtTtl() {
@@ -58,10 +68,11 @@ public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory
         String sub = getJwtSubject(request, response, result);
         Assert.hasText(sub, "JWT subject value cannot be null or empty.");
 
-        String signingKey = getJwtSigningKey(request, response, result);
+        SignatureAlgorithm alg = getJwtSignatureAlgorithm();
+        Key signingKey = getJwtSigningKey(request, response, result);
 
         JwtBuilder builder =
-            Jwts.builder().setId(id).setIssuedAt(now).setSubject(sub).signWith(SignatureAlgorithm.HS256, signingKey);
+            Jwts.builder().setId(id).setIssuedAt(now).setSubject(sub).signWith(alg, signingKey);
 
         int ttl = getJwtTtlSeconds(request, response, result);
         if (ttl >= 0) {
@@ -100,9 +111,9 @@ public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory
         return result.getAccount().getHref();
     }
 
-    protected String getJwtSigningKey(HttpServletRequest request, HttpServletResponse response,
-                                      AuthenticationResult result) {
-        return getJwtSigningKeyResolver().getSigningKey(request, response, result);
+    protected Key getJwtSigningKey(HttpServletRequest request, HttpServletResponse response,
+                                   AuthenticationResult result) {
+        return getJwtSigningKeyResolver().getSigningKey(request, response, result, getJwtSignatureAlgorithm());
     }
 
     @SuppressWarnings("UnusedParameters")

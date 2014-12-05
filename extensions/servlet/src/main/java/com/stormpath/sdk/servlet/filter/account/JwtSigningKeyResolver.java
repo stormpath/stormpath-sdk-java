@@ -18,16 +18,18 @@ package com.stormpath.sdk.servlet.filter.account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Key;
 
 /**
  * Both method implementations <em>MUST</em> return the same signing key.
  */
 public interface JwtSigningKeyResolver {
 
-    String getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result);
+    Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result, SignatureAlgorithm alg);
 
-    String getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims);
+    Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims);
 }

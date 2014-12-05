@@ -19,15 +19,21 @@ import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.DefaultAuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.servlet.ServletContext;
 
 public class AuthenticationJwtFactoryFactory extends ConfigSingletonFactory<AuthenticationJwtFactory> {
 
+    public static final String JWT_SIGNATURE_ALGORITHM = "stormpath.web.account.jwt.signatureAlgorithm";
+    public static final String JWT_SIGNING_KEY_RESOLVER = "stormpath.web.account.jwt.signingKey.resolver";
+
     @Override
     protected AuthenticationJwtFactory createInstance(ServletContext servletContext) throws Exception {
-        JwtSigningKeyResolver resolver = getConfig().getInstance("stormpath.web.account.jwt.signingKey.resolver");
+        JwtSigningKeyResolver resolver = getConfig().getInstance(JWT_SIGNING_KEY_RESOLVER);
+        String algName = getConfig().get(JWT_SIGNATURE_ALGORITHM);
+        SignatureAlgorithm alg = SignatureAlgorithm.forName(algName);
         int ttl = getConfig().getAccountJwtTtl();
-        return new DefaultAuthenticationJwtFactory(resolver, ttl);
+        return new DefaultAuthenticationJwtFactory(resolver, alg, ttl);
     }
 }
