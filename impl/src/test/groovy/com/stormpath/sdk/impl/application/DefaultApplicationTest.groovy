@@ -24,6 +24,7 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
@@ -700,6 +701,38 @@ class DefaultApplicationTest {
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAddAccountStoreNull() {
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def application = new DefaultApplication(internalDataStore, null)
+
+        try {
+            application.addAccountStore((String) null)
+            fail("Should have thrown because of null 'hrefOrName'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "hrefOrName cannot be null or empty.")
+        }
+
+        try {
+            application.addAccountStore((DirectoryCriteria) null)
+            fail("Should have thrown because of null 'DirectoryCriteria'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "criteria cannot be null.")
+        }
+
+        try {
+            application.addAccountStore((GroupCriteria) null)
+            fail("Should have thrown because of null 'GroupCriteria'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "criteria cannot be null.")
+        }
+    }
+
     //@since 1.0.RC
     static class ApplicationMatcher implements IArgumentMatcher {
 
@@ -722,7 +755,7 @@ class DefaultApplicationTest {
         }
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC
     private void setNewValue(Class clazz, Object object, String fieldName, Object value){
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)
