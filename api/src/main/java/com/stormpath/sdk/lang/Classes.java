@@ -75,7 +75,7 @@ public class Classes {
      */
     public static <T> Class<T> forName(String fqcn) throws UnknownClassException {
 
-        Class clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
+        Class<T> clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
 
         if (clazz == null) {
             if (log.isTraceEnabled()) {
