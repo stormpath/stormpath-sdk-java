@@ -248,14 +248,23 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     @Override
     public Account sendPasswordResetEmail(String email) {
-        PasswordResetToken token = createPasswordResetToken(email);
+        PasswordResetToken token = createPasswordResetToken(email, null);
         return token.getAccount();
     }
 
-    private PasswordResetToken createPasswordResetToken(String email) {
-        String href = getPasswordResetTokensHref();
+    @Override
+    public Account sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
+        PasswordResetToken token = createPasswordResetToken(email, accountStore);
+        return token.getAccount();
+    }
+
+    private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {
         PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class);
         passwordResetToken.setEmail(email);
+        if (accountStore != null) {
+            passwordResetToken.setAccountStore(accountStore);
+        }
+        String href = getPasswordResetTokensHref();
         return getDataStore().create(href, passwordResetToken);
     }
 

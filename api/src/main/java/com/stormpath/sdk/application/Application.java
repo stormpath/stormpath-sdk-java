@@ -357,11 +357,43 @@ public interface Application extends Resource, Saveable, Deletable {
      * {@link #verifyPasswordResetToken(String)} JavaDoc.
      *
      * @param email an email address of an Account that may login to the application.
-     * @return the account corresponding to the specified email address.
+     * @return the matching account that will receive a password reset email
      * @see #verifyPasswordResetToken(String)
      * @see #resetPassword(String, String)
+     * @throws ResourceException if there is no account that matches the specified email address
      */
-    Account sendPasswordResetEmail(String email);
+    Account sendPasswordResetEmail(String email) throws ResourceException;
+
+    /**
+     * Sends a password reset email to an account in the specified {@code AccountStore} matching the specified
+     * {@code email} address.  If the email does not match an account in the specified AccountStore, a
+     * ResourceException will be thrown.  If you are unsure of which of the application's mapped account stores might
+     * contain the account, use the more general
+     * {@link #sendPasswordResetEmail(String) sendPasswordResetEmail(String email)} method instead.
+     *
+     * <p>This method is useful as a performance enhancement if the application might be mapped to many (dozens,
+     * hundreds or thousands) of account stores.  This can be common in multi-tenant applications where each mapped
+     * AccountStore represents a specific tenant or customer organization.  Specifying the AccountStore
+     * in these scenarios bypasses the general email-only-based account search and performs a more-efficient direct
+     * lookup directly against the specified AccountStore.  The AccountStore is usually discovered before calling this
+     * method by inspecting a submitted tenant id or subdomain, e.g. http://ACCOUNT_STORE_NAME.foo.com </p>
+     *
+     * <p>Like the {@link #sendPasswordResetEmail(String)} method, this email merely sends the email that contains
+     * a link that, when clicked, will take the user to a view (web page) that allows them to specify a new password.
+     * When the new password is submitted, the {@link #verifyPasswordResetToken(String)} method is expected to be
+     * called at that time.</p>
+     *
+     * @param email an email address of an Account that may login to the application.
+     * @param accountStore the accountStore expected to contain an account with the specified email address
+     * @return the matching account in the specified account store that will receive a password reset email
+     * @see #sendPasswordResetEmail(String)
+     * @see #verifyPasswordResetToken(String)
+     * @see #resetPassword(String, String)
+     * @throws ResourceException if the specified AccountStore is not mapped to this application or if the email address
+     *                           is not in the specified Account store
+     * @since 1.0.RC3
+     */
+    Account sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException;
 
     /**
      * Verifies a password reset token in a user-clicked link within an email.
@@ -471,10 +503,8 @@ public interface Application extends Resource, Saveable, Deletable {
      * Returns all AccountStoreMappings accessible to the application.
      * <p/>
      * Tip: Instead of iterating over all accountStoreMappings, it might be more convenient (and practical) to execute
-     * a
-     * search
-     * for one or more accountStoreMappings using the {@link #getAccountStoreMappings(java.util.Map)} method or the
-     * {@link #getAccountStoreMappings(AccountStoreMappingCriteria)} instead of this one.
+     * a search for one or more accountStoreMappings using the {@link #getAccountStoreMappings(java.util.Map)} method
+     * or the {@link #getAccountStoreMappings(AccountStoreMappingCriteria)} instead of this one.
      *
      * @return all AccountStoreMappings accessible to the application.
      * @see #getAccountStoreMappings(java.util.Map)
