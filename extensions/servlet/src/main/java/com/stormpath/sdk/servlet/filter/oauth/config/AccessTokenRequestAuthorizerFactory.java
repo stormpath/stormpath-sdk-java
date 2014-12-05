@@ -15,23 +15,22 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth.config;
 
+import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.filter.oauth.AccessTokenRequestAuthorizer;
-import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenRequestAuthorizer;
 import com.stormpath.sdk.servlet.util.RequestCondition;
 
 import javax.servlet.ServletContext;
 
-public class AccessTokenRequestAuthorizerFactory extends ConfigSingletonFactory<AccessTokenRequestAuthorizer> {
+public class AccessTokenRequestAuthorizerFactory extends ConfigSingletonFactory<RequestAuthorizer> {
 
-    public static final String SERVER_URI_RESOLVER = "stormpath.web.accessToken.authorizer.serverUriResolver";
     public static final String SECURE_CONDITION = "stormpath.web.accessToken.authorizer.secure.condition";
+    public static final String ORIGIN_AUTHORIZER = "stormpath.web.accessToken.origin.authorizer";
 
     @Override
-    protected AccessTokenRequestAuthorizer createInstance(ServletContext servletContext) throws Exception {
-        ServerUriResolver resolver = getConfig().getInstance(SERVER_URI_RESOLVER);
+    protected RequestAuthorizer createInstance(ServletContext servletContext) throws Exception {
         RequestCondition condition = getConfig().getInstance(SECURE_CONDITION);
-        return new OriginAccessTokenRequestAuthorizer(resolver, condition);
+        RequestAuthorizer originAuthorizer = getConfig().getInstance(ORIGIN_AUTHORIZER);
+        return new DefaultAccessTokenRequestAuthorizer(condition, originAuthorizer);
     }
 }

@@ -15,98 +15,124 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.util.RequestCondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Collections;
 
-public class OriginAccessTokenRequestAuthorizer implements AccessTokenRequestAuthorizer {
+public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
-    public static final String GRANT_TYPE_PARAM_NAME = "grant_type";
+    private static final Logger log = LoggerFactory.getLogger(OriginAccessTokenRequestAuthorizer.class);
+
+    public static final String ORIGIN_HEADER_NAME = "Origin";
+    public static final String ORIGIN_URIS_CONFIG_PROPERTY_NAME =
+        "stormpath.web.accessToken.origin.authorizer.originUris";
 
     private final ServerUriResolver serverUriResolver;
-    private final RequestCondition secureCondition;
+    private final RequestCondition localhost;
+    private final Collection<String> authorizedOriginUrls;
 
-    public OriginAccessTokenRequestAuthorizer(ServerUriResolver serverUriResolver, RequestCondition secureCondition) {
+    public OriginAccessTokenRequestAuthorizer(ServerUriResolver serverUriResolver, RequestCondition localhost,
+                                              Collection<String> authorizedOriginUrls) {
         Assert.notNull(serverUriResolver, "ServerUriResolver cannot be null.");
-        Assert.notNull(secureCondition, "Secure RequestCondition cannot be null.");
+        Assert.notNull(localhost, "localhost RequestCondition cannot be null.");
         this.serverUriResolver = serverUriResolver;
-        this.secureCondition = secureCondition;
+        this.localhost = localhost;
+        if (authorizedOriginUrls == null) {
+            this.authorizedOriginUrls = Collections.emptyList();
+        } else {
+            this.authorizedOriginUrls = authorizedOriginUrls;
+        }
     }
 
     public ServerUriResolver getServerUriResolver() {
         return serverUriResolver;
     }
 
-    public RequestCondition getSecureCondition() {
-        return secureCondition;
+    public RequestCondition getLocalhostCondition() {
+        return localhost;
+    }
+
+    public Collection<String> getAuthorizedOriginUrls() {
+        return authorizedOriginUrls;
     }
 
     @Override
-    public void assertAccessTokenRequestAuthorized(HttpServletRequest request, HttpServletResponse response)
-        throws OauthException {
+    public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException {
 
-        //POST is required: https://tools.ietf.org/html/rfc6749#section-3.2
-        if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
-            String msg = "HTTP POST is required.";
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
-        }
+        String origin = request.getHeader(ORIGIN_HEADER_NAME);
 
-        //grant_type is always required for all token requests:
-        String grantType = Strings.clean(request.getParameter(GRANT_TYPE_PARAM_NAME));
-        if (grantType == null) {
-            String msg = "Missing grant_type value.";
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
-        }
-
-        //Secure connections are required: https://tools.ietf.org/html/rfc6749#section-3.2
-        assertSecure(request, response);
-
-        //assert Origin header matches expected conditions (prevent any random JS client on the web from submitting
-        //token requests):
-        assertOrigin(request);
-    }
-
-    protected void assertOrigin(HttpServletRequest request) throws OauthException {
-
-        String origin = request.getHeader("Origin");
+        boolean localhostClient = isLocalhostClient(request, response);
 
         if (!Strings.hasText(origin)) {
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "Missing Origin header.", null);
+
+            String errorMessage = null;
+
+            if (localhostClient) {
+                //convenient message during localhost testing:
+                errorMessage = "Missing Origin header.";
+            }
+
+            //it is unexpected that a modern browser wouldn't send the Origin header.
+            //Because of this, the request could likely represent someone doing something sneaky, so we should
+            //deny the request and not give them a specific error message: a detailed error message
+            //would tell them how to fix the issue and side-step the authorization check
+            //since you could just easily spoof the origin header if not a browser:
+
+            //however, we will log a message though production environments can see why the
+            //request failed:
+            log.debug(
+                "Request client (remoteAddr={}) did not specify an Origin header.  Access Token request is denied",
+                request.getRemoteAddr());
+
+            throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
 
-        String uri = getServerUriResolver().getServerUri(request);
-        if (!origin.startsWith(uri)) {
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "Unauthorized Origin.", null);
+        if (!isAuthorizedOrigin(request, response, origin)) {
+
+            String errorMessage = null;
+
+            if (localhostClient) {
+                //convenient message during localhost testing:
+                errorMessage = "Unauthorized Origin.";
+            }
+
+            // otherwise don't give a potentially-malicious client any information as to why the request failed
+            // but we will log the message:
+            log.debug("Unauthorized Origin header value: {}.  If this is unexpected, you might want to specify " +
+                      "one or more comma-delimited URLs via the {} property.", origin,
+                      ORIGIN_URIS_CONFIG_PROPERTY_NAME);
+
+            throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
     }
 
-    /**
-     * Asserts that the OAuth token request is secure as mandated by <a href="https://tools.ietf.org/html/rfc6749#section-3.2">https://tools.ietf.org/html/rfc6749#section-3.2</a>,
-     * and if not, throws an appropriate {@link com.stormpath.sdk.servlet.filter.oauth.OauthException OauthException}.
-     *
-     * <p>This implementation delegates to {@link #isSecureConnectionRequired(javax.servlet.http.HttpServletRequest,
-     * javax.servlet.http.HttpServletResponse) isSecureConnectionRequired(request,response)}, and if not secure, throws
-     * an exception with an appropriate message, otherwise this method returns quietly.</p>
-     *
-     * @param request  inbound request
-     * @param response outbound response
-     * @throws com.stormpath.sdk.servlet.filter.oauth.OauthException if the request is not secure.
-     */
-    protected void assertSecure(HttpServletRequest request, HttpServletResponse response) throws OauthException {
-        if (isSecureConnectionRequired(request, response) && !request.isSecure()) {
-            String msg = "A secure HTTPS connection is required for token requests - this is " +
-                         "a requirement of the OAuth 2 specification.";
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
+    protected boolean isAuthorizedOrigin(HttpServletRequest request, HttpServletResponse response, String origin) {
+
+        String requestedServerUri = getServerUriResolver().getServerUri(request);
+
+        if (origin.startsWith(requestedServerUri)) {
+            return true;
         }
+
+        for (String authorizedOriginUri : getAuthorizedOriginUrls()) {
+            if (origin.startsWith(authorizedOriginUri)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    protected boolean isSecureConnectionRequired(HttpServletRequest request, HttpServletResponse response) {
-        return getSecureCondition().isTrue(request, response);
+    protected boolean isLocalhostClient(HttpServletRequest request, HttpServletResponse response) {
+        return getLocalhostCondition().isTrue(request, response);
     }
-
 }

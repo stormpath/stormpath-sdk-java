@@ -25,6 +25,7 @@ import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
@@ -47,19 +48,19 @@ public class AccessTokenFilter extends HttpFilter {
     protected static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
         "stormpath.web.accessToken.authenticationRequestFactory";
 
-    protected static final String ACCESS_TOKEN_REQUEST_AUTHORIZER = "stormpath.web.accessToken.authorizer";
+    protected static final String REQUEST_AUTHORIZER = "stormpath.web.accessToken.authorizer";
 
     protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
 
     protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 
-    private AccessTokenRequestAuthorizer requestAuthorizer;
+    private RequestAuthorizer requestAuthorizer;
     private AccessTokenAuthenticationRequestFactory authenticationRequestFactory;
     private AccessTokenResultFactory resultFactory;
     private Saver<AuthenticationResult> accountSaver;
     private Publisher<RequestEvent> eventPublisher;
 
-    public AccessTokenRequestAuthorizer getRequestAuthorizer() {
+    public RequestAuthorizer getRequestAuthorizer() {
         return this.requestAuthorizer;
     }
 
@@ -82,7 +83,7 @@ public class AccessTokenFilter extends HttpFilter {
     @Override
     protected void onInit() throws ServletException {
         Config config = getConfig();
-        this.requestAuthorizer = config.getInstance(ACCESS_TOKEN_REQUEST_AUTHORIZER);
+        this.requestAuthorizer = config.getInstance(REQUEST_AUTHORIZER);
         this.authenticationRequestFactory = config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
         this.resultFactory = config.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
         this.accountSaver = config.getInstance(ACCOUNT_SAVER);
@@ -160,7 +161,7 @@ public class AccessTokenFilter extends HttpFilter {
 
     protected void assertAuthorized(HttpServletRequest request, HttpServletResponse response)
         throws OauthException {
-        getRequestAuthorizer().assertAccessTokenRequestAuthorized(request, response);
+        getRequestAuthorizer().assertAuthorized(request, response);
     }
 
     protected Application getApplication(HttpServletRequest request) {
