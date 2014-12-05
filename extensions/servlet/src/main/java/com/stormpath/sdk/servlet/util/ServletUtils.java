@@ -15,14 +15,10 @@
  */
 package com.stormpath.sdk.servlet.util;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -229,22 +225,6 @@ public class ServletUtils {
             contextPath = "";
         }
         return decodeRequestString(request, contextPath);
-    }
-
-    public static Client getClient(ServletRequest request) {
-        return getClient(request.getServletContext());
-    }
-
-    public static Client getClient(ServletContext sc) {
-        return Servlets.getClient(sc);
-    }
-
-    public static Application getApplication(ServletRequest request) {
-        return getApplication(request.getServletContext());
-    }
-
-    public static Application getApplication(ServletContext sc) {
-        return (Application)sc.getAttribute(Application.class.getName());
     }
 
     /**

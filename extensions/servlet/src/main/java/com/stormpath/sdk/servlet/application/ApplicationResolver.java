@@ -11,10 +11,9 @@ import javax.servlet.ServletContext;
  * the web application, such as login, password reset, etc.  For example:
  *
  * <pre>
- * Application app = Servlets.getApplication(aServletRequest);
+ * Application app = applicationResolver.getApplication(aServletContext);
  * </pre>
  *
- * @see com.stormpath.sdk.servlet.Servlets
  * @see DefaultApplicationResolver
  * @since 1.0
  */

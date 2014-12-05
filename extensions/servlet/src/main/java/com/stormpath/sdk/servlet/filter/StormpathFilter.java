@@ -143,7 +143,8 @@ public class StormpathFilter extends HttpFilter {
         }
     }
 
-    protected void setApplicationRequestAttributes(HttpServletRequest request) {
+    protected void
+    setApplicationRequestAttributes(HttpServletRequest request) {
         String name = Application.class.getName();
         Application application = (Application) request.getServletContext().getAttribute(name);
         //this must always be set:

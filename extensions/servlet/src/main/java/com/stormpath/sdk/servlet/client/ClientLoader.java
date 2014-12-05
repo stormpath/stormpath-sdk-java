@@ -31,7 +31,7 @@ import javax.servlet.ServletContext;
  * can access the {@code client} instance easily, for example:
  *
  * <pre>
- * Servlets.getClient(aServletRequest);
+ * (Client)aServletRequest.getAttribute(Client.class.getName());
  * </pre>
  *
  * <h3>Usage</h3>

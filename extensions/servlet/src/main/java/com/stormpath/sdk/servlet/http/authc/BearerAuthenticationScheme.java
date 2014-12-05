@@ -26,7 +26,6 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OauthException;
@@ -189,7 +188,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             };
         } else {
 
-            Client client = Servlets.getClient(request);
+            Client client = getClient(request);
 
             final Account account = client.getResource(href, Account.class);
 
@@ -218,6 +217,10 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
         }
 
         return new DefaultHttpAuthenticationResult(request, response, authcResult);
+    }
+
+    protected Client getClient(HttpServletRequest request) {
+        return (Client)request.getAttribute(Client.class.getName());
     }
 
     /**

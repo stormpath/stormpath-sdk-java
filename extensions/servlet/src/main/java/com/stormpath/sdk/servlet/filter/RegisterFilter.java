@@ -293,7 +293,7 @@ public class RegisterFilter extends HttpFilter {
         account.setSurname(value != null ? value : "UNSPECIFIED");
 
         //Get the Stormpath Application instance corresponding to this web app:
-        Application app = (Application)req.getServletContext().getAttribute(Application.class.getName());
+        Application app = (Application)req.getAttribute(Application.class.getName());
 
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);

@@ -20,7 +20,6 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
@@ -109,7 +108,7 @@ public class AccessTokenFilter extends HttpFilter {
 
             AuthenticationResult ar;
             try {
-                Application app = getApplication(request);
+                Application app = getApplication();
                 ar = app.authenticateAccount(authcRequest);
             } catch (ResourceException e) {
                 log.debug("Unable to authenticate access token request: " + e.getMessage(), e);
@@ -162,10 +161,6 @@ public class AccessTokenFilter extends HttpFilter {
     protected void assertAuthorized(HttpServletRequest request, HttpServletResponse response)
         throws OauthException {
         getRequestAuthorizer().assertAuthorized(request, response);
-    }
-
-    protected Application getApplication(HttpServletRequest request) {
-        return Servlets.getApplication(request);
     }
 
     protected AuthenticationRequest createTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {

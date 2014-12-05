@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import org.slf4j.Logger;
@@ -115,7 +115,11 @@ public abstract class HttpFilter implements Filter {
     }
 
     protected Client getClient() {
-        return Servlets.getClient(this.servletContext);
+        return (Client)getServletContext().getAttribute(Client.class.getName());
+    }
+
+    protected Application getApplication() {
+        return (Application)getServletContext().getAttribute(Application.class.getName());
     }
 
     @Override

@@ -20,7 +20,6 @@ import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.servlet.Servlets;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -38,7 +37,7 @@ public class StormpathHttpSession implements HttpSession {
     }
 
     protected Client getClient() {
-        return Servlets.getClient(getServletContext());
+        return (Client)getServletContext().getAttribute(Client.class.getName());
     }
 
     @Override

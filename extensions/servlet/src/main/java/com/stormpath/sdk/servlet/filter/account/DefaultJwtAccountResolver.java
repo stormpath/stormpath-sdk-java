@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.filter.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.Servlets;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
@@ -60,7 +59,11 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver {
         String accountHref = claims.getSubject();
 
         //will hit the cache:
-        Client client = Servlets.getClient(request);
+        Client client = getClient(request);
         return client.getResource(accountHref, Account.class);
+    }
+
+    protected Client getClient(HttpServletRequest request) {
+        return (Client)request.getAttribute(Client.class.getName());
     }
 }

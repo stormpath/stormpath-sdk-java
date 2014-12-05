@@ -21,7 +21,6 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.Servlets;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
@@ -138,7 +137,7 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
     }
 
     protected Application getApplication(HttpServletRequest req) {
-        return Servlets.getApplication(req);
+        return (Application)req.getAttribute(Application.class.getName());
     }
 
     public void sendChallenge(HttpServletRequest request, HttpServletResponse response) {
