@@ -16,14 +16,15 @@
 package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 /**
  * @since 0.8
@@ -41,25 +42,36 @@ class DefaultPasswordResetTokenTest {
                  account: [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]])
 
         assertTrue(resourceWithDS instanceof DefaultPasswordResetToken && resourceWithProps instanceof DefaultPasswordResetToken)
-        assertEquals(resourceWithProps.getPropertyDescriptors().size(), 3)
-        assertTrue(resourceWithProps.getPropertyDescriptors().get("email") instanceof StringProperty && resourceWithProps.getPropertyDescriptors().get("account") instanceof ResourceReference)
-        assertEquals(resourceWithProps.getPropertyDescriptors().get("account").getType(), Account)
-        assertTrue(resourceWithProps.getPropertyDescriptors().get("password") instanceof StringProperty)
+        def pd = resourceWithProps.getPropertyDescriptors()
+        assertEquals(pd.size(), 4)
+        assertTrue(pd.email instanceof StringProperty)
+        assertTrue(pd.account instanceof ResourceReference)
+        assertEquals(pd.account.type, Account)
+        assertTrue(pd.accountStore instanceof ResourceReference)
+        assertEquals(pd.accountStore.type, AccountStore)
+        assertTrue(pd.password instanceof StringProperty)
 
         resourceWithDS.setEmail("some@email.com")
         assertEquals(resourceWithDS.getEmail(), "some@email.com")
 
         def innerProperties = [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]
-        expect(internalDataStore.instantiate(Account, innerProperties)).andReturn(new DefaultAccount(internalDataStore, innerProperties))
+        def account = new DefaultAccount(internalDataStore, innerProperties)
+        expect(internalDataStore.instantiate(Account, innerProperties)).andReturn(account)
+
+        def accountStore = createStrictMock(Directory)
+        def accountStoreHref = 'https://api.stormpath.com/v1/directories/dir123'
+        expect(accountStore.href).andReturn(accountStoreHref)
+
+        replay internalDataStore, accountStore
 
         resourceWithDS.setPassword("fooPassword")
         assertEquals(resourceWithDS.getProperty("password"), "fooPassword")
 
-        replay internalDataStore
+        resourceWithDS.setAccountStore(accountStore)
+        assertEquals(resourceWithDS.dirtyProperties.accountStore.href, accountStoreHref)
 
-        assertTrue(resourceWithProps.getAccount() instanceof Account)
+        assertSame(resourceWithProps.account, account)
 
-        verify internalDataStore
-
+        verify internalDataStore, accountStore
     }
 }

@@ -73,9 +73,9 @@ public class Classes {
      * @return the located class
      * @throws UnknownClassException if the class cannot be found.
      */
-    public static Class forName(String fqcn) throws UnknownClassException {
+    public static <T> Class<T> forName(String fqcn) throws UnknownClassException {
 
-        Class clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
+        Class<T> clazz = THREAD_CL_ACCESSOR.loadClass(fqcn);
 
         if (clazz == null) {
             if (log.isTraceEnabled()) {
@@ -196,7 +196,7 @@ public class Classes {
      * @since 1.0
      */
     private static interface ClassLoaderAccessor {
-        Class loadClass(String fqcn);
+        <T> Class<T> loadClass(String fqcn);
         InputStream getResourceStream(String name);
     }
 
@@ -205,12 +205,13 @@ public class Classes {
      */
     private static abstract class ExceptionIgnoringAccessor implements ClassLoaderAccessor {
 
-        public Class loadClass(String fqcn) {
-            Class clazz = null;
+        @SuppressWarnings("unchecked")
+        public <T> Class<T> loadClass(String fqcn) {
+            Class<T> clazz = null;
             ClassLoader cl = getClassLoader();
             if (cl != null) {
                 try {
-                    clazz = cl.loadClass(fqcn);
+                    clazz = (Class<T>)cl.loadClass(fqcn);
                 } catch (ClassNotFoundException e) {
                     if (log.isTraceEnabled()) {
                         log.trace("Unable to load clazz named [" + fqcn + "] from class loader [" + cl + "]");
