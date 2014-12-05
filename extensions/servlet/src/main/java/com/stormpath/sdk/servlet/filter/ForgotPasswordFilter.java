@@ -183,7 +183,7 @@ public class ForgotPasswordFilter extends HttpFilter {
             setForm(request, form);
             AccountStore accountStore = getAccountStoreResolver().getAccountStore(request, response);
             if (accountStore != null) {
-                //application.sendPasswordResetEmail(email, accountStore);
+                application.sendPasswordResetEmail(email, accountStore);
             } else {
                 application.sendPasswordResetEmail(email);
             }
@@ -228,5 +228,4 @@ public class ForgotPasswordFilter extends HttpFilter {
         String csrfToken = form.getCsrfToken();
         Assert.isTrue(getCsrfTokenManager().isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
     }
-
 }
