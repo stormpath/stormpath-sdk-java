@@ -20,9 +20,10 @@ import com.stormpath.sdk.directory.AccountStore;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface AuthenticationAccountStoreResolver {
+public class DisabledAccountStoreResolver implements AccountStoreResolver {
 
-    AccountStore getAuthenticationAccountStore(HttpServletRequest request, HttpServletResponse response);
-
-
+    @Override
+    public AccountStore getAccountStore(HttpServletRequest request, HttpServletResponse response) {
+        return null;
+    }
 }

@@ -19,30 +19,30 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.http.authc.AuthenticationAccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class DefaultUsernamePasswordRequestFactory implements UsernamePasswordRequestFactory {
 
-    private AuthenticationAccountStoreResolver authenticationAccountStoreResolver;
+    private AccountStoreResolver accountStoreResolver;
 
     public DefaultUsernamePasswordRequestFactory(
-        AuthenticationAccountStoreResolver authenticationAccountStoreResolver) {
-        Assert.notNull(authenticationAccountStoreResolver, "AuthenticationAccountStoreResolver cannot be null.");
-        this.authenticationAccountStoreResolver = authenticationAccountStoreResolver;
+        AccountStoreResolver accountStoreResolver) {
+        Assert.notNull(accountStoreResolver, "AccountStoreResolver cannot be null.");
+        this.accountStoreResolver = accountStoreResolver;
     }
 
-    protected AuthenticationAccountStoreResolver getAuthenticationAccountStoreResolver() {
-        return this.authenticationAccountStoreResolver;
+    protected AccountStoreResolver getAccountStoreResolver() {
+        return this.accountStoreResolver;
     }
 
     @Override
     public AuthenticationRequest createUsernamePasswordRequest(HttpServletRequest request, HttpServletResponse response,
                                                                String username, String password) {
         AccountStore accountStore =
-            getAuthenticationAccountStoreResolver().getAuthenticationAccountStore(request, response);
+            getAccountStoreResolver().getAccountStore(request, response);
 
         return new UsernamePasswordRequest(username, password, request.getRemoteHost(), accountStore);
     }

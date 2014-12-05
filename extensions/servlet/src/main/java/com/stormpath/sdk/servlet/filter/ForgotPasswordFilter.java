@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -25,6 +26,7 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,17 +44,24 @@ public class ForgotPasswordFilter extends HttpFilter {
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordFilter.class);
 
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
+    public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/forgot.jsp";
 
+    private AccountStoreResolver accountStoreResolver;
     private CsrfTokenManager csrfTokenManager;
 
     @Override
     protected void onInit() throws ServletException {
         this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
+        this.accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
     }
 
     protected CsrfTokenManager getCsrfTokenManager() {
         return this.csrfTokenManager;
+    }
+
+    protected AccountStoreResolver getAccountStoreResolver() {
+        return accountStoreResolver;
     }
 
     protected String getForgotPasswordUrl() {
@@ -170,7 +179,14 @@ public class ForgotPasswordFilter extends HttpFilter {
         String email = form.getFieldValue("email");
 
         try {
-            application.sendPasswordResetEmail(email);
+            //set the form on the request in case the AccountStoreResolver needs to inspect it:
+            setForm(request, form);
+            AccountStore accountStore = getAccountStoreResolver().getAccountStore(request, response);
+            if (accountStore != null) {
+                //application.sendPasswordResetEmail(email, accountStore);
+            } else {
+                application.sendPasswordResetEmail(email);
+            }
         } catch (ResourceException e) {
             //404 == resource does not exist.  Do not let the user know that the account does not
             //exist, otherwise we open up to phishing attacks

@@ -18,7 +18,7 @@ package com.stormpath.sdk.servlet.filter.config;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.http.authc.AuthenticationAccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.ServletContext;
 
@@ -27,8 +27,8 @@ public class UsernamePasswordRequestFactoryFactory extends ConfigSingletonFactor
     @Override
     protected UsernamePasswordRequestFactory createInstance(ServletContext servletContext) throws Exception {
 
-        AuthenticationAccountStoreResolver resolver =
-            getConfig().getInstance("stormpath.web.http.authc.accountStoreResolver");
+        AccountStoreResolver resolver =
+            getConfig().getInstance("stormpath.web.accountStoreResolver");
 
         return new DefaultUsernamePasswordRequestFactory(resolver);
     }
