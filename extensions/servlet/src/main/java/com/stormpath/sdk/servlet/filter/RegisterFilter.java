@@ -27,7 +27,6 @@ import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
@@ -52,7 +51,8 @@ public class RegisterFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterFilter.class);
 
-    public static final String FIELD_CONFIG_NAME_PREFIX = "stormpath.web.register.form.fields.";
+    public static final String FIELDS = "stormpath.web.register.form.fields";
+    public static final String FIELD_CONFIG_NAME_PREFIX = FIELDS + ".";
     public static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
     public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
@@ -63,12 +63,69 @@ public class RegisterFilter extends HttpFilter {
     private Saver<AuthenticationResult> authenticationResultSaver;
     private CsrfTokenManager csrfTokenManager;
     private Publisher<RequestEvent> eventPublisher;
+    private List<DefaultField> formFields;
 
     @Override
     protected void onInit() throws ServletException {
         this.authenticationResultSaver = getConfig().getInstance(ACCOUNT_SAVER_PROP);
         this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
         this.eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
+        this.formFields = getFields();
+    }
+
+    private List<DefaultField> getFields() throws ServletException {
+        try {
+            List<DefaultField> fields = doGetFields();
+            Assert.notEmpty(fields, "Register form fields must be specified.");
+            return fields;
+        } catch (Exception e) {
+            String msg = "Unable to parse " + FIELDS + " property value.";
+            throw new ServletException(msg, e);
+        }
+    }
+
+    private List<DefaultField> doGetFields() {
+        String val = getConfig().get(FIELDS);
+        String[] vals = Strings.split(val, ',', '(', ')', true, true);
+
+        List<DefaultField> fields = new ArrayList<DefaultField>(vals.length);
+
+        for(String token : vals) {
+
+
+            String fieldName = token;
+            boolean required = false;
+            String type = "text";
+
+            int i = token.indexOf('(');
+
+            if (i != -1) {
+
+                fieldName = token.substring(0, i);
+
+                String inner = token.substring(i + 1, token.length() - 1);
+
+                if (inner.contains("required")) {
+                    required = true;
+                }
+                if (inner.contains("password")) {
+                    type = "password";
+                }
+            }
+
+            String label = FIELD_CONFIG_NAME_PREFIX + fieldName + ".label";
+            String placeholder = FIELD_CONFIG_NAME_PREFIX + fieldName + ".placeholder";
+
+            DefaultField field = new DefaultField();
+            field.setName(fieldName);
+            field.setLabel(label);
+            field.setPlaceholder(placeholder);
+            field.setRequired(required);
+            field.setType(type);
+            fields.add(field);
+        }
+
+        return fields;
     }
 
     /**
@@ -124,57 +181,17 @@ public class RegisterFilter extends HttpFilter {
             form.setNext(value);
         }
 
-        Config config = getConfig();
+        for(DefaultField template : this.formFields) {
 
-        for (String key : config.keySet()) {
-
-            if (key.startsWith(FIELD_CONFIG_NAME_PREFIX)) {
-
-                value = config.get(key);
-
-                if (value.equalsIgnoreCase("disabled")) {
-                    //don't include it in the form:
-                    continue;
-                }
-
-                boolean required = value.equalsIgnoreCase("required");
-
-                String fieldName = key.substring(FIELD_CONFIG_NAME_PREFIX.length());
-
-                DefaultField field = new DefaultField();
-                field.setName(fieldName);
-                field.setRequired(required);
-                field.setType("text");
-                String param = request.getParameter(fieldName);
-                field.setValue(param != null ? param : "");
-
-                String label;
-
-                if ("username".equals(fieldName)) {
-                    label = "Username";
-                } else if ("email".equals(fieldName)) {
-                    label = "Email";
-                } else if ("givenName".equals(fieldName)) {
-                    label = "First Name";
-                } else if ("middleName".equals(fieldName)) {
-                    label = "Middle Name";
-                } else if ("surname".equals(fieldName)) {
-                    label = "Last Name";
-                } else if ("password".equals(fieldName)) {
-                    field.setType("password");
-                    label = "Password";
-                    if (!retainPassword) {
-                        field.setValue("");
-                    }
-                } else {
-                    //unrecognized property
-                    continue;
-                }
-
-                field.setLabel(label).setPlaceholder(label);
-
-                form.addField(field);
+            DefaultField field = template.copy();
+            String fieldName = field.getName();
+            String param = request.getParameter(fieldName);
+            field.setValue(param != null ? param : "");
+            if ("password".equals(fieldName) && !retainPassword) {
+                field.setValue("");
             }
+
+            form.addField(field);
         }
 
         form.autofocus();

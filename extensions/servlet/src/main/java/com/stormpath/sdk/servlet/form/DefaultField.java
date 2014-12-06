@@ -94,4 +94,16 @@ public class DefaultField implements Field {
         this.type = type;
         return this;
     }
+
+    public DefaultField copy() {
+        DefaultField field = new DefaultField();
+        field.name = name;
+        field.value = value;
+        field.label = label;
+        field.placeholder = placeholder;
+        field.required = required;
+        field.autofocus = autofocus;
+        field.type = type;
+        return field;
+    }
 }

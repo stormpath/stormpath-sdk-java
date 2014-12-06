@@ -125,7 +125,7 @@ public class LoginFilter extends HttpFilter {
             String label;
 
             if ("login".equals(fieldName)) {
-                label = "Email";
+                label = "Username or Email";
             } else if ("password".equals(fieldName)) {
                 field.setType("password");
                 label = "Password";
