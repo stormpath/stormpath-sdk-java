@@ -16,9 +16,13 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="lang" value="${not empty param.lang ? param.lang : not empty lang ? lang : pageContext.request.locale}"/>
+<fmt:setLocale value="${lang}" />
+<fmt:setBundle basename="com.stormpath.sdk.servlet.i18n"/>
 
 <t:page>
-    <jsp:attribute name="title">Login</jsp:attribute>
+    <jsp:attribute name="title"><fmt:message key="stormpath.web.login.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -32,20 +36,17 @@
                         <div class="email-password-area col-xs-12 <c:out value="${social ? 'small col-sm-8' : 'large col-sm-12'}"/>">
 
                             <div class="header">
-                                <span>Log In or <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.register.url']}">Create Account</a></span>
+                                <span>
+                                    <fmt:message key="stormpath.web.login.form.title">
+                                        <fmt:param><a href="${pageContext.request.contextPath}${requestScope['stormpath.web.register.url']}"><fmt:message key="stormpath.web.login.form.registerLink.text"/></a></fmt:param>
+                                    </fmt:message>
+                                </span>
                             </div>
 
-                            <c:if test="${!empty status && status == 'verified'}">
+                            <c:if test="${!empty status}">
                                 <div class="alert alert-dismissable alert-success">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                    <p>You have successfully verified your account. You may now login.</p>
-                                </div>
-                            </c:if>
-                            <c:if test="${!empty status && status == 'forgot'}">
-                                <div class="alert alert-dismissable alert-success">
-                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                    <p>If you entered a valid account email address, you will see an email shortly.</p>
-                                    <p>Please check your email inbox to continue.</p>
+                                    <p><fmt:message key="stormpath.web.login.status.${status}"/></p>
                                 </div>
                             </c:if>
 
@@ -66,10 +67,10 @@
 
                                 <c:forEach items="${form.fields}" var="field">
                                     <div form-group="true" class="form-group group-${field.name}">
-                                        <label class="<c:out value="${social ? 'col-sm-12' : 'col-sm-4'}"/>">${field.label}</label>
+                                        <label class="<c:out value="${social ? 'col-sm-12' : 'col-sm-4'}"/>"><fmt:message key="${field.label}"/></label>
                                         <div class="col-sm-8">
                                             <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                   placeholder="${field.placeholder}"
+                                                   placeholder="<fmt:message key="${field.placeholder}"/>"
                                                    <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
                                                    <c:if test="${field.required}">required="required" </c:if>
                                                    class="form-control">
@@ -78,7 +79,7 @@
                                 </c:forEach>
 
                                 <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green">Log In</button>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><fmt:message key="stormpath.web.login.form.button.value"/></button>
                                 </div>
                             </form>
 
@@ -86,7 +87,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.forgot.url']}" class="to-login">Forgot Password?</a>
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.forgot.url']}" class="to-login"><fmt:message key="stormpath.web.login.form.resetLink.text"/></a>
 
                 </div>
 

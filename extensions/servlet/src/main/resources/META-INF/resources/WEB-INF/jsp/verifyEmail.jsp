@@ -16,9 +16,13 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="lang" value="${not empty param.lang ? param.lang : not empty lang ? lang : pageContext.request.locale}"/>
+<fmt:setLocale value="${lang}" />
+<fmt:setBundle basename="com.stormpath.sdk.servlet.i18n"/>
 
 <t:page>
-    <jsp:attribute name="title">Verify Email</jsp:attribute>
+    <jsp:attribute name="title"><fmt:message key="stormpath.web.verify.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -32,14 +36,9 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span>Almost done! We just sent you a verification email.</span>
-
-                                <p>Before you can log into your account, you need to activate your
-                                    account by clicking the link we sent to you at your email
-                                    address: <b>${account.email}</b>.</p>
-
-                                <p>Please check your email Inbox to continue.</p>
-
+                                <span><fmt:message key="stormpath.web.verify.body.title"/></span>
+                                <p><fmt:message key="stormpath.web.verify.body.instructions"/>
+                                <p><fmt:message key="stormpath.web.verify.body.instructions2"/></p>
                             </div>
 
                         </div>

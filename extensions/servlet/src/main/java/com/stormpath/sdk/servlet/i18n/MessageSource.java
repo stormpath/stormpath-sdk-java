@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.i18n;
 
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Locale;
 
-public class UnauthorizedFilter extends HttpFilter {
+public interface MessageSource {
 
-    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/unauthorized.jsp";
+    String getMessage(String key, Locale locale);
 
-    @Override
-    protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws Exception {
-        request.getRequestDispatcher(VIEW_TEMPLATE_PATH).forward(request, response);
-    }
+    String getMessage(String key, Locale locale, Object... args);
+
 }

@@ -26,6 +26,8 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ChangePasswordFilter extends HttpFilter {
@@ -45,28 +48,23 @@ public class ChangePasswordFilter extends HttpFilter {
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordFilter.class);
 
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
+    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
+    public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/change.jsp";
 
-    public static final String GENERIC_ERROR_MESSAGE =
-        "Your password reset attempt has failed.  This might happen for " +
-        "several reasons: your reset token might be expired, it might " +
-        "have already been used, or we may just be having issues right " +
-        "now.  Please try again, and if you're still having " +
-        "problems, please contact the site administrator for help!";
-
     private CsrfTokenManager csrfTokenManager;
+    private Resolver<Locale> localeResolver;
+    private MessageSource messageSource;
 
     @Override
     protected void onInit() throws ServletException {
         this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
+        this.localeResolver = getConfig().getInstance(LOCALE_RESOLVER);
+        this.messageSource = getConfig().getInstance(MESSAGE_SOURCE);
     }
 
     protected CsrfTokenManager getCsrfTokenManager() {
         return this.csrfTokenManager;
-    }
-
-    protected String getChangePasswordUrl() {
-        return getConfig().getChangePasswordUrl();
     }
 
     protected String getChangePasswordNextUrl() {
@@ -75,6 +73,16 @@ public class ChangePasswordFilter extends HttpFilter {
 
     protected String getLoginUrl() {
         return getConfig().getLoginUrl();
+    }
+
+    protected String i18n(HttpServletRequest request, String key) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale);
+    }
+
+    protected String i18n(HttpServletRequest request, String key, Object... args) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale, args);
     }
 
     @Override
@@ -98,7 +106,7 @@ public class ChangePasswordFilter extends HttpFilter {
 
         if (!Strings.hasText(request.getParameter("sptoken"))) {
             Map<String, String> queryParams = new HashMap<String, String>(1);
-            queryParams.put("status", "sptokenInvalid");
+            queryParams.put("error", "sptokenInvalid");
 
             //not allowed to visit this page unless a sptoken is presented
             ServletUtils.issueRedirect(request, response, getLoginUrl(), queryParams, true, true);
@@ -148,23 +156,13 @@ public class ChangePasswordFilter extends HttpFilter {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
+            field.setName(fieldName);
+            field.setLabel("stormpath.web.change.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.change.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("password");
             String param = request.getParameter(fieldName);
             field.setValue(param != null ? param : "");
-
-            String label;
-
-            if ("password".equals(fieldName)) {
-                label = "Password";
-            } else if ("confirmPassword".equals(fieldName)) {
-                label = "Confirm Password";
-            } else {
-                //unrecognized property
-                continue;
-            }
-
-            field.setLabel(label).setPlaceholder(label);
 
             form.addField(field);
         }
@@ -185,29 +183,26 @@ public class ChangePasswordFilter extends HttpFilter {
 
             List<String> errors = new ArrayList<String>(1);
 
-            if (e instanceof MismatchedPasswordException) {
-
+            if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException) {
                 errors.add(e.getMessage());
-
             } else if (e instanceof ResourceException && ((ResourceException) e).getStatus() == 400) {
-
                 //TODO: update this with a specific message that tells the exact password requirements.
                 //This can only be done when this functionality is available via the Stormpath REST API
                 //(currently being implemented in the Stormpath server-side REST API, not yet complete)
-                String msg = "Password is not strong enough.  Try making it longer or adding some numbers, " +
-                             "punctuation or special characters.";
-
+                String key = "stormpath.web.change.form.errors.strength";
+                String msg = i18n(request, key);
                 errors.add(msg);
 
             } else if (e instanceof ResourceException && ((ResourceException) e).getCode() == 404) {
-
-                String msg = "Invalid password reset link.  If you like, you may try again and " +
-                             "<a href=\"" + request.getContextPath() + getConfig().getForgotPasswordUrl() + "\">" +
-                             "get a new password reset link</a>.";
+                String url = request.getContextPath() + getConfig().getForgotPasswordUrl();
+                String key = "stormpath.web.change.form.errors.invalid";
+                String msg = i18n(request, key, url);
                 errors.add(msg);
             } else {
                 log.warn("Potentially unexpected change password problem.", e);
-                errors.add(GENERIC_ERROR_MESSAGE);
+                String key = "stormpath.web.change.form.errors.default";
+                String msg = i18n(request, key);
+                errors.add(msg);
             }
             request.setAttribute("errors", errors);
 
@@ -258,8 +253,9 @@ public class ChangePasswordFilter extends HttpFilter {
             if (field.isRequired()) {
                 String value = Strings.clean(field.getValue());
                 if (value == null) {
-                    //TODO: i18n
-                    throw new IllegalArgumentException(Strings.capitalize(field.getName()) + " is required.");
+                    String key = "stormpath.web.change.form.fields." + field.getName() + ".required";
+                    String msg = i18n(request, key);
+                    throw new IllegalArgumentException(msg);
                 }
             }
         }
@@ -269,7 +265,8 @@ public class ChangePasswordFilter extends HttpFilter {
         String confirmPassword = form.getFieldValue("confirmPassword");
 
         if (!password.equals(confirmPassword)) {
-            String msg = "Password values do not match.";
+            String key = "stormpath.web.change.form.errors.mismatch";
+            String msg = i18n(request, key);
             throw new MismatchedPasswordException(msg);
         }
     }

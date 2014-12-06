@@ -16,9 +16,13 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="lang" value="${not empty param.lang ? param.lang : not empty lang ? lang : pageContext.request.locale}"/>
+<fmt:setLocale value="${lang}" />
+<fmt:setBundle basename="com.stormpath.sdk.servlet.i18n"/>
 
 <t:page>
-    <jsp:attribute name="title">Change Your Password</jsp:attribute>
+    <jsp:attribute name="title"><fmt:message key="stormpath.web.change.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -32,10 +36,8 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span>Change Your Password</span>
-                                <p>Enter your new account password below.  Once confirmed,
-                                    you'll be logged into your account and your new password will be
-                                    active.</p>
+                                <span><fmt:message key="stormpath.web.change.form.title"/></span>
+                                <p><fmt:message key="stormpath.web.change.form.instructions"/></p>
                             </div>
 
                             <c:if test="${!empty errors}">
@@ -54,20 +56,27 @@
                                 <input name="csrfToken" type="hidden" value="${form.csrfToken}">
 
                                 <c:forEach items="${form.fields}" var="field">
-                                    <div form-group="true" class="form-group group-${field.name}">
-                                        <label class="col-sm-4">${field.label}</label>
-                                        <div class="col-sm-8">
-                                            <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                   placeholder="${field.placeholder}"
-                                                   <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
-                                                   <c:if test="${field.required}">required="required" </c:if>
-                                                   class="form-control">
-                                        </div>
-                                    </div>
+                                    <c:choose>
+                                        <c:when test="${field.type == 'hidden'}">
+                                            <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div form-group="true" class="form-group group-${field.name}">
+                                                <label class="col-sm-4"><fmt:message key="${field.label}"/></label>
+                                                <div class="col-sm-8">
+                                                    <input name="${field.name}" value="${field.value}" type="${field.type}"
+                                                           placeholder="<fmt:message key="${field.placeholder}"/>"
+                                                           <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
+                                                           <c:if test="${field.required}">required="required" </c:if>
+                                                           class="form-control"/>
+                                                </div>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:forEach>
 
                                 <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green">Submit</button>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><fmt:message key="stormpath.web.change.form.button.value"/></button>
                                 </div>
                             </form>
 
@@ -75,7 +84,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.url']}" class="to-login">Back to Log In</a>
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.url']}" class="to-login"><fmt:message key="stormpath.web.change.form.loginLink.text"/></a>
 
                 </div>
 

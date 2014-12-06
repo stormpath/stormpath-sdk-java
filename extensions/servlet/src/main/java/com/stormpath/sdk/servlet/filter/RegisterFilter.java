@@ -34,7 +34,9 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class RegisterFilter extends HttpFilter {
 
@@ -56,6 +59,8 @@ public class RegisterFilter extends HttpFilter {
     public static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
     public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+    public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
+    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/register.jsp";
     public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/verifyEmail.jsp";
 
@@ -64,6 +69,8 @@ public class RegisterFilter extends HttpFilter {
     private CsrfTokenManager csrfTokenManager;
     private Publisher<RequestEvent> eventPublisher;
     private List<DefaultField> formFields;
+    private Resolver<Locale> localeResolver;
+    private MessageSource i18n;
 
     @Override
     protected void onInit() throws ServletException {
@@ -71,6 +78,8 @@ public class RegisterFilter extends HttpFilter {
         this.csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
         this.eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
         this.formFields = getFields();
+        this.localeResolver = getConfig().getInstance(LOCALE_RESOLVER);
+        this.i18n = getConfig().getInstance(MESSAGE_SOURCE);
     }
 
     private List<DefaultField> getFields() throws ServletException {
@@ -145,6 +154,11 @@ public class RegisterFilter extends HttpFilter {
         return this.eventPublisher;
     }
 
+    protected String i18n(HttpServletRequest request, String key) {
+        Locale locale = localeResolver.get(request, null);
+        return i18n.getMessage(key, locale);
+    }
+
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
@@ -211,10 +225,14 @@ public class RegisterFilter extends HttpFilter {
 
             List<String> errors = new ArrayList<String>();
 
-            if (e instanceof ResourceException) {
-                errors.add(((ResourceException) e).getStormpathError().getMessage());
+            if (e instanceof IllegalArgumentException) {
+                errors.add(e.getMessage());
+            } else if (e instanceof ResourceException) {
+                errors.add(((ResourceException)e).getStormpathError().getMessage());
             } else {
-                errors.add("Oops! Unable to register you!  Please contact support.");
+                String key = "stormpath.web.register.form.errors.default";
+                String msg = i18n(request, key);
+                errors.add(msg);
                 log.warn("Unable to resister user account: " + e.getMessage(), e);
             }
             request.setAttribute("errors", errors);
@@ -263,8 +281,9 @@ public class RegisterFilter extends HttpFilter {
             if (field.isRequired()) {
                 String value = getValue(field);
                 if (value == null) {
-                    //TODO: i18n
-                    throw new IllegalArgumentException(Strings.capitalize(field.getName()) + " is required.");
+                    String key = "stormpath.web.login.form.fields." + field.getName() + ".required";
+                    String msg = i18n(request, key);
+                    throw new IllegalArgumentException(msg);
                 }
             }
         }

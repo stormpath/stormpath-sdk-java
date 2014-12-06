@@ -123,21 +123,12 @@ public class ForgotPasswordFilter extends HttpFilter {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
+            field.setLabel("stormpath.web.forgot.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.forgot.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
             String param = request.getParameter(fieldName);
             field.setValue(param != null ? param : "");
-
-            String label;
-
-            if ("email".equals(fieldName)) {
-                label = "Email";
-            } else {
-                //unrecognized property
-                continue;
-            }
-
-            field.setLabel(label).setPlaceholder(label);
 
             form.addField(field);
         }

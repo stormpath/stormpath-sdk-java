@@ -117,27 +117,19 @@ public class LoginFilter extends HttpFilter {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
+            field.setLabel("stormpath.web.login.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.login.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
             String param = request.getParameter(fieldName);
             field.setValue(param != null ? param : "");
 
-            String label;
-
-            if ("login".equals(fieldName)) {
-                label = "Username or Email";
-            } else if ("password".equals(fieldName)) {
+            if ("password".equals(fieldName)) {
                 field.setType("password");
-                label = "Password";
                 if (!retainPassword) {
                     field.setValue("");
                 }
-            } else {
-                //unrecognized property
-                continue;
             }
-
-            field.setLabel(label).setPlaceholder(label);
 
             form.addField(field);
         }

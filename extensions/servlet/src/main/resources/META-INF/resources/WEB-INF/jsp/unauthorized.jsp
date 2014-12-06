@@ -15,10 +15,14 @@
   --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="lang" value="${not empty param.lang ? param.lang : not empty lang ? lang : pageContext.request.locale}"/>
+<fmt:setLocale value="${lang}" />
+<fmt:setBundle basename="com.stormpath.sdk.servlet.i18n"/>
 
 <t:page>
-    <jsp:attribute name="title">Unauthorized</jsp:attribute>
-    <jsp:attribute name="description">You are not authorized to view the requested page.</jsp:attribute>
+    <jsp:attribute name="title"><fmt:message key="stormpath.web.unauthorized.title"/></jsp:attribute>
+    <jsp:attribute name="description"><fmt:message key="stormpath.web.unauthorized.description"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -32,10 +36,9 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span>Unauthorized</span>
-                                <p>You are not authorized to view the requested page.</p>
-                                <p>If this is unexpected, please contact your site administrator for help, otherwise
-                                    click your web browser's back button to return to the previous page.</p>
+                                <span><fmt:message key="stormpath.web.unauthorized.title"/></span>
+                                <p><fmt:message key="stormpath.web.unauthorized.description"/></p>
+                                <p><fmt:message key="stormpath.web.unauthorized.description2"/></p>
                             </div>
 
                         </div>
