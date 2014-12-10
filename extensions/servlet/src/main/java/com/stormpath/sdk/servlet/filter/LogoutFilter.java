@@ -33,20 +33,14 @@ public class LogoutFilter extends HttpFilter {
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
 
+        //clear out any authentication/account state:
         request.logout();
 
-        //it is a security risk to not terminate a session on logout:
+        //it is a security risk to not terminate a session (if one exists) on logout:
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-
-        /*
-        //clear out any account cookie:
-        CookieConfig accountCookieConfig = getConfig().getAccountCookieConfig();
-        Saver<String> saver = new CookieSaver(accountCookieConfig);
-        saver.set(request, response, null); //null value == delete the cookie
-        */
 
         String next = request.getParameter("next");
 
