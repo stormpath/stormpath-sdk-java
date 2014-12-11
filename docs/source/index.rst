@@ -1,5 +1,5 @@
 Stormpath Servlet Plugin
-=========================
+========================
 
 The Stormpath Servlet Plugin is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your application.
 
