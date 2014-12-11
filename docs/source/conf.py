@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Stormpath Java Web Plugin documentation build configuration file, created by
+# Stormpath Servlet Plugin documentation build configuration file, created by
 # sphinx-quickstart on Mon Dec  8 16:03:46 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -49,7 +49,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Stormpath Java Web Plugin'
+project = u'Stormpath Servlet Plugin'
 copyright = u'2014, Stormpath, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -98,7 +98,6 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
-
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -182,7 +181,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'StormpathSDKforJavadoc'
+htmlhelp_basename = 'StormpathServletPlugindoc'
 
 
 # Make the default syntax highlighting target Javascript code snippets.
@@ -205,7 +204,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'StormpathSDKforJava.tex', u'Stormpath Java Web Plugin Documentation',
+  ('index', 'StormpathServletPlugin.tex', u'Stormpath Servlet Plugin Documentation',
    u'Stormpath, Inc.', 'manual'),
 ]
 
@@ -235,7 +234,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'stormpath-sdk-for-java', u'Stormpath Java Web Plugin Documentation',
+    ('index', 'stormpath-servlet-plugin', u'Stormpath Servlet Plugin Documentation',
      [u'Stormpath, Inc.'], 1)
 ]
 
@@ -249,8 +248,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'StormpathSDKforJava', u'Stormpath Java Web Plugin Documentation',
-   u'Stormpath', 'StormpathSDKforJava', 'One line description of project.',
+  ('index', 'StormpathServletPlugin', u'Stormpath Servlet Plugin Documentation',
+   u'Stormpath', 'StormpathServletPlugin', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -270,13 +269,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Stormpath Java Web Plugin'
+epub_title = u'Stormpath Servlet Plugin'
 epub_author = u'Stormpath'
 epub_publisher = u'Stormpath'
 epub_copyright = u'2014, Stormpath'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = u'Stormpath Java Web Plugin'
+#epub_basename = u'Stormpath Servlet Plugin'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is

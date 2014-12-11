@@ -4,7 +4,7 @@
 About
 =====
 
-Not sure if the Stormpath Java Web plugin is for you?  We'll help you decide whether or not the Stormpath Java Web plugin is a good fit for your project!
+Not sure if the Stormpath Servlet Plugin is for you?  This page will help you decide if is a good fit!
 
 
 What is Stormpath?
@@ -31,15 +31,22 @@ Stormpath at its core provides a simple REST API for all of the above.  For inst
 
 In addition to allowing you to create users and groups, Stormpath also allows you to store custom data with each user account.  Let's say you want to store a user's birthday -- you can send Stormpath an ``HTTP POST`` request to the user's account URL and store *any* variable JSON data (birthdays, images, movies, links, etc.).  This information is encrypted and authenticated end-to-end, ensuring your user data is secure.
 
+What is the Stormpath Servlet Plugin?
+-------------------------------------
 
-Who Should Use Stormpath
-------------------------
+The Stormpath Servlet Plugin is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your application.
 
-Stormpath is a great service, but it might not be for everyone!
+It aims to completely abstract away all user registration, login, authentication and authorization workloads as well as properly secure the web app.  It is completely flexible - use only the functionality you need or leverage the entire feature set.
+
+
+Who should use Stormpath?
+-------------------------
+
+Stormpath is a great service and the Stormpath Servlet Plugin makes it even easier to use in servlet-based web applications, but it might not be for everyone!
 
 You might want to use Stormpath if:
 
-- You want to make user creation, management, and security as simple as possible (you can get started with Stormpath Java Web plugin with ZERO lines of code *excluding settings*)!
+- You want to make user creation, management, and security as simple as possible (you can get started with the Stormpath Servlet Plugin with ZERO lines of code *excluding settings*)!
 - User security is a top priority.  We're known for our security.
 - Scaling your userbase is a potential problem (Stormpath handles scaling your users transparently).
 - You need to store custom user data along with your user's basic information (email, password).
@@ -64,3 +71,4 @@ Want to use Stormpath?  OK, great!  Let's get started!
 .. _Stormpath: https://stormpath.com/
 .. _Facebook: https://www.facebook.com/
 .. _Google: https://www.google.com/
+.. _Servlet: https://jcp.org/aboutJava/communityprocess/final/jsr315/
