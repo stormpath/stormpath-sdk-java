@@ -16,6 +16,8 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.http.UserAgent;
+import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.FilterChain;
@@ -48,8 +50,22 @@ public class LogoutFilter extends HttpFilter {
             next = getLogoutNextUrl();
         }
 
-        ServletUtils.issueRedirect(request, response, next, null, true, true);
+        if (isHtmlPreferred(request)) {
+            ServletUtils.issueRedirect(request, response, next, null, true, true);
+        } else {
+            //probably an ajax or non-browser client - return 200 ok:
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
 
         //don't continue the chain - we want to short circuit and redirect
+    }
+
+    protected boolean isHtmlPreferred(HttpServletRequest request) {
+        UserAgent ua = getUserAgent(request);
+        return ua.isHtmlPreferred();
+    }
+
+    protected UserAgent getUserAgent(HttpServletRequest request) {
+        return new DefaultUserAgent(request);
     }
 }

@@ -17,10 +17,14 @@ package com.stormpath.sdk.servlet.http.impl;
 
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Objects;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.http.UserAgent;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class DefaultUserAgent implements UserAgent {
 
@@ -77,29 +81,153 @@ public class DefaultUserAgent implements UserAgent {
     @Override
     public boolean isHtmlPreferred() {
 
-        String header = request.getHeader("Accept");
+        List<AcceptedMediaType> mimeTypes = getMimeTypes();
 
-        if (Strings.hasText(header)) {
+        for(AcceptedMediaType mimeType : mimeTypes) {
 
-            //TODO: support relative quality factor ('q' media type param)
-            String[] acceptValues = Strings.split(header);
+            String val = mimeType.getName();
 
-            if (acceptValues != null && acceptValues.length > 0) {
+            if (val.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+                return false;
+            }
 
-                for(String acceptedContentType : acceptValues) {
-
-                    if (acceptedContentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-                        return false;
-                    }
-
-                    if (acceptedContentType.startsWith(MediaType.TEXT_HTML_VALUE) ||
-                        acceptedContentType.startsWith(MediaType.APPLICATION_XHTML_XML_VALUE)) {
-                        return true;
-                    }
-                }
+            if (val.startsWith(MediaType.TEXT_HTML_VALUE) || val.startsWith(MediaType.APPLICATION_XHTML_XML_VALUE)) {
+                return true;
             }
         }
 
         return false;
+    }
+
+    protected List<AcceptedMediaType> getMimeTypes() {
+
+        String header = this.request.getHeader("Accept");
+
+        if (Strings.hasText(header)) {
+
+            String[] acceptValues = Strings.split(header);
+
+            if (acceptValues != null && acceptValues.length > 0) {
+
+                List<AcceptedMediaType> acceptedMediaTypes = new ArrayList<AcceptedMediaType>(acceptValues.length);
+
+                for(int i = 0; i < acceptValues.length; i++) {
+
+                    String mimeTypeString = acceptValues[i];
+
+                    String mimeType = mimeTypeString;
+                    double quality = 1d; //default per http spec
+
+                    int j = mimeTypeString.indexOf(';');
+                    if (j != -1) {
+
+                        String paramsString = mimeTypeString.substring(j+1);
+                        mimeType = mimeTypeString.substring(0, j);
+
+                        String[] params = Strings.split(paramsString, ';');
+
+                        if (params != null && params.length > 0) {
+
+                            for (String param : params) {
+                                if (param.startsWith("q=")) {
+                                    param = param.substring(2);
+                                    try {
+                                        quality = Double.parseDouble(param);
+                                    } catch (NumberFormatException e) {
+                                        quality = 1d; //default
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    AcceptedMediaType amt = new AcceptedMediaType(mimeType, quality, i);
+                    acceptedMediaTypes.add(amt);
+                }
+
+                //sort according to the quality parameter, falling back to the list index when qualities are equal
+                Collections.sort(acceptedMediaTypes);
+
+                return acceptedMediaTypes;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    protected class AcceptedMediaType implements Comparable<AcceptedMediaType> {
+
+        private final String name;
+        private final double quality;
+        private final int listIndex;
+
+        public AcceptedMediaType(String name, double quality, int listIndex) {
+            Assert.hasText(name, "Name cannot be null or empty.");
+            Assert.isTrue(listIndex >= 0, "list index must be zero or greater.");
+            this.name = name;
+            this.quality = Math.max(0, Math.min(1, quality));
+            this.listIndex = listIndex;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getQuality() {
+            return quality;
+        }
+
+        public int getListIndex() {
+            return listIndex;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public int compareTo(AcceptedMediaType acceptedMediaType) {
+            if (acceptedMediaType == null) {
+                return 1;
+            }
+
+            if (this.quality > acceptedMediaType.quality) {
+                return -1; //higher qualities should be present earlier in the collection
+            } else if (this.quality < acceptedMediaType.quality) {
+                return 1; //lower qualities should be present earlier in the collection
+            }
+
+            //otherwise the quality is equal, so we need to fall back to the list index (the order that the media
+            //type was declared in the header value)
+            if (this.listIndex > acceptedMediaType.listIndex) {
+                return 1;
+            } else if (this.listIndex < acceptedMediaType.listIndex) {
+                return -1;
+            }
+
+            //otherwise equal weight:
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) return true;
+
+            if (o instanceof AcceptedMediaType) {
+                AcceptedMediaType a = (AcceptedMediaType)o;
+                return this.name.equals(a.name) && this.quality == a.quality;
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hashCode = this.name.hashCode();
+            hashCode = 31 * hashCode + Objects.hashCode(this.quality);
+            return hashCode;
+        }
+
+        @Override
+        public String toString() {
+            return name + ";q=" + quality;
+        }
     }
 }
