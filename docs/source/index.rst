@@ -17,7 +17,8 @@ This part of the documentation will show you how to get started with the Stormpa
    :maxdepth: 2
 
    about
-   setup
+   quickstart
+..   setup
 ..   setup
 ..   quickstart
 ..   product
