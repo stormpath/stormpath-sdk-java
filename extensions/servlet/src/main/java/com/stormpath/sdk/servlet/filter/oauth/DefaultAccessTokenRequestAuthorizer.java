@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class DefaultAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
+    public static final String FORM_MEDIA_TYPE = "application/x-www-form-urlencoded";
+
     public static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
     private final RequestCondition secureConnectionRequired;
@@ -49,9 +51,17 @@ public class DefaultAccessTokenRequestAuthorizer implements RequestAuthorizer {
     @Override
     public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException {
 
+
         //POST is required: https://tools.ietf.org/html/rfc6749#section-3.2
         if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
             String msg = "HTTP POST is required.";
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
+        }
+
+        //Form media type is required: https://tools.ietf.org/html/rfc6749#section-4.3.2
+        String contentType = Strings.clean(request.getContentType());
+        if (contentType == null || !contentType.startsWith(FORM_MEDIA_TYPE)) {
+            String msg = "Content-Type must be " + FORM_MEDIA_TYPE;
             throw new OauthException(OauthErrorCode.INVALID_REQUEST, msg, null);
         }
 

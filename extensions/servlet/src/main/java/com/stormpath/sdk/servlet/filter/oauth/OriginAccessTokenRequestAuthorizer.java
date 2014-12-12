@@ -33,6 +33,8 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     private static final Logger log = LoggerFactory.getLogger(OriginAccessTokenRequestAuthorizer.class);
 
     public static final String ORIGIN_HEADER_NAME = "Origin";
+    //yes, 'Referer' is supposed to be spelled incorrectly: https://tools.ietf.org/html/rfc7231#section-5.5.2 :
+    public static final String REFERER_HEADER_NAME = "Referer";
     public static final String ORIGIN_URIS_CONFIG_PROPERTY_NAME =
         "stormpath.web.accessToken.origin.authorizer.originUris";
 
@@ -68,9 +70,18 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     @Override
     public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException {
 
-        String origin = request.getHeader(ORIGIN_HEADER_NAME);
-
         boolean localhostClient = isLocalhostClient(request, response);
+
+        String origin = Strings.clean(request.getHeader(ORIGIN_HEADER_NAME));
+        boolean fallbackToReferer = false;
+
+        if (origin == null) {
+            //fall back to referer:
+            origin = Strings.clean(request.getHeader(REFERER_HEADER_NAME));
+            if (origin != null) {
+                fallbackToReferer = true;
+            }
+        }
 
         if (!Strings.hasText(origin)) {
 
@@ -78,10 +89,10 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
             if (localhostClient) {
                 //convenient message during localhost testing:
-                errorMessage = "Missing Origin header.";
+                errorMessage = "Missing Origin or Referer header (Origin preferred).";
             }
 
-            //it is unexpected that a modern browser wouldn't send the Origin header.
+            //it is unexpected that a modern browser wouldn't send the Origin or Referer header.
             //Because of this, the request could likely represent someone doing something sneaky, so we should
             //deny the request and not give them a specific error message: a detailed error message
             //would tell them how to fix the issue and side-step the authorization check
@@ -90,7 +101,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
             //however, we will log a message though production environments can see why the
             //request failed:
             log.debug(
-                "Request client (remoteAddr={}) did not specify an Origin header.  Access Token request is denied",
+                "Request client (remoteAddr={}) did not specify an Origin or Referer header. Access Token request is denied",
                 request.getRemoteAddr());
 
             throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
@@ -101,15 +112,17 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
             String errorMessage = null;
 
             if (localhostClient) {
-                //convenient message during localhost testing:
-                errorMessage = "Unauthorized Origin.";
+                //give a specific message to the developer:
+                errorMessage = "Unauthorized request " +
+                               (fallbackToReferer ? "origin (via Referer header)." : "Origin.");
             }
 
             // otherwise don't give a potentially-malicious client any information as to why the request failed
             // but we will log the message:
-            log.debug("Unauthorized Origin header value: {}.  If this is unexpected, you might want to specify " +
-                      "one or more comma-delimited URLs via the {} property.", origin,
-                      ORIGIN_URIS_CONFIG_PROPERTY_NAME);
+            log.debug("Unauthorized {} header value: {}.  If this is unexpected, you might want to specify " +
+                      "one or more comma-delimited URLs via the {} property.",
+                      new Object[]{ (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin,
+                          ORIGIN_URIS_CONFIG_PROPERTY_NAME});
 
             throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
