@@ -39,10 +39,10 @@ public class DefaultConfigFactory implements ConfigFactory {
     public static final String DEFAULT_STORMPATH_PROPERTIES_SOURCES =
         //MUST always be first:
         ClasspathResource.SCHEME_PREFIX + "META-INF/com/stormpath/sdk/servlet/default." + STORMPATH_PROPERTIES + NL +
-        ENVVARS_TOKEN + NL +
         ClasspathResource.SCHEME_PREFIX + STORMPATH_PROPERTIES + NL +
         "/WEB-INF/stormpath.properties" + NL +
         CONTEXT_PARAM_TOKEN + NL +
+        ENVVARS_TOKEN + NL +
         SYSPROPS_TOKEN;
 
     private static final EnvVarNameConverter envVarNameConverter = new DefaultEnvVarNameConverter();

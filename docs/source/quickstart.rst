@@ -4,12 +4,14 @@
 Quickstart
 ==========
 
-This quickstart demonstrates the fastest way to enable Stormpath in a servlet-based Java web application.  It should take about 5 minutes start to finish.  Let's get started!
+This quickstart demonstrates the fastest way to enable Stormpath in a Servlet 3.0 (or later) Java web application.  It should take about 5 minutes start to finish.  Let's get started!
 
 Topics:
 
 .. contents:: :local:
    :depth: 1
+
+.. _get-api-key:
 
 Get an API Key
 --------------
@@ -46,6 +48,8 @@ All communication with Stormpath must be authenticated with an API Key.
      $ chmod u-w ~/.stormpath/apiKey.properties
 
 On Windows, you can `set file permissions similarly`_.
+
+.. _servlet-plugin-jar:
 
 Add the Stormpath Servlet Plugin
 --------------------------------
@@ -104,7 +108,14 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
 * you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your application's Stormpath ``href``, found in the admin console.
 
-* your web app already uses web frameworks that make heavy use of servlet filters for security or view rendering, like Spring or Apache Shiro. These could cause servlet filter ordering conflicts, but the fix is easy - you'll need to manually add a few lines to your web app's ``/WEB-INF/web.xml`` file.
+* your web app already uses web frameworks that make heavy use of servlet filters, like Spring or Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you'll need to manually add a few lines to your web app's ``/WEB-INF/web.xml`` file.  Ensure the following chunk is at or near the top of your filter mapping definitions:
+
+  .. code-block:: xml
+
+      <filter-mapping>
+          <filter-name>StormpathFilter</filter-name>
+          <url-pattern>/*</url-pattern>
+      </filter-mapping>
 
 * If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
 
@@ -118,7 +129,7 @@ That was just a little example of how much functionality is ready right out of t
 * Token authentication for Single Page Applications (SPAs)
 * Account email verification (verify an email address is valid before enabling a user account)
 * Secure CSRF protection on views with forms
-* A security assertion/authorization framework
+* A simple security assertion/authorization framework
 * Events to react to registration, login, logout, etc
 * Session-free (stateless) secure user account identification
 * HTTP Basic and OAuth2 authentication
