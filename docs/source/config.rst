@@ -25,9 +25,11 @@ described below.
 web.xml
 -------
 
-You only need to modify your web application's ``/WEB-INF/web.xml`` configuration if you experience a filter chain conflict that might arise in some circumstances.
+Most plugin users do not need to modify the web application ``/WEB-INF/web.xml`` file to enable the plugin - just adding the plugin .jar to your web application's ``lib`` directory is usually sufficient.
 
-At application startup, the Stormpath Servlet Plugin automatically enables a ``StormpathFilter`` to handle various request flows.  If your web application uses frameworks that make heavy use of servlet filters, like Spring or Apache Shiro, these existing filters might cause an ordering conflict with the ``StormpathFilter``.
+However, some applications might experience a filter chain conflict that causes problems.
+
+At application startup, the Stormpath Servlet Plugin automatically enables a ``StormpathFilter`` to handle various request flows.  If your web application uses frameworks that make heavy use of servlet filters, like Spring MVC or Apache Shiro, these existing filters might cause an ordering conflict with the ``StormpathFilter``.
 
 If you are experiencing problems after adding the stormpath-servlet-plugin .jar to your web app's classpath, you'll need to explicitly specify where the ``StormpathFilter`` should reside in your application's filter chain.  Luckily the fix is really easy:
 
@@ -40,10 +42,10 @@ Simply specify the following XML chunk in ``/WEB-INF/web.xml`` relative to other
           <url-pattern>/*</url-pattern>
       </filter-mapping>
 
-It is often easiest to specifying this at or near the top of your other filter mappings.  The ``StormpathFilter`` will ignore all filtered requests that do not match URL rules that you explicitly specify, allowing other frameworks to filter requests as necessary.
+It is often easiest to specifying this at or near the top of your other filter mappings.  The ``StormpathFilter`` will ignore all filtered requests that do not match recognized URL rules, allowing other frameworks to filter requests as necessary.
 
-Properties
-----------
+stormpath.properties
+--------------------
 
 If you need to customize behavior, the Stormpath Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a  convenient overrides mechanism using various property definition locations.
 
@@ -83,7 +85,7 @@ It includes all of the plugin's default configuration and is not modifiable.  Th
 2. classpath:stormpath.properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If a ``stormpath.properties`` file exists at the root of your web application's classpath (typically in ``/WEB-INF/classes`` or at the root of one of your .jar files in ``/WEB-INF/lib``), ``stormpath.*`` properties will be read from that file and override any identically-named properties discovered in previous locations.
+If a ``stormpath.properties`` file exists at the root of your web application's classpath (typically in ``/WEB-INF/classes`` or at the root of one of your .jar files in ``/WEB-INF/lib``), ``stormpath.*`` properties will be read from that file and override any identically-named properties discovered previously.
 
 .. NOTE::
    Because this is not a web-specific location, it is only recommended to use this location if you wish to share stormpath properties configuration across multiple projects in a 'resource .jar' that is used in such projects.
@@ -148,3 +150,59 @@ Because Stormpath API Keys are always assigned to an individual person, they sho
 Also, it should also be noted that, while JVM System Properties are not usually visible to other developers, using System Properties for secrets and passwords can also be seen as a security risk: system property values are visible to anyone performing a process listing on a production machine (e.g. ``ps aux | grep java``).
 
 If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties`` file, Environment Variables or a different private local file (with restricted read permissions) is usually a safer alternative when defining passwords or secret values than shared files or JVM System Properties.
+
+Filters and Routes
+------------------
+
+The Stormpath Servlet Plugin works largely by intercepting requests to certain *routes* or paths (URIs) in your application and then executing one or more servlet filters based on the route/path being accessed.
+
+.. _filters:
+
+Filters
+~~~~~~~
+
+All of the Servlet Filters needed by the plugin are already configured, but if you wanted to, you could define your own Servlet Filters (or even override the plugin's defaults) in ``stormpath.properties`` locations via the following convention:
+
+.. code-block:: properties
+
+    stormpath.web.filters.FILTER_NAME = FULLY_QUALFIED_CLASS_NAME
+
+where:
+
+* ``FILTER_NAME`` is a unique String name of the filter.
+* ``FULLY_QUALIFIED_CLASS_NAME`` is your ``javax.servlet.Filter`` implementation fully qualified class name, for example, ``com.whatever.foo.MyFilter``.
+
+You control which filters are executed, and the order they are executed, by declaring routes.
+
+.. _routes:
+
+Routes
+~~~~~~
+
+You can control which functionality is executed for any application route (URI path) by defining your own paths in ``stormpath.properties`` locations via the following convention:
+
+.. code-block:: properties
+
+    stormpath.web.routes.ROUTE_PATTERN = FILTER_CHAIN_DEFINITION
+
+where:
+
+* ``ROUTE_PATTERN`` is an `Ant-style path expression`_ that represents a URI path or path hierarchy (via wildcard ``*`` matching) relative to the web application's `context path`_.
+* ``FILTER_CHAIN_DEFINITION`` is a comma-delimited list of filter names that match the the names of any previously defined filters as described  :ref:`above <filters>`.
+
+For example:
+
+``stormpath.web.routes./admin/** = foo, bar, baz``
+
+This configuration line indicates that any request to the `/admin` path or any of its children paths (via the ant-style wildcard of `/admin/**`), the ``foo`` filter should execute, then the ``bar`` filter should execute, then the ``baz`` filter should execute.  If the filters all allow the request to continue, then a servlet handler or controller will receive and process the request.
+
+Therefore, the comma-delimited list of filter names defines a *filter chain* that should execute for that specific route/path.  You can define as many routes (filter chains) as you wish based on your applications needs.
+
+We'll see later on that this technique will be very useful to easily define authentication and authorization rules for your web application.
+
+.. TIP::
+    Because route patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:8080/myapp`` and then later deploy it to ``https://myapp.com`` without changing your route configuration.
+
+
+.. _Ant-style path expression: https://ant.apache.org/manual/dirtasks.html#patterns
+.. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()

@@ -1,0 +1,44 @@
+.. _i18n:
+
+Internationalization (i18n)
+===========================
+
+All of the plugin's default views are fully internationalized using a standard `Java Resource Bundle`_ named ``com.stormpath.sdk.servlet.i18n``
+
+Languages
+^^^^^^^^^
+
+The plugin .jar comes with one default :ref:`English bundle file <i18n-properties-file>`: ``/com/stormpath/sdk/servlet/i18n.properties``.
+
+You can add other languages as follows:
+
+1.  Create a ``com.stormpath.sdk.servlet`` package in your project.  It must have this exact structure and name.
+2.  In this ``com/stormpath/sdk/servlet`` package directory, add one or more ``i18n_LOCALE.properties`` files to this package, for example, ``i18n_es.properties`` for Spanish (or even ``i18n_es_ES.properties`` for Spain's dialect of Spanish and ``i18n_es_MX.properties`` for Mexican dialect of Spanish, etc).
+3.  In each locale-specific file, re-define each :ref:`i18n property <i18n-properties-file>` value in that language.
+
+.. Note::
+    If you create new translations, we'd love it if you would contribute them to the project as a `pull request`_. The Stormpath community would be grateful!
+
+
+Request Locale
+^^^^^^^^^^^^^^
+
+The locale used to render messages during a request is determined by a ``Resolver<Locale>`` instance, specified via the ``stormpath.web.locale.resolver`` configuration property.  For example, the default implementation inspects the HTTP request's ``Accept-Language`` header:
+
+.. code-block:: properties
+
+    stormpath.web.locale.resolver = com.stormpath.sdk.servlet.i18n.AcceptHeaderLocaleResolver
+
+You can override this value by specifying the fully qualified class name of a class that implements the ``com.stormpath.sdk.servlet.http.Resolver<Locale>`` interface.  That implementation will be instantiated and used instead.
+
+
+.. _i18n-properties-file:
+
+i18n.properties
+---------------
+
+.. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
+   :language: properties
+
+.. _Java Resource Bundle: http://docs.oracle.com/javase/tutorial/i18n/resbundle/concept.html
+.. _pull request: https://github.com/stormpath/stormpath-sdk-java/pulls

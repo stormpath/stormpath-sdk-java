@@ -44,7 +44,7 @@ import java.util.Set;
  */
 public class DefaultFilterChainManager implements FilterChainManager {
 
-    public static final String FILTER_CONFIG_PREFIX = "stormpath.web.filter.";
+    public static final String FILTER_CONFIG_PREFIX = "stormpath.web.filters.";
 
     private static transient final Logger log = LoggerFactory.getLogger(DefaultFilterChainManager.class);
 

@@ -39,7 +39,6 @@ import java.util.Map;
 public class DefaultFilterChainResolverFactory implements Factory<FilterChainResolver>, ServletContextInitializable {
 
     public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.routes.";
-    public static final String FILTER_CONFIG_NAME_PREFIX = "stormpath.web.filter.";
 
     private FilterChainResolver resolver;
 
