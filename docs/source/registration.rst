@@ -22,7 +22,7 @@ Pretty nice!  Not a single line of code required :)
 
 And while we think the default look and feel of the pages automatically rendered by the plugin are pretty nice, you have full control over the CSS and HTML for these pages - we'll cover customizing them later.
 
-URL
+URI
 ---
 
 Users can self-register for your web application by visiting ``/register``
@@ -34,10 +34,10 @@ If you want to change this path, set the ``stormpath.web.register.url`` configur
     # The context-relative path to the register ('new user') view:
     stormpath.web.register.url = /register
 
-Next URL
+Next URI
 --------
 
-If :ref:`email verification <registration with email verification>` is disabled, a successfully registered user will be automatically redirected to the application's context root (home page) by default.  If you want to change this destination, set the ``stormpath.web.register.nextUrl`` configuration property:
+If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically redirected to the application's context root (home page) by default.  If you want to change this destination, set the ``stormpath.web.register.nextUrl`` configuration property:
 
 .. code-block:: properties
 
@@ -48,7 +48,7 @@ Again, this property is only referenced if email verification is disabled.  If e
 Next Query Parameter
 ^^^^^^^^^^^^^^^^^^^^
 
-If :ref:`email verification <registration with email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URL has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location.  For example:
+If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URL has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location.  For example:
 
 ``https://myapp.com/register?next=/registerSuccess``
 
@@ -110,10 +110,10 @@ The :ref:`i18n` message keys used in the default register view have names prefix
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 
-.. _registration with email verification:
+.. _email verification:
 
-Registration with Email Verification
-------------------------------------
+Email Verification
+------------------
 
 Many applications require a newly registered user to verify that they do indeed 'own' the email address specified during registration before the user is allowed to login.  This helps ensure that:
 
@@ -163,7 +163,7 @@ Try it!
 
 .. _verify link base url:
 
-Verify Link Base URL
+Verify Link Base URI
 ^^^^^^^^^^^^^^^^^^^^
 
 The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
@@ -181,7 +181,7 @@ You can change the value to reflect a different path if you wish.
 
 .. _verify next url:
 
-Verify Next URL
+Verify Next URI
 ^^^^^^^^^^^^^^^
 
 When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verify.url`` path, the user will be immediately redirected to a 'next' URL.  By default, this URL is the :ref:`login page <login>` as controlled by the ``stormpath.web.verify.nextUrl`` configuration property:
@@ -193,5 +193,22 @@ When the user clicks the email verification link and the request is processed by
 As you can see, this URL has a query parameter ``status=verified``.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
 .. image:: /_static/login-verified.png
+
+Events
+------
+
+If you implement a :ref:`Request Event Listener <events>`, you can listen registration-related events and execute custom logic if desired.
+
+Registered Account
+^^^^^^^^^^^^^^^^^^
+
+A ``RegisteredAccountRequestEvent`` will be published when processing an HTTP request that results in a newly registered ``Account``.  If the newly registered account requires email verification before it can login, ``event.getAccount().getStatus() == AccountStatus.UNDEFINED`` will be ``true``.
+
+Verified Account
+^^^^^^^^^^^^^^^^
+
+A ``VerifiedAccountRequestEvent`` will be published when processing an HTTP request that verifies an account's email address.  The event's associated account is considered verified and may login to the application.
+
+Naturally, **this event is only published if** :ref:`email verification <email verification>` **is enabled.**
 
 .. _Stormpath Admin Console: https://api.stormpath.com

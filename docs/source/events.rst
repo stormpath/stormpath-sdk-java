@@ -3,17 +3,17 @@
 Events
 ======
 
-The plugin will trigger events when interesting things happen.  You can listen for these events and implement custom behavior when desired.
+The Stormpath Servlet Plugin will trigger events when interesting things happen.  You can listen for these events and implement custom behavior when desired.
 
 RequestEventListener
 --------------------
 
-When events are triggered by various plugin components, a ``RequestEventListener`` will be notified.  If you want to listen for events, you have two options:
+When the plugin publishes various events, a ``RequestEventListener`` will be notified.  If you want to listen for events, you can implement your own ``RequestEventListener`` in one of two ways:
 
-#. Create an implementation of the ``com.stormpath.sdk.servlet.event.RequestEventListener`` interface and implement all event methods.
+#. Implement the ``com.stormpath.sdk.servlet.event.RequestEventListener`` interface directly and implement all event methods.
 #. Subclass the ``com.stormpath.sdk.servlet.event.RequestEventListenerAdapter`` and override only the event methods you are interested in.
 
-You may specify your implementation by setting the ``stormpath.web.event.listener`` configuration property:
+You may specify your implementation's fully qualified class name using the ``stormpath.web.event.listener`` configuration property:
 
 .. code-block:: properties
 

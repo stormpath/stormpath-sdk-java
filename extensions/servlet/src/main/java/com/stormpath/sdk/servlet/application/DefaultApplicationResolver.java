@@ -8,6 +8,7 @@ import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
 import com.stormpath.sdk.servlet.config.Config;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 
 public class DefaultApplicationResolver implements ApplicationResolver {
 
@@ -33,6 +34,11 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         Assert.notNull(config, "Stormpath Config instance is not available in the ServletContext.  Ensure the " +
                                "ConfigLoaderListener is defined before the ApplicationLoaderListener.");
         return config;
+    }
+
+    @Override
+    public Application getApplication(final ServletRequest servletRequest) {
+        return getApplication(servletRequest.getServletContext());
     }
 
     @Override

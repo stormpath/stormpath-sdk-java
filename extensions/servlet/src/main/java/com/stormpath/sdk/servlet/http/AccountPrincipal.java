@@ -32,11 +32,39 @@ public class AccountPrincipal implements Principal {  //NOT serializable on purp
 
     @Override
     public String getName() {
+        boolean quoted = false;
+        String name = null;
+
         String value = account.getGivenName();
-        if (!Strings.hasText(value)) {
-            value = account.getEmail();
+
+        if (Strings.hasText(value)) {
+            name = "\"" + value;
+            quoted = true;
         }
-        return value;
+
+        value = account.getSurname();
+        if (Strings.hasText(value)) {
+            if (quoted) {
+                name = name + " " + value + "\"";
+            } else {
+                name = "\"" + value + "\"";
+            }
+            quoted = true;
+        } else {
+            if (quoted) {
+                name += "\"";
+            }
+        }
+
+        value = account.getEmail();
+
+        if (quoted) {
+            name += " <" + value + ">";
+        } else {
+            name = value;
+        }
+
+        return name;
     }
 
     public Account getAccount() {

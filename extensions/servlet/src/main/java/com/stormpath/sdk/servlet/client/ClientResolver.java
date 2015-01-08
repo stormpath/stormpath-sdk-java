@@ -3,6 +3,7 @@ package com.stormpath.sdk.servlet.client;
 import com.stormpath.sdk.client.Client;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 
 public interface ClientResolver {
 
@@ -13,4 +14,6 @@ public interface ClientResolver {
     public static final ClientResolver INSTANCE = new DefaultClientResolver();
 
     Client getClient(ServletContext servletContext);
+
+    Client getClient(ServletRequest request);
 }

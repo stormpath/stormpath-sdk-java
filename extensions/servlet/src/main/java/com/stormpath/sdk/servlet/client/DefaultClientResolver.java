@@ -4,6 +4,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 
 public class DefaultClientResolver implements ClientResolver {
 
@@ -30,5 +31,10 @@ public class DefaultClientResolver implements ClientResolver {
                                                   Client.class.getName() + " instance as required.  " +
                                                   "Instance is of type: " + object.getClass().getName());
         return (Client)object;
+    }
+
+    @Override
+    public Client getClient(final ServletRequest request) {
+        return getClient(request.getServletContext());
     }
 }
