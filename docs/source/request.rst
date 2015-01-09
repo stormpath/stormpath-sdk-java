@@ -101,7 +101,7 @@ If you'd prefer to use the native ``HttpServletRequest`` API to obtain any assoc
 * HttpServletRequest `getRemoteUser()`_
 * HttpServletRequest `getUserPrincipal()`_
 
-Even better, you can customize exactly what is returned from either of these methods without changing source code.
+Even better, you can customize exactly what is returned from either of these methods.
 
 HttpServletRequest getRemoteUser()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,6 +147,8 @@ The property value may be one of the following strings: ``account``, ``email``, 
 * ``bypass``: disables the plugin behavior for this method and delegates to the Servlet Container implementation.
 
 Again, if there is no Account associated with the request, ``getUserPrincipal()`` will return ``null``.
+
+.. _request application:
 
 Stormpath Application
 ---------------------
@@ -209,6 +211,8 @@ Without these simpler attribute names, you would have to do something like this:
     My application name is: ${requestScope['com.stormpath.sdk.application.Application'].name}.
 
 which is less readable and not very convenient.
+
+.. _request sdk client:
 
 Stormpath SDK Client
 --------------------

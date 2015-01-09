@@ -16,6 +16,8 @@ Overview
 
 After entering a valid account username or email address and password, the user will be logged in and redirected back to your application's `context path`_ ('home page') by default.
 
+The default login view also has links to allow the user to :ref:`register a new user account <registration>` or :ref:`reset their password <forgot password>` if they forgot it.
+
 URI
 ---
 

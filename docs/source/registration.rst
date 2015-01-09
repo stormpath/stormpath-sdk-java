@@ -136,11 +136,11 @@ If you want to enable email verification for newly registered accounts, you have
 #. On the Directory Workflows screen, the 'Verification Email' workflow is shown first.  Ensure that you
 
    #. Enable the workflow, and
-   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.
+   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The plugin's default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/verify``.
 
    .. image:: /_static/console-directory-workflows-ann.png
 
-#. Click 'Save Changes'
+#. Click the 'Save Changes' button on the bottom right.
 
 Try it!
 ^^^^^^^
@@ -190,7 +190,7 @@ When the user clicks the email verification link and the request is processed by
 
     stormpath.web.verify.nextUrl = /login?status=verified
 
-As you can see, this URL has a query parameter ``status=verified``.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+As you can see, this URL has a ``status=verified`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
 .. image:: /_static/login-verified.png
 

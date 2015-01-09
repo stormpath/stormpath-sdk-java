@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
@@ -228,9 +227,8 @@ public class ChangePasswordFilter extends HttpFilter {
         String password = form.getFieldValue("password");
 
         Application application = (Application) request.getAttribute(Application.class.getName());
-        Account account = application.verifyPasswordResetToken(form.getFieldValue("sptoken"));
-        account.setPassword(password);
-        account.save();
+        String sptoken = form.getFieldValue("sptoken");
+        application.resetPassword(sptoken, password);
 
         String next = form.getNext();
 

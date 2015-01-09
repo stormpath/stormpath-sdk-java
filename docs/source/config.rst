@@ -5,7 +5,7 @@ Configuration
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 No Config?
 ----------
@@ -57,6 +57,8 @@ All stormpath configuration properties are prefixed with ``stormpath.`` and take
     stormpath.another.property.name = anotherValue
 
 etc.
+
+.. _stormpath.properties locations:
 
 Property Locations
 ~~~~~~~~~~~~~~~~~~
@@ -140,6 +142,8 @@ If you define ``stormpath.*`` system properties (using ``-D`` flags when startin
 
 ``-Dstormpath.foo.bar=myValue``
 
+.. _stormpath.properties security considerations:
+
 Security Considerations: Passwords and secret values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -150,6 +154,100 @@ Because Stormpath API Keys are always assigned to an individual person, they sho
 Also, it should also be noted that, while JVM System Properties are not usually visible to other developers, using System Properties for secrets and passwords can also be seen as a security risk: system property values are visible to anyone performing a process listing on a production machine (e.g. ``ps aux | grep java``).
 
 If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties`` file, Environment Variables or a different private local file (with restricted read permissions) is usually a safer alternative when defining passwords or secret values than shared files or JVM System Properties.
+
+SDK Client
+----------
+
+The Stormpath Servlet Plugin depends on a Stormpath SDK ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
+
+API Key
+~~~~~~~
+
+The API Key used by the SDK Client will be acquired from the following locations.  Locations inspected later override previously discovered values.
+
+* ``$HOME/.stormpath/apiKey.properties`` file
+* Any ``stormpath.apiKey.id`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
+* Any ``stormpath.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>` **\***
+
+**\*** While ``stormpath.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <stormpath.properties locations>` of files shared with other people.
+
+HTTP Proxy
+~~~~~~~~~~
+
+If your application requires communication to Stormpath go through an HTTP Proxy, you can set the following configuration properties as needed:
+
+* ``stormpath.proxy.host``: Proxy server hostname or IP address, e.g. ``proxy.mycompany.com`` or ``10.0.2.88``.
+* ``stormpath.proxy.port``: Proxy server port, for example ``8888``.
+* ``stormpath.proxy.username``: Username to use when connecting to the proxy server.  Only configure this property if proxy server username/password authentication is required.
+* ``stormpath.proxy.password``: Password to use when connecting to the proxy server.  Only configure this property if proxy server username/password authentication is required, but **note**: it is strongly recommended that you don't embed passwords in text files. You might want to specify this property as an environment variable, for example:
+
+ .. code-block:: bash
+
+    export STORMPATH_PROXY_PASSWORD=your_proxy_server_password
+
+Authentication Scheme
+~~~~~~~~~~~~~~~~~~~~~
+
+The Stormpath SDK Client communicates with Stormpath using a very secure `cryptographic digest`_-based authentication scheme.
+
+If you deploy your app on Google App Engine however, you might experience some problems.  You can change the scheme to use ``basic`` authentication by setting the following configuration property and value:
+
+.. code-block:: properties
+
+   stormpath.authentication.scheme = basic
+
+If your application is not deployed on Google App Engine, we recommend that you *do not* set this property.
+
+Usage
+~~~~~
+
+After application startup, you may access the ``Client`` instance if desired using the ``ClientResolver`` and referencing the web application's ``ServletContext``:
+
+.. code-block:: java
+
+   import com.stormpath.sdk.servlet.client.ClientResolver;
+   //...
+
+   Client client = ClientResolver.INSTANCE.getClient(servletContext);
+
+You can also :ref:`access the client via a ServletRequest <request sdk client>`.
+
+Stormpath Application
+---------------------
+
+The Stormpath Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.
+
+If you only have one registered application with Stormpath, the plugin will automatically query Stormpath at startup, find the ``Application`` and use it, and no configuration is necessary.
+
+However, if you have more than one application registered with Stormpath, you must configure the ``href`` of the specific application to access by setting the following configuration property:
+
+.. code-block:: properties
+
+   stormpath.application.href = your_application_href_here
+
+You can find your application's href in the `Stormpath Admin Console`_:
+
+#. Click on the ``Applications`` tab and find your application in the list.  Click on the Application's name:
+
+   .. image:: /_static/console-applications-ann.png
+
+#. On the resulting *Application Details* page, the **REST URL** property value is your application's ``href``:
+
+   .. image:: /_static/console-application-href.png
+
+Usage
+~~~~~
+
+After application startup, you may access the ``Application`` instance if desired (for example, searching your application's user accounts, creating groups, etc) using the ``ApplicationResolver`` and referencing the web application's ``ServletContext``:
+
+.. code-block:: java
+
+   import com.stormpath.sdk.servlet.application.ApplicationResolver;
+   //...
+
+   Application myApp = ApplicationResolver.INSTANCE.getApplication(servletContext);
+
+You can also :ref:`access the application via a ServletRequest <request application>`.
 
 Filters and Routes
 ------------------
@@ -206,3 +304,5 @@ We'll see later on that this technique will be very useful to easily define auth
 
 .. _Ant-style path expression: https://ant.apache.org/manual/dirtasks.html#patterns
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()
+.. _cryptographic digest: http://en.wikipedia.org/wiki/Cryptographic_hash_function
+.. _Stormpath Admin Console: https://api.stormpath.com

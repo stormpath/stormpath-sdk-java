@@ -7,7 +7,6 @@ It aims to completely abstract away all user registration, login, authentication
 
 And the best part? **You don't even need a database!**
 
-
 User Guide
 ----------
 
@@ -21,10 +20,12 @@ This part of the documentation will show you how to get started with the Stormpa
    config
    registration
    login
+   forgot-password
    logout
    request
    i18n
    events
+   caching
 
 Additional Notes
 ----------------
