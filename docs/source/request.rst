@@ -40,7 +40,7 @@ A type-safe way to get an ``Account`` associated with the current request is to 
     if (AccountResolver.INSTANCE.hasAccount(servletRequest)) {
 
         //a known user has authenticated previously - get the user identity:
-        Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
+        Account account = AccountResolver.INSTANCE.getRequiredAccount(servletRequest);
 
         //do something with the account
 
@@ -51,7 +51,7 @@ A type-safe way to get an ``Account`` associated with the current request is to 
     }
 
 .. caution::
-   Notice that the ``AccountResolver getAccount`` method is only invoked if it is known that there is indeed an Account instance available.  If an account is not available when calling ``getAccount`` an exception will be thrown.
+   Notice that the ``AccountResolver getRequiredAccount`` method is only invoked if it is known that there is indeed an Account instance available.  If an account is not available when calling ``getRequiredAccount`` an exception will be thrown.
 
    This *check-then-use* pattern helps eliminate NullPointerExceptions and conditional branching bugs when working with user identities - often desirable in sensitive logic.
 

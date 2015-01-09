@@ -40,6 +40,12 @@ public class DefaultAccountResolver implements AccountResolver {
     @Override
     public Account getAccount(ServletRequest request) {
         Assert.notNull(request, "ServletRequest argument cannot be null.");
+        return findAccount(request);
+    }
+
+    @Override
+    public Account getRequiredAccount(ServletRequest request) {
+        Assert.notNull(request, "ServletRequest argument cannot be null.");
         Account account = findAccount(request);
         Assert.notNull(account, "The current request does not reflect an authenticated user.  " +
                                 "Call 'hasAccount' to check if an authenticated user exists before " +

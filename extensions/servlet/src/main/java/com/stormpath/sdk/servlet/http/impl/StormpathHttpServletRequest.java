@@ -148,8 +148,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         return AccountResolver.INSTANCE.hasAccount(this);
     }
 
-    protected Account getAccount() {
-        return AccountResolver.INSTANCE.getAccount(this);
+    protected Account getRequiredAccount() {
+        return AccountResolver.INSTANCE.getRequiredAccount(this);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return null;
         }
 
-        Account account = getAccount();
+        Account account = getRequiredAccount();
 
         if (!Strings.hasText(strategy) || USERNAME.equals(strategy)) {
             return account.getUsername();
@@ -222,7 +222,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return null;
         }
 
-        Account account = getAccount();
+        Account account = getRequiredAccount();
 
         if (!Strings.hasText(strategy) || USERNAME.equals(strategy)) {
             return new UsernamePrincipal(account.getUsername());
@@ -264,7 +264,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         Assert.hasText(role, "Role name cannot be null or empty.");
 
-        Account account = getAccount();
+        Account account = getRequiredAccount();
 
         //todo: make this customizable, i.e. AccountRoleResolver
 
@@ -313,7 +313,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         final AuthenticationRequest authcRequest = createAuthenticationRequest(username, password);
 
         if (hasAccount()) {
-            Account account = getAccount();
+            Account account = getRequiredAccount();
             String msg = "The current request is already associated with an authenticated user [" + account.getEmail() +
                          "].  Login attempt for submitted username [" + username + "] is denied.";
 
@@ -358,7 +358,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     protected LogoutRequestEvent createLogoutEvent() {
-        Account account = hasAccount() ? getAccount() : null;
+        Account account = hasAccount() ? getRequiredAccount() : null;
         return new DefaultLogoutRequestEvent(this, this.response, account);
     }
 

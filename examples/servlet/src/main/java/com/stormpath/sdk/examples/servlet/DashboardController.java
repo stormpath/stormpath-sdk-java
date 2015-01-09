@@ -36,7 +36,7 @@ public class DashboardController extends HttpServlet {
         String birthday = "";
         String color = "";
 
-        Account account = AccountResolver.INSTANCE.getAccount(req);
+        Account account = AccountResolver.INSTANCE.getRequiredAccount(req);
         if (account != null) {
             CustomData data = account.getCustomData();
             birthday = (String)data.get("birthday");
@@ -55,7 +55,7 @@ public class DashboardController extends HttpServlet {
         String color = req.getParameter("color");
 
         //get the currently-logged-in account:
-        Account account = AccountResolver.INSTANCE.getAccount(req);
+        Account account = AccountResolver.INSTANCE.getRequiredAccount(req);
         if (account != null) {
 
             CustomData data = account.getCustomData();

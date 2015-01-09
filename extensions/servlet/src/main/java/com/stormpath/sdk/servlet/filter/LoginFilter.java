@@ -180,7 +180,7 @@ public class LoginFilter extends HttpFilter {
     }
 
     protected Account getAccount(HttpServletRequest req) {
-        return AccountResolver.INSTANCE.getAccount(req);
+        return AccountResolver.INSTANCE.getRequiredAccount(req);
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form)

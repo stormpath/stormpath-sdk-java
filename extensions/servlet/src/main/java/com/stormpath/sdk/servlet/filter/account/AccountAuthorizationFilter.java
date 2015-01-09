@@ -70,7 +70,7 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
             if (this.expression != null) {
 
                 //an account is present, let's ensure that they are authorized according to the expression:
-                final Account requestAccount = AccountResolver.INSTANCE.getAccount(request);
+                final Account requestAccount = AccountResolver.INSTANCE.getRequiredAccount(request);
 
                 //ensure that the expression can't modify the account and that other http attributes are available
                 //during expression evaluation:
