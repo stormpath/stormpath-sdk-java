@@ -56,7 +56,7 @@ i18n
 
 The :ref:`i18n` message keys used in the default login view have names prefixed with ``stormpath.web.login.``:
 
-.. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
+.. literalinclude:: ../../extensions/servlet/src/main/resources/META-INF/resources/WEB-INF/classes/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
    :lines: 20-37
 

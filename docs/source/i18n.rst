@@ -37,7 +37,7 @@ You can override this value by specifying the fully qualified class name of a cl
 i18n.properties
 ---------------
 
-.. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
+.. literalinclude:: ../../extensions/servlet/src/main/resources/META-INF/resources/WEB-INF/classes/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
 
 .. _Java Resource Bundle: http://docs.oracle.com/javase/tutorial/i18n/resbundle/concept.html
