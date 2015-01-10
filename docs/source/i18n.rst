@@ -23,11 +23,11 @@ You can add other languages as follows:
 Request Locale
 ^^^^^^^^^^^^^^
 
-The locale used to render messages during a request is determined by a ``Resolver<Locale>`` instance, specified via the ``stormpath.web.locale.resolver`` configuration property.  For example, the default implementation inspects the HTTP request's ``Accept-Language`` header:
+The locale used to render messages during a request is determined by a ``Resolver<Locale>`` instance, specified via the ``stormpath.web.locale.resolver`` configuration property.  For example, the default implementation returns `ServletRequest.getLocale()`_:
 
 .. code-block:: properties
 
-    stormpath.web.locale.resolver = com.stormpath.sdk.servlet.i18n.AcceptHeaderLocaleResolver
+    stormpath.web.locale.resolver = com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver
 
 You can override this value by specifying the fully qualified class name of a class that implements the ``com.stormpath.sdk.servlet.http.Resolver<Locale>`` interface.  That implementation will be instantiated and used instead.
 
@@ -42,3 +42,4 @@ i18n.properties
 
 .. _Java Resource Bundle: http://docs.oracle.com/javase/tutorial/i18n/resbundle/concept.html
 .. _pull request: https://github.com/stormpath/stormpath-sdk-java/pulls
+.. _ServletRequest.getLocale(): http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html#getLocale()

@@ -21,8 +21,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 
-public class AcceptHeaderLocaleResolver implements Resolver<Locale> {
+/**
+ * Default locale resolver implementation that returns {@link javax.servlet.http.HttpServletRequest#getLocale()}.
+ */
+public class DefaultLocaleResolver implements Resolver<Locale> {
 
+    /**
+     * Returns {@link HttpServletRequest#getLocale()}.
+     *
+     * @param request  the inbound request
+     * @param response the outbound response
+     * @return {@link HttpServletRequest#getLocale()}.
+     */
     @Override
     public Locale get(HttpServletRequest request, HttpServletResponse response) {
         return request.getLocale();
