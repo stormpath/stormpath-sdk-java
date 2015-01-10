@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.i18n;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -35,7 +37,36 @@ import java.util.Locale;
 public class MessageTag extends TagSupport {
 
     private String key;
+    private String var;
+    private String scope = "page";
     private List<Object> nestedArguments;
+
+    /**
+     * Sets the i18n message key for this tag.
+     *
+     * @param key the i18n message key for this tag.
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    /**
+     * Set PageContext attribute name under which to expose a variable that contains the resolved message.
+     * @see #setScope
+     * @see javax.servlet.jsp.PageContext#setAttribute
+     */
+    public void setVar(String var) {
+        this.var = var;
+    }
+
+    /**
+     * Set the scope to export the variable to.  Default is <code>page</code>.
+     * @see #setVar
+     * @see javax.servlet.jsp.PageContext#setAttribute
+     */
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
 
     protected Config getConfig() throws JspException {
         ServletRequest request = pageContext.getRequest();
@@ -65,12 +96,40 @@ public class MessageTag extends TagSupport {
         return EVAL_BODY_INCLUDE;
     }
 
+    public int getScopeCode() {
+
+        Assert.hasText(this.scope, "Scope cannot be null or empty.");
+
+        if ("request".equals(this.scope)) {
+            return PageContext.REQUEST_SCOPE;
+        }
+        if ("session".equals(this.scope)) {
+            return PageContext.SESSION_SCOPE;
+        }
+        if ("application".equals(this.scope)) {
+            return PageContext.APPLICATION_SCOPE;
+        }
+
+        //default:
+        return PageContext.PAGE_SCOPE;
+    }
+
     @Override
     public int doEndTag() throws JspException {
+
         try {
+
             String msg = resolveMessage();
-            writeMessage(msg);
+
+            // Expose as variable if requested:
+            if (this.var != null) {
+                pageContext.setAttribute(this.var, msg, getScopeCode());
+            } else {
+                writeMessage(msg);
+            }
+
             return EVAL_PAGE;
+
         } catch (IOException ex) {
             throw new JspTagException(ex.getMessage(), ex);
         }
@@ -103,16 +162,6 @@ public class MessageTag extends TagSupport {
             return msgSrc.getMessage(key, locale, this.nestedArguments.toArray());
         }
     }
-
-    /**
-     * Sets the i18n message key for this tag.
-     *
-     * @param key the i18n message key for this tag.
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-
 
     /**
      * Write the message to the page. <p>Can be overridden in subclasses, e.g. for testing purposes.

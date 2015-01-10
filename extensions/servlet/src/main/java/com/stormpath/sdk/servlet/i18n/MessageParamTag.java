@@ -38,7 +38,7 @@ public class MessageParamTag extends BodyTagSupport {
 
         MessageTag parent = (MessageTag) findAncestorWithClass(this, MessageTag.class);
         if (parent == null) {
-            throw new JspException("The arg tag must be a descendant of a tag that supports arguments");
+            throw new JspException("The param tag must be a descendant of a tag that supports parameters");
         }
 
         parent.addArgument(arg);
@@ -62,5 +62,4 @@ public class MessageParamTag extends BodyTagSupport {
         this.value = null;
         this.valueSet = false;
     }
-
 }

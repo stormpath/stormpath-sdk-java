@@ -37,6 +37,22 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+        <attribute>
+            <description>The string to use when binding the result to the page,
+                request, session or application scope. If not specified, the result
+                gets outputted to the writer (i.e. typically directly to the JSP).</description>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>The scope to use when exporting the result to a variable.
+                This attribute is only used when var is also set. Possible values are
+                page, request, session and application.</description>
+            <name>scope</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
 
     <tag>
@@ -46,7 +62,7 @@
         <tag-class>com.stormpath.sdk.servlet.i18n.MessageParamTag</tag-class>
         <body-content>JSP</body-content>
         <attribute>
-            <description>The value of the argument.</description>
+            <description>The value of the parameter.  If unspecified, the tag body will be used.</description>
             <name>value</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
