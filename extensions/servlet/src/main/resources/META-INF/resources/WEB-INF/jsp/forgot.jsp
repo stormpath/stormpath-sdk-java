@@ -14,16 +14,14 @@
   ~ limitations under the License.
   --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<c:set var="lang" value="${not empty param.lang ? param.lang : not empty lang ? lang : pageContext.request.locale}"/>
-<fmt:setLocale value="${lang}" />
-<fmt:setBundle basename="com.stormpath.sdk.servlet.i18n"/>
+<%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
+<%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
 
 <t:page>
-    <jsp:attribute name="title"><fmt:message key="stormpath.web.forgot.title"/></jsp:attribute>
-    <jsp:attribute name="description"><fmt:message key="stormpath.web.forgot.title"/></jsp:attribute>
+    <jsp:attribute name="title"><sp:message key="stormpath.web.forgot.title"/></jsp:attribute>
+    <jsp:attribute name="description"><sp:message key="stormpath.web.forgot.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -37,8 +35,8 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span><fmt:message key="stormpath.web.forgot.form.title"/></span>
-                                <p><fmt:message key="stormpath.web.forgot.form.instructions"/></p>
+                                <span><sp:message key="stormpath.web.forgot.form.title"/></span>
+                                <p><sp:message key="stormpath.web.forgot.form.instructions"/></p>
                             </div>
 
                             <c:if test="${!empty errors}">
@@ -58,10 +56,10 @@
 
                                 <c:forEach items="${form.fields}" var="field">
                                     <div form-group="true" class="form-group group-${field.name}">
-                                        <label class="col-sm-4"><fmt:message key="${field.label}"/></label>
+                                        <label class="col-sm-4"><sp:message key="${field.label}"/></label>
                                         <div class="col-sm-8">
                                             <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                   placeholder="<fmt:message key="${field.placeholder}"/>"
+                                                   placeholder="<sp:message key="${field.placeholder}"/>"
                                                    <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
                                                    <c:if test="${field.required}">required="required" </c:if>
                                                    class="form-control">
@@ -70,7 +68,7 @@
                                 </c:forEach>
 
                                 <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green"><fmt:message key="stormpath.web.forgot.form.button.value"/></button>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.forgot.form.button.value"/></button>
                                 </div>
                             </form>
 
@@ -78,7 +76,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.url']}" class="to-login"><fmt:message key="stormpath.web.forgot.form.loginLink.text"/></a>
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.url']}" class="to-login"><sp:message key="stormpath.web.forgot.form.loginLink.text"/></a>
 
                 </div>
 
