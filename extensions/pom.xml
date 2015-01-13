@@ -32,7 +32,7 @@
         <module>oauth</module>
         <module>hazelcast</module>
         <module>servlet</module>
-        <module>web-fragment</module>
+        <module>servlet-plugin</module>
         <module>httpclient</module>
     </modules>
 

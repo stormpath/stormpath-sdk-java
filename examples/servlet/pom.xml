@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-web-fragment</artifactId>
+            <artifactId>stormpath-servlet-plugin</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

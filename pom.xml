@@ -181,7 +181,7 @@
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
-                <artifactId>stormpath-web-fragment</artifactId>
+                <artifactId>stormpath-servlet-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

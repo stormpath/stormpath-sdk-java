@@ -25,8 +25,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-web-fragment</artifactId>
-    <name>Stormpath Java SDK :: Extensions :: Stormpath Web Fragment</name>
+    <artifactId>stormpath-servlet-plugin</artifactId>
+    <name>Stormpath Java SDK :: Extensions :: Stormpath Servlet Plugin</name>
     <description>
         Automatically deploys Stormpath support in a servlet container-based web application.
     </description>
