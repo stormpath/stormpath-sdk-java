@@ -1,7 +1,7 @@
 .. _views:
 
-Views
-=====
+Custom Views
+============
 
 The Stormpath Servlet Plugin provides out-of-the-box template-based views for common URIs, like `/login`, `/register`, etc.  This page documents how you can easily customize or completely replace the views to have your own look and feel.
 
@@ -10,9 +10,9 @@ All of the default views are all based on the same principle: they are decorated
 JSP Views
 ---------
 
-The default views are all rendered based on a common page template, conveniently represented as a JSP tag library - no 3rd party template libraries are required. This tag library is included in the Stormpath Servlet Plugin and available to any JSP view in your project.
+The default views are JSPs rendered based on a common page template.  The template itself is also a JSP, but represented as a tag library - no 3rd party template libraries are required. This tag library is included in the Stormpath Servlet Plugin and available to any JSP view in your project.
 
-Any JSP view that should be rendered based on this template should reference this JSP tag library at the top of the JSP:
+A JSP view that should be rendered based on this template should reference this template tag library at the top of the JSP:
 
 .. code-block:: jsp
 
@@ -39,25 +39,33 @@ And the page might be defined as follows:
 
 Anything within the ``<jsp:body> </jsp:body>`` element will be 'wrapped' by the :ref:`page template <view template>`.
 
-.. _default view files:
+CSS
+---
 
-Change a Default View
----------------------
+Views are styled based on CSS files referenced in the view template.  Because each view is decorated by the template, the view is styled based on the definitions in these CSS files:
 
-If you want to change the structure of any of the included default JSP views, you must redefine them (copy and paste them) in your own project in the following *exact* .war file locations:
+.. code-block:: jsp
 
-============= ================================ =======================================
-Default URI   Description                      War File Location
-============= ================================ =======================================
-/login        Login View                       /WEB-INF/jsp/stormpath/login.jsp
-/forgot       Forgot Password Workflow Start   /WEB-INF/jsp/stormpath/forgot.jsp
-/change       Forgot Password Set New Password /WEB-INF/jsp/stormpath/change.jsp
-/register     New user / registration view     /WEB-INF/jsp/stormpath/register.jsp
-/verify       New user please check email view /WEB-INF/jsp/stormpath/verifyEmail.jsp
-/unauthorized Unauthorized access view         /WEB-INF/jsp/stormpath/unauthorized.jsp
-============= ================================ =======================================
+    <link href="${pageContext.request.contextPath}/assets/css/stormpath.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/custom.stormpath.css" rel="stylesheet">
 
-If you re-define any of these files at the exact same respective path in your .war project, that file will be used to render the view instead of the plugin file.
+If you wish to easily override only a few styles, it's easiest to re-create the ``custom.stormpath.css`` in your own project at the following *exact* .war path and file name:
+
+.. code-block:: bash
+
+    /assets/css/custom.stormpath.css
+
+If this file is present in your .war, it will override the plugin default file.  You can re-define any definitions you find in the base ``stormpath.css`` file and those will override the defaults in ``stormpath.css``.
+
+If you have a lot of CSS changes, you may wish to re-define the ``stormpath.css`` file entirely.  Just create the following file in your project at the following *exact* .war path and file name:
+
+.. code-block:: bash
+
+    /assets/css/stormpath.css
+
+If this file is present in your .war, it will override the plugin default file.
+
+Finally, if this proves too cumbersome or you just want total control, you might want to define your own `view template`_ and reference your own CSS file in the template and ignore any of the plugin default css files.
 
 Internationalization (i18n)
 ---------------------------
@@ -89,12 +97,32 @@ The ``<sp:message>`` tag works just like the standard template library's ``<fmt:
 
 If you wish to see all of the predefined message keys available, as well as more information about i18n message value resolution, please see the :ref:`i18n` page.
 
+.. _default view files:
+
+Change a Default View
+---------------------
+
+If you want to change the structure of any of the included default JSP views, you must redefine them (copy and paste them) in your own project in the following *exact* .war file locations:
+
+============= ================================ =======================================
+Default URI   Description                      War File Location
+============= ================================ =======================================
+/login        Login View                       /WEB-INF/jsp/stormpath/login.jsp
+/forgot       Forgot Password Workflow Start   /WEB-INF/jsp/stormpath/forgot.jsp
+/change       Forgot Password Set New Password /WEB-INF/jsp/stormpath/change.jsp
+/register     New user / registration view     /WEB-INF/jsp/stormpath/register.jsp
+/verify       New user please check email view /WEB-INF/jsp/stormpath/verifyEmail.jsp
+/unauthorized Unauthorized access view         /WEB-INF/jsp/stormpath/unauthorized.jsp
+============= ================================ =======================================
+
+If you re-define any of these files at the exact same respective path in your .war project, that file will be used to render the view instead of the plugin file.
+
 .. _view template:
 
 View Template
 -------------
 
-Unfortunately the convenient override mechanism where you simply just replace a plugin default file does not work with JSP tag-based templates.  This means that if you want to use your own page template for the plugin's views, you will need to override *all* of the plugin's default view files.  There are only 6 of them, and they can mostly be copied-and-pasted, so it shouldn't take too long (5 to 10 minutes?).
+Unfortunately the convenient override mechanism where you simply just replace a plugin default file with your own does not work with JSP tag-based templates.  This means that if you want to use your own page template for the plugin's views, you will need to replace *all* of the plugin's default view files.  But the good news is that there are only 6 view files, and they can mostly be copied-and-pasted, so it shouldn't take too long (5 to 10 minutes?).
 
 If you do wish to use your own page template, here is how:
 
@@ -167,33 +195,5 @@ If you do wish to use your own page template, here is how:
 
 
 After completing these steps, all plugin views will reflect your custom template.
-
-CSS
----
-
-The plugin's default JSP template references two relevant CSS files:
-
-.. code-block:: jsp
-
-    <link href="${pageContext.request.contextPath}/assets/css/stormpath.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/assets/css/custom.stormpath.css" rel="stylesheet">
-
-If you wish to easily override only a few styles, it's easiest to re-create the ``custom.stormpath.css`` in your own project at the following *exact* .war path and file name:
-
-.. code-block:: bash
-
-    /assets/css/custom.stormpath.css
-
-If this file is present in your .war, it will override the plugin default file.  You can re-define any definitions you find in the base ``stormpath.css`` file and those will override the defaults in ``stormpath.css``.
-
-If you have a lot of CSS changes, you may wish to re-define the ``stormpath.css`` file entirely.  Just create the following file in your project at the following *exact* .war path and file name:
-
-.. code-block:: bash
-
-    /assets/css/stormpath.css
-
-If this file is present in your .war, it will override the plugin default file.
-
-Finally, if this proves too cumbersome or you just want total control, you might want to define your own `view template`_ and reference your own CSS file in the template and ignore any of the plugin default css files.
 
 
