@@ -62,7 +62,7 @@ public class RegisterFilter extends HttpFilter {
     public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
     public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
     public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/register.jsp";
-    public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/verifyEmail.jsp";
+    public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/verify.jsp";
 
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
@@ -373,7 +373,7 @@ public class RegisterFilter extends HttpFilter {
             // the authentication state will be saved appropriately via the login filter.
             //
             // We set the account as a request attribute here only for the remainder of the request in case the
-            // verifyEmail.jsp view wants to use it to render a user-specific message, for example,
+            // verify.jsp view wants to use it to render a user-specific message, for example,
             //
             // 'Thanks for registering Joe!  Almost done - please verify your email...'
             //

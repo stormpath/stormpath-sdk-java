@@ -111,7 +111,7 @@ Default URI   Description                      War File Location
 /forgot       Forgot Password Workflow Start   /WEB-INF/jsp/stormpath/forgot.jsp
 /change       Forgot Password Set New Password /WEB-INF/jsp/stormpath/change.jsp
 /register     New user / registration view     /WEB-INF/jsp/stormpath/register.jsp
-/verify       New user please check email view /WEB-INF/jsp/stormpath/verifyEmail.jsp
+/verify       New user please check email view /WEB-INF/jsp/stormpath/verify.jsp
 /unauthorized Unauthorized access view         /WEB-INF/jsp/stormpath/unauthorized.jsp
 ============= ================================ =======================================
 
