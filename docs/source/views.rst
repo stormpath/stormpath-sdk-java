@@ -44,16 +44,16 @@ Change a Default View
 
 If you want to change the structure of any of the included default JSP views, you must redefine them in your own project in the following *exact* War File Locations:
 
-============= ================================ =============================
+============= ================================ =======================================
 Default URI   Description                      War File Location
-============= ================================ =============================
-/login        Login View                       /WEB-INF/jsp/login.jsp
-/forgot       Forgot Password Workflow Start   /WEB-INF/jsp/forgot.jsp
-/change       Forgot Password Set New Password /WEB-INF/jsp/change.jsp
-/register     New user / registration view     /WEB-INF/jsp/register.jsp
-/verify       New user please check email view /WEB-INF/jsp/verifyEmail.jsp
-/unauthorized Unauthorized access view         /WEB-INF/jsp/unauthorized.jsp
-============= ================================ =============================
+============= ================================ =======================================
+/login        Login View                       /WEB-INF/jsp/stormpath/login.jsp
+/forgot       Forgot Password Workflow Start   /WEB-INF/jsp/stormpath/forgot.jsp
+/change       Forgot Password Set New Password /WEB-INF/jsp/stormpath/change.jsp
+/register     New user / registration view     /WEB-INF/jsp/stormpath/register.jsp
+/verify       New user please check email view /WEB-INF/jsp/stormpath/verifyEmail.jsp
+/unauthorized Unauthorized access view         /WEB-INF/jsp/stormpath/unauthorized.jsp
+============= ================================ =======================================
 
 If you re-define any of these files at the exact same respective path in your .war project, that file will be used to render the view instead of the plugin file.
 

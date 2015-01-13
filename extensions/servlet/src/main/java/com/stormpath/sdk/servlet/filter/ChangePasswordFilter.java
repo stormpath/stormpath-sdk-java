@@ -49,7 +49,7 @@ public class ChangePasswordFilter extends HttpFilter {
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
     public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
     public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
-    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/change.jsp";
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/change.jsp";
 
     private CsrfTokenManager csrfTokenManager;
     private Resolver<Locale> localeResolver;

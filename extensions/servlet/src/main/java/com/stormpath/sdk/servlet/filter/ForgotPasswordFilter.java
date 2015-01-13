@@ -45,7 +45,7 @@ public class ForgotPasswordFilter extends HttpFilter {
 
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
     public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
-    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/forgot.jsp";
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/forgot.jsp";
 
     private AccountStoreResolver accountStoreResolver;
     private CsrfTokenManager csrfTokenManager;

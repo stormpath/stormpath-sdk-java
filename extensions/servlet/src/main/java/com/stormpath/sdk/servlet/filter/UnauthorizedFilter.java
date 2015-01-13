@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class UnauthorizedFilter extends HttpFilter {
 
-    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/unauthorized.jsp";
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/unauthorized.jsp";
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

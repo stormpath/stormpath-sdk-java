@@ -61,8 +61,8 @@ public class RegisterFilter extends HttpFilter {
     public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
     public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
     public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
-    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/register.jsp";
-    public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/verifyEmail.jsp";
+    public static final String VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/register.jsp";
+    public static final String VERIFY_EMAIL_VIEW_TEMPLATE_PATH = "/WEB-INF/jsp/stormpath/verifyEmail.jsp";
 
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
