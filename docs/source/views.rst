@@ -39,10 +39,12 @@ And the page might be defined as follows:
 
 Anything within the ``<jsp:body> </jsp:body>`` element will be 'wrapped' by the :ref:`page template <view template>`.
 
+.. _default view files:
+
 Change a Default View
 ---------------------
 
-If you want to change the structure of any of the included default JSP views, you must redefine them in your own project in the following *exact* War File Locations:
+If you want to change the structure of any of the included default JSP views, you must redefine them (copy and paste them) in your own project in the following *exact* .war file locations:
 
 ============= ================================ =======================================
 Default URI   Description                      War File Location
@@ -92,48 +94,84 @@ If you wish to see all of the predefined message keys available, as well as more
 View Template
 -------------
 
-You can change the template applied to the views if desired.  You simply re-define the template file in your own project at the following .war file location:
+Unfortunately the convenient override mechanism where you simply just replace a plugin default file does not work with JSP tag-based templates.  This means that if you want to use your own page template for the plugin's views, you will need to override *all* of the plugin's default view files.  There are only 6 of them, and they can mostly be copied-and-pasted, so it shouldn't take too long (5 to 10 minutes?).
 
-.. code-block:: bash
+If you do wish to use your own page template, here is how:
 
-    /WEB-INF/tags/page.tag
+.. _custom template tld:
 
-Your file *must* have this exact path and name in the .war file, otherwise the override will not occur.
+#. Create a new ``/META-INF/templates.tld`` file in your .war project with the following contents:
 
-Once you create the file, you can populate it.  Here is a basic template example you can use to start:
+   .. code-block:: xml
 
-.. code-block:: jsp
+     <?xml version="1.0" encoding="UTF-8" ?>
+     <taglib xmlns="http://java.sun.com/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+             version="2.1">
 
-    <%@tag description="Stormpath Page template" pageEncoding="UTF-8"%>
-    <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-    <%-- Any other taglibs --%>
-    <%@attribute name="title" required="false" %>
-    <%-- Any other attributes referenced in this template --%>
+         <tlib-version>1.0</tlib-version> <!-- whatever version your application is -->
+         <short-name>myAppPageTemplate</short-name> <!-- any name will do -->
+         <uri>http://mycompany.com/myapp/jsp/tags/templates</uri> <!-- Does not need to resolve to a real view -->
 
-    <!DOCTYPE html>
-    <html>
-        <head>
-        <meta charset="utf-8">
-        <title><c:out value="${!empty title ? title : ''}"/></title>
-        <link href="${pageContext.request.contextPath}/assets/css/style.css" rel="stylesheet">
-    </head>
-    <body>
-        <jsp:doBody/>
-    </body>
-    </html>
+         <tag-file>
+             <name>page</name>
+             <path>/META-INF/tags/page.tag</path>
+         </tag-file>
 
-The important points to note:
+     </taglib>
 
-* ``<%@tag description="Default Page template" pageEncoding="UTF-8"%>`` must be at the top of the file
-* ``<jsp:doBody/>`` must be somewhere in the template.  This will be substituted at runtime with the actual page content.
-* A ``title`` page attribute is supported.  This can be specified in views that use the template via ``<jsp:attribute name="title">Value Here</jsp:attribute>``
+#. Create a new ``/META-INF/tags/page.tag`` file in your .war project with your view template markup.  Although this has a ``.tag`` suffix, this is just a standard JSP file.  Here is a basic template example you can use to start:
 
-Once you've done this, all of the default views will reflect your template instead of the plugin's default template!
+   .. code-block:: jsp
+
+     <%@tag description="My App page template" pageEncoding="UTF-8"%>
+     <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+     <%-- Any other taglibs --%>
+     <%@attribute name="title" required="false" %>
+     <%-- Any other attributes referenced in this template --%>
+
+     <!DOCTYPE html>
+     <html>
+         <head>
+         <meta charset="utf-8">
+         <title><c:out value="${!empty title ? title : ''}"/></title>
+         <link href="${pageContext.request.contextPath}/assets/css/style.css" rel="stylesheet">
+     </head>
+     <body>
+         <jsp:doBody/>
+     </body>
+     </html>
+
+   The important points to note:
+
+   * ``<%@tag description="My App page template" pageEncoding="UTF-8"%>`` must be at the top of the file
+   * ``<jsp:doBody/>`` must be somewhere in the template.  This will be substituted at runtime with the actual page content.
+   * A ``title`` page attribute is supported.  This can be specified in views that use the template via ``<jsp:attribute name="title">Value Here</jsp:attribute>``
+
+#. Copy and paste :ref:`each stormpath default view file <default view files>` to your own project at the *exact* same path as the plugin files.  That is, each file *must* be in your .war's ``/WEB-INF/jsp/stormpath/`` directory and they *must* have the exact same name as the original files.
+
+#. In each view file, you'll need to replace the following line:
+
+   .. code-block:: jsp
+
+      <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
+
+   with your own tag library template uri:
+
+   .. code-block:: jsp
+
+      <%@ taglib prefix="t" uri="http://mycompany.com/myapp/jsp/tags/templates" %>
+
+   (or whatever URI you chose when you created your ``/META-INF/templates.tld`` :ref:`tag library descriptor file <custom template tld>`).
+
+
+After completing these steps, all plugin views will reflect your custom template.
 
 CSS
 ---
 
-The plugin's JSP template references two relevant CSS files:
+The plugin's default JSP template references two relevant CSS files:
 
 .. code-block:: jsp
 
@@ -156,6 +194,6 @@ If you have a lot of CSS changes, you may wish to re-define the ``stormpath.css`
 
 If this file is present in your .war, it will override the plugin default file.
 
-Finally, if this proves too cumbersome, it might be easier just to re-define the plugin's `view template`_ and reference your own CSS file in the template and ignore any of the plugin default css files.
+Finally, if this proves too cumbersome or you just want total control, you might want to define your own `view template`_ and reference your own CSS file in the template and ignore any of the plugin default css files.
 
 
