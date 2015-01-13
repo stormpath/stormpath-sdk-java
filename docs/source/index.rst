@@ -26,6 +26,7 @@ This part of the documentation will show you how to get started with the Stormpa
    i18n
    events
    caching
+   views
 
 Additional Notes
 ----------------

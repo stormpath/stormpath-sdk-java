@@ -52,7 +52,7 @@
                     </c:otherwise>
                 </c:choose>
             </ul>
-            <h3 class="text-muted">Stormpath Servlet</h3>
+            <h3 class="text-muted">Stormpath Servlet Plugin</h3>
         </div>
         <jsp:doBody/>
     </div>
