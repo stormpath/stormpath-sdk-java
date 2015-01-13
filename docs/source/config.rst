@@ -249,10 +249,10 @@ After application startup, you may access the ``Application`` instance if desire
 
 You can also :ref:`access the application via a ServletRequest <request application>`.
 
-Filters and Routes
-------------------
+Filters and URIs
+----------------
 
-The Stormpath Servlet Plugin works largely by intercepting requests to certain *routes* or paths (URIs) in your application and then executing one or more servlet filters based on the route/path being accessed.
+The Stormpath Servlet Plugin works largely by intercepting requests to certain URI paths in your application and then executing one or more servlet filters based on the URI being accessed.
 
 .. _filters:
 
@@ -270,18 +270,18 @@ where:
 * ``FILTER_NAME`` is a unique String name of the filter.
 * ``FULLY_QUALIFIED_CLASS_NAME`` is your ``javax.servlet.Filter`` implementation fully qualified class name, for example, ``com.whatever.foo.MyFilter``.
 
-You control which filters are executed, and the order they are executed, by declaring routes.
+You control which filters are executed, and the order they are executed, by declaring URI patterns.
 
-.. _routes:
+.. _uris:
 
-Routes
-~~~~~~
+URIs
+~~~~
 
-You can control which functionality is executed for any application route (URI path) by defining your own paths in ``stormpath.properties`` locations via the following convention:
+You can control which functionality is executed for any application URI path by defining your own paths in ``stormpath.properties`` locations via the following convention:
 
 .. code-block:: properties
 
-    stormpath.web.routes.ROUTE_PATTERN = FILTER_CHAIN_DEFINITION
+    stormpath.web.uris.URI_PATTERN = FILTER_CHAIN_DEFINITION
 
 where:
 
@@ -290,16 +290,16 @@ where:
 
 For example:
 
-``stormpath.web.routes./admin/** = foo, bar, baz``
+``stormpath.web.uris./admin/** = foo, bar, baz``
 
 This configuration line indicates that any request to the `/admin` path or any of its children paths (via the ant-style wildcard of `/admin/**`), the ``foo`` filter should execute, then the ``bar`` filter should execute, then the ``baz`` filter should execute.  If the filters all allow the request to continue, then a servlet handler or controller will receive and process the request.
 
-Therefore, the comma-delimited list of filter names defines a *filter chain* that should execute for that specific route/path.  You can define as many routes (filter chains) as you wish based on your applications needs.
+Therefore, the comma-delimited list of filter names defines a *filter chain* that should execute for that specific URI path.  You can define as many URI filter chains as you wish based on your applications needs.
 
 We'll see later on that this technique will be very useful to easily define authentication and authorization rules for your web application.
 
 .. TIP::
-    Because route patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:8080/myapp`` and then later deploy it to ``https://myapp.com`` without changing your route configuration.
+    Because URI patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:8080/myapp`` and then later deploy it to ``https://myapp.com`` without changing your URI configuration.
 
 
 .. _Ant-style path expression: https://ant.apache.org/manual/dirtasks.html#patterns
