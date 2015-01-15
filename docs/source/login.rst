@@ -62,6 +62,8 @@ The :ref:`i18n` message keys used in the default login view have names prefixed 
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 
+.. _login events:
+
 Events
 ------
 

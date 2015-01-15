@@ -1,6 +1,5 @@
 .. _about:
 
-
 About
 =====
 

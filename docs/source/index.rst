@@ -23,6 +23,7 @@ This part of the documentation will show you how to get started with the Stormpa
    forgot-password
    logout
    request
+   access-control
    i18n
    events
    caching

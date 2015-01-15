@@ -14,6 +14,8 @@ You can configure the out-of-the-box in-memory cache for the single-JVM applicat
 
 The cache memory space is segmented into regions or 'sections', allowing you to specify different caching behavior for each region.
 
+.. _default ttl:
+
 Default TTL
 ^^^^^^^^^^^
 
@@ -41,7 +43,7 @@ You can specify the default TTI value for all cache regions by setting the ``sto
 Cache Regions
 ^^^^^^^^^^^^^
 
-Cache Regions are automatically created as they are requested - you do not need to configure them explicitly.
+Cache Regions are automatically created as they are requested and use the default ttl and tti - you do not need to configure them explicitly.
 
 However, if you want to specify a cache region's TTL or TTI, you can do so using a configuration property convention; prefix the region name ``stormpath.cache.`` and suffix the name with ``.ttl`` or ``tti`` for TTL or TTI respectively.
 
@@ -55,7 +57,7 @@ For example, let's assume we have a cache region named ``My Test Cache Region`` 
    # 1,800,000 millis = 30 minutes:
    stormpath.cache.My Test Cache Region.ttl = 1800000
 
-If a cache region does not have configured ``.tti`` or ``.ttl`` values, the above defaults are assumed.
+If a cache region does not have configured ``.tti`` or ``.ttl`` values, the :ref:`default ttl and tti values <default ttl>` are assumed.
 
 Client Cache Regions
 ^^^^^^^^^^^^^^^^^^^^
@@ -79,9 +81,11 @@ If you want to configure caching rules for a particular client resource type, wh
 Shared Cache
 ------------
 
-If your web application .war is deployed on multiple JVMs (for example for load balancing requests across multiple identical nodes), then each web application instance will, by default, have its _own_ cache memory space.
+Each web application instance will, by default, have its *own* private in-process cache as described above.
 
-This is usually not desirable in most multi-JVM (striped or clustered) deployments: each web app instance could see its own 'version' of the cached data.  If a user sends a request that is directed to web app instance A and then a subsequent request is directed to web app instance B, and the two instances do not agree on the same cached data, this could cause data integrity problems in many applications. This can be solved by using a shared or distributed cache to ensure cache consistency, also known as `cache coherence`_.
+However, if your web application .war is deployed on multiple JVMs - for example, you load balance requests across multiple identical web application nodes - you may experience data cache inconsistency problems if the default cache remains enabled: separate private cache instances are often not desirable because each web app instance could see its own 'version' of the cached data.
+
+For example, if a user sends a request that is directed to web app instance A and then a subsequent request is directed to web app instance B, and the two instances do not agree on the same cached data, this could cause data integrity problems in many applications. This can be solved by using a shared or distributed cache to ensure cache consistency, also known as `cache coherence`_.
 
 If you need cache coherency, you will want to specify a ``com.stormpath.sdk.cache.CacheManager`` implementation that can communicate with a shared or distributed cache system, like Hazelcast, Redis, etc.
 

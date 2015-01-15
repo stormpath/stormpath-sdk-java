@@ -249,17 +249,15 @@ After application startup, you may access the ``Application`` instance if desire
 
 You can also :ref:`access the application via a ServletRequest <request application>`.
 
-Filters and URIs
-----------------
-
-The Stormpath Servlet Plugin works largely by intercepting requests to certain URI paths in your application and then executing one or more servlet filters based on the URI being accessed.
 
 .. _filters:
 
 Filters
-~~~~~~~
+-------
 
-All of the Servlet Filters needed by the plugin are already configured, but if you wanted to, you could define your own Servlet Filters (or even override the plugin's defaults) in ``stormpath.properties`` locations via the following convention:
+The Stormpath Servlet Plugin works largely by intercepting requests to certain URI paths in your application and then executing one or more servlet filters based on the URI being accessed.
+
+All of the Servlet Filters needed by the plugin are already configured, but if you wanted to, you could define your own Servlet Filters (or even override the plugin's defaults) as configuration properties via the following convention:
 
 .. code-block:: properties
 
@@ -270,14 +268,37 @@ where:
 * ``FILTER_NAME`` is a unique String name of the filter.
 * ``FULLY_QUALIFIED_CLASS_NAME`` is your ``javax.servlet.Filter`` implementation fully qualified class name, for example, ``com.whatever.foo.MyFilter``.
 
-You control which filters are executed, and the order they are executed, by declaring URI patterns.
+.. tip::
+   Any ``Filter`` implementation may be specified!
+
+   However, if you need to implement a new filter, you might find it easier to subclass the ``com.stormpath.sdk.servlet.filter.HttpFilter`` class: it provides some nice conveniences, like enabling/disabling and the ability to access Stormpath configuration properties if necessary.
+
+You control which filters are executed, and the order they are executed, by declaring URI patterns, covered below.
+
+.. _default filters:
+
+Default Filters
+~~~~~~~~~~~~~~~
+
+The plugin contains some useful filter implementations pre-configured and ready to use in your URI pattern chains:
+
+=========== ======================================================================= =========================================================================
+Filter Name Filter Class                                                            Description
+=========== ======================================================================= =========================================================================
+``anon``    ``com.stormpath.sdk.servlet.filter.AnonymousFilter``                    'anon'ymous users are allowed (anyone). Mostly useful for exclusion rules
+``authc``   ``com.stormpath.sdk.servlet.filter.AuthenticationFilter``               Requesting user must be authenticated. If not, redirect to login
+                                                                                    or issue http authentication challenge depending on ``Accept``
+                                                                                    header preference rules.
+``account`` ``com.stormpath.sdk.servlet.filter.account.AccountAuthorizationFilter`` Requesting user must be a known user account and, optionally, must pass
+                                                                                    one or more account-specific authorization expressions.
+=========== ======================================================================= =========================================================================
 
 .. _uris:
 
 URIs
-~~~~
+----
 
-You can control which functionality is executed for any application URI path by defining your own paths in ``stormpath.properties`` locations via the following convention:
+You can control which filters are executed for any application URI path by defining your own paths in ``stormpath.properties`` locations via the following convention:
 
 .. code-block:: properties
 
@@ -286,7 +307,7 @@ You can control which functionality is executed for any application URI path by 
 where:
 
 * ``ROUTE_PATTERN`` is an `Ant-style path expression`_ that represents a URI path or path hierarchy (via wildcard ``*`` matching) relative to the web application's `context path`_.
-* ``FILTER_CHAIN_DEFINITION`` is a comma-delimited list of filter names that match the the names of any previously defined filters as described  :ref:`above <filters>`.
+* ``FILTER_CHAIN_DEFINITION`` is a comma-delimited list of filter names that match the the names of the a :ref:`default filter <default filters>` or any manually defined filter as described  :ref:`above <filters>`
 
 For example:
 
@@ -296,11 +317,28 @@ This configuration line indicates that any request to the `/admin` path or any o
 
 Therefore, the comma-delimited list of filter names defines a *filter chain* that should execute for that specific URI path.  You can define as many URI filter chains as you wish based on your applications needs.
 
-We'll see later on that this technique will be very useful to easily define authentication and authorization rules for your web application.
-
 .. TIP::
-    Because URI patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:8080/myapp`` and then later deploy it to ``https://myapp.com`` without changing your URI configuration.
+   Because URI patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:8080/myapp`` and then later deploy it to ``https://myapp.com`` without changing your URI configuration.
 
+.. _uri evaluation priority:
+
+URI Evaluation Priority
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. WARNING:: Order Matters!
+
+   URI patterns are evaluated against an incoming request in the order they are defined, and the *FIRST MATCH WINS*.
+
+   For example, let's assume there are the following path chain definitions:
+
+   .. code-block:: properties
+
+      /account/** = authc
+      /account/signup = anon
+
+   If an incoming request is intended to reach ``/account/signup`` (accessible by all 'anon'ymous users), *it will never be handled!*. The reason is that the ``/account/**`` pattern matched the incoming request first and 'short-circuited' all remaining definitions.
+
+   Always remember to define your filter chains based on a *FIRST MATCH WINS* policy.
 
 .. _Ant-style path expression: https://ant.apache.org/manual/dirtasks.html#patterns
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()

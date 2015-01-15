@@ -32,8 +32,6 @@ The locale used to render messages during a request is determined by a ``Resolve
 You can override this value by specifying the fully qualified class name of a class that implements the ``com.stormpath.sdk.servlet.http.Resolver<Locale>`` interface.  That implementation will be instantiated and used instead.
 
 
-.. _i18n-properties-file:
-
 JSP Tag Library
 ---------------
 
@@ -50,6 +48,8 @@ Then you can reference the message key as necessary in the page content, for exa
     <span><sp:message key="stormpath.web.register.title"/></span>
 
 The ``<sp:message>`` tag works just like the standard template library's ``<fmt:message>`` tag, but ``<sp:message>`` will automatically use the ``com.stormpath.sdk.servlet.i18n`` message bundle in addition to allowing for a flexible locale resolution strategy per the ``stormpath.web.locale.resolver`` mentioned above.
+
+.. _i18n-properties-file:
 
 i18n.properties
 ---------------
