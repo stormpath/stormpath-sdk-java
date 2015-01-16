@@ -309,6 +309,18 @@ public interface ClientBuilder {
     ClientBuilder setAuthenticationScheme(AuthenticationScheme authenticationScheme);
 
     /**
+     * Determines both the timeout until a connection is established and the socket timeout (i.e. a maximum period of inactivity
+     * between two consecutive data packets)
+     * </pre>
+     * A timeout value of zero is interpreted as an infinite timeout.
+     *
+     * @param timeout connection and socket timeout in milliseconds
+     * @return the ClientBuilder instance for method chaining
+     * @since 1.0.0
+     */
+    ClientBuilder setConnectionTimeout(int timeout);
+
+    /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.

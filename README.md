@@ -33,7 +33,8 @@ recognize how to implement a fix.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 106](https://github.com/stormpath/stormpath-sdk-java/issues/106): Creating an account or group from a Directory now returns the created resource.
-                                                                                                 
+- [Issue 130](https://github.com/stormpath/stormpath-sdk-java/issues/130): Connection timeout is now configurable (see `Clients.builder().setConnectionTimeout(int)`)
+
 #### ID Site Logout Functionality ####
 
 A user who has an open session with ID Site wanting to logout from it will add the <code>forLogoout()</code> method when

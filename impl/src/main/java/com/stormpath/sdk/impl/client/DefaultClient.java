@@ -75,9 +75,10 @@ public class DefaultClient implements Client {
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
      *                             server (can be null)
      */
-    public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
+    public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
-        Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme);
+        Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
+        Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme, connectionTimeout);
         DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey);
 
         if (cacheManager != null) {
@@ -117,7 +118,7 @@ public class DefaultClient implements Client {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme) {
+    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, int connectionTimeout) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -134,9 +135,9 @@ public class DefaultClient implements Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = Classes.getConstructor(requestExecutorClass, com.stormpath.sdk.api.ApiKey.class, Proxy.class, AuthenticationScheme.class);
+        Constructor ctor = Classes.getConstructor(requestExecutorClass, com.stormpath.sdk.api.ApiKey.class, Proxy.class, AuthenticationScheme.class, Integer.class);
 
-        return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme);
+        return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme, connectionTimeout);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

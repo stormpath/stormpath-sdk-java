@@ -71,11 +71,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
     private static final Logger log = LoggerFactory.getLogger(HttpClientRequestExecutor.class);
 
     /**
-     * Default HTTP connection timeout.
-     */
-    private static final int CONNECTION_TIMEOUT = 10000; //10,000 millis = 10 seconds
-
-    /**
      * Maximum exponential back-off time before retrying a request
      */
     private static final int MAX_BACKOFF_IN_MILLISECONDS = 20 * 1000;
@@ -107,8 +102,9 @@ public class HttpClientRequestExecutor implements RequestExecutor {
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server.
      *                             If null, then Sauthc1 will be used.
      */
-    public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme) {
+    public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, Integer connectionTimeout) {
         Assert.notNull(apiKey, "apiKey argument is required.");
+        Assert.isTrue(connectionTimeout >= 0, "Timeout cannot be a negative number.");
 
         this.apiKey = apiKey;
 
@@ -121,8 +117,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         this.httpClient = new DefaultHttpClient(connMgr);
         httpClient.getParams().setParameter(AllClientPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-        httpClient.getParams().setParameter(AllClientPNames.SO_TIMEOUT, CONNECTION_TIMEOUT);
-        httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
+        httpClient.getParams().setParameter(AllClientPNames.SO_TIMEOUT, connectionTimeout);
+        httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, connectionTimeout);
         httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
 
