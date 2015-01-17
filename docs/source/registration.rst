@@ -163,7 +163,7 @@ Try it!
 
 .. _verify link base url:
 
-Verify Link Base URI
+Verify Link Base URL
 ^^^^^^^^^^^^^^^^^^^^
 
 The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
