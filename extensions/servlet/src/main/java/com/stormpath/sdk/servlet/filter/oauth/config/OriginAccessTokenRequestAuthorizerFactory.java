@@ -20,7 +20,7 @@ import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
-import com.stormpath.sdk.servlet.util.RequestCondition;
+import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.ServletContext;
 import java.util.Arrays;
@@ -29,15 +29,15 @@ import java.util.Collections;
 
 public class OriginAccessTokenRequestAuthorizerFactory extends ConfigSingletonFactory<RequestAuthorizer> {
 
-    public static final String LOCALHOST_CONDITION = "stormpath.web.localhost.condition";
+    public static final String LOCALHOST_RESOLVER = "stormpath.web.localhost.resolver";
     public static final String SERVER_URI_RESOLVER = "stormpath.web.accessToken.origin.authorizer.serverUriResolver";
     public static final String ORIGIN_URIS = "stormpath.web.accessToken.origin.authorizer.originUris";
 
     @Override
     protected RequestAuthorizer createInstance(ServletContext servletContext) throws Exception {
-        ServerUriResolver resolver = getConfig().getInstance(SERVER_URI_RESOLVER);
-        RequestCondition localhost = getConfig().getInstance(LOCALHOST_CONDITION);
 
+        ServerUriResolver resolver = getConfig().getInstance(SERVER_URI_RESOLVER);
+        Resolver<Boolean> localhost = getConfig().getInstance(LOCALHOST_RESOLVER);
         String uris = getConfig().get(ORIGIN_URIS);
 
         Collection<String> additionalOriginUris = Collections.emptyList();

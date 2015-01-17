@@ -19,7 +19,7 @@ import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
-import com.stormpath.sdk.servlet.util.RequestCondition;
+import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,17 +30,17 @@ public class DefaultAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
     public static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
-    private final RequestCondition secureConnectionRequired;
+    private final Resolver<Boolean> secureConnectionRequired;
     private final RequestAuthorizer originAuthorizer;
 
-    public DefaultAccessTokenRequestAuthorizer(RequestCondition secureConnectionRequired, RequestAuthorizer originAuthorizer) {
-        Assert.notNull(secureConnectionRequired, "secure RequestCondition cannot be null.");
+    public DefaultAccessTokenRequestAuthorizer(Resolver<Boolean> secureConnectionRequired, RequestAuthorizer originAuthorizer) {
+        Assert.notNull(secureConnectionRequired, "secure resolver cannot be null.");
         Assert.notNull(originAuthorizer, "origin RequestAuthorizer cannot be null.");
         this.secureConnectionRequired = secureConnectionRequired;
         this.originAuthorizer = originAuthorizer;
     }
 
-    public RequestCondition getSecureConnectionRequired() {
+    public Resolver<Boolean> getSecureConnectionRequired() {
         return secureConnectionRequired;
     }
 
@@ -101,7 +101,7 @@ public class DefaultAccessTokenRequestAuthorizer implements RequestAuthorizer {
     }
 
     protected boolean isSecureConnectionRequired(HttpServletRequest request, HttpServletResponse response) {
-        return getSecureConnectionRequired().isTrue(request, response);
+        return getSecureConnectionRequired().get(request, response);
     }
 
     protected void assertOriginAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException {

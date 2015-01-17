@@ -16,13 +16,14 @@
 package com.stormpath.sdk.servlet.util;
 
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 
-public class LocalhostCondition implements RequestCondition {
+public class IsLocalhostResolver implements Resolver<Boolean> {
 
     private static final List<String> REMOTE_ADDR_HEADERS = Arrays
         .asList("X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR");
@@ -58,7 +59,7 @@ public class LocalhostCondition implements RequestCondition {
     }
 
     @Override
-    public boolean isTrue(HttpServletRequest request, HttpServletResponse response) {
+    public Boolean get(HttpServletRequest request, HttpServletResponse response) {
 
         String host = getRemoteAddr(request);
 

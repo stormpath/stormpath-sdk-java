@@ -20,8 +20,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.util.RequestCondition;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,19 +29,19 @@ import javax.servlet.http.HttpServletResponse;
 public class CookieAuthenticationResultSaver extends AccountCookieHandler implements Saver<AuthenticationResult> {
 
     private AuthenticationJwtFactory authenticationJwtFactory;
-    private RequestCondition secureCookieRequired;
+    private Resolver<Boolean> secureCookieRequired;
 
     public CookieAuthenticationResultSaver(CookieConfig accountCookieConfig,
-                                           RequestCondition secureCookieRequired,
+                                           Resolver<Boolean> secureCookieRequired,
                                            AuthenticationJwtFactory authenticationJwtFactory) {
         super(accountCookieConfig);
-        Assert.notNull(secureCookieRequired, "secureCookieRequired RequestCondition cannot be null.");
+        Assert.notNull(secureCookieRequired, "secureCookieRequired RequestRCondition cannot be null.");
         Assert.notNull(authenticationJwtFactory, "AuthenticationJwtFactory cannot be null.");
         this.secureCookieRequired = secureCookieRequired;
         this.authenticationJwtFactory = authenticationJwtFactory;
     }
 
-    public RequestCondition getSecureCookieRequired() {
+    public Resolver<Boolean> getSecureCookieRequired() {
         return secureCookieRequired;
     }
 
@@ -81,7 +81,7 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
     }
 
     protected boolean isSecureCookieRequired(HttpServletRequest request) {
-        return getSecureCookieRequired().isTrue(request, null);
+        return getSecureCookieRequired().get(request, null);
     }
 
     @Override

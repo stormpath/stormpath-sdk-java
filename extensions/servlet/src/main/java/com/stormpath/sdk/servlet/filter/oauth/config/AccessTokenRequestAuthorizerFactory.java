@@ -18,18 +18,18 @@ package com.stormpath.sdk.servlet.filter.oauth.config;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenRequestAuthorizer;
-import com.stormpath.sdk.servlet.util.RequestCondition;
+import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.ServletContext;
 
 public class AccessTokenRequestAuthorizerFactory extends ConfigSingletonFactory<RequestAuthorizer> {
 
-    public static final String SECURE_CONDITION = "stormpath.web.accessToken.authorizer.secure.condition";
+    public static final String SECURE_RESOLVER = "stormpath.web.accessToken.authorizer.secure.resolver";
     public static final String ORIGIN_AUTHORIZER = "stormpath.web.accessToken.origin.authorizer";
 
     @Override
     protected RequestAuthorizer createInstance(ServletContext servletContext) throws Exception {
-        RequestCondition condition = getConfig().getInstance(SECURE_CONDITION);
+        Resolver<Boolean> condition = getConfig().getInstance(SECURE_RESOLVER);
         RequestAuthorizer originAuthorizer = getConfig().getInstance(ORIGIN_AUTHORIZER);
         return new DefaultAccessTokenRequestAuthorizer(condition, originAuthorizer);
     }

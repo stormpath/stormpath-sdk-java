@@ -214,11 +214,11 @@ Some notes about the default values:
 
   Because of the security requirements around identity cookies, the default implementation always requires HTTPS *except* when it has been determined that the request is sent and received by ``localhost``.  This allows you to develop on your local machine without requiring a TLS/SSL certificate, but will require one when you deploy to production due to the security attack vectors that would occur otherwise.
 
-  If you want to provide your own condition implementation that returns ``true`` or ``false`` based on request criteria, you can specify your own ``com.stormpath.sdk.servlet.util.RequestCondition`` implementation - for example:
+  If you want to provide your own condition implementation that returns ``true`` or ``false`` based on request criteria, you can specify your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation - for example:
 
   .. code-block:: properties
 
-     stormpath.web.account.cookie.secure.condition = my.impl.class.that.implements.RequestCondition
+     stormpath.web.account.cookie.secure.condition = my.impl.class.that.implements.ResolverThatReturnsBoolean
 
 
 HttpSession Storage

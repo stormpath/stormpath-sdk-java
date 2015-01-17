@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.util.RequestCondition;
+import com.stormpath.sdk.servlet.http.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +39,13 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
         "stormpath.web.accessToken.origin.authorizer.originUris";
 
     private final ServerUriResolver serverUriResolver;
-    private final RequestCondition localhost;
+    private final Resolver<Boolean> localhost;
     private final Collection<String> authorizedOriginUrls;
 
-    public OriginAccessTokenRequestAuthorizer(ServerUriResolver serverUriResolver, RequestCondition localhost,
+    public OriginAccessTokenRequestAuthorizer(ServerUriResolver serverUriResolver, Resolver<Boolean> localhost,
                                               Collection<String> authorizedOriginUrls) {
         Assert.notNull(serverUriResolver, "ServerUriResolver cannot be null.");
-        Assert.notNull(localhost, "localhost RequestCondition cannot be null.");
+        Assert.notNull(localhost, "localhost resolver cannot be null.");
         this.serverUriResolver = serverUriResolver;
         this.localhost = localhost;
         if (authorizedOriginUrls == null) {
@@ -59,7 +59,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
         return serverUriResolver;
     }
 
-    public RequestCondition getLocalhostCondition() {
+    public Resolver<Boolean> getLocalhostResolver() {
         return localhost;
     }
 
@@ -113,8 +113,8 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
             if (localhostClient) {
                 //give a specific message to the developer:
-                errorMessage = "Unauthorized request " +
-                               (fallbackToReferer ? "origin (via Referer header)." : "Origin.");
+                errorMessage =
+                    "Unauthorized request " + (fallbackToReferer ? "origin (via Referer header)." : "Origin.");
             }
 
             // otherwise don't give a potentially-malicious client any information as to why the request failed
@@ -122,7 +122,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
             log.debug("Unauthorized {} header value: {}.  If this is unexpected, you might want to specify " +
                       "one or more comma-delimited URLs via the {} property.",
                       new Object[]{ (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin,
-                          ORIGIN_URIS_CONFIG_PROPERTY_NAME});
+                          ORIGIN_URIS_CONFIG_PROPERTY_NAME });
 
             throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
@@ -146,6 +146,6 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     }
 
     protected boolean isLocalhostClient(HttpServletRequest request, HttpServletResponse response) {
-        return getLocalhostCondition().isTrue(request, response);
+        return getLocalhostResolver().get(request, response);
     }
 }

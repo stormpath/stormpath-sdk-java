@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.util;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,13 +29,13 @@ import javax.servlet.http.HttpServletResponse;
  * <p>This allows for the common use case where behavior typically always needs to be secure over a TLS connection (e.g.
  * a login attempt) except during development, typically done on localhost.</p>
  */
-public class SecureRequiredExceptForLocalhostCondition implements RequestCondition {
+public class SecureRequiredExceptForLocalhostResolver implements Resolver<Boolean> {
 
-    private RequestCondition localhostCondition;
+    private final Resolver<Boolean> localhostResolver;
 
-    public SecureRequiredExceptForLocalhostCondition(RequestCondition localhostCondition) {
-        Assert.notNull(localhostCondition, "localhost Condition cannot be null.");
-        this.localhostCondition = localhostCondition;
+    public SecureRequiredExceptForLocalhostResolver(Resolver<Boolean> localhostResolver) {
+        Assert.notNull(localhostResolver, "localhost resolver cannot be null.");
+        this.localhostResolver = localhostResolver;
     }
 
     /**
@@ -47,9 +48,9 @@ public class SecureRequiredExceptForLocalhostCondition implements RequestConditi
      * localhost client.
      */
     @Override
-    public boolean isTrue(HttpServletRequest request, HttpServletResponse response) {
+    public Boolean get(HttpServletRequest request, HttpServletResponse response) {
         //secure must be request except if the client is coming from localhost:
-        return !localhostCondition.isTrue(request, response);
+        boolean isLocalhost = this.localhostResolver.get(request, response);
+        return !isLocalhost;
     }
-
 }

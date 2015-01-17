@@ -22,21 +22,21 @@ import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.util.RequestCondition;
 
 import javax.servlet.ServletContext;
 
 public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFactory<Saver<AuthenticationResult>> {
 
-    protected static final String ACCOUNT_COOKIE_SECURE_CONDITION = "stormpath.web.account.cookie.secure.condition";
+    protected static final String ACCOUNT_COOKIE_SECURE_RESOLVER = "stormpath.web.account.cookie.secure.resolver";
     protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
 
     @Override
     protected Saver<AuthenticationResult> createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         CookieConfig cookieConfig = config.getAccountCookieConfig();
-        RequestCondition secureCookieRequired = config.getInstance(ACCOUNT_COOKIE_SECURE_CONDITION);
+        Resolver<Boolean> secureCookieRequired = config.getInstance(ACCOUNT_COOKIE_SECURE_RESOLVER);
         AuthenticationJwtFactory factory = config.getInstance(ACCOUNT_JWT_FACTORY);
         return new CookieAuthenticationResultSaver(cookieConfig, secureCookieRequired, factory);
     }

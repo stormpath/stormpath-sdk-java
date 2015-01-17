@@ -15,18 +15,18 @@
  */
 package com.stormpath.sdk.servlet.config;
 
-import com.stormpath.sdk.servlet.util.RequestCondition;
-import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostCondition;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 
 import javax.servlet.ServletContext;
 
-public class SecureConditionFactory extends ConfigSingletonFactory<RequestCondition> {
+public class SecureResolverFactory extends ConfigSingletonFactory<Resolver<Boolean>> {
 
-    public static final String LOCALHOST_CONDITION = "stormpath.web.localhost.condition";
+    public static final String LOCALHOST_RESOLVER = "stormpath.web.localhost.resolver";
 
     @Override
-    protected RequestCondition createInstance(ServletContext servletContext) throws Exception {
-        RequestCondition localhostCondition = getConfig().getInstance(LOCALHOST_CONDITION);
-        return new SecureRequiredExceptForLocalhostCondition(localhostCondition);
+    protected Resolver<Boolean> createInstance(ServletContext servletContext) throws Exception {
+        Resolver<Boolean> localhostResolver = getConfig().getInstance(LOCALHOST_RESOLVER);
+        return new SecureRequiredExceptForLocalhostResolver(localhostResolver);
     }
 }
