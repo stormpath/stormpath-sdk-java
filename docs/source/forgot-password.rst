@@ -81,23 +81,23 @@ Forgot URI
 
 Users can initiate the password reset workflow by visiting ``/forgot``
 
-If you want to change this path, set the ``stormpath.web.forgot.url`` configuration property:
+If you want to change this path, set the ``stormpath.web.forgot.uri`` configuration property:
 
 .. code-block:: properties
 
     # The context-relative path to the 'forgot password' view:
-    stormpath.web.forgot.url = /forgot
+    stormpath.web.forgot.uri = /forgot
 
 Forgot Next URI
 ---------------
 
-After the user submits their email address to send a 'reset password' email, they will automatically be redirected to a 'next' URL.  By default, this URL is the :ref:`login page <login>` as controlled by the ``stormpath.web.forgot.nextUrl`` configuration property:
+After the user submits their email address to send a 'reset password' email, they will automatically be redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.forgot.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.forgot.nextUrl = /login?status=forgot
+    stormpath.web.forgot.nextUri = /login?status=forgot
 
-As you can see, this URL has a ``status=forgot`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that they should check their email inbox to look for the password reset email with instructions:
+As you can see, this URI has a ``status=forgot`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that they should check their email inbox to look for the password reset email with instructions:
 
 .. image:: /_static/forgot-result.png
 
@@ -106,38 +106,38 @@ Change Password URI
 
 The Password Reset 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the password reset email.  For example, during development, this is often something like ``http://localhost:8080/change`` and in production, something like ``https://myapp.com/change``.
 
-When a user clicks the link in the email, the Stormpath Servlet Plugin will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.change.url`` configuration property:
+When a user clicks the link in the email, the Stormpath Servlet Plugin will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.change.uri`` configuration property:
 
 .. code-block:: properties
 
-   stormpath.web.change.url = /change
+   stormpath.web.change.uri = /change
 
 You can change the value to reflect a different path if you wish.
 
 .. caution::
-   The fully qualified Password Reset Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.change.url``.  If you change one, you must change the other.
+   The fully qualified Password Reset Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.change.uri``.  If you change one, you must change the other.
 
 Change Password Next URI
 ------------------------
 
-After the user successfully specifies their new password, they will be redirected to a `next` URL.  By default, this URL is the :ref:`login page <login>` as controlled by the ``stormpath.web.change.nextUrl`` configuration property:
+After the user successfully specifies their new password, they will be redirected to a `next` URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.change.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.change.nextUrl = /login?status=changed
+    stormpath.web.change.nextUri = /login?status=changed
 
-As you can see, this URL has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+As you can see, this URI has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
 .. image:: /_static/login-changed.png
 
 Users can login to your web application by visiting ``/login``
 
-If you want to change this path, set the ``stormpath.web.login.url`` configuration property:
+If you want to change this path, set the ``stormpath.web.login.uri`` configuration property:
 
 .. code-block:: properties
 
     # The context-relative path to the login view:
-    stormpath.web.login.url = /login
+    stormpath.web.login.uri = /login
 
 i18n
 ----

@@ -35,7 +35,7 @@
                             <div class="header">
                                 <span>
                                     <sp:message key="stormpath.web.login.form.title">
-                                        <sp:param><a href="${pageContext.request.contextPath}${requestScope['stormpath.web.register.url']}"><sp:message key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
+                                        <sp:param><a href="${pageContext.request.contextPath}${requestScope['stormpath.web.register.uri']}"><sp:message key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
                                     </sp:message>
                                 </span>
                             </div>
@@ -84,7 +84,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.forgot.url']}" class="to-login"><sp:message key="stormpath.web.login.form.resetLink.text"/></a>
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.forgot.uri']}" class="to-login"><sp:message key="stormpath.web.login.form.resetLink.text"/></a>
 
                 </div>
 

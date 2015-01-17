@@ -27,32 +27,32 @@ URI
 
 Users can self-register for your web application by visiting ``/register``
 
-If you want to change this path, set the ``stormpath.web.register.url`` configuration property:
+If you want to change this path, set the ``stormpath.web.register.uri`` configuration property:
 
 .. code-block:: properties
 
     # The context-relative path to the register ('new user') view:
-    stormpath.web.register.url = /register
+    stormpath.web.register.uri = /register
 
 Next URI
 --------
 
-If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically redirected to the application's context root (home page) by default.  If you want to change this destination, set the ``stormpath.web.register.nextUrl`` configuration property:
+If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically redirected to the application's context root (home page) by default.  If you want to change this destination, set the ``stormpath.web.register.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.register.nextUrl = /
+    stormpath.web.register.nextUri = /
 
 Again, this property is only referenced if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
 
 Next Query Parameter
 ^^^^^^^^^^^^^^^^^^^^
 
-If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URL has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location.  For example:
+If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location.  For example:
 
 ``https://myapp.com/register?next=/registerSuccess``
 
-This will cause the user to be redirected ``/registerSuccess`` instead of the configured ``stormpath.web.register.nextUrl`` path.
+This will cause the user to be redirected ``/registerSuccess`` instead of the configured ``stormpath.web.register.nextUri`` path.
 
 Again, this functionality is only executed if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
 
@@ -168,29 +168,29 @@ Verify Link Base URI
 
 The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
 
-When a user clicks the link in the email, the Stormpath Servlet Plugin will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verify.url`` configuration property:
+When a user clicks the link in the email, the Stormpath Servlet Plugin will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verify.uri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.verify.url = /verify
+    stormpath.web.verify.uri = /verify
 
 You can change the value to reflect a different path if you wish.
 
 .. caution::
-    The fully qualified Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.verify.url``.  If you change one, you must change the other.
+    The fully qualified Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.verify.uri``.  If you change one, you must change the other.
 
-.. _verify next url:
+.. _verify next uri:
 
 Verify Next URI
 ^^^^^^^^^^^^^^^
 
-When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verify.url`` path, the user will be immediately redirected to a 'next' URL.  By default, this URL is the :ref:`login page <login>` as controlled by the ``stormpath.web.verify.nextUrl`` configuration property:
+When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verify.uri`` path, the user will be immediately redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verify.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.verify.nextUrl = /login?status=verified
+    stormpath.web.verify.nextUri = /login?status=verified
 
-As you can see, this URL has a ``status=verified`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+As you can see, this URI has a ``status=verified`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
 .. image:: /_static/login-verified.png
 

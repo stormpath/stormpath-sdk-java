@@ -15,33 +15,33 @@ URI
 
 Users will be logged-out if they visit ``/logout``.
 
-If you want to change this path, set the ``stormpath.web.logout.url`` configuration property:
+If you want to change this path, set the ``stormpath.web.logout.uri`` configuration property:
 
 .. code-block:: properties
 
     # The context-relative path that will log out the user if visited:
-    stormpath.web.logout.url = /logout
+    stormpath.web.logout.uri = /logout
 
 Next Query Parameter
 ^^^^^^^^^^^^^^^^^^^^
 
 The logout controller supports a ``next`` query parameter.  If present in the request, the value must be a context-relative path to where the user should be redirected after the current request completes.
 
-If the logout URL is visited with a ``next`` query parameter, the user will be redirected to the ``next`` path instead of the default ``nextUrl``.
+If the logout URI is visited with a ``next`` query parameter, the user will be redirected to the ``next`` path instead of the default ``nextUrl``.
 
 Next URI
 --------
 
-If the request to the logout URL does not have a ``next`` query parameter, the user will be redirected to the application's web context root path ('home page') by default.
+If the request to the logout URI does not have a ``next`` query parameter, the user will be redirected to the application's web context root path ('home page') by default.
 
-If you want the user to visit a different default post-logout path, set the ``stormpath.web.logout.nextUrl`` configuration property:
+If you want the user to visit a different default post-logout path, set the ``stormpath.web.logout.nextUri`` configuration property:
 
 .. code-block:: properties
 
     # The default context-relative path where the user will be redirected after logout:
-    stormpath.web.logout.nextUrl = /
+    stormpath.web.logout.nextUri = /
 
-If the request to the logout URL has a ``next`` query parameter, that parameter value will be used as the context-relative path instead and the ``stormpath.web.logout.nextUrl`` value will be ignored.
+If the request to the logout URI has a ``next`` query parameter, that parameter value will be used as the context-relative path instead and the ``stormpath.web.logout.nextUri`` value will be ignored.
 
 Events
 ------

@@ -81,7 +81,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.url']}" class="to-login"><sp:message key="stormpath.web.change.form.loginLink.text"/></a>
+                    <a href="${pageContext.request.contextPath}${requestScope['stormpath.web.login.uri']}" class="to-login"><sp:message key="stormpath.web.change.form.loginLink.text"/></a>
 
                 </div>
 

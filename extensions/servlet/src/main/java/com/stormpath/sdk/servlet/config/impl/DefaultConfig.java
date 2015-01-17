@@ -33,21 +33,21 @@ import java.util.Set;
 
 public class DefaultConfig implements Config {
 
-    public static final String LOGIN_URL = "stormpath.web.login.url";
-    public static final String LOGIN_NEXT_URL = "stormpath.web.login.nextUrl";
-    public static final String LOGOUT_URL = "stormpath.web.logout.url";
-    public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUrl";
-    public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.url";
-    public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUrl";
-    public static final String CHANGE_PASSWORD_URL = "stormpath.web.change.url";
-    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUrl";
-    public static final String REGISTER_URL = "stormpath.web.register.url";
-    public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUrl";
-    public static final String VERIFY_URL = "stormpath.web.verify.url";
-    public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUrl";
-    public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.url";
+    public static final String LOGIN_URL = "stormpath.web.login.uri";
+    public static final String LOGIN_NEXT_URL = "stormpath.web.login.nextUri";
+    public static final String LOGOUT_URL = "stormpath.web.logout.uri";
+    public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUri";
+    public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.uri";
+    public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUri";
+    public static final String CHANGE_PASSWORD_URL = "stormpath.web.change.uri";
+    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUri";
+    public static final String REGISTER_URL = "stormpath.web.register.uri";
+    public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
+    public static final String VERIFY_URL = "stormpath.web.verify.uri";
+    public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUri";
+    public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
-    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.url";
+    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.uri";
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";

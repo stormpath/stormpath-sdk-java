@@ -22,6 +22,7 @@ This part of the documentation will show you how to get started with the Stormpa
    login
    forgot-password
    logout
+   http-request-authentication
    request
    access-control
    i18n
