@@ -16,7 +16,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 ## Change Log ##
 
-### 1.0.0 ###
+### 1.0.RC3 ###
 
 #### Resolved Issues ####
 
@@ -29,15 +29,12 @@ means of the User-Agent http header. The primary purpose of this is for us at St
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
 recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
+- [Issue 103](https://github.com/stormpath/stormpath-sdk-java/issues/103): We have added three convenience methods to simplify the addition of Account Stores: app.addAccountStore(String), app.addAccountStore(DirectoryCriteria) and app.addAccountStore(GroupCriteria).
 - [Issue 107](https://github.com/stormpath/stormpath-sdk-java/issues/107): Added the ability to resend Account Verification Emails.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 106](https://github.com/stormpath/stormpath-sdk-java/issues/106): Creating an account or group from a Directory now returns the created resource.
                                                                                                  
-### 1.0.RC2.1 ###
-
-This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
-
 #### ID Site Logout Functionality ####
 
 A user who has an open session with ID Site wanting to logout from it will add the <code>forLogoout()</code> method when
@@ -55,6 +52,10 @@ If successfully executed, the user will be redirected to the {@code callbackUri}
 
 When users logs out, their session with the ID Site is no longer valid for every application pertaining to this domain. They will
 be required to log in again when trying to access any of those applications.
+
+### 1.0.RC2.1 ###
+
+This is a patch / bug-fix release that resolves a [thread-safety issue](https://github.com/stormpath/stormpath-sdk-java/issues/114) in the data store that may impact some customers.
 
 ### 1.0.RC2 ###
 

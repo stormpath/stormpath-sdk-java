@@ -23,6 +23,8 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -227,7 +229,14 @@ public interface Application extends Resource, Saveable, Deletable {
     Account createAccount(CreateAccountRequest request) throws ResourceException;
 
     /**
-     * Returns all Groups accessible to the application (based on the Application's associated Account stores).
+     * Returns all Groups accessible to the application. It will not only return any group associated directly as an
+     * {@link AccountStore} but also every group that exists inside every directory associated as an account store.
+     * <p/>
+     * These groups can be used role-based access control checks, for example, 'if a user is in the admin group, allow
+     * them to delete a user'.
+     * <p/>
+     * If you want to control which accounts can login to an application, you control that via the application's AccountStoreMappings
+     * collection, not this method.
      * <p/>
      * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
      * for one or more groups using the {@link #getGroups(java.util.Map)} method instead of this one.
@@ -1308,4 +1317,113 @@ public interface Application extends Resource, Saveable, Deletable {
      * @since 1.0.0
      */
     public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest);
+
+    /**
+     * Convenience method to add a a new {@link AccountStore} to this application.
+     * <p/>
+     * The given String can be either an 'href' or a 'name' of a {@link Directory} or a {@link Group} belonging to the current Tenant.
+     * <p/>
+     * If the provided value is an 'href', this method will get the proper Resource and add it as a new AccountStore in this
+     * Application without much effort. However, if the provided value is not an 'href', it will be considered as a 'name'. In this case,
+     * this method will search for both a Directory and a Group whose names equal the provided <code>hrefOrName</code>. If only
+     * one resource exists (either a Directory or a Group), then it will be added as a new AccountStore in this Application. However,
+     * if there are two resources (a Directory and a Group) matching that name, a {@link com.stormpath.sdk.resource.ResourceException ResourceException}
+     * will be thrown.
+     * <p/>
+     * At the end of this process, if a single matching resource is found, this method will then delegate the actual {@link AccountStoreMapping}
+     * creation to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
+     * </p>
+     * Example providing an href:
+     * <p/>
+     * <pre>
+     *      AccountStoreMapping accountStoreMapping = application.addAccountStore("https://api.stormpath.com/v1/groups/2rwq022yMt4u2DwKLfzriP");
+     * </pre>
+     * Example providing a name:
+     * <p/>
+     * <pre>
+     *      AccountStoreMapping accountStoreMapping = application.addAccountStore("Foo Name");
+     * </pre>
+     * <b>USAGE NOTE 1:</b> When using 'names' this method is not efficient as it will search for both Directories and Groups within this Tenant
+     * for a matching name. In order to do so, some looping takes place at the client side: groups exist within directories, therefore we need
+     * to loop through every existing directory in order to find the required Group. In contrast, providing the Group's 'href' is much more
+     * efficient as no actual search operation needs to be carried out.
+     * <p/>
+     * <b>USAGE NOTE 2:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
+     *
+     * @param hrefOrName either the 'href' or the 'name' of the desired Directory or Group.
+     * @return the {@link AccountStoreMapping} created after finding the actual resource described by <code>hrefOrName</code>. It returns
+     * <code>null</code> if there is no group or directory matching the href or name given.
+     * @throws ResourceException if the resource already exists as an account store in this application.
+     * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
+     * @see #addAccountStore(com.stormpath.sdk.directory.DirectoryCriteria)
+     * @see #addAccountStore(com.stormpath.sdk.group.GroupCriteria)
+     * @since 1.0.RC3
+     */
+    AccountStoreMapping addAccountStore(String hrefOrName);
+
+    /**
+     * Convenience method to add a new {@link Directory} as an {@link AccountStore} to this application.
+     * <p/>
+     * The provided {@link DirectoryCriteria} must match a single {@link Directory} in the current Tenant. If more than one
+     * Directory matches the criteria, an {@link IllegalArgumentException} will be thrown. If no Directory matches the criteria,
+     * this method will return <code>null</code>.
+     * <p/>
+     * When a single Directory is found, this method will then delegate the actual {@link AccountStoreMapping} creation
+     * to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
+     * </p>
+     * Example:
+     * <p/>
+     * <pre>
+     *      DirectoryCriteria criteria = Directories.criteria().add(Directories.name().eqIgnoreCase("Foo Dir Name"));
+     *      AccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
+     * </pre>
+     * <p/>
+     * <b>USAGE NOTE 1:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
+     *
+     * @param criteria to search for the desired {@link Directory} to be added as an {@link AccountStore}.
+     * @return the {@link AccountStoreMapping} created after finding the actual resource matching the criteria. It returns
+     * <code>null</code> if there is no Directory matching the criteria.
+     * @throws ResourceException if the found {@link Directory} already exists as an account store in this application.
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @since 1.0.RC3
+     */
+    AccountStoreMapping addAccountStore(DirectoryCriteria criteria);
+
+    /**
+     * Convenience method to add a new {@link Group} as an {@link AccountStore} to this application.
+     * <p/>
+     * The provided {@link GroupCriteria} must match a single {@link Group} in the current Tenant. If more than one
+     * Group matches the criteria, an {@link IllegalArgumentException} will be thrown. If no Group matches the criteria,
+     * this method will return <code>null</code>.
+     * <p/>
+     * When a single Group is found, this method will then delegate the actual {@link AccountStoreMapping} creation
+     * to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
+     * </p>
+     * Example:
+     * <p/>
+     * <pre>
+     *      GroupCriteria criteria = Groups.criteria().add(Groups.name().containsIgnoreCase("Foo Group Name"));
+     *      AccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
+     * </pre>
+     * <p/>
+     * <b>USAGE NOTE 1:</b> This method is not efficient as it will search for every Group within every Directory of this Tenant.
+     * In order to do so, some looping takes place at the client side: groups exist within directories, therefore we need to loop through every
+     * existing directory in order to find the required group. In contrast, if the Group's 'href' is already known, we suggest using
+     * {@link #addAccountStore(String)} with the Group's 'href' since it is a more efficient mechanism where no actual search
+     * needs to be carried out.
+     * <p/>
+     * <b>USAGE NOTE 2:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
+     *
+     * @param criteria to search for the desired {@link Group} to be added as an {@link AccountStore}.
+     * @return the {@link AccountStoreMapping} created after finding the actual resource matching the criteria. It returns
+     * <code>null</code> if there is no Group matching the criteria.
+     * @throws ResourceException if the found {@link Group} already exists as an account store in this application.
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @see #addAccountStore(String)
+     * @since 1.0.RC3
+     */
+    AccountStoreMapping addAccountStore(GroupCriteria criteria);
 }

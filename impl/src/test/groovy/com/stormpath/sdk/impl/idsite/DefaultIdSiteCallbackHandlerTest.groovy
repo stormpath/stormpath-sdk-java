@@ -20,11 +20,7 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
-import com.stormpath.sdk.idsite.AccountResult
-import com.stormpath.sdk.idsite.AuthenticationResult
-import com.stormpath.sdk.idsite.IdSiteResultListener
-import com.stormpath.sdk.idsite.LogoutResult
-import com.stormpath.sdk.idsite.RegistrationResult
+import com.stormpath.sdk.idsite.*
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import org.testng.annotations.Test
 
@@ -33,7 +29,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 class DefaultIdSiteCallbackHandlerTest {
 

@@ -15,23 +15,24 @@
  */
 package com.stormpath.sdk.ds;
 
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * A {@code DataStore} is the liaison between client SDK components and the raw Stormpath REST API.  It is
- * responsible for converting SDK objects (Account, Directory, Group instances, etc) into REST HTTP requests,
- * executing those requests, and converting REST HTTP responses back into SDK objects.
+ * A {@code DataStore} is the liaison between client SDK components and the raw Stormpath REST API.  It is responsible
+ * for converting SDK objects (Account, Directory, Group instances, etc) into REST HTTP requests, executing those
+ * requests, and converting REST HTTP responses back into SDK objects.
  *
  * @since 0.1
  */
 public interface DataStore {
 
     /**
-     * Instantiates and returns a new instance of the specified Resource type.  The instance is merely instantiated
-     * and is not saved/synchronized with the server in any way.
-     * <p/>
-     * This method effectively replaces the {@code new} keyword that would have been used otherwise if the concrete
-     * implementation was known (Resource implementation classes are intentionally not exposed to SDK end-users).
+     * Instantiates and returns a new instance of the specified Resource type.  The instance is merely instantiated and
+     * is not saved/synchronized with the server in any way. <p/> This method effectively replaces the {@code new}
+     * keyword that would have been used otherwise if the concrete implementation was known (Resource implementation
+     * classes are intentionally not exposed to SDK end-users).
      *
      * @param clazz the Resource class to instantiate.
      * @param <T>   the Resource sub-type
@@ -40,12 +41,10 @@ public interface DataStore {
     <T extends Resource> T instantiate(Class<T> clazz);
 
     /**
-     * Looks up (retrieves) the resource at the specified {@code href} URL and returns the resource as an instance
-     * of the specified {@code class}.
-     * <p/>
-     * The {@code Class} argument must represent an interface that is a sub-interface of
-     * {@link Resource}, for example {@link com.stormpath.sdk.account.Account Account},
-     * {@link com.stormpath.sdk.directory.Directory Directory}, etc.
+     * Looks up (retrieves) the resource at the specified {@code href} URL and returns the resource as an instance of
+     * the specified {@code class}. <p/> The {@code Class} argument must represent an interface that is a sub-interface
+     * of {@link Resource}, for example {@link com.stormpath.sdk.account.Account Account}, {@link
+     * com.stormpath.sdk.directory.Directory Directory}, etc.
      *
      * @param href  the resource URL of the resource to retrieve
      * @param clazz the {@link Resource} sub-interface to instantiate
@@ -53,5 +52,21 @@ public interface DataStore {
      * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
      */
     <T extends Resource> T getResource(String href, Class<T> clazz);
+
+    /**
+     * Returns the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.
+     *
+     * @return the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.
+     * @since 1.0.RC3
+     */
+    ApiKey getApiKey();
+
+    /**
+     * Returns the CacheManager used to improve data store performance.
+     *
+     * @return the CacheManager used to improve data store performance.
+     * @since 1.0.RC3
+     */
+    CacheManager getCacheManager();
 
 }

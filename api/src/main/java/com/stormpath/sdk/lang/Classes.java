@@ -143,14 +143,14 @@ public class Classes {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static Object newInstance(String fqcn) {
-        return newInstance(forName(fqcn));
+    public static <T> T newInstance(String fqcn) {
+        Class<T> clazz = forName(fqcn);
+        return newInstance(clazz);
     }
 
-    @SuppressWarnings("unchecked")
-    public static Object newInstance(String fqcn, Object... args) {
-        return newInstance(forName(fqcn), args);
+    public static <T> T newInstance(String fqcn, Object... args) {
+        Class<T> clazz = forName(fqcn);
+        return newInstance(clazz, args);
     }
 
     public static <T> T newInstance(Class<T> clazz) {

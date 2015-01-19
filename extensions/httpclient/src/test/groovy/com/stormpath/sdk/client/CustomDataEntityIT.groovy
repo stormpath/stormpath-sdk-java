@@ -49,6 +49,8 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
 
         deleteOnTeardown(account.directory)
 
+        deleteOnTeardown(group)
+
         deleteOnTeardown(application)
 
     }

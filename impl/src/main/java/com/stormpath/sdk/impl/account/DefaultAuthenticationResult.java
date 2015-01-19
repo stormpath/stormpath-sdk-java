@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * DefaultAuthenticationResult is the default implementation of the {@link com.stormpath.sdk.idsite.AuthenticationResult AuthenticationResult} interface.
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public class DefaultAuthenticationResult extends DefaultAccountResult implements AuthenticationResult {
 

@@ -87,7 +87,7 @@ public abstract class Collections {
      * @param elements the elements to put in the list.
      * @param <T> the type of elements in the collection
      * @return a new List that contains the specified elements or an empty collection if the elements are null or empty.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     public static <T> List<T> toList(T... elements) {
         if (elements == null || elements.length == 0) {

@@ -28,8 +28,6 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 import static org.testng.Assert.*
 
@@ -115,7 +113,7 @@ class DefaultCustomDataTest {
 
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testMapManipulation() {
         def ds = createStrictMock(InternalDataStore)
@@ -215,7 +213,7 @@ class DefaultCustomDataTest {
 
 }
 
-// @since 1.0.0
+// @since 1.0.RC3
 private class DefaultDataStoreDelegateTo extends DefaultDataStore {
 
     private CustomData customData;

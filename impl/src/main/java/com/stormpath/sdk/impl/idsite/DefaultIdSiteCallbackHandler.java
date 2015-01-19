@@ -20,7 +20,12 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.*;
+import com.stormpath.sdk.idsite.AccountResult;
+import com.stormpath.sdk.idsite.AuthenticationResult;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
+import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.idsite.NonceStore;
+import com.stormpath.sdk.idsite.RegistrationResult;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.account.DefaultAuthenticationResult;
 import com.stormpath.sdk.impl.account.DefaultLogoutResult;
@@ -126,7 +131,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if(this.resultListener != null) {
             IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
             dispatchResponseStatus(resultStatus, properties);
@@ -136,7 +141,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public IdSiteCallbackHandler setResultListener(IdSiteResultListener idSiteResultListener) {
@@ -229,7 +234,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
      * @param properties a map of attributes extracted from the JSON Payload that is used to create the specific Account Result sub-class:
      *                   like: {@link RegistrationResult}, {@link AuthenticationResult} or {@ling LogoutResult}.
      * @throws IllegalArgumentException if the result status is unknown.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     private void dispatchResponseStatus(IdSiteResultStatus status, Map<String, Object> properties) {
         switch (status) {

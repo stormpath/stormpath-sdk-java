@@ -20,6 +20,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.ScopeFactory;
@@ -44,10 +45,8 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
 
     private final String secret;
 
-    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
-
     @SuppressWarnings("UnusedDeclaration") //used via reflection in com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
-    public AccessTokenAuthenticationRequest(Object httpRequest) throws Exception {
+    public AccessTokenAuthenticationRequest(HttpRequest httpRequest) throws Exception {
         this(getHttpServletRequest(httpRequest), null, DEFAULT_TTL);
     }
 
@@ -66,17 +65,12 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
         this.ttl = ttl;
     }
 
-    private static HttpServletRequest getHttpServletRequest(Object httpRequest) {
-        HttpServletRequest httpServletRequest;
-        Class httpRequestClass = httpRequest.getClass();
-        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
-            httpServletRequest = (HttpServletRequest) httpRequest;
-        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+    private static HttpServletRequest getHttpServletRequest(HttpRequest httpRequest) {
+        if (httpRequest instanceof ServletHttpRequest) {
+            return ((ServletHttpRequest)httpRequest).getHttpServletRequest();
         } else {
-            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+            return new OauthHttpServletRequest(httpRequest);
         }
-        return httpServletRequest;
     }
 
     public long getTtl() {

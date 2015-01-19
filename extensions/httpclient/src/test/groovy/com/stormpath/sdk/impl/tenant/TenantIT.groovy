@@ -174,7 +174,7 @@ class TenantIT extends ClientIT {
         assertEquals(((FacebookProvider)provider).getClientSecret(), clientSecret)
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testGetAccounts() {
         def tenant = client.currentTenant
@@ -187,7 +187,7 @@ class TenantIT extends ClientIT {
         }
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testGetAccountsWithCriteria() {
         def uniqueEmail = uniquify("myUnique") + "@email.com"
@@ -221,7 +221,7 @@ class TenantIT extends ClientIT {
         assertEquals newQty, originalQty + 1
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testGetAccountsWithMap() {
         def uniqueEmail = uniquify("myUnique") + "@email.com"
@@ -255,7 +255,7 @@ class TenantIT extends ClientIT {
         assertEquals newQty, originalQty + 1
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testGetGroups() {
         def tenant = client.currentTenant
@@ -268,7 +268,7 @@ class TenantIT extends ClientIT {
         }
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testGetGroupsWithCriteria() {
         def uniqueName = uniquify("uniqueGroupName")
@@ -298,7 +298,7 @@ class TenantIT extends ClientIT {
         assertEquals newQty, originalQty + 1
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testGetGroupsWithMap() {
         def uniqueName = uniquify("uniqueGroupName")
