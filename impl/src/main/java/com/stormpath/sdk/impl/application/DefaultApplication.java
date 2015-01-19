@@ -78,7 +78,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 
 /** @since 0.2 */
 public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {

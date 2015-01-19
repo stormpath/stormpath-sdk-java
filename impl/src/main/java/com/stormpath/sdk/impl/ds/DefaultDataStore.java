@@ -74,9 +74,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.LIMIT;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.OFFSET;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 
 /**
  * @since 0.1

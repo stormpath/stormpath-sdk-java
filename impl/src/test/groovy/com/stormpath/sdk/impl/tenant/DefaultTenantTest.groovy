@@ -23,11 +23,10 @@ import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.provider.DefaultGoogleProvider
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
-import com.stormpath.sdk.lang.Objects
-import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.provider.Providers
 import org.easymock.IArgumentMatcher
