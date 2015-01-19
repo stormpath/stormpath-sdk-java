@@ -29,7 +29,8 @@ means of the User-Agent http header. The primary purpose of this is for us at St
 better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
 recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
-- [Issue 103](https://github.com/stormpath/stormpath-sdk-java/issues/103): We have added three convenience methods to simplify the addition of Account Stores: app.addAccountStore(String), app.addAccountStore(DirectoryCriteria) and app.addAccountStore(GroupCriteria). 
+- [Issue 103](https://github.com/stormpath/stormpath-sdk-java/issues/103): We have added three convenience methods to simplify the addition of Account Stores: app.addAccountStore(String), app.addAccountStore(DirectoryCriteria) and app.addAccountStore(GroupCriteria).
+- [Issue 107](https://github.com/stormpath/stormpath-sdk-java/issues/107): Added the ability to resend Account Verification Emails.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 106](https://github.com/stormpath/stormpath-sdk-java/issues/106): Creating an account or group from a Directory now returns the created resource.

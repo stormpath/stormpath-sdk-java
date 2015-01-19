@@ -21,6 +21,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -45,6 +46,7 @@ import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
+import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
@@ -552,6 +554,22 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         validateHttpRequest(httpRequest);
 
         return new DefaultIdSiteCallbackHandler(getDataStore(), this, httpRequest);
+    }
+
+    /** @since 1.0.0 */
+    public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest) {
+        Assert.notNull(verificationEmailRequest, "verificationEmailRequest must not be null.");
+        Assert.hasText(verificationEmailRequest.getLogin(), "verificationEmailRequest's email property is required.");
+
+        AccountStore accountStore = verificationEmailRequest.getAccountStore();
+        if(accountStore != null && accountStore.getHref() == null) {
+            throw new IllegalArgumentException("verificationEmailRequest's accountStore has been specified but its href is null.");
+        }
+
+        String href = getHref() + "/verificationEmails";
+        //We are passing a dummy return type (VerificationEmailRequest). It is not actually needed, but if we use the
+        //the two-parameters create(...) operation, we get an exception caused by an empty response body from the backend
+        getDataStore().create(href, (DefaultVerificationEmailRequest) verificationEmailRequest, DefaultVerificationEmailRequest.class);
     }
 
     @SuppressWarnings("unchecked")
