@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.http.support;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -46,7 +48,7 @@ import java.util.jar.JarFile;
  * This is a sample User-Agent string:
  * <i>stormpath-spring-security/0.7.0 stormpath-sdk-java/1.0.0 spring/4.0.4.RELEASE java/1.7.0_45 Mac OS X/10.9.2 (spring-security/3.2.0.RELEASE jetty/8.1.5.v20120716)</i>
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public class UserAgent {
 

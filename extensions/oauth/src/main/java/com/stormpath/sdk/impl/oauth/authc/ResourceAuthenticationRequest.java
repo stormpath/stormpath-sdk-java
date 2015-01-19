@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.RequestLocation;
@@ -34,29 +35,28 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest implements AuthenticationRequest {
 
-    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
+    private final HttpServletRequest httpServletRequest;
 
-    @SuppressWarnings("UnusedDeclaration") //used via reflection by com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
-    public ResourceAuthenticationRequest(Object httpRequest, RequestLocation[] requestLocations) throws OAuthSystemException, OAuthProblemException {
-        this(getHttpServletRequest(httpRequest), requestLocations);
+    @SuppressWarnings("UnusedDeclaration")
+    //used via reflection by com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
+    public ResourceAuthenticationRequest(HttpRequest request, RequestLocation[] requestLocations)
+        throws OAuthSystemException, OAuthProblemException {
+        this(toHttpServletRequest(request), requestLocations);
     }
 
-    public ResourceAuthenticationRequest(HttpServletRequest httpServletRequest, RequestLocation[] requestLocations) throws OAuthProblemException, OAuthSystemException {
-        super(httpServletRequest, new TokenType[]{TokenType.BEARER}, convert(requestLocations));
+    public ResourceAuthenticationRequest(HttpServletRequest httpServletRequest, RequestLocation[] requestLocations)
+        throws OAuthProblemException, OAuthSystemException {
+        super(httpServletRequest, new TokenType[]{ TokenType.BEARER }, convert(requestLocations));
         Assert.notNull(httpServletRequest, "httpServletRequest cannot be null");
+        this.httpServletRequest = httpServletRequest;
     }
 
-    private static HttpServletRequest getHttpServletRequest(Object httpRequest) {
-        HttpServletRequest httpServletRequest;
-        Class httpRequestClass = httpRequest.getClass();
-        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
-            httpServletRequest = (HttpServletRequest) httpRequest;
-        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+    private static HttpServletRequest toHttpServletRequest(HttpRequest httpRequest) {
+        if (httpRequest instanceof ServletHttpRequest) {
+            return ((ServletHttpRequest) httpRequest).getHttpServletRequest();
         } else {
-            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+            return new OauthHttpServletRequest(httpRequest);
         }
-        return httpServletRequest;
     }
 
     private static ParameterStyle[] convert(RequestLocation[] requestLocations) {
@@ -89,27 +89,27 @@ public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest im
 
     @Override
     public Object getPrincipals() {
-        throw new UnsupportedOperationException("getPrincipals() this operation is not supported ApiAuthenticationRequest.");
+        throw new UnsupportedOperationException(getClass().getName() + " .getPrincipals() is not supported.");
     }
 
     @Override
     public Object getCredentials() {
-        throw new UnsupportedOperationException("getCredentials()this operation is not supported ApiAuthenticationRequest.");
+        throw new UnsupportedOperationException(getClass().getName() + " .getCredentials() is not supported.");
     }
 
     @Override
     public String getHost() {
-        throw new UnsupportedOperationException("getHost() this operation is not supported ApiAuthenticationRequest.");
+        return httpServletRequest.getRemoteHost();
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("clear() this operation is not supported ApiAuthenticationRequest.");
+        //no-op
     }
 
     @Override
     public AccountStore getAccountStore() {
-        throw new UnsupportedOperationException("getAccountStore()this operation is not supported OauthAuthenticationRequest.");
+        throw new UnsupportedOperationException(getClass().getName() + " .getAccountStore() is not supported.");
     }
 
 }

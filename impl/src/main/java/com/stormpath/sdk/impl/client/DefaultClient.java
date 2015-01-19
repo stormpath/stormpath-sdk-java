@@ -57,6 +57,7 @@ import java.util.Map;
  */
 public class DefaultClient implements Client {
 
+    private final ApiKey apiKey;
     private final DataStore dataStore;
 
     private String currentTenantHref;
@@ -77,6 +78,7 @@ public class DefaultClient implements Client {
      */
     public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
+        this.apiKey = apiKey;
         Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme);
         DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey);
 
@@ -112,6 +114,16 @@ public class DefaultClient implements Client {
     }
 
     @Override
+    public ApiKey getApiKey() {
+        return this.apiKey;
+    }
+
+    @Override
+    public CacheManager getCacheManager() {
+        return this.dataStore.getCacheManager();
+    }
+
+    @Override
     public DataStore getDataStore() {
         return this.dataStore;
     }
@@ -130,7 +142,7 @@ public class DefaultClient implements Client {
             //HTTP calls via the HttpClient.  Throw an exception:
 
             String msg = "Unable to find the '" + className + "' implementation on the classpath.  Please ensure you " +
-                    "have added the stormpath-sdk-impl-httpclient .jar file to your runtime classpath.";
+                    "have added the stormpath-sdk-httpclient .jar file to your runtime classpath.";
             throw new RuntimeException(msg);
         }
 
@@ -321,7 +333,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public AccountList getAccounts() {
@@ -331,7 +343,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
@@ -341,7 +353,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public AccountList getAccounts(Map<String, Object> queryParams) {
@@ -351,7 +363,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public GroupList getGroups() {
@@ -361,7 +373,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
@@ -371,7 +383,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public GroupList getGroups(Map<String, Object> queryParams) {

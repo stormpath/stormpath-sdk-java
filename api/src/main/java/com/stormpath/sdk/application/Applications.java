@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.application;
 
+import com.stormpath.sdk.account.VerificationEmailRequestBuilder;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
@@ -185,6 +186,20 @@ public final class Applications {
         return (CreateApplicationRequestBuilder) Classes.instantiate(ctor, application);
     }
 
+    /**
+     * Creates a new {@link com.stormpath.sdk.account.VerificationEmailRequestBuilder VerificationEmailRequestBuilder}.
+     * The builder is used when the verification email needs to be re-sent.
+     *
+     * @return a new {@link com.stormpath.sdk.account.VerificationEmailRequestBuilder VerificationEmailRequestBuilder}
+     *         instance.
+     * @see com.stormpath.sdk.application.Application#sendVerificationEmail(com.stormpath.sdk.account.VerificationEmailRequest)
+     * @since 1.0.0
+     */
+    public static VerificationEmailRequestBuilder verificationEmailBuilder() {
+        final String FQCN = "com.stormpath.sdk.impl.account.DefaultVerificationEmailRequestBuilder";
+        return (VerificationEmailRequestBuilder) Classes.newInstance(FQCN);
+    }
+
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";
         return (StringExpressionFactory) Classes.newInstance(FQCN, propName);
@@ -194,4 +209,6 @@ public final class Applications {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory";
         return (EqualsExpressionFactory) Classes.newInstance(FQCN, propName);
     }
+
+
 }

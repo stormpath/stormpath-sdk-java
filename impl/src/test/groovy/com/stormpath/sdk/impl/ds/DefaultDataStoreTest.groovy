@@ -23,11 +23,7 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GoogleProviderData
-import com.stormpath.sdk.provider.Provider
-import com.stormpath.sdk.provider.ProviderData
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit

@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
@@ -57,10 +56,6 @@ public interface InternalDataStore extends DataStore {
 
     //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
 
-    /**
-     * @since 1.0.RC
-     */
-    ApiKey getApiKey();
     /**
      * @since 1.0.beta
      */

@@ -47,16 +47,26 @@ import java.util.Properties;
  *         <code>System.getProperty("user.home") + "/.stormpath/apiKey.properties"</code> as
  *         recommended/documented in the <a href="https://docs.stormpath.com/java/quickstart/">Stormpath Java
  *         Quickstart</a>.</li>
+ *     <li>A properties file that exists at the file path or URL specified by the {@code STORMPATH_API_KEY_FILE}
+ *         variable.  If this file exists and contains either the apiKey id or secret properties, these values
+ *         override any values found in the default apiKey.properties file.  The {@code STORMPATH_API_KEY_FILE}
+ *         String can be an absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+ *         {@code classpath:} prefixes respectively.</li>
  *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
- *         these values are present, they override any values found in the default apiKey.properties file.</li>
+ *         these values are present, they override any previously discovered value.</li>
+ *     <li>A properties file that exists at the file path or URL specified by the {@code stormpath.apiKey.file}
+ *         system property.  If this file exists and any values are present, the values override any
+ *         previously discovered value.  The {@code stormpath.apiKey.file} system property String can be an
+ *         absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+ *         {@code classpath:} prefixes respectively.</li>
  *     <li>The system properties {@code stormpath.apiKey.id} and {@code stormpath.apiKey.secret}.  If either of
  *         these values are present, they override any previously discovered values.</li>
  * </ol>
  *
- * <p><b>SECURITY NOTICE:</b> While System properties may be used to represent your API Key Secret as mentioned above,
- * this is not recommended: process listings on a machine will expose process arguments (like system properties) and
- * expose the secret value to anyone that can read process listings.  As always, secret values should never be exposed
- * to anyone other than the person that owns the API Key.</p>
+ * <p><b>SECURITY NOTICE:</b> While the {@code stormpath.apiKey.secret} system property may be used to represent your
+ * API Key Secret as mentioned above, this is not recommended: process listings on a machine will expose process
+ * arguments (like system properties) and expose the secret value to anyone that can read process listings.  As
+ * always, secret values should never be exposed to anyone other than the person that owns the API Key.</p>
  *
  * <p>While an API Key ID may be configured anywhere (and be visible by anyone), it is recommended to use a private
  * read-only file or an environment variable to represent API Key secrets.  <b>Never</b> commit secrets to source code
@@ -277,15 +287,25 @@ public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ /
 
     /**
      * Constructs a new {@link ApiKey} instance based on the ApiKeyBuilder's current configuration state.  This method
-     * loads ID and secret values from the following locations, in order:
+     * loads (and overrides) ID and secret values from the following locations, in order:
      *
      * <ol>
      *     <li>The default apiKey.properties file location of
      *         <code>System.getProperty("user.home") + "/.stormpath/apiKey.properties"</code> as
      *         recommended/documented in the <a href="https://docs.stormpath.com/java/quickstart/">Stormpath Java
      *         Quickstart</a>.</li>
+     *     <li>A properties file that exists at the file path or URL specified by the {@code STORMPATH_API_KEY_FILE}
+     *         variable.  If this file exists and contains either the apiKey id or secret properties, these values
+     *         override any values found in the default apiKey.properties file.  The {@code STORMPATH_API_KEY_FILE}
+     *         String can be an absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+     *         {@code classpath:} prefixes respectively.</li>
      *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
-     *         these values are present, they override any values found in the default apiKey.properties file.</li>
+     *         these values are present, they override any previously discovered value.</li>
+     *     <li>A properties file that exists at the file path or URL specified by the {@code stormpath.apiKey.file}
+     *         system property.  If this file exists and any values are present, the values override any
+     *         previously discovered value.  The {@code stormpath.apiKey.file} system property String can be an
+     *         absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+     *         {@code classpath:} prefixes respectively.</li>
      *     <li>The system properties {@code stormpath.apiKey.id} and {@code stormpath.apiKey.secret}.  If either of
      *         these values are present, they override any previously discovered values.</li>
      *     <li>A specified {@link #setFileLocation(String) fileLocation}:  Any properties discovered in this .properties
