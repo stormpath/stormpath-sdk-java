@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import com.stormpath.sdk.servlet.event.RequestEventListener;
 
 import javax.servlet.ServletContext;
 
+/**
+ * @since 1.0.RC3
+ */
 public class EventPublisherFactory extends ConfigSingletonFactory<Publisher> {
 
     public static final String REQUEST_EVENT_PUBLISHER = "stormpath.web.request.event.listener";

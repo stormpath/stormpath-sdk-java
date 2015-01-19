@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.ServletContext;
 
+/**
+ * @since 1.0.RC3
+ */
 public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFactory<Saver<AuthenticationResult>> {
 
     protected static final String ACCOUNT_COOKIE_SECURE_RESOLVER = "stormpath.web.account.cookie.secure.resolver";

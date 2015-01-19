@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import java.util.List;
  * {@link javax.servlet.FilterChain} as well as a {@link java.util.List List} of other
  * {@link javax.servlet.Filter Filter}s that might need to execute prior to the final wrapped original chain.
  * It allows a list of filters to execute before continuing the original (proxied) {@code FilterChain} instance.
+ *
+ * @since 1.0.RC3
  */
 public class ProxiedFilterChain implements FilterChain {
 

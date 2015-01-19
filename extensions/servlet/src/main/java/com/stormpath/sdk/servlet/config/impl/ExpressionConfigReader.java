@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import javax.servlet.ServletContext;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC3
+ */
 public class ExpressionConfigReader implements ConfigReader {
 
     private static final SpelExpressionParser EXPR_PARSER = createExpressionParser();

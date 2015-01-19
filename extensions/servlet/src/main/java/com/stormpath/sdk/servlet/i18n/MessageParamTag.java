@@ -18,6 +18,9 @@ package com.stormpath.sdk.servlet.i18n;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+/**
+ * @since 1.0.RC3
+ */
 public class MessageParamTag extends BodyTagSupport {
 
     private Object value;

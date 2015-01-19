@@ -34,6 +34,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * @since 1.0.RC3
+ */
 public class MessageTag extends TagSupport {
 
     private String key;

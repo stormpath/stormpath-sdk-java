@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+/**
+ * @since 1.0.RC3
+ */
 public class DefaultMessageSource implements MessageSource {
     
     public static final String BUNDLE_BASE_NAME = "com.stormpath.sdk.servlet.i18n";

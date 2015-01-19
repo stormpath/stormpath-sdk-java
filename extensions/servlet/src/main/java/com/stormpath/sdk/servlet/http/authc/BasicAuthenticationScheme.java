@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
 
+/**
+ * @since 1.0.RC3
+ */
 public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");

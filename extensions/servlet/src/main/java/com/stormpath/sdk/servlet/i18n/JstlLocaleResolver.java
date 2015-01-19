@@ -24,6 +24,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.jstl.core.Config;
 import java.util.Locale;
 
+/**
+ * @since 1.0.RC3
+ */
 public class JstlLocaleResolver implements Resolver<Locale> {
 
     @Override

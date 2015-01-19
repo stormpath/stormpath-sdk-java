@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ import java.io.IOException;
  *
  * This class was initially borrowed from the Apache Shiro and Spring Framework projects with additional
  * modifications.
+ *
+ * @since 1.0.RC3
  */
 public abstract class HttpFilter implements Filter {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,12 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+/**
+ *
+ * @param <T> The type of the singleton object returned
+ *
+ * @since 1.0.RC3
+ */
 public abstract class ConfigSingletonFactory<T> implements ServletContextInitializable, Factory<T> {
 
     private T instance;

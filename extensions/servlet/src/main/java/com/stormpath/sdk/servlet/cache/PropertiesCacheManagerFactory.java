@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @since 1.0.RC3
+ */
 public class PropertiesCacheManagerFactory implements CacheManagerFactory {
 
     public static final String STORMPATH_CACHE_CONFIG_PREFIX = "stormpath.cache.";

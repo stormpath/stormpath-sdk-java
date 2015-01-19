@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import java.util.Set;
 /**
  * An OAuth {@code AccessTokenResult} that is returned as a result from a successful password {@code grant_type}
  * authentication attempt.
+ *
+ * @since 1.0.RC3
  */
 public class PasswordGrantAccessTokenResult implements AccessTokenResult {
 

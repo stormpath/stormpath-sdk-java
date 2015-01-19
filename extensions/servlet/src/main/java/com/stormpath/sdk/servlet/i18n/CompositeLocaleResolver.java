@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * @since 1.0.RC3
+ */
 public class CompositeLocaleResolver implements Resolver<Locale> {
 
     private List<Resolver<Locale>> resolvers;

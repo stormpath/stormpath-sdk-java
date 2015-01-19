@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,32 @@ package com.stormpath.sdk.servlet.event;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * An event generated while processing an {@link javax.servlet.http.HttpServletRequest HttpServletRequest}.
+ *
+ * @since 1.0.RC3
+ */
 public interface RequestEvent {
 
+    /**
+     * The request being processed.
+     *
+     * @return the request being processed.
+     */
     HttpServletRequest getRequest();
 
+    /**
+     * The response corresponding to the {@link #getRequest() request}.
+     *
+     * @return response corresponding to the {@link #getRequest() request}.
+     */
     HttpServletResponse getResponse();
 
+    /**
+     * Dispatch method that allows a listener to process this event in a type-safe manner.
+     *
+     * @param listener the listener that will process this event.
+     */
     void accept(RequestEventListener listener);
 
 }

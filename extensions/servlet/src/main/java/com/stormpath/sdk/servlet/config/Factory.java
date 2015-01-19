@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+/**
+ * @since 1.0.RC3
+ * @param <T> the type of object returned
+ */
 public interface Factory<T> {
 
     T getInstance();

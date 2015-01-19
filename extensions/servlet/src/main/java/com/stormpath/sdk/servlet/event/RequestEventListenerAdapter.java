@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,14 @@ import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Default adapter implementation of the {@link RequestEventListener} interface, to be used to subclass and override
+ * only the methods necessary.
+ *
+ * <p>All method implementations simply log to {@code DEBUG}.</p>
+ *
+ * @since 1.0.RC3
+ */
 public class RequestEventListenerAdapter implements RequestEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(RequestEventListenerAdapter.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC3
+ */
 public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
 
     private static final Logger log = LoggerFactory.getLogger(AuthorizationHeaderAuthenticator.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ import com.stormpath.sdk.lang.Classes;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * @param <T> the type of object discovered/resolved.
+ * @since 1.0.RC3
+ */
 public class ImplementationClassResolver<T> {
 
     private final Config CONFIG;

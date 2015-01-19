@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * <p>This allows for the common use case where behavior typically always needs to be secure over a TLS connection (e.g.
  * a login attempt) except during development, typically done on localhost.</p>
+ *
+ * @since 1.0.RC3
  */
 public class SecureRequiredExceptForLocalhostResolver implements Resolver<Boolean> {
 

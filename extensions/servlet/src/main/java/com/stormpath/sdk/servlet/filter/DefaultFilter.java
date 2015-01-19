@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.servlet.Filter;
 /**
  * Enum representing all of the default Stormpath Filter instances available to web applications.
  *
- * @since 1.0
+ * @since 1.0.RC3
  */
 public enum DefaultFilter {
 

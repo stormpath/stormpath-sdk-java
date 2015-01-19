@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.stormpath.sdk.servlet.http.authc;
 /**
  * Parses an Authorization header value according to the
  * <a href="https://tools.ietf.org/html/rfc7235#appendix-C">HTTP Authentication grammar</a> specification.
+ *
+ * @since 1.0.RC3
  */
 public class DefaultAuthorizationHeaderParser implements AuthorizationHeaderParser {
 

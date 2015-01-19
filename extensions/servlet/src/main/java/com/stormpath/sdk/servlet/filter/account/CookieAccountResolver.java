@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * @since 1.0.RC3
+ */
 public class CookieAccountResolver extends AccountCookieHandler implements Resolver<Account> {
 
     private static final Logger log = LoggerFactory.getLogger(CookieAccountResolver.class);

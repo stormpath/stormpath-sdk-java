@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import javax.servlet.ServletContextListener;
  * </ol>
  *
  * @see ClientLoader
- * @since 1.0
+ * @since 1.0.RC3
  */
 public class DefaultClientLoaderListener extends ClientLoader implements ServletContextListener {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
 
 import javax.servlet.ServletContext;
 
+/**
+ * @since 1.0.RC3
+ */
 public class BasicAuthenticationSchemeFactory extends ConfigSingletonFactory<BasicAuthenticationScheme> {
 
     public static final String USERNAME_PASSWORD_REQUEST_FACTORY = "stormpath.web.authc.usernamePasswordRequestFactory";
