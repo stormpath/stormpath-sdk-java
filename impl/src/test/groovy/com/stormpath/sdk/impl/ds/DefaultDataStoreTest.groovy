@@ -16,16 +16,17 @@
 package com.stormpath.sdk.impl.ds
 
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.cache.Caches
+import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GoogleProviderData
-import com.stormpath.sdk.provider.Provider
-import com.stormpath.sdk.provider.ProviderData
+import com.stormpath.sdk.provider.*
 import org.testng.annotations.Test
+
+import java.util.concurrent.TimeUnit
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -240,6 +241,80 @@ class DefaultDataStoreTest {
         }
 
         verify(requestExecutor, response, facebookProvider)
+    }
+
+    @Test
+    void testProviderAccountResultNotCached() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def response = createStrictMock(Response)
+        def apiKey = createStrictMock(ApiKey)
+        def providerResponseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
+                           createdAt: "2014-04-01T22:05:25.661Z",
+                           modifiedAt: "2014-04-01T22:05:53.177Z",
+                           clientId: "237396459765014",
+                           clientSecret: "a93fae44d2a4f21d4de6201aae9b849a",
+                           providerId: "facebook"
+        ]
+        def providerAccountResponseMap = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                                          fullName: "Mel Ben Smuk",
+                                          emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
+                                          directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
+                                          tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                                          groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
+                                          apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"]
+        ]
+
+        def appProperties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
+                          defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                          defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                          accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+        ]
+
+        def mapMarshaller = new JacksonMapMarshaller();
+        // convert String into InputStream
+        InputStream providerResponseIS = new ByteArrayInputStream(mapMarshaller.marshal(providerResponseMap).getBytes());
+        InputStream providerAccountResponseIS = new ByteArrayInputStream(mapMarshaller.marshal(providerAccountResponseMap).getBytes());
+
+        def childIdProperty = "providerId"
+        def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
+
+        expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(providerResponseIS)
+        expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(providerAccountResponseIS)
+        expect(response.getHttpStatus()).andReturn(201)
+
+        replay(requestExecutor, response)
+
+        def cache = Caches.newCacheManager()
+                .withDefaultTimeToIdle(1, TimeUnit.HOURS)
+                .withDefaultTimeToLive(1, TimeUnit.HOURS)
+                .build();
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        defaultDataStore.setCacheManager(cache)
+        def app = new DefaultApplication(defaultDataStore, appProperties)
+
+        defaultDataStore.getResource(providerResponseMap.href, Provider, childIdProperty, map)
+        assertEquals(defaultDataStore.cacheManager.getCache("com.stormpath.sdk.provider.Provider").get("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider"), providerResponseMap)
+
+        def request = Providers.GOOGLE.account().setCode("4/MZ-Z4Xr-V6K61-Y0CE-ifJlyIVwY.EqwqoikzZTUSaDn_5y0ZQNiQIAI2iwI").build();
+        def account = app.getAccount(request)
+
+        assertTrue(account.isNewAccount())
+
+        assertEquals(defaultDataStore.cacheManager.caches.size(), 1)
+
+        verify(requestExecutor, response)
     }
 
 }

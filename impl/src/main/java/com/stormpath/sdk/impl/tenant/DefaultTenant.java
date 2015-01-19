@@ -16,6 +16,8 @@
 package com.stormpath.sdk.impl.tenant;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
@@ -26,6 +28,9 @@ import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.application.CreateApplicationAndDirectoryRequest;
 import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
@@ -55,6 +60,10 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
             new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
     static final CollectionReference<DirectoryList, Directory> DIRECTORIES =
             new CollectionReference<DirectoryList, Directory>("directories", DirectoryList.class, Directory.class);
+    static final CollectionReference<AccountList, Account> ACCOUNTS =
+            new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
+    static final CollectionReference<GroupList, Group> GROUPS =
+            new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA);
@@ -186,4 +195,57 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
         //execute a POST (should clean this up / make it more obvious)
         return getDataStore().save(evToken, Account.class);
     }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Override
+    public AccountList getAccounts() {
+        return getResourceProperty(ACCOUNTS);
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        AccountList proxy = getAccounts(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), AccountList.class, criteria);
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        AccountList proxy = getAccounts(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), AccountList.class, queryParams);
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Override
+    public GroupList getGroups() {
+        return getResourceProperty(GROUPS);
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Override
+    public GroupList getGroups(GroupCriteria criteria) {
+        GroupList proxy = getGroups(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), GroupList.class, criteria);
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Override
+    public GroupList getGroups(Map<String, Object> queryParams) {
+        GroupList proxy = getGroups(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), GroupList.class, queryParams);
+    }
+
 }

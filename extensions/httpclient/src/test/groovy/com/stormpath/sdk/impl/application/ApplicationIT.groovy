@@ -15,11 +15,13 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
+import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
@@ -39,7 +41,6 @@ import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
-import org.codehaus.jackson.map.ObjectMapper
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -344,7 +345,11 @@ class ApplicationIT extends ClientIT {
 
     }
 
-    @Test
+
+    //The implementation of https://github.com/stormpath/stormpath-sdk-java/issues/62
+    //causes the bug https://github.com/stormpath/stormpath-sdk-java/issues/74 to materialize itself.
+    //This test must be re-enabled when issue 74 is implemented.
+    @Test(enabled = false)
     void testGetApiKeyByIdWithOptionsInCache() {
 
         def app = createTempApp()
@@ -363,6 +368,9 @@ class ApplicationIT extends ClientIT {
         assertEquals appApiKey2.secret, appApiKey.secret
         assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
         assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
+
+        assertEquals appApiKey2.account.propertyNames.size(), appApiKey.account.propertyNames.size() // comparing object retrieved from the server and object obtained from cache
+        assertEquals appApiKey2.tenant.propertyNames.size(), appApiKey.tenant.propertyNames.size() // comparing object retrieved from the server and object obtained from cache
 
         def dataStore = (DefaultDataStore) client.dataStore
 
@@ -429,6 +437,46 @@ class ApplicationIT extends ClientIT {
         assertEquals jsonPayload.sub, app.href
         assertEquals jsonPayload.state, "anyState"
         assertEquals jsonPayload.path, "/mypath"
+    }
+
+    // @since 1.0.RC3
+    @Test
+    void testCreateSsoLogout() {
+        def app = createTempApp()
+        def ssoRedirectUrlBuilder = app.newIdSiteUrlBuilder()
+
+        def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").forLogout().build()
+
+        assertNotNull ssoURL
+
+        String[] ssoUrlPath = ssoURL.split("jwtRequest=")
+
+        assertEquals 2, ssoUrlPath.length
+
+        StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
+
+        //Expected JWT token 'base64Header'.'base64JsonPayload'.'base64Signature'
+        assertEquals tokenizer.countTokens(), 3
+
+        def base64Header = tokenizer.nextToken()
+        def base64JsonPayload = tokenizer.nextToken()
+        def base64Signature = tokenizer.nextToken()
+
+
+        def objectMapper = new ObjectMapper()
+
+        assertTrue Base64.isBase64(base64Header)
+        assertTrue Base64.isBase64(base64JsonPayload)
+        assertTrue Base64.isBase64(base64Signature)
+
+        byte[] decodedJsonPayload = Base64.decodeBase64(base64JsonPayload)
+
+        def jsonPayload = objectMapper.readValue(decodedJsonPayload, Map)
+
+        assertTrue ssoURL.startsWith(ssoRedirectUrlBuilder.SSO_ENDPOINT + "/logout?jwtRequest=")
+        assertEquals jsonPayload.cb_uri, "https://mycallbackuri.com/path"
+        assertEquals jsonPayload.iss, client.dataStore.apiKey.id
+        assertEquals jsonPayload.sub, app.href
     }
 
     def Account createTestAccount(Application app) {
@@ -526,7 +574,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testGetApplicationsWithCustomData() {
@@ -544,6 +592,205 @@ class ApplicationIT extends ClientIT {
             assertEquals(application.getCustomData().size(), 4)
         }
         assertEquals(count, 1)
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test
+    void testAddAccountStore_Dirs() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_Dirs")
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        def app = createTempApp()
+
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        def retrievedAccountStoreMapping = app.addAccountStore(dir.name)
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 2)
+        assertEquals(retrievedAccountStoreMapping.accountStore.href, dir.href)
+        retrievedAccountStoreMapping.delete()
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        retrievedAccountStoreMapping = app.addAccountStore(dir.href)
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 2)
+        assertEquals(retrievedAccountStoreMapping.accountStore.href, dir.href)
+        retrievedAccountStoreMapping.delete()
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        retrievedAccountStoreMapping = app.addAccountStore(Directories.criteria().add(Directories.description().eqIgnoreCase(dir.description)))
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 2)
+        assertEquals(retrievedAccountStoreMapping.accountStore.href, dir.href)
+        retrievedAccountStoreMapping.delete()
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        //Non-existent
+        retrievedAccountStoreMapping = app.addAccountStore("non-existent Dir")
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(dir.name.substring(0, 10))
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(dir.name + "XXX")
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(dir.href + "XXX")
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(Directories.criteria().add(Directories.description().eqIgnoreCase(dir.description + "XXX")))
+        assertNull(retrievedAccountStoreMapping)
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test
+    void testAddAccountStore_Groups() {
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_Groups")
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_Groups")
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        def retrievedAccountStoreMapping = app.addAccountStore(group.name)
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 2)
+        assertEquals(retrievedAccountStoreMapping.accountStore.href, group.href)
+        retrievedAccountStoreMapping.delete()
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        retrievedAccountStoreMapping = app.addAccountStore(group.href)
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 2)
+        assertEquals(retrievedAccountStoreMapping.accountStore.href, group.href)
+        retrievedAccountStoreMapping.delete()
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        retrievedAccountStoreMapping = app.addAccountStore(Groups.criteria().add(Groups.description().eqIgnoreCase(group.description)))
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 2)
+        assertEquals(retrievedAccountStoreMapping.accountStore.href, group.href)
+        retrievedAccountStoreMapping.delete()
+        assertAccountStoreMappingListSize(app.getAccountStoreMappings(), 1)
+
+        //Non-existent
+        retrievedAccountStoreMapping = app.addAccountStore("non-existent Group")
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(group.name.substring(0, 10))
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(group.href + "XXX")
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(group.name + "XXX")
+        assertNull(retrievedAccountStoreMapping)
+
+        retrievedAccountStoreMapping = app.addAccountStore(Groups.criteria().add(Groups.description().eqIgnoreCase(group.description + "XXX")))
+        assertNull(retrievedAccountStoreMapping)
+    }
+
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testAddAccountStore_DirAndGroupMatch() {
+
+        Directory dir01 = client.instantiate(Directory)
+        dir01.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_DirAndGroupMatch")
+        dir01.description = dir01.name + "-Description"
+        dir01 = client.currentTenant.createDirectory(dir01);
+        deleteOnTeardown(dir01)
+
+        Directory dir02 = client.instantiate(Directory)
+        dir02.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_DirAndGroupMatch")
+        dir02.description = dir02.name + "-Description"
+        dir02 = client.currentTenant.createDirectory(dir02);
+        deleteOnTeardown(dir02)
+
+        Group group = client.instantiate(Group)
+        group.name = dir02.name
+        group.description = group.name + "-Description"
+        dir01.createGroup(group)
+
+        def app = createTempApp()
+
+        app.addAccountStore(group.name)
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testAddAccountStore_MultipleDirCriteria() {
+
+        Directory dir01 = client.instantiate(Directory)
+        dir01.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_MultipleDirCriteria")
+        dir01.description = dir01.name + "-Description"
+        dir01 = client.currentTenant.createDirectory(dir01);
+        deleteOnTeardown(dir01)
+
+        Directory dir02 = client.instantiate(Directory)
+        dir02.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_MultipleDirCriteria")
+        dir02.description = dir02.name + "-Description"
+        dir02 = client.currentTenant.createDirectory(dir02);
+        deleteOnTeardown(dir02)
+
+        def app = createTempApp()
+
+        app.addAccountStore(Directories.criteria().add(Directories.name().containsIgnoreCase("testAddAccountStore_MultipleDirCriteria")))
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testAddAccountStore_MultipleGroupCriteria() {
+
+        Directory dir01 = client.instantiate(Directory)
+        dir01.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_MultipleGroupCriteria")
+        dir01.description = dir01.name + "-Description"
+        dir01 = client.currentTenant.createDirectory(dir01);
+        deleteOnTeardown(dir01)
+
+        Directory dir02 = client.instantiate(Directory)
+        dir02.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_MultipleGroupCriteria")
+        dir02.description = dir02.name + "-Description"
+        dir02 = client.currentTenant.createDirectory(dir02);
+        deleteOnTeardown(dir02)
+
+        Group group01 = client.instantiate(Group)
+        group01.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_MultipleGroupCriteria")
+        group01.description = group01.name + "-Description"
+        dir01.createGroup(group01)
+
+        Group group02 = client.instantiate(Group)
+        group02.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_MultipleGroupCriteria")
+        group02.description = group02.name + "-Description"
+        dir02.createGroup(group02)
+
+        def app = createTempApp()
+
+        app.addAccountStore(Groups.criteria().add(Groups.name().containsIgnoreCase("testAddAccountStore_MultipleGroupCriteria")))
+    }
+
+    private assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
+        int qty = 0;
+        for(AccountStoreMapping accountStoreMapping : accountStoreMappings) {
+            qty++;
+        }
+        assertEquals(qty, expectedSize)
     }
 
 }

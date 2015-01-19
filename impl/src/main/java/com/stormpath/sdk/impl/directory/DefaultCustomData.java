@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,12 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,14 +68,23 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public void delete() {
-        getDataStore().delete(this);
+        writeLock.lock();
+        try {
+            getDataStore().delete(this);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public int size() {
         readLock.lock();
         try {
-            return properties.size();
+            Set<String> keySet = new LinkedHashSet<String>();
+            keySet.addAll(this.properties.keySet());
+            keySet.addAll(this.dirtyProperties.keySet());
+            keySet.removeAll(this.deletedPropertyNames);
+            return keySet.size();
         } finally {
             readLock.unlock();
         }
@@ -80,33 +92,22 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public boolean isEmpty() {
-        readLock.lock();
-        try {
-            return properties.isEmpty();
-        } finally {
-            readLock.unlock();
-        }
+        return this.size() <= 0;
     }
 
     @Override
     public boolean containsKey(Object key) {
-        Assert.isInstanceOf(String.class, key);
-        readLock.lock();
-        try {
-            return properties.containsKey(key);
-        } finally {
-            readLock.unlock();
-        }
+        return this.keySet().contains(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
-        readLock.lock();
-        try {
-            return properties.containsValue(value);
-        } finally {
-            readLock.unlock();
+        for(Entry<String, Object> entry: this.entrySet()) {
+            if(entry.getValue().equals(value)) {
+                return true;
+            }
         }
+        return false;
     }
 
     @Override
@@ -125,8 +126,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
         Assert.isInstanceOf(String.class, key);
         writeLock.lock();
         try {
-            Object object = this.properties.remove(key);
-            this.dirtyProperties.remove(key);
+            Object object = this.dirtyProperties.remove(key);
             this.deletedPropertyNames.add(key.toString());
             this.dirty = true;
             return object;
@@ -159,13 +159,13 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
             propertiesToFilter.add(HREF_PROP_NAME);
             propertiesToFilter.addAll(getPropertyDescriptors().keySet());
 
-            for (String propertyName : getPropertyNames()) {
+            for (String propertyName : this.keySet()) {
                 if (propertiesToFilter.contains(propertyName)) {
                     continue;
                 }
-                this.properties.remove(propertyName);
                 this.dirtyProperties.remove(propertyName);
                 this.deletedPropertyNames.add(propertyName);
+                dirty = true;
             }
         } finally {
             writeLock.unlock();
@@ -174,24 +174,46 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public Set<String> keySet() {
-        return super.getPropertyNames();
-    }
-
-    @Override
-    public Collection<Object> values() {
+        if(! isMaterialized()) {
+            writeLock.lock();
+            try {
+                materialize();
+            } finally {
+                writeLock.unlock();
+            }
+        }
         readLock.lock();
         try {
-            return properties.values();
+            Set<String> keySet = new LinkedHashSet<String>();
+            keySet.addAll(this.properties.keySet());
+            keySet.addAll(this.dirtyProperties.keySet());
+            keySet.removeAll(this.deletedPropertyNames);
+            return java.util.Collections.unmodifiableSet(keySet);
         } finally {
             readLock.unlock();
         }
     }
 
     @Override
+    public Collection<Object> values() {
+        Set<String> keySet = this.keySet();
+        Collection<Object> values = new ArrayList<Object>(keySet.size());
+        for (String key : keySet) {
+            values.add(this.get(key));
+        }
+        return java.util.Collections.unmodifiableCollection(values);
+    }
+
+    @Override
     public Set<Entry<String, Object>> entrySet() {
+        Set<String> keySet = this.keySet();
         readLock.lock();
         try {
-            return this.properties.entrySet();
+            Set<Entry<String, Object>> entrySet = new LinkedHashSet<Entry<String, Object>>(keySet.size());
+            for(String key : keySet) {
+                entrySet.add(new AbstractMap.SimpleEntry<String, Object>(key, this.get(key)));
+            }
+            return java.util.Collections.unmodifiableSet(entrySet);
         } finally {
             readLock.unlock();
         }
@@ -200,19 +222,32 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     @Override
     public void save() {
         if (isDirty()) {
-            if (hasRemovedProperties()) {
-                deleteRemovedProperties();
-            }
-            if (hasNewProperties()) {
-                super.save();
+            this.writeLock.lock();
+            try{
+                if (hasRemovedProperties()) {
+                    deleteRemovedProperties();
+                }
+                if (hasNewProperties()) {
+                    super.save();
+                }
+            } finally {
+                this.writeLock.unlock();
             }
         }
     }
 
     public void deleteRemovedProperties() {
-        Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
-        for (String deletedPropertyName : deletedPropertyNames) {
-            getDataStore().deleteResourceProperty(this, deletedPropertyName);
+        this.writeLock.lock();
+        try {
+
+            Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
+            for (String deletedPropertyName : deletedPropertyNames) {
+                getDataStore().deleteResourceProperty(this, deletedPropertyName);
+                this.properties.remove(deletedPropertyName);
+            }
+            this.deletedPropertyNames.clear();
+        } finally {
+            this.writeLock.unlock();
         }
     }
 
@@ -232,6 +267,11 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
         } finally {
             readLock.unlock();
         }
+    }
+
+    @Override
+    public Set<String> getPropertyNames() {
+        return this.keySet();
     }
 
 }

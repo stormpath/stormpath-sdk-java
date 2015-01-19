@@ -19,11 +19,15 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.CreateAccountRequest
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryStatus
+import com.stormpath.sdk.group.CreateGroupRequest
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -71,6 +75,9 @@ class DefaultDirectoryTest {
     void testMethods() {
 
         InternalDataStore internalDataStore = createStrictMock(InternalDataStore)
+
+        CreateAccountRequest createAccountRequest = createStrictMock(CreateAccountRequest)
+        CreateGroupRequest createGroupRequest = createStrictMock(CreateGroupRequest)
 
         def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf",
                 name: "My Directory",
@@ -129,10 +136,23 @@ class DefaultDirectoryTest {
 
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts?registrationWorkflowEnabled=false", account)).andReturn(account)
 
+        expect(createAccountRequest.getAccount()).andReturn(account)
+        expect(createAccountRequest.isRegistrationWorkflowOptionSpecified()).andReturn(false)
+        expect(createAccountRequest.isAccountOptionsSpecified()).andReturn(true)
+        def accountOptions = Accounts.options().withTenant()
+        expect(createAccountRequest.getAccountOptions()).andReturn(accountOptions)
+        expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts", account, accountOptions)).andReturn(account)
+
         def group = createStrictMock(Group)
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups", group)).andReturn(group)
 
-        replay internalDataStore, accountCriteria, groupCriteria, account, group
+        expect(createGroupRequest.getGroup()).andReturn(group)
+        expect(createGroupRequest.isGroupOptionsSpecified()).andReturn(true)
+        def groupOptions = Groups.options().withDirectory()
+        expect(createGroupRequest.getGroupOptions()).andReturn(groupOptions)
+        expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups", group, groupOptions)).andReturn(group)
+
+        replay internalDataStore, accountCriteria, groupCriteria, account, group, createAccountRequest, createGroupRequest
 
         def resource = defaultDirectory.getAccounts()
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
@@ -162,14 +182,25 @@ class DefaultDirectoryTest {
 
         defaultDirectory.delete()
 
-        defaultDirectory.createAccount(account)
+        def returnedAccount = defaultDirectory.createAccount(account)
+        assertSame(returnedAccount, account)
 
-        defaultDirectory.createAccount(account, true)
-        defaultDirectory.createAccount(account, false)
+        returnedAccount = defaultDirectory.createAccount(account, true)
+        assertSame(returnedAccount, account)
 
-        defaultDirectory.createGroup(group)
+        returnedAccount = defaultDirectory.createAccount(account, false)
+        assertSame(returnedAccount, account)
 
-        verify internalDataStore, accountCriteria, groupCriteria, account, group
+        returnedAccount = defaultDirectory.createAccount(createAccountRequest)
+        assertSame(returnedAccount, account)
+
+        def returnedGroup = defaultDirectory.createGroup(group)
+        assertSame(returnedGroup, group)
+
+        returnedGroup = defaultDirectory.createGroup(createGroupRequest)
+        assertSame(returnedGroup, group)
+
+        verify internalDataStore, accountCriteria, groupCriteria, account, group, createAccountRequest, createGroupRequest
     }
 
 

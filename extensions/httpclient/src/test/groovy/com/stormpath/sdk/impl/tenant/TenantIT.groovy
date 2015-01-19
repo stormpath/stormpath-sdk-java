@@ -15,10 +15,14 @@
  */
 package com.stormpath.sdk.impl.tenant
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.provider.FacebookProvider
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
@@ -170,6 +174,158 @@ class TenantIT extends ClientIT {
         assertEquals(((FacebookProvider)provider).getClientSecret(), clientSecret)
     }
 
+    //@since 1.0.RC3
+    @Test
+    void testGetAccounts() {
+        def tenant = client.currentTenant
+        def count = 0
+        def accounts = tenant.getAccounts()
+        for(Account acct : accounts) {
+            count++
+            //Let's iterate 3 times only, enough to know the collection was received while avoiding unnecessary traffic
+            if(count > 2) break
+        }
+    }
 
+    //@since 1.0.RC3
+    @Test
+    void testGetAccountsWithCriteria() {
+        def uniqueEmail = uniquify("myUnique") + "@email.com"
+
+        def criteria = Accounts.criteria().add(Accounts.email().eqIgnoreCase(uniqueEmail))
+
+        def tenant = client.currentTenant
+
+        def originalQty = 0
+        def accounts = tenant.getAccounts(criteria)
+        for(Account acct : accounts) {
+            originalQty++
+        }
+
+        def app = createTempApp()
+        Account account = client.instantiate(Account)
+        account.email = uniqueEmail
+        account.username = uniquify("username")
+        account.password = uniquify("paS5w&")
+        account.givenName = uniquify("givenName")
+        account.surname = uniquify("surname")
+        account = app.createAccount(account)
+        deleteOnTeardown(account)
+
+        def newQty = 0
+        accounts = tenant.getAccounts(criteria)
+        for(Account acct : accounts) {
+            newQty++
+        }
+
+        assertEquals newQty, originalQty + 1
+    }
+
+    //@since 1.0.RC3
+    @Test
+    void testGetAccountsWithMap() {
+        def uniqueEmail = uniquify("myUnique") + "@email.com"
+
+        def queryParams = ['email': uniqueEmail]
+
+        def tenant = client.currentTenant
+
+        def originalQty = 0
+        def accounts = tenant.getAccounts(queryParams);
+        for(Account acct : accounts) {
+            originalQty++
+        }
+
+        def app = createTempApp()
+        Account account = client.instantiate(Account)
+        account.email = uniqueEmail
+        account.username = uniquify("username")
+        account.password = uniquify("paS5w&")
+        account.givenName = uniquify("givenName")
+        account.surname = uniquify("surname")
+        account = app.createAccount(account)
+        deleteOnTeardown(account)
+
+        def newQty = 0
+        accounts = tenant.getAccounts(queryParams)
+        for(Account acct : accounts) {
+            newQty++
+        }
+
+        assertEquals newQty, originalQty + 1
+    }
+
+    //@since 1.0.RC3
+    @Test
+    void testGetGroups() {
+        def tenant = client.currentTenant
+        def count = 0
+        def groups = tenant.getGroups()
+        for(Group group : groups) {
+            count++
+            //Let's iterate 3 times only, enough to know the collection was received while avoiding unnecessary traffic
+            if(count > 2) break
+        }
+    }
+
+    //@since 1.0.RC3
+    @Test
+    void testGetGroupsWithCriteria() {
+        def uniqueName = uniquify("uniqueGroupName")
+
+        def criteria = Groups.criteria().add(Groups.name().eqIgnoreCase(uniqueName))
+
+        def tenant = client.currentTenant
+
+        def originalQty = 0
+        def groups = tenant.getGroups(criteria)
+        for(Group grp : groups) {
+            originalQty++
+        }
+
+        def app = createTempApp()
+        Group group = client.instantiate(Group)
+        group.name = uniqueName
+        group = app.createGroup(group)
+        deleteOnTeardown(group)
+
+        def newQty = 0
+        groups = tenant.getGroups(criteria)
+        for(Group grp : groups) {
+            newQty++
+        }
+
+        assertEquals newQty, originalQty + 1
+    }
+
+    //@since 1.0.RC3
+    @Test
+    void testGetGroupsWithMap() {
+        def uniqueName = uniquify("uniqueGroupName")
+
+        def queryParams = ['name': uniqueName]
+
+        def tenant = client.currentTenant
+
+        def originalQty = 0
+        def groups = tenant.getGroups(queryParams);
+        for(Group grp : groups) {
+            originalQty++
+        }
+
+        def app = createTempApp()
+        Group group = client.instantiate(Group)
+        group.name = uniqueName
+        group = app.createGroup(group)
+        deleteOnTeardown(group)
+
+        def newQty = 0
+        groups = tenant.getGroups(queryParams)
+        for(Group grp : groups) {
+            newQty++
+        }
+
+        assertEquals newQty, originalQty + 1
+    }
 
 }

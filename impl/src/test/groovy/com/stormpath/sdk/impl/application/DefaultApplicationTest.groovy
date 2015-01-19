@@ -26,6 +26,8 @@ import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
@@ -39,11 +41,7 @@ import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
-import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper
-import com.stormpath.sdk.impl.resource.CollectionReference
-import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
-import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.resource.*
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.FacebookProviderData
@@ -55,6 +53,8 @@ import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -178,6 +178,43 @@ class DefaultApplicationTest {
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
+    }
+
+    @Test
+    void testSendPasswordResetEmailWithAccountStore() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        def email = 'foo@bar.com'
+        def account = createStrictMock(Account)
+        def accountStore = createStrictMock(Directory)
+        def accountStoreHref = 'https://api.stormpath.com/v1/directories/dir123'
+        def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
+                               account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+        def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
+
+        expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
+        expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        replay internalDataStore, account, accountStore
+
+        def returnedAccount = defaultApplication.sendPasswordResetEmail(email, accountStore)
+
+        assertEquals(returnedAccount, account)
+
+        assertEquals(defaultPassResetToken.dirtyProperties.accountStore.href, accountStoreHref)
+
+        verify internalDataStore, account, accountStore
     }
 
     @Test
@@ -416,6 +453,7 @@ class DefaultApplicationTest {
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         newPropertiesState.put("customData", customData);
         def modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [accountStoreMappings: accountStoreMappings])
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -425,6 +463,7 @@ class DefaultApplicationTest {
 
         newPropertiesState.put("defaultAccountStoreMapping", newAccountStoreMapping)
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultAccountStoreMapping: newAccountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -439,6 +478,7 @@ class DefaultApplicationTest {
 
         newPropertiesState.put("defaultAccountStoreMapping", accountStoreMapping)
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultAccountStoreMapping: accountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -498,6 +538,7 @@ class DefaultApplicationTest {
         newPropertiesState.put("accountStoreMappings", accountStoreMappings);
         newPropertiesState.put("customData", customData);
         def modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [accountStoreMappings: accountStoreMappings])
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -507,6 +548,7 @@ class DefaultApplicationTest {
 
         newPropertiesState.put("defaultGroupStoreMapping", newAccountStoreMapping)
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultGroupStoreMapping: newAccountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -521,6 +563,7 @@ class DefaultApplicationTest {
 
         newPropertiesState.put("defaultGroupStoreMapping", accountStoreMapping)
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
+        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultGroupStoreMapping: accountStoreMapping])
 
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
@@ -544,23 +587,21 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def providerAccountResultHelper = createStrictMock(ProviderAccountResultHelper)
         def providerAccountResult = createStrictMock(ProviderAccountResult)
         ProviderAccountRequest request = Providers.FACEBOOK.account().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
 
         def providerAccountAccess = new DefaultProviderAccountAccess<FacebookProviderData>(internalDataStore);
         providerAccountAccess.setProviderData(request.getProviderData())
 
-        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResultHelper))).andReturn(providerAccountResultHelper)
-        expect(providerAccountResultHelper.getProviderAccountResult()).andReturn(providerAccountResult)
+        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
 
-        replay(internalDataStore, providerAccountResultHelper, providerAccountResult)
+        replay(internalDataStore, providerAccountResult)
 
         def defaultApplication = new DefaultApplication(internalDataStore, properties)
         ProviderAccountResult accountResult = defaultApplication.getAccount(request)
         assertNotNull(accountResult)
 
-        verify(internalDataStore, providerAccountResultHelper, providerAccountResult)
+        verify(internalDataStore, providerAccountResult)
     }
 
     /**
@@ -687,6 +728,38 @@ class DefaultApplicationTest {
         }
     }
 
+    /**
+     * @since 1.0.RC3
+     */
+    @Test
+    void testAddAccountStoreNull() {
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def application = new DefaultApplication(internalDataStore, null)
+
+        try {
+            application.addAccountStore((String) null)
+            fail("Should have thrown because of null 'hrefOrName'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "hrefOrName cannot be null or empty.")
+        }
+
+        try {
+            application.addAccountStore((DirectoryCriteria) null)
+            fail("Should have thrown because of null 'DirectoryCriteria'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "criteria cannot be null.")
+        }
+
+        try {
+            application.addAccountStore((GroupCriteria) null)
+            fail("Should have thrown because of null 'GroupCriteria'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "criteria cannot be null.")
+        }
+    }
+
     //@since 1.0.RC
     static class ApplicationMatcher implements IArgumentMatcher {
 
@@ -701,12 +774,19 @@ class DefaultApplicationTest {
                 return false;
             }
             Application actual = (Application) o
-            return (Objects.nullSafeEquals(expected, actual))
+            return expected.toString().equals(actual.toString())
         }
 
         void appendTo(StringBuffer stringBuffer) {
             stringBuffer.append(expected.toString())
         }
+    }
+
+    //@since 1.0.RC
+    private void setNewValue(Class clazz, Object object, String fieldName, Object value){
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        field.set(object, value)
     }
 
 }

@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
@@ -34,8 +36,7 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
-import com.stormpath.sdk.impl.http.support.Version;
-import com.stormpath.sdk.impl.provider.ProviderAccountResultHelper;
+import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
@@ -45,10 +46,13 @@ import com.stormpath.sdk.impl.resource.CollectionProperties;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
@@ -93,7 +97,8 @@ public class DefaultDataStore implements InternalDataStore {
     private final ApiKey apiKey;
     private final PropertiesFilterProcessor resourceDataFilterProcessor;
     private final PropertiesFilterProcessor queryStringFilterProcessor;
-    
+    private volatile Map<String, Enlistment> hrefMapStore;
+
     /**
      * @since 0.9
      */
@@ -104,6 +109,11 @@ public class DefaultDataStore implements InternalDataStore {
     private final QueryStringFactory queryStringFactory;
 
     private final CacheMapInitializer cacheMapInitializer;
+
+    /**
+     * @since 1.0.RC3
+     */
+    public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
     public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
         this(requestExecutor, DEFAULT_API_VERSION, apiKey);
@@ -125,15 +135,16 @@ public class DefaultDataStore implements InternalDataStore {
         this.cacheManager = new DisabledCacheManager(); //disabled by default - end-user must explicitly configure caching
         this.cacheRegionNameResolver = new DefaultCacheRegionNameResolver();
         this.referenceFactory = new ReferenceFactory();
+        this.hrefMapStore = new SoftHashMap<String, Enlistment>();
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
-        resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor();
+
+        this.resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyCachePropertiesFilter(apiKey)));
         // Adding another processor for query strings because we don't want to mix
         // the processing (filtering) of the query strings with the processing of the resource properties,
         // even though they're both (resource properties and query string objects) Maps that might apply
         // to the be added to the same filter. This separation also improves requests performance.
-        queryStringFilterProcessor = new DefaultPropertiesFilterProcessor();
-        initFilterProcessors();
+        this.queryStringFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyQueryPropertiesFilter()));
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -148,7 +159,12 @@ public class DefaultDataStore implements InternalDataStore {
     public ApiKey getApiKey() {
         return apiKey;
     }
-    
+
+    @Override
+    public CacheManager getCacheManager() {
+        return this.cacheManager;
+    }
+
     /* =====================================================================
        Resource Instantiation
        ===================================================================== */
@@ -200,6 +216,11 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
+        //@since 1.0.RC3
+        if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) && data.get("href") != null) {
+            data = toEnlistment(data);
+        }
+
         if (CollectionResource.class.isAssignableFrom(clazz)) {
             //only collections can support a query string constructor argument:
             return this.resourceFactory.instantiate(clazz, data, qs);
@@ -241,6 +262,11 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, parent, qs);
 
+        //@since 1.0.RC3
+        if (!Collections.isEmpty(data) && data.get("href") != null && !CollectionResource.class.isAssignableFrom(parent)) {
+            data = toEnlistment(data);
+        }
+
         if (Collections.isEmpty(data)) {
             throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
         }
@@ -280,9 +306,7 @@ public class DefaultDataStore implements InternalDataStore {
                             .setItemsMap(apiKeyData);
                     data = builder.build();
                 }
-
             } else {
-
                 data = getCachedValue(href, clazz);
             }
         }
@@ -305,8 +329,11 @@ public class DefaultDataStore implements InternalDataStore {
             // For example: decrypting the api key secret to return to the user
             // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
             // be added when initializing the filter (they depend on the current request).
-            resourceDataFilterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
-            returnResponseBody = resourceDataFilterProcessor.process(clazz, data);
+            List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
+            List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
+            filters.add(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
+            PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
+            returnResponseBody = processor.process(clazz, data);
         }
 
         return returnResponseBody;
@@ -329,7 +356,13 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+
+        //@since 1.0.RC3
+        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
+            in.setProperties(toEnlistment(props));
+        } else {
+            in.setProperties(props);
+        }
 
         return (T) in;
     }
@@ -351,7 +384,13 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource in = (AbstractResource) resource;
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
-        in.setProperties(props);
+
+        //@since 1.0.RC3
+        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
+            in.setProperties(toEnlistment(props));
+        } else {
+            in.setProperties(props);
+        }
 
         return (T) in;
     }
@@ -444,13 +483,28 @@ public class DefaultDataStore implements InternalDataStore {
         Response response = executeRequestGetFullResponse(request);
         Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
 
-        // Transitory filters serve the purpose of filtering the resource properties to return to the user,
-        // based on the current request.
+        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
+        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
+        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
+        //"is new" status
+        int responseStatus = response.getHttpStatus();
+        if (ProviderAccountResult.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
+            if(responseStatus == 200) { //is not a new account
+                responseBody.put("isNewAccount", false);
+            } else {
+                responseBody.put("isNewAccount", true);
+            }
+        }
+
+        // Filter resource properties to return to the user, based on the current request.
         // For example: decrypting the api key secret to return to the user
         // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
         // be added when initializing the filter (they depend on the current request).
-        resourceDataFilterProcessor.addTransitoryFilter(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
-        Map<String, ?> returnResponseBody = resourceDataFilterProcessor.process(returnType, responseBody);
+        List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
+        List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
+        filters.add(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
+        PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
+        Map<String,?> returnResponseBody = processor.process(returnType, responseBody);
 
         if (Collections.isEmpty(responseBody)) {
             return null;
@@ -459,8 +513,17 @@ public class DefaultDataStore implements InternalDataStore {
         //asserts invariant given that we should have returned if the responseBody is null or empty:
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
-        if (isCacheUpdateEnabled(returnType)) {
-            cache(returnType, responseBody, filteredQs);
+        //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
+        boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+
+        if (isCacheUpdateEnabled(returnType) && !emailVerification) {
+            //@since 1.0.RC3: Let's first check if the response is an actual Resource (meaning, that it has an href property)
+            if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
+                //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+                if (!returnType.isAssignableFrom(ProviderAccountResult.class)) {
+                    cache(returnType, responseBody, filteredQs);
+                }
+            }
         }
 
         //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
@@ -473,17 +536,9 @@ public class DefaultDataStore implements InternalDataStore {
             cacheNestedCustomData(href, props);
         }
 
-        //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
-        //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
-        //after the resource has been instantiated we are going to manipulate it before returning it in order to set the
-        //"is new" status
-        int responseStatus = response.getHttpStatus();
-        if (ProviderAccountResultHelper.class.isAssignableFrom(returnType) && (responseStatus == 200 || responseStatus == 201)) {
-            if(response.getHttpStatus() == 200) { //is not a new account
-                responseBody.put("isNewAccount", false);
-            } else {
-                responseBody.put("isNewAccount", true);
-            }
+        //@since 1.0.RC3
+        if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
+            returnResponseBody = toEnlistment(returnResponseBody);
         }
 
         return resourceFactory.instantiate(returnType, returnResponseBody);
@@ -916,7 +971,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", "Stormpath-JavaSDK/" + Version.getClientVersion());
+        request.getHeaders().set("User-Agent", USER_AGENT_STRING);
         if (request.getBody() != null) {
             //this data store currently only deals with JSON messages:
             request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -956,23 +1011,28 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     /**
-     * Initializes the filter processors with the filters that should always be present when calling
-     * {@link PropertiesFilterProcessor#process(Class,Map)}.
-     *
-     * @since 1.0.RC
-     */
-    protected void initFilterProcessors() {
-
-        resourceDataFilterProcessor.add(new ApiKeyCachePropertiesFilter(apiKey));
-        queryStringFilterProcessor.add(new ApiKeyQueryPropertiesFilter());
-    }
-
-    /**
      *
      * @since 1.0.RC
      */
     private boolean isApiKeyCollectionQuery(Class clazz, QueryString qs) {
-
         return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());
+    }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all
+     * Resource instances referencing the same Href.
+     * @since 1.0.RC3
+     */
+    private Enlistment toEnlistment(Map data) {
+        Enlistment enlistment;
+        Object responseHref = data.get("href");
+        if (this.hrefMapStore.containsKey(responseHref)) {
+            enlistment = this.hrefMapStore.get(responseHref);
+            enlistment.setProperties((Map<String, Object>) data);
+        } else {
+            enlistment = new Enlistment((Map<String, Object>) data);
+            this.hrefMapStore.put((String) responseHref, enlistment);
+        }
+        return enlistment;
     }
 }

@@ -43,9 +43,7 @@ public class ProviderAccountResolver {
         providerAccountAccess.setProviderData(request.getProviderData());
         String href = parentHref + "/accounts";
 
-        ProviderAccountResultHelper providerAccountResultHelper = this.dataStore.create(href, providerAccountAccess, ProviderAccountResultHelper.class);
-
-        return providerAccountResultHelper.getProviderAccountResult();
+        return this.dataStore.create(href, providerAccountAccess, ProviderAccountResult.class);
     }
 
 }

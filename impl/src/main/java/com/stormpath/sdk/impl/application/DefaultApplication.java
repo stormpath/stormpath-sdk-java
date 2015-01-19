@@ -33,6 +33,10 @@ import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.Directories;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryCriteria;
+import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -252,14 +256,23 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public Account sendPasswordResetEmail(String email) {
-        PasswordResetToken token = createPasswordResetToken(email);
+        PasswordResetToken token = createPasswordResetToken(email, null);
         return token.getAccount();
     }
 
-    private PasswordResetToken createPasswordResetToken(String email) {
-        String href = getPasswordResetTokensHref();
+    @Override
+    public Account sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
+        PasswordResetToken token = createPasswordResetToken(email, accountStore);
+        return token.getAccount();
+    }
+
+    private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {
         PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class);
         passwordResetToken.setEmail(email);
+        if (accountStore != null) {
+            passwordResetToken.setAccountStore(accountStore);
+        }
+        String href = getPasswordResetTokensHref();
         return getDataStore().create(href, passwordResetToken);
     }
 
@@ -552,6 +565,121 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         }
         throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequestClass.getName(),
                                                          HTTP_REQUEST_SUPPORTED_CLASSES.toString()));
+    }
+
+    /** @since 1.0.RC3 */
+    @Override
+    public AccountStoreMapping addAccountStore(String hrefOrName) {
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
+        AccountStore accountStore = null;
+
+        //Let's check if hrefOrName looks like an href. If so, we will also identify whether it refers to directory or a group
+        String[] splitHrefOrName = hrefOrName.split("/");
+        if (splitHrefOrName.length > 4) {
+            Class<? extends AccountStore> accountStoreType = null;
+            String[] splitApplicationHref = getHref().split("/");
+            if (splitHrefOrName.length == splitApplicationHref.length) {
+                if (splitHrefOrName[4].equals("directories")) {
+                    accountStoreType = Directory.class;
+                } else if (splitHrefOrName[4].equals("groups")) {
+                    accountStoreType = Group.class;
+                }
+            }
+            if (accountStoreType != null) {
+                try {
+                    //Let's check if the provided value is an actual href for an existent resource
+                    accountStore = getDataStore().getResource(hrefOrName, accountStoreType);
+                } catch (ResourceException e) {
+                    //Although hrefOrName seemed to be an actual href value no Resource was found in the backend. So maybe
+                    //this is actually a name rather than an href. Let's try to find a resource by name now...
+                }
+            }
+        }
+        if (accountStore == null) {
+            //Let's try to find both a Directory and a Group with the given name
+            Directory directory = getSingleTenantDirectory(Directories.where(Directories.name().eqIgnoreCase(hrefOrName)));
+            Group group = getSingleTenantGroup(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
+            if (directory != null && group != null) {
+                //The provided criteria matched more than one Groups in the tenant, we will throw
+                throw new IllegalArgumentException("There are both a Directory and a Group matching the provided name in the current tenant. " +
+                        "Please provide the href of the intended Resource instead of its name in order to univocally identify it.");
+            }
+            accountStore = (directory != null) ? directory : group;
+        }
+        if(accountStore != null) {
+            return addAccountStore(accountStore);
+        }
+        //We could not find any resource matching the hrefOrName value; we return null
+        return null;
+    }
+
+    /** @since 1.0.RC3 */
+    @Override
+    public AccountStoreMapping addAccountStore(DirectoryCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Directory directory = getSingleTenantDirectory(criteria);
+        if (directory != null) {
+            return addAccountStore(directory);
+        }
+        //No directory matching the given information could be found; therefore no account store can be added. We return null...
+        return null;
+    }
+
+    /** @since 1.0.RC3 */
+    @Override
+    public AccountStoreMapping addAccountStore(GroupCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Group group = getSingleTenantGroup(criteria);
+        if (group != null) {
+            return addAccountStore(group);
+        }
+        //No group matching the given information could be found; therefore no account store can be added. We return null...
+        return null;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @since 1.0.RC3
+     */
+    private Directory getSingleTenantDirectory(DirectoryCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        DirectoryList directories = tenant.getDirectories(criteria);
+
+        Directory foundDirectory = null;
+        for (Directory dir : directories) {
+            if (foundDirectory != null) {
+                //The provided criteria matched more than one Directory in the tenant, we will throw
+                throw new IllegalArgumentException("The provided criteria matched more than one Directory in the current Tenant.");
+            }
+            foundDirectory = dir;
+        }
+        return foundDirectory;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @since 1.0.RC3
+     * */
+    private Group getSingleTenantGroup(GroupCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        DirectoryList directories = tenant.getDirectories();
+        Group foundGroup = null;
+        for (Directory directory : directories) {
+            GroupList groups = directory.getGroups(criteria);
+            //There cannot be more than one group with the same name in a single tenant. Thus, the group list will have either
+            //zero or one items, never more.
+            for (Group grp : groups) {
+                if(foundGroup != null) {
+                    //The provided criteria matched more than one Groups in the tenant, we will throw
+                    throw new IllegalArgumentException("The provided criteria matched more than one Group in the current Tenant.");
+                }
+                foundGroup = grp;
+            }
+        }
+        return foundGroup;
     }
 
 }

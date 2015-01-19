@@ -47,16 +47,26 @@ import com.stormpath.sdk.cache.CacheManager;
  *         <code>System.getProperty("user.home") + "/.stormpath/apiKey.properties"</code> as
  *         recommended/documented in the <a href="https://docs.stormpath.com/java/quickstart/">Stormpath Java
  *         Quickstart</a>.</li>
+ *     <li>A properties file that exists at the file path or URL specified by the {@code STORMPATH_API_KEY_FILE}
+ *         variable.  If this file exists and contains either the apiKey id or secret properties, these values
+ *         override any values found in the default apiKey.properties file.  The {@code STORMPATH_API_KEY_FILE}
+ *         String can be an absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+ *         {@code classpath:} prefixes respectively.</li>
  *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
- *         these values are present, they override any values found in the default apiKey.properties file.</li>
+ *         these values are present, they override any previously discovered value.</li>
+ *     <li>A properties file that exists at the file path or URL specified by the {@code stormpath.apiKey.file}
+ *         system property.  If this file exists and any values are present, the values override any
+ *         previously discovered value.  The {@code stormpath.apiKey.file} system property String can be an
+ *         absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
+ *         {@code classpath:} prefixes respectively.</li>
  *     <li>The system properties {@code stormpath.apiKey.id} and {@code stormpath.apiKey.secret}.  If either of
  *         these values are present, they override any previously discovered values.</li>
  * </ol>
  *
- * <p><b>SECURITY NOTICE:</b> While System properties may be used to represent your API Key Secret as mentioned above,
- * this is not recommended: process listings on a machine will expose process arguments (like system properties) and
- * expose the secret value to anyone that can read process listings.  As always, secret values should never be exposed
- * to anyone other than the person that owns the API Key.</p>
+ * <p><b>SECURITY NOTICE:</b> While the {@code stormpath.apiKey.secret} system property may be used to represent your
+ * API Key Secret as mentioned above, this is not recommended: process listings on a machine will expose process
+ * arguments (like system properties) and expose the secret value to anyone that can read process listings.  As
+ * always, secret values should never be exposed to anyone other than the person that owns the API Key.</p>
  *
  * <p>While an API Key ID may be configured anywhere (and be visible by anyone), it is recommended to use a private
  * read-only file or an environment variable to represent API Key secrets.  <b>Never</b> commit secrets to source code
@@ -161,6 +171,10 @@ import com.stormpath.sdk.cache.CacheManager;
  * Client client = {@link com.stormpath.sdk.client.Clients Clients}.builder().setCacheManager(cacheManager).build();
  * </pre>
  *
+ * <p><b>NOTE</b>: it should be noted that <a href="http://memcached.org/">Memcache</a> <em>DOES NOT</em> guarantee cache
+ * coherency.  It is strongly recommended that you do not use Memcache as your clustered caching solution (memcache
+ * is fine for caching files, etc, but not data that is expected to be coherent across multiple cluster nodes).</p>
+ *
  * <h4>Disable Caching</h4>
  *
  * <p>While production applications will usually enable a working CacheManager as described above, you might wish to disable caching
@@ -172,10 +186,6 @@ import com.stormpath.sdk.cache.CacheManager;
  *     <b><code>Caches.newDisabledCacheManager()</code></b>
  * ).build();
  * </pre>
- *
- * <p>NOTE: it should be noted that <a href="http://memcached.org/">Memcache</a> <em>DOES NOT</em> guarantee cache
- * coherency.  It is strongly recommended that you do not use Memcache as your clustered caching solution (memcache
- * is fine for caching files, etc, but not data that is expected to be coherent across a cluster).</p>
  *
  * <h3>Single Instance</h3>
  *
@@ -190,7 +200,7 @@ import com.stormpath.sdk.cache.CacheManager;
  * result in exposing stale data to your application and could data errors.</p>
  *
  * <p>If you must have multiple {@code Client} instances in your application, you should ensure that each client
- * references the same {@code CacheManager} instance to guarantee cache coherency.</p>
+ * references the same exact {@code CacheManager} instance to guarantee cache coherency.</p>
  *
  * @see com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder
  * @since 1.0.beta
@@ -201,9 +211,12 @@ public interface ClientBuilder {
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the
      * default location + override/fallback behavior defined in the {@link ClientBuilder documentation above}.
      *
+     * <p>Consider using an {@link com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder} to construct your
+     * {@code ApiKey} instance.</p>
+     *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
-     * @see com.stormpath.sdk.api.ApiKeyBuilder#setId(String) ApiKeyBuilder.setId(String)
+     * @see com.stormpath.sdk.api.ApiKeyBuilder
      * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
      */
     @Deprecated
@@ -213,9 +226,12 @@ public interface ClientBuilder {
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the
      * default location + override/fallback behavior defined in the {@link ClientBuilder documentation above}.
      *
+     * <p>Consider using an {@link com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder} to construct your
+     * {@code ApiKey} instance.</p>
+     *
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
-     * @see com.stormpath.sdk.api.ApiKeyBuilder#setId(String) ApiKeyBuilder.setId(String)
+     * @see com.stormpath.sdk.api.ApiKeyBuilder
      */
     ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey);
 
@@ -276,7 +292,9 @@ public interface ClientBuilder {
      *
      * <p>In these multi-JVM environments, you will likely want to create a simple CacheManager implementation that
      * wraps your distributed Caching API/product of choice and then plug that implementation in to the Stormpath SDK
-     * via this method.</p>
+     * via this method.  Hazelcast is one known cluster-safe caching product, and the Stormpath SDK has out-of-the-box
+     * support for this as an extension module.  See the top-level class JavaDoc for a Hazelcast configuration
+     * example.</p>
      *
      * @param cacheManager the {@link CacheManager} that should be used to cache Stormpath REST resources, reducing
      *                     round-trips to the Stormpath API server and enhancing application performance.
