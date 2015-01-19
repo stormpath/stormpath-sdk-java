@@ -187,7 +187,7 @@ You can control the authentication cookie behavior by setting various ``stormpat
 `maxAge <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge(int)>`_                ``stormpath.web.account.cookie.maxAge``           ``${servletContext.sessionCookieConfig.maxAge}``
 `path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.account.cookie.path``             ``${servletContext.sessionCookieConfig.path}``
 `httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.account.cookie.httpOnly``         ``true``
-`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.account.cookie.secure.condition`` ``com.stormpath.sdk.servlet.config.SecureConditionFactory``
+`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.account.cookie.secure.resolver`` ``com.stormpath.sdk.servlet.config.SecureResolverFactory``
 ============================================================================================================ ================================================= ===========================================================
 
 Some notes about the default values:
@@ -210,7 +210,7 @@ Some notes about the default values:
 
    A ``secure`` cookie will only be sent by the browser over HTTPS connections, otherwise the cookie will not be sent at all.  To eliminate certain security attack vectors, it is important that identity cookies always be ``secure`` in production.
 
-* The ``stormpath.web.account.cookie.secure.condition`` property that controls whether the cookie must be secure or not is a little special.  It does not reflect a direct value.  Instead, it reflects an object that returns a ``RequestCondition`` implementation.  This ``RequestCondition`` implementation returns ``true`` or ``false`` as to whether the cookie should be secure or not.
+* The ``stormpath.web.account.cookie.secure.resolver`` property that controls whether the cookie must be secure or not is a little special.  It does not reflect a direct value.  Instead, it reflects an object that returns a ``Resolver<Boolean>`` implementation.  This ``Resolver<Boolean>`` implementation returns ``true`` or ``false`` as to whether the cookie should be secure or not.
 
   Because of the security requirements around identity cookies, the default implementation always requires HTTPS *except* when it has been determined that the request is sent and received by ``localhost``.  This allows you to develop on your local machine without requiring a TLS/SSL certificate, but will require one when you deploy to production due to the security attack vectors that would occur otherwise.
 
@@ -218,7 +218,7 @@ Some notes about the default values:
 
   .. code-block:: properties
 
-     stormpath.web.account.cookie.secure.condition = my.impl.class.that.implements.ResolverThatReturnsBoolean
+     stormpath.web.account.cookie.secure.resolver = my.impl.class.that.implements.ResolverThatReturnsBoolean
 
 
 HttpSession Storage
