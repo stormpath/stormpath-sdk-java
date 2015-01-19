@@ -138,7 +138,7 @@ class DefaultClientTest {
         assertEquals(client.getDataStore().baseUrl, baseUrl)
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
         def apiKey = createNiceMock(ApiKey)
@@ -230,7 +230,7 @@ class DefaultClientTest {
         verify requestExecutor, response, resourceFactory
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     static class RequestMatcher implements IArgumentMatcher {
 
         private Request expected
@@ -360,7 +360,7 @@ class DefaultClientTest {
     /**
      * Allows to set a new value to a final property
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     private void setNewValue(Object object, String fieldName, Object value){
         Field field = object.class.getDeclaredField(fieldName);

@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * operations.
  *
  * @see {@link DefaultDataStore}
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public class Enlistment implements Map<String, Object> {
 

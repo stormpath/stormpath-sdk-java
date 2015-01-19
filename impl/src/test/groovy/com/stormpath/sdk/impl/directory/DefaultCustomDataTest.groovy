@@ -113,7 +113,7 @@ class DefaultCustomDataTest {
 
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testMapManipulation() {
         def ds = createStrictMock(InternalDataStore)
@@ -213,7 +213,7 @@ class DefaultCustomDataTest {
 
 }
 
-// @since 1.0.0
+// @since 1.0.RC3
 private class DefaultDataStoreDelegateTo extends DefaultDataStore {
 
     private CustomData customData;

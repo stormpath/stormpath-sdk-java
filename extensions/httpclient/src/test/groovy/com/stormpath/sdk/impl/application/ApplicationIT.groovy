@@ -439,7 +439,7 @@ class ApplicationIT extends ClientIT {
         assertEquals jsonPayload.path, "/mypath"
     }
 
-    // @since 1.0.0
+    // @since 1.0.RC3
     @Test
     void testCreateSsoLogout() {
         def app = createTempApp()
@@ -574,7 +574,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testAddAccountStore_Dirs() {
@@ -624,7 +624,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testAddAccountStore_Groups() {
@@ -681,7 +681,7 @@ class ApplicationIT extends ClientIT {
 
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test(expectedExceptions = IllegalArgumentException)
     void testAddAccountStore_DirAndGroupMatch() {
@@ -709,7 +709,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test(expectedExceptions = IllegalArgumentException)
     void testAddAccountStore_MultipleDirCriteria() {
@@ -732,7 +732,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test(expectedExceptions = IllegalArgumentException)
     void testAddAccountStore_MultipleGroupCriteria() {

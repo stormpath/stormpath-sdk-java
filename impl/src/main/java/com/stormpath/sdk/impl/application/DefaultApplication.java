@@ -567,7 +567,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
                                                          HTTP_REQUEST_SUPPORTED_CLASSES.toString()));
     }
 
-    /** @since 1.0.0 */
+    /** @since 1.0.RC3 */
     @Override
     public AccountStoreMapping addAccountStore(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
@@ -613,7 +613,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         return null;
     }
 
-    /** @since 1.0.0 */
+    /** @since 1.0.RC3 */
     @Override
     public AccountStoreMapping addAccountStore(DirectoryCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");
@@ -625,7 +625,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
         return null;
     }
 
-    /** @since 1.0.0 */
+    /** @since 1.0.RC3 */
     @Override
     public AccountStoreMapping addAccountStore(GroupCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");
@@ -639,7 +639,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /**
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     private Directory getSingleTenantDirectory(DirectoryCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");
@@ -659,7 +659,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     /**
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
-     * @since 1.0.0
+     * @since 1.0.RC3
      * */
     private Group getSingleTenantGroup(GroupCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");

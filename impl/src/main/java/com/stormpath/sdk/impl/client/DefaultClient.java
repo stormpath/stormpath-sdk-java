@@ -333,7 +333,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public AccountList getAccounts() {
@@ -343,7 +343,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
@@ -353,7 +353,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public AccountList getAccounts(Map<String, Object> queryParams) {
@@ -363,7 +363,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public GroupList getGroups() {
@@ -373,7 +373,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
@@ -383,7 +383,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Override
     public GroupList getGroups(Map<String, Object> queryParams) {

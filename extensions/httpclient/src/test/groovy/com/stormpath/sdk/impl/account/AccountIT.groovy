@@ -285,7 +285,7 @@ class AccountIT extends ClientIT {
 
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     public void testResourceReferencesStayInSync() {
@@ -316,7 +316,7 @@ class AccountIT extends ClientIT {
         assertEquals(directory.getName(), account.getDirectory().getName());
     }
 
-    // @since 1.0.0
+    // @since 1.0.RC3
     @Test
     public void testCustomDataStayInSync() {
         def app = createTempApp()
@@ -347,7 +347,7 @@ class AccountIT extends ClientIT {
         assertEquals(customData.get("aKey"), account.getCustomData().get("aKey")); // assertion fails
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     public void testCustomDataSize() {
         def app = createTempApp()
@@ -371,7 +371,7 @@ class AccountIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testInternalProperties() {
@@ -459,7 +459,7 @@ class AccountIT extends ClientIT {
 
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testCustomData() {
         def app = createTempApp()
@@ -636,7 +636,7 @@ class AccountIT extends ClientIT {
 
     /**
      * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testGetGroupsWithLimitAndOffset() {
@@ -695,7 +695,7 @@ class AccountIT extends ClientIT {
 
     /**
      * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testGetGroupswithAccountMembershipsLimitAndOffset() {
@@ -756,7 +756,7 @@ class AccountIT extends ClientIT {
     }
 
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     private Object getValue(Class clazz, Object object, String fieldName) {
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)

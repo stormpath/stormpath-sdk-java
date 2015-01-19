@@ -110,7 +110,7 @@ public class DefaultDataStore implements InternalDataStore {
     private final CacheMapInitializer cacheMapInitializer;
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
@@ -215,7 +215,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) && data.get("href") != null) {
             data = toEnlistment(data);
         }
@@ -261,7 +261,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, parent, qs);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(data) && data.get("href") != null && !CollectionResource.class.isAssignableFrom(parent)) {
             data = toEnlistment(data);
         }
@@ -356,7 +356,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
             in.setProperties(toEnlistment(props));
         } else {
@@ -384,7 +384,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
             in.setProperties(toEnlistment(props));
         } else {
@@ -512,13 +512,13 @@ public class DefaultDataStore implements InternalDataStore {
         //asserts invariant given that we should have returned if the responseBody is null or empty:
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
-        //since 1.0.0 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
+        //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
         boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
 
         if (isCacheUpdateEnabled(returnType) && !emailVerification) {
-            //@since 1.0.0: Let's first check if the response is an actual Resource (meaning, that it has an href property)
+            //@since 1.0.RC3: Let's first check if the response is an actual Resource (meaning, that it has an href property)
             if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
-                //@since 1.0.0: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+                //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
                 if (!returnType.isAssignableFrom(ProviderAccountResult.class)) {
                     cache(returnType, responseBody, filteredQs);
                 }
@@ -535,7 +535,7 @@ public class DefaultDataStore implements InternalDataStore {
             cacheNestedCustomData(href, props);
         }
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
             returnResponseBody = toEnlistment(returnResponseBody);
         }
@@ -1020,7 +1020,7 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all
      * Resource instances referencing the same Href.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     private Enlistment toEnlistment(Map data) {
         Enlistment enlistment;

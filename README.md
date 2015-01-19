@@ -16,7 +16,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 
 ## Change Log ##
 
-### 1.0.0 ###
+### 1.0.RC3 ###
 
 #### Resolved Issues ####
 

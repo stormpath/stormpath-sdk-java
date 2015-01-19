@@ -21,7 +21,7 @@ package com.stormpath.sdk.idsite;
  * <p/>
  * For usage, see {@link com.stormpath.sdk.idsite.IdSiteCallbackHandler#setResultListener(IdSiteResultListener)}
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public interface IdSiteResultListener {
 

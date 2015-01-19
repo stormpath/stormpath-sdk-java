@@ -99,7 +99,7 @@ public interface IdSiteUrlBuilder {
      * SSO endpoint. To achieve that, a new {@link IdSiteUrlBuilder} will need to be constructed.
      *
      * @return this instance for method chaining.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     IdSiteUrlBuilder forLogout();
 
