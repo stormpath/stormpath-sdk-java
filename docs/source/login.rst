@@ -165,7 +165,7 @@ If you wanted to enable both cookie and session storage, for example:
 or if you wish, you may specify your own name that corresponds to a property that reflects a custom implementation.
 
 Cookie Storage
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 The ``CookieAuthenticationResultSaver`` is the default enabled saver for storing authentication state across requests.
 
@@ -174,21 +174,21 @@ Authentication state is represented as a compact `cryptographically-signed JSON 
 Additionally, the JWT is cryptographically signed by a key known only to your application (by default, your Stormpath API Key Secret).  This means it is sufficiently impossible for anything outside of your web application (like a browser or javascript client) to tamper with the token and misrepresent information or 'fake' a login.  As long as HTTPS is enabled :ref:`during login and for the duration of user interaction <https required>`, you can be reasonably assured that the user identity associated with the request is accurate and set only by your application.
 
 Cookie Config
-"""""""""""""
+~~~~~~~~~~~~~
 
 You can control the authentication cookie behavior by setting various ``stormpath.web.account.cookie``.\* configuration properties:
 
-============================================================================================================ ================================================= ===========================================================
-`Cookie <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html>`_ property                      Config Property Name                              Default Value
-============================================================================================================ ================================================= ===========================================================
-`name <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#getName()>`_                       ``stormpath.web.account.cookie.name``             ``account``
-`comment <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setComment(java.lang.String)>`_ ``stormpath.web.account.cookie.comment``          ``${servletContext.sessionCookieConfig.comment}``
-`domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.account.cookie.domain``           ``${servletContext.sessionCookieConfig.domain}``
-`maxAge <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge(int)>`_                ``stormpath.web.account.cookie.maxAge``           ``${servletContext.sessionCookieConfig.maxAge}``
-`path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.account.cookie.path``             ``${servletContext.sessionCookieConfig.path}``
-`httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.account.cookie.httpOnly``         ``true``
+============================================================================================================ ================================================ ==========================================================
+`Cookie <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html>`_ property                      Config Property Name                             Default Value
+============================================================================================================ ================================================ ==========================================================
+`name <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#getName()>`_                       ``stormpath.web.account.cookie.name``            ``account``
+`comment <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setComment(java.lang.String)>`_ ``stormpath.web.account.cookie.comment``         ``${servletContext.sessionCookieConfig.comment}``
+`domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.account.cookie.domain``          ``${servletContext.sessionCookieConfig.domain}``
+`maxAge <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge(int)>`_                ``stormpath.web.account.cookie.maxAge``          ``${servletContext.sessionCookieConfig.maxAge}``
+`path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.account.cookie.path``            ``${servletContext.sessionCookieConfig.path}``
+`httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.account.cookie.httpOnly``        ``true``
 `secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.account.cookie.secure.resolver`` ``com.stormpath.sdk.servlet.config.SecureResolverFactory``
-============================================================================================================ ================================================= ===========================================================
+============================================================================================================ ================================================ ==========================================================
 
 Some notes about the default values:
 
@@ -222,7 +222,7 @@ Some notes about the default values:
 
 
 HttpSession Storage
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 The ``SessionAuthenticationResultSaver`` is available but not enabled by default.  This saver will save an efficient compact representation of the authenticated ``Account`` to the associated request's `HttpSession <http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpSession.html>`_.  This implementation assumes you are using sessions managed by the servlet container.
 
