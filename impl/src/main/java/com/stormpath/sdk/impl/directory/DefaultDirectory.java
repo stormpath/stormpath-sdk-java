@@ -30,7 +30,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class DefaultDirectory extends AbstractInstanceResource implements Directory {
+public class DefaultDirectory extends AbstractExtendableInstanceResource implements Directory {
 
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name");
@@ -63,7 +63,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -257,5 +257,6 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         setProperty(PROVIDER, provider);
         return this;
     }
+
 
 }

@@ -95,4 +95,13 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
         getOptions().withAccountStoreMappings(limit, offset);
         return this;
     }
+
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    public ApplicationCriteria withCustomData() {
+        getOptions().withCustomData();
+        return this;
+    }
 }

@@ -22,9 +22,12 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.Tenants
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
@@ -208,4 +211,106 @@ abstract class AbstractCustomDataIT extends ClientIT {
 
         return group
     }
+
+    /**
+     * @since 1.0.0
+     */
+    protected def newDirectoryData() {
+        def dir = client.instantiate(Directory)
+        dir.name = uniquify("My Directory")
+        return dir
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected Directory updateDirectory(Directory dir, Map initialCustomData, Map newCustomData) {
+
+        dir.setDescription(uniquify("this is a unique description."))
+
+        //Delete properties if contained.
+        def propertiesToDelete = createSetOfPropertiesToDelete()
+
+        for (String propertyToDelete : propertiesToDelete) {
+            if(initialCustomData.containsKey(propertyToDelete)){
+                dir.customData.remove(propertyToDelete)
+                initialCustomData.remove(propertyToDelete)
+            }
+        }
+
+        dir.customData.putAll(newCustomData)
+
+        dir.save()
+
+        initialCustomData.putAll(newCustomData)
+
+        assertValidCustomData(dir.href + "/customData", initialCustomData, dir.customData, false)
+
+        return dir
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected def newApplicationData() {
+        def app = client.instantiate(Application)
+        app.name = uniquify("My Application")
+        return app
+    }
+
+
+    /**
+     * @since 1.0.0
+     */
+    protected Application updateApplication(Application app, Map initialCustomData, Map newCustomData) {
+
+        app.setDescription(uniquify("this is a unique description."))
+
+        //Delete properties if contained.
+        def propertiesToDelete = createSetOfPropertiesToDelete()
+
+        for (String propertyToDelete : propertiesToDelete) {
+            if(initialCustomData.containsKey(propertyToDelete)){
+                app.customData.remove(propertyToDelete)
+                initialCustomData.remove(propertyToDelete)
+            }
+        }
+
+        app.customData.putAll(newCustomData)
+
+        app.save()
+
+        initialCustomData.putAll(newCustomData)
+
+        assertValidCustomData(app.href + "/customData", initialCustomData, app.customData, false)
+
+        return app
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected Tenant updateTenant(Tenant tenant, Map initialCustomData, Map newCustomData) {
+
+        //Delete properties if contained.
+        def propertiesToDelete = createSetOfPropertiesToDelete()
+
+        for (String propertyToDelete : propertiesToDelete) {
+            if(initialCustomData.containsKey(propertyToDelete)){
+                tenant.customData.remove(propertyToDelete)
+                initialCustomData.remove(propertyToDelete)
+            }
+        }
+
+        tenant.customData.putAll(newCustomData)
+
+        tenant.save()
+
+        initialCustomData.putAll(newCustomData)
+
+        assertValidCustomData(tenant.href + "/customData", initialCustomData, tenant.customData, false)
+
+        return tenant
+    }
+
 }

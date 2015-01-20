@@ -16,23 +16,21 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.provider.LinkedInAccountRequestBuilder;
-import com.stormpath.sdk.provider.LinkedInCreateProviderRequestBuilder;
-import com.stormpath.sdk.provider.LinkedInRequestFactory;
+import com.stormpath.sdk.provider.*;
 
 /**
  * @since 1.0.0
  */
-public class DefaultLinkedInRequestFactory implements LinkedInRequestFactory {
+public class DefaultGithubRequestFactory implements GithubRequestFactory {
 
     @Override
-    public LinkedInAccountRequestBuilder account() {
-        return (LinkedInAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultLinkedInAccountRequestBuilder");
+    public GithubAccountRequestBuilder account() {
+        return (GithubAccountRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGithubAccountRequestBuilder");
     }
 
     @Override
-    public LinkedInCreateProviderRequestBuilder builder() {
-        return (LinkedInCreateProviderRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultLinkedInCreateProviderRequestBuilder");
+    public GithubCreateProviderRequestBuilder builder() {
+        return (GithubCreateProviderRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGithubCreateProviderRequestBuilder");
     }
 
 }

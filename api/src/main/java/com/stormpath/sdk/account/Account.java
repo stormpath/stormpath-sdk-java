@@ -28,6 +28,7 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
@@ -40,7 +41,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Account extends Resource, Saveable, Deletable {
+public interface Account extends Resource, Saveable, Deletable, Extendable {
 
     /**
      * Returns the account's username, guaranteed to be unique for all accounts within a Directory.  If you do not have
@@ -305,14 +306,6 @@ public interface Account extends Resource, Saveable, Deletable {
      * @return the account's email verification token.
      */
     EmailVerificationToken getEmailVerificationToken();
-
-    /**
-     * Returns the Stormpath CustomData owned by this Account resource.
-     *
-     * @return the Stormpath CustomData owned by  this Account resource.
-     * @since 0.9
-     */
-    CustomData getCustomData();
 
     /**
      * Saves this Account resource and ensures the returned Account response reflects the specified options.  This
