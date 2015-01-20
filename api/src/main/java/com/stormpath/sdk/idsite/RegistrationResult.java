@@ -19,7 +19,7 @@ package com.stormpath.sdk.idsite;
  * Holder for Registration-specific data that will be received on the {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(RegistrationResult)
  * IdSiteResultListener#onRegistered(RegistrationResult)} method.
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public interface RegistrationResult extends AccountResult {
 }

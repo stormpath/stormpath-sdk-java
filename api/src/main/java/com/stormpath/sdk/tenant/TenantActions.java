@@ -257,7 +257,7 @@ public interface TenantActions {
      * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.account.Account Account} instances.
      * @see #getAccounts(com.stormpath.sdk.account.AccountCriteria)
      * @see #getAccounts(java.util.Map)
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     AccountList getAccounts();
 
@@ -277,7 +277,7 @@ public interface TenantActions {
      *
      * @param criteria the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's accounts that match the specified query criteria.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     AccountList getAccounts(AccountCriteria criteria);
 
@@ -292,7 +292,7 @@ public interface TenantActions {
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's accounts that match the specified query criteria.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     AccountList getAccounts(Map<String, Object> queryParams);
 
@@ -306,7 +306,7 @@ public interface TenantActions {
      * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.group.Group Group} instances.
      * @see #getGroups(com.stormpath.sdk.group.GroupCriteria)
      * @see #getGroups(java.util.Map)
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     GroupList getGroups();
 
@@ -325,7 +325,7 @@ public interface TenantActions {
      *
      * @param criteria the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's groups that match the specified query criteria.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     GroupList getGroups(GroupCriteria criteria);
 
@@ -340,7 +340,7 @@ public interface TenantActions {
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's groups that match the specified query criteria.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     GroupList getGroups(Map<String, Object> queryParams);
 

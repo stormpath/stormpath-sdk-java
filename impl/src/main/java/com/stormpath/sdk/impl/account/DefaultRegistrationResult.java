@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * DefaultRegistrationResult is the default implementation of the {@link com.stormpath.sdk.idsite.RegistrationResult RegistrationResult} interface.
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public class DefaultRegistrationResult extends DefaultAccountResult implements RegistrationResult {
 

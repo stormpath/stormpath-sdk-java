@@ -111,7 +111,7 @@ public interface IdSiteCallbackHandler {
      *                       will be sent.
      * @return this instance for method chaining
      * @see IdSiteResultListener
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     IdSiteCallbackHandler setResultListener(IdSiteResultListener resultListener);
 

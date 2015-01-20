@@ -24,21 +24,21 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
+import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
-import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.impl.resource.CollectionReference
-import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
-import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.resource.*
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.FacebookProviderData
@@ -174,6 +174,43 @@ class DefaultApplicationTest {
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
+    }
+
+    @Test
+    void testSendPasswordResetEmailWithAccountStore() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        def email = 'foo@bar.com'
+        def account = createStrictMock(Account)
+        def accountStore = createStrictMock(Directory)
+        def accountStoreHref = 'https://api.stormpath.com/v1/directories/dir123'
+        def innerProperties = [href: properties.passwordResetTokens.href + "/bwehiuwehfiwuh4huj",
+                               account: [href: "https://api.stormpath.com/v1/accounts/wewjheu824rWEFEjgy"]]
+        def defaultPassResetToken = new DefaultPasswordResetToken(internalDataStore)
+
+        expect(internalDataStore.instantiate(PasswordResetToken)).andReturn(defaultPassResetToken)
+        expect(internalDataStore.create(properties.passwordResetTokens.href, defaultPassResetToken)).andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
+
+        replay internalDataStore, account, accountStore
+
+        def returnedAccount = defaultApplication.sendPasswordResetEmail(email, accountStore)
+
+        assertEquals(returnedAccount, account)
+
+        assertEquals(defaultPassResetToken.dirtyProperties.accountStore.href, accountStoreHref)
+
+        verify internalDataStore, account, accountStore
     }
 
     @Test
@@ -673,6 +710,66 @@ class DefaultApplicationTest {
         verify(internalDataStore, providerAccountResult)
     }
 
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testSendVerificationEmailToken() {
+
+        def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        VerificationEmailRequest verificationEmailRequest = createStrictMock(DefaultVerificationEmailRequest)
+        def accountStore = createStrictMock(AccountStore)
+
+        expect(verificationEmailRequest.getLogin()).andReturn("fooUsername")
+        expect(verificationEmailRequest.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(internalDataStore.create(defaultApplication.getHref() + "/verificationEmails", verificationEmailRequest, DefaultVerificationEmailRequest.class)).andReturn(null)
+
+        replay internalDataStore, verificationEmailRequest, accountStore
+
+        defaultApplication.sendVerificationEmail(verificationEmailRequest)
+
+        verify internalDataStore, verificationEmailRequest, accountStore
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testSendVerificationEmailTokenInvalidData() {
+
+        def defaultApplication = new DefaultApplication(null)
+
+        def verificationEmailRequest = new DefaultVerificationEmailRequest(null)
+
+        try {
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "verificationEmailRequest's email property is required.")
+        }
+
+        verificationEmailRequest.setLogin(null)
+        try {
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "verificationEmailRequest's email property is required.")
+        }
+
+        def dir = new DefaultDirectory(null)
+        verificationEmailRequest.setLogin("fooUsername")
+        verificationEmailRequest.setAccountStore(dir)
+        try {
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "verificationEmailRequest's accountStore has been specified but its href is null.")
+        }
+    }
+
     //@since 1.0.beta
     static class ProviderAccountAccessEquals implements IArgumentMatcher {
 
@@ -692,6 +789,38 @@ class DefaultApplicationTest {
 
         void appendTo(StringBuffer stringBuffer) {
             stringBuffer.append("providerData: " + expected.providerData.toString())
+        }
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test
+    void testAddAccountStoreNull() {
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def application = new DefaultApplication(internalDataStore, null)
+
+        try {
+            application.addAccountStore((String) null)
+            fail("Should have thrown because of null 'hrefOrName'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "hrefOrName cannot be null or empty.")
+        }
+
+        try {
+            application.addAccountStore((DirectoryCriteria) null)
+            fail("Should have thrown because of null 'DirectoryCriteria'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "criteria cannot be null.")
+        }
+
+        try {
+            application.addAccountStore((GroupCriteria) null)
+            fail("Should have thrown because of null 'GroupCriteria'")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "criteria cannot be null.")
         }
     }
 
@@ -717,7 +846,7 @@ class DefaultApplicationTest {
         }
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC
     private void setNewValue(Class clazz, Object object, String fieldName, Object value){
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)

@@ -163,7 +163,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
         verify internalDataStore, apiKey
     }
 
-    // @since 1.0.0
+    // @since 1.0.RC3
     @Test
     void testBuilderForLogout() {
         def UTF_8 = Charset.forName("UTF-8");

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2015 Stormpath, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<taglib
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+
+    <tlib-version>1.0</tlib-version>
+    <short-name>stormpath</short-name>
+    <uri>http://stormpath.com/jsp/tags</uri>
+
+    <tag>
+        <description>Tag based on the JSTL fmt:message tag. Retrieves the translated message for the given i18n key
+            based on the resolved request locale.
+        </description>
+        <name>message</name>
+        <tag-class>com.stormpath.sdk.servlet.i18n.MessageTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>The i18n key (dotted property code) to use when looking up the message.</description>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>The string to use when binding the result to the page,
+                request, session or application scope. If not specified, the result
+                gets outputted to the writer (i.e. typically directly to the JSP).</description>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>The scope to use when exporting the result to a variable.
+                This attribute is only used when var is also set. Possible values are
+                page, request, session and application.</description>
+            <name>scope</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>Param tag based on the JSTL fmt:param tag to support parameters to the stormpath:message tag.
+        </description>
+        <name>param</name>
+        <tag-class>com.stormpath.sdk.servlet.i18n.MessageParamTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>The value of the parameter.  If unspecified, the tag body will be used.</description>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
+        </attribute>
+    </tag>
+
+</taglib>
