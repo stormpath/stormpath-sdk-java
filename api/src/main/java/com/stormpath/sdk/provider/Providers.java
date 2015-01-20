@@ -47,13 +47,6 @@ public final class Providers {
     }
 
     /**
-     * Returns a new {@link GoogleRequestFactory} instance, used to construct Google requests, like Google Directory creation.
-     *
-     * @return a new {@link GoogleRequestFactory} instance, used to construct Google requests, like Google Directory creation.
-     */
-    public static final GoogleRequestFactory GOOGLE = (GoogleRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleRequestFactory");
-
-    /**
      * Returns a new {@link FacebookRequestFactory} instance, used to construct Facebook requests, like Facebook Account creation and retrieval.
      *
      * @return a new {@link FacebookRequestFactory} instance, used to construct Facebook requests, like Facebook Account creation and retrieval.
@@ -67,6 +60,21 @@ public final class Providers {
      * @since 1.0.0
      */
     public static final GithubRequestFactory GITHUB = (GithubRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGithubRequestFactory");
+
+    /**
+     * Returns a new {@link GoogleRequestFactory} instance, used to construct Google requests, like Google Directory creation.
+     *
+     * @return a new {@link GoogleRequestFactory} instance, used to construct Google requests, like Google Directory creation.
+     */
+    public static final GoogleRequestFactory GOOGLE = (GoogleRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGoogleRequestFactory");
+
+    /**
+     * Returns a new {@link LinkedInRequestFactory} instance, used to construct LinkedIn requests, like LinkedIn Account creation and retrieval.
+     *
+     * @return a new {@link LinkedInRequestFactory} instance, used to construct LinkedIn requests, like LinkedIn Account creation and retrieval.
+     * @since 1.0.0
+     */
+    public static final LinkedInRequestFactory LINKEDIN = (LinkedInRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultLinkedInRequestFactory");
 
 }
 

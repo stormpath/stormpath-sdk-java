@@ -30,9 +30,20 @@ import java.util.Map;
 public enum IdentityProviderType {
 
     STORMPATH("stormpath", Provider.class, ProviderData.class),
+
     FACEBOOK("facebook", FacebookProvider.class, FacebookProviderData.class),
+
+    /**
+     * @since 1.0.RC3
+     */
+    GITHUB("github", GithubProvider.class, GithubProviderData.class),
+
     GOOGLE("google", GoogleProvider.class, GoogleProviderData.class),
-    GITHUB("github", GithubProvider.class, GithubProviderData.class);
+
+    /**
+     * @since 1.0.RC3
+     */
+    LINKEDIN("linkedin", LinkedInProvider.class, LinkedInProviderData.class);
 
     private static final Map<String, IdentityProviderType> IDENTITY_PROVIDER_MAP;
     public static final Map<String, Class<? extends Provider>> IDENTITY_PROVIDER_CLASS_MAP;

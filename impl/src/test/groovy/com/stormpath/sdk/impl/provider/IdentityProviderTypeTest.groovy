@@ -27,35 +27,46 @@ class IdentityProviderTypeTest {
 
     @Test
     void testMaps() {
+
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), 4)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
         assertEquals(item.getNameKey(), "stormpath")
         assertEquals(item.getProviderClass(), Provider.class)
         assertEquals(item.getProviderDataClass(), ProviderData.class)
+
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("facebook");
         assertEquals(item.getNameKey(), "facebook")
         assertEquals(item.getProviderClass(), FacebookProvider.class)
         assertEquals(item.getProviderDataClass(), FacebookProviderData.class)
+
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("google");
         assertEquals(item.getNameKey(), "google")
         assertEquals(item.getProviderClass(), GoogleProvider.class)
         assertEquals(item.getProviderDataClass(), GoogleProviderData.class)
+
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("github");
         assertEquals(item.getNameKey(), "github")
         assertEquals(item.getProviderClass(), GithubProvider.class)
         assertEquals(item.getProviderDataClass(), GithubProviderData.class)
+
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("linkedin");
+        assertEquals(item.getNameKey(), "linkedin")
+        assertEquals(item.getProviderClass(), LinkedInProvider.class)
+        assertEquals(item.getProviderDataClass(), LinkedInProviderData.class)
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), 4)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("google"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("github"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("linkedin"))
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), 4)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("google"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("github"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("linkedin"))
     }
 
     @Test
@@ -64,6 +75,7 @@ class IdentityProviderTypeTest {
         assertSame(IdentityProviderType.fromNameKey("facebook"), IdentityProviderType.FACEBOOK)
         assertSame(IdentityProviderType.fromNameKey("GOOGLE"), IdentityProviderType.GOOGLE)
         assertSame(IdentityProviderType.fromNameKey("GitHUB"), IdentityProviderType.GITHUB)
+        assertSame(IdentityProviderType.fromNameKey("LiNKEdIn"), IdentityProviderType.LINKEDIN)
     }
 
     @Test

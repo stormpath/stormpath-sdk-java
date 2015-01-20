@@ -24,10 +24,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 - [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
 - [Issue 76](https://github.com/stormpath/stormpath-sdk-java/issues/76): SSO/Logout Support and Result Listener for ID Site.
-- [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
-means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
-better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
-recognize how to implement a fix.
+- [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better recognize how to implement a fix.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
 - [Issue 103](https://github.com/stormpath/stormpath-sdk-java/issues/103): We have added three convenience methods to simplify the addition of Account Stores: app.addAccountStore(String), app.addAccountStore(DirectoryCriteria) and app.addAccountStore(GroupCriteria).
 - [Issue 106](https://github.com/stormpath/stormpath-sdk-java/issues/106): Creating an account or group from a Directory now returns the created resource.
@@ -35,6 +32,7 @@ recognize how to implement a fix.
 - [Issue 109](https://github.com/stormpath/stormpath-sdk-java/issues/109): The Tenant Resource now provides operations for retrieving accounts and groups.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 117](https://github.com/stormpath/stormpath-sdk-java/issues/117): Added support for Github OAuth.
+- [Issue 119](https://github.com/stormpath/stormpath-sdk-java/issues/119): Added support for LinkedIn OAuth.
 
 ### 1.0.RC2.1 ###
 
