@@ -33,7 +33,7 @@ This is a patch / bug-fix release that resolves a [thread-safety issue](https://
 
 #### ID Site Logout Functionality ####
 
-A user who has an open session with ID Site wanting to logout from it will add the <code>forLogoout()</code> method when
+A user who has an open session with ID Site wanting to logout from it will add the <code>forLogout()</code> method when
 constructing the {@code callbackUri} using the `IdSiteUrlBuilder`. For example:
 
 ```java
