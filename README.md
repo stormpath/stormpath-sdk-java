@@ -37,6 +37,7 @@ recognize how to implement a fix.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 117](https://github.com/stormpath/stormpath-sdk-java/issues/117): Added support for Github OAuth.
 - [Issue 119](https://github.com/stormpath/stormpath-sdk-java/issues/119): Added support for LinkedIn OAuth.
+- [Issue 130](https://github.com/stormpath/stormpath-sdk-java/issues/130): Connection timeout is now configurable (see `Clients.builder().setConnectionTimeout(int)`)
 
 ### 1.0.RC2.1 ###
 

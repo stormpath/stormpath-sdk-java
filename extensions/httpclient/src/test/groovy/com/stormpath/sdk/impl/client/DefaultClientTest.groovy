@@ -24,11 +24,6 @@ import com.stormpath.sdk.application.CreateApplicationRequest
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
-import com.stormpath.sdk.directory.CreateDirectoryRequest
-import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryCriteria
-import com.stormpath.sdk.directory.DirectoryList
-import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
@@ -37,6 +32,12 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
+import org.apache.http.client.params.AllClientPNames
+import com.stormpath.sdk.directory.CreateDirectoryRequest
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
+import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
@@ -61,6 +62,7 @@ class DefaultClientTest {
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
+        def connectionTimeout = 990011
 
         expect(proxy.getHost()).andReturn("192.168.2.110")
         expect(proxy.getPort()).andReturn(777)
@@ -68,9 +70,11 @@ class DefaultClientTest {
 
         replay(apiKey, proxy, cacheManager)
 
-        Client client = new DefaultClient(apiKey, baseUrl, proxy, cacheManager, authcScheme)
+        Client client = new DefaultClient(apiKey, baseUrl, proxy, cacheManager, authcScheme, connectionTimeout)
 
         assertEquals(client.dataStore.requestExecutor.apiKey, apiKey)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), connectionTimeout)
 
         verify(apiKey, proxy, cacheManager)
     }
@@ -84,7 +88,7 @@ class DefaultClientTest {
         def authcScheme = AuthenticationScheme.SAUTHC1
 
         try {
-            new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme)
+            new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme, 10000)
             fail("Should have thrown due to null ApiKey")
         } catch (IllegalArgumentException ex) {
             assertEquals(ex.getMessage(), "apiKey argument cannot be null.")
@@ -132,7 +136,7 @@ class DefaultClientTest {
         String baseUrl = "http://localhost:8080/v1"
         def authcScheme = AuthenticationScheme.SAUTHC1
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, null, authcScheme)
+        Client client = new DefaultClient(apiKey, baseUrl, null, null, authcScheme, 10000)
 
         assertNotNull(client.getDataStore())
         assertEquals(client.getDataStore().baseUrl, baseUrl)
@@ -200,7 +204,7 @@ class DefaultClientTest {
         replay requestExecutor, response, resourceFactory
 
         //Let's start
-        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, null, null)
+        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, null, null, 10000)
         setNewValue(client, "dataStore", dataStore)
         def account01 = client.getResource(properties.href, Account)
         def account02 = client.getResource(properties.href, Account)
@@ -338,7 +342,7 @@ class DefaultClientTest {
         replay(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
                 map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, null, null)
+        Client client = new DefaultClient(apiKey, baseUrl, null, null, null, 10000)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)

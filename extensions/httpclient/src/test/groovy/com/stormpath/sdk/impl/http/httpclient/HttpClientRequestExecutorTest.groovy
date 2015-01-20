@@ -38,7 +38,7 @@ class HttpClientRequestExecutorTest {
         HttpEntity entity = createStrictMock(HttpEntity)
         InputStream entityContent = createStrictMock(InputStream)
 
-        def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationScheme.SAUTHC1) {
+        def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationScheme.SAUTHC1, 10000) {
             @Override
             protected String toString(HttpEntity he) throws IOException {
                 return null

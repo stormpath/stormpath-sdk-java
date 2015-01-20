@@ -44,6 +44,11 @@ public class DefaultClientBuilder implements ClientBuilder {
     private AuthenticationScheme authenticationScheme;
     private CacheManager         cacheManager;
 
+    /**
+     * Default connection timeout.
+     */
+    private int connectionTimeout = 10000; //10,000 millis = 10 seconds
+
     @Override
     public ClientBuilder setApiKey(ApiKey apiKey) {
         return setApiKey((com.stormpath.sdk.api.ApiKey) apiKey);
@@ -77,6 +82,14 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    /* @since 1.0.0 */
+    @Override
+    public ClientBuilder setConnectionTimeout(int timeout) {
+        Assert.isTrue(timeout >= 0, "Timeout cannot be a negative number.");
+        this.connectionTimeout = timeout;
+        return this;
+    }
+
     @Override
     public Client build() {
         if (this.apiKey == null) {
@@ -97,7 +110,7 @@ public class DefaultClientBuilder implements ClientBuilder {
                                       .build();
         }
 
-        return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme);
+        return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme, this.connectionTimeout);
     }
 
     //For internal Stormpath needs only and not intended for public consumption

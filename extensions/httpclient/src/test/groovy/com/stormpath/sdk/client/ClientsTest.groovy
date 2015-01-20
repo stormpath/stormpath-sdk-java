@@ -24,6 +24,7 @@ import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.util.Duration
+import org.apache.http.client.params.AllClientPNames
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -57,6 +58,8 @@ public class ClientsTest {
         //ensure these defaults match what is documented in the Clients class-level JavaDoc:
         assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(1, TimeUnit.HOURS)
         assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(1, TimeUnit.HOURS)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 10000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 10000)
     }
 
     @Test
@@ -182,6 +185,27 @@ public class ClientsTest {
             fail("Should have thrown due to null proxy.")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "proxy argument cannot be null.")
+        }
+    }
+
+    /* @since 1.0.0 */
+    @Test
+    void testSetConnectionTimeout() {
+        def builder = Clients.builder().setConnectionTimeout(990)
+        assertEquals(builder.connectionTimeout, 990)
+        def client = builder.build()
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 990)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 990)
+    }
+
+    /* @since 1.0.0 */
+    @Test
+    void testSetConnectionTimeoutNegative() {
+        try {
+            Clients.builder().setConnectionTimeout(-100)
+            fail("Should have thrown due to negative timeout.")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "Timeout cannot be a negative number.")
         }
     }
 
