@@ -20,7 +20,6 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.provider.GoogleProvider
-import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
