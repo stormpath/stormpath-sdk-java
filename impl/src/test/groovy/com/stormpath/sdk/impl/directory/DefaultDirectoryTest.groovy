@@ -18,9 +18,9 @@ package com.stormpath.sdk.impl.directory
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
-import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.CreateAccountRequest
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryStatus
 import com.stormpath.sdk.group.*

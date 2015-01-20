@@ -39,7 +39,7 @@ import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.CollectionProperties;

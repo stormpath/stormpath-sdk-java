@@ -467,8 +467,8 @@ class DefaultApplicationTest {
         expect(accountStore.getHref()).andReturn(accountStoreHref) times 2
         expect(accountStoreMapping.setDefaultAccountStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
-        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
@@ -546,7 +546,6 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.save())
 
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
-
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor

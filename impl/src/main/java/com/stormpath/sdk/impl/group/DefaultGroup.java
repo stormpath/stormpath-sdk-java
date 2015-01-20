@@ -26,7 +26,12 @@ import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.group.GroupOptions;
 import com.stormpath.sdk.group.GroupStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
