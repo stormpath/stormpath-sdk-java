@@ -16,7 +16,6 @@
 package com.stormpath.sdk.account;
 
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.resource.Resource;
 
 /**
  * The VerificationEmailRequest is used in scenarios where the <a href="http://docs.stormpath.com/console/product-guide/#workflow-automations">

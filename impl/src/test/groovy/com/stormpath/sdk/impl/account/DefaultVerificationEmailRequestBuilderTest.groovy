@@ -21,7 +21,8 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertSame
 
 /**
  * @since 1.0.0

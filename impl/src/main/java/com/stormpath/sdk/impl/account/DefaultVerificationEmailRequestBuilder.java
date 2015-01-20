@@ -15,7 +15,8 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.VerificationEmailRequestBuilder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
