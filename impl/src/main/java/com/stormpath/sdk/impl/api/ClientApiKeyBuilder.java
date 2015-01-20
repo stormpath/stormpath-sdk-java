@@ -17,18 +17,16 @@ package com.stormpath.sdk.impl.api;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
-import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.impl.io.FileResource;
 import com.stormpath.sdk.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.util.Properties;
 
 /** @since 1.0.RC */
@@ -111,6 +109,44 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         return props;
     }
 
+    protected Properties getEnvironmentVariableFileProperties() {
+        Properties props = new Properties();
+
+        String location = System.getenv("STORMPATH_API_KEY_FILE");
+        if (Strings.hasText(location)) {
+            try {
+                Reader reader = createFileReader(location);
+                props = toProperties(reader);
+            } catch (IOException ignored) {
+                log.debug("Unable to load api key properties file [" +
+                          location + "] specified by environment variable " +
+                          "STORMPATH_API_KEY_FILE.  This can be safely ignored as this is a " +
+                          "fallback location - other more specific locations will be checked.", ignored);
+            }
+        }
+
+        return props;
+    }
+
+    protected Properties getSystemPropertyFileProperties() {
+        Properties props = new Properties();
+
+        String location = System.getProperty("stormpath.apiKey.file");
+        if (Strings.hasText(location)) {
+            try {
+                Reader reader = createFileReader(location);
+                props = toProperties(reader);
+            } catch (IOException ignored) {
+                log.debug("Unable to load api key properties file [" +
+                          location + "] specified by system property " +
+                          "stormpath.apiKey.file.  This can be safely ignored as this is a " +
+                          "fallback location - other more specific locations will be checked.", ignored);
+            }
+        }
+
+        return props;
+    }
+
     protected Properties getEnvironmentVariableProperties() {
         Properties props = new Properties();
 
@@ -154,17 +190,27 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         String id = getPropertyValue(props, this.apiKeyIdPropertyName);
         String secret = getPropertyValue(props, this.apiKeySecretPropertyName);
 
-        //2. Try environment variables:
+        //2. Try environment variable file:
+        props = getEnvironmentVariableFileProperties();
+        id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+        secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
+
+        //3. Try environment variables:
         props = getEnvironmentVariableProperties();
         id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
         secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
 
-        //3. Try system properties:
+        //4. Try system property file:
+        props = getSystemPropertyFileProperties();
+        id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
+        secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
+
+        //5. Try system properties:
         props = getSystemProperties();
         id = getPropertyValue(props, this.apiKeyIdPropertyName, id);
         secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
 
-        //4. Try any configured properties files:
+        //6. Try any configured properties files:
         if (Strings.hasText(this.apiKeyFileLocation)) {
             try {
                 Reader reader = createFileReader(this.apiKeyFileLocation);
@@ -178,6 +224,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
             secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
         }
 
+        //7.
         if (this.apiKeyInputStream != null) {
             try {
                 Reader reader = toReader(this.apiKeyInputStream);
@@ -190,6 +237,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
             secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
         }
 
+        //8.
         if (this.apiKeyReader != null) {
             try {
                 props = toProperties(this.apiKeyReader);
@@ -201,32 +249,41 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
             secret = getPropertyValue(props, this.apiKeySecretPropertyName, secret);
         }
 
+        //9.
         if (this.apiKeyProperties != null && !this.apiKeyProperties.isEmpty()) {
             id = getPropertyValue(this.apiKeyProperties, this.apiKeyIdPropertyName, id);
             secret = getPropertyValue(this.apiKeyProperties, this.apiKeySecretPropertyName, secret);
         }
 
-        //5. Explicitly-configured values always take precedence:
+        //10. Explicitly-configured values always take precedence:
         id = valueOf(this.apiKeyId, id);
         secret = valueOf(this.apiKeySecret, secret);
 
         if (!Strings.hasText(id)) {
-            String msg = "Unable to find an API Key 'id', either from explicit configuration (" +
-                         getClass().getSimpleName() + ".setApiKeyId) or from fallback locations " +
-                         "1) the system property 'stormpath.apiKey.id', 2) environment variable " +
-                         "'STORMPATH_API_KEY_ID' or 3) in the default apiKey.properties file location " +
-                         DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION + ".  Please ensure you manually configure an " +
-                         "API Key ID or ensure that it exists in one of these fallback locations.";
+            String msg = "Unable to find an API Key 'id', either from explicit configuration (for example, " +
+                         ApiKeyBuilder.class.getSimpleName() + ".setApiKeyId) or from fallback locations:\n\n" +
+                         "1) system property stormpath.apiKey.id\n" +
+                         "2) resource file path or URL specified by system property stormpath.apiKey.file\n" +
+                         "3) resource file path or URL specified by environment variable STORMPATH_API_KEY_FILE\n" +
+                         "4) environment variable STORMPATH_API_KEY_ID\n" +
+                         "5) default apiKey.properties file location " + DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION +
+                         ".\n\n" +
+                         "Please ensure you manually configure an API Key ID or ensure that it exists in one of these " +
+                         "fallback locations.";
             throw new IllegalStateException(msg);
         }
 
         if (!Strings.hasText(secret)) {
-            String msg = "Unable to find an API Key 'secret', either from explicit configuration (" +
-                         getClass().getSimpleName() + ".setApiKeySecret) or from fallback locations " +
-                         "1) the system property 'stormpath.apiKey.secret', 2) environment variable " +
-                         "'STORMPATH_API_KEY_SECRET' or 3) in the default apiKey.properties file location " +
-                         DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION + ".  Please ensure you manually configure an " +
-                         "API Key secret or ensure that it exists in one of these fallback locations.";
+            String msg = "Unable to find an API Key 'secret', either from explicit configuration (for example, " +
+                         ApiKeyBuilder.class.getSimpleName() + ".setApiKeySecret) or from fallback locations:\n\n" +
+                         "1) system property stormpath.apiKey.secret\n" +
+                         "2) resource file path or URL specified by system property stormpath.apiKey.file\n" +
+                         "3) resource file path or URL specified by environment variable STORMPATH_API_KEY_FILE\n" +
+                         "4) environment variable STORMPATH_API_KEY_SECRET\n" +
+                         "5) default apiKey.properties file location " + DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION +
+                         ".\n\n" +
+                         "Please ensure you manually configure an API Key Secret or ensure that it exists in one of " +
+                         "these fallback locations.";
             throw new IllegalStateException(msg);
         }
 
@@ -263,7 +320,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     }
 
     protected Reader createFileReader(String apiKeyFileLocation) throws IOException {
-        InputStream is = ResourceUtils.getInputStreamForPath(apiKeyFileLocation);
+        InputStream is = new FileResource(apiKeyFileLocation).getInputStream();
         return toReader(is);
     }
 
@@ -275,90 +332,6 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         Properties properties = new Properties();
         properties.load(reader);
         return properties;
-    }
-
-    private static class ResourceUtils {
-
-        /** Resource path prefix that specifies to load from a classpath location, value is <b>{@code classpath:}</b> */
-        public static final String CLASSPATH_PREFIX = "classpath:";
-        /** Resource path prefix that specifies to load from a url location, value is <b>{@code url:}</b> */
-        public static final String URL_PREFIX       = "url:";
-        /** Resource path prefix that specifies to load from a file location, value is <b>{@code file:}</b> */
-        public static final String FILE_PREFIX      = "file:";
-
-        /** Prevent instantiation. */
-        private ResourceUtils() {
-        }
-
-        /**
-         * Returns {@code true} if the resource path is not null and starts with one of the recognized
-         * resource prefixes ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
-         * {@link #URL_PREFIX URL_PREFIX}, or {@link #FILE_PREFIX FILE_PREFIX}), {@code false} otherwise.
-         *
-         * @param resourcePath the resource path to check
-         * @return {@code true} if the resource path is not null and starts with one of the recognized
-         *         resource prefixes, {@code false} otherwise.
-         * @since 0.8
-         */
-        @SuppressWarnings({"UnusedDeclaration"})
-        public static boolean hasResourcePrefix(String resourcePath) {
-            return resourcePath != null &&
-                   (resourcePath.startsWith(CLASSPATH_PREFIX) ||
-                    resourcePath.startsWith(URL_PREFIX) ||
-                    resourcePath.startsWith(FILE_PREFIX));
-        }
-
-        /**
-         * Returns the InputStream for the resource represented by the specified path, supporting scheme
-         * prefixes that direct how to acquire the input stream
-         * ({@link #CLASSPATH_PREFIX CLASSPATH_PREFIX},
-         * {@link #URL_PREFIX URL_PREFIX}, or {@link #FILE_PREFIX FILE_PREFIX}).  If the path is not prefixed by one
-         * of these schemes, the path is assumed to be a file-based path that can be loaded with a
-         * {@link java.io.FileInputStream FileInputStream}.
-         *
-         * @param resourcePath the String path representing the resource to obtain.
-         * @return the InputStraem for the specified resource.
-         * @throws java.io.IOException if there is a problem acquiring the resource at the specified path.
-         */
-        public static InputStream getInputStreamForPath(String resourcePath) throws IOException {
-
-            InputStream is;
-            if (resourcePath.startsWith(CLASSPATH_PREFIX)) {
-                is = loadFromClassPath(stripPrefix(resourcePath));
-
-            } else if (resourcePath.startsWith(URL_PREFIX)) {
-                is = loadFromUrl(stripPrefix(resourcePath));
-
-            } else if (resourcePath.startsWith(FILE_PREFIX)) {
-                is = loadFromFile(stripPrefix(resourcePath));
-
-            } else {
-                is = loadFromFile(resourcePath);
-            }
-
-            if (is == null) {
-                throw new IOException("Resource [" + resourcePath + "] could not be found.");
-            }
-
-            return is;
-        }
-
-        private static InputStream loadFromFile(String path) throws IOException {
-            return new FileInputStream(path);
-        }
-
-        private static InputStream loadFromUrl(String urlPath) throws IOException {
-            URL url = new URL(urlPath);
-            return url.openStream();
-        }
-
-        private static InputStream loadFromClassPath(String path) {
-            return Classes.getResourceAsStream(path);
-        }
-
-        private static String stripPrefix(String resourcePath) {
-            return resourcePath.substring(resourcePath.indexOf(":") + 1);
-        }
     }
 
 }

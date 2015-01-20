@@ -109,19 +109,19 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     }
 
     @Override
-    public void createAccount(Account account) {
+    public Account createAccount(Account account) {
         Assert.notNull(account, "account cannot be null.");
-        createAccount(Accounts.newCreateRequestFor(account).build());
+        return createAccount(Accounts.newCreateRequestFor(account).build());
     }
 
     @Override
-    public void createAccount(Account account, boolean registrationWorkflowEnabled) {
+    public Account createAccount(Account account, boolean registrationWorkflowEnabled) {
         Assert.notNull(account, "account cannot be null.");
-        createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build());
+        return createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build());
     }
 
     @Override
-    public void createAccount(CreateAccountRequest request) {
+    public Account createAccount(CreateAccountRequest request) {
         Assert.notNull(request, "Request cannot be null.");
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
@@ -131,11 +131,10 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         }
 
         if (request.isAccountOptionsSpecified()) {
-            getDataStore().create(href, account, request.getAccountOptions());
-            return;
+            return getDataStore().create(href, account, request.getAccountOptions());
         }
 
-        getDataStore().create(href, account);
+        return getDataStore().create(href, account);
     }
 
     @Override
@@ -181,21 +180,20 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
      * @since 0.6
      */
     @Override
-    public void createGroup(Group group) {
+    public Group createGroup(Group group) {
         Assert.notNull(group, "Group cannot be null.");
-        createGroup(Groups.newCreateRequestFor(group).build());
+        return createGroup(Groups.newCreateRequestFor(group).build());
     }
 
     @Override
-    public void createGroup(CreateGroupRequest request) {
+    public Group createGroup(CreateGroupRequest request) {
         Assert.notNull(request, "Request cannot be null.");
         final Group group = request.getGroup();
         String href = getGroups().getHref();
         if (request.isGroupOptionsSpecified()) {
-            getDataStore().create(href, group, request.getGroupOptions());
-            return;
+            return getDataStore().create(href, group, request.getGroupOptions());
         }
-        getDataStore().create(href, group);
+        return getDataStore().create(href, group);
     }
 
     @Override

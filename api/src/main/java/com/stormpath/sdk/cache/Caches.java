@@ -85,7 +85,7 @@ public class Caches {
      * </pre>
      *
      * @return a new disabled {@code CacheManager} instance.  All caching
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     public static CacheManager newDisabledCacheManager() {
         return (CacheManager) Classes.newInstance("com.stormpath.sdk.impl.cache.DisabledCacheManager");

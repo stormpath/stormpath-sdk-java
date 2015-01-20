@@ -85,6 +85,25 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setPath(String path);
 
     /**
+     *
+     * A user that has an open session and wants to logout from it will invoke this method when constructing the {@code callbackUri}.
+     * <p/>
+     * To execute this operation the application will create a signed request to the internal logout endpoint in Stormpath
+     * (i.e. {@code /sso/logout}). If successfully executed, the user will be redirected to the {@code callbackUri} indicating
+     * that the account has been properly logged out.
+     * <p/>
+     * When users logs out, their session with the ID Site is no longer valid for every application pertaining to this domain.
+     * They will be required to log in again when trying to access any of those applications.
+     * <p/>
+     * Note that once this method is invoked, there is no way to modify it (i.e. undo) to make it point to the regular
+     * SSO endpoint. To achieve that, a new {@link IdSiteUrlBuilder} will need to be constructed.
+     *
+     * @return this instance for method chaining.
+     * @since 1.0.RC3
+     */
+    IdSiteUrlBuilder forLogout();
+
+    /**
      * Builds and returns the the fully qualified URL representing the initial location in the ID Site where the
      * end-user should be redirected.
      *
