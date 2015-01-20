@@ -2,6 +2,8 @@
 
 ### 1.0.RC3 ###
 
+This is a large interim release on our way to 1.0 final.  It introduces substantial servlet container-based webapp support as well as a number of bug fixes and enhancements.
+
 #### Resolved Issues ####
 
 - [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
