@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
@@ -36,8 +37,9 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
+    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT, PASSWORD);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT_STORE, PASSWORD, ACCOUNT);
 
     public DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
@@ -68,12 +70,23 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
         return getResourceProperty(ACCOUNT);
     }
 
+    @Override
+    public PasswordResetToken setAccountStore(AccountStore accountStore) {
+        setResourceProperty(ACCOUNT_STORE, accountStore);
+        return this;
+    }
+
+    public AccountStore getAccountStore() {
+        return getResourceProperty(ACCOUNT_STORE);
+    }
+
     /**
      * @since 1.0.RC
      */
     @Override
-    public void setPassword(String password) {
+    public PasswordResetToken setPassword(String password) {
         setProperty(PASSWORD, password);
+        return this;
     }
 
 }

@@ -18,8 +18,12 @@ package com.stormpath.sdk.impl.provider;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.FacebookProvider;
 import com.stormpath.sdk.provider.FacebookProviderData;
+import com.stormpath.sdk.provider.GithubProvider;
+import com.stormpath.sdk.provider.GithubProviderData;
 import com.stormpath.sdk.provider.GoogleProvider;
 import com.stormpath.sdk.provider.GoogleProviderData;
+import com.stormpath.sdk.provider.LinkedInProvider;
+import com.stormpath.sdk.provider.LinkedInProviderData;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderData;
 
@@ -35,8 +39,20 @@ import java.util.Map;
 public enum IdentityProviderType {
 
     STORMPATH("stormpath", Provider.class, ProviderData.class),
+
     FACEBOOK("facebook", FacebookProvider.class, FacebookProviderData.class),
-    GOOGLE("google", GoogleProvider.class, GoogleProviderData.class);
+
+    /**
+     * @since 1.0.RC3
+     */
+    GITHUB("github", GithubProvider.class, GithubProviderData.class),
+
+    GOOGLE("google", GoogleProvider.class, GoogleProviderData.class),
+
+    /**
+     * @since 1.0.RC3
+     */
+    LINKEDIN("linkedin", LinkedInProvider.class, LinkedInProviderData.class);
 
     private static final Map<String, IdentityProviderType> IDENTITY_PROVIDER_MAP;
     public static final Map<String, Class<? extends Provider>> IDENTITY_PROVIDER_CLASS_MAP;

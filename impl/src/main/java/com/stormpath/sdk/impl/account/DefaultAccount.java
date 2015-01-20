@@ -23,7 +23,6 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -32,10 +31,10 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
-import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -51,7 +50,7 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-public class DefaultAccount extends AbstractDirectoryEntity implements Account {
+public class DefaultAccount extends AbstractExtendableInstanceResource implements Account {
 
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
@@ -224,23 +223,12 @@ public class DefaultAccount extends AbstractDirectoryEntity implements Account {
         return getResourceProperty(EMAIL_VERIFICATION_TOKEN);
     }
 
-    @Override
-    public CustomData getCustomData() {
-        return super.getCustomData();
-    }
-
     /**
      * @since 0.8
      */
     @Override
     public void delete() {
         getDataStore().delete(this);
-    }
-
-    @Override
-    public void save(){
-        applyCustomDataUpdatesIfNecessary();
-        super.save();
     }
 
     @Override

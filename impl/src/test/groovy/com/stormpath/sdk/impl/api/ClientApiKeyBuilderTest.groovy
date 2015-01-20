@@ -288,5 +288,15 @@ class ClientApiKeyBuilderTest {
         protected Properties getSystemProperties() {
             return new Properties();
         }
+
+        @Override
+        protected Properties getEnvironmentVariableFileProperties() {
+            return new Properties();
+        }
+
+        @Override
+        protected Properties getSystemPropertyFileProperties() {
+            return new Properties();
+        }
     }
 }

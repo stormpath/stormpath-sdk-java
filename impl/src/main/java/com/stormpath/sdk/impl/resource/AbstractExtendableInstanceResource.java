@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.directory;
+package com.stormpath.sdk.impl.resource;
 
+import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.impl.directory.DefaultCustomData;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Saveable;
 
 import java.util.Map;
 
 /**
- * AbstractDirectoryEntity is an abstract representation for resources that depend on hang off of a
- * {@link com.stormpath.sdk.directory.Directory} like {@link com.stormpath.sdk.account.Account} or
- * {@link com.stormpath.sdk.group.Group}.
- *
- * @since 0.9
+ * @since 1.0.0
  */
-public abstract class AbstractDirectoryEntity extends AbstractInstanceResource {
+public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource implements Saveable, Extendable {
 
     public static final ResourceReference<CustomData> CUSTOM_DATA = new ResourceReference<CustomData>("customData", CustomData.class);
 
-    protected AbstractDirectoryEntity(InternalDataStore dataStore) {
+    protected AbstractExtendableInstanceResource(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    protected AbstractDirectoryEntity(InternalDataStore dataStore, Map<String, Object> properties) {
+    protected AbstractExtendableInstanceResource(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore);
 
+        //@since 1.0.0
         if (properties != null && properties.containsKey(CUSTOM_DATA.getName())) {
             Object object = properties.get(CUSTOM_DATA.getName());
             Assert.isInstanceOf(Map.class, object);
@@ -48,13 +47,21 @@ public abstract class AbstractDirectoryEntity extends AbstractInstanceResource {
             properties.put(CUSTOM_DATA.getName(), customData);
         }
         setProperties(properties);
+
     }
 
-    protected CustomData getCustomData(){
+    @Override
+    public CustomData getCustomData() {
         if (isNew() && getResourceProperty(CUSTOM_DATA) == null) {
             setProperty(CUSTOM_DATA, getDataStore().instantiate(CustomData.class));
         }
         return getResourceProperty(CUSTOM_DATA);
+    }
+
+    @Override
+    public void save(){
+        applyCustomDataUpdatesIfNecessary();
+        super.save();
     }
 
     protected void applyCustomDataUpdatesIfNecessary(){

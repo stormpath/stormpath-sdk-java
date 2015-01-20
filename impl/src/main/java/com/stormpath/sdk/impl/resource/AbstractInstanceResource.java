@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.resource;
 
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.resource.Saveable;
 
@@ -37,4 +38,5 @@ public abstract class AbstractInstanceResource extends AbstractResource implemen
     public void save() {
         getDataStore().save(this);
     }
+
 }

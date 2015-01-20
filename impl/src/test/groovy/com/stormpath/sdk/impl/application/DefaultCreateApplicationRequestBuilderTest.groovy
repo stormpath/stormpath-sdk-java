@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
@@ -44,6 +45,7 @@ class DefaultCreateApplicationRequestBuilderTest {
         assertTrue(request.createDirectory)
         assertNull(request.directoryName)
         assertTrue(request.build() instanceof CreateApplicationAndDirectoryRequest)
+
     }
 
 }

@@ -17,9 +17,12 @@ package com.stormpath.sdk.impl.tenant
 
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.CacheManager
+import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.application.ApplicationList
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -30,13 +33,15 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProvider
 import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.impl.resource.CollectionReference
+import com.stormpath.sdk.impl.resource.ResourceReference
+import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.provider.Providers
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -45,6 +50,23 @@ import static org.testng.Assert.*
  * @since 0.8
  */
 class DefaultTenantTest {
+
+    //@since 1.0.0
+    @Test
+    void testGetPropertyDescriptors() {
+
+        DefaultTenant defaultTenant = new DefaultTenant(createStrictMock(InternalDataStore))
+
+        def propertyDescriptors = defaultTenant.getPropertyDescriptors()
+
+        assertEquals(propertyDescriptors.size(), 5)
+
+        assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("applications") instanceof CollectionReference && propertyDescriptors.get("applications").getType().equals(ApplicationList))
+        assertTrue(propertyDescriptors.get("directories") instanceof CollectionReference && propertyDescriptors.get("directories").getType().equals(DirectoryList))
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
+    }
 
     @Test
     void testCreateDirectory() {

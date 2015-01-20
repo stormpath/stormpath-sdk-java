@@ -30,7 +30,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class DefaultDirectory extends AbstractInstanceResource implements Directory {
+public class DefaultDirectory extends AbstractExtendableInstanceResource implements Directory {
 
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name");
@@ -63,7 +63,7 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -116,19 +116,19 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
     }
 
     @Override
-    public void createAccount(Account account) {
+    public Account createAccount(Account account) {
         Assert.notNull(account, "account cannot be null.");
-        createAccount(Accounts.newCreateRequestFor(account).build());
+        return createAccount(Accounts.newCreateRequestFor(account).build());
     }
 
     @Override
-    public void createAccount(Account account, boolean registrationWorkflowEnabled) {
+    public Account createAccount(Account account, boolean registrationWorkflowEnabled) {
         Assert.notNull(account, "account cannot be null.");
-        createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build());
+        return createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build());
     }
 
     @Override
-    public void createAccount(CreateAccountRequest request) {
+    public Account createAccount(CreateAccountRequest request) {
         Assert.notNull(request, "Request cannot be null.");
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
@@ -138,11 +138,10 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         }
 
         if (request.isAccountOptionsSpecified()) {
-            getDataStore().create(href, account, request.getAccountOptions());
-            return;
+            return getDataStore().create(href, account, request.getAccountOptions());
         }
 
-        getDataStore().create(href, account);
+        return getDataStore().create(href, account);
     }
 
     @Override
@@ -188,21 +187,20 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
      * @since 0.6
      */
     @Override
-    public void createGroup(Group group) {
+    public Group createGroup(Group group) {
         Assert.notNull(group, "Group cannot be null.");
-        createGroup(Groups.newCreateRequestFor(group).build());
+        return createGroup(Groups.newCreateRequestFor(group).build());
     }
 
     @Override
-    public void createGroup(CreateGroupRequest request) {
+    public Group createGroup(CreateGroupRequest request) {
         Assert.notNull(request, "Request cannot be null.");
         final Group group = request.getGroup();
         String href = getGroups().getHref();
         if (request.isGroupOptionsSpecified()) {
-            getDataStore().create(href, group, request.getGroupOptions());
-            return;
+            return getDataStore().create(href, group, request.getGroupOptions());
         }
-        getDataStore().create(href, group);
+        return getDataStore().create(href, group);
     }
 
     @Override
@@ -259,5 +257,6 @@ public class DefaultDirectory extends AbstractInstanceResource implements Direct
         setProperty(PROVIDER, provider);
         return this;
     }
+
 
 }

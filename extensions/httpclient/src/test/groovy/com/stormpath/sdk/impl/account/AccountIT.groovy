@@ -26,15 +26,17 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.resource.AbstractResource
-import java.lang.reflect.Field
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
+import org.testng.annotations.Test
+
+import java.lang.reflect.Field
+
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
 import static org.testng.Assert.*
-import org.testng.annotations.Test
 
 /**
  * @since 0.9.3
@@ -283,7 +285,7 @@ class AccountIT extends ClientIT {
 
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     public void testResourceReferencesStayInSync() {
@@ -314,7 +316,7 @@ class AccountIT extends ClientIT {
         assertEquals(directory.getName(), account.getDirectory().getName());
     }
 
-    // @since 1.0.0
+    // @since 1.0.RC3
     @Test
     public void testCustomDataStayInSync() {
         def app = createTempApp()
@@ -345,7 +347,7 @@ class AccountIT extends ClientIT {
         assertEquals(customData.get("aKey"), account.getCustomData().get("aKey")); // assertion fails
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     public void testCustomDataSize() {
         def app = createTempApp()
@@ -369,7 +371,7 @@ class AccountIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testInternalProperties() {
@@ -391,26 +393,28 @@ class AccountIT extends ClientIT {
         Map properties02 = getValue(AbstractResource, account02, "properties")
         Map dirtyProperties02 = getValue(AbstractResource, account02, "dirtyProperties")
 
-        assertEquals(properties01.size(), 16)
+        final int EXPECTED_PROPERTIES_SIZE = 17;
+
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
         assertSame(properties01, properties02)
 
         account01.setEmail("new@email.com")
         assertEquals(account01.getEmail(), "new@email.com")
         assertEquals(account02.getEmail(), account01.getUsername() + "@nowhere.com")
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 1)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
 
         account01.save()
 
         assertSame(properties01, properties02)
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
 
         assertEquals(account01.getEmail(), account02.getEmail())
@@ -418,44 +422,44 @@ class AccountIT extends ClientIT {
         account02.setMiddleName("New Middle Name for Account02")
         assertEquals(account01.getMiddleName(), null)
         assertEquals(account02.getMiddleName(), "New Middle Name for Account02")
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 1)
 
         assertEquals(account01.getMiddleName(), null)
         assertEquals(account02.getMiddleName(), "New Middle Name for Account02")
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 1)
 
         account01.setMiddleName("New Middle Name for Account01")
         assertEquals(account01.getMiddleName(), "New Middle Name for Account01")
         assertEquals(account02.getMiddleName(), "New Middle Name for Account02")
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 1)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 1)
         account02.save()
 
         assertEquals(account01.getMiddleName(), "New Middle Name for Account01")
         assertEquals(account02.getMiddleName(), "New Middle Name for Account02")
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 1)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
         account01.save()
         assertEquals(account01.getMiddleName(), "New Middle Name for Account01")
         assertEquals(account02.getMiddleName(), "New Middle Name for Account01")
-        assertEquals(properties01.size(), 16)
+        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
-        assertEquals(properties02.size(), 16)
+        assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
 
     }
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     @Test
     void testCustomData() {
         def app = createTempApp()
@@ -632,7 +636,7 @@ class AccountIT extends ClientIT {
 
     /**
      * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testGetGroupsWithLimitAndOffset() {
@@ -691,7 +695,7 @@ class AccountIT extends ClientIT {
 
     /**
      * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testGetGroupswithAccountMembershipsLimitAndOffset() {
@@ -752,7 +756,7 @@ class AccountIT extends ClientIT {
     }
 
 
-    //@since 1.0.0
+    //@since 1.0.RC3
     private Object getValue(Class clazz, Object object, String fieldName) {
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)

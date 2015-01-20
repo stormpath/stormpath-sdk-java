@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
@@ -117,6 +118,25 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
+     * @since 1.0.0
+     */
+    @Test
+    void testCreateLinkedInDirectoryRequestViaTenantActions() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateLinkedInDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.LINKEDIN.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .build()
+        ).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+    }
+
+    /**
      * @since 1.0.RC
      */
     @Test
@@ -143,6 +163,30 @@ class DirectoryIT extends ClientIT {
         def dirCriteria = Directories.criteria()
         def dirList = client.getDirectories(dirCriteria)
         assertNotNull dirList.href
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testGetDirectoriesWithCustomData() {
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: DirectoryIT.testGetDirectoriesWithCustomData")
+        directory.customData.put("someKey", "someValue")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+        assertNotNull directory.href
+
+        def dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.getName())).withCustomData())
+
+        def count = 0
+        for (Directory dir : dirList) {
+            count++
+            assertNotNull(dir.getHref())
+            assertEquals(dir.getCustomData().size(), 4)
+        }
+        assertEquals(count, 1)
+
     }
 
 }

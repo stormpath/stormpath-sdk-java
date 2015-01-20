@@ -65,4 +65,12 @@ public class DefaultApplicationOptions extends DefaultOptions<ApplicationOptions
     public Object withAccountStoreMappings(int limit, int offset) {
         return expand(DefaultApplication.ACCOUNT_STORE_MAPPINGS, limit, offset);
     }
+
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    public ApplicationOptions withCustomData() {
+        return expand(DefaultApplication.CUSTOM_DATA);
+    }
 }

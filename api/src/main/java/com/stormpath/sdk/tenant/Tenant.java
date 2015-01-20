@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.tenant;
 
+import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
@@ -46,7 +47,7 @@ import com.stormpath.sdk.resource.Saveable;
  *
  * @since 0.1
  */
-public interface Tenant extends Resource, Saveable, TenantActions {
+public interface Tenant extends Resource, Saveable, TenantActions, Extendable {
 
     /**
      * <p>Returns the tenant's globally-unique name in Stormpath.</p>

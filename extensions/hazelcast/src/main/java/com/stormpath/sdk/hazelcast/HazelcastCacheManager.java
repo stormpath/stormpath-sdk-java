@@ -79,7 +79,7 @@ import java.util.concurrent.ConcurrentMap;
  * Client stormpathClient = {@link com.stormpath.sdk.client.Clients Clients}.builder()<b>.setCacheManager(cacheManager)</b>.build();
  * </pre>
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public class HazelcastCacheManager implements CacheManager {
 

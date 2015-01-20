@@ -25,7 +25,7 @@
 
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.RC3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Stormpath Java SDK</name>
@@ -86,6 +86,7 @@
         <module>api</module>
         <module>impl</module>
         <module>extensions</module>
+        <module>examples</module>
     </modules>
 
     <properties>
@@ -93,15 +94,25 @@
         <slf4j.version>1.6.6</slf4j.version>
         <hazelcast.version>3.2.4</hazelcast.version>
         <httpClient.version>4.2.2</httpClient.version>
-        <jackson.version>1.9.11</jackson.version>
+        <jackson.version>2.4.3</jackson.version>
+        <jjwt.version>0.4</jjwt.version>
         <oltu.version>1.0.0</oltu.version>
+
+        <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
+             See: http://stackoverflow.com/questions/22314453/unsupported-major-minor-version-51-0-error-when-using-1-6-in-pom-and-openjdk6-fo -->
         <servlet.version>3.0.1</servlet.version>
+        <spring.version>4.1.1.RELEASE</spring.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
         <logback.version>1.0.7</logback.version>
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
+        <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
+        <skipITs>true</skipITs>
+
+        <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
+        <jstl.version>1.2</jstl.version>
 
     </properties>
 
@@ -111,8 +122,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -160,6 +169,21 @@
                 <artifactId>stormpath-sdk-oauth</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-sdk-servlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-sdk-httpclient</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-servlet-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- 3rd party dependencies: -->
             <dependency>
@@ -175,6 +199,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
@@ -182,9 +211,15 @@
                 <scope>runtime</scope>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-mapper-asl</artifactId>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.oltu.oauth2</groupId>
@@ -203,8 +238,30 @@
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>${jstl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>javax.servlet.jsp-api</artifactId>
+                <version>2.2.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>${spring.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -283,6 +340,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.16</version>
                 <configuration>
+                    <skipITs>${skipITs}</skipITs>
                     <includes>
                         <include>**/*IT.java</include>
                         <include>**/*IT.groovy</include>
@@ -299,6 +357,18 @@
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -322,9 +392,48 @@
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
+                     clean up the HTML source in JavaDoc comments: -->
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+        <profile>
+            <id>it</id>
+            <activation>
+                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
+                the REST api unnecessarily. -->
+                <jdk>1.6</jdk>
+            </activation>
+            <properties>
+                <skipITs>false</skipITs>
+            </properties>
+        </profile>
         <profile>
             <id>stormpath-signature</id>
             <build>
@@ -353,7 +462,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
+                        <version>2.10.1</version>
                         <executions>
                             <execution>
                                 <id>attach-api-docs</id>
@@ -365,45 +474,38 @@
                         <inherited>true</inherited>
                         <configuration>
                             <top><![CDATA[
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-29159574-1', 'auto');
+      ga('send', 'pageview');
+    </script>
     <script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-29159574-1']);
-  _gaq.push(['_setDomainName', 'stormpath.com']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
-<!-- kissmetrics -->
-<script type="text/javascript">
-  var _kmq = _kmq || [];
-  var _kmk = _kmk || '684b854336bd3a6523260ebd991eec06b18b929a';
-  function _kms(u){
-    setTimeout(function(){
-      var d = document, f = d.getElementsByTagName('script')[0],
-      s = d.createElement('script');
-      s.type = 'text/javascript'; s.async = true; s.src = u;
-      f.parentNode.insertBefore(s, f);
-    }, 1);
-  }
-  _kms('//i.kissmetrics.com/i.js');
-  _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
-</script>
-
-<!-- Optimizely -->
-<script src="//cdn.optimizely.com/js/225847041.js"></script>
+      (function(d,s,i,r) {
+        if (d.getElementById(i)){return;}
+        var n=d.createElement(s),e=d.getElementsByTagName(s)[0];
+        n.id=i;n.src='//js.hs-analytics.net/analytics/'+(Math.ceil(new Date()/r)*r)+'/475298.js';
+        e.parentNode.insertBefore(n, e);
+      })(document,"script","hs-analytics",300000);
+    </script>
+    <script type="text/javascript">
+      var _kmq = _kmq || [];
+      var _kmk = _kmk || '684b854336bd3a6523260ebd991eec06b18b929a';
+      function _kms(u){
+        setTimeout(function(){
+            var d = document, f = d.getElementsByTagName('script')[0],
+                    s = d.createElement('script');
+            s.type = 'text/javascript'; s.async = true; s.src = u;
+            f.parentNode.insertBefore(s, f);
+        }, 1);
+      }
+      _kms('//i.kissmetrics.com/i.js');
+      _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
+    </script>
+    <script src="//cdn.optimizely.com/js/225847041.js"></script>
                                 ]]></top>
-
-                            <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
-                                 clean up the HTML source in JavaDoc comments: -->
-                            <additionalparam>-Xdoclint:none</additionalparam>
-
                         </configuration>
                     </plugin>
                     <plugin>
