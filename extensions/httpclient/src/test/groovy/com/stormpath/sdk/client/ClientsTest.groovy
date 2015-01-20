@@ -58,8 +58,8 @@ public class ClientsTest {
         //ensure these defaults match what is documented in the Clients class-level JavaDoc:
         assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(1, TimeUnit.HOURS)
         assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(1, TimeUnit.HOURS)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 10000)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 10000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 20000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 20000)
     }
 
     @Test
@@ -188,7 +188,7 @@ public class ClientsTest {
         }
     }
 
-    /* @since 1.0.0 */
+    /* @since 1.0.RC3 */
     @Test
     void testSetConnectionTimeout() {
         def builder = Clients.builder().setConnectionTimeout(990)
@@ -198,7 +198,7 @@ public class ClientsTest {
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 990)
     }
 
-    /* @since 1.0.0 */
+    /* @since 1.0.RC3 */
     @Test
     void testSetConnectionTimeoutNegative() {
         try {

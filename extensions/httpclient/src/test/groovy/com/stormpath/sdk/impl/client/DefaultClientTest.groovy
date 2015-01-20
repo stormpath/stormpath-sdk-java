@@ -136,7 +136,7 @@ class DefaultClientTest {
         String baseUrl = "http://localhost:8080/v1"
         def authcScheme = AuthenticationScheme.SAUTHC1
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, null, authcScheme, 10000)
+        Client client = new DefaultClient(apiKey, baseUrl, null, null, authcScheme, 20000)
 
         assertNotNull(client.getDataStore())
         assertEquals(client.getDataStore().baseUrl, baseUrl)
@@ -204,7 +204,7 @@ class DefaultClientTest {
         replay requestExecutor, response, resourceFactory
 
         //Let's start
-        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, null, null, 10000)
+        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         def account01 = client.getResource(properties.href, Account)
         def account02 = client.getResource(properties.href, Account)
@@ -342,7 +342,7 @@ class DefaultClientTest {
         replay(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
                 map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, null, null, 10000)
+        Client client = new DefaultClient(apiKey, baseUrl, null, null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)

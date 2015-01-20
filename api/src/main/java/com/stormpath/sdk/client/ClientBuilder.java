@@ -334,7 +334,7 @@ public interface ClientBuilder {
      *
      * @param timeout connection and socket timeout in milliseconds
      * @return the ClientBuilder instance for method chaining
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     ClientBuilder setConnectionTimeout(int timeout);
 

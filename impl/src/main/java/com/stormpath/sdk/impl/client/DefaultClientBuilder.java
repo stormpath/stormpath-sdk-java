@@ -47,7 +47,7 @@ public class DefaultClientBuilder implements ClientBuilder {
     /**
      * Default connection timeout.
      */
-    private int connectionTimeout = 10000; //10,000 millis = 10 seconds
+    private int connectionTimeout = 20000; //20,000 millis = 20 seconds
 
     @Override
     public ClientBuilder setApiKey(ApiKey apiKey) {
@@ -82,7 +82,7 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
-    /* @since 1.0.0 */
+    /* @since 1.0.RC3 */
     @Override
     public ClientBuilder setConnectionTimeout(int timeout) {
         Assert.isTrue(timeout >= 0, "Timeout cannot be a negative number.");
