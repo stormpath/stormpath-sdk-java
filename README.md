@@ -21,6 +21,7 @@ This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
 #### Resolved Issues ####
 
 - [Issue 47](https://github.com/stormpath/stormpath-sdk-java/issues/47): Fix for ResourceReference instances getting out of sync.
+- [Issue 60](https://github.com/stormpath/stormpath-sdk-java/issues/60): Fixed issue when trying to cache account verification responses.
 - [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
 - [Issue 76](https://github.com/stormpath/stormpath-sdk-java/issues/76): SSO/Logout Support and Result Listener for ID Site.
