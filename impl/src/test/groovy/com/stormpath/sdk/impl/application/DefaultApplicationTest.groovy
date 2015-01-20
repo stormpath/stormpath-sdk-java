@@ -41,11 +41,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountAccess
 import com.stormpath.sdk.impl.resource.*
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
-import com.stormpath.sdk.provider.FacebookProviderData
-import com.stormpath.sdk.provider.GithubProviderData
-import com.stormpath.sdk.provider.ProviderAccountRequest
-import com.stormpath.sdk.provider.ProviderAccountResult
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
