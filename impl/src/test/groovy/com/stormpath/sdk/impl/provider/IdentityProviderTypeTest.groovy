@@ -27,7 +27,7 @@ class IdentityProviderTypeTest {
 
     @Test
     void testMaps() {
-        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), 3)
+        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), 4)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
         assertEquals(item.getNameKey(), "stormpath")
         assertEquals(item.getProviderClass(), Provider.class)
@@ -40,16 +40,25 @@ class IdentityProviderTypeTest {
         assertEquals(item.getNameKey(), "google")
         assertEquals(item.getProviderClass(), GoogleProvider.class)
         assertEquals(item.getProviderDataClass(), GoogleProviderData.class)
+        //@since 1.0.0
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("linkedin");
+        assertEquals(item.getNameKey(), "linkedin")
+        assertEquals(item.getProviderClass(), LinkedInProvider.class)
+        assertEquals(item.getProviderDataClass(), LinkedInProviderData.class)
 
-        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), 3)
+        assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), 4)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("google"))
+        //@since 1.0.0
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("linkedin"))
 
-        assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), 3)
+        assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), 4)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("google"))
+        //@since 1.0.0
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("linkedin"))
     }
 
     @Test

@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
@@ -111,6 +112,25 @@ class DirectoryIT extends ClientIT {
                     .setRedirectUri("http://localhost")
                     .build()
                 ).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testCreateLinkedInDirectoryRequestViaTenantActions() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateLinkedInDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.LINKEDIN.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .build()
+        ).build()
         dir = client.createDirectory(request);
         deleteOnTeardown(dir)
         assertNotNull dir.href
