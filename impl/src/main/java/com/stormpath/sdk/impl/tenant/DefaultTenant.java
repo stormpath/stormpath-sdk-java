@@ -36,7 +36,7 @@ import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-public class DefaultTenant extends AbstractInstanceResource implements Tenant {
+public class DefaultTenant extends AbstractExtendableInstanceResource implements Tenant {
 
     // SIMPLE PROPERTIES:
     static final StringProperty NAME = new StringProperty("name");
@@ -66,7 +66,7 @@ public class DefaultTenant extends AbstractInstanceResource implements Tenant {
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);

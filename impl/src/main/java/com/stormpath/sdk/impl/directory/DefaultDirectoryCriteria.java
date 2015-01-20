@@ -77,4 +77,13 @@ public class DefaultDirectoryCriteria extends DefaultCriteria<DirectoryCriteria,
         getOptions().withTenant();
         return this;
     }
+
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    public DirectoryCriteria withCustomData() {
+        getOptions().withCustomData();
+        return this;
+    }
 }

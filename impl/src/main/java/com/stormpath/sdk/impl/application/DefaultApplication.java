@@ -58,7 +58,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -83,7 +83,7 @@ import java.util.Set;
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 
 /** @since 0.2 */
-public class DefaultApplication extends AbstractInstanceResource implements Application {
+public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
 
     private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
         "com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator";
@@ -164,7 +164,7 @@ public class DefaultApplication extends AbstractInstanceResource implements Appl
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);

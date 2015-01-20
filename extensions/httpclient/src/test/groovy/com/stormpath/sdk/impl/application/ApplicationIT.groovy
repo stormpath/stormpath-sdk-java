@@ -577,6 +577,27 @@ class ApplicationIT extends ClientIT {
      * @since 1.0.RC3
      */
     @Test
+    void testGetApplicationsWithCustomData() {
+
+        def app = createTempApp()
+        app.getCustomData().put("someKey", "someValue")
+        app.save()
+
+        def appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(app.getName())).withCustomData())
+
+        def count = 0
+        for (Application application : appList) {
+            count++
+            assertNotNull(application.getHref())
+            assertEquals(application.getCustomData().size(), 4)
+        }
+        assertEquals(count, 1)
+    }
+
+    /**
+     * @since 1.0.RC3
+     */
+    @Test
     void testAddAccountStore_Dirs() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_Dirs")

@@ -19,15 +19,14 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
-import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.group.GroupOptions;
 import com.stormpath.sdk.group.GroupStatus;
-import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -41,7 +40,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
-public class DefaultGroup extends AbstractDirectoryEntity implements Group {
+public class DefaultGroup extends AbstractExtendableInstanceResource implements Group {
 
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name");
@@ -112,11 +111,6 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
     }
 
     @Override
-    public CustomData getCustomData() {
-        return super.getCustomData();
-    }
-
-    @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT);
     }
@@ -169,11 +163,6 @@ public class DefaultGroup extends AbstractDirectoryEntity implements Group {
         visitor.visit(this);
     }
 
-    @Override
-    public void save() {
-        applyCustomDataUpdatesIfNecessary();
-        super.save();
-    }
 
     @Override
     public void saveWithResponseOptions(GroupOptions groupOptions) {
