@@ -52,7 +52,7 @@ public class ClientsTest {
         assertEquals client.dataStore.apiKey.id, 'foo'
         assertEquals client.dataStore.apiKey.secret, 'bar'
 
-        //caching is enabled by default in 1.0.0:
+        //caching is enabled by default in 1.0.RC3:
         assertTrue client.dataStore.cacheManager instanceof DefaultCacheManager
 
         //ensure these defaults match what is documented in the Clients class-level JavaDoc:

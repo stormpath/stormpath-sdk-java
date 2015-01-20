@@ -47,6 +47,7 @@ class DefaultApplicationCriteriaTest {
                 .orderByDescription().descending()
                 .orderByStatus()
                 .withTenant()
+                .withCustomData()
                 .withAccounts(30, 50)
                 .withAccounts(50)
                 .withAccounts()
@@ -69,12 +70,13 @@ class DefaultApplicationCriteriaTest {
                 'name asc, description desc, status asc ' +
                 'offset 120 ' +
                 'limit 20 ' +
-                'expand tenant, accounts(offset:50,limit:30), accounts(limit:50), accounts, ' +
+                'expand tenant, customData, accounts(offset:50,limit:30), accounts(limit:50), accounts, ' +
                 'groups(offset:100,limit:25), groups, groups(limit:90)'
 
         def expectedQueryString = 'description=b*' + AND +
                 'expand=' +
                 'tenant' + COMMA +
+                'customData' + COMMA +
                 'accounts' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 30 + CLOSE_PAREN + COMMA +
                 'accounts' + OPEN_PAREN + 'limit' + COLON + 50 + CLOSE_PAREN + COMMA +
                 'accounts' + COMMA +

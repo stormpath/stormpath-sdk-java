@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
@@ -23,7 +25,6 @@ import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
-import com.stormpath.sdk.impl.directory.AbstractDirectoryEntity;
 import com.stormpath.sdk.impl.ds.api.ApiKeyCachePropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryPropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyResourcePropertiesFilter;
@@ -38,6 +39,7 @@ import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.CollectionProperties;
@@ -108,7 +110,7 @@ public class DefaultDataStore implements InternalDataStore {
     private final CacheMapInitializer cacheMapInitializer;
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
@@ -135,7 +137,6 @@ public class DefaultDataStore implements InternalDataStore {
         this.hrefMapStore = new SoftHashMap<String, Enlistment>();
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
-
         this.resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyCachePropertiesFilter(apiKey)));
         // Adding another processor for query strings because we don't want to mix
         // the processing (filtering) of the query strings with the processing of the resource properties,
@@ -156,7 +157,12 @@ public class DefaultDataStore implements InternalDataStore {
     public ApiKey getApiKey() {
         return apiKey;
     }
-    
+
+    @Override
+    public CacheManager getCacheManager() {
+        return this.cacheManager;
+    }
+
     /* =====================================================================
        Resource Instantiation
        ===================================================================== */
@@ -208,7 +214,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) && data.get("href") != null) {
             data = toEnlistment(data);
         }
@@ -254,7 +260,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String, ?> data = retrieveResponseValue(href, parent, qs);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(data) && data.get("href") != null && !CollectionResource.class.isAssignableFrom(parent)) {
             data = toEnlistment(data);
         }
@@ -349,7 +355,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
             in.setProperties(toEnlistment(props));
         } else {
@@ -377,7 +383,7 @@ public class DefaultDataStore implements InternalDataStore {
         AbstractResource ret = (AbstractResource) returnValue;
         LinkedHashMap<String, Object> props = toMap(ret, false);
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) && props.get("href") != null) {
             in.setProperties(toEnlistment(props));
         } else {
@@ -505,10 +511,13 @@ public class DefaultDataStore implements InternalDataStore {
         //asserts invariant given that we should have returned if the responseBody is null or empty:
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
-        if (isCacheUpdateEnabled(returnType)) {
-            //@since 1.0.0: Let's first check if the response is an actual Resource (meaning, that it has an href property)
+        //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
+        boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+
+        if (isCacheUpdateEnabled(returnType) && !emailVerification) {
+            //@since 1.0.RC3: Let's first check if the response is an actual Resource (meaning, that it has an href property)
             if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
-                //@since 1.0.0: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+                //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
                 if (!returnType.isAssignableFrom(ProviderAccountResult.class)) {
                     cache(returnType, responseBody, filteredQs);
                 }
@@ -521,11 +530,11 @@ public class DefaultDataStore implements InternalDataStore {
         //default.  There is probably a much cleaner OO way of doing this, but it wasn't worth it at impl time to
         //find a smoother way.  Helper methods have been marked as private to indicate that this shouldn't be used as
         //a dependency in case we choose to implement a cleaner way later.
-        if (resource instanceof AbstractDirectoryEntity && isCacheUpdateEnabled(CustomData.class)) {
+        if (resource instanceof AbstractExtendableInstanceResource && isCacheUpdateEnabled(CustomData.class)) {
             cacheNestedCustomData(href, props);
         }
 
-        //@since 1.0.0
+        //@since 1.0.RC3
         if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
             returnResponseBody = toEnlistment(returnResponseBody);
         }
@@ -536,11 +545,11 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * Helps fix <a href="https://github.com/stormpath/stormpath-sdk-java/issues/30">Issue #30</a>.
      * <p/>
-     * This implementation ensures that if custom data is nested inside an AbstractDirectoryEntity (either an
-     * Account or Group) and that AbstractDirectoryEntity is saved, that the nested custom data submitted and saved to
-     * the server is also updated in any local cache.
+     * This implementation ensures that if custom data is nested inside an AbstractExtendableInstanceResource (an
+     * Account, Group, Directory, Application or Tenant) and that AbstractExtendableInstanceResource is saved, that the
+     * nested custom data submitted and saved to the server is also updated in any local cache.
      * <p/>
-     * Ordinarily, only the object returned from the server response (The AbstractDirectoryEntity) is cached.
+     * Ordinarily, only the object returned from the server response (The AbstractExtendableInstanceResource) is cached.
      * When updating objects, any nested objects are not returned from the server, so we have to do this preemptively
      * ourselves.
      * <p/>
@@ -555,7 +564,7 @@ public class DefaultDataStore implements InternalDataStore {
      */
     @SuppressWarnings("unchecked")
     private void cacheNestedCustomData(String directoryEntityHref, Map<String, Object> props) {
-        Map<String, Object> customData = (Map<String, Object>) props.get(AbstractDirectoryEntity.CUSTOM_DATA.getName());
+        Map<String, Object> customData = (Map<String, Object>) props.get(AbstractExtendableInstanceResource.CUSTOM_DATA.getName());
 
         if (customData != null) {
             customData.remove(AbstractResource.HREF_PROP_NAME); //we remove it here for ordering reasons (see below)
@@ -1010,7 +1019,7 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all
      * Resource instances referencing the same Href.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     private Enlistment toEnlistment(Map data) {
         Enlistment enlistment;

@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -37,6 +38,7 @@ import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
@@ -50,7 +52,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Application extends Resource, Saveable, Deletable {
+public interface Application extends Resource, Saveable, Deletable, Extendable {
 
     /**
      * Returns the Application's name.  An application's name must be unique across all other applications in the
@@ -1293,6 +1295,34 @@ public interface Application extends Resource, Saveable, Deletable {
     IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
 
     /**
+     * Triggers the delivery of a new verification email for the specified account.
+     * <p/>
+     * This method is useful in scenarios where the <a href="http://docs.stormpath.com/console/product-guide/#workflow-automations">
+     * Account Registration and Verification workflow</a> is enabled. If the welcome email has not been received by
+     * a newly registered account, then the user will not be able to login until the account is verified.
+     * <p/>
+     * This method re-sends the verification email and allows the user to verify the account.
+     * <p/>
+     * The {@link com.stormpath.sdk.account.VerificationEmailRequest VerificationEmailRequest} resource must contain the email or the
+     * username identifying the account. If the optional {@link com.stormpath.sdk.directory.AccountStore AccountStore} is
+     * also specified, the desired Account will be sought only in that specific AccountStore.
+     * Sample code:
+     * <p/>
+     * <pre>
+     *      Directory dir = client.getResource("https://api.stormpath.com/v1/directories/7WcyHGlDa0V2Nk11Vum3Zd", Directory.class);
+     *      VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
+     *                                          .setLogin("myaccountemail@mycompany.com")
+     *                                          .setAccountStore(dir)
+     *                                          .build();
+     *      application.sendVerificationEmail(verificationEmailRequest);
+     * </pre>
+     *
+     * @param verificationEmailRequest contains the required information for the verification email to be sent.
+     * @since 1.0.0
+     */
+    public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest);
+
+    /**
      * Convenience method to add a a new {@link AccountStore} to this application.
      * <p/>
      * The given String can be either an 'href' or a 'name' of a {@link Directory} or a {@link Group} belonging to the current Tenant.
@@ -1332,7 +1362,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
      * @see #addAccountStore(com.stormpath.sdk.directory.DirectoryCriteria)
      * @see #addAccountStore(com.stormpath.sdk.group.GroupCriteria)
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     AccountStoreMapping addAccountStore(String hrefOrName);
 
@@ -1361,7 +1391,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * <code>null</code> if there is no Directory matching the criteria.
      * @throws ResourceException if the found {@link Directory} already exists as an account store in this application.
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     AccountStoreMapping addAccountStore(DirectoryCriteria criteria);
 
@@ -1397,7 +1427,7 @@ public interface Application extends Resource, Saveable, Deletable {
      * @throws ResourceException if the found {@link Group} already exists as an account store in this application.
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
      * @see #addAccountStore(String)
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     AccountStoreMapping addAccountStore(GroupCriteria criteria);
 

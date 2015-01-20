@@ -49,6 +49,7 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -269,17 +270,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         }
     }
 
-    private String toString(InputStream is) throws IOException {
-        if (is == null) {
-            return null;
-        }
-        try {
-            return new java.util.Scanner(is, "UTF-8").useDelimiter("\\A").next();
-        } catch (java.util.NoSuchElementException e) {
-            return null;
-        }
-    }
-
     private boolean isRedirect(org.apache.http.HttpResponse response) {
         int status = response.getStatusLine().getStatusCode();
         return (status == HttpStatus.SC_MOVED_PERMANENTLY ||
@@ -382,6 +372,24 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         return msg != null && msg.contains("HTTP 429");
     }
 
+    protected String toString(HttpEntity entity) throws IOException {
+
+        if (entity == null || entity.getContent() == null) {
+            return null;
+        }
+
+        try {
+            return toString(entity, "UTF-8");
+        } catch (IOException e) {
+            log.warn("Unable to obtain expected content body: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    protected String toString(HttpEntity entity, String defaultCharset) throws IOException {
+        return EntityUtils.toString(entity, defaultCharset);
+    }
+
     protected Response toSdkResponse(HttpResponse httpResponse) throws IOException {
 
         int httpStatus = httpResponse.getStatusLine().getStatusCode();
@@ -396,8 +404,12 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         //ensure that the content has been fully acquired before closing the http stream
         if (body != null) {
-            String stringBody = toString(body);
-            body = new StringInputStream(stringBody);
+            String stringBody = toString(entity);
+            if (stringBody != null) {
+                body = new StringInputStream(stringBody);
+            } else {
+                body = null;
+            }
         }
 
         return new DefaultResponse(httpStatus, mediaType, body, contentLength);

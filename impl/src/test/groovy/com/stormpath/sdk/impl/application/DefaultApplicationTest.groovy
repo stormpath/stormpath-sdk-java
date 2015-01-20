@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2014 Stormpath, Inc.
  *
@@ -17,6 +16,7 @@
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.*
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
@@ -24,31 +24,33 @@ import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
-import com.stormpath.sdk.directory.DirectoryCriteria
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
+import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.directory.DefaultCustomData
+import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
 import com.stormpath.sdk.impl.resource.*
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
-import com.stormpath.sdk.provider.FacebookProviderData
-import com.stormpath.sdk.provider.ProviderAccountRequest
-import com.stormpath.sdk.provider.ProviderAccountResult
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
-
 import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
@@ -66,7 +68,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 10)
+        assertEquals( propertyDescriptors.size(), 11)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -78,6 +80,8 @@ class DefaultApplicationTest {
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("passwordResetTokens") instanceof CollectionReference && propertyDescriptors.get("passwordResetTokens").getType().equals(PasswordResetTokenList))
         assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
+        //since 1.0.0
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
     }
 
     @Test
@@ -410,7 +414,8 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
                 defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
                 defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
-                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"],
+                customData: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/customData"]
         ]
 
         def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
@@ -423,7 +428,12 @@ class DefaultApplicationTest {
         def iterator = createStrictMock(Iterator)
         def accountStoreMapping = createStrictMock(AccountStoreMapping)
         def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+        def customData = new DefaultCustomData(dataStore)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKey = createStrictMock(ApiKey)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
 
+        expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
@@ -437,8 +447,8 @@ class DefaultApplicationTest {
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
-        def modifiedApp = new DefaultApplication(null, newPropertiesState)
-        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [accountStoreMappings: accountStoreMappings])
+        newPropertiesState.put("customData", customData);
+        def modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -446,9 +456,7 @@ class DefaultApplicationTest {
         expect(newAccountStoreMapping.setDefaultAccountStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
-        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultAccountStoreMapping: newAccountStoreMapping])
-
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
@@ -460,18 +468,16 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.setDefaultAccountStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
-        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultAccountStoreMapping: accountStoreMapping])
-
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultAccountStore(group)
         app.setDefaultAccountStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
     }
 
     //@since 1.0.RC
@@ -485,7 +491,8 @@ class DefaultApplicationTest {
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
                 defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
                 defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
-                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"]
+                accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"],
+                customData: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/customData"]
         ]
 
         def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
@@ -498,7 +505,12 @@ class DefaultApplicationTest {
         def iterator = createStrictMock(Iterator)
         def accountStoreMapping = createStrictMock(AccountStoreMapping)
         def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+        def customData = new DefaultCustomData(dataStore)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKey = createStrictMock(ApiKey)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
 
+        expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
@@ -512,8 +524,8 @@ class DefaultApplicationTest {
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
         newPropertiesState.putAll(properties)
-        def modifiedApp = new DefaultApplication(null, newPropertiesState)
-        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [accountStoreMappings: accountStoreMappings])
+        newPropertiesState.put("customData", customData);
+        def modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
 
         expect(newAccountStoreMapping.setApplication((Application) reportMatcher(new ApplicationMatcher(modifiedApp)))).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(newAccountStoreMapping)
@@ -521,9 +533,7 @@ class DefaultApplicationTest {
         expect(newAccountStoreMapping.setDefaultGroupStore(true)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.save())
 
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
-        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultGroupStoreMapping: newAccountStoreMapping])
-
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
@@ -535,18 +545,16 @@ class DefaultApplicationTest {
         expect(accountStoreMapping.setDefaultGroupStore(true)).andReturn(accountStoreMapping)
         expect(accountStoreMapping.save())
 
-        modifiedApp = new DefaultApplication(null, newPropertiesState)
-        setNewValue(AbstractResource, modifiedApp, "dirtyProperties", [defaultGroupStoreMapping: accountStoreMapping])
-
+        modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultGroupStore(group)
         app.setDefaultGroupStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
     }
 
     //@since 1.0.beta
@@ -679,6 +687,94 @@ class DefaultApplicationTest {
 
     }
 
+    //@since 1.0.0
+    @Test
+    void testGetAccountGithub() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def providerAccountResult = createStrictMock(ProviderAccountResult)
+        ProviderAccountRequest request = Providers.GITHUB.account().setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build()
+
+        def providerAccountAccess = new DefaultProviderAccountAccess<GithubProviderData>(internalDataStore);
+        providerAccountAccess.setProviderData(request.getProviderData())
+
+        expect(internalDataStore.create(eq(properties.accounts.href), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
+
+        replay(internalDataStore, providerAccountResult)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        ProviderAccountResult accountResult = defaultApplication.getAccount(request)
+        assertNotNull(accountResult)
+
+        verify(internalDataStore, providerAccountResult)
+    }
+
+    /**
+     * @since 1.0.RC
+     */
+    @Test
+    void testSendVerificationEmailToken() {
+
+        def accountStoreHref = "https://api.stormpath.com/v1/directories/6i2DiJWcsG6ZyUA8r0EwQU"
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        VerificationEmailRequest verificationEmailRequest = createStrictMock(DefaultVerificationEmailRequest)
+        def accountStore = createStrictMock(AccountStore)
+
+        expect(verificationEmailRequest.getLogin()).andReturn("fooUsername")
+        expect(verificationEmailRequest.getAccountStore()).andReturn(accountStore)
+        expect(accountStore.getHref()).andReturn(accountStoreHref)
+        expect(internalDataStore.create(defaultApplication.getHref() + "/verificationEmails", verificationEmailRequest, DefaultVerificationEmailRequest.class)).andReturn(null)
+
+        replay internalDataStore, verificationEmailRequest, accountStore
+
+        defaultApplication.sendVerificationEmail(verificationEmailRequest)
+
+        verify internalDataStore, verificationEmailRequest, accountStore
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testSendVerificationEmailTokenInvalidData() {
+
+        def defaultApplication = new DefaultApplication(null)
+
+        def verificationEmailRequest = new DefaultVerificationEmailRequest(null)
+
+        try {
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "verificationEmailRequest's email property is required.")
+        }
+
+        verificationEmailRequest.setLogin(null)
+        try {
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "verificationEmailRequest's email property is required.")
+        }
+
+        def dir = new DefaultDirectory(null)
+        verificationEmailRequest.setLogin("fooUsername")
+        verificationEmailRequest.setAccountStore(dir)
+        try {
+            defaultApplication.sendVerificationEmail(verificationEmailRequest)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "verificationEmailRequest's accountStore has been specified but its href is null.")
+        }
+    }
+
     //@since 1.0.beta
     static class ProviderAccountAccessEquals implements IArgumentMatcher {
 
@@ -702,7 +798,7 @@ class DefaultApplicationTest {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testAddAccountStoreNull() {

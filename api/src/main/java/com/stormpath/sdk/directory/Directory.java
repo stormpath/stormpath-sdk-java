@@ -25,6 +25,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
@@ -42,7 +43,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Directory extends Resource, Saveable, Deletable, AccountStore {
+public interface Directory extends Resource, Saveable, Deletable, AccountStore, Extendable {
 
     /**
      * Returns this Directory's name.  The name is guaranteed to be non-null and unique among all other Directories in
@@ -346,4 +347,5 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore {
      * @since 1.0.beta
      */
     Provider getProvider();
+
 }

@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert
 import org.testng.annotations.Test
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 class UserAgentTest {
 

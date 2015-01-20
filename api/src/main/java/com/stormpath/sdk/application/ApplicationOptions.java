@@ -59,4 +59,14 @@ public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
      * @return this instance for method chaining.
      */
     T withAccountStoreMappings(int limit, int offset);
+
+    /**
+     * Ensures that when retrieving an Application, the Application's {@link Application#getCustomData() customData} is also
+     * retrieved in the same request. This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     * @since 1.0.0
+     */
+    T withCustomData();
 }

@@ -20,13 +20,10 @@ import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.CreateAccountRequest
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryStatus
-import com.stormpath.sdk.group.CreateGroupRequest
-import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupCriteria
-import com.stormpath.sdk.group.GroupList
-import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -56,7 +53,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 8)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -65,6 +62,8 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("provider") instanceof ResourceReference && propertyDescriptors.get("provider").getType().equals(Provider))
+        //since 1.0.0
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
     }
 
 

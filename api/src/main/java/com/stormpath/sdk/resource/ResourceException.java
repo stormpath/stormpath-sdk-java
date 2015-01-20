@@ -72,6 +72,10 @@ public class ResourceException extends RuntimeException implements Error {
         return error.getMoreInfo();
     }
 
+    public Error getStormpathError() {
+        return this.error;
+    }
+
     /**
      * Returns the underlying REST {@link Error} returned from the Stormpath API server.
      * <p/>

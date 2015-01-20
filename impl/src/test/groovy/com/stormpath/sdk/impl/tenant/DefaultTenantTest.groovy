@@ -15,12 +15,27 @@
  */
 package com.stormpath.sdk.impl.tenant
 
+import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.cache.CacheManager
+import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.application.ApplicationList
+import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.impl.directory.DefaultDirectory
+import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
+import com.stormpath.sdk.impl.http.Request
+import com.stormpath.sdk.impl.http.RequestExecutor
+import com.stormpath.sdk.impl.http.Response
+import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProvider
 import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.impl.resource.CollectionReference
+import com.stormpath.sdk.impl.resource.ResourceReference
+import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.provider.Providers
 import org.easymock.IArgumentMatcher
@@ -35,6 +50,23 @@ import static org.testng.Assert.*
  * @since 0.8
  */
 class DefaultTenantTest {
+
+    //@since 1.0.0
+    @Test
+    void testGetPropertyDescriptors() {
+
+        DefaultTenant defaultTenant = new DefaultTenant(createStrictMock(InternalDataStore))
+
+        def propertyDescriptors = defaultTenant.getPropertyDescriptors()
+
+        assertEquals(propertyDescriptors.size(), 5)
+
+        assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("applications") instanceof CollectionReference && propertyDescriptors.get("applications").getType().equals(ApplicationList))
+        assertTrue(propertyDescriptors.get("directories") instanceof CollectionReference && propertyDescriptors.get("directories").getType().equals(DirectoryList))
+        assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
+    }
 
     @Test
     void testCreateDirectory() {
@@ -124,6 +156,46 @@ class DefaultTenantTest {
 
     }
 
+    /**
+     * Asserts that https://github.com/stormpath/stormpath-sdk-java/issues/60 has been fixed
+     * @since 1.0.0 */
+    @Test
+    void testVerifyAccountEmail() {
+
+        def properties = [ href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE",
+                           applications: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/applications"],
+                           directories: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/directories"]
+        ]
+        def returnedProperties = [ href: "https://api.stormpath.com/v1/accounts/2IEuQrTEPg43GRxcqYCZDN" ]
+
+        String token = "fooVerificationEmail"
+        def apiKey = createStrictMock(ApiKey)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def cacheManager = createStrictMock(CacheManager)
+        def response = createStrictMock(Response)
+        def mapMarshaller = new JacksonMapMarshaller();
+        InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(returnedProperties).getBytes());
+
+        expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.POST, "https://api.stormpath.com/v1/accounts/emailVerificationTokens/fooVerificationEmail"))))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is)
+        expect(response.getHttpStatus()).andReturn(200)
+
+        replay apiKey, cacheManager, requestExecutor, response
+
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        dataStore.cacheManager = cacheManager
+
+        def tenant = new DefaultTenant(dataStore, properties)
+        //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise
+        //we are not actually asserting that the issue has been fixed
+        assertTrue(dataStore.isCachingEnabled())
+        tenant.verifyAccountEmail(token)
+
+        verify apiKey, cacheManager, requestExecutor, response
+    }
+
     //@since 1.0.beta
     static class ProviderEquals implements IArgumentMatcher {
 
@@ -158,5 +230,26 @@ class DefaultTenantTest {
         }
     }
 
+    //@since 1.0.0
+    static class RequestMatcher implements IArgumentMatcher {
+
+        private Request expected
+
+        RequestMatcher(Request request) {
+            expected = request;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! Request.isInstance(o)) {
+                return false;
+            }
+            Request actual = (Request) o
+            return expected.getMethod().equals(actual.getMethod()) && expected.getResourceUrl().equals(actual.getResourceUrl()) && expected.getQueryString().equals(actual.getQueryString())
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append(expected.toString())
+        }
+    }
 
 }

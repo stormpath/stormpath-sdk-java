@@ -137,7 +137,7 @@ class ApiKeyIT extends ClientIT {
 
     /**
      * Tests the fix of the issue found in above test (https://github.com/stormpath/stormpath-sdk-java/issues/62)
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testListApiKeysWithDeletion_NewCollectionInstance() {
@@ -173,7 +173,7 @@ class ApiKeyIT extends ClientIT {
 
     /**
      * Tests the fix of issue 62 (https://github.com/stormpath/stormpath-sdk-java/issues/62)
-     * @since 1.0.0
+     * @since 1.0.RC3
      */
     @Test
     void testListApiKeysWithDeletion_SameCollection_NewIterator() {
