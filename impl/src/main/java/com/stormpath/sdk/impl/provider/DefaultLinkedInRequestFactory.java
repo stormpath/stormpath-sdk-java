@@ -16,7 +16,9 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.provider.LinkedInAccountRequestBuilder;
+import com.stormpath.sdk.provider.LinkedInCreateProviderRequestBuilder;
+import com.stormpath.sdk.provider.LinkedInRequestFactory;
 
 /**
  * @since 1.0.0

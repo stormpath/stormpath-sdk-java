@@ -23,11 +23,7 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GithubProvider
-import com.stormpath.sdk.provider.GoogleProvider
-import com.stormpath.sdk.provider.LinkedInProvider
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 

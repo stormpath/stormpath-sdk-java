@@ -16,7 +16,16 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.provider.FacebookProvider;
+import com.stormpath.sdk.provider.FacebookProviderData;
+import com.stormpath.sdk.provider.GithubProvider;
+import com.stormpath.sdk.provider.GithubProviderData;
+import com.stormpath.sdk.provider.GoogleProvider;
+import com.stormpath.sdk.provider.GoogleProviderData;
+import com.stormpath.sdk.provider.LinkedInProvider;
+import com.stormpath.sdk.provider.LinkedInProviderData;
+import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.provider.ProviderData;
 
 import java.util.Collections;
 import java.util.HashMap;
