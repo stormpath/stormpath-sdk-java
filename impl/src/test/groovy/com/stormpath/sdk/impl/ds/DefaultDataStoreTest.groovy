@@ -23,7 +23,12 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GithubProvider
+import com.stormpath.sdk.provider.GoogleProviderData
+import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.provider.ProviderData
+import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -253,7 +258,7 @@ class DefaultDataStoreTest {
                            modifiedAt: "2014-04-01T22:05:53.177Z",
                            clientId: "237396459765014",
                            clientSecret: "a93fae44d2a4f21d4de6201aae9b849a",
-                           providerId: "facebook"
+                           providerId: "google"
         ]
         def providerAccountResponseMap = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
                                           fullName: "Mel Ben Smuk",
@@ -316,5 +321,47 @@ class DefaultDataStoreTest {
 
         verify(requestExecutor, response)
     }
+
+    //@since 1.0.0
+    @Test
+    void getSpecificResourceGithubProvider() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def response = createStrictMock(Response)
+        def apiKey = createStrictMock(ApiKey)
+        def responseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
+                           createdAt: "2014-04-01T22:05:25.661Z",
+                           modifiedAt: "2014-04-01T22:05:53.177Z",
+                           clientId: "237396459765014",
+                           clientSecret: "a93fae44d2a4f21d4de6201aae9b849a",
+                           providerId: "github"
+        ]
+        def mapMarshaller = new JacksonMapMarshaller();
+        // convert String into InputStream
+        InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(responseMap).getBytes());
+
+        def childIdProperty = "providerId"
+        def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
+
+        expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is)
+
+        replay(requestExecutor, response)
+
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        def returnedResource = defaultDataStore.getResource(responseMap.href, Provider, childIdProperty, map)
+        assertEquals(returnedResource.getHref(), responseMap.href)
+        assertTrue(returnedResource instanceof GithubProvider)
+        assertEquals(((GithubProvider) returnedResource).getProviderId(), responseMap.providerId)
+        assertEquals(((GithubProvider) returnedResource).getClientId(), responseMap.clientId)
+        assertEquals(((GithubProvider) returnedResource).getClientSecret(), responseMap.clientSecret)
+        assertNotNull(((GithubProvider)returnedResource).getCreatedAt())
+        assertNotNull(((GithubProvider)returnedResource).getModifiedAt())
+
+        verify(requestExecutor, response)
+    }
+
+
 
 }
