@@ -18,9 +18,10 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.error.authc.InvalidAuthenticationException;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
-import com.stormpath.sdk.http.HttpMethod;
+import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.oauth.RequestLocation;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,29 +32,24 @@ import javax.servlet.http.HttpServletRequest;
 public class OauthAuthenticationRequestFactory extends ApiAuthenticationRequestFactory {
 
     public AuthenticationRequest createFrom(HttpServletRequest httpServletRequest) {
+
+        final HttpRequest request = new ServletHttpRequest(httpServletRequest);
+
         String authzHeaderValue = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
 
         String[] schemeAndValue = getSchemeAndValue(authzHeaderValue);
 
         try {
             if (schemeAndValue == null) {
-
-                HttpMethod method = HttpMethod.fromName(httpServletRequest.getMethod());
-
-                RequestLocation[] requestLocations = getRequestLocations(false, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER));
-
+                RequestLocation[] requestLocations = getRequestLocations(request, false);
                 if (requestLocations.length > 0) {
                     return new ResourceAuthenticationRequest(httpServletRequest, requestLocations);
                 }
-
             } else {
                 if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
                     return new AccessTokenAuthenticationRequest(httpServletRequest, null, AccessTokenAuthenticationRequest.DEFAULT_TTL);
                 } else if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
-
-                    HttpMethod method = HttpMethod.fromName(httpServletRequest.getMethod());
-
-                    return new ResourceAuthenticationRequest(httpServletRequest, getRequestLocations(true, method, httpServletRequest.getHeader(CONTENT_TYPE_HEADER)));
+                    return new ResourceAuthenticationRequest(httpServletRequest, getRequestLocations(request, true));
                 }
             }
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationException.class);

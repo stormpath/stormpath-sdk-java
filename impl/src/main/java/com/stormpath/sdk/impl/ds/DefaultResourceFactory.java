@@ -72,7 +72,7 @@ public class DefaultResourceFactory implements ResourceFactory {
         return clazz;
     }
 
-    static <T extends Resource> Class<T> getInterfaceClass(Class<T> clazz) {
+    public static <T extends Resource> Class<T> getInterfaceClass(Class<T> clazz) {
         if (clazz.isInterface()) {
             return clazz;
         }

@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * DefaultLogoutResult is the default implementation of the {@link com.stormpath.sdk.idsite.LogoutResult LogoutResult} interface.
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public class DefaultLogoutResult extends DefaultAccountResult implements LogoutResult {
 

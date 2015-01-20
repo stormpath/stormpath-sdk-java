@@ -19,7 +19,7 @@ package com.stormpath.sdk.idsite;
  * Holder for Authentication-specific data that will be received on the {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated(AuthenticationResult)
  * IdSiteResultListener#onAuthenticated(AuthenticationResult)} method.
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public interface AuthenticationResult extends AccountResult {
 }

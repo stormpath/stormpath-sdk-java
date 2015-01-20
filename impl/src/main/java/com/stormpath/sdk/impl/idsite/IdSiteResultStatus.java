@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.idsite;
 /**
  * Enumeration identifying the possible results of an Id Site invocation.
  *
- * @since 1.0.0
+ * @since 1.0.RC3
  */
 public enum IdSiteResultStatus {
 
