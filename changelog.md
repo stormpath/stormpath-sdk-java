@@ -9,11 +9,11 @@
 - [Issue 62](https://github.com/stormpath/stormpath-sdk-java/issues/62): Methods that return an Iterator for a Collection now return a new Iterator on every method call.
 - [Issue 70](https://github.com/stormpath/stormpath-sdk-java/issues/70): Issue preventing version.properties file to be properly read.
 - [Issue 76](https://github.com/stormpath/stormpath-sdk-java/issues/76): SSO/Logout Support and Result Listener for ID Site.
-- [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by
-means of the User-Agent http header. The primary purpose of this is for us at Stormpath to understand environment-specific details to provide
-better technical support. When bug reports or feature requests are received, we can identify the impacted environment and better
-recognize how to implement a fix.
+- [Issue 88](https://github.com/stormpath/stormpath-sdk-java/issues/88): Servlet container webapp support
+- [Issue 89](https://github.com/stormpath/stormpath-sdk-java/issues/89): Added the ability to track integrations with the SDK by means of the User-Agent http header to aid in support/troubleshooting.
 - [Issue 90](https://github.com/stormpath/stormpath-sdk-java/issues/90): Fixed issue requiring a class from the impl module (ProviderAccountResultHelper) to be cached. The class has been removed altogether.
+- [Issue 93](https://github.com/stormpath/stormpath-sdk-java/issues/93): Custom Data for Application / Directory / Tenant
+- [Issue 102](https://github.com/stormpath/stormpath-sdk-java/issues/102): JavaDoc fix for Application AccountStores
 - [Issue 103](https://github.com/stormpath/stormpath-sdk-java/issues/103): We have added three convenience methods to simplify the addition of Account Stores: app.addAccountStore(String), app.addAccountStore(DirectoryCriteria) and app.addAccountStore(GroupCriteria).
 - [Issue 106](https://github.com/stormpath/stormpath-sdk-java/issues/106): Creating an account or group from a Directory now returns the created resource.
 - [Issue 107](https://github.com/stormpath/stormpath-sdk-java/issues/107): Added the ability to resend Account Verification Emails.
@@ -21,6 +21,8 @@ recognize how to implement a fix.
 - [Issue 112](https://github.com/stormpath/stormpath-sdk-java/issues/112): Fixed issue where Collection limits and offsets were being ignored.
 - [Issue 117](https://github.com/stormpath/stormpath-sdk-java/issues/117): Added support for Github OAuth.
 - [Issue 119](https://github.com/stormpath/stormpath-sdk-java/issues/119): Added support for LinkedIn OAuth.
+- [Issue 121](https://github.com/stormpath/stormpath-sdk-java/issues/121): Specify AccountStore when sending a password reset email
+- [Issue 124](https://github.com/stormpath/stormpath-sdk-java/issues/124): NullPointerException bug fix in HttpClientRequestExecutor
 - [Issue 130](https://github.com/stormpath/stormpath-sdk-java/issues/130): Connection timeout is now configurable (see `Clients.builder().setConnectionTimeout(int)`)
 
 ### 1.0.RC2.1 ###
