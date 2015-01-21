@@ -9,7 +9,7 @@ Not sure if the Stormpath Servlet Plugin is for you?  This page will help you de
 What is Stormpath?
 ------------------
 
-`Stormpath`_ is the ultimate REST API service for managing users, authentication and authorization. Stormpath allows you to do things like:                            †
+`Stormpath`_ is the ultimate REST API service for managing users, authentication and authorization. Stormpath allows you to do things like:
 
 - Create user accounts.
 - Edit user accounts.

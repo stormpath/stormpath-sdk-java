@@ -31,19 +31,10 @@ This part of the documentation will show you how to get started with the Stormpa
    views
    appendix
 
-Additional Notes
-----------------
+Open Source License
+-------------------
 
-This part of the documentation covers changes between versions and upgrade information, to help you migrate to newer versions of the Stormpath Servlet Plugin easily.
-
-The Stormpath Servlet Plugin is made available under the business-friendly `Apache License, Version 2.0`_.
-
-.. toctree::
-   :maxdepth: 2
-
-   changelog
-   upgrading
-
+The Stormpath Servlet Plugin and the Stormpath SDK for Java are made available under the business-friendly `Apache License, Version 2.0`_.
 
 .. _Servlet: https://jcp.org/aboutJava/communityprocess/final/jsr315/
 .. _Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
