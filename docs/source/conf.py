@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Stormpath Servlet Plugin documentation build configuration file, created by
+# Stormpath Java Servlet Plugin documentation build configuration file, created by
 # sphinx-quickstart on Mon Dec  8 16:03:46 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -52,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Stormpath Servlet Plugin'
+project = u'Stormpath Java Servlet Plugin'
 copyright = u'2014, Stormpath, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -214,7 +214,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'StormpathServletPlugin.tex', u'Stormpath Servlet Plugin Documentation',
+  ('index', 'StormpathServletPlugin.tex', u'Stormpath Java Servlet Plugin Documentation',
    u'Stormpath, Inc.', 'manual'),
 ]
 
@@ -244,7 +244,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'stormpath-servlet-plugin', u'Stormpath Servlet Plugin Documentation',
+    ('index', 'stormpath-servlet-plugin', u'Stormpath Java Servlet Plugin Documentation',
      [u'Stormpath, Inc.'], 1)
 ]
 
@@ -258,7 +258,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'StormpathServletPlugin', u'Stormpath Servlet Plugin Documentation',
+  ('index', 'StormpathServletPlugin', u'Stormpath Java Servlet Plugin Documentation',
    u'Stormpath', 'StormpathServletPlugin', 'One line description of project.',
    'Miscellaneous'),
 ]
@@ -279,13 +279,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Stormpath Servlet Plugin'
+epub_title = u'Stormpath Java Servlet Plugin'
 epub_author = u'Stormpath'
 epub_publisher = u'Stormpath'
 epub_copyright = u'2014, Stormpath'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = u'Stormpath Servlet Plugin'
+#epub_basename = u'Stormpath Java Servlet Plugin'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is
