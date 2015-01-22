@@ -1,5 +1,13 @@
 ## Change Log ##
 
+### 1.0.RC3.1 ###
+
+This is a minor patch release that allows the Stormpath Servlet Plugin to work in Jetty and other servlet containers that do not support web fragment artifacts in `/META-INF/resources/WEB-INF/classes`.
+
+#### Resolved Issues ####
+
+- [Issue 136](https://github.com/stormpath/stormpath-sdk-java/issues/136): Change i18n.properties file location.
+
 ### 1.0.RC3 ###
 
 This is a large interim release on our way to 1.0 final.  It introduces substantial servlet container-based webapp support as well as a number of bug fixes and enhancements.
