@@ -23,6 +23,7 @@ import com.stormpath.sdk.account.CreateAccountRequest
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryStatus
+import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -36,6 +37,7 @@ import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.tenant.Tenant
+import org.easymock.EasyMock
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -53,7 +55,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 8)
+        assertEquals(propertyDescriptors.size(), 9)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -64,6 +66,8 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("provider") instanceof ResourceReference && propertyDescriptors.get("provider").getType().equals(Provider))
         //since 1.0.0
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
+        //@since 1.0.0
+        assertTrue(propertyDescriptors.get("passwordPolicy") instanceof ResourceReference && propertyDescriptors.get("passwordPolicy").getType().equals(PasswordPolicy))
     }
 
 
@@ -81,20 +85,13 @@ class DefaultDirectoryTest {
                 accounts: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts"],
                 groups: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups"],
                 tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
-                provider: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider"]
+                provider: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider"],
+                customData: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/customData"],
+                passwordPolicy: [href: "https://api.stormpath.com/v1/passwordPolicies/42YN9IWiow0lVtfPOh9qO1"]
         ]
 
-        Directory defaultDirectory = new DefaultDirectory(internalDataStore, properties)
-
-        assertNull(defaultDirectory.getStatus())
-
-        defaultDirectory = defaultDirectory.setName("My new Directory")
-            .setDescription("My new Description")
-            .setStatus(DirectoryStatus.DISABLED)
-
-        assertEquals(defaultDirectory.getName(), "My new Directory")
-        assertEquals(defaultDirectory.getDescription(), "My new Description")
-        assertEquals(defaultDirectory.getStatus(), DirectoryStatus.DISABLED)
+        expect(internalDataStore.instantiate(CustomData, properties.customData)).
+            andReturn(new DefaultCustomData(internalDataStore, properties.customData))
 
         expect(internalDataStore.instantiate(AccountList, properties.accounts)).
                 andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
@@ -123,7 +120,10 @@ class DefaultDirectoryTest {
         expect(internalDataStore.getResource(properties.provider.href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP))
                 .andReturn(new DefaultProvider(internalDataStore, properties.provider))
 
-        expect(internalDataStore.delete(defaultDirectory))
+        expect(internalDataStore.instantiate(PasswordPolicy, properties.passwordPolicy)).
+                andReturn(new DefaultPasswordPolicy(internalDataStore, properties.passwordPolicy))
+
+        expect(internalDataStore.delete(EasyMock.anyObject(DefaultDirectory)))
 
         def account = createStrictMock(Account)
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts", account)).andReturn(account)
@@ -149,6 +149,17 @@ class DefaultDirectoryTest {
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups", group, groupOptions)).andReturn(group)
 
         replay internalDataStore, accountCriteria, groupCriteria, account, group, createAccountRequest, createGroupRequest
+
+        Directory defaultDirectory = new DefaultDirectory(internalDataStore, properties)
+        assertNull(defaultDirectory.getStatus())
+
+        defaultDirectory = defaultDirectory.setName("My new Directory")
+                .setDescription("My new Description")
+                .setStatus(DirectoryStatus.DISABLED)
+
+        assertEquals(defaultDirectory.getName(), "My new Directory")
+        assertEquals(defaultDirectory.getDescription(), "My new Description")
+        assertEquals(defaultDirectory.getStatus(), DirectoryStatus.DISABLED)
 
         def resource = defaultDirectory.getAccounts()
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
@@ -176,6 +187,9 @@ class DefaultDirectoryTest {
         resource = defaultDirectory.getProvider() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
         assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
 
+        resource = defaultDirectory.getPasswordPolicy()
+        assertTrue(resource instanceof DefaultPasswordPolicy && resource.getHref().equals(properties.passwordPolicy.href))
+
         defaultDirectory.delete()
 
         def returnedAccount = defaultDirectory.createAccount(account)
@@ -197,6 +211,7 @@ class DefaultDirectoryTest {
         assertSame(returnedGroup, group)
 
         verify internalDataStore, accountCriteria, groupCriteria, account, group, createAccountRequest, createGroupRequest
+
     }
 
 

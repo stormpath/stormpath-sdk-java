@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,17 @@
  */
 package com.stormpath.sdk.impl.resource;
 
+import java.util.Map;
+
 /**
- * @since 0.8
+ * This is a {@link java.util.Map} backed subclass of a {@link Property}.
+ *
+ * @since 1.0.0
  */
-public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
+public class MapProperty extends Property<Map> {
 
-    public StatusProperty(Class<T> clazz) {
-        super("status", clazz);
+    public MapProperty(String name) {
+        super(name, Map.class);
     }
 
-    /**
-     * @since 1.0.0
-     */
-    public StatusProperty(String propertyName, Class<T> clazz) {
-        super(propertyName, clazz);
-    }
 }

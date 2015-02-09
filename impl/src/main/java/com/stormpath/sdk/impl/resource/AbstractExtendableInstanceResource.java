@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.directory.DefaultCustomData;
 import com.stormpath.sdk.impl.ds.InternalDataStore;

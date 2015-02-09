@@ -428,6 +428,26 @@ public abstract class AbstractResource implements Resource {
         setProperty(name, reference);
     }
 
+    /**
+     * @since 1.0.0
+     */
+    protected Map getMap(MapProperty mapProperty) {
+        return getMapProperty(mapProperty.getName());
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected Map getMapProperty(String key) {
+        Object value = getProperty(key);
+        if (value != null) {
+            if (value instanceof Map) {
+                return (Map) value;
+            }
+        }
+        return null;
+    }
+
     private int parseInt(String value) {
         try {
             return Integer.parseInt(value);

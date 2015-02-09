@@ -348,4 +348,15 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      */
     Provider getProvider();
 
+    /**
+     * Returns the {@link PasswordPolicy} resource for this Directory. It allows directories to be configured to enforce specific
+     * restrictions on passwords for accounts associated with it, such as requiring at least one or more non-alphanumeric characters.
+     * <p/>
+     * It also provides the means to configure the specific emails that will be delivered when resetting accounts' password.
+     *
+     * @return the {@link PasswordPolicy} for this Directory.
+     * @see <href>http://docs.stormpath.com/java/product-guide/#account-password-policy</href>
+     * @since 1.0.0
+     */
+    PasswordPolicy getPasswordPolicy();
 }
