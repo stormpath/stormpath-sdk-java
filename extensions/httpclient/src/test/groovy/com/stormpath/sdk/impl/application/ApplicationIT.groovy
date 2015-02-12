@@ -242,7 +242,7 @@ class ApplicationIT extends ClientIT {
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 400 (mailto:support@stormpath.com): Invalid username or password.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104): Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
         }
 
         //No account store has been defined, therefore login must succeed
