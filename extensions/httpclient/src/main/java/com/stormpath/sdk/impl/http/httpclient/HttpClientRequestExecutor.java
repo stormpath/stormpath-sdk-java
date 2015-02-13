@@ -243,8 +243,14 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
                     Response response = toSdkResponse(httpResponse);
 
-                    if (response.getHttpStatus() == 429) {
+                    int httpStatus = response.getHttpStatus();
+
+                    if (httpStatus == 429) {
                         throw new RestException("HTTP 429: Too Many Requests.  Exceeded request rate limit in the allotted amount of time.");
+                    }
+                    if ((httpStatus == 503 || httpStatus == 504) && retryCount <= this.numRetries) {
+                        //allow the loop to continue to execute a retry request
+                        continue;
                     }
 
                     return response;
