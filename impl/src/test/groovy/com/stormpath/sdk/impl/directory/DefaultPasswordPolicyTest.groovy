@@ -130,5 +130,35 @@ class DefaultPasswordPolicyTest {
         }
     }
 
+    @Test
+    void testSetStatusNull() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def properties = [href: "https://api.stormpath.com/v1/passwordPolicies/35YM3OwioW9PVtfLOh6q1e",
+                          resetTokenTtl: 24,
+                          resetEmailStatus: "ENABLED",
+                          resetSuccessEmailStatus: "ENABLED",
+                          strength: [href: "https://api.stormpath.com/v1/passwordPolicies/35YM3OwioW9PVtfLOh6q1e/strength"],
+                          resetEmailTemplates: [href: "https://api.stormpath.com/v1/passwordPolicies/35YM3OwioW9PVtfLOh6q1e/resetEmailTemplates"],
+                          resetSuccessEmailTemplates: [href: "https://api.stormpath.com/v1/passwordPolicies/35YM3OwioW9PVtfLOh6q1e/resetSuccessEmailTemplates"]
+        ]
+
+        PasswordPolicy passwordPolicy = new DefaultPasswordPolicy(internalDataStore, properties)
+
+        try {
+            passwordPolicy.setResetEmailStatus(null); //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "status cannot be null.")
+        }
+
+        try {
+            passwordPolicy.setResetSuccessEmailStatus(null); //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "status cannot be null.")
+        }
+    }
+
 
 }

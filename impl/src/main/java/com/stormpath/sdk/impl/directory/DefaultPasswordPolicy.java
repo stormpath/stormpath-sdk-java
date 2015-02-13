@@ -82,6 +82,7 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
 
     @Override
     public PasswordPolicy setResetEmailStatus(EmailStatus status) {
+        Assert.notNull(status, "status cannot be null.");
         setProperty(RESET_EMAIL_STATUS, status.name());
         return this;
     }
@@ -97,6 +98,7 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
 
     @Override
     public PasswordPolicy setResetSuccessEmailStatus(EmailStatus status) {
+        Assert.notNull(status, "status cannot be null.");
         setProperty(RESET_SUCCESS_EMAIL_STATUS, status.name());
         return this;
     }
