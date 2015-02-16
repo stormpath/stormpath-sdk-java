@@ -121,7 +121,7 @@ public interface Strength extends Resource, Saveable {
     /**
      * Specifies the maximum quantity of total characters allowed in a password by this policy.
      * <p/>
-     * The maximum allowed password length is 1023 characters.
+     * The maximum allowed password length is 1024 characters.
      *
      * @return this instance for method chaining.
      */

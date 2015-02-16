@@ -125,21 +125,23 @@ class DefaultStrengthTest {
             strength.setMinLength(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1023.")
+            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1024.")
         }
 
         try {
             strength.setMinLength(0) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1023.")
+            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1024.")
         }
 
+        strength.setMinLength(1024) //OK
+
         try {
-            strength.setMinLength(1024) //must throw
+            strength.setMinLength(1025) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1023.")
+            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1024.")
         }
 
         try {
@@ -153,21 +155,23 @@ class DefaultStrengthTest {
             strength.setMaxLength(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1023.")
+            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1024.")
         }
 
         try {
             strength.setMaxLength(0) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1023.")
+            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1024.")
         }
 
+        strength.setMaxLength(1024) //OK
+
         try {
-            strength.setMaxLength(1024) //must throw
+            strength.setMaxLength(1025) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1023.")
+            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1024.")
         }
 
         try {
