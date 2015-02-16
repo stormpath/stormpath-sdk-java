@@ -85,7 +85,7 @@ class DefaultStrengthTest {
 
 
     @Test
-    void testSetNegativeTTL() {
+    void testLimits() {
         def internalDataStore = createStrictMock(InternalDataStore)
 
         def properties = [href: "https://api.stormpath.com/v1/passwordPolicies/35YM3OwioW9PVtfLOh6q1e",
@@ -125,7 +125,21 @@ class DefaultStrengthTest {
             strength.setMinLength(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "minLength cannot be a negative number.")
+            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1023.")
+        }
+
+        try {
+            strength.setMinLength(0) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1023.")
+        }
+
+        try {
+            strength.setMinLength(1024) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "minLength cannot be less than 1 or larger than 1023.")
         }
 
         try {
@@ -139,7 +153,21 @@ class DefaultStrengthTest {
             strength.setMaxLength(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "maxLength cannot be a negative number.")
+            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1023.")
+        }
+
+        try {
+            strength.setMaxLength(0) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1023.")
+        }
+
+        try {
+            strength.setMaxLength(1024) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "maxLength cannot be less than 1 or larger than 1023.")
         }
 
         try {

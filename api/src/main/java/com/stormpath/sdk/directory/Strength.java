@@ -28,49 +28,63 @@ import com.stormpath.sdk.resource.Saveable;
 public interface Strength extends Resource, Saveable {
 
     /**
-     * Return the minimum quantity of symbols (e.g. %, !, @) required by this policy.
+     * Return the minimum quantity of symbols required by this policy.
+     * </p>
+     * This is the complete list of symbols supported: space, !, ", #, $, %, &, ', (, ), *, +, comma, -, ., /, :, ;, <, =, >, @,
+     * [, \, ], ^, _, {, |, }, ~, ¡, §, ©, «, ¬, ® , ±, µ, ¶, ·, », ½, ¿, ×, ÷.
      *
-     * @return the minimum quantity of symbols (e.g. %, !, @) required by this policy.
+     * @return the minimum quantity of symbols required by this policy.
      */
     int getMinSymbol();
 
     /**
-     * Specifies the minimum quantity of symbols (e.g. %, !, @) required by this policy.
+     * Specifies the minimum quantity of symbols required by this policy.
+     * </p>
+     * This is the complete list of symbols supported: space, !, ", #, $, %, &, ', (, ), *, +, comma, -, ., /, :, ;, <, =, >, @,
+     * [, \, ], ^, _, {, |, }, ~, ¡, §, ©, «, ¬, ® , ±, µ, ¶, ·, », ½, ¿, ×, ÷.
      *
      * @return this instance for method chaining.
      */
     Strength setMinSymbol(int minSymbol);
 
     /**
-     * Return the minimum quantity of diacritic characters (e.g. ', `, ’) required by this policy.
+     * Return the minimum quantity of diacritic characters required by this policy.
+     * </p>
+     * This is the complete list of diacritic characters supported: À, Á, Â, Ã, Ä, Å, Æ, Ç, È, É, Ê, Ë, Ì, Í, Î, Ï, Ð, Ñ,
+     * Ò, Ó, Ô, Õ, Ö, Ø, Ù, Ú, Û, Ü, Ý, Þ, ß, à, á, â, ã, ä, å, æ, ç, è, é, ê, ë, ì, í, î, ï, ð, ñ, ò, ó, ô, õ, ö, ø,
+     * ù, ú, û, ü, ý, þ, ÿ.
      *
-     * @return the minimum quantity of diacritic characters (e.g. ', `, ’) required by this policy.
+     * @return the minimum quantity of diacritic characters required by this policy.
      */
     int getMinDiacritic();
 
     /**
-     * Specifies the minimum quantity of diacritic characters (e.g. ', `, ’) required by this policy.
+     * Specifies the minimum quantity of diacritic characters required by this policy.
+     * </p>
+     * This is the complete list of diacritic characters supported: À, Á, Â, Ã, Ä, Å, Æ, Ç, È, É, Ê, Ë, Ì, Í, Î, Ï, Ð, Ñ,
+     * Ò, Ó, Ô, Õ, Ö, Ø, Ù, Ú, Û, Ü, Ý, Þ, ß, à, á, â, ã, ä, å, æ, ç, è, é, ê, ë, ì, í, î, ï, ð, ñ, ò, ó, ô, õ, ö, ø,
+     * ù, ú, û, ü, ý, þ, ÿ.
      *
      * @return this instance for method chaining.
      */
     Strength setMinDiacritic(int minDiacritic);
 
     /**
-     * Return the minimum quantity of uppercase characters (e.g. A, B, C) required by this policy.
+     * Returns the minimum quantity of uppercase characters (i.e. A, B, C, ... Z) required by this policy.
      *
-     * @return the minimum quantity of uppercase characters (e.g. A, B, C) required by this policy.
+     * @return the minimum quantity of uppercase characters required by this policy.
      */
     int getMinUpperCase();
 
     /**
-     * Specifies the minimum quantity of uppercase characters (e.g. A, B, C) required by this policy.
+     * Specifies the minimum quantity of uppercase characters (i.e. A, B, C, ... Z) required by this policy.
      *
      * @return this instance for method chaining.
      */
     Strength setMinUpperCase(int minUpperCase);
 
     /**
-     * Return the minimum quantity of total characters required in a password by this policy.
+     * Returns the minimum quantity of total characters required in a password by this policy.
      *
      * @return the minimum quantity of total characters required in a password by this policy.
      */
@@ -84,21 +98,21 @@ public interface Strength extends Resource, Saveable {
     Strength setMinLength(int minLength);
 
     /**
-     * Return the minimum quantity of lowercase characters (e.g. a, b, c) required by this policy.
+     * Returns the minimum quantity of lowercase characters (i.e. a, b, c, ... z) required by this policy.
      *
-     * @return the minimum quantity of lowercase characters (e.g. a, b, c) required by this policy.
+     * @return the minimum quantity of lowercase characters required by this policy.
      */
     int getMinLowerCase();
 
     /**
-     * Specifies the minimum quantity of lowercase characters (e.g. a, b, c) required by this policy.
+     * Specifies the minimum quantity of lowercase characters (i.e. a, b, c, ... z) required by this policy.
      *
      * @return this instance for method chaining.
      */
     Strength setMinLowerCase(int minLowerCase);
 
     /**
-     * Return the maximum quantity of total characters allowed in a password by this policy.
+     * Returns the maximum quantity of total characters allowed in a password by this policy.
      *
      * @return the maximum quantity of total characters allowed in a password by this policy.
      */
@@ -106,20 +120,22 @@ public interface Strength extends Resource, Saveable {
 
     /**
      * Specifies the maximum quantity of total characters allowed in a password by this policy.
+     * <p/>
+     * The maximum allowed password length is 1023 characters.
      *
      * @return this instance for method chaining.
      */
     Strength setMaxLength(int maxLength);
 
     /**
-     * Return the minimum quantity of numeric characters (e.g. 1, 2, 3) required by this policy.
+     * Returns the minimum quantity of numeric characters (i.e. 0, 1, 2, 3, 5, 6, 7, 8, 9) required by this policy.
      *
-     * @return the minimum quantity of numeric characters (e.g. 1, 2, 3) required by this policy.
+     * @return the minimum quantity of numeric characters required by this policy.
      */
     int getMinNumeric();
 
     /**
-     * Specifies the minimum quantity of numeric characters (e.g. 1, 2, 3) required by this policy.
+     * Specifies the minimum quantity of numeric characters (i.e. 0, 1, 2, 3, 5, 6, 7, 8, 9) required by this policy.
      *
      * @return this instance for method chaining.
      */

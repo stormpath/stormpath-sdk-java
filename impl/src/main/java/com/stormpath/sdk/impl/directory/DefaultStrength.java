@@ -96,7 +96,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinLength(int minLength) {
-        isTrue(minLength >= 0, "minLength cannot be a negative number.");
+        isTrue(minLength > 0 && minLength < 1024, "minLength cannot be less than 1 or larger than 1023.");
         setProperty(MIN_LENGTH, minLength);
         return this;
     }
@@ -120,7 +120,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMaxLength(int maxLength) {
-        isTrue(maxLength >= 0, "maxLength cannot be a negative number.");
+        isTrue(maxLength > 0 && maxLength < 1024, "maxLength cannot be less than 1 or larger than 1023.");
         setProperty(MAX_LENGTH, maxLength);
         return this;
     }

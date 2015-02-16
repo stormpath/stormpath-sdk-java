@@ -37,6 +37,8 @@ public interface PasswordPolicy extends Resource, Saveable {
     /**
      * Specifies the amount of time (in hours) that a reset token will remain valid. Once that time has passed, the token
      * gets invalidated.
+     * <p/>
+     * Defaults to 24 hrs. Must be a positive integer, less than 169 (i.e. 0 < resetTokenTtl < 169). 168 hours equals 7 days.
      *
      * @param resetTokenTtl how long (in hours) a reset token can remain active until it is used.
      * @return this instance for method chaining.

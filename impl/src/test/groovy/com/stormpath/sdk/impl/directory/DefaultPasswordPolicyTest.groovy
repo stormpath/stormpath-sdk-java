@@ -120,14 +120,29 @@ class DefaultPasswordPolicyTest {
         ]
 
         PasswordPolicy passwordPolicy = new DefaultPasswordPolicy(internalDataStore, properties)
-        passwordPolicy.setResetTokenTtl(0)    //must be ok
+        passwordPolicy.setResetTokenTtl(1)    //must be ok
 
         try {
             passwordPolicy.setResetTokenTtl(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "resetTokenTtl cannot be a negative number.")
+            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
         }
+
+        try {
+            passwordPolicy.setResetTokenTtl(0) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
+        }
+
+        try {
+            passwordPolicy.setResetTokenTtl(169) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
+        }
+
     }
 
     @Test
