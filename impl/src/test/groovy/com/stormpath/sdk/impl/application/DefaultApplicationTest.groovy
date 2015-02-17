@@ -23,11 +23,13 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.group.*
+import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
@@ -37,8 +39,12 @@ import com.stormpath.sdk.impl.directory.DefaultCustomData
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
+import com.stormpath.sdk.impl.http.Response
+import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
@@ -829,6 +835,54 @@ class DefaultApplicationTest {
         }
     }
 
+    /**
+     * Asserts that https://github.com/stormpath/stormpath-sdk-java/issues/132 has been fixed
+     * @since 1.0.RC4 */
+    @Test
+    void testPasswordResetToken() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
+                          defaultAccountStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                          defaultGroupStoreMapping: [href: "https://api.stormpath.com/v1/accountStoreMappings/5dc0HbVMB8g3GWpSkOzqfF"],
+                          accountStoreMappings: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accountStoreMappings"],
+                          customData: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/customData"]
+        ]
+        def returnedProperties = [ href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens/eyJraWQiOiI0Y0ZPSXNsZ3ZLTHNiakFFSWlXVjZaIiwiYWxnIjoiSFMyNTYifQ.eyJleHAiOjE0MjQyNzI3NjAsImp0aSI6IjJoVnlWdmhLRktyYWhBMVlabVVTUkUifQ.WQdIUrvE6Vtv6mGTcKsvG1ndQkv4Bza1ekWX9Y0LVt4",
+                                   email : "test@stormpath.com",
+                                   account: [ href : "https://api.stormpath.com/v1/accounts/1dEw3gHFhzyw8jmYFqlIld"]
+        ]
+
+        def apiKey = createStrictMock(ApiKey)
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def cacheManager = createStrictMock(CacheManager)
+        def response = createStrictMock(Response)
+        def mapMarshaller = new JacksonMapMarshaller();
+        InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(returnedProperties).getBytes());
+
+        expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.POST, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"))))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is)
+        expect(response.getHttpStatus()).andReturn(200)
+
+        replay apiKey, cacheManager, requestExecutor, response
+
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        dataStore.cacheManager = cacheManager
+
+        def application = new DefaultApplication(dataStore, properties)
+        //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise
+        //we are not actually asserting that the issue has been fixed
+        assertTrue(dataStore.isCachingEnabled())
+        application.sendPasswordResetEmail("test@stormpath.com");
+
+        verify apiKey, cacheManager, requestExecutor, response
+    }
+
     //@since 1.0.RC
     static class ApplicationMatcher implements IArgumentMatcher {
 
@@ -856,6 +910,28 @@ class DefaultApplicationTest {
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)
         field.set(object, value)
+    }
+
+    //@since 1.0.RC4
+    static class RequestMatcher implements IArgumentMatcher {
+
+        private Request expected
+
+        RequestMatcher(Request request) {
+            expected = request;
+
+        }
+        boolean matches(Object o) {
+            if (o == null || ! Request.isInstance(o)) {
+                return false;
+            }
+            Request actual = (Request) o
+            return expected.getMethod().equals(actual.getMethod()) && expected.getResourceUrl().equals(actual.getResourceUrl()) && expected.getQueryString().equals(actual.getQueryString())
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append(expected.toString())
+        }
     }
 
 }

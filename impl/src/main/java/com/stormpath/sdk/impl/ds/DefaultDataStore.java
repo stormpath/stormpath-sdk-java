@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
@@ -511,10 +512,14 @@ public class DefaultDataStore implements InternalDataStore {
         //asserts invariant given that we should have returned if the responseBody is null or empty:
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
-        //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
-        boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+        //since 1.0.RC3 RC: uncaching boolean hack. EmailVerificationToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
+        boolean doNotCache = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+        if (!doNotCache) {
+            //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
+            doNotCache = resource instanceof PasswordResetToken && PasswordResetToken.class.isAssignableFrom(returnType);
+        }
 
-        if (isCacheUpdateEnabled(returnType) && !emailVerification) {
+        if (isCacheUpdateEnabled(returnType) && !doNotCache) {
             //@since 1.0.RC3: Let's first check if the response is an actual Resource (meaning, that it has an href property)
             if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
                 //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached

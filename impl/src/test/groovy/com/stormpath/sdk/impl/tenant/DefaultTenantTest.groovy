@@ -158,7 +158,7 @@ class DefaultTenantTest {
 
     /**
      * Asserts that https://github.com/stormpath/stormpath-sdk-java/issues/60 has been fixed
-     * @since 1.0.0 */
+     * @since 1.0.RC3 */
     @Test
     void testVerifyAccountEmail() {
 
