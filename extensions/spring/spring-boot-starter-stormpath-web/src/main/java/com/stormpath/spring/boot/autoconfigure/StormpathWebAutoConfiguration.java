@@ -16,8 +16,14 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
@@ -29,21 +35,35 @@ import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.CookieAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.DefaultAuthenticationJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtSigningKeyResolver;
+import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
+import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.SessionAuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderAuthenticator;
+import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
+import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.spring.boot.mvc.LoginController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -53,6 +73,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
@@ -76,7 +97,9 @@ import java.util.Set;
 @AutoConfigureAfter({ StormpathAutoConfiguration.class, WebMvcAutoConfiguration.class })
 @EnableConfigurationProperties({ StormpathAccountCookieProperties.class, StormpathAccountJwtProperties.class,
                                    StormpathRequestRemoteUserProperties.class,
-                                   StormpathRequestUserPrincipalProperties.class })
+                                   StormpathRequestUserPrincipalProperties.class,
+                                   StormpathHandlerMappingProperties.class, StormpathCsrfTokenProperties.class,
+                                   StormpathNonceCacheProperties.class, StormpathHttpAuthenticationProperties.class })
 public class StormpathWebAutoConfiguration {
 
     @Autowired(required = false)
@@ -97,6 +120,18 @@ public class StormpathWebAutoConfiguration {
     @Autowired
     private StormpathRequestUserPrincipalProperties requestUserPrincipalProperties;
 
+    @Autowired
+    private StormpathHandlerMappingProperties handlerMappingProperties;
+
+    @Autowired
+    private StormpathCsrfTokenProperties csrfTokenProperties;
+
+    @Autowired
+    private StormpathNonceCacheProperties nonceCacheProperties;
+
+    @Autowired
+    private StormpathHttpAuthenticationProperties httpAuthenticationProperties;
+
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
     public HandlerMapping stormpathHandlerMapping() {
@@ -108,7 +143,7 @@ public class StormpathWebAutoConfiguration {
         urlToControllerMap.put("/login", new LoginController());
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setOrder(10); //allow user-defined @Controller classes to take precedence over these default controllers
+        mapping.setOrder(handlerMappingProperties.getOrder());
         mapping.setUrlMap(urlToControllerMap);
 
         if (pathMatcher != null) {
@@ -121,7 +156,6 @@ public class StormpathWebAutoConfiguration {
 
         return mapping;
     }
-
 
     @Bean
     @ConditionalOnMissingBean
@@ -251,6 +285,7 @@ public class StormpathWebAutoConfiguration {
         return new RequestEventPublisher(requestEventListener);
     }
 
+    /*
     @Bean
     @ConditionalOnMissingBean
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory(
@@ -262,5 +297,129 @@ public class StormpathWebAutoConfiguration {
                                                        requestUserPrincipalProperties.getStrategy(),
                                                        requestRemoteUserProperties.getStrategy());
     }
+    */
 
+    @Bean
+    @ConditionalOnMissingBean
+    public String stormpathCsrfTokenSigningKey(Client client) {
+        return client.getApiKey().getSecret();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JwtAccountResolver stormpathJwtAccountResolver(JwtSigningKeyResolver jwtSigningKeyResolver) {
+        return new DefaultJwtAccountResolver(jwtSigningKeyResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Cache<String, String> stormpathNonceCache(CacheManager cacheManager) {
+        return cacheManager.getCache(nonceCacheProperties.getName());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CsrfTokenManager stormpathCsrfTokenManager(
+        @Qualifier("stormpathNonceCache") Cache<String, String> nonceCache,
+        @Qualifier("stormpathCsrfTokenSigningKey") String signingKey) {
+
+        return new DefaultCsrfTokenManager(nonceCache, signingKey, csrfTokenProperties.getTtl());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AccessTokenResultFactory stormpathAccessTokenResultFactory(Application stormpathApplication,
+                                                                      AuthenticationJwtFactory authenticationJwtFactory) {
+
+        return new DefaultAccessTokenResultFactory(stormpathApplication, authenticationJwtFactory,
+                                                   accountJwtProperties.getTtl());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public WrappedServletRequestFactory stormpathWrappedServletRequestFactory(
+        UsernamePasswordRequestFactory usernamePasswordRequestFactory,
+        @Qualifier("stormpathAuthenticationResultSaver") Saver<AuthenticationResult> authenticationResultSaver,
+        Publisher<RequestEvent> requestEventPublisher) {
+
+        return new DefaultWrappedServletRequestFactory(usernamePasswordRequestFactory, authenticationResultSaver,
+                                                       requestEventPublisher,
+                                                       requestUserPrincipalProperties.getStrategy(),
+                                                       requestRemoteUserProperties.getStrategy());
+    }
+
+    /*
+     * The HTTP spec says that more well-supported authentication schemes should be listed first when the challenge is
+     * sent.  The default Stormpath header authenticator implementation will send challenge entries in the specified
+     * order.  Since 'basic' is a more well-supported scheme than 'bearer' we order basic (0) with higher priority than
+     * bearer (10).
+     */
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathBasicAuthenticationScheme")
+    @Order(0)
+    public HttpAuthenticationScheme stormpathBasicAuthenticationScheme(UsernamePasswordRequestFactory factory) {
+        return new BasicAuthenticationScheme(factory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathBearerAuthenticationScheme")
+    @Order(10)
+    public HttpAuthenticationScheme stormpathBearerAuthenticationScheme(JwtSigningKeyResolver resolver) {
+        return new BearerAuthenticationScheme(resolver);
+    }
+
+    //This bean is defined to allow the app developer to override this list if they want to construct it themselves,
+    //for example, with an entirely different order or excluding some schemes
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathHttpAuthenticationSchemes")
+    public List<HttpAuthenticationScheme> stormpathHttpAuthenticationSchemes(List<HttpAuthenticationScheme> schemes) {
+        return schemes;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HeaderAuthenticator stormpathAuthorizationHeaderAuthenticator(
+        @Value("#{stormpathHttpAuthenticationSchemes}") List<HttpAuthenticationScheme> schemes,
+        Publisher<RequestEvent> requestEventPublisher) {
+
+        return new AuthorizationHeaderAuthenticator(schemes, httpAuthenticationProperties.isChallenge(),
+                                                    requestEventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathAuthorizationHeaderAccountResolver")
+    public Resolver<Account> stormpathAuthorizationHeaderAccountResolver(HttpAuthenticator httpAuthenticator) {
+        return new AuthorizationHeaderAccountResolver(httpAuthenticator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathCookieAccountResolver")
+    public Resolver<Account> stormpathCookieAccountResolver(
+        @Qualifier("stormpathAccountCookieConfig") CookieConfig cookieConfig, JwtAccountResolver resolver) {
+
+        return new CookieAccountResolver(cookieConfig, resolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathSessionAccountResolver")
+    public Resolver<Account> stormpathSessionAccountResolver() {
+        return new SessionAccountResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathAccountResolvers")
+    public List<Resolver<Account>> stormpathAccountResolvers(
+        @Qualifier("stormpathAuthorizationHeaderAccountResolver") Resolver<Account> headerResolver,
+        @Qualifier("stormpathCookieAccountResolver") Resolver<Account> cookieResolver,
+        @Qualifier("stormpathSessionAccountResolver") Resolver<Account> sessionResolver) {
+
+        //the order determines which locations are checked.  One an account is found, the remaining locations are
+        //skipped, so we must order them based on preference:
+        List<Resolver<Account>> resolvers = new ArrayList<>(3);
+        resolvers.add(headerResolver);
+        resolvers.add(cookieResolver);
+        resolvers.add(sessionResolver);
+
+        return resolvers;
+    }
 }

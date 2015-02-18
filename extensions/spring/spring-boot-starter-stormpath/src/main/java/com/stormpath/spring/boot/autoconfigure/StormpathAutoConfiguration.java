@@ -32,6 +32,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.TimeUnit;
+
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @EnableConfigurationProperties({ StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
@@ -45,6 +47,12 @@ public class StormpathAutoConfiguration {
     @Autowired
     protected StormpathApplicationProperties applicationProperties;
 
+    @Autowired
+    protected StormpathClientAuthenticationProperties authenticationProperties;
+
+    @Autowired
+    protected StormpathClientProxyProperties proxyProperties;
+
     @Bean
     @ConditionalOnMissingBean(name = "stormpathClientApiKey")
     public ApiKey stormpathClientApiKey() {
@@ -57,57 +65,18 @@ public class StormpathAutoConfiguration {
         return applicationProperties.resolveApplication(client);
     }
 
-    protected static abstract class AbstractClientConfiguration {
-
-        @Autowired
-        protected StormpathClientAuthenticationProperties authenticationProperties;
-
-        @Autowired
-        protected StormpathClientProxyProperties proxyProperties;
-
-        @Autowired
-        @Qualifier("stormpathClientApiKey")
-        protected ApiKey apiKey;
-
-        protected ClientBuilder newClientBuilder() {
-
-            ClientBuilder builder = Clients.builder().setAuthenticationScheme(authenticationProperties.getScheme());
-
-            builder.setApiKey(apiKey);
-
-            Proxy proxy = proxyProperties.resolveProxy();
-            if (proxy != null) {
-                builder.setProxy(proxy);
-            }
-
-            return builder;
-        }
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     @Configuration
     @ConditionalOnMissingBean(type={"org.springframework.cache.CacheManager", "com.stormpath.sdk.cache.CacheManager"})
-    protected static class DefaultStormpathClientConfiguration extends AbstractClientConfiguration {
+    protected static class DefaultStormpathCacheManagerConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public Client stormpathClient() {
-            return newClientBuilder().setCacheManager(Caches.newCacheManager().build()).build();
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    @Configuration
-    @ConditionalOnBean(com.stormpath.sdk.cache.CacheManager.class)
-    protected static class CachingStormpathClientConfiguration extends AbstractClientConfiguration {
-
-        @Autowired
-        private com.stormpath.sdk.cache.CacheManager cacheManager;
-
-        @Bean
-        @ConditionalOnMissingBean
-        public Client stormpathClient() {
-            return newClientBuilder().setCacheManager(cacheManager).build();
+        public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
+            return Caches.newCacheManager()
+                         .withDefaultTimeToIdle(1, TimeUnit.HOURS)
+                         .withDefaultTimeToIdle(1, TimeUnit.HOURS)
+                         .build();
         }
     }
 
@@ -115,18 +84,36 @@ public class StormpathAutoConfiguration {
     @Configuration
     @ConditionalOnBean(CacheManager.class)
     @ConditionalOnMissingBean(com.stormpath.sdk.cache.CacheManager.class)
-    protected static class SpringCachingStormpathClientConfiguration extends AbstractClientConfiguration {
+    protected static class SpringCachingStormpathCacheManagerConfiguration {
 
         @Autowired
         private CacheManager cacheManager;
 
         @Bean
         @ConditionalOnMissingBean
-        public Client stormpathClient() {
-            return newClientBuilder().setCacheManager(new SpringStormpathCacheManager(cacheManager)).build();
+        public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
+            return new SpringStormpathCacheManager(cacheManager);
+        }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Client stormpathClient(@Qualifier("stormpathClientApiKey") ApiKey apiKey,
+                                  com.stormpath.sdk.cache.CacheManager cacheManager) {
+
+        ClientBuilder builder = Clients.builder().setAuthenticationScheme(authenticationProperties.getScheme());
+
+        builder.setApiKey(apiKey);
+        builder.setCacheManager(cacheManager);
+
+        Proxy proxy = proxyProperties.resolveProxy();
+        if (proxy != null) {
+            builder.setProxy(proxy);
         }
 
+        return builder.build();
     }
+
 
     @SuppressWarnings("unchecked")
     protected static class SpringStormpathCacheManager implements com.stormpath.sdk.cache.CacheManager {
