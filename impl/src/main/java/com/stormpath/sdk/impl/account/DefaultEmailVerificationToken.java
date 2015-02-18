@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public class DefaultEmailVerificationToken extends AbstractInstanceResource implements EmailVerificationToken {
 
+    private static final String TOKEN_DELIMITER = "/emailVerificationTokens/";
+
     public DefaultEmailVerificationToken(InternalDataStore dataStore) {
         super(dataStore);
     }
@@ -39,5 +41,16 @@ public class DefaultEmailVerificationToken extends AbstractInstanceResource impl
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return Collections.emptyMap();
+    }
+
+    /* @since 1.0.RC4 */
+    @Override
+    public String getToken() {
+        String href = getHref();
+        if (href != null) {
+            String token = href.substring(href.indexOf(TOKEN_DELIMITER) + TOKEN_DELIMITER.length());
+            return token;
+        }
+        return null;
     }
 }

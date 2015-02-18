@@ -38,5 +38,7 @@ class DefaultEmailVerificationTokenTest {
         assertTrue(resourceWithDS instanceof DefaultEmailVerificationToken && resourceWithProps instanceof DefaultEmailVerificationToken)
         assertEquals(resourceWithProps.getPropertyDescriptors().size(), 0)
 
+        assertEquals(resourceWithDS.getToken(), null)
+        assertEquals(resourceWithProps.getToken(), "efwer23823ujweouidfj")
     }
 }
