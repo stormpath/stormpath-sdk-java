@@ -17,13 +17,14 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+
 @ConfigurationProperties(prefix = "stormpath.web.account.cookie")
 public class StormpathAccountCookieProperties {
 
-    private String name;
+    private String name = "account";
     private String comment;
     private String domain;
-    private int maxAge;
+    private int maxAge = 86400; // 1 day
     private String path;
     private boolean httpOnly = true;
     private boolean secure = true;

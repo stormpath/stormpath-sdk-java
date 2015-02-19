@@ -21,6 +21,9 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.application.ApplicationLoader;
+import com.stormpath.sdk.servlet.client.ClientLoader;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager;
@@ -31,8 +34,11 @@ import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
@@ -70,9 +76,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -81,7 +90,13 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.util.UrlPathHelper;
 
+import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -99,7 +114,9 @@ import java.util.Set;
                                    StormpathRequestRemoteUserProperties.class,
                                    StormpathRequestUserPrincipalProperties.class,
                                    StormpathHandlerMappingProperties.class, StormpathCsrfTokenProperties.class,
-                                   StormpathNonceCacheProperties.class, StormpathHttpAuthenticationProperties.class })
+                                   StormpathNonceCacheProperties.class, StormpathHttpAuthenticationProperties.class,
+                                   StormpathRequestClientProperties.class, StormpathRequestApplicationProperties.class,
+                                   StormpathFilterProperties.class })
 public class StormpathWebAutoConfiguration {
 
     @Autowired(required = false)
@@ -131,6 +148,15 @@ public class StormpathWebAutoConfiguration {
 
     @Autowired
     private StormpathHttpAuthenticationProperties httpAuthenticationProperties;
+
+    @Autowired
+    private StormpathRequestClientProperties requestClientProperties;
+
+    @Autowired
+    private StormpathRequestApplicationProperties requestApplicationProperties;
+
+    @Autowired
+    private StormpathFilterProperties stormpathFilterProperties;
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
@@ -285,20 +311,6 @@ public class StormpathWebAutoConfiguration {
         return new RequestEventPublisher(requestEventListener);
     }
 
-    /*
-    @Bean
-    @ConditionalOnMissingBean
-    public WrappedServletRequestFactory stormpathWrappedServletRequestFactory(
-        UsernamePasswordRequestFactory usernamePasswordRequestFactory,
-        AuthenticationResultSaver authenticationResultSaver, Publisher<RequestEvent> requestEventPublisher) {
-
-        return new DefaultWrappedServletRequestFactory(usernamePasswordRequestFactory, authenticationResultSaver,
-                                                       requestEventPublisher,
-                                                       requestUserPrincipalProperties.getStrategy(),
-                                                       requestRemoteUserProperties.getStrategy());
-    }
-    */
-
     @Bean
     @ConditionalOnMissingBean
     public String stormpathCsrfTokenSigningKey(Client client) {
@@ -421,5 +433,90 @@ public class StormpathWebAutoConfiguration {
         resolvers.add(sessionResolver);
 
         return resolvers;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public FilterChainResolver stormpathFilterChainResolver() throws ServletException {
+        return new FilterChainResolver() {
+            @Override
+            public FilterChain getChain(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+                return chain; //currently testing
+            }
+        };
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<ServletContextListener> stormpathServletContextListener(
+        final @Qualifier("stormpathApplication") Application application, final Client client) {
+
+        ServletContextListener listener = new ServletContextListener() {
+            @Override
+            public void contextInitialized(ServletContextEvent sce) {
+                sce.getServletContext().setAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY, client);
+                sce.getServletContext().setAttribute(ApplicationLoader.APP_ATTRIBUTE_NAME, application);
+            }
+
+            @Override
+            public void contextDestroyed(ServletContextEvent sce) {
+                //no op
+            }
+        };
+
+        return new ServletListenerRegistrationBean<>(listener);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathFilter")
+    @DependsOn("stormpathServletContextListener")
+    public FilterRegistrationBean stormpathFilter(FilterChainResolver filterChainResolver,
+                                                  WrappedServletRequestFactory wrappedServletRequestFactory) {
+
+        StormpathFilter filter = new StormpathFilter() {
+            @Override
+            protected void onInit() throws ServletException {
+                //no op - we apply dependencies via setters below
+            }
+        };
+
+        filter.setEnabled(this.stormpathFilterProperties.isEnabled());
+        filter.setClientRequestAttributeNames(this.requestClientProperties.getAttributeNames());
+        filter.setApplicationRequestAttributeNames(this.requestApplicationProperties.getAttributeNames());
+        filter.setFilterChainResolver(filterChainResolver);
+        filter.setWrappedServletRequestFactory(wrappedServletRequestFactory);
+
+        FilterRegistrationBean bean = new FilterRegistrationBean();
+        bean.setFilter(filter);
+        bean.setEnabled(stormpathFilterProperties.isEnabled());
+        bean.setOrder(stormpathFilterProperties.getOrder());
+        bean.setUrlPatterns(stormpathFilterProperties.getUrlPatterns());
+        bean.setServletNames(stormpathFilterProperties.getServletNames());
+        bean.setDispatcherTypes(stormpathFilterProperties.getDispatcherTypes());
+        bean.setMatchAfter(stormpathFilterProperties.isMatchAfter());
+        return bean;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathAccountResolverFilter")
+    @DependsOn("stormpathServletContextListener")
+    public FilterRegistrationBean stormpathAccountResolverFilter(
+        @Value("#{stormpathAccountResolvers}") List<Resolver<Account>> resolvers) {
+
+        Assert.notEmpty(resolvers, "Account resolver collection cannot be null or empty.");
+
+        AccountResolverFilter filter = new AccountResolverFilter();
+        filter.setEnabled(this.stormpathFilterProperties.isEnabled());
+        filter.setResolvers(resolvers);
+
+        FilterRegistrationBean bean = new FilterRegistrationBean();
+        bean.setFilter(filter);
+        bean.setEnabled(stormpathFilterProperties.isEnabled());
+        //we always want this filter to be immediately after the StormpathFilter:
+        bean.setOrder(stormpathFilterProperties.getOrder() + 1);
+        bean.setUrlPatterns(stormpathFilterProperties.getUrlPatterns());
+        bean.setServletNames(stormpathFilterProperties.getServletNames());
+        bean.setDispatcherTypes(stormpathFilterProperties.getDispatcherTypes());
+        bean.setMatchAfter(stormpathFilterProperties.isMatchAfter());
+        return bean;
     }
 }
