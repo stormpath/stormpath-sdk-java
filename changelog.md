@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.0.RC4 ###
+
+- [Issue 151](https://github.com/stormpath/stormpath-sdk-java/issues/151): Fixed issue where `UserAgent` was not being able to read POM properties from Virtual File System.
+
 ### 1.0.RC3.1 ###
 
 This is a minor patch release that allows the Stormpath Servlet Plugin to work in Jetty and other servlet containers that do not support web fragment artifacts in `/META-INF/resources/WEB-INF/classes`.
