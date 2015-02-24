@@ -24,6 +24,7 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertSame
 import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
 
@@ -100,6 +101,12 @@ class DefaultResetEmailTemplateTest {
         assertEquals(emailTemplate.getMimeType(), MimeType.HTML)
         assertEquals(emailTemplate.getLinkBaseUrl(), "http://localhost:8080/newPasswordReset")
         assertEquals(emailTemplate.getDefaultModel(), [linkBaseUrl : "http://localhost:8080/newPasswordReset"])
+
+        Map defaultModel = emailTemplate.getDefaultModel()
+        assertEquals(defaultModel.size(), 1)
+        assertSame(emailTemplate.getLinkBaseUrl(), defaultModel.get("linkBaseUrl"))
+        emailTemplate.setLinkBaseUrl("http://mycompany.com/resetEmail.html")
+        assertEquals(defaultModel.get("linkBaseUrl"), "http://mycompany.com/resetEmail.html")
     }
 
     @Test
@@ -122,12 +129,19 @@ class DefaultResetEmailTemplateTest {
         def emailTemplate = new DefaultResetEmailTemplate(internalDataStore, properties)
 
         Map defaultModel = emailTemplate.getDefaultModel()
-        try {
-            defaultModel.put("ThisShouldFail", "BecauseTheModelIsUnmodifiable")
-            fail("Should have thrown")
-        } catch (UnsupportedOperationException e) {
-        }
+        assertEquals(defaultModel.size(), 1)
+        defaultModel.put("newKey", "newValue")
+        assertEquals(defaultModel.size(), 2)
+        defaultModel.put("linkBaseUrl", "http://mycompany.com/resetEmail.html")
+        assertEquals(defaultModel.size(), 2)
 
+        try {
+            defaultModel.remove("linkBaseUrl")
+            emailTemplate.save()
+            fail("Should have thrown")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "The defaultModel map must contain the 'linkBasedUrl' reserved property.")
+        }
     }
 
     @Test

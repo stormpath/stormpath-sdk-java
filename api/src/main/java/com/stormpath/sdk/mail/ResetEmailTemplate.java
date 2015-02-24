@@ -26,17 +26,27 @@ import java.util.Map;
 public interface ResetEmailTemplate extends EmailTemplate<ResetEmailTemplate> {
 
     /**
-     * An {@link java.util.Collections#unmodifiableMap(java.util.Map) UnmodifiableMap} where Stormpath-reserved
-     * properties (like <code>linkBaseUrl</code>) are stored.
+     * An {@link Map} where JSON data can be stored. This allows both Stormpath and developers to define variables that can later be
+     * replaced when the template is being processed. For example, we currently store the <code>linkBaseUrl</code> key to hold the
+     * clickable url that the user will receive inside the reset password email.
      *
-     * @return the map where Stormpath-reserved properties (like linkBaseUrl) are stored.
+     * @return the map where custom JSON data (like <code>linkBaseUrl</code>) can be stored.
      * @see #setLinkBaseUrl(String)
      */
     Map<String, String> getDefaultModel();
 
     /**
-     * Specifies the clickable url that the user will receive inside the reset password email. This url should point to the form
+     * Convenience method to specify the clickable url that the user will receive inside the reset password email. This url should point to the form
      * where the user can insert his new password.
+     * <p/>
+     * This is just a convenience method and doing this:
+     * <pre>
+     *      resetEmailTemplate.setLinkBaseUrl("http://mycompany.com/resetEmail.html");
+     * </pre>
+     * is equivalent to doing:
+     * <pre>
+     *     resetEmailTemplate.getDefaultModel().put("linkBaseUrl", "http://mycompany.com/resetEmail.html");
+     * </pre>
      *
      * @param linkBaseUrl clickable url where the user will be prompted for the new password.
      * @return this instance for method chaining.
@@ -45,6 +55,14 @@ public interface ResetEmailTemplate extends EmailTemplate<ResetEmailTemplate> {
 
     /**
      * Return the clickable url that the user will receive inside the reset password email.
+     * This is just a convenience method and doing this:
+     * <pre>
+     *      String linkBaseUrl = resetEmailTemplate.getLinkBaseUrl();
+     * </pre>
+     * is equivalent to doing:
+     * <pre>
+     *      String linkBaseUrl = resetEmailTemplate.getDefaultModel().get("linkBaseUrl");
+     * </pre>
      *
      * @return clickable url where the user will be prompted for the new password.
      */

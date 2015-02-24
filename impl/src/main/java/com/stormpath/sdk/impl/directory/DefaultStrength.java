@@ -18,10 +18,10 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.directory.Strength;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.Map;
 
-import static com.stormpath.sdk.lang.Assert.*;
 
 /**
  * @since 1.0.0
@@ -60,7 +60,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinSymbol(int minSymbol) {
-        isTrue(minSymbol >= 0, "minSymbol cannot be a negative number.");
+        Assert.isTrue(minSymbol >= 0, "minSymbol cannot be a negative number.");
         setProperty(MIN_SYMBOL, minSymbol);
         return this;
     }
@@ -72,7 +72,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinDiacritic(int minDiacritic) {
-        isTrue(minDiacritic >= 0, "minDiacritic cannot be a negative number.");
+        Assert.isTrue(minDiacritic >= 0, "minDiacritic cannot be a negative number.");
         setProperty(MIN_DIACRITIC, minDiacritic);
         return this;
     }
@@ -84,7 +84,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinUpperCase(int minUpperCase) {
-        isTrue(minUpperCase >= 0, "minUpperCase cannot be a negative number.");
+        Assert.isTrue(minUpperCase >= 0, "minUpperCase cannot be a negative number.");
         setProperty(MIN_UPPERCASE, minUpperCase);
         return this;
     }
@@ -96,7 +96,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinLength(int minLength) {
-        isTrue(minLength > 0 && minLength <= 1024, "minLength cannot be less than 1 or larger than 1024.");
+        Assert.isTrue(minLength > 0 && minLength <= 1024, "minLength cannot be less than 1 or larger than 1024.");
         setProperty(MIN_LENGTH, minLength);
         return this;
     }
@@ -108,7 +108,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinLowerCase(int minLowerCase) {
-        isTrue(minLowerCase >= 0, "minLowerCase cannot be a negative number.");
+        Assert.isTrue(minLowerCase >= 0, "minLowerCase cannot be a negative number.");
         setProperty(MIN_LOWERCASE, minLowerCase);
         return this;
     }
@@ -120,7 +120,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMaxLength(int maxLength) {
-        isTrue(maxLength > 0 && maxLength <= 1024, "maxLength cannot be less than 1 or larger than 1024.");
+        Assert.isTrue(maxLength > 0 && maxLength <= 1024, "maxLength cannot be less than 1 or larger than 1024.");
         setProperty(MAX_LENGTH, maxLength);
         return this;
     }
@@ -132,15 +132,15 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
 
     @Override
     public Strength setMinNumeric(int minNumeric) {
-        isTrue(minNumeric >= 0, "minNumeric cannot be a negative number.");
+        Assert.isTrue(minNumeric >= 0, "minNumeric cannot be a negative number.");
         setProperty(MIN_NUMERIC, minNumeric);
         return this;
     }
 
     @Override
     public void save() {
-        isTrue(getMaxLength() >= getMinLength(), "minLength cannot be greater than maxLength.");
-        isTrue(getMinSymbol() + getMinDiacritic() + getMinUpperCase() + getMinLowerCase() + getMinNumeric() <= getMaxLength(), "maxLength is not large enough to hold all the minimum conditions specified.");
+        Assert.isTrue(getMaxLength() >= getMinLength(), "minLength cannot be greater than maxLength.");
+        Assert.isTrue(getMinSymbol() + getMinDiacritic() + getMinUpperCase() + getMinLowerCase() + getMinNumeric() <= getMaxLength(), "maxLength is not large enough to hold all the minimum conditions specified.");
         super.save();
     }
 }

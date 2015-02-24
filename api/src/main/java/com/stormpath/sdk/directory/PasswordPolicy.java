@@ -28,11 +28,11 @@ import com.stormpath.sdk.resource.Saveable;
 public interface PasswordPolicy extends Resource, Saveable {
 
     /**
-     * Return the time-to-live for the reset password token.
+     * Return the time-to-live (in hours) for the reset password token.
      *
-     * @return the time-to-live for the reset password token
+     * @return the time-to-live (in hours) for the reset password token.
      */
-    int getResetTokenTtl();
+    int getResetTokenTtlHours();
 
     /**
      * Specifies the amount of time (in hours) that a reset token will remain valid. Once that time has passed, the token
@@ -43,7 +43,7 @@ public interface PasswordPolicy extends Resource, Saveable {
      * @param resetTokenTtl how long (in hours) a reset token can remain active until it is used.
      * @return this instance for method chaining.
      */
-    PasswordPolicy setResetTokenTtl(int resetTokenTtl);
+    PasswordPolicy setResetTokenTtlHours(int resetTokenTtl);
 
     /**
      * Returns the Reset Email's status.

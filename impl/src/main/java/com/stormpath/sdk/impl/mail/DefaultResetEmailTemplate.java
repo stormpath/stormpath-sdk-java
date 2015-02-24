@@ -54,10 +54,7 @@ public class DefaultResetEmailTemplate extends AbstractEmailTemplate<ResetEmailT
 
     @Override
     public Map<String, String> getDefaultModel() {
-        Map<String, String> defaultModel = getDefaultModel(false);
-        //Let's avoid the defaultModel to be modified. If the linkBaseUrl property needs to
-        //be modified it can be done via the setLinkBaseUrl(String) method
-        return defaultModel != null ? java.util.Collections.unmodifiableMap(defaultModel) : null;
+        return getDefaultModel(false);
     }
 
     @Override
@@ -86,6 +83,14 @@ public class DefaultResetEmailTemplate extends AbstractEmailTemplate<ResetEmailT
             defaultModel = new LinkedHashMap<String, String>();
         }
         return defaultModel;
+    }
+
+    @Override
+    public void save() {
+        if (!getDefaultModel().containsKey(LINK_BASE_URL)) {
+            throw new IllegalStateException("The defaultModel map must contain the 'linkBasedUrl' reserved property.");
+        }
+        super.save();
     }
 
 }

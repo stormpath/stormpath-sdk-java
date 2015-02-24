@@ -32,7 +32,7 @@ class PasswordPolicyIT extends ClientIT {
     void testStrength() {
 
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testResetEmailTemplateList")
+        dir.name = uniquify("Java SDK: DirectoryIT.testStrength")
         dir = client.currentTenant.createDirectory(dir);
         deleteOnTeardown(dir)
 

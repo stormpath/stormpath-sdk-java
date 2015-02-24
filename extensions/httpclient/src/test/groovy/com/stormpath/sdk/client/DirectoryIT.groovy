@@ -19,7 +19,6 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
@@ -201,17 +200,17 @@ class DirectoryIT extends ClientIT {
         deleteOnTeardown(dir)
         def passwordPolicy = dir.getPasswordPolicy()
         assertNotNull passwordPolicy.href
-        assertEquals passwordPolicy.getResetTokenTtl(), 24
+        assertEquals passwordPolicy.getResetTokenTtlHours(), 24
         assertEquals passwordPolicy.getResetEmailStatus(), EmailStatus.ENABLED
         assertEquals passwordPolicy.getResetSuccessEmailStatus(), EmailStatus.ENABLED
-        passwordPolicy.setResetTokenTtl(100)
+        passwordPolicy.setResetTokenTtlHours(100)
                 .setResetEmailStatus(EmailStatus.DISABLED)
                 .setResetSuccessEmailStatus(EmailStatus.DISABLED)
         passwordPolicy.save()
 
         //Let's check that the new state is properly retrieved in a new instance
         def retrievedPasswordPolicy = client.getResource(passwordPolicy.href, PasswordPolicy.class)
-        assertEquals retrievedPasswordPolicy.getResetTokenTtl(), 100
+        assertEquals retrievedPasswordPolicy.getResetTokenTtlHours(), 100
         assertEquals retrievedPasswordPolicy.getResetEmailStatus(), EmailStatus.DISABLED
         assertEquals retrievedPasswordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED
     }

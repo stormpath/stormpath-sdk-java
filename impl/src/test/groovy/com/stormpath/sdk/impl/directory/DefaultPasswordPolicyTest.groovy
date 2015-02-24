@@ -81,13 +81,13 @@ class DefaultPasswordPolicyTest {
         replay internalDataStore
 
         PasswordPolicy passwordPolicy = new DefaultPasswordPolicy(internalDataStore, properties)
-        assertEquals(passwordPolicy.getResetTokenTtl(), 24)
+        assertEquals(passwordPolicy.getResetTokenTtlHours(), 24)
 
-        passwordPolicy = passwordPolicy.setResetTokenTtl(100)
+        passwordPolicy = passwordPolicy.setResetTokenTtlHours(100)
                 .setResetEmailStatus(EmailStatus.DISABLED)
                 .setResetSuccessEmailStatus(EmailStatus.DISABLED)
 
-        assertEquals(passwordPolicy.getResetTokenTtl(), 100)
+        assertEquals(passwordPolicy.getResetTokenTtlHours(), 100)
         assertEquals(passwordPolicy.getResetEmailStatus(), EmailStatus.DISABLED)
         assertEquals(passwordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED)
         assertEquals(passwordPolicy.getHref(), properties.href)
@@ -120,24 +120,24 @@ class DefaultPasswordPolicyTest {
         ]
 
         PasswordPolicy passwordPolicy = new DefaultPasswordPolicy(internalDataStore, properties)
-        passwordPolicy.setResetTokenTtl(1)    //must be ok
+        passwordPolicy.setResetTokenTtlHours(1)    //must be ok
 
         try {
-            passwordPolicy.setResetTokenTtl(-1) //must throw
+            passwordPolicy.setResetTokenTtlHours(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
         }
 
         try {
-            passwordPolicy.setResetTokenTtl(0) //must throw
+            passwordPolicy.setResetTokenTtlHours(0) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
         }
 
         try {
-            passwordPolicy.setResetTokenTtl(169) //must throw
+            passwordPolicy.setResetTokenTtlHours(169) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
