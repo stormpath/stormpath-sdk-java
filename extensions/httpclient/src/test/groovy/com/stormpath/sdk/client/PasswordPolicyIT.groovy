@@ -16,15 +16,14 @@
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.mail.ResetEmailTemplate
-import com.stormpath.sdk.mail.ResetSuccessEmailTemplate
+import com.stormpath.sdk.mail.ModeledEmailTemplate
+import com.stormpath.sdk.mail.PasswordResetSuccessEmailTemplate
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 
 /**
- *
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 class PasswordPolicyIT extends ClientIT {
 
@@ -89,7 +88,7 @@ class PasswordPolicyIT extends ClientIT {
 
         dir = client.getResource(dir.href, Directory.class)
         def emailTemplateFromDir = dir.getPasswordPolicy().getResetEmailTemplates().iterator().next()
-        emailTemplate = client.getResource(emailTemplate.href, ResetEmailTemplate.class)
+        emailTemplate = client.getResource(emailTemplate.href, ModeledEmailTemplate.class)
         assertEquals(emailTemplate.href, emailTemplateFromDir.href)
         assertEquals(emailTemplate.getSubject(), "New Reset your Password Subject")
         assertEquals(emailTemplate.getName(), "New Default Password Reset Email Template Name")
@@ -123,7 +122,7 @@ class PasswordPolicyIT extends ClientIT {
 
         dir = client.getResource(dir.href, Directory.class)
         def emailTemplateFromDir = dir.getPasswordPolicy().getResetSuccessEmailTemplates().iterator().next()
-        emailTemplate = client.getResource(emailTemplate.href, ResetSuccessEmailTemplate.class)
+        emailTemplate = client.getResource(emailTemplate.href, PasswordResetSuccessEmailTemplate.class)
         assertEquals(emailTemplate.href, emailTemplateFromDir.href)
         assertEquals(emailTemplate.getSubject(), "New Your password has been changed Subject")
         assertEquals(emailTemplate.getName(), "New Default Password Reset Success Email Template Name")

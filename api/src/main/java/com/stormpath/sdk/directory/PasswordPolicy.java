@@ -23,7 +23,7 @@ import com.stormpath.sdk.resource.Saveable;
  * A PasswordPolicy resource is used to configure different aspects of the restrictions on passwords for accounts associated
  * with the parent {@link Directory}.
  *
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 public interface PasswordPolicy extends Resource, Saveable {
 
@@ -84,24 +84,24 @@ public interface PasswordPolicy extends Resource, Saveable {
     PasswordPolicy setResetSuccessEmailStatus(EmailStatus status);
 
     /**
-     * Return the {@link Strength} resource to configure the password strength policy.
+     * Return the {@link PasswordStrength} resource to configure the password strength policy.
      *
-     * @return the {@link Strength} resource to configure the password strength policy.
+     * @return the {@link PasswordStrength} resource to configure the password strength policy.
      */
-    Strength getStrength();
+    PasswordStrength getStrength();
 
     /**
-     * Returns the {@link ResetEmailTemplateList} collection holding the set of email templates to be used when requesting a password reset operation.
+     * Returns the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection holding the set of email templates to be used when requesting a password reset operation.
      *
-     * @return the {@link ResetEmailTemplateList} collection holding the set of email templates to be used when requesting a password reset operation.
+     * @return the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection holding the set of email templates to be used when requesting a password reset operation.
      */
-    ResetEmailTemplateList getResetEmailTemplates();
+    ModeledEmailTemplateList getResetEmailTemplates();
 
     /**
-     * Returns the {@link ResetEmailTemplateList} collection holding the set of email templates available when notifying about a successful password reset operation.
+     * Returns the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection holding the set of email templates available when notifying about a successful password reset operation.
      *
-     * @return the {@link ResetEmailTemplateList} collection holding the set of email templates available when notifying about a successful password reset operation.
+     * @return the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection holding the set of email templates available when notifying about a successful password reset operation.
      */
-    ResetSuccessEmailTemplateList getResetSuccessEmailTemplates();
+    PasswordResetSuccessEmailTemplateList getResetSuccessEmailTemplates();
 
 }

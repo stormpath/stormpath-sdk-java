@@ -18,12 +18,12 @@ package com.stormpath.sdk.mail;
 import java.util.Map;
 
 /**
- * The ResetEmailTemplate is a {@link EmailTemplate} resource which also provides the ability to configure the url where
+ * The {@link ModeledEmailTemplate} is a {@link EmailTemplate} resource which also provides the ability to configure the url where
  * the user will be redirected once he clicks the link received in the Reset Password Email.
  *
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public interface ResetEmailTemplate extends EmailTemplate<ResetEmailTemplate> {
+public interface ModeledEmailTemplate extends EmailTemplate<ModeledEmailTemplate> {
 
     /**
      * An {@link Map} where JSON data can be stored. This allows both Stormpath and developers to define variables that can later be
@@ -41,27 +41,27 @@ public interface ResetEmailTemplate extends EmailTemplate<ResetEmailTemplate> {
      * <p/>
      * This is just a convenience method and doing this:
      * <pre>
-     *      resetEmailTemplate.setLinkBaseUrl("http://mycompany.com/resetEmail.html");
+     *      modeledEmailTemplate.setLinkBaseUrl("http://mycompany.com/resetEmail.html");
      * </pre>
      * is equivalent to doing:
      * <pre>
-     *     resetEmailTemplate.getDefaultModel().put("linkBaseUrl", "http://mycompany.com/resetEmail.html");
+     *     modeledEmailTemplate.getDefaultModel().put("linkBaseUrl", "http://mycompany.com/resetEmail.html");
      * </pre>
      *
      * @param linkBaseUrl clickable url where the user will be prompted for the new password.
      * @return this instance for method chaining.
      */
-    ResetEmailTemplate setLinkBaseUrl(String linkBaseUrl);
+    ModeledEmailTemplate setLinkBaseUrl(String linkBaseUrl);
 
     /**
      * Return the clickable url that the user will receive inside the reset password email.
      * This is just a convenience method and doing this:
      * <pre>
-     *      String linkBaseUrl = resetEmailTemplate.getLinkBaseUrl();
+     *      String linkBaseUrl = modeledEmailTemplate.getLinkBaseUrl();
      * </pre>
      * is equivalent to doing:
      * <pre>
-     *      String linkBaseUrl = resetEmailTemplate.getDefaultModel().get("linkBaseUrl");
+     *      String linkBaseUrl = modeledEmailTemplate.getDefaultModel().get("linkBaseUrl");
      * </pre>
      *
      * @return clickable url where the user will be prompted for the new password.

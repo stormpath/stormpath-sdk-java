@@ -19,35 +19,35 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.mail.ResetEmailTemplate;
-import com.stormpath.sdk.mail.ResetEmailTemplateList;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
+import com.stormpath.sdk.mail.ModeledEmailTemplateList;
 
 import java.util.Map;
 
 /**
-* @since 1.0.0
+* @since 1.0.RC4
 */
-public class DefaultResetEmailTemplateList extends AbstractCollectionResource<ResetEmailTemplate> implements ResetEmailTemplateList {
+public class DefaultModeledEmailTemplateList extends AbstractCollectionResource<ModeledEmailTemplate> implements ModeledEmailTemplateList {
 
-    private static final ArrayProperty<ResetEmailTemplate> ITEMS = new ArrayProperty<ResetEmailTemplate>("items", ResetEmailTemplate.class);
+    private static final ArrayProperty<ModeledEmailTemplate> ITEMS = new ArrayProperty<ModeledEmailTemplate>("items", ModeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
-    public DefaultResetEmailTemplateList(InternalDataStore dataStore) {
+    public DefaultModeledEmailTemplateList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultResetEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultModeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
-    public DefaultResetEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
+    public DefaultModeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
     @Override
-    public Class<ResetEmailTemplate> getItemType() {
-        return ResetEmailTemplate.class;
+    public Class<ModeledEmailTemplate> getItemType() {
+        return ModeledEmailTemplate.class;
     }
 
     @Override

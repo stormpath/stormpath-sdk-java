@@ -429,14 +429,14 @@ public abstract class AbstractResource implements Resource {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC4
      */
     protected Map getMap(MapProperty mapProperty) {
         return getMapProperty(mapProperty.getName());
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC4
      */
     protected Map getMapProperty(String key) {
         Object value = getProperty(key);
@@ -444,6 +444,10 @@ public abstract class AbstractResource implements Resource {
             if (value instanceof Map) {
                 return (Map) value;
             }
+            String msg = "'" + key + "' property value type does not match the specified type. Specified type: Map. " +
+                    "Existing type: " + value.getClass().getName();
+            msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
+            throw new IllegalArgumentException(msg);
         }
         return null;
     }

@@ -19,13 +19,13 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
- * {@link Strength} is the resource used to configure the password strength policy. This policy defines requirements
+ * {@link PasswordStrength} is the resource used to configure the password strength policy. This policy defines requirements
  * like minimum uppercase chars or maximum password length (among others) and will enforced by Stormpath when setting
  * or resetting accounts' passwords.
  *
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public interface Strength extends Resource, Saveable {
+public interface PasswordStrength extends Resource, Saveable {
 
     /**
      * Return the minimum quantity of symbols required by this policy.
@@ -45,7 +45,7 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMinSymbol(int minSymbol);
+    PasswordStrength setMinSymbol(int minSymbol);
 
     /**
      * Return the minimum quantity of diacritic characters required by this policy.
@@ -67,7 +67,7 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMinDiacritic(int minDiacritic);
+    PasswordStrength setMinDiacritic(int minDiacritic);
 
     /**
      * Returns the minimum quantity of uppercase characters (i.e. A, B, C, ... Z) required by this policy.
@@ -81,7 +81,7 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMinUpperCase(int minUpperCase);
+    PasswordStrength setMinUpperCase(int minUpperCase);
 
     /**
      * Returns the minimum quantity of total characters required in a password by this policy.
@@ -95,7 +95,7 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMinLength(int minLength);
+    PasswordStrength setMinLength(int minLength);
 
     /**
      * Returns the minimum quantity of lowercase characters (i.e. a, b, c, ... z) required by this policy.
@@ -109,7 +109,7 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMinLowerCase(int minLowerCase);
+    PasswordStrength setMinLowerCase(int minLowerCase);
 
     /**
      * Returns the maximum quantity of total characters allowed in a password by this policy.
@@ -125,7 +125,7 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMaxLength(int maxLength);
+    PasswordStrength setMaxLength(int maxLength);
 
     /**
      * Returns the minimum quantity of numeric characters (i.e. 0, 1, 2, 3, 5, 6, 7, 8, 9) required by this policy.
@@ -139,6 +139,6 @@ public interface Strength extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    Strength setMinNumeric(int minNumeric);
+    PasswordStrength setMinNumeric(int minNumeric);
 
 }

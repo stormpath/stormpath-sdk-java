@@ -16,7 +16,7 @@
 package com.stormpath.sdk.mail;
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 public enum EmailStatus {
 

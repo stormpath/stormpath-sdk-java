@@ -24,29 +24,29 @@ import com.stormpath.sdk.mail.*;
 import java.util.Map;
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public class DefaultResetSuccessEmailTemplateList extends AbstractCollectionResource<ResetSuccessEmailTemplate> implements ResetSuccessEmailTemplateList {
+public class DefaultPasswordResetSuccessEmailTemplateList extends AbstractCollectionResource<PasswordResetSuccessEmailTemplate> implements PasswordResetSuccessEmailTemplateList {
 
-    private static final ArrayProperty<ResetSuccessEmailTemplate> ITEMS = new ArrayProperty<ResetSuccessEmailTemplate>("items", ResetSuccessEmailTemplate.class);
+    private static final ArrayProperty<PasswordResetSuccessEmailTemplate> ITEMS = new ArrayProperty<PasswordResetSuccessEmailTemplate>("items", PasswordResetSuccessEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
-    public DefaultResetSuccessEmailTemplateList(InternalDataStore dataStore) {
+    public DefaultPasswordResetSuccessEmailTemplateList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultResetSuccessEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultPasswordResetSuccessEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
-    public DefaultResetSuccessEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
+    public DefaultPasswordResetSuccessEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
     @Override
-    protected Class<ResetSuccessEmailTemplate> getItemType() {
-        return ResetSuccessEmailTemplate.class;
+    protected Class<PasswordResetSuccessEmailTemplate> getItemType() {
+        return PasswordResetSuccessEmailTemplate.class;
     }
 
     @Override

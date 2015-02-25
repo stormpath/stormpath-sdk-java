@@ -17,23 +17,23 @@ package com.stormpath.sdk.impl.mail;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.mail.ResetSuccessEmailTemplate;
+import com.stormpath.sdk.mail.PasswordResetSuccessEmailTemplate;
 
 import java.util.Map;
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public class DefaultResetSuccessEmailTemplate extends AbstractEmailTemplate<ResetSuccessEmailTemplate> implements ResetSuccessEmailTemplate {
+public class DefaultPasswordResetSuccessEmailTemplate extends AbstractEmailTemplate<PasswordResetSuccessEmailTemplate> implements PasswordResetSuccessEmailTemplate {
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, DESCRIPTION, FROM_NAME, FROM_EMAIL_ADDRESS, SUBJECT, TEXT_BODY, HTML_BODY, MIME_TYPE);
 
-    public DefaultResetSuccessEmailTemplate(InternalDataStore dataStore) {
+    public DefaultPasswordResetSuccessEmailTemplate(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultResetSuccessEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultPasswordResetSuccessEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

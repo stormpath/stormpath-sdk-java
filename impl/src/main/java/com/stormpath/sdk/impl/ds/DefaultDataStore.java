@@ -51,7 +51,7 @@ import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.mail.ResetEmailTemplate;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.provider.ProviderData;
@@ -706,7 +706,7 @@ public class DefaultDataStore implements InternalDataStore {
             String name = entry.getKey();
             Object value = entry.getValue();
 
-            boolean isDefaultModelMap = ResetEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
+            boolean isDefaultModelMap = ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
             //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
             //do need to have an href property
             if (isDefaultModelMap) {
@@ -904,7 +904,7 @@ public class DefaultDataStore implements InternalDataStore {
         if (value instanceof Map) {
             //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
             //do need to have an href property
-            if (resource instanceof ResetEmailTemplate && propName.equals("defaultModel")) {
+            if (resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) {
                 return value;
             } else {
                 //if the property is a reference, don't write the entire object - just the href will do:

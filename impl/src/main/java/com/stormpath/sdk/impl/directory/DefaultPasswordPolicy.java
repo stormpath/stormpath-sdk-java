@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.directory;
 
 import com.stormpath.sdk.directory.PasswordPolicy;
-import com.stormpath.sdk.directory.Strength;
+import com.stormpath.sdk.directory.PasswordStrength;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
@@ -25,7 +25,7 @@ import com.stormpath.sdk.mail.*;
 import java.util.Map;
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 public class DefaultPasswordPolicy extends AbstractInstanceResource implements PasswordPolicy {
 
@@ -35,13 +35,13 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
     static final StatusProperty<EmailStatus> RESET_SUCCESS_EMAIL_STATUS = new StatusProperty<EmailStatus>("resetSuccessEmailStatus", EmailStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Strength> STRENGTH = new ResourceReference<Strength>("strength", Strength.class);
+    static final ResourceReference<PasswordStrength> STRENGTH = new ResourceReference<PasswordStrength>("strength", PasswordStrength.class);
 
     //COLLECTION RESOURCE REFERENCES:
-    static final CollectionReference<ResetEmailTemplateList, ResetEmailTemplate> RESET_EMAIL_TEMPLATES =
-            new CollectionReference<ResetEmailTemplateList, ResetEmailTemplate>("resetEmailTemplates", ResetEmailTemplateList.class, ResetEmailTemplate.class);
-    static final CollectionReference<ResetSuccessEmailTemplateList, ResetSuccessEmailTemplate> RESET_SUCCESS_EMAIL_TEMPLATES =
-            new CollectionReference<ResetSuccessEmailTemplateList, ResetSuccessEmailTemplate>("resetSuccessEmailTemplates", ResetSuccessEmailTemplateList.class, ResetSuccessEmailTemplate.class);
+    static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> RESET_EMAIL_TEMPLATES =
+            new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("resetEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);
+    static final CollectionReference<PasswordResetSuccessEmailTemplateList, PasswordResetSuccessEmailTemplate> RESET_SUCCESS_EMAIL_TEMPLATES =
+            new CollectionReference<PasswordResetSuccessEmailTemplateList, PasswordResetSuccessEmailTemplate>("resetSuccessEmailTemplates", PasswordResetSuccessEmailTemplateList.class, PasswordResetSuccessEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             RESET_TOKEN_TTL, RESET_EMAIL_STATUS, RESET_SUCCESS_EMAIL_STATUS, STRENGTH, RESET_EMAIL_TEMPLATES, RESET_SUCCESS_EMAIL_TEMPLATES);
@@ -104,17 +104,17 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
     }
 
     @Override
-    public Strength getStrength() {
+    public PasswordStrength getStrength() {
         return getResourceProperty(STRENGTH);
     }
 
     @Override
-    public ResetEmailTemplateList getResetEmailTemplates() {
+    public ModeledEmailTemplateList getResetEmailTemplates() {
         return getResourceProperty(RESET_EMAIL_TEMPLATES);
     }
 
     @Override
-    public ResetSuccessEmailTemplateList getResetSuccessEmailTemplates() {
+    public PasswordResetSuccessEmailTemplateList getResetSuccessEmailTemplates() {
         return getResourceProperty(RESET_SUCCESS_EMAIL_TEMPLATES);
     }
 

@@ -19,9 +19,9 @@ import com.stormpath.sdk.resource.CollectionResource;
 
 /**
  *
- * A {@link CollectionResource} containing {@link ResetSuccessEmailTemplate} instances.
+ * A {@link CollectionResource} containing {@link ModeledEmailTemplate} instances.
  *
- * @since 1.0.0
- */
-public interface ResetSuccessEmailTemplateList extends CollectionResource<ResetSuccessEmailTemplate> {
+ * @since 1.0.RC4
+*/
+public interface ModeledEmailTemplateList extends CollectionResource<ModeledEmailTemplate> {
 }

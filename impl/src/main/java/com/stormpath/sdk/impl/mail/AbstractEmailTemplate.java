@@ -24,7 +24,7 @@ import com.stormpath.sdk.mail.MimeType;
 import java.util.Map;
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 public abstract class AbstractEmailTemplate<T extends EmailTemplate> extends AbstractInstanceResource implements EmailTemplate<T> {
 

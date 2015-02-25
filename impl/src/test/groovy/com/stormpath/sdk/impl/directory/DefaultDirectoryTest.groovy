@@ -66,7 +66,7 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("provider") instanceof ResourceReference && propertyDescriptors.get("provider").getType().equals(Provider))
         //since 1.0.0
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
-        //@since 1.0.0
+        //@since 1.0.RC4
         assertTrue(propertyDescriptors.get("passwordPolicy") instanceof ResourceReference && propertyDescriptors.get("passwordPolicy").getType().equals(PasswordPolicy))
     }
 

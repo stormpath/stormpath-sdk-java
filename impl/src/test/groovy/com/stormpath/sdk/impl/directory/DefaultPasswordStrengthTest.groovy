@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.directory
 
-import com.stormpath.sdk.directory.Strength
+import com.stormpath.sdk.directory.PasswordStrength
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.IntegerProperty
 import org.testng.annotations.Test
@@ -24,14 +24,14 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-class DefaultStrengthTest {
+class DefaultPasswordStrengthTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        Strength strength = new DefaultStrength(createStrictMock(InternalDataStore))
+        PasswordStrength strength = new DefaultPasswordStrength(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = strength.getPropertyDescriptors()
 
@@ -62,7 +62,7 @@ class DefaultStrengthTest {
                 minNumeric: 1
         ]
 
-        Strength strength = new DefaultStrength(internalDataStore, properties)
+        PasswordStrength strength = new DefaultPasswordStrength(internalDataStore, properties)
         assertEquals(strength.getMinSymbol(), 0)
         assertEquals(strength.getMinDiacritic(), 0)
 
@@ -98,7 +98,7 @@ class DefaultStrengthTest {
                           minNumeric: 1
         ]
 
-        Strength strength = new DefaultStrength(internalDataStore, properties)
+        PasswordStrength strength = new DefaultPasswordStrength(internalDataStore, properties)
 
         try {
             strength.setMinSymbol(-1) //must throw
@@ -196,7 +196,7 @@ class DefaultStrengthTest {
                           minNumeric: 1
         ]
 
-        Strength strength = new DefaultStrength(internalDataStore, properties)
+        PasswordStrength strength = new DefaultPasswordStrength(internalDataStore, properties)
 
         try {
             strength.setMinSymbol(101)

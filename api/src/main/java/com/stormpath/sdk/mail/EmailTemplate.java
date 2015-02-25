@@ -22,7 +22,7 @@ import com.stormpath.sdk.resource.Saveable;
  * This resource provides operations to customize all the internal components (e.g. sender, subject, html body, etc) of emails
  * that will be eventually used and sent by Stormpath in different scenarios (e.g. account creation verification, reset password, etc)
  *
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 public interface EmailTemplate<T extends EmailTemplate> extends Resource, Saveable {
 

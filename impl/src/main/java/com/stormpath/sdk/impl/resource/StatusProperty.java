@@ -25,7 +25,7 @@ public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC4
      */
     public StatusProperty(String propertyName, Class<T> clazz) {
         super(propertyName, clazz);

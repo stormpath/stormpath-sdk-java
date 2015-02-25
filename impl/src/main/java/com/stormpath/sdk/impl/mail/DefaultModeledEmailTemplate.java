@@ -20,15 +20,15 @@ import com.stormpath.sdk.impl.resource.MapProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.mail.ResetEmailTemplate;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public class DefaultResetEmailTemplate extends AbstractEmailTemplate<ResetEmailTemplate> implements ResetEmailTemplate {
+public class DefaultModeledEmailTemplate extends AbstractEmailTemplate<ModeledEmailTemplate> implements ModeledEmailTemplate {
 
     // SIMPLE PROPERTIES
     static final MapProperty DEFAULT_MODEL = new MapProperty("defaultModel");
@@ -39,11 +39,11 @@ public class DefaultResetEmailTemplate extends AbstractEmailTemplate<ResetEmailT
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, DESCRIPTION, FROM_NAME, FROM_EMAIL_ADDRESS, SUBJECT, TEXT_BODY, HTML_BODY, MIME_TYPE, DEFAULT_MODEL);
 
-    public DefaultResetEmailTemplate(InternalDataStore dataStore) {
+    public DefaultModeledEmailTemplate(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultResetEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultModeledEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -58,7 +58,7 @@ public class DefaultResetEmailTemplate extends AbstractEmailTemplate<ResetEmailT
     }
 
     @Override
-    public ResetEmailTemplate setLinkBaseUrl(String linkBaseUrl) {
+    public ModeledEmailTemplate setLinkBaseUrl(String linkBaseUrl) {
         Assert.hasText(linkBaseUrl, "linkBaseUrl cannot be null or empty");
         Map<String, String> defaultModel = getDefaultModel(true);
         defaultModel.put(LINK_BASE_URL, linkBaseUrl);

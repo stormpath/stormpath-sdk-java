@@ -356,7 +356,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      *
      * @return the {@link PasswordPolicy} for this Directory.
      * @see <href>http://docs.stormpath.com/java/product-guide/#account-password-policy</href>
-     * @since 1.0.0
+     * @since 1.0.RC4
      */
     PasswordPolicy getPasswordPolicy();
 }

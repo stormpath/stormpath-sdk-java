@@ -16,24 +16,24 @@
 package com.stormpath.sdk.impl.directory
 
 import com.stormpath.sdk.directory.PasswordPolicy
-import com.stormpath.sdk.directory.Strength
+import com.stormpath.sdk.directory.PasswordStrength
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.mail.DefaultResetEmailTemplateList
-import com.stormpath.sdk.impl.mail.DefaultResetSuccessEmailTemplateList
+import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
+import com.stormpath.sdk.impl.mail.DefaultPasswordResetSuccessEmailTemplateList
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.IntegerProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.mail.EmailStatus
-import com.stormpath.sdk.mail.ResetEmailTemplateList
-import com.stormpath.sdk.mail.ResetSuccessEmailTemplateList
+import com.stormpath.sdk.mail.ModeledEmailTemplateList
+import com.stormpath.sdk.mail.PasswordResetSuccessEmailTemplateList
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
 class DefaultPasswordPolicyTest {
 
@@ -69,14 +69,14 @@ class DefaultPasswordPolicyTest {
                 resetSuccessEmailTemplates: [href: "https://api.stormpath.com/v1/passwordPolicies/35YM3OwioW9PVtfLOh6q1e/resetSuccessEmailTemplates"]
         ]
 
-        expect(internalDataStore.instantiate(Strength, properties.strength)).
-            andReturn(new DefaultStrength(internalDataStore, properties.strength))
+        expect(internalDataStore.instantiate(PasswordStrength, properties.strength)).
+            andReturn(new DefaultPasswordStrength(internalDataStore, properties.strength))
 
-        expect(internalDataStore.instantiate(ResetEmailTemplateList, properties.resetEmailTemplates)).
-                andReturn(new DefaultResetEmailTemplateList(internalDataStore, properties.resetEmailTemplates))
+        expect(internalDataStore.instantiate(ModeledEmailTemplateList, properties.resetEmailTemplates)).
+                andReturn(new DefaultModeledEmailTemplateList(internalDataStore, properties.resetEmailTemplates))
 
-        expect(internalDataStore.instantiate(ResetSuccessEmailTemplateList, properties.resetSuccessEmailTemplates)).
-                andReturn(new DefaultResetSuccessEmailTemplateList(internalDataStore, properties.resetSuccessEmailTemplates))
+        expect(internalDataStore.instantiate(PasswordResetSuccessEmailTemplateList, properties.resetSuccessEmailTemplates)).
+                andReturn(new DefaultPasswordResetSuccessEmailTemplateList(internalDataStore, properties.resetSuccessEmailTemplates))
 
         replay internalDataStore
 
@@ -93,13 +93,13 @@ class DefaultPasswordPolicyTest {
         assertEquals(passwordPolicy.getHref(), properties.href)
 
         def resource = passwordPolicy.getStrength()
-        assertTrue(resource instanceof DefaultStrength && resource.getHref().equals(properties.strength.href))
+        assertTrue(resource instanceof DefaultPasswordStrength && resource.getHref().equals(properties.strength.href))
 
         resource = passwordPolicy.getResetEmailTemplates()
-        assertTrue(resource instanceof DefaultResetEmailTemplateList && resource.getHref().equals(properties.resetEmailTemplates.href))
+        assertTrue(resource instanceof DefaultModeledEmailTemplateList && resource.getHref().equals(properties.resetEmailTemplates.href))
 
         resource = passwordPolicy.getResetSuccessEmailTemplates()
-        assertTrue(resource instanceof DefaultResetSuccessEmailTemplateList && resource.getHref().equals(properties.resetSuccessEmailTemplates.href))
+        assertTrue(resource instanceof DefaultPasswordResetSuccessEmailTemplateList && resource.getHref().equals(properties.resetSuccessEmailTemplates.href))
 
         verify internalDataStore
 

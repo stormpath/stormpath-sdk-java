@@ -17,10 +17,10 @@ package com.stormpath.sdk.mail;
 
 /**
  *
- * A special kind of {@link EmailTemplate} to customize properties for Reset Success Emails.
+ * A special kind of {@link EmailTemplate} to customize properties for Password Reset Success Emails.
  *
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public interface ResetSuccessEmailTemplate extends EmailTemplate<ResetSuccessEmailTemplate> {
+public interface PasswordResetSuccessEmailTemplate extends EmailTemplate<PasswordResetSuccessEmailTemplate> {
 
 }

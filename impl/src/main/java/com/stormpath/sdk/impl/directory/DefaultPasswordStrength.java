@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.directory.Strength;
+import com.stormpath.sdk.directory.PasswordStrength;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
@@ -24,9 +24,9 @@ import java.util.Map;
 
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-public class DefaultStrength extends AbstractInstanceResource implements Strength {
+public class DefaultPasswordStrength extends AbstractInstanceResource implements PasswordStrength {
 
     // SIMPLE PROPERTIES
     static final IntegerProperty MIN_SYMBOL = new IntegerProperty("minSymbol");
@@ -40,11 +40,11 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             MIN_SYMBOL, MIN_DIACRITIC, MIN_UPPERCASE, MIN_LENGTH, MIN_LOWERCASE, MAX_LENGTH, MIN_NUMERIC);
 
-    public DefaultStrength(InternalDataStore dataStore) {
+    public DefaultPasswordStrength(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultStrength(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultPasswordStrength(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -59,7 +59,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMinSymbol(int minSymbol) {
+    public PasswordStrength setMinSymbol(int minSymbol) {
         Assert.isTrue(minSymbol >= 0, "minSymbol cannot be a negative number.");
         setProperty(MIN_SYMBOL, minSymbol);
         return this;
@@ -71,7 +71,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMinDiacritic(int minDiacritic) {
+    public PasswordStrength setMinDiacritic(int minDiacritic) {
         Assert.isTrue(minDiacritic >= 0, "minDiacritic cannot be a negative number.");
         setProperty(MIN_DIACRITIC, minDiacritic);
         return this;
@@ -83,7 +83,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMinUpperCase(int minUpperCase) {
+    public PasswordStrength setMinUpperCase(int minUpperCase) {
         Assert.isTrue(minUpperCase >= 0, "minUpperCase cannot be a negative number.");
         setProperty(MIN_UPPERCASE, minUpperCase);
         return this;
@@ -95,7 +95,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMinLength(int minLength) {
+    public PasswordStrength setMinLength(int minLength) {
         Assert.isTrue(minLength > 0 && minLength <= 1024, "minLength cannot be less than 1 or larger than 1024.");
         setProperty(MIN_LENGTH, minLength);
         return this;
@@ -107,7 +107,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMinLowerCase(int minLowerCase) {
+    public PasswordStrength setMinLowerCase(int minLowerCase) {
         Assert.isTrue(minLowerCase >= 0, "minLowerCase cannot be a negative number.");
         setProperty(MIN_LOWERCASE, minLowerCase);
         return this;
@@ -119,7 +119,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMaxLength(int maxLength) {
+    public PasswordStrength setMaxLength(int maxLength) {
         Assert.isTrue(maxLength > 0 && maxLength <= 1024, "maxLength cannot be less than 1 or larger than 1024.");
         setProperty(MAX_LENGTH, maxLength);
         return this;
@@ -131,7 +131,7 @@ public class DefaultStrength extends AbstractInstanceResource implements Strengt
     }
 
     @Override
-    public Strength setMinNumeric(int minNumeric) {
+    public PasswordStrength setMinNumeric(int minNumeric) {
         Assert.isTrue(minNumeric >= 0, "minNumeric cannot be a negative number.");
         setProperty(MIN_NUMERIC, minNumeric);
         return this;

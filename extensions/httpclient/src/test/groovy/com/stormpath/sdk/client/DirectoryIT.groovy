@@ -190,7 +190,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0.RC4
      */
     @Test
     void testPasswordPolicy() {

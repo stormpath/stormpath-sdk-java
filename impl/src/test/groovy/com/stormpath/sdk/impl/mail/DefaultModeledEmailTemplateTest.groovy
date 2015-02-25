@@ -29,14 +29,14 @@ import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-class DefaultResetEmailTemplateTest {
+class DefaultModeledEmailTemplateTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        EmailTemplate emailTemplate = new DefaultResetEmailTemplate(createStrictMock(InternalDataStore))
+        EmailTemplate emailTemplate = new DefaultModeledEmailTemplate(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = emailTemplate.getPropertyDescriptors()
 
@@ -70,7 +70,7 @@ class DefaultResetEmailTemplateTest {
                           defaultModel: [linkBaseUrl : "http://localhost:9191/passwordReset"]
         ]
 
-        def emailTemplate = new DefaultResetEmailTemplate(internalDataStore, properties)
+        def emailTemplate = new DefaultModeledEmailTemplate(internalDataStore, properties)
         assertEquals(emailTemplate.getName(), "My Email")
         assertEquals(emailTemplate.getDescription(), "My Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
@@ -126,7 +126,7 @@ class DefaultResetEmailTemplateTest {
                           defaultModel: [linkBaseUrl : "http://localhost:9191/passwordReset"]
         ]
 
-        def emailTemplate = new DefaultResetEmailTemplate(internalDataStore, properties)
+        def emailTemplate = new DefaultModeledEmailTemplate(internalDataStore, properties)
 
         Map defaultModel = emailTemplate.getDefaultModel()
         assertEquals(defaultModel.size(), 1)
@@ -161,7 +161,7 @@ class DefaultResetEmailTemplateTest {
                           defaultModel: [linkBaseUrl : "http://localhost:9191/passwordReset"]
         ]
 
-        def emailTemplate = new DefaultResetEmailTemplate(internalDataStore, properties)
+        def emailTemplate = new DefaultModeledEmailTemplate(internalDataStore, properties)
 
         try {
             emailTemplate.setMimeType(null)

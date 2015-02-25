@@ -25,14 +25,14 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.0
+ * @since 1.0.RC4
  */
-class DefaultResetSuccessEmailTemplateTest {
+class DefaultPasswordResetSuccessEmailTemplateTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        EmailTemplate emailTemplate = new DefaultResetSuccessEmailTemplate(createStrictMock(InternalDataStore))
+        EmailTemplate emailTemplate = new DefaultPasswordResetSuccessEmailTemplate(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = emailTemplate.getPropertyDescriptors()
 
@@ -64,7 +64,7 @@ class DefaultResetSuccessEmailTemplateTest {
                 mimeType: "text/plain"
         ]
 
-        EmailTemplate emailTemplate = new DefaultResetSuccessEmailTemplate(internalDataStore, properties)
+        EmailTemplate emailTemplate = new DefaultPasswordResetSuccessEmailTemplate(internalDataStore, properties)
         assertEquals(emailTemplate.getName(), "My Email")
         assertEquals(emailTemplate.getDescription(), "My Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
