@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider
+package com.stormpath.sdk.impl.provider
 
-import com.stormpath.sdk.impl.provider.DefaultFacebookRequestFactory
-import com.stormpath.sdk.impl.provider.DefaultGithubRequestFactory
-import com.stormpath.sdk.impl.provider.DefaultGoogleRequestFactory
-import com.stormpath.sdk.impl.provider.DefaultLinkedInRequestFactory
+import com.stormpath.sdk.provider.ProviderRequestFactory
+import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertTrue

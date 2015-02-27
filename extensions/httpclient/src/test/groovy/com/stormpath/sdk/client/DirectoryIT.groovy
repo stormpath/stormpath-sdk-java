@@ -19,7 +19,8 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
@@ -186,7 +187,34 @@ class DirectoryIT extends ClientIT {
             assertEquals(dir.getCustomData().size(), 4)
         }
         assertEquals(count, 1)
-
     }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testPasswordPolicy() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testPasswordPolicy")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+        def passwordPolicy = dir.getPasswordPolicy()
+        assertNotNull passwordPolicy.href
+        assertEquals passwordPolicy.getResetTokenTtlHours(), 24
+        assertEquals passwordPolicy.getResetEmailStatus(), EmailStatus.ENABLED
+        assertEquals passwordPolicy.getResetSuccessEmailStatus(), EmailStatus.ENABLED
+        passwordPolicy.setResetTokenTtlHours(100)
+                .setResetEmailStatus(EmailStatus.DISABLED)
+                .setResetSuccessEmailStatus(EmailStatus.DISABLED)
+        passwordPolicy.save()
+
+        //Let's check that the new state is properly retrieved in a new instance
+        def retrievedPasswordPolicy = client.getResource(passwordPolicy.href, PasswordPolicy.class)
+        assertEquals retrievedPasswordPolicy.getResetTokenTtlHours(), 100
+        assertEquals retrievedPasswordPolicy.getResetEmailStatus(), EmailStatus.DISABLED
+        assertEquals retrievedPasswordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED
+    }
+
+
 
 }

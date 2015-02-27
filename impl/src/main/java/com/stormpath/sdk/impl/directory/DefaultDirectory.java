@@ -37,6 +37,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.directory.PasswordPolicy;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -55,6 +56,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
     static final ResourceReference<Provider> PROVIDER = new ResourceReference<Provider>("provider", Provider.class);
+    static final ResourceReference<PasswordPolicy> PASSWORD_POLICY = new ResourceReference<PasswordPolicy>("passwordPolicy", PasswordPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =
@@ -63,7 +65,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -258,5 +260,9 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         return this;
     }
 
+    @Override
+    public PasswordPolicy getPasswordPolicy() {
+        return getResourceProperty(PASSWORD_POLICY);
+    }
 
 }
