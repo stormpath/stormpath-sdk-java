@@ -15,29 +15,38 @@
  */
 package com.stormpath.spring.boot.mvc;
 
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-public class LoginController extends AbstractController {
+public class ServletController extends AbstractController {
+
+    private Servlet servlet;
+
+    public ServletController() {
+    }
+
+    public ServletController(Servlet servlet) {
+        setServlet(servlet);
+    }
+
+    public Servlet getServlet() {
+        return servlet;
+    }
+
+    public void setServlet(Servlet servlet) {
+        Assert.notNull(servlet, "servlet instance cannot be null.");
+        this.servlet = servlet;
+    }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
-
-        View view = new SpelView("<html><body>The time is ${time}.</body></html>");
-
-        Map<String,Object> model = new HashMap<String,Object>();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        model.put("time", format.format(new Date()));
-
-        return new ModelAndView(view, model);
+        servlet.service(request, response);
+        return null;
     }
 }

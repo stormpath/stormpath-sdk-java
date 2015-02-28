@@ -53,6 +53,8 @@ import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.SessionAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
+import com.stormpath.sdk.servlet.form.DefaultField;
+import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -64,9 +66,15 @@ import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
+import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
+import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
+import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
-import com.stormpath.spring.boot.mvc.LoginController;
+import com.stormpath.spring.boot.mvc.SpringController;
+import com.stormpath.spring.boot.mvc.ThymeleafLayoutInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,14 +87,23 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.Resource;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -102,6 +119,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,8 +134,12 @@ import java.util.Set;
                                    StormpathHandlerMappingProperties.class, StormpathCsrfTokenProperties.class,
                                    StormpathNonceCacheProperties.class, StormpathHttpAuthenticationProperties.class,
                                    StormpathRequestClientProperties.class, StormpathRequestApplicationProperties.class,
-                                   StormpathFilterProperties.class })
+                                   StormpathFilterProperties.class, StormpathLoginProperties.class,
+                                   StormpathForgotPasswordProperties.class, StormpathRegisterProperties.class,
+                                   StormpathRegisterFormProperties.class, StormpathVerifyProperties.class })
 public class StormpathWebAutoConfiguration {
+
+    private static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
 
     @Autowired(required = false)
     private PathMatcher pathMatcher;
@@ -158,19 +180,48 @@ public class StormpathWebAutoConfiguration {
     @Autowired
     private StormpathFilterProperties stormpathFilterProperties;
 
+    @Autowired
+    private StormpathLoginProperties loginProperties;
+
+    @Autowired
+    private StormpathForgotPasswordProperties forgotPasswordProperties;
+
+    @Autowired
+    private StormpathRegisterProperties registerProperties;
+
+    @Autowired
+    private StormpathRegisterFormProperties registerFormProperties;
+
+    @Autowired
+    private StormpathVerifyProperties verifyProperties;
+
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
-    public HandlerMapping stormpathHandlerMapping() {
+    public HandlerMapping stormpathHandlerMapping(LocaleChangeInterceptor localeChangeInterceptor,
+                                                  @Qualifier("stormpathLoginController") Controller loginController,
+                                                  @Qualifier("stormpathRegisterController") Controller registerController,
+                                                  @Qualifier("stormpathForgotPasswordController")
+                                                  Controller forgotPasswordController) {
 
-        Map<String, Controller> urlToControllerMap = new LinkedHashMap<String, Controller>();
+        Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
 
         //TODO: work in progress, just testing for now:
 
-        urlToControllerMap.put("/login", new LoginController());
+        if (loginProperties.isEnabled()) {
+            mappings.put(loginProperties.getUri(), loginController);
+        }
+        if (forgotPasswordProperties.isEnabled()) {
+            mappings.put(forgotPasswordProperties.getUri(), forgotPasswordController);
+        }
+        if (registerProperties.isEnabled()) {
+            mappings.put(registerProperties.getUri(), registerController);
+        }
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setOrder(handlerMappingProperties.getOrder());
-        mapping.setUrlMap(urlToControllerMap);
+        mapping.setUrlMap(mappings);
+
+        mapping.setInterceptors(new Object[]{ localeChangeInterceptor, new ThymeleafLayoutInterceptor() });
 
         if (pathMatcher != null) {
             mapping.setPathMatcher(pathMatcher);
@@ -467,7 +518,7 @@ public class StormpathWebAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathFilter")
+    @ConditionalOnMissingBean(name = "stormpathFilter")
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter(FilterChainResolver filterChainResolver,
                                                   WrappedServletRequestFactory wrappedServletRequestFactory) {
@@ -497,7 +548,7 @@ public class StormpathWebAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAccountResolverFilter")
+    @ConditionalOnMissingBean(name = "stormpathAccountResolverFilter")
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathAccountResolverFilter(
         @Value("#{stormpathAccountResolvers}") List<Resolver<Account>> resolvers) {
@@ -518,5 +569,185 @@ public class StormpathWebAutoConfiguration {
         bean.setDispatcherTypes(stormpathFilterProperties.getDispatcherTypes());
         bean.setMatchAfter(stormpathFilterProperties.isMatchAfter());
         return bean;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLoginController")
+    public Controller stormpathLoginController(CsrfTokenManager csrfTokenManager,
+                                               @Qualifier("stormpathAuthenticationResultSaver")
+                                               Saver<AuthenticationResult> authenticationResultSaver) {
+
+        LoginController controller = new LoginController();
+        controller.setNextUri(loginProperties.getNextUri());
+        controller.setForgotLoginUri(forgotPasswordProperties.getUri());
+        controller.setRegisterUri(registerProperties.getUri());
+        controller.setAuthenticationResultSaver(authenticationResultSaver);
+        controller.setCsrfTokenManager(csrfTokenManager);
+        controller.init();
+
+        return new SpringController(controller);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathForgotPasswordController")
+    public Controller stormpathForgotPasswordController(CsrfTokenManager csrfTokenManager,
+                                                        AccountStoreResolver accountStoreResolver) {
+
+        ForgotPasswordController controller = new ForgotPasswordController();
+        controller.setCsrfTokenManager(csrfTokenManager);
+        controller.setAccountStoreResolver(accountStoreResolver);
+        controller.setNextView(forgotPasswordProperties.getNextUri());
+        controller.setLoginUri(loginProperties.getUri());
+        controller.init();
+
+        return new SpringController(controller);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRegisterFormFields")
+    public List<Field> stormpathRegisterFormFields(
+        @Qualifier("stormpathRegisterFormFieldParser") FormFieldParser parser) {
+        return parser.parse(registerFormProperties.getFields());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRegisterFormFieldParser")
+    public FormFieldParser stormpathRegisterFormFieldParser() {
+        return new DefaultFormFieldsParser("stormpath.web.register.form.fields");
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LocaleResolver localeResolver() {
+        return new CookieLocaleResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+        lci.setParamName("lang");
+        return lci;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
+    public Resolver<Locale> stormpathLocaleResolver(final LocaleResolver localeResolver) {
+        return new Resolver<Locale>() {
+            @Override
+            public Locale get(HttpServletRequest request, HttpServletResponse response) {
+                return localeResolver.resolveLocale(request);
+            }
+        };
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    @Configuration
+    @ConditionalOnMissingBean(MessageSource.class)
+    @ConditionalOnProperty(prefix="spring.messages", name="basename")
+    public static class MessageSourceConfiguration extends WebMvcConfigurerAdapter {
+        @Bean
+        public MessageSource messageSource(@Value("${spring.messages.basename}") String basename) {
+            List<String> list = new ArrayList<String>();
+
+            if (StringUtils.hasText(basename)) {
+                String[] basenamesArray = StringUtils.commaDelimitedListToStringArray(basename);
+                list.addAll(Arrays.asList(basenamesArray));
+            }
+
+            if (!list.contains(I18N_PROPERTIES_BASENAME)) {
+                list.add(I18N_PROPERTIES_BASENAME);
+            }
+
+            ResourceBundleMessageSource src = new ResourceBundleMessageSource();
+            String[] basenames = list.toArray(new String[list.size()]);
+            src.setBasenames(basenames);
+            src.setDefaultEncoding("UTF-8");
+            return src;
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    @Configuration
+    @ConditionalOnMissingBean(MessageSource.class)
+    @ConditionalOnProperty(prefix="spring.messages", name="basename", matchIfMissing=true)
+    public static class MissingBasenameMessageSourceConfiguration extends WebMvcConfigurerAdapter {
+
+        @Autowired
+        private ApplicationContext appCtx;
+
+        @Bean
+        public MessageSource messageSource() {
+
+            List<String> list = new ArrayList<String>();
+
+            Resource resource = appCtx.getResource("classpath*:messages*.properties");
+            if (resource.exists()) {
+                list.add("messages");
+            }
+            list.add(I18N_PROPERTIES_BASENAME);
+
+            ResourceBundleMessageSource src = new ResourceBundleMessageSource();
+            String[] basenames = list.toArray(new String[list.size()]);
+            src.setBasenames(basenames);
+            src.setDefaultEncoding("UTF-8");
+            return src;
+        }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public com.stormpath.sdk.servlet.i18n.MessageSource stormpathMessageSource(
+        final /*@Qualifier("stormpathSpringMessageSource")*/ MessageSource springMessageSource) {
+
+        return new com.stormpath.sdk.servlet.i18n.MessageSource() {
+
+            @Override
+            public String getMessage(String key, Locale locale) {
+                return springMessageSource.getMessage(key, null, locale);
+            }
+
+            @Override
+            public String getMessage(String key, Locale locale, Object... args) {
+                return springMessageSource.getMessage(key, args, locale);
+            }
+        };
+    }
+
+    private List<DefaultField> toDefaultFields(List<Field> fields) {
+        List<DefaultField> defaultFields = new ArrayList<DefaultField>(fields.size());
+        for (Field field : fields) {
+            Assert.isInstanceOf(DefaultField.class, field);
+            defaultFields.add((DefaultField) field);
+        }
+
+        return defaultFields;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRegisterController")
+    public Controller stormpathRegisterController(CsrfTokenManager csrfTokenManager, Client client,
+                                                  Publisher<RequestEvent> eventPublisher,
+                                                  @Value("#{stormpathRegisterFormFields}") List<Field> fields,
+                                                  @Qualifier("stormpathLocaleResolver")
+                                                  Resolver<Locale> stormpathLocaleResolver,
+                                                  com.stormpath.sdk.servlet.i18n.MessageSource messageSource,
+                                                  @Qualifier("stormpathAuthenticationResultSaver")
+                                                  Saver<AuthenticationResult> authenticationResultSaver) {
+
+        RegisterController controller = new RegisterController();
+        controller.setCsrfTokenManager(csrfTokenManager);
+        controller.setClient(client);
+        controller.setEventPublisher(eventPublisher);
+        controller.setFormFields(toDefaultFields(fields));
+        controller.setLocaleResolver(stormpathLocaleResolver);
+        controller.setMessageSource(messageSource);
+        controller.setAuthenticationResultSaver(authenticationResultSaver);
+        controller.setNextUri(registerProperties.getNextUri());
+        controller.setLoginUri(loginProperties.getUri());
+        controller.setVerifyViewName(verifyProperties.getUri());
+        controller.init();
+
+        return new SpringController(controller);
     }
 }

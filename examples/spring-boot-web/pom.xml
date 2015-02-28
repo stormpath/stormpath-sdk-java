@@ -38,6 +38,11 @@
             <groupId>com.stormpath.spring</groupId>
             <artifactId>spring-boot-starter-stormpath-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
