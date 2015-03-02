@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.account
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.EmailVerificationToken
 import com.stormpath.sdk.api.ApiKeyList
+import com.stormpath.sdk.application.ApplicationCriteria
+import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.*
@@ -52,7 +54,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 16)
+        assertEquals(propertyDescriptors.size(), 17)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -70,6 +72,7 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("groupMemberships") instanceof CollectionReference && propertyDescriptors.get("groupMemberships").getType().equals(GroupMembershipList))
         assertTrue(propertyDescriptors.get("apiKeys") instanceof CollectionReference && propertyDescriptors.get("apiKeys").getType().equals(ApiKeyList))
         assertTrue(propertyDescriptors.get("providerData") instanceof ResourceReference && propertyDescriptors.get("providerData").getType().equals(ProviderData))
+        assertTrue(propertyDescriptors.get("applications") instanceof CollectionReference && propertyDescriptors.get("applications").getType().equals(ApplicationList))
     }
 
     @Test
@@ -328,6 +331,50 @@ class DefaultAccountTest {
         DefaultAccount defaultAccount = new DefaultAccount(internalDataStore, properties)
 
         assertNull(defaultAccount.getProviderData())
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetApplications() {
+
+        def properties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
+                          fullName: "Mel Ben Smuk",
+                          emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
+                          directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+                          groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                          groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
+                          providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
+                          apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"],
+                          applications: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/applications"]
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def applicationList = createStrictMock(ApplicationList)
+        def map = createStrictMock(Map)
+        def applicationCriteria = createStrictMock(ApplicationCriteria)
+
+        //getApplications()
+        expect(internalDataStore.instantiate(ApplicationList, properties.applications)).andReturn(applicationList)
+        expect(applicationList.getHref()).andReturn(properties.applications.href)
+
+        //getApplications(Map)
+        expect(internalDataStore.getResource(properties.applications.href, ApplicationList, map)).andReturn(applicationList)
+        expect(applicationList.getHref()).andReturn(properties.applications.href)
+
+        //getApplications(ApplicationCriteria)
+        expect(internalDataStore.getResource(properties.applications.href, ApplicationList, applicationCriteria)).andReturn(applicationList)
+
+        replay(internalDataStore, applicationList, map, applicationCriteria)
+
+        def account = new DefaultAccount(internalDataStore, properties)
+        assertSame(account.getApplications(), applicationList)
+        assertSame(account.getApplications(map), applicationList)
+        assertSame(account.getApplications(applicationCriteria), applicationList)
+
+        verify(internalDataStore, applicationList, map, applicationCriteria)
     }
 
 }

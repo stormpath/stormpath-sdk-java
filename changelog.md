@@ -3,6 +3,7 @@
 ### 1.0.RC4 ###
 
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.
+- [Issue 154](https://github.com/stormpath/stormpath-sdk-java/issues/154): Added the ability to retrieve all the applications for an account.
 
 ### 1.0.RC3.1 ###
 
