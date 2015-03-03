@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.0.RC4.1 ###
+
+- [Issue 175](https://github.com/stormpath/stormpath-sdk-java/issues/175): Added support for the 'AccountCreationPolicy' resource in Directories.
+
 ### 1.0.RC4 ###
 
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.

@@ -15,15 +15,8 @@
  */
 package com.stormpath.sdk.impl.directory
 
-import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.AccountCriteria
-import com.stormpath.sdk.account.AccountList
-import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.account.CreateAccountRequest
-import com.stormpath.sdk.directory.CustomData
-import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryStatus
-import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.account.*
+import com.stormpath.sdk.directory.*
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -55,7 +48,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 9)
+        assertEquals(propertyDescriptors.size(), 10)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -68,6 +61,8 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         //@since 1.0.RC4
         assertTrue(propertyDescriptors.get("passwordPolicy") instanceof ResourceReference && propertyDescriptors.get("passwordPolicy").getType().equals(PasswordPolicy))
+        //@since 1.0.RC4.1
+        assertTrue(propertyDescriptors.get("accountCreationPolicy") instanceof ResourceReference && propertyDescriptors.get("accountCreationPolicy").getType().equals(AccountCreationPolicy))
     }
 
 
@@ -87,7 +82,8 @@ class DefaultDirectoryTest {
                 tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
                 provider: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider"],
                 customData: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/customData"],
-                passwordPolicy: [href: "https://api.stormpath.com/v1/passwordPolicies/42YN9IWiow0lVtfPOh9qO1"]
+                passwordPolicy: [href: "https://api.stormpath.com/v1/passwordPolicies/42YN9IWiow0lVtfPOh9qO1"],
+                accountCreationPolicy: [href: "https://api.stormpath.com/v1/accountCreationPolicies/42YN9IWiow0lVtfPOh9qO1"]
         ]
 
         expect(internalDataStore.instantiate(CustomData, properties.customData)).
@@ -122,6 +118,9 @@ class DefaultDirectoryTest {
 
         expect(internalDataStore.instantiate(PasswordPolicy, properties.passwordPolicy)).
                 andReturn(new DefaultPasswordPolicy(internalDataStore, properties.passwordPolicy))
+
+        expect(internalDataStore.instantiate(AccountCreationPolicy, properties.accountCreationPolicy)).
+                andReturn(new DefaultAccountCreationPolicy(internalDataStore, properties.accountCreationPolicy))
 
         expect(internalDataStore.delete(EasyMock.anyObject(DefaultDirectory)))
 
@@ -189,6 +188,9 @@ class DefaultDirectoryTest {
 
         resource = defaultDirectory.getPasswordPolicy()
         assertTrue(resource instanceof DefaultPasswordPolicy && resource.getHref().equals(properties.passwordPolicy.href))
+
+        resource = defaultDirectory.getAccountCreationPolicy()
+        assertTrue(resource instanceof DefaultAccountCreationPolicy && resource.getHref().equals(properties.accountCreationPolicy.href))
 
         defaultDirectory.delete()
 

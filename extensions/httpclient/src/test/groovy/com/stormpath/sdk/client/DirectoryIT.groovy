@@ -17,6 +17,7 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.PasswordPolicy
@@ -213,6 +214,36 @@ class DirectoryIT extends ClientIT {
         assertEquals retrievedPasswordPolicy.getResetTokenTtlHours(), 100
         assertEquals retrievedPasswordPolicy.getResetEmailStatus(), EmailStatus.DISABLED
         assertEquals retrievedPasswordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    @Test
+    void testAccountCreationPolicy(){
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testAccountCreationPolicy")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+        def accountPolicy = dir.getAccountCreationPolicy()
+        assertNotNull accountPolicy.href
+
+        // Validate default values
+        assertEquals accountPolicy.getAccountVerificationEmailStatus(), EmailStatus.DISABLED
+        assertEquals accountPolicy.getAccountVerificationSuccessEmailStatus(), EmailStatus.DISABLED
+        assertEquals accountPolicy.getWelcomeEmailStatus(), EmailStatus.DISABLED
+
+        //Set new values
+        accountPolicy.setAccountVerificationEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.setAccountVerificationSuccessEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.setWelcomeEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.save()
+
+        //Validate new values
+        def retrievedAccountCreationPolicy = client.getResource(accountPolicy.href, AccountCreationPolicy.class)
+        assertEquals(retrievedAccountCreationPolicy.getAccountVerificationEmailStatus(), EmailStatus.ENABLED)
+        assertEquals(retrievedAccountCreationPolicy.getAccountVerificationSuccessEmailStatus(), EmailStatus.ENABLED)
+        assertEquals(retrievedAccountCreationPolicy.getWelcomeEmailStatus(), EmailStatus.ENABLED)
     }
 
 
