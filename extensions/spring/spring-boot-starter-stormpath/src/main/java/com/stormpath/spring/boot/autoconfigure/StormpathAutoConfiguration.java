@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
+@ConditionalOnProperty(name = "stormpath.enabled", matchIfMissing = true)
 @EnableConfigurationProperties({ StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
                                    StormpathClientAuthenticationProperties.class,
                                    StormpathClientProxyProperties.class })

@@ -41,6 +41,7 @@ public class LoginController extends FormController {
     private String nextUri;
     private String forgotLoginUri;
     private String registerUri;
+    private String logoutUri;
     private Saver<AuthenticationResult> authenticationResultSaver;
 
     public void init() {
@@ -48,6 +49,7 @@ public class LoginController extends FormController {
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
         Assert.hasText(this.forgotLoginUri, "forgotLoginUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
+        Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
     }
 
@@ -76,6 +78,14 @@ public class LoginController extends FormController {
         this.registerUri = registerUri;
     }
 
+    public String getLogoutUri() {
+        return logoutUri;
+    }
+
+    public void setLogoutUri(String logoutUri) {
+        this.logoutUri = logoutUri;
+    }
+
     public Saver<AuthenticationResult> getAuthenticationResultSaver() {
         return this.authenticationResultSaver;
     }
@@ -83,6 +93,26 @@ public class LoginController extends FormController {
     public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
         Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
         this.authenticationResultSaver = authenticationResultSaver;
+    }
+
+    @Override
+    protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (AccountResolver.INSTANCE.hasAccount(request)) {
+            //already logged in:
+            return new DefaultViewModel(getNextUri()).setRedirect(true);
+        }
+        //otherwise should be able to visit:
+        return super.doGet(request, response);
+    }
+
+    @Override
+    protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        //logged in users should not be trying to login again - could be malicious activity - log out the user:
+        //TODO: should do this logout immediately and not redirect
+        if (AccountResolver.INSTANCE.hasAccount(request)) {
+            return new DefaultViewModel(getLogoutUri()).setRedirect(true);
+        }
+        return super.doPost(request, response);
     }
 
     @Override

@@ -17,27 +17,12 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "stormpath.web.register")
-public class StormpathRegisterProperties {
+@ConfigurationProperties(prefix = "stormpath.web.logout")
+public class StormpathLogoutProperties {
 
     private boolean enabled = true;
-    private String uri = "/register";
+    private String uri = "/logout";
     private String nextUri = "/";
-
-    /**
-     * The view name of the register view to be rendered. Note that for filename-based view resolvers, this view name is
-     * usually relative to a view resolver prefix and suffix.  For example:
-     *
-     * <pre>
-     * prefix: classpath:/templates/
-     * suffix: .html
-     * </pre>
-     *
-     * With a {@code view} value of {@code stormpath/register}, the page template then is expected to be at
-     * {@code classpath:/templates/stormpath/register.html}.
-     *
-     */
-    private String view = "stormpath/register";
 
     public boolean isEnabled() {
         return enabled;
@@ -61,13 +46,5 @@ public class StormpathRegisterProperties {
 
     public void setNextUri(String nextUri) {
         this.nextUri = nextUri;
-    }
-
-    public String getView() {
-        return view;
-    }
-
-    public void setView(String view) {
-        this.view = view;
     }
 }

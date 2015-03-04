@@ -24,6 +24,21 @@ public class StormpathVerifyProperties {
     private String uri = "/verify";
     private String nextUri = "/login?status=verified";
 
+    /**
+     * The view name of the verify view to be rendered. Note that for filename-based view resolvers, this view name is
+     * usually relative to a view resolver prefix and suffix.  For example:
+     *
+     * <pre>
+     * prefix: classpath:/templates/
+     * suffix: .html
+     * </pre>
+     *
+     * With a {@code view} value of {@code stormpath/verify}, the page template then is expected to be at
+     * {@code classpath:/templates/stormpath/verify.html}.
+     *
+     */
+    private String view = "stormpath/verify";
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -46,5 +61,13 @@ public class StormpathVerifyProperties {
 
     public void setNextUri(String nextUri) {
         this.nextUri = nextUri;
+    }
+
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        this.view = view;
     }
 }

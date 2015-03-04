@@ -15,19 +15,15 @@
 */-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!--/*
-    <title th:fragment="title" th:text="#{stormpath.web.register.title}">Login</title>
-    */-->
+    <title th:text="#{stormpath.web.register.title}">|Register|</title>
+    <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
-<body>
-    <div class="container custom-container" th:fragment="content">
-
+<body class="register">
+    <div class="container custom-container">
         <div class="va-wrapper">
-
             <div class="view registration-view container">
 
                 <div class="box row">
-
                     <div class="col-sm-12">
 
                         <div class="header">
@@ -72,11 +68,8 @@
 
                 <a th:href="@{${loginUri}}" class="to-login" th:text="#{stormpath.web.register.form.loginLink.text}">|Back
                     to Login|</a>
-
             </div>
-
         </div>
-
     </div>
 </body>
 </html>

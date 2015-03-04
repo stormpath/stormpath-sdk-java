@@ -32,9 +32,19 @@ import java.util.Map;
 public abstract class FormController extends AbstractController {
 
     private CsrfTokenManager csrfTokenManager;
+    private String view;
 
     public void init() {
+        Assert.hasText(this.view, "view cannot be null or empty.");
         Assert.notNull(this.csrfTokenManager, "csrfTokenManager cannot be null.");
+    }
+
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        this.view = view;
     }
 
     public CsrfTokenManager getCsrfTokenManager() {
@@ -61,8 +71,9 @@ public abstract class FormController extends AbstractController {
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String view = getView();
         Map<String,?> model = createModel(request, response);
-        return new DefaultViewModel(model);
+        return new DefaultViewModel(view, model);
     }
 
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
@@ -153,9 +164,14 @@ public abstract class FormController extends AbstractController {
         if (field != null) {
             ((DefaultField)field).setValue("");
         }
+        field = form.getField("confirmPassword");
+        if (field != null) {
+            ((DefaultField)field).setValue("");
+        }
 
+        String view = getView();
         Map<String,?> model = createModel(request, response, form, errors);
-        return new DefaultViewModel(model);
+        return new DefaultViewModel(view, model);
     }
 
     protected abstract List<String> toErrors(HttpServletRequest request, Form form, Exception e);

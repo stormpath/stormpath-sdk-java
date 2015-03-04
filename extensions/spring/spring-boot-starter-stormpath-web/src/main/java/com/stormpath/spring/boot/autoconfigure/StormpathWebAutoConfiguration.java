@@ -66,15 +66,18 @@ import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
+import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.spring.boot.mvc.SpringController;
-import com.stormpath.spring.boot.mvc.ThymeleafLayoutInterceptor;
+import com.stormpath.spring.boot.mvc.TemplateLayoutInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -125,6 +128,7 @@ import java.util.Set;
 
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
+@ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.web.enabled" }, matchIfMissing = true)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ StormpathAutoConfiguration.class, WebMvcAutoConfiguration.class })
@@ -136,7 +140,9 @@ import java.util.Set;
                                    StormpathRequestClientProperties.class, StormpathRequestApplicationProperties.class,
                                    StormpathFilterProperties.class, StormpathLoginProperties.class,
                                    StormpathForgotPasswordProperties.class, StormpathRegisterProperties.class,
-                                   StormpathRegisterFormProperties.class, StormpathVerifyProperties.class })
+                                   StormpathRegisterFormProperties.class, StormpathVerifyProperties.class,
+                                   StormpathLogoutProperties.class, StormpathChangePasswordProperties.class,
+                                   StormpathHeadTemplateProperties.class })
 public class StormpathWebAutoConfiguration {
 
     private static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
@@ -195,13 +201,25 @@ public class StormpathWebAutoConfiguration {
     @Autowired
     private StormpathVerifyProperties verifyProperties;
 
+    @Autowired
+    private StormpathLogoutProperties logoutProperties;
+
+    @Autowired
+    private StormpathChangePasswordProperties changePasswordProperties;
+
+    @Autowired
+    private StormpathHeadTemplateProperties headTemplateProperties;
+
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
     public HandlerMapping stormpathHandlerMapping(LocaleChangeInterceptor localeChangeInterceptor,
+                                                  TemplateLayoutInterceptor templateLayoutInterceptor,
                                                   @Qualifier("stormpathLoginController") Controller loginController,
-                                                  @Qualifier("stormpathRegisterController") Controller registerController,
-                                                  @Qualifier("stormpathForgotPasswordController")
-                                                  Controller forgotPasswordController) {
+                                                  @Qualifier("stormpathLogoutController") Controller logoutController,
+                                                  @Qualifier("stormpathVerifyController") Controller verifyController,
+                                                  @Qualifier("stormpathRegisterController") Controller register,
+                                                  @Qualifier("stormpathChangePasswordController") Controller change,
+                                                  @Qualifier("stormpathForgotPasswordController") Controller forgot) {
 
         Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
 
@@ -210,18 +228,27 @@ public class StormpathWebAutoConfiguration {
         if (loginProperties.isEnabled()) {
             mappings.put(loginProperties.getUri(), loginController);
         }
-        if (forgotPasswordProperties.isEnabled()) {
-            mappings.put(forgotPasswordProperties.getUri(), forgotPasswordController);
+        if (logoutProperties.isEnabled()) {
+            mappings.put(logoutProperties.getUri(), logoutController);
         }
         if (registerProperties.isEnabled()) {
-            mappings.put(registerProperties.getUri(), registerController);
+            mappings.put(registerProperties.getUri(), register);
+        }
+        if (verifyProperties.isEnabled()) {
+            mappings.put(verifyProperties.getUri(), verifyController);
+        }
+        if (forgotPasswordProperties.isEnabled()) {
+            mappings.put(forgotPasswordProperties.getUri(), forgot);
+        }
+        if (changePasswordProperties.isEnabled()) {
+            mappings.put(changePasswordProperties.getUri(), change);
         }
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setOrder(handlerMappingProperties.getOrder());
         mapping.setUrlMap(mappings);
 
-        mapping.setInterceptors(new Object[]{ localeChangeInterceptor, new ThymeleafLayoutInterceptor() });
+        mapping.setInterceptors(new Object[]{ localeChangeInterceptor, templateLayoutInterceptor });
 
         if (pathMatcher != null) {
             mapping.setPathMatcher(pathMatcher);
@@ -232,6 +259,18 @@ public class StormpathWebAutoConfiguration {
         }
 
         return mapping;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TemplateLayoutInterceptor stormpathThymeleafLayoutInterceptor() throws Exception {
+
+        TemplateLayoutInterceptor interceptor = new TemplateLayoutInterceptor();
+        interceptor.setHeadFragmentSelector(headTemplateProperties.getFragmentSelector());
+        interceptor.setHeadViewName(headTemplateProperties.getView());
+        interceptor.afterPropertiesSet();
+
+        return interceptor;
     }
 
     @Bean
@@ -578,14 +617,16 @@ public class StormpathWebAutoConfiguration {
                                                Saver<AuthenticationResult> authenticationResultSaver) {
 
         LoginController controller = new LoginController();
+        controller.setView(loginProperties.getView());
         controller.setNextUri(loginProperties.getNextUri());
         controller.setForgotLoginUri(forgotPasswordProperties.getUri());
         controller.setRegisterUri(registerProperties.getUri());
+        controller.setLogoutUri(logoutProperties.getUri());
         controller.setAuthenticationResultSaver(authenticationResultSaver);
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.init();
 
-        return new SpringController(controller);
+        return createSpringController(controller);
     }
 
     @Bean
@@ -594,13 +635,22 @@ public class StormpathWebAutoConfiguration {
                                                         AccountStoreResolver accountStoreResolver) {
 
         ForgotPasswordController controller = new ForgotPasswordController();
+        controller.setView(forgotPasswordProperties.getView());
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setAccountStoreResolver(accountStoreResolver);
         controller.setNextView(forgotPasswordProperties.getNextUri());
         controller.setLoginUri(loginProperties.getUri());
         controller.init();
 
-        return new SpringController(controller);
+        return createSpringController(controller);
+    }
+
+    private Controller createSpringController(com.stormpath.sdk.servlet.mvc.Controller controller) {
+        SpringController springController = new SpringController(controller);
+        if (this.urlPathHelper != null) {
+            springController.setUrlPathHelper(urlPathHelper);
+        }
+        return springController;
     }
 
     @Bean
@@ -644,8 +694,9 @@ public class StormpathWebAutoConfiguration {
     @SuppressWarnings("UnusedDeclaration")
     @Configuration
     @ConditionalOnMissingBean(MessageSource.class)
-    @ConditionalOnProperty(prefix="spring.messages", name="basename")
+    @ConditionalOnProperty(prefix = "spring.messages", name = "basename")
     public static class MessageSourceConfiguration extends WebMvcConfigurerAdapter {
+
         @Bean
         public MessageSource messageSource(@Value("${spring.messages.basename}") String basename) {
             List<String> list = new ArrayList<String>();
@@ -670,7 +721,7 @@ public class StormpathWebAutoConfiguration {
     @SuppressWarnings("UnusedDeclaration")
     @Configuration
     @ConditionalOnMissingBean(MessageSource.class)
-    @ConditionalOnProperty(prefix="spring.messages", name="basename", matchIfMissing=true)
+    @ConditionalOnProperty(prefix = "spring.messages", name = "basename", matchIfMissing = true)
     public static class MissingBasenameMessageSourceConfiguration extends WebMvcConfigurerAdapter {
 
         @Autowired
@@ -743,11 +794,55 @@ public class StormpathWebAutoConfiguration {
         controller.setLocaleResolver(stormpathLocaleResolver);
         controller.setMessageSource(messageSource);
         controller.setAuthenticationResultSaver(authenticationResultSaver);
+        controller.setView(registerProperties.getView());
         controller.setNextUri(registerProperties.getNextUri());
         controller.setLoginUri(loginProperties.getUri());
-        controller.setVerifyViewName(verifyProperties.getUri());
+        controller.setVerifyViewName(verifyProperties.getView());
         controller.init();
 
-        return new SpringController(controller);
+        return createSpringController(controller);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathVerifyController")
+    public Controller stormpathVerifyController(Client client, Publisher<RequestEvent> eventPublisher) {
+
+        VerifyController controller = new VerifyController();
+        controller.setNextUri(verifyProperties.getNextUri());
+        controller.setLogoutUri(logoutProperties.getUri());
+        controller.setClient(client);
+        controller.setEventPublisher(eventPublisher);
+        controller.init();
+
+        return createSpringController(controller);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathChangePasswordController")
+    public Controller stormpathChangePasswordController(CsrfTokenManager csrfTokenManager,
+                                                        @Qualifier("stormpathLocaleResolver")
+                                                        Resolver<Locale> stormpathLocaleResolver,
+                                                        com.stormpath.sdk.servlet.i18n.MessageSource messageSource) {
+
+        ChangePasswordController controller = new ChangePasswordController();
+        controller.setView(changePasswordProperties.getView());
+        controller.setCsrfTokenManager(csrfTokenManager);
+        controller.setNextUri(changePasswordProperties.getNextUri());
+        controller.setLoginUri(loginProperties.getUri());
+        controller.setForgotPasswordUri(forgotPasswordProperties.getUri());
+        controller.setLocaleResolver(stormpathLocaleResolver);
+        controller.setMessageSource(messageSource);
+        controller.init();
+
+        return createSpringController(controller);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLogoutController")
+    public Controller stormpathLogoutController() {
+        LogoutController controller = new LogoutController();
+        controller.setNextUri(logoutProperties.getNextUri());
+        controller.init();
+        return createSpringController(controller);
     }
 }

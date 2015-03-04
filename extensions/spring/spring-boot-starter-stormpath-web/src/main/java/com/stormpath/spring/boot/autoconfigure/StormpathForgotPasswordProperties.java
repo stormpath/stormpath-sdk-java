@@ -24,6 +24,21 @@ public class StormpathForgotPasswordProperties {
     private String uri = "/forgot";
     private String nextUri = "/login?status=forgot";
 
+    /**
+     * The view name of the forgot view to be rendered. Note that for filename-based view resolvers, this view name is
+     * usually relative to a view resolver prefix and suffix.  For example:
+     *
+     * <pre>
+     * prefix: classpath:/templates/
+     * suffix: .html
+     * </pre>
+     *
+     * With a {@code view} value of {@code stormpath/forgot}, the page template then is expected to be at
+     * {@code classpath:/templates/stormpath/forgot.html}.
+     *
+     */
+    private String view = "stormpath/forgot";
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -46,5 +61,13 @@ public class StormpathForgotPasswordProperties {
 
     public void setNextUri(String nextUri) {
         this.nextUri = nextUri;
+    }
+
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        this.view = view;
     }
 }

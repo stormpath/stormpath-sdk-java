@@ -17,15 +17,15 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "stormpath.web.register")
-public class StormpathRegisterProperties {
+@ConfigurationProperties(prefix = "stormpath.web.change")
+public class StormpathChangePasswordProperties {
 
     private boolean enabled = true;
-    private String uri = "/register";
-    private String nextUri = "/";
+    private String uri = "/change";
+    private String nextUri = "/login?status=changed";
 
     /**
-     * The view name of the register view to be rendered. Note that for filename-based view resolvers, this view name is
+     * The view name of the change view to be rendered. Note that for filename-based view resolvers, this view name is
      * usually relative to a view resolver prefix and suffix.  For example:
      *
      * <pre>
@@ -33,11 +33,11 @@ public class StormpathRegisterProperties {
      * suffix: .html
      * </pre>
      *
-     * With a {@code view} value of {@code stormpath/register}, the page template then is expected to be at
-     * {@code classpath:/templates/stormpath/register.html}.
+     * With a {@code view} value of {@code stormpath/change}, the page template then is expected to be at
+     * {@code classpath:/templates/stormpath/change.html}.
      *
      */
-    private String view = "stormpath/register";
+    private String view = "stormpath/change";
 
     public boolean isEnabled() {
         return enabled;

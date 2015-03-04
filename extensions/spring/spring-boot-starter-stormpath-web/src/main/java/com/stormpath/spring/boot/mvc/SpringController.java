@@ -19,25 +19,46 @@ import com.stormpath.sdk.servlet.mvc.ViewModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.UrlFilenameViewController;
+import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-public class SpringController extends UrlFilenameViewController {
+public class SpringController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(SpringController.class);
+
+    private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     private com.stormpath.sdk.servlet.mvc.Controller stormpathCoreController;
 
     public SpringController(com.stormpath.sdk.servlet.mvc.Controller stormpathCoreController) {
         Assert.notNull(stormpathCoreController);
         this.stormpathCoreController = stormpathCoreController;
+    }
+
+    /**
+     * Set the UrlPathHelper to use for the resolution of lookup paths.
+     * <p>Use this to override the default UrlPathHelper with a custom subclass,
+     * or to share common UrlPathHelper settings across multiple MethodNameResolvers
+     * and HandlerMappings.
+     * @see org.springframework.web.servlet.handler.AbstractUrlHandlerMapping#setUrlPathHelper
+     */
+    public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
+        Assert.notNull(urlPathHelper, "UrlPathHelper must not be null");
+        this.urlPathHelper = urlPathHelper;
+    }
+
+    /**
+     * Return the UrlPathHelper to use for the resolution of lookup paths.
+     */
+    protected UrlPathHelper getUrlPathHelper() {
+        return this.urlPathHelper;
     }
 
     @Override
@@ -55,9 +76,7 @@ public class SpringController extends UrlFilenameViewController {
         }
 
         String viewName = vm.getViewName();
-        if (!StringUtils.hasText(viewName)) {
-            viewName = getViewNameForRequest(request);
-        }
+        Assert.hasText(viewName, "ViewModel must contain a viewName.");
 
         if (log.isDebugEnabled()) {
             String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);

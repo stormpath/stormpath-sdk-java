@@ -15,15 +15,12 @@
 */-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!--/*
-    <title th:fragment="title" th:text="#{stormpath.web.forgot.title}">Login</title>
-    */-->
+    <title th:text="#{stormpath.web.forgot.title}">|Forgot Login?|</title>
+    <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
-<body>
-    <div class="container custom-container" th:fragment="content">
-
+<body class="login">
+    <div class="container custom-container">
         <div class="va-wrapper">
-
             <div class="view login-view container">
 
                 <div class="box row">
@@ -79,7 +76,6 @@
             </div>
 
         </div>
-
     </div>
 </body>
 </html>
