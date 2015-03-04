@@ -78,12 +78,12 @@ class DefaultAccountCreationPolicyTest {
 
         AccountCreationPolicy accountCreationPolicy = new DefaultAccountCreationPolicy(internalDataStore, properties)
 
-        accountCreationPolicy = accountCreationPolicy.setAccountVerificationEmailStatus(EmailStatus.DISABLED)
-                .setAccountVerificationSuccessEmailStatus(EmailStatus.DISABLED)
+        accountCreationPolicy = accountCreationPolicy.setVerificationEmailStatus(EmailStatus.DISABLED)
+                .setVerificationSuccessEmailStatus(EmailStatus.DISABLED)
                 .setWelcomeEmailStatus(EmailStatus.DISABLED)
 
-        assertEquals(accountCreationPolicy.getAccountVerificationEmailStatus(), EmailStatus.DISABLED)
-        assertEquals(accountCreationPolicy.getAccountVerificationSuccessEmailStatus(), EmailStatus.DISABLED)
+        assertEquals(accountCreationPolicy.getVerificationEmailStatus(), EmailStatus.DISABLED)
+        assertEquals(accountCreationPolicy.getVerificationSuccessEmailStatus(), EmailStatus.DISABLED)
         assertEquals(accountCreationPolicy.getWelcomeEmailStatus(), EmailStatus.DISABLED)
         assertEquals(accountCreationPolicy.getHref(), properties.href)
 
@@ -116,14 +116,14 @@ class DefaultAccountCreationPolicyTest {
         AccountCreationPolicy accountCreationPolicy = new DefaultAccountCreationPolicy(internalDataStore, properties)
 
         try {
-            accountCreationPolicy.setAccountVerificationEmailStatus(null); //must throw
+            accountCreationPolicy.setVerificationEmailStatus(null); //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "verificationEmailStatus cannot be null.")
         }
 
         try {
-            accountCreationPolicy.setAccountVerificationSuccessEmailStatus(null); //must throw
+            accountCreationPolicy.setVerificationSuccessEmailStatus(null); //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "verificationSuccessEmailStatus cannot be null.")

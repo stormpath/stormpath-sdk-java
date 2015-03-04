@@ -229,20 +229,20 @@ class DirectoryIT extends ClientIT {
         assertNotNull accountPolicy.href
 
         // Validate default values
-        assertEquals accountPolicy.getAccountVerificationEmailStatus(), EmailStatus.DISABLED
-        assertEquals accountPolicy.getAccountVerificationSuccessEmailStatus(), EmailStatus.DISABLED
+        assertEquals accountPolicy.getVerificationEmailStatus(), EmailStatus.DISABLED
+        assertEquals accountPolicy.getVerificationSuccessEmailStatus(), EmailStatus.DISABLED
         assertEquals accountPolicy.getWelcomeEmailStatus(), EmailStatus.DISABLED
 
         //Set new values
-        accountPolicy.setAccountVerificationEmailStatus(EmailStatus.ENABLED)
-        accountPolicy.setAccountVerificationSuccessEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.setVerificationEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.setVerificationSuccessEmailStatus(EmailStatus.ENABLED)
         accountPolicy.setWelcomeEmailStatus(EmailStatus.ENABLED)
         accountPolicy.save()
 
         //Validate new values
         def retrievedAccountCreationPolicy = client.getResource(accountPolicy.href, AccountCreationPolicy.class)
-        assertEquals(retrievedAccountCreationPolicy.getAccountVerificationEmailStatus(), EmailStatus.ENABLED)
-        assertEquals(retrievedAccountCreationPolicy.getAccountVerificationSuccessEmailStatus(), EmailStatus.ENABLED)
+        assertEquals(retrievedAccountCreationPolicy.getVerificationEmailStatus(), EmailStatus.ENABLED)
+        assertEquals(retrievedAccountCreationPolicy.getVerificationSuccessEmailStatus(), EmailStatus.ENABLED)
         assertEquals(retrievedAccountCreationPolicy.getWelcomeEmailStatus(), EmailStatus.ENABLED)
     }
 

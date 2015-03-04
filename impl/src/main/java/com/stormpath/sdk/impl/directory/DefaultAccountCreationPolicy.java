@@ -78,7 +78,7 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     }
 
     @Override
-    public EmailStatus getAccountVerificationEmailStatus() {
+    public EmailStatus getVerificationEmailStatus() {
         String value = getStringProperty(ACCOUNT_VERIFICATION_EMAIL_STATUS.getName());
         if (value == null) {
             return null;
@@ -87,14 +87,14 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     }
 
     @Override
-    public AccountCreationPolicy setAccountVerificationEmailStatus(EmailStatus accountVerificationEmailStatus) {
+    public AccountCreationPolicy setVerificationEmailStatus(EmailStatus accountVerificationEmailStatus) {
         Assert.notNull(accountVerificationEmailStatus, "verificationEmailStatus cannot be null.");
         setProperty(ACCOUNT_VERIFICATION_EMAIL_STATUS, accountVerificationEmailStatus.name());
         return this;
     }
 
     @Override
-    public EmailStatus getAccountVerificationSuccessEmailStatus() {
+    public EmailStatus getVerificationSuccessEmailStatus() {
         String value = getStringProperty(ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS.getName());
         if (value == null) {
             return null;
@@ -103,7 +103,7 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     }
 
     @Override
-    public AccountCreationPolicy setAccountVerificationSuccessEmailStatus(EmailStatus accountVerificationSuccessEmailStatus) {
+    public AccountCreationPolicy setVerificationSuccessEmailStatus(EmailStatus accountVerificationSuccessEmailStatus) {
         Assert.notNull(accountVerificationSuccessEmailStatus, "verificationSuccessEmailStatus cannot be null.");
         setProperty(ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS, accountVerificationSuccessEmailStatus.name());
         return this;

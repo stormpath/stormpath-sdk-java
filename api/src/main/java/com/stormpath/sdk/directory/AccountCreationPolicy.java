@@ -65,7 +65,7 @@ public interface AccountCreationPolicy extends Resource, Saveable {
      *
      * @return the Account verification Email status.
      */
-    EmailStatus getAccountVerificationEmailStatus();
+    EmailStatus getVerificationEmailStatus();
 
     /**
      * Specifies whether the Account Verification Workflow is enabled or disabled for the parent directory.
@@ -74,7 +74,7 @@ public interface AccountCreationPolicy extends Resource, Saveable {
      * @param accountVerificationEmailStatus the status of the Account Verification Email Workflow
      * @return this instance for method chaining.
      */
-    AccountCreationPolicy setAccountVerificationEmailStatus(EmailStatus accountVerificationEmailStatus);
+    AccountCreationPolicy setVerificationEmailStatus(EmailStatus accountVerificationEmailStatus);
 
     /**
      * Returns the Account Verification Success Email Status
@@ -84,7 +84,7 @@ public interface AccountCreationPolicy extends Resource, Saveable {
      *
      * @return the Account verification Success Email status.
      */
-    EmailStatus getAccountVerificationSuccessEmailStatus();
+    EmailStatus getVerificationSuccessEmailStatus();
 
     /**
      * Specifies whether the Account Verification Success Workflow is enabled or disabled for the parent directory.
@@ -93,7 +93,7 @@ public interface AccountCreationPolicy extends Resource, Saveable {
      * @param accountVerificationSuccessEmailStatus the status of the Account Verification Success Email Workflow
      * @return this instance for method chaining.
      */
-    AccountCreationPolicy setAccountVerificationSuccessEmailStatus(EmailStatus accountVerificationSuccessEmailStatus);
+    AccountCreationPolicy setVerificationSuccessEmailStatus(EmailStatus accountVerificationSuccessEmailStatus);
 
     /**
      * Returns the Welcome Email Status
