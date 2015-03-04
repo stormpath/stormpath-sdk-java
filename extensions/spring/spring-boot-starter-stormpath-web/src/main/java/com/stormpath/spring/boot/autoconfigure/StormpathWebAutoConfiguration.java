@@ -101,6 +101,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -213,7 +214,8 @@ public class StormpathWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
     public HandlerMapping stormpathHandlerMapping(LocaleChangeInterceptor localeChangeInterceptor,
-                                                  TemplateLayoutInterceptor templateLayoutInterceptor,
+                                                  @Qualifier("stormpathLayoutInterceptor")
+                                                  HandlerInterceptor stormpathLayoutInterceptor,
                                                   @Qualifier("stormpathLoginController") Controller loginController,
                                                   @Qualifier("stormpathLogoutController") Controller logoutController,
                                                   @Qualifier("stormpathVerifyController") Controller verifyController,
@@ -248,7 +250,7 @@ public class StormpathWebAutoConfiguration {
         mapping.setOrder(handlerMappingProperties.getOrder());
         mapping.setUrlMap(mappings);
 
-        mapping.setInterceptors(new Object[]{ localeChangeInterceptor, templateLayoutInterceptor });
+        mapping.setInterceptors(new Object[]{ localeChangeInterceptor, stormpathLayoutInterceptor });
 
         if (pathMatcher != null) {
             mapping.setPathMatcher(pathMatcher);
@@ -262,14 +264,12 @@ public class StormpathWebAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public TemplateLayoutInterceptor stormpathThymeleafLayoutInterceptor() throws Exception {
-
+    @ConditionalOnMissingBean(name="stormpathLayoutInterceptor")
+    public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
         TemplateLayoutInterceptor interceptor = new TemplateLayoutInterceptor();
         interceptor.setHeadFragmentSelector(headTemplateProperties.getFragmentSelector());
         interceptor.setHeadViewName(headTemplateProperties.getView());
         interceptor.afterPropertiesSet();
-
         return interceptor;
     }
 
