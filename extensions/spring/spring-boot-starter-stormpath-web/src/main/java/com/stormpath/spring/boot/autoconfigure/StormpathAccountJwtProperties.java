@@ -18,6 +18,9 @@ package com.stormpath.spring.boot.autoconfigure;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.web.account.jwt")
 public class StormpathAccountJwtProperties {
 

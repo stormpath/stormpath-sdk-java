@@ -24,6 +24,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * @since 1.0.RC4
+ */
 public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter implements InitializingBean {
 
     public static final String HEAD_VIEW_NAME_KEY = "headViewName";

@@ -18,6 +18,9 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.authentication")
 public class StormpathClientAuthenticationProperties {
 

@@ -20,16 +20,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @since 1.0.RC4
  */
-@ConfigurationProperties(prefix = "stormpath.web.register.form")
-public class StormpathRegisterFormProperties {
+@ConfigurationProperties(prefix = "stormpath")
+public class StormpathProperties {
 
-    private String fields = "givenName, surname, email(required), password(required,password)";
+    private String baseUrl = "https://api.stormpath.com/v1";
 
-    public String getFields() {
-        return fields;
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
-    public void setFields(String fields) {
-        this.fields = fields;
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

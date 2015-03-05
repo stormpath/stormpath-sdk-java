@@ -24,6 +24,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.web.stormpathFilter")
 public class StormpathFilterProperties {
 

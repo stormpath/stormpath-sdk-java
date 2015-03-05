@@ -15,21 +15,35 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
+import com.stormpath.sdk.lang.Strings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @since 1.0.RC4
  */
-@ConfigurationProperties(prefix = "stormpath.web.register.form")
-public class StormpathRegisterFormProperties {
+@ConfigurationProperties(prefix = "stormpath.web.accessToken.origin.authorizer")
+public class StormpathAccessTokenOriginAuthorizerProperties {
 
-    private String fields = "givenName, surname, email(required), password(required,password)";
+    private String originUris;
 
-    public String getFields() {
-        return fields;
+    public String getOriginUris() {
+        return originUris;
     }
 
-    public void setFields(String fields) {
-        this.fields = fields;
+    public void setOriginUris(String originUris) {
+        this.originUris = originUris;
     }
+
+    public Set<String> getOriginUrisSet() {
+
+        if (Strings.hasText(originUris)) {
+            return Strings.commaDelimitedListToSet(originUris);
+        }
+
+        return Collections.emptySet();
+    }
+
 }

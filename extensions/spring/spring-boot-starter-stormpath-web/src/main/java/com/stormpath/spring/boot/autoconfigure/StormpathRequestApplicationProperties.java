@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.web.request.application")
 public class StormpathRequestApplicationProperties {
 

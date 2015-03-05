@@ -20,6 +20,9 @@ import com.stormpath.sdk.client.Client;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.application")
 public class StormpathApplicationProperties {
 

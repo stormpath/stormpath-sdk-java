@@ -339,6 +339,19 @@ public interface ClientBuilder {
     ClientBuilder setConnectionTimeout(int timeout);
 
     /**
+     * Sets the base URL of the Stormpath REST API to use.  If unspecified, this value defaults to
+     * {@code https://api.stormpath.com/v1} - the most common use case for Stormpath's public SaaS cloud.
+     * <p/>
+     * Customers using Stormpath's Enterprise HA cloud might need to configure this to be
+     * {@code https://enterprise.stormpath.io/v1} for example.
+     *
+     * @param baseUrl the base URL of the Stormpath REST API to use.
+     * @return the ClientBuilder instance for method chaining
+     * @since 1.0.RC4
+     */
+    ClientBuilder setBaseUrl(String baseUrl);
+
+    /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.

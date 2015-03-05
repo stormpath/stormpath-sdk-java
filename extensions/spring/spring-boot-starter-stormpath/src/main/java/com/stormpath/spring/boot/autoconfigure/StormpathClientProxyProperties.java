@@ -19,6 +19,9 @@ import com.stormpath.sdk.client.Proxy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.proxy")
 public class StormpathClientProxyProperties {
 

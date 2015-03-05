@@ -23,6 +23,7 @@ import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
+import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
@@ -32,9 +33,11 @@ import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
+import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
@@ -51,8 +54,12 @@ import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.SessionAuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenRequestAuthorizer;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.CookieSaver;
@@ -66,6 +73,7 @@ import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticator;
+import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
@@ -143,7 +151,8 @@ import java.util.Set;
                                    StormpathForgotPasswordProperties.class, StormpathRegisterProperties.class,
                                    StormpathRegisterFormProperties.class, StormpathVerifyProperties.class,
                                    StormpathLogoutProperties.class, StormpathChangePasswordProperties.class,
-                                   StormpathHeadTemplateProperties.class })
+                                   StormpathHeadTemplateProperties.class, StormpathAccessTokenProperties.class,
+                                   StormpathAccessTokenOriginAuthorizerProperties.class})
 public class StormpathWebAutoConfiguration {
 
     private static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
@@ -211,6 +220,12 @@ public class StormpathWebAutoConfiguration {
     @Autowired
     private StormpathHeadTemplateProperties headTemplateProperties;
 
+    @Autowired
+    private StormpathAccessTokenProperties accessTokenProperties;
+
+    @Autowired
+    private StormpathAccessTokenOriginAuthorizerProperties accessTokenOriginAuthorizerProperties;
+
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
     public HandlerMapping stormpathHandlerMapping(LocaleChangeInterceptor localeChangeInterceptor,
@@ -221,7 +236,8 @@ public class StormpathWebAutoConfiguration {
                                                   @Qualifier("stormpathVerifyController") Controller verifyController,
                                                   @Qualifier("stormpathRegisterController") Controller register,
                                                   @Qualifier("stormpathChangePasswordController") Controller change,
-                                                  @Qualifier("stormpathForgotPasswordController") Controller forgot) {
+                                                  @Qualifier("stormpathForgotPasswordController") Controller forgot,
+                                                  @Qualifier("stormpathAccessTokenController") Controller accessToken) {
 
         Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
 
@@ -244,6 +260,9 @@ public class StormpathWebAutoConfiguration {
         }
         if (changePasswordProperties.isEnabled()) {
             mappings.put(changePasswordProperties.getUri(), change);
+        }
+        if (accessTokenProperties.isEnabled()) {
+            mappings.put(accessTokenProperties.getUri(), accessToken);
         }
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
@@ -430,11 +449,9 @@ public class StormpathWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AccessTokenResultFactory stormpathAccessTokenResultFactory(Application stormpathApplication,
+    public AccessTokenResultFactory stormpathAccessTokenResultFactory(@Qualifier("stormpathApplication") Application app,
                                                                       AuthenticationJwtFactory authenticationJwtFactory) {
-
-        return new DefaultAccessTokenResultFactory(stormpathApplication, authenticationJwtFactory,
-                                                   accountJwtProperties.getTtl());
+        return new DefaultAccessTokenResultFactory(app, authenticationJwtFactory, accountJwtProperties.getTtl());
     }
 
     @Bean
@@ -835,6 +852,57 @@ public class StormpathWebAutoConfiguration {
         controller.init();
 
         return createSpringController(controller);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathAccessTokenController")
+    public Controller stormpathAccessTokenController(Publisher<RequestEvent> eventPublisher,
+                                                     AccessTokenAuthenticationRequestFactory requestFactory,
+                                                     AccessTokenResultFactory resultFactory,
+                                                     @Qualifier("stormpathAccessTokenRequestAuthorizer")
+                                                     RequestAuthorizer requestAuthorizer,
+                                                     @Qualifier("stormpathAuthenticationResultSaver")
+                                                     Saver<AuthenticationResult> authenticationResultSaver) {
+
+        AccessTokenController c = new AccessTokenController();
+        c.setEventPublisher(eventPublisher);
+        c.setAccessTokenAuthenticationRequestFactory(requestFactory);
+        c.setAccessTokenResultFactory(resultFactory);
+        c.setAccountSaver(authenticationResultSaver);
+        c.setRequestAuthorizer(requestAuthorizer);
+        c.init();
+
+        return createSpringController(c);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory(UsernamePasswordRequestFactory factory) {
+        return new DefaultAccessTokenAuthenticationRequestFactory(factory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathAccessTokenRequestAuthorizer")
+    public RequestAuthorizer stormpathAccessTokenRequestAuthorizer(
+        @Qualifier("stormpathSecureResolver") Resolver<Boolean> secureRequired,
+        @Qualifier("stormpathOriginAccessTokenRequestAuthorizer") RequestAuthorizer originAuthorizer) {
+
+        return new DefaultAccessTokenRequestAuthorizer(secureRequired, originAuthorizer);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathOriginAccessTokenRequestAuthorizer")
+    public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer(ServerUriResolver serverUriResolver,
+                                                                         @Qualifier("stormpathLocalhostResolver")
+                                                                         Resolver<Boolean> localhostResolver) {
+        Set<String> authorizedOriginUris = accessTokenOriginAuthorizerProperties.getOriginUrisSet();
+        return new OriginAccessTokenRequestAuthorizer(serverUriResolver, localhostResolver, authorizedOriginUris);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ServerUriResolver stormpathServerUriResolver() {
+        return new DefaultServerUriResolver();
     }
 
     @Bean

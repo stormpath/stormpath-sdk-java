@@ -31,6 +31,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.apiKey")
 public class StormpathClientApiKeyProperties {
 

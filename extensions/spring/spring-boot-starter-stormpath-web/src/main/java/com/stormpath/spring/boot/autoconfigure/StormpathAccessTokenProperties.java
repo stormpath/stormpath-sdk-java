@@ -20,27 +20,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @since 1.0.RC4
  */
-@ConfigurationProperties(prefix = "stormpath.web.change")
-public class StormpathChangePasswordProperties {
+@ConfigurationProperties(prefix = "stormpath.web.accessToken")
+public class StormpathAccessTokenProperties {
 
     private boolean enabled = true;
-    private String uri = "/change";
-    private String nextUri = "/login?status=changed";
-
-    /**
-     * The view name of the change view to be rendered. Note that for filename-based view resolvers, this view name is
-     * usually relative to a view resolver prefix and suffix.  For example:
-     *
-     * <pre>
-     * prefix: classpath:/templates/
-     * suffix: .html
-     * </pre>
-     *
-     * With a {@code view} value of {@code stormpath/change}, the page template then is expected to be at
-     * {@code classpath:/templates/stormpath/change.html}.
-     *
-     */
-    private String view = "stormpath/change";
+    private String uri = "/oauth/token";
 
     public boolean isEnabled() {
         return enabled;
@@ -56,21 +40,5 @@ public class StormpathChangePasswordProperties {
 
     public void setUri(String uri) {
         this.uri = uri;
-    }
-
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
-    }
-
-    public String getView() {
-        return view;
-    }
-
-    public void setView(String view) {
-        this.view = view;
     }
 }

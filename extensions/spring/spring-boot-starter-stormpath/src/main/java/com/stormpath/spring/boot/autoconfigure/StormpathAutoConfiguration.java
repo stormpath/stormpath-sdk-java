@@ -35,13 +35,20 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @since 1.0.RC4
+ */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @ConditionalOnProperty(name = "stormpath.enabled", matchIfMissing = true)
-@EnableConfigurationProperties({ StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
+@EnableConfigurationProperties({ StormpathProperties.class,
+                                   StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
                                    StormpathClientAuthenticationProperties.class,
                                    StormpathClientProxyProperties.class })
 public class StormpathAutoConfiguration {
+
+    @Autowired
+    protected StormpathProperties stormpathProperties;
 
     @Autowired
     protected StormpathClientApiKeyProperties apiKeyProperties;
@@ -103,10 +110,11 @@ public class StormpathAutoConfiguration {
     public Client stormpathClient(@Qualifier("stormpathClientApiKey") ApiKey apiKey,
                                   com.stormpath.sdk.cache.CacheManager cacheManager) {
 
-        ClientBuilder builder = Clients.builder().setAuthenticationScheme(authenticationProperties.getScheme());
-
-        builder.setApiKey(apiKey);
-        builder.setCacheManager(cacheManager);
+        ClientBuilder builder = Clients.builder()
+            .setBaseUrl(stormpathProperties.getBaseUrl())
+            .setAuthenticationScheme(authenticationProperties.getScheme())
+            .setApiKey(apiKey)
+            .setCacheManager(cacheManager);
 
         Proxy proxy = proxyProperties.resolveProxy();
         if (proxy != null) {

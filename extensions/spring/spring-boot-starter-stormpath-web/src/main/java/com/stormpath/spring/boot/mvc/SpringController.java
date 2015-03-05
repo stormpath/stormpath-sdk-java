@@ -29,6 +29,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+/**
+ * This is an adapter or bridge component: it is a Spring {@link org.springframework.web.servlet.mvc.Controller Controller} implementationt that simply wraps (delegates) to a Stormpath {@link com.stormpath.sdk.servlet.mvc.Controller com.stormpath.sdk.servlet.mvc.Controller} implementation.
+ * <p/>
+ * It allows existing Stormpath mvc-framewokr-agnostic controller implementations to be used as Spring controllers in
+ * Spring environments.
+ *
+ * @since 1.0.RC4
+ */
 public class SpringController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(SpringController.class);
@@ -61,6 +69,15 @@ public class SpringController extends AbstractController {
         return this.urlPathHelper;
     }
 
+    /**
+     * Delegates to the wrapped {@link com.stormpath.sdk.servlet.mvc.Controller com.stormpath.sdk.servlet.mvc.Controller}
+     * instance and converts the returned Stormpath SDK-specific {@link com.stormpath.sdk.servlet.mvc.ViewModel ViewModel}
+     * to a Spring {@link org.springframework.web.servlet.ModelAndView ModelAndView} instance.
+     *
+     * @param request inbound http request
+     * @param response outbound http response
+     * @return the ModelAndView that should be rendered by Spring MVC.
+     */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
 

@@ -17,6 +17,9 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * @since 1.0.RC4
+ */
 @ConfigurationProperties(prefix = "stormpath.web.http.authc")
 public class StormpathHttpAuthenticationProperties {
 
