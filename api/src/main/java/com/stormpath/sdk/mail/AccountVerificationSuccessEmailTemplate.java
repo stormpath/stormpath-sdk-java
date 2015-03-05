@@ -19,7 +19,7 @@ package com.stormpath.sdk.mail;
  * The AccountVerificationSuccessEmailTemplate is a {@link EmailTemplate} resource which provides the ability to configure the URL where
  * the user will be redirected after the account verification process is completed successfully.
  *
- * @since 1.0.RC4.1
+ * @since 1.0.RC4
  */
 public interface AccountVerificationSuccessEmailTemplate extends EmailTemplate<AccountVerificationSuccessEmailTemplate> {
 

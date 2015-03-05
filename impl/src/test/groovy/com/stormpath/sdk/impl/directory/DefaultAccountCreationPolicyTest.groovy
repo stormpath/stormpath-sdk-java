@@ -32,7 +32,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC4.1
+ * @since 1.0.RC4
  */
 class DefaultAccountCreationPolicyTest {
 

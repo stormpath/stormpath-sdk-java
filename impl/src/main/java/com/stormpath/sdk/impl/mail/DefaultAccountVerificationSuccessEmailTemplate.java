@@ -22,7 +22,7 @@ import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplate;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4.1
+ * @since 1.0.RC4
  */
 public class DefaultAccountVerificationSuccessEmailTemplate extends AbstractEmailTemplate<AccountVerificationSuccessEmailTemplate> implements AccountVerificationSuccessEmailTemplate {
 

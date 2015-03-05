@@ -26,7 +26,7 @@ import com.stormpath.sdk.resource.Saveable;
  * A AccountCreationPolicy resource is used to configure what Stormpath does when an Account associated with a
  * parent {@link Directory} is created
  *
- * @since 1.0.RC4.1
+ * @since 1.0.RC4
  */
 public interface AccountCreationPolicy extends Resource, Saveable {
 

@@ -21,7 +21,7 @@ import com.stormpath.sdk.resource.CollectionResource;
  *
  * A {@link CollectionResource} containing {@link AccountVerificationSuccessEmailTemplate} instances.
  *
- * @since 1.0.RC4.1
+ * @since 1.0.RC4
  */
 public interface WelcomeEmailTemplateList extends CollectionResource<WelcomeEmailTemplate> {
 }
