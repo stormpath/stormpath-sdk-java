@@ -23,37 +23,36 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
- * A AccountCreationPolicy resource is used to configure what Stormpath does when an Account associated with a
- * parent {@link Directory} is created
+ * A AccountCreationPolicy resource is used to configure different aspects and actions relevant to the {@link Account}-creation process.
  *
  * @since 1.0.RC4
  */
 public interface AccountCreationPolicy extends Resource, Saveable {
 
     /**
-     * Returns the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection that contains email
-     * templates that can be used for sending the ‘email verification’ email when new accounts are created.
+     * Returns the {@link ModeledEmailTemplateList} collection that contains the 'verification email'
+     * templates that can be used for sending the ‘verification email’ when new accounts are created.
      *
-     * @return the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection that contains email templates
-     * that can be used for sending the 'email verification' email when new accounts are created.
+     * @return the {@link ModeledEmailTemplateList} collection that contains the 'verification email' templates
+     * that can be used for sending the 'verification email' when new accounts are created.
      */
     ModeledEmailTemplateList getAccountVerificationEmailTemplates();
 
     /**
-     * Returns the {@link com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplateList} collection that contains email
-     * templates that can be used for sending the ‘email verification success’ email for new accounts.
+     * Returns the {@link AccountVerificationSuccessEmailTemplateList} collection that contains the ‘verification success email’
+     * templates that can be used for sending the ‘verification success email’ for new accounts.
      *
-     * @return the {@link com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplateList} collection that contains email
-     * templates that can be used for sending the ‘email verification success’ email for new accounts.
+     * @return the {@link AccountVerificationSuccessEmailTemplateList} collection that contains the ‘verification success email’
+     * templates that can be used for sending the ‘verification success email’ for new accounts.
      */
     AccountVerificationSuccessEmailTemplateList getAccountVerificationSuccessEmailTemplates();
 
     /**
-     * Returns the {@link com.stormpath.sdk.mail.WelcomeEmailTemplateList} collection that contains email
-     * templates that can be used for sending an email to a newly registered account.
+     * Returns the {@link WelcomeEmailTemplateList} collection that contains the ‘welcome email’
+     * templates that can be used for sending a 'welcome email' to a newly registered account.
      *
-     * @return the {@link com.stormpath.sdk.mail.WelcomeEmailTemplateList} collection that contains email
-     * templates that can be used for sending an email to a newly registered account.
+     * @return the {@link WelcomeEmailTemplateList} collection that contains the ‘welcome email’
+     * templates that can be used for sending a 'welcome email' to a newly registered account.
      */
     WelcomeEmailTemplateList getWelcomeEmailTemplates();
 
