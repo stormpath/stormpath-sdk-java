@@ -24,6 +24,9 @@ import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplateList;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public class DefaultAccountVerificationSuccessEmailTemplateList extends AbstractCollectionResource<AccountVerificationSuccessEmailTemplate> implements AccountVerificationSuccessEmailTemplateList {
 
     private static final ArrayProperty<AccountVerificationSuccessEmailTemplate> ITEMS = new ArrayProperty<AccountVerificationSuccessEmailTemplate>("items", AccountVerificationSuccessEmailTemplate.class);

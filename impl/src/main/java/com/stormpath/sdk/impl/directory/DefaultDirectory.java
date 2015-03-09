@@ -28,7 +28,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
- * @since 0.2
+ * @since 1.0.RC4
  */
 public class DefaultDirectory extends AbstractExtendableInstanceResource implements Directory {
 
@@ -36,12 +36,12 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
     static final StatusProperty<DirectoryStatus> STATUS = new StatusProperty<DirectoryStatus>(DirectoryStatus.class);
-    static final ResourceReference<AccountCreationPolicy> ACCOUNT_CREATION_POLICY = new ResourceReference<AccountCreationPolicy>("accountCreationPolicy", AccountCreationPolicy.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
     static final ResourceReference<Provider> PROVIDER = new ResourceReference<Provider>("provider", Provider.class);
     static final ResourceReference<PasswordPolicy> PASSWORD_POLICY = new ResourceReference<PasswordPolicy>("passwordPolicy", PasswordPolicy.class);
+    static final ResourceReference<AccountCreationPolicy> ACCOUNT_CREATION_POLICY = new ResourceReference<AccountCreationPolicy>("accountCreationPolicy", AccountCreationPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =

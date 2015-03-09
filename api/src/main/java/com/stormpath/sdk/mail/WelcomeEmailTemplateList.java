@@ -19,7 +19,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 
 /**
  *
- * A {@link CollectionResource} containing {@link AccountVerificationSuccessEmailTemplate} instances.
+ * A {@link CollectionResource} containing {@link WelcomeEmailTemplate} instances.
  *
  * @since 1.0.RC4
  */

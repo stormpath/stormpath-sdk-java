@@ -30,7 +30,7 @@ import static org.testng.Assert.*
 
 /**
  *
- * @since 0.8.1
+ * @since 1.0.RC4
  */
 class DirectoryIT extends ClientIT {
 

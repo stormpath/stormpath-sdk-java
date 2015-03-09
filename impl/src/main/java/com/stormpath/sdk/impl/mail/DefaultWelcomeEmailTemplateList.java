@@ -21,9 +21,11 @@ import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.mail.WelcomeEmailTemplate;
 import com.stormpath.sdk.mail.WelcomeEmailTemplateList;
-
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public class DefaultWelcomeEmailTemplateList extends AbstractCollectionResource<WelcomeEmailTemplate> implements WelcomeEmailTemplateList {
 
     private static final ArrayProperty<WelcomeEmailTemplate> ITEMS = new ArrayProperty<WelcomeEmailTemplate>("items", WelcomeEmailTemplate.class);

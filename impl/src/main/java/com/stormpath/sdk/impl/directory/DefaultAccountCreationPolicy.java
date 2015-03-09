@@ -38,7 +38,6 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> ACCOUNT_VERIFICATION_EMAIL_TEMPLATES =
             new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("verificationEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);
 
-
     static final CollectionReference<AccountVerificationSuccessEmailTemplateList, AccountVerificationSuccessEmailTemplate> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES =
             new CollectionReference<AccountVerificationSuccessEmailTemplateList, AccountVerificationSuccessEmailTemplate>("verificationSuccessEmailTemplates", AccountVerificationSuccessEmailTemplateList.class, AccountVerificationSuccessEmailTemplate.class);
 
@@ -88,7 +87,7 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
 
     @Override
     public AccountCreationPolicy setVerificationEmailStatus(EmailStatus accountVerificationEmailStatus) {
-        Assert.notNull(accountVerificationEmailStatus, "verificationEmailStatus cannot be null.");
+        Assert.notNull(accountVerificationEmailStatus, "accountVerificationEmailStatus cannot be null.");
         setProperty(ACCOUNT_VERIFICATION_EMAIL_STATUS, accountVerificationEmailStatus.name());
         return this;
     }
@@ -104,7 +103,7 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
 
     @Override
     public AccountCreationPolicy setVerificationSuccessEmailStatus(EmailStatus accountVerificationSuccessEmailStatus) {
-        Assert.notNull(accountVerificationSuccessEmailStatus, "verificationSuccessEmailStatus cannot be null.");
+        Assert.notNull(accountVerificationSuccessEmailStatus, "accountVerificationSuccessEmailStatus cannot be null.");
         setProperty(ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS, accountVerificationSuccessEmailStatus.name());
         return this;
     }
