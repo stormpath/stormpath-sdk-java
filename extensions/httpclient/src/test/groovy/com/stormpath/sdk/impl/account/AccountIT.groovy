@@ -830,11 +830,6 @@ class AccountIT extends ClientIT {
         }
         assertEquals(count, 1)
 
-//        def dir = client.instantiate(Directory)
-//        dir.name = uniquify("Java SDK: AccountIT.testGetApplications")
-//        dir = client.createDirectory(dir);
-//        deleteOnTeardown(dir)
-
         //create a group
         def group = client.instantiate(Group)
         group.name = uniquify('Java SDK: AccountIT.testGetApplications')
