@@ -27,7 +27,7 @@ public interface EmailVerificationToken extends Resource, Saveable {
      * Returns the actual token required to verify the account. For example:
      * <pre>
      *     EmailVerificationToken emailVerificationToken = account.getEmailVerificationToken();
-     *     account = client.verifyAccountEmail(emailVerificationToken.getToken());
+     *     account = client.verifyAccountEmail(emailVerificationToken.getValue());
      *     //at this point the account has been successfully verified.
      * </code>
      * </pre>
@@ -35,6 +35,6 @@ public interface EmailVerificationToken extends Resource, Saveable {
      * @return the actual token required to verify the account.
      * @since 1.0.RC4
      */
-    String getToken();
+    String getValue();
 
 }

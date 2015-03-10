@@ -45,7 +45,7 @@ public class DefaultEmailVerificationToken extends AbstractInstanceResource impl
 
     /* @since 1.0.RC4 */
     @Override
-    public String getToken() {
+    public String getValue() {
         String href = getHref();
         if (href != null) {
             String token = href.substring(href.indexOf(TOKEN_DELIMITER) + TOKEN_DELIMITER.length());
