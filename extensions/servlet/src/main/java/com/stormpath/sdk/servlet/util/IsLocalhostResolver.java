@@ -15,60 +15,41 @@
  */
 package com.stormpath.sdk.servlet.util;
 
-import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @since 1.0.RC3
  */
 public class IsLocalhostResolver implements Resolver<Boolean> {
 
-    private static final List<String> REMOTE_ADDR_HEADERS = Arrays
-        .asList("X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR");
+    private final Resolver<String> remoteAddrResolver;
 
-    protected boolean isValidIp(String ip) {
-        return Strings.hasText(ip) && !"unknown".equalsIgnoreCase(ip);
+    @SuppressWarnings("UnusedDeclaration") //used via reflection by servlet config (stormpath.web.localhost.resolver)
+    public IsLocalhostResolver() {
+        this(new RemoteAddrResolver());
     }
 
-    protected String getRemoteAddr(HttpServletRequest request) {
-
-        String ip = null;
-        for (String headerName : REMOTE_ADDR_HEADERS) {
-            ip = request.getHeader(headerName);
-            if (ip == null) {
-                continue;
-            }
-
-            int i = ip.indexOf(',');
-            if (i != -1) {
-                ip = Strings.clean(ip.substring(0, i));
-            }
-
-            if (isValidIp(ip)) {
-                break;
-            }
-        }
-
-        if (!isValidIp(ip)) {
-            ip = request.getRemoteAddr();
-        }
-
-        return ip;
+    public IsLocalhostResolver(Resolver<String> remoteAddrResolver) {
+        Assert.notNull(remoteAddrResolver, "remoteAddrResolver cannot be null.");
+        this.remoteAddrResolver = remoteAddrResolver;
     }
 
     @Override
     public Boolean get(HttpServletRequest request, HttpServletResponse response) {
 
-        String host = getRemoteAddr(request);
+        String host = getRemoteAddr(request, response);
 
         return host != null && (host.equalsIgnoreCase("localhost") ||
                                 host.equals("127.0.0.1") ||
                                 host.startsWith("::1") ||
                                 host.startsWith("0:0:0:0:0:0:0:1"));
+    }
+
+    protected String getRemoteAddr(HttpServletRequest request, HttpServletResponse response) {
+        return this.remoteAddrResolver.get(request, response);
     }
 }

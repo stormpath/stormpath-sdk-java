@@ -83,6 +83,7 @@ import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
+import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.spring.boot.mvc.SpringController;
 import com.stormpath.spring.boot.mvc.TemplateLayoutInterceptor;
@@ -152,7 +153,7 @@ import java.util.Set;
                                    StormpathRegisterFormProperties.class, StormpathVerifyProperties.class,
                                    StormpathLogoutProperties.class, StormpathChangePasswordProperties.class,
                                    StormpathHeadTemplateProperties.class, StormpathAccessTokenProperties.class,
-                                   StormpathAccessTokenOriginAuthorizerProperties.class})
+                                   StormpathAccessTokenOriginAuthorizerProperties.class })
 public class StormpathWebAutoConfiguration {
 
     private static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
@@ -283,7 +284,7 @@ public class StormpathWebAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathLayoutInterceptor")
+    @ConditionalOnMissingBean(name = "stormpathLayoutInterceptor")
     public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
         TemplateLayoutInterceptor interceptor = new TemplateLayoutInterceptor();
         interceptor.setHeadFragmentSelector(headTemplateProperties.getFragmentSelector());
@@ -350,9 +351,16 @@ public class StormpathWebAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathRemoteAddrResolver")
+    public Resolver<String> stormpathRemoteAddrResolver() {
+        return new RemoteAddrResolver();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathLocalhostResolver")
-    public Resolver<Boolean> stormpathLocalhostResolver() {
-        return new IsLocalhostResolver();
+    public Resolver<Boolean> stormpathLocalhostResolver(
+        @Qualifier("stormpathRemoteAddrResolver") Resolver<String> remoteAddrResolver) {
+        return new IsLocalhostResolver(remoteAddrResolver);
     }
 
     @Bean
@@ -449,8 +457,8 @@ public class StormpathWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AccessTokenResultFactory stormpathAccessTokenResultFactory(@Qualifier("stormpathApplication") Application app,
-                                                                      AuthenticationJwtFactory authenticationJwtFactory) {
+    public AccessTokenResultFactory stormpathAccessTokenResultFactory(
+        @Qualifier("stormpathApplication") Application app, AuthenticationJwtFactory authenticationJwtFactory) {
         return new DefaultAccessTokenResultFactory(app, authenticationJwtFactory, accountJwtProperties.getTtl());
     }
 
@@ -855,7 +863,7 @@ public class StormpathWebAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAccessTokenController")
+    @ConditionalOnMissingBean(name = "stormpathAccessTokenController")
     public Controller stormpathAccessTokenController(Publisher<RequestEvent> eventPublisher,
                                                      AccessTokenAuthenticationRequestFactory requestFactory,
                                                      AccessTokenResultFactory resultFactory,
@@ -877,7 +885,8 @@ public class StormpathWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory(UsernamePasswordRequestFactory factory) {
+    public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory(
+        UsernamePasswordRequestFactory factory) {
         return new DefaultAccessTokenAuthenticationRequestFactory(factory);
     }
 

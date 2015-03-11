@@ -22,13 +22,13 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.cache.DisabledCacheManager;
+import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,10 +41,10 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @ConditionalOnProperty(name = "stormpath.enabled", matchIfMissing = true)
-@EnableConfigurationProperties({ StormpathProperties.class,
-                                   StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
-                                   StormpathClientAuthenticationProperties.class,
-                                   StormpathClientProxyProperties.class })
+@EnableConfigurationProperties(
+    { StormpathProperties.class, StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
+        StormpathClientAuthenticationProperties.class, StormpathClientProxyProperties.class,
+        StormpathCacheProperties.class })
 public class StormpathAutoConfiguration {
 
     @Autowired
@@ -62,6 +62,12 @@ public class StormpathAutoConfiguration {
     @Autowired
     protected StormpathClientProxyProperties proxyProperties;
 
+    @Autowired
+    protected StormpathCacheProperties cacheProperties;
+
+    @Autowired(required = false)
+    protected CacheManager cacheManager;
+
     @Bean
     @ConditionalOnMissingBean(name = "stormpathClientApiKey")
     public ApiKey stormpathClientApiKey() {
@@ -69,40 +75,27 @@ public class StormpathAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathApplication")
+    @ConditionalOnMissingBean(name = "stormpathApplication")
     public Application stormpathApplication(Client client) {
         return applicationProperties.resolveApplication(client);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    @Configuration
-    @ConditionalOnMissingBean(type={"org.springframework.cache.CacheManager", "com.stormpath.sdk.cache.CacheManager"})
-    protected static class DefaultStormpathCacheManagerConfiguration {
+    @Bean
+    @ConditionalOnMissingBean
+    public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
 
-        @Bean
-        @ConditionalOnMissingBean
-        public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
-            return Caches.newCacheManager()
-                         .withDefaultTimeToIdle(1, TimeUnit.HOURS)
-                         .withDefaultTimeToIdle(1, TimeUnit.HOURS)
-                         .build();
+        if (!cacheProperties.isEnabled()) {
+            return new DisabledCacheManager();
         }
-    }
 
-    @SuppressWarnings("UnusedDeclaration")
-    @Configuration
-    @ConditionalOnBean(CacheManager.class)
-    @ConditionalOnMissingBean(com.stormpath.sdk.cache.CacheManager.class)
-    protected static class SpringCachingStormpathCacheManagerConfiguration {
-
-        @Autowired
-        private CacheManager cacheManager;
-
-        @Bean
-        @ConditionalOnMissingBean
-        public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
-            return new SpringStormpathCacheManager(cacheManager);
+        if (cacheManager != null) {
+            return new SpringCacheManager(cacheManager);
         }
+
+        //otherwise no Spring CacheManager - create a default:
+        return Caches.newCacheManager()
+                     .withDefaultTimeToLive(1, TimeUnit.HOURS)
+                     .withDefaultTimeToIdle(1, TimeUnit.HOURS).build();
     }
 
     @Bean
@@ -110,11 +103,9 @@ public class StormpathAutoConfiguration {
     public Client stormpathClient(@Qualifier("stormpathClientApiKey") ApiKey apiKey,
                                   com.stormpath.sdk.cache.CacheManager cacheManager) {
 
-        ClientBuilder builder = Clients.builder()
-            .setBaseUrl(stormpathProperties.getBaseUrl())
-            .setAuthenticationScheme(authenticationProperties.getScheme())
-            .setApiKey(apiKey)
-            .setCacheManager(cacheManager);
+        ClientBuilder builder = Clients.builder().setBaseUrl(stormpathProperties.getBaseUrl())
+                                       .setAuthenticationScheme(authenticationProperties.getScheme()).setApiKey(apiKey)
+                                       .setCacheManager(cacheManager);
 
         Proxy proxy = proxyProperties.resolveProxy();
         if (proxy != null) {
@@ -124,47 +115,4 @@ public class StormpathAutoConfiguration {
         return builder.build();
     }
 
-
-    @SuppressWarnings("unchecked")
-    protected static class SpringStormpathCacheManager implements com.stormpath.sdk.cache.CacheManager {
-
-        private CacheManager springCacheManager;
-
-        public SpringStormpathCacheManager(CacheManager springCacheManager) {
-            this.springCacheManager = springCacheManager;
-        }
-
-        @Override
-        public <K, V> com.stormpath.sdk.cache.Cache<K, V> getCache(String name) {
-
-            final Cache cache = this.springCacheManager.getCache(name);
-
-            return new com.stormpath.sdk.cache.Cache<K,V>() {
-                @Override
-                public V get(K key) {
-                    Cache.ValueWrapper vw = cache.get(key);
-                    if (vw == null) {
-                        return null;
-                    }
-                    return (V)vw.get();
-                }
-
-                @Override
-                public V put(K key, V value) {
-                    Cache.ValueWrapper vw = cache.putIfAbsent(key, value);
-                    if (vw == null) {
-                        return null;
-                    }
-                    return (V)vw.get();
-                }
-
-                @Override
-                public V remove(K key) {
-                    V v = get(key);
-                    cache.evict(key);
-                    return v;
-                }
-            };
-        }
-    }
 }

@@ -44,8 +44,8 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     private InputStream apiKeyInputStream;
     private Reader      apiKeyReader;
     private Properties  apiKeyProperties;
-    private String apiKeyIdPropertyName     = "apiKey.id";
-    private String apiKeySecretPropertyName = "apiKey.secret";
+    private String apiKeyIdPropertyName     = DEFAULT_ID_PROPERTY_NAME;
+    private String apiKeySecretPropertyName = DEFAULT_SECRET_PROPERTY_NAME;
 
     @Override
     public ApiKeyBuilder setId(String id) {

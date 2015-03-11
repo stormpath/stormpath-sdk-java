@@ -303,18 +303,18 @@ public interface ClientBuilder {
 
     /**
      * Overrides the default (very secure)
-     * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Stormpath SAuthc1 Digest Authentication Scheme</a>
-     * used to authenticate every request sent to the Stormpath API server.
-     * <p/>
-     * It is not recommended that you override this setting <em>unless</em> your application is deployed in an
+     * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Stormpath SAuthc1 Digest
+     * Authentication Scheme</a> used to authenticate every request sent to the Stormpath API server.
+     *
+     * <p>It is not recommended that you override this setting <em>unless</em> your application is deployed in an
      * environment that - outside of your application's control - manipulates request headers on outgoing HTTP requests.
-     * Google App Engine is one such environment, for example.
-     * <p/>
-     * As such, in these environments only, an alternative authentication mechanism is necessary, such as
+     * Google App Engine is one such environment, for example.</p>
+     *
+     * <p>As such, in these environments only, an alternative authentication mechanism is necessary, such as
      * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
      * Basic Authentication</a>.  You can enable Basic Authentication as follows (again, only do this if your
-     * application runtime environment forces you to use it, like Google App Engine):
-     * </pre>
+     * application runtime environment forces you to use it, like Google App Engine):</p>
+     * <pre>
      * Client client = Clients.builder()...
      *    // setApiKey, etc...
      *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
@@ -327,10 +327,8 @@ public interface ClientBuilder {
     ClientBuilder setAuthenticationScheme(AuthenticationScheme authenticationScheme);
 
     /**
-     * Determines both the timeout until a connection is established and the socket timeout (i.e. a maximum period of inactivity
-     * between two consecutive data packets)
-     * </pre>
-     * A timeout value of zero is interpreted as an infinite timeout.
+     * Sets both the timeout until a connection is established and the socket timeout (i.e. a maximum period of inactivity
+     * between two consecutive data packets).  A timeout value of zero is interpreted as an infinite timeout.
      *
      * @param timeout connection and socket timeout in milliseconds
      * @return the ClientBuilder instance for method chaining
@@ -341,9 +339,9 @@ public interface ClientBuilder {
     /**
      * Sets the base URL of the Stormpath REST API to use.  If unspecified, this value defaults to
      * {@code https://api.stormpath.com/v1} - the most common use case for Stormpath's public SaaS cloud.
-     * <p/>
-     * Customers using Stormpath's Enterprise HA cloud might need to configure this to be
-     * {@code https://enterprise.stormpath.io/v1} for example.
+     *
+     * <p>Customers using Stormpath's Enterprise HA cloud might need to configure this to be
+     * {@code https://enterprise.stormpath.io/v1} for example.</p>
      *
      * @param baseUrl the base URL of the Stormpath REST API to use.
      * @return the ClientBuilder instance for method chaining
@@ -357,5 +355,4 @@ public interface ClientBuilder {
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.
      */
     Client build();
-
 }
