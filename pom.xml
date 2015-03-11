@@ -91,7 +91,7 @@
 
     <properties>
 
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.6</jdk.version>
 
         <slf4j.version>1.7.8</slf4j.version>
         <hazelcast.version>3.2.4</hazelcast.version>
@@ -364,7 +364,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.2</version>
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>

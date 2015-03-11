@@ -385,7 +385,7 @@ public class StormpathWebAutoConfiguration {
     @ConditionalOnProperty(prefix = "stormpath.web.authc.savers.session", name = "enabled", havingValue = "true")
     public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
         String[] attributeNames = { Account.class.getName(), "account" };
-        Set<String> set = new HashSet<>(Arrays.asList(attributeNames));
+        Set<String> set = new HashSet<String>(Arrays.asList(attributeNames));
         return new SessionAuthenticationResultSaver(set);
     }
 
@@ -405,7 +405,7 @@ public class StormpathWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthenticationResultSaver stormpathAuthenticationResultSaver(List<Saver<AuthenticationResult>> savers) {
-        List<Saver<AuthenticationResult>> target = new ArrayList<>();
+        List<Saver<AuthenticationResult>> target = new ArrayList<Saver<AuthenticationResult>>();
 
         for (Saver<AuthenticationResult> saver : savers) {
             if (!CookieSaver.class.isAssignableFrom(saver.getClass())) {
@@ -542,7 +542,7 @@ public class StormpathWebAutoConfiguration {
 
         //the order determines which locations are checked.  One an account is found, the remaining locations are
         //skipped, so we must order them based on preference:
-        List<Resolver<Account>> resolvers = new ArrayList<>(3);
+        List<Resolver<Account>> resolvers = new ArrayList<Resolver<Account>>(3);
         resolvers.add(headerResolver);
         resolvers.add(cookieResolver);
         resolvers.add(sessionResolver);
@@ -578,7 +578,7 @@ public class StormpathWebAutoConfiguration {
             }
         };
 
-        return new ServletListenerRegistrationBean<>(listener);
+        return new ServletListenerRegistrationBean<ServletContextListener>(listener);
     }
 
     @Bean
