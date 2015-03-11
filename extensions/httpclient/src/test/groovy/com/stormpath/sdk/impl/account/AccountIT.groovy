@@ -393,7 +393,7 @@ class AccountIT extends ClientIT {
         Map properties02 = getValue(AbstractResource, account02, "properties")
         Map dirtyProperties02 = getValue(AbstractResource, account02, "dirtyProperties")
 
-        final int EXPECTED_PROPERTIES_SIZE = 17;
+        final int EXPECTED_PROPERTIES_SIZE = 19;
 
         assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
