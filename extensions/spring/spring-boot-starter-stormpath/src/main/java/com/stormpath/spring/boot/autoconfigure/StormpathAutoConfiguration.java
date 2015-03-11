@@ -17,23 +17,13 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Clients;
-import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.cache.DisabledCacheManager;
-import com.stormpath.spring.cache.SpringCacheManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stormpath.spring.config.AbstractStormpathConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @since 1.0.RC4
@@ -41,78 +31,31 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @ConditionalOnProperty(name = "stormpath.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(
-    { StormpathProperties.class, StormpathApplicationProperties.class, StormpathClientApiKeyProperties.class,
-        StormpathClientAuthenticationProperties.class, StormpathClientProxyProperties.class,
-        StormpathCacheProperties.class })
-public class StormpathAutoConfiguration {
-
-    @Autowired
-    protected StormpathProperties stormpathProperties;
-
-    @Autowired
-    protected StormpathClientApiKeyProperties apiKeyProperties;
-
-    @Autowired
-    protected StormpathApplicationProperties applicationProperties;
-
-    @Autowired
-    protected StormpathClientAuthenticationProperties authenticationProperties;
-
-    @Autowired
-    protected StormpathClientProxyProperties proxyProperties;
-
-    @Autowired
-    protected StormpathCacheProperties cacheProperties;
-
-    @Autowired(required = false)
-    protected CacheManager cacheManager;
+public class StormpathAutoConfiguration extends AbstractStormpathConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathClientApiKey")
     public ApiKey stormpathClientApiKey() {
-        return apiKeyProperties.resolveApiKey();
+        return super.stormpathClientApiKey();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathApplication")
     public Application stormpathApplication(Client client) {
-        return applicationProperties.resolveApplication(client);
+        return super.stormpathApplication(client);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
-
-        if (!cacheProperties.isEnabled()) {
-            return new DisabledCacheManager();
-        }
-
-        if (cacheManager != null) {
-            return new SpringCacheManager(cacheManager);
-        }
-
-        //otherwise no Spring CacheManager - create a default:
-        return Caches.newCacheManager()
-                     .withDefaultTimeToLive(1, TimeUnit.HOURS)
-                     .withDefaultTimeToIdle(1, TimeUnit.HOURS).build();
+        return super.stormpathCacheManager();
     }
 
     @Bean
     @ConditionalOnMissingBean
     public Client stormpathClient(@Qualifier("stormpathClientApiKey") ApiKey apiKey,
                                   com.stormpath.sdk.cache.CacheManager cacheManager) {
-
-        ClientBuilder builder = Clients.builder().setBaseUrl(stormpathProperties.getBaseUrl())
-                                       .setAuthenticationScheme(authenticationProperties.getScheme()).setApiKey(apiKey)
-                                       .setCacheManager(cacheManager);
-
-        Proxy proxy = proxyProperties.resolveProxy();
-        if (proxy != null) {
-            builder.setProxy(proxy);
-        }
-
-        return builder.build();
+        return super.stormpathClient(apiKey, cacheManager);
     }
 
 }

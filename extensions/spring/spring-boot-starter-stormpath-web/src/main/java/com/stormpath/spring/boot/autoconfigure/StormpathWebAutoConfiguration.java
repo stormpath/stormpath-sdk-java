@@ -113,7 +113,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -241,8 +240,6 @@ public class StormpathWebAutoConfiguration {
                                                   @Qualifier("stormpathAccessTokenController") Controller accessToken) {
 
         Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
-
-        //TODO: work in progress, just testing for now:
 
         if (loginProperties.isEnabled()) {
             mappings.put(loginProperties.getUri(), loginController);
@@ -720,7 +717,7 @@ public class StormpathWebAutoConfiguration {
     @Configuration
     @ConditionalOnMissingBean(MessageSource.class)
     @ConditionalOnProperty(prefix = "spring.messages", name = "basename")
-    public static class MessageSourceConfiguration extends WebMvcConfigurerAdapter {
+    public static class MessageSourceConfiguration {
 
         @Bean
         public MessageSource messageSource(@Value("${spring.messages.basename}") String basename) {
@@ -747,7 +744,7 @@ public class StormpathWebAutoConfiguration {
     @Configuration
     @ConditionalOnMissingBean(MessageSource.class)
     @ConditionalOnProperty(prefix = "spring.messages", name = "basename", matchIfMissing = true)
-    public static class MissingBasenameMessageSourceConfiguration extends WebMvcConfigurerAdapter {
+    public static class MissingBasenameMessageSourceConfiguration {
 
         @Autowired
         private ApplicationContext appCtx;

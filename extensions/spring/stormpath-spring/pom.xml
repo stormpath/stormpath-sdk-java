@@ -29,6 +29,8 @@
     <description>Implementations of Stormpath interfaces that delegate to Spring components.</description>
 
     <dependencies>
+
+        <!-- Required dependencies: -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -37,6 +39,8 @@
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-api</artifactId>
         </dependency>
+
+        <!-- Testing-only dependencies: -->
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-impl</artifactId>
