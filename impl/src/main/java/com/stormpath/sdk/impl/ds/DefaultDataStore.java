@@ -73,16 +73,16 @@ public class DefaultDataStore implements InternalDataStore {
     public static final int DEFAULT_API_VERSION = 1;
 
     public static final String DEFAULT_CRITERIA_MSG = "The " + DefaultDataStore.class.getName() +
-                                                      " implementation only functions with " +
-                                                      DefaultCriteria.class.getName() + " instances.";
+            " implementation only functions with " +
+            DefaultCriteria.class.getName() + " instances.";
 
     public static final String DEFAULT_OPTIONS_MSG = "The " + DefaultDataStore.class.getName() +
-                                                     " implementation only functions with " +
-                                                     DefaultOptions.class.getName() + " instances.";
+            " implementation only functions with " +
+            DefaultOptions.class.getName() + " instances.";
 
     public static final String HREF_REQD_MSG = "'save' may only be called on objects that have already been " +
-                                               "persisted and have an existing " + AbstractResource.HREF_PROP_NAME +
-                                               " attribute.";
+            "persisted and have an existing " + AbstractResource.HREF_PROP_NAME +
+            " attribute.";
 
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
@@ -251,6 +251,20 @@ public class DefaultDataStore implements InternalDataStore {
 
         return instantiate(childClass, data, result.getUri().getQuery());
     }
+
+    @Override
+    public <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.isInstanceOf(DefaultOptions.class, options, "The " + getClass().getName() + " implementation only functions with " +
+                DefaultOptions.class.getName() + " instances.");
+        DefaultOptions defaultOptions = (DefaultOptions) options;
+        QueryString qs = queryStringFactory.createQueryString(defaultOptions);
+        //return getResourceData(href, clazz, (Map<String, String>) qs);
+        ResourceDataResult result = getResourceData(href, clazz, (Map<String, String>) qs);
+        return instantiate(clazz, result.getData(), result.getUri().getQuery());
+    }
+
 
     @SuppressWarnings("unchecked")
     private ResourceDataResult getResourceData(String href, Class<? extends Resource> clazz, Map<String,?> queryParameters) {

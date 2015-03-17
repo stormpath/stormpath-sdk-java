@@ -23,12 +23,9 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GithubProvider
-import com.stormpath.sdk.provider.GoogleProviderData
-import com.stormpath.sdk.provider.Provider
-import com.stormpath.sdk.provider.ProviderData
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.impl.query.DefaultOptions
+import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.resource.Resource
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -358,6 +355,38 @@ class DefaultDataStoreTest {
         verify(requestExecutor, response)
     }
 
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetResourceExpandedInvalidArguments() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKey = createStrictMock(ApiKey)
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        def emptyOptions = createStrictMock(DefaultOptions)
+        def resourceData = Resource
+        def href = "http://api.stormpath.com/v1/directories/2B6PLkZ8AGvWlziq18JJ62"
 
+        try {
+            defaultDataStore.getResourceExpanded(null, resourceData, emptyOptions)
+            fail("should have thrown due to empty href")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "href argument cannot be null or empty.")
+        }
+
+        try {
+            defaultDataStore.getResourceExpanded(href, null, emptyOptions)
+            fail("should have thrown due to empty class")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "Resource class argument cannot be null.")
+        }
+
+        try {
+            defaultDataStore.getResourceExpanded(href, resourceData, null)
+            fail("should have thrown due to empty options")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "The com.stormpath.sdk.impl.ds.DefaultDataStore implementation only functions with com.stormpath.sdk.impl.query.DefaultOptions instances.Object of class [null] must be an instance of class com.stormpath.sdk.impl.query.DefaultOptions")
+        }
+    }
 
 }

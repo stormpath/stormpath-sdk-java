@@ -25,6 +25,8 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.TenantOptions
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -382,6 +384,53 @@ class TenantIT extends ClientIT {
         assertTrue(GithubProvider.isAssignableFrom(provider.getClass()))
         assertEquals(((GithubProvider)provider).getClientId(), clientId)
         assertEquals(((GithubProvider)provider).getClientSecret(), clientSecret)
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testTenantExpansion(){
+        def tenant = client.currentTenant
+
+        TenantOptions options = Tenants.options()
+                .withApplications()
+                .withGroups()
+
+        // test options created successfully
+        assertNotNull options
+        assertEquals options.expansions.size(), 2
+
+        def retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options).iterator().next()
+        def initialGroups = 0
+        def iterator = retrieved.groups.iterator()
+        while(iterator.hasNext()){
+            iterator.next()
+            initialGroups ++
+        }
+
+        def app = createTempApp()
+        Group group1 = client.instantiate(Group)
+        group1.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group1")
+        group1 = app.createGroup(group1)
+        deleteOnTeardown(group1)
+
+        Group group2 = client.instantiate(Group)
+        group2.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group2")
+        group2 = app.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options).iterator().next()
+        assertEquals(tenant.href, retrieved.href)
+
+        def finalGroups = 0
+        iterator = retrieved.groups.iterator()
+        while(iterator.hasNext()){
+            iterator.next()
+            finalGroups ++
+        }
+
+        assertEquals(finalGroups, initialGroups + 2)
     }
 
 }

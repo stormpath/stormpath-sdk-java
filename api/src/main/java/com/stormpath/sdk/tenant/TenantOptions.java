@@ -43,4 +43,67 @@ public interface TenantOptions<T> extends Options {
      * @since 1.0.0
      */
     T withCustomData();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the returned accounts, see the
+     * {@link #withAccounts(int) withAccounts(limit)} or
+     * {@link #withAccounts(int, int) withAccounts(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     * @since 1.0.RC4
+     */
+    T withAccounts();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
+     *
+     * @param limit the number of results in the accounts collection's first page.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4
+     */
+    T withAccounts(int limit);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
+     *
+     * @param limit the number of results in the accounts collection's first page.  Min: 1, Max: 100.
+     * @param offset the starting index of the first Account to retrieve in the overall accounts collection's result set.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4
+     */
+    T withAccounts(int limit, int offset);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the returned groups, see the
+     * {@link #withGroups(int) withGroups(limit)} or
+     * {@link #withGroups(int, int) withGroups(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     * @since 1.0.RC4
+     */
+    T withGroups();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
+     *
+     * @param limit the number of results in the groups collection's first page.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4
+     */
+    T withGroups(int limit);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
+     *
+     * @param limit the number of results in the groups collection's first page.  Min: 1, Max: 100.
+     * @param offset the starting index of the first {@link Group} to retrieve in the overall groups collection's result set.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4
+     */
+    T withGroups(int limit, int offset);
+
 }
