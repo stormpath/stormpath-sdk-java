@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
@@ -215,6 +216,38 @@ class DirectoryIT extends ClientIT {
         assertEquals retrievedPasswordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED
     }
 
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testDirectoryExpansion(){
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDirectoryExpansion")
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
 
+        String href = dir.href
+
+        DirectoryOptions options = Directories.options().withAccounts()
+
+        // test options created successfully
+        assertNotNull options
+        assertEquals options.expansions.size(), 1
+
+        Directory retrieved = client.getResourceExpanded(href, Directory.class, options).iterator().next()
+
+        assertFalse retrieved.accounts.iterator().hasNext()
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('Doe')
+                .setEmail('johndoe@email.com')
+                .setPassword('Changeme1!')
+        dir.createAccount(account)
+
+        retrieved = client.getResourceExpanded(href, Directory.class, options).iterator().next()
+        def retrievedAccount = retrieved.accounts.iterator().next()
+        assertNotNull retrievedAccount.username
+    }
 
 }

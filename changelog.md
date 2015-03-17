@@ -3,6 +3,7 @@
 ### 1.0.RC4 ###
 
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.
+- [Issue 142] (https://github.com/stormpath/stormpath-sdk-java/issues/98): Add a way to retrieve a single Resource with Expansion
 
 ### 1.0.RC3.1 ###
 

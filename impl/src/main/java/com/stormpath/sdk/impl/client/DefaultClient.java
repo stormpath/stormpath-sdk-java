@@ -36,6 +36,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
@@ -222,6 +223,23 @@ public class DefaultClient implements Client {
     }
 
     /**
+     * Delegates to the internal {@code dataStore} instance. This is a convenience mechanism to eliminate the constant
+     * need to call {@code client.getDataStore()} every time one needs to look up a Resource.
+     *
+     * @param href  the URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
+     * @param options the {@link Options} sub-interface with the properties to expand
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @return an instance of the specified {@code Class} based on the data returned from the specified {@code href} URL.
+     *
+     * @since 1.0.RC4
+     */
+    @Override
+    public <T extends Resource> T getResourceExpanded(String href, Class<T> clazz, Options options) {
+        return this.dataStore.getResourceExpanded(href, clazz, options);
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @since 1.0.RC
@@ -391,4 +409,11 @@ public class DefaultClient implements Client {
         return getCurrentTenant().getGroups(queryParams);
     }
 
+//    /**
+//     * @since 1.0.RC4
+//     */
+//    @Override
+//    public <T extends Resource> T getResourceWithExpansionOptions(String href, Class<T> clazz, Class<Options> options) {
+//        return this.dataStore.getResourceWithExpansionOptions(href, clazz, options);
+//    }
 }

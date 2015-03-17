@@ -54,8 +54,6 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria);
 
-    //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
-
     /**
      * @since 1.0.beta
      */

@@ -29,23 +29,12 @@ import com.stormpath.sdk.impl.ds.api.ApiKeyCachePropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryPropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyResourcePropertiesFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.QueryStringFactory;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.impl.http.*;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.resource.ArrayProperty;
-import com.stormpath.sdk.impl.resource.CollectionProperties;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ReferenceFactory;
-import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
@@ -66,17 +55,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.HREF_PROP_NAME;
 
 /**
  * @since 0.1
@@ -192,8 +174,21 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "Resource class argument cannot be null.");
         SanitizedQuery sanitized = QuerySanitizer.sanitize(href, queryParameters);
         return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
+    }
+
+    @Override
+    public <T extends Resource> T getResourceExpanded(String href, Class<T> clazz, Options options) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.isInstanceOf(DefaultOptions.class, options, "The " + getClass().getName() + " implementation only functions with " +
+                DefaultOptions.class.getName() + " instances.");
+        DefaultOptions defaultOptions = (DefaultOptions) options;
+        QueryString qs = queryStringFactory.createQueryString(defaultOptions);
+        return getResource(href, clazz, qs);
     }
 
     @Override
@@ -289,26 +284,26 @@ public class DefaultDataStore implements InternalDataStore {
 
         QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(clazz, qs);
         Map<String, ?> data = null;
-        if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) {
-
-            if (isApiKeyCollectionQuery(clazz, filteredQs)) {
-                String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
-                Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
-
-                Map apiKeyData = getCachedValue(cacheHref, cacheClass);
-
-                if (!Collections.isEmpty(apiKeyData)) {
-                    CollectionProperties.Builder builder = new CollectionProperties.Builder()
-                            .setHref(href)
-                            .setOffset(filteredQs.containsKey(OFFSET.getName()) ? Integer.valueOf(filteredQs.get(OFFSET.getName())) : 0)
-                            .setLimit(filteredQs.containsKey(LIMIT.getName()) ? Integer.valueOf(filteredQs.get(LIMIT.getName())) : 25)
-                            .setItemsMap(apiKeyData);
-                    data = builder.build();
-                }
-            } else {
-                data = getCachedValue(href, clazz);
-            }
-        }
+//        if ((isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) && !qs.containsKey("expand")) {
+//
+//            if (isApiKeyCollectionQuery(clazz, filteredQs)) {
+//                String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
+//                Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
+//
+//                Map apiKeyData = getCachedValue(cacheHref, cacheClass);
+//
+//                if (!Collections.isEmpty(apiKeyData)) {
+//                    CollectionProperties.Builder builder = new CollectionProperties.Builder()
+//                            .setHref(href)
+//                            .setOffset(filteredQs.containsKey(OFFSET.getName()) ? Integer.valueOf(filteredQs.get(OFFSET.getName())) : 0)
+//                            .setLimit(filteredQs.containsKey(LIMIT.getName()) ? Integer.valueOf(filteredQs.get(LIMIT.getName())) : 25)
+//                            .setItemsMap(apiKeyData);
+//                    data = builder.build();
+//                }
+//            } else {
+//                data = getCachedValue(href, clazz);
+//            }
+//        }
 
         Map<String, ?> returnResponseBody = data;
         if (Collections.isEmpty(data)) {
@@ -316,7 +311,7 @@ public class DefaultDataStore implements InternalDataStore {
             Request request = createRequest(HttpMethod.GET, href, filteredQs);
             data = executeRequest(request);
 
-            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
+            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz) && !qs.containsKey("expand")) {
                 //cache for further use:
                 cache(clazz, data, filteredQs);
             }
