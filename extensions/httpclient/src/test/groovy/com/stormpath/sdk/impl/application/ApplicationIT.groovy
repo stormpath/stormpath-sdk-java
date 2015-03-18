@@ -647,11 +647,15 @@ class ApplicationIT extends ClientIT {
                 retrievedAccountStoreMapping = app.addAccountStore(Directories.criteria().add(Directories.description().eqIgnoreCase(dir.description + "XXX")))
                 assertNull(retrievedAccountStoreMapping)
             } catch (Exception e) {
-                if (!(e instanceof ResourceException)) { //this is the known sporadic exception; we will fail if there is a different one
+                if (!(e instanceof ResourceException)) {
+                    //this is the known sporadic exception; we will fail if there is a different one
                     throw e;
                 }
-                System.out.println("Test failed due to " + e.getMessage() + ".\nRetrying once...")
-                retry--
+                count--
+                if (count < 0) {
+                    throw e
+                }
+                System.out.println("Test failed due to " + e.getMessage() + ".\nRetrying " + (count + 1) + " more time(s)")
                 continue
             }
             break;  //no error, let's get out of the loop
@@ -719,8 +723,11 @@ class ApplicationIT extends ClientIT {
                     //this is the known sporadic exception; we will fail if there is a different one
                     throw e;
                 }
-                System.out.println("Test failed due to " + e.getMessage() + ".\nRetrying once...")
-                retry--
+                count--
+                if (count < 0) {
+                    throw e
+                }
+                System.out.println("Test failed due to " + e.getMessage() + ".\nRetrying " + (count + 1) + " more time(s)")
                 continue
             }
             break;  //no error, let's get out of the loop
