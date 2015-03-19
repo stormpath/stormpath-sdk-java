@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.autoconfigure;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+public class App {
 
-/**
- * @since 1.0.RC4
- */
-@ConfigurationProperties(prefix = "stormpath.web.register.form")
-public class StormpathRegisterFormProperties {
+    public static void main(String[] args) {
 
-    private String fields = "givenName, surname, email(required), password(required,password)";
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        context.registerShutdownHook();
 
-    public String getFields() {
-        return fields;
-    }
+        String startupMessage = context.getBean("startupMessage", String.class);
 
-    public void setFields(String fields) {
-        this.fields = fields;
+        System.out.println("\n");
+        System.out.println(startupMessage);
+        System.out.println("\n");
     }
 }

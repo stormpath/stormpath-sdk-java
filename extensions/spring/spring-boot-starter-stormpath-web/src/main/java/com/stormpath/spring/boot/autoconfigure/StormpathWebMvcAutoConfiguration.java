@@ -87,7 +87,6 @@ import java.util.Locale;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ StormpathAutoConfiguration.class, WebMvcAutoConfiguration.class })
-
 public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcConfiguration {
 
     @Bean

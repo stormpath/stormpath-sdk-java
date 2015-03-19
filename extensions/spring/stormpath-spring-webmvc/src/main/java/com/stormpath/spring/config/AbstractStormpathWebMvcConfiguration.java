@@ -93,6 +93,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -686,7 +687,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         MessageSource messageSource = this.messageSource;
 
-        if (messageSource == null) {
+        if (messageSource == null || isPlaceholder(messageSource)) {
             messageSource = createI18nPropertiesMessageSource();
         } else {
 
@@ -713,6 +714,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         return messageSource;
+    }
+
+    /**
+     * At ApplicationContext startup, Spring creates a placeholder in the ApplicationContext to await a 'real' message
+     * source.  This method returns {@code true} if the specified message source is just a placeholder (and not relevant
+     * for our needs) or {@code false} if the message source is a 'real' message source and usable.
+     *
+     * @param messageSource the message source to check
+     * @return {@code true} if the specified message source is just a placeholder (and not relevant for our needs) or
+     * {@code false} if the message source is a 'real' message source and usable.
+     */
+    //
+    protected boolean isPlaceholder(MessageSource messageSource) {
+        return messageSource instanceof DelegatingMessageSource &&
+               ((DelegatingMessageSource) messageSource).getParentMessageSource() == null;
     }
 
     protected MessageSource createI18nPropertiesMessageSource() {

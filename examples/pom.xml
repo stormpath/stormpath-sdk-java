@@ -30,6 +30,7 @@
 
     <modules>
         <module>servlet</module>
+        <module>spring</module>
         <module>spring-boot-web</module>
     </modules>
 
