@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.mvc;
+package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.lang.Strings;
 import org.springframework.beans.factory.InitializingBean;

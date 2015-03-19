@@ -19,7 +19,6 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.spring.config.AbstractStormpathConfiguration;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +40,8 @@ public class StormpathAutoConfiguration extends AbstractStormpathConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathApplication")
-    public Application stormpathApplication(Client client) {
-        return super.stormpathApplication(client);
+    public Application stormpathApplication() {
+        return super.stormpathApplication();
     }
 
     @Bean
@@ -53,9 +52,8 @@ public class StormpathAutoConfiguration extends AbstractStormpathConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public Client stormpathClient(@Qualifier("stormpathClientApiKey") ApiKey apiKey,
-                                  com.stormpath.sdk.cache.CacheManager cacheManager) {
-        return super.stormpathClient(apiKey, cacheManager);
+    public Client stormpathClient() {
+        return super.stormpathClient();
     }
 
 }

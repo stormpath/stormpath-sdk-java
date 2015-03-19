@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.mvc;
+package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.servlet.mvc.ViewModel;
 import org.slf4j.Logger;
@@ -30,10 +30,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
- * This is an adapter or bridge component: it is a Spring {@link org.springframework.web.servlet.mvc.Controller Controller} implementationt that simply wraps (delegates) to a Stormpath {@link com.stormpath.sdk.servlet.mvc.Controller com.stormpath.sdk.servlet.mvc.Controller} implementation.
- * <p/>
- * It allows existing Stormpath mvc-framewokr-agnostic controller implementations to be used as Spring controllers in
- * Spring environments.
+ * This is an adapter or bridge component: it is a Spring {@link org.springframework.web.servlet.mvc.Controller
+ * Controller} implementation that simply wraps (delegates) to a Stormpath {@link com.stormpath.sdk.servlet.mvc.Controller
+ * com.stormpath.sdk.servlet.mvc.Controller} implementation.
+ *
+ * <p>It allows existing Stormpath mvc-framework-agnostic controller implementations to be used as Spring controllers in
+ * Spring environments.</p>
  *
  * @since 1.0.RC4
  */
@@ -51,10 +53,10 @@ public class SpringController extends AbstractController {
     }
 
     /**
-     * Set the UrlPathHelper to use for the resolution of lookup paths.
-     * <p>Use this to override the default UrlPathHelper with a custom subclass,
-     * or to share common UrlPathHelper settings across multiple MethodNameResolvers
-     * and HandlerMappings.
+     * Set the UrlPathHelper to use for the resolution of lookup paths. <p>Use this to override the default
+     * UrlPathHelper with a custom subclass, or to share common UrlPathHelper settings across multiple
+     * MethodNameResolvers and HandlerMappings.
+     *
      * @see org.springframework.web.servlet.handler.AbstractUrlHandlerMapping#setUrlPathHelper
      */
     public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
@@ -71,10 +73,10 @@ public class SpringController extends AbstractController {
 
     /**
      * Delegates to the wrapped {@link com.stormpath.sdk.servlet.mvc.Controller com.stormpath.sdk.servlet.mvc.Controller}
-     * instance and converts the returned Stormpath SDK-specific {@link com.stormpath.sdk.servlet.mvc.ViewModel ViewModel}
-     * to a Spring {@link org.springframework.web.servlet.ModelAndView ModelAndView} instance.
+     * instance and converts the returned Stormpath SDK-specific {@link com.stormpath.sdk.servlet.mvc.ViewModel
+     * ViewModel} to a Spring {@link org.springframework.web.servlet.ModelAndView ModelAndView} instance.
      *
-     * @param request inbound http request
+     * @param request  inbound http request
      * @param response outbound http response
      * @return the ModelAndView that should be rendered by Spring MVC.
      */
@@ -100,7 +102,7 @@ public class SpringController extends AbstractController {
             log.debug("Returning view name '" + viewName + "' for lookup path [" + lookupPath + "]");
         }
 
-        Map<String,?> model = vm.getModel();
+        Map<String, ?> model = vm.getModel();
 
         boolean redirect = vm.isRedirect();
 

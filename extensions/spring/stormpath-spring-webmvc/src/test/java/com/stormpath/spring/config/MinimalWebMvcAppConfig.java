@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.autoconfigure;
+package com.stormpath.spring.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * @since 1.0.RC4
- */
-@ConfigurationProperties(prefix = "stormpath.web.register")
-public class StormpathRegisterProperties extends ViewControllerProperties {
-
-    public StormpathRegisterProperties() {
-        super("/register", "/", "stormpath/register");
-    }
-}
+@Configuration
+@EnableStormpath
+@EnableStormpathWebMvc
+public class MinimalWebMvcAppConfig {}

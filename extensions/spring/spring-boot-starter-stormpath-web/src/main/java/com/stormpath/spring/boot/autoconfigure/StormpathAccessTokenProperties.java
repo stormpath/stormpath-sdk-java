@@ -21,24 +21,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.RC4
  */
 @ConfigurationProperties(prefix = "stormpath.web.accessToken")
-public class StormpathAccessTokenProperties {
+public class StormpathAccessTokenProperties extends ControllerProperties {
 
-    private boolean enabled = true;
-    private String uri = "/oauth/token";
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
+    public StormpathAccessTokenProperties() {
+        super("/oauth/token");
     }
 }

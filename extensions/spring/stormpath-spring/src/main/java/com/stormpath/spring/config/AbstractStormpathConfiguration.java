@@ -116,7 +116,9 @@ public abstract class AbstractStormpathConfiguration {
         return builder.build();
     }
 
-    public Application stormpathApplication(Client client) {
+    public Application stormpathApplication() {
+
+        Client client = stormpathClient();
 
         if (Strings.hasText(applicationHref)) {
             return client.getResource(applicationHref, Application.class);
@@ -156,7 +158,7 @@ public abstract class AbstractStormpathConfiguration {
                      .withDefaultTimeToIdle(1, TimeUnit.HOURS).build();
     }
 
-    private Proxy resolveProxy() {
+    protected Proxy resolveProxy() {
 
         if (!Strings.hasText(proxyHost)) {
             return null;
@@ -173,9 +175,11 @@ public abstract class AbstractStormpathConfiguration {
         return proxy;
     }
 
-    public Client stormpathClient(ApiKey apiKey, com.stormpath.sdk.cache.CacheManager cacheManager) {
+    public Client stormpathClient() {
 
-        ClientBuilder builder = Clients.builder().setApiKey(apiKey).setCacheManager(cacheManager);
+        ClientBuilder builder = Clients.builder()
+                                       .setApiKey(stormpathClientApiKey())
+                                       .setCacheManager(stormpathCacheManager());
 
         if (authenticationScheme != null) {
             builder.setAuthenticationScheme(authenticationScheme);

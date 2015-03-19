@@ -24,28 +24,53 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-spring</artifactId>
-    <name>Stormpath :: Spring :: Core</name>
-    <description>Implementations of Stormpath interfaces that delegate to Spring components.</description>
+    <artifactId>stormpath-spring-webmvc</artifactId>
+    <name>Stormpath :: Spring :: Web MVC</name>
+    <description>Web MVC support for Stormpath-enabled Spring applications.</description>
 
     <dependencies>
 
         <!-- Required dependencies: -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-api</artifactId>
         </dependency>
-
-        <!-- Testing-only dependencies: -->
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-servlet</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-httpclient</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.stormpath.spring</groupId>
+            <artifactId>stormpath-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <!-- Testing-only dependencies: -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

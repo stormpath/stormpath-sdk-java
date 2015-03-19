@@ -15,32 +15,32 @@
  */
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class StormpathConfiguration extends AbstractStormpathConfiguration {
+@EnableStormpath
+public class BeanOverrideAppConfig {
 
-    @Bean
-    public ApiKey stormpathClientApiKey() {
-        return super.stormpathClientApiKey();
-    }
+    @Autowired
+    private Client client;
 
     @Bean
     public Application stormpathApplication() {
-        return super.stormpathApplication();
+
+        //purposefully return the Stormpath admin console app.
+        //Real apps would never do this, but this is an easy way to test that bean overrides work:
+
+        for (Application app : client.getApplications()) {
+            if (app.getName().equalsIgnoreCase("Stormpath")) { //return the admin app
+                return app;
+            }
+        }
+
+        throw new IllegalStateException("Stormpath application is always available in Stormpath.");
     }
 
-    @Bean
-    public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
-        return super.stormpathCacheManager();
-    }
-
-    @Bean
-    public Client stormpathClient() {
-        return super.stormpathClient();
-    }
 }

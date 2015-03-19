@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.autoconfigure;
+package com.stormpath.spring.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Import;
 
-/**
- * @since 1.0.RC4
- */
-@ConfigurationProperties(prefix = "stormpath.web.register")
-public class StormpathRegisterProperties extends ViewControllerProperties {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public StormpathRegisterProperties() {
-        super("/register", "/", "stormpath/register");
-    }
-}
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Import(StormpathWebMvcConfiguration.class)
+public @interface EnableStormpathWebMvc {}

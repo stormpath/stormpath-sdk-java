@@ -21,26 +21,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.RC4
  */
 @ConfigurationProperties(prefix = "stormpath.web.logout")
-public class StormpathLogoutProperties {
+public class StormpathLogoutProperties extends ControllerProperties {
 
-    private boolean enabled = true;
-    private String uri = "/logout";
     private String nextUri = "/";
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
+    public StormpathLogoutProperties() {
+        super("/logout");
     }
 
     public String getNextUri() {
