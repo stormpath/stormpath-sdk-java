@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.resource.Auditable;
 
 import java.util.Date;
 import java.util.Map;
@@ -30,7 +31,7 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
-public abstract class AbstractProvider extends AbstractResource implements Provider {
+public abstract class AbstractProvider extends AbstractResource implements Provider, Auditable {
 
     // SIMPLE PROPERTIES
     static final StringProperty PROVIDER_ID = new StringProperty("providerId");
@@ -51,6 +52,9 @@ public abstract class AbstractProvider extends AbstractResource implements Provi
         return getString(PROVIDER_ID);
     }
 
+    /**
+     * @since 1.0.RC4
+     */
     @Override
     public Date getCreatedAt() {
         return getDateProperty(CREATED_AT);

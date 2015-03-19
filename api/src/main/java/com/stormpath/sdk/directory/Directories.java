@@ -17,6 +17,7 @@ package com.stormpath.sdk.directory;
 
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
+import com.stormpath.sdk.query.DateExpressionFactory;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
@@ -122,6 +123,58 @@ public final class Directories {
     }
 
     /**
+     * Creates a new {@link DateExpressionFactory} instance reflecting the Directory {@link Directory#getCreatedAt() createdAt}
+     * property, to be used to construct a createdAt Criterion when building an {@link DirectoryCriteria} query.  For example:
+     * <pre>
+     * Directories.where(<b>Directories.createdAt()</b>.matches("[,2014-04-05T12:00:00]");
+     * </pre>
+     * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
+     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(Criterion) where} method).
+     * <pre>
+     * For example, the following code is equivalent:
+     * <pre>
+     * DirectoryCriteria criteria = Directories.criteria();
+     * DateExpressionFactory createdAt = Directories.createdAt();
+     * Criterion createdAtMatches = createdAt.matches("[,2014-04-05T12:00:00]");
+     * criteria.add(createdAtMatches);
+     * </pre>
+     *
+     * @return a new {@link Directory#getCreatedAt() createdAt}-specific {@link DateExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link DirectoryCriteria} query.
+     * @since 1.0.RC4
+     */
+    public static DateExpressionFactory createdAt(){
+        return newDateExpressionFactory("createdAt");
+    }
+
+    /**
+     * Creates a new {@link DateExpressionFactory} instance reflecting the Directory {@link Directory#getModifiedAt() modifiedAt}
+     * property, to be used to construct a modifiedAt Criterion when building an {@link DirectoryCriteria} query.  For example:
+     * <pre>
+     * Directories.where(<b>Directories.modifiedAt()</b>.matches("[,2014-04-05T12:00:00]");
+     * </pre>
+     * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
+     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(Criterion) where} method).
+     * <pre>
+     * For example, the following code is equivalent:
+     * <pre>
+     * DirectoryCriteria criteria = Directories.criteria();
+     * DateExpressionFactory createdAt = Directories.modifiedAt();
+     * Criterion modifiedAtMatches = modifiedAt.matches("[,2014-04-05T12:00:00]");
+     * criteria.add(modifiedAtMatches);
+     * </pre>
+     *
+     * @return a new {@link Directory#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link DirectoryCriteria} query.
+     * @since 1.0.RC4
+     */
+    public static DateExpressionFactory modifiedAt(){
+        return newDateExpressionFactory("modifiedAt");
+    }
+
+    /**
      * Creates a new {@link StringExpressionFactory} instance reflecting the Directory {@link Directory#getDescription() description}
      * property, to be used to construct a description Criterion when building an {@link DirectoryCriteria} query.  For example:
      * <pre>
@@ -177,6 +230,11 @@ public final class Directories {
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";
         return (StringExpressionFactory) Classes.newInstance(FQCN, propName);
+    }
+
+    private static DateExpressionFactory newDateExpressionFactory(String propName) {
+        final String FQCN = "com.stormpath.sdk.impl.query.DefaultDateExpressionFactory";
+        return (DateExpressionFactory) Classes.newInstance(FQCN, propName);
     }
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {

@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.application
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.*
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.AccountStoreMapping
@@ -52,6 +53,7 @@ import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 import java.lang.reflect.Field
+import java.text.DateFormat
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -91,7 +93,9 @@ class DefaultApplicationTest {
                 tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
                 accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
                 groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
-                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"]]
+                passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
+                createdAt: "2015-01-01T00:00:00Z",
+                modifiedAt: "2015-02-01T00:00:00Z"]
 
         def internalDataStore = createStrictMock(InternalDataStore)
 
@@ -106,6 +110,10 @@ class DefaultApplicationTest {
         assertEquals(defaultApplication.getStatus(), ApplicationStatus.DISABLED)
         assertEquals(defaultApplication.getName(), "App Name")
         assertEquals(defaultApplication.getDescription(), "App Description")
+
+        DateFormat df = new ISO8601DateFormat();
+        assertEquals(df.format(defaultApplication.getCreatedAt()), "2015-01-01T00:00:00Z")
+        assertEquals(df.format(defaultApplication.getModifiedAt()), "2015-02-01T00:00:00Z")
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 

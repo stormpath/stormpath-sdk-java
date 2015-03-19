@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.account
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.EmailVerificationToken
 import com.stormpath.sdk.api.ApiKeyList
@@ -36,6 +37,8 @@ import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
+
+import java.text.DateFormat
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -83,7 +86,9 @@ class DefaultAccountTest {
                           groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
                           groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
                           providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
-                          apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"]]
+                          apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"],
+                          createdAt: "2015-01-01T00:00:00Z",
+                          modifiedAt: "2015-02-01T12:00:00Z"]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultAccount = new DefaultAccount(internalDataStore, properties)
@@ -99,6 +104,8 @@ class DefaultAccountTest {
             .setStatus(AccountStatus.DISABLED)
             .setPassword("superPass0rd")
 
+        DateFormat df = new ISO8601DateFormat();
+
         assertEquals(defaultAccount.getUsername(), "pacoman")
         assertEquals(defaultAccount.getEmail(), "some@email.com")
         assertEquals(defaultAccount.getSurname(), "Smuk")
@@ -106,6 +113,8 @@ class DefaultAccountTest {
         assertEquals(defaultAccount.getGivenName(), "Mel")
         assertEquals(defaultAccount.getStatus(), AccountStatus.DISABLED)
         assertEquals(defaultAccount.getFullName(), "Mel Ben Smuk")
+        assertEquals(df.format(defaultAccount.getCreatedAt()), "2015-01-01T00:00:00Z")
+        assertEquals(df.format(defaultAccount.getModifiedAt()), "2015-02-01T12:00:00Z")
 
         expect(internalDataStore.instantiate(EmailVerificationToken, properties.emailVerificationToken)).
                 andReturn(new DefaultEmailVerificationToken(internalDataStore, properties.emailVerificationToken))
@@ -163,6 +172,8 @@ class DefaultAccountTest {
         resource = defaultAccount.getProviderData() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
         assertTrue(resource instanceof DefaultProviderData && resource.getHref().equals(properties.providerData.href))
 
+        assertTrue(defaultAccount.getCreatedAt() instanceof Date)
+        assertTrue(defaultAccount.getModifiedAt() instanceof Date)
         defaultAccount.delete()
 
         defaultAccount.addGroup(group)

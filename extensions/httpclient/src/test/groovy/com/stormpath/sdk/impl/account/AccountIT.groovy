@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.account
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
@@ -33,6 +34,8 @@ import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
@@ -631,6 +634,49 @@ class AccountIT extends ClientIT {
         assertEquals(customData02.getUpdatedPropertyNames().size(), 0)
         assertEquals(customData02.getDeletedPropertyNames().size(), 0)
         assertNull(customData02.get("aKey"))
+
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetGroupsWithTimestampFilter() {
+        def app = createTempApp()
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('StormpathTimestampTest'))
+                .setPassword("Changeme123")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@mail.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        deleteOnTeardown(account)
+
+        DateFormat df = new ISO8601DateFormat();
+
+        def group01 = client.instantiate(Group)
+        group01.name = uniquify("StormpathTimestampTest Group01")
+        group01 = app.createGroup(group01)
+        account.addGroup(group01)
+        deleteOnTeardown(group01)
+        String group01creation = df.format(group01.createdAt)
+
+        def group02 = client.instantiate(Group)
+        group02.name = uniquify("StormpathTimestampTest Group02")
+        group02 = app.createGroup(group02)
+        account.addGroup(group02)
+        deleteOnTeardown(group02)
+        String group02creation = df.format(group02.createdAt)
+
+        def groupList = account.getGroups(Groups.where(Groups.createdAt().matches(group01creation)))
+
+        assertNotNull groupList
+        assertEquals groupList.iterator().next().href, group01.href
+
+        groupList = account.getGroups(Groups.where(Groups.createdAt().matches(group02creation)))
+
+        assertNotNull groupList
+        assertEquals groupList.iterator().next().href, group02.href
 
     }
 

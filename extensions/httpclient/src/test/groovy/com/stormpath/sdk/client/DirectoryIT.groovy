@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.client
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -23,7 +25,12 @@ import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.query.Criterion
+import com.stormpath.sdk.query.DateExpressionFactory
 import org.testng.annotations.Test
+
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 import static org.testng.Assert.*
 
@@ -215,6 +222,33 @@ class DirectoryIT extends ClientIT {
         assertEquals retrievedPasswordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED
     }
 
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetAccountsWithTimestampFilter() {
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: TenantIT.testGetDirectoriesWithTimestampFilters")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('Test')
+                .setEmail('emailme@test.com')
+                .setPassword('Changeme123')
+
+        directory.createAccount(account)
 
 
+        DateFormat dateFormatter = new ISO8601DateFormat();
+        String creationTimestamp = dateFormatter.format(account.createdAt)
+
+        def accountList = directory.getAccounts(Accounts.where(Accounts.createdAt().matches(creationTimestamp)))
+
+        assertNotNull accountList
+        def retrieved = accountList.iterator().next()
+        assertEquals retrieved.href, account.href
+        assertEquals dateFormatter.format(retrieved.createdAt), creationTimestamp
+    }
 }

@@ -15,9 +15,11 @@
  */
 package com.stormpath.sdk.impl.tenant
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -26,6 +28,9 @@ import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
+
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 import static org.testng.Assert.*
 
@@ -384,4 +389,65 @@ class TenantIT extends ClientIT {
         assertEquals(((GithubProvider)provider).getClientSecret(), clientSecret)
     }
 
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetDirectoriesWithTimestampFilter() {
+        def tenant = client.currentTenant
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: TenantIT.testGetDirectoriesWithTimestampFilters")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+        assertNotNull directory.href
+
+        DateFormat df = new ISO8601DateFormat();
+        String creationTimestamp = df.format(directory.createdAt)
+
+        def dirList = tenant.getDirectories(Directories.where(Directories.createdAt().matches(creationTimestamp)))
+
+        assertNotNull dirList
+        def retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetDirectoriesWithWrongTimestampFilter() {
+        def tenant = client.currentTenant
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: TenantIT.testGetDirectoriesWithWrongTimestampFilters")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+        assertNotNull directory.href
+
+        try {
+            def dirList = tenant.getDirectories(
+                    Directories.where(Directories.modifiedAt().matches("wrong match expression")))
+            fail("should have thrown")
+        } catch (Exception e){
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 2103 (http://docs.stormpath.com/errors/2103): modifiedAt query criteria parameter value is invalid or an unexpected type.")
+        }
+    }
+
+    @Test
+    void testGetApplicationsWithTimestampFilter(){
+        def tenant = client.currentTenant
+        def app1 = createTempApp()
+        def app2 = createTempApp()
+
+        DateFormat df = new ISO8601DateFormat();
+        String dateRange = "[".concat(df.format(app1.getCreatedAt())).concat(",").concat(df.format(app2.getCreatedAt())).concat("]")
+        def appList = tenant.getApplications(Applications.where(Applications.createdAt().matches(dateRange)))
+
+        assertNotNull appList
+        def qty = 0
+        for(Application app : appList) {
+            qty++
+        }
+        assertEquals qty, 2
+    }
 }

@@ -34,6 +34,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -235,5 +236,18 @@ public class ImmutableAccount implements Account {
     @Override
     public void save() {
         immutable();
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Override
+    public Date getCreatedAt() {
+        return account.getCreatedAt();
+    }
+
+    @Override
+    public Date getModifiedAt() {
+        return account.getModifiedAt();
     }
 }

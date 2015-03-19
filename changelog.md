@@ -3,6 +3,7 @@
 ### 1.0.RC4 ###
 
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.
+- New feature: Functionality to expose and query createdAt and modifiedAt properties (JSDK-181)
 
 ### 1.0.RC3.1 ###
 
