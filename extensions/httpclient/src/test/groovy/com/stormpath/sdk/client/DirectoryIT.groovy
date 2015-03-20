@@ -21,10 +21,13 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static org.testng.Assert.*
 
@@ -217,13 +220,24 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
+     *@since 1.0.RC4
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
+    }
+
+    /**
      * @since 1.0.RC4
      */
     @Test
     void testDirectoryExpansion(){
+
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testDirectoryExpansion")
-        dir = client.currentTenant.createDirectory(dir)
+        dir = client.createDirectory(dir);
+
         deleteOnTeardown(dir)
 
         String href = dir.href
@@ -234,7 +248,9 @@ class DirectoryIT extends ClientIT {
         assertNotNull options
         assertEquals options.expansions.size(), 1
 
-        Directory retrieved = client.getResourceExpanded(href, Directory.class, options).iterator().next()
+        Directory retrieved = client.getResourceExpanded(href, Directory.class, options)
+
+        Map properties01 = getValue(AbstractResource, retrieved, "properties")
 
         assertFalse retrieved.accounts.iterator().hasNext()
 

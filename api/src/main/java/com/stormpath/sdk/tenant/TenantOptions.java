@@ -59,7 +59,7 @@ public interface TenantOptions<T> extends Options {
     /**
      * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
      *
-     * @param limit the number of results in the accounts collection's first page.  Min: 1, Max: 100.
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
      * @return this instance for method chaining.
      * @since 1.0.RC4
      */
@@ -68,8 +68,8 @@ public interface TenantOptions<T> extends Options {
     /**
      * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
      *
-     * @param limit the number of results in the accounts collection's first page.  Min: 1, Max: 100.
-     * @param offset the starting index of the first Account to retrieve in the overall accounts collection's result set.
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
      * @return this instance for method chaining.
      * @since 1.0.RC4
      */
@@ -90,7 +90,7 @@ public interface TenantOptions<T> extends Options {
     /**
      * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
      *
-     * @param limit the number of results in the groups collection's first page.  Min: 1, Max: 100.
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
      * @return this instance for method chaining.
      * @since 1.0.RC4
      */
@@ -99,8 +99,8 @@ public interface TenantOptions<T> extends Options {
     /**
      * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
      *
-     * @param limit the number of results in the groups collection's first page.  Min: 1, Max: 100.
-     * @param offset the starting index of the first {@link Group} to retrieve in the overall groups collection's result set.
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
      * @return this instance for method chaining.
      * @since 1.0.RC4
      */
