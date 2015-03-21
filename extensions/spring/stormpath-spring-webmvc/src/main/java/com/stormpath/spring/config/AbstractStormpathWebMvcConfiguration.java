@@ -22,6 +22,7 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
@@ -105,7 +106,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.util.UrlPathHelper;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -113,9 +113,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -181,10 +181,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected String requestUserPrincipalStrategy;
 
     @Value("#{ @environment['stormpath.web.request.client.attributeNames'] ?: 'client' }")
-    protected Set<String> requestClientAttributeNames;
+    protected String requestClientAttributeNames;
 
     @Value("#{ @environment['stormpath.web.request.application.attributeNames'] ?: 'application' }")
-    protected Set<String> requestApplicationAttributeNames;
+    protected String requestApplicationAttributeNames;
 
     //By default, we want the the RequestMappingHandlerMapping to take precedence over this HandlerMapping: this
     //allows app developers to override any of the Stormpath default controllers by creating their own
@@ -213,13 +213,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected int stormpathFilterOrder;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
-    protected Collection<String> stormpathFilterUrlPatterns;
+    protected String stormpathFilterUrlPatterns;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: T(java.util.Collections).emptySet() }")
-    protected Collection<String> stormpathFilterServletNames;
+    @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] }")
+    protected String stormpathFilterServletNames;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.dispatcherTypes'] ?: 'REQUEST, INCLUDE, FORWARD, ERROR' }")
-    protected Set<DispatcherType> stormpathFilterDispatcherTypes;
+    protected String stormpathFilterDispatcherTypes;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.matchAfter'] ?: false }")
     protected boolean stormpathFilterMatchAfter;
@@ -297,10 +297,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
     protected boolean logoutEnabled;
 
-    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/verify' }")
+    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
     protected String logoutUri;
 
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=verified' }")
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
 
     // ================  Change Password Controller properties  ===================
@@ -326,7 +326,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected String accessTokenUri;
 
     @Value("#{ @environment['stormpath.web.accessToken.origin.authorizer.originUris'] }")
-    protected Set<String> accessTokenAuthorizedOriginUris;
+    protected String accessTokenAuthorizedOriginUris;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -669,6 +669,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return lci;
     }
 
+    public Set<String> stormpathRequestClientAttributeNames() {
+        Set<String> set = new LinkedHashSet<String>();
+        set.addAll(Strings.commaDelimitedListToSet(requestClientAttributeNames));
+        //we always want the client to be available as an attribute by it's own class name:
+        set.add(Client.class.getName());
+        return set;
+    }
+
+    public Set<String> stormpathRequestApplicationAttributeNames() {
+        Set<String> set = new LinkedHashSet<String>();
+        set.addAll(Strings.commaDelimitedListToSet(requestApplicationAttributeNames));
+        set.add(Application.class.getName());
+        return set;
+    }
+
     public Resolver<Locale> stormpathLocaleResolver() {
 
         final LocaleResolver localeResolver = stormpathSpringLocaleResolver();
@@ -834,9 +849,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                                                        stormpathOriginAccessTokenRequestAuthorizer());
     }
 
+    public Set<String> stormpathAccessTokenAuthorizedOriginUris() {
+        return Strings.commaDelimitedListToSet(accessTokenAuthorizedOriginUris);
+    }
+
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return new OriginAccessTokenRequestAuthorizer(stormpathServerUriResolver(), stormpathLocalhostResolver(),
-                                                      accessTokenAuthorizedOriginUris);
+                                                      stormpathAccessTokenAuthorizedOriginUris());
     }
 
     public ServerUriResolver stormpathServerUriResolver() {

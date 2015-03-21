@@ -20,8 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface Controller {
 
-    public static final String REDIRECT_PREFIX = "redirect:";
-
     ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

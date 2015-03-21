@@ -21,6 +21,8 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigLoader;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
@@ -45,6 +47,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -54,14 +57,21 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 @Configuration
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
@@ -78,6 +88,198 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public void afterPropertiesSet() throws Exception {
         servletContext.setAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY, client);
         servletContext.setAttribute(ApplicationLoader.APP_ATTRIBUTE_NAME, application);
+        servletContext.setAttribute(ConfigLoader.CONFIG_ATTRIBUTE_NAME, stormpathInternalConfig());
+    }
+
+    @SuppressWarnings("SpringFacetCodeInspection")
+    @Configuration
+    public static class StormpathWebMvcStaticResourceConfigurer extends WebMvcConfigurerAdapter {
+
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry.addResourceHandler("/assets/css/*stormpath.css")
+                    //reference the actual files in the stormpath-sdk-servlet .jar:
+                    .addResourceLocations("classpath:/META-INF/resources/assets/css/");
+        }
+    }
+
+    @Bean
+    public InternalResourceViewResolver stormpathJspViewResolver() {
+        InternalResourceViewResolver bean = new InternalResourceViewResolver();
+        bean.setViewClass(JstlView.class);
+        bean.setPrefix("/WEB-INF/jsp/");
+        bean.setSuffix(".jsp");
+        return bean;
+    }
+
+    //this isn't needed in a Spring environment, but we have to have it because the
+    //default .jsp views reference it (MessageTag uses a Config instance:
+    @Bean
+    public Config stormpathInternalConfig() {
+
+        final com.stormpath.sdk.servlet.i18n.MessageSource messageSource = stormpathMessageSource();
+        final Resolver<Locale> localeResolver = stormpathLocaleResolver();
+
+        return new Config() {
+            @Override
+            public String getLoginUrl() {
+                return loginUri;
+            }
+
+            @Override
+            public String getLoginNextUrl() {
+                return loginNextUri;
+            }
+
+            @Override
+            public String getLogoutUrl() {
+                return logoutUri;
+            }
+
+            @Override
+            public String getForgotPasswordUrl() {
+                return forgotUri;
+            }
+
+            @Override
+            public String getForgotPasswordNextUrl() {
+                return forgotNextUri;
+            }
+
+            @Override
+            public String getChangePasswordUrl() {
+                return changePasswordUri;
+            }
+
+            @Override
+            public String getChangePasswordNextUrl() {
+                return changePasswordNextUri;
+            }
+
+            @Override
+            public String getLogoutNextUrl() {
+                return logoutNextUri;
+            }
+
+            @Override
+            public String getAccessTokenUrl() {
+                return accessTokenUri;
+            }
+
+            @Override
+            public String getRegisterUrl() {
+                return registerUri;
+            }
+
+            @Override
+            public String getRegisterNextUrl() {
+                return registerNextUri;
+            }
+
+            @Override
+            public String getVerifyUrl() {
+                return verifyUri;
+            }
+
+            @Override
+            public String getVerifyNextUrl() {
+                return verifyNextUri;
+            }
+
+            @Override
+            public String getUnauthorizedUrl() {
+                return "/unauthorized";
+            }
+
+            @Override
+            public CookieConfig getAccountCookieConfig() {
+                return stormpathAccountCookieConfig();
+            }
+
+            @Override
+            public int getAccountJwtTtl() {
+                return accountJwtTtl;
+            }
+
+            @Override
+            public <T> T getInstance(String classPropertyName) throws ServletException {
+                if (MessageTag.LOCALE_RESOLVER_CONFIG_KEY.equals(classPropertyName)) {
+                    return (T)localeResolver;
+                } else if (MessageTag.MESSAGE_SOURCE_CONFIG_KEY.equals(classPropertyName)) {
+                    return (T)messageSource;
+                } else {
+                    String msg = "The config key '" + classPropertyName + "' is not supported in Spring environments " +
+                                 "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
+                    throw new UnsupportedOperationException(msg);
+                }
+            }
+
+            @Override
+            public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType)
+                throws ServletException {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public int size() {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public boolean isEmpty() {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public boolean containsKey(Object o) {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public boolean containsValue(Object o) {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public String get(Object o) {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public String put(String s, String s2) {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public String remove(Object o) {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public void putAll(Map<? extends String, ? extends String> map) {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public void clear() {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public Set<String> keySet() {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public Collection<String> values() {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+
+            @Override
+            public Set<Entry<String, String>> entrySet() {
+                throw new UnsupportedOperationException("Not supported for spring environments.");
+            }
+        };
     }
 
     @Bean
@@ -335,8 +537,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         StormpathFilter filter = (StormpathFilter) builder.build();
 
         filter.setEnabled(stormpathFilterEnabled);
-        filter.setClientRequestAttributeNames(requestClientAttributeNames);
-        filter.setApplicationRequestAttributeNames(requestApplicationAttributeNames);
+        filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
+        filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
         filter.setFilterChainResolver(stormpathFilterChainResolver());
         filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
 

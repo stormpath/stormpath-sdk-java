@@ -18,6 +18,8 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
@@ -70,6 +72,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextEvent;
@@ -77,9 +80,12 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
@@ -457,6 +463,26 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathFilterChainResolver();
     }
 
+    public Collection<String> stormpathFilterUrlPatterns() {
+        return Strings.commaDelimitedListToSet(stormpathFilterUrlPatterns);
+    }
+
+    public Collection<String> stormpathFilterServletNames() {
+        return Strings.commaDelimitedListToSet(stormpathFilterServletNames);
+    }
+
+    public Set<DispatcherType> stormpathFilterDispatcherTypes() {
+        Set<String> names = Strings.commaDelimitedListToSet(stormpathFilterDispatcherTypes);
+        if (Collections.isEmpty(names)) {
+            return java.util.Collections.emptySet();
+        }
+        Set<DispatcherType> types = new LinkedHashSet<DispatcherType>(names.size());
+        for(String name : names) {
+            types.add(DispatcherType.valueOf(name));
+        }
+        return types;
+    }
+
     @Bean
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
@@ -469,8 +495,8 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         };
 
         filter.setEnabled(stormpathFilterEnabled);
-        filter.setClientRequestAttributeNames(requestClientAttributeNames);
-        filter.setApplicationRequestAttributeNames(requestApplicationAttributeNames);
+        filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
+        filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
         filter.setFilterChainResolver(stormpathFilterChainResolver());
         filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
 
@@ -478,9 +504,9 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         bean.setFilter(filter);
         bean.setEnabled(stormpathFilterEnabled);
         bean.setOrder(stormpathFilterOrder);
-        bean.setUrlPatterns(stormpathFilterUrlPatterns);
-        bean.setServletNames(stormpathFilterServletNames);
-        bean.setDispatcherTypes(EnumSet.copyOf(stormpathFilterDispatcherTypes));
+        bean.setUrlPatterns(stormpathFilterUrlPatterns());
+        bean.setServletNames(stormpathFilterServletNames());
+        bean.setDispatcherTypes(EnumSet.copyOf(stormpathFilterDispatcherTypes()));
         bean.setMatchAfter(stormpathFilterMatchAfter);
         return bean;
     }

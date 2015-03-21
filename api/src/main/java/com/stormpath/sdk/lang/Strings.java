@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -1151,11 +1152,12 @@ public abstract class Strings {
      * @return a Set of String entries in the list
      */
     public static Set<String> commaDelimitedListToSet(String str) {
-        Set<String> set = new TreeSet<String>();
-        String[] tokens = commaDelimitedListToStringArray(str);
-        for (String token : tokens) {
-            set.add(token);
+        if (str == null) {
+            return java.util.Collections.emptySet();
         }
+        Set<String> set = new LinkedHashSet<String>();
+        String[] tokens = split(str);
+        java.util.Collections.addAll(set, tokens);
         return set;
     }
 

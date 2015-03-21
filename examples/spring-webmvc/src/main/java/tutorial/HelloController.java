@@ -15,18 +15,27 @@
  */
 package tutorial;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.account.AccountResolver;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Configuration
-@EnableAutoConfiguration
-@ComponentScan
-public class Application {
+import javax.servlet.http.HttpServletRequest;
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+@RestController
+public class HelloController {
+
+    @RequestMapping("/")
+    String home(HttpServletRequest request) {
+
+        String name = "World";
+
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+        if (account != null) {
+            name = account.getGivenName();
+        }
+
+        return "Hello " + name + "!";
     }
 
 }

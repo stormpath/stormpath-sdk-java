@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class LoginController extends FormController {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     private String nextUri;
     private String forgotLoginUri;
