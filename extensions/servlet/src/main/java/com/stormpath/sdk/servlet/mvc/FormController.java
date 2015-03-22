@@ -29,6 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public abstract class FormController extends AbstractController {
 
     private CsrfTokenManager csrfTokenManager;

@@ -24,10 +24,34 @@ import com.stormpath.sdk.oauth.OauthAuthenticationResult;
  * react to different types of authentication results, particularly those reflecting successfully authenticated API
  * requests (e.g. using {@link com.stormpath.sdk.api.ApiKey ApiKeys}.
  *
+ * <p>Instead of implementing this interface directly, you might consider using the {@code
+ * AuthenticationResultVisitorAdaptor}, which allows you to implement only the methods you are interested in.</p>
+ *
+ * <pre>
+ *  AuthenticationResult authResult = application.authenticateApiRequest(httpRequest).execute();
+ *
+ *  authResult.accept(new AuthenticationResultVisitorAdapter() {
+ *
+ *      &#64;Override
+ *      public void visit(ApiAuthenticationResult result) {
+ *          Account account = result.getAccount();
+ *          ApiKey apiKey = result.getApiKey();
+ *          //do stuff
+ *      }
+ *
+ *      &#64;Override
+ *      public void visit(AccessTokenResult result) {
+ *          TokenResponse tokenResponse = result.getTokenResponse();
+ *          //do stuff
+ *      }
+ *  });
+ * </pre>
+ *
  * @see com.stormpath.sdk.api.ApiKey ApiKey
  * @see com.stormpath.sdk.api.ApiAuthenticationResult
  * @see OauthAuthenticationResult
  * @see com.stormpath.sdk.oauth.AccessTokenResult
+ * @see com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter
  * @since 1.0.RC
  */
 public interface AuthenticationResultVisitor {
@@ -41,10 +65,11 @@ public interface AuthenticationResultVisitor {
     void visit(AuthenticationResult result);
 
     /**
-     * Invoked when an API request has been successfully authenticated with an
-     * {@link com.stormpath.sdk.api.ApiKey ApiKey}, usually as a result of HTTP Basic Authentication.
+     * Invoked when an API request has been successfully authenticated with an {@link com.stormpath.sdk.api.ApiKey
+     * ApiKey}, usually as a result of HTTP Basic Authentication.
      *
-     * @param result the {@link com.stormpath.sdk.api.ApiAuthenticationResult} representing the successful API authentication attempt.
+     * @param result the {@link com.stormpath.sdk.api.ApiAuthenticationResult} representing the successful API
+     *               authentication attempt.
      */
     void visit(ApiAuthenticationResult result);
 

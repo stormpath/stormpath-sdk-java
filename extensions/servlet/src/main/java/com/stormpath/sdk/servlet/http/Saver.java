@@ -19,10 +19,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * An http {@code Saver} is able to save (persist) a value for later access.
+ *
+ * @param <T> the type of value to be persisted.
  * @since 1.0.RC3
  */
 public interface Saver<T> {
 
+    /**
+     * Persists the specified value for later access.  A null or empty {@code value} indicates that the value should be
+     * removed.
+     *
+     * @param request  inbound request
+     * @param response outbound response
+     * @param value    value to save for later access or {@code null} to remove any previously saved value.
+     */
     void set(HttpServletRequest request, HttpServletResponse response, T value);
 
 }

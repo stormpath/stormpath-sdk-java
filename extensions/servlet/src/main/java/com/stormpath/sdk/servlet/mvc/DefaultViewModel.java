@@ -17,6 +17,9 @@ package com.stormpath.sdk.servlet.mvc;
 
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public class DefaultViewModel implements ViewModel {
 
     private final String viewName;

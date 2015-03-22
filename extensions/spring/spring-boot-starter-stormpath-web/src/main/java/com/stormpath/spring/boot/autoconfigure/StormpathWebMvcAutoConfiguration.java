@@ -87,6 +87,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+/**
+ * @since 1.0.RC4
+ */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.web.enabled" }, matchIfMissing = true)

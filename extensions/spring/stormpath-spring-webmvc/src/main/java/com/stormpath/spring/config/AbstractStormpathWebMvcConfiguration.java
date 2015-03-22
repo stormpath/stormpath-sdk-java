@@ -121,6 +121,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @since 1.0.RC4
+ */
 @SuppressWarnings({ "SpringFacetCodeInspection", "SpringJavaAutowiredMembersInspection" })
 public abstract class AbstractStormpathWebMvcConfiguration {
 

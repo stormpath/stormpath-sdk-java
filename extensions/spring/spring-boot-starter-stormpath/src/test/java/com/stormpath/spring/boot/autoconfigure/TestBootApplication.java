@@ -24,6 +24,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
+/**
+ * @since 1.0.RC4
+ */
 @Configuration
 @EnableAutoConfiguration
 public class TestBootApplication {

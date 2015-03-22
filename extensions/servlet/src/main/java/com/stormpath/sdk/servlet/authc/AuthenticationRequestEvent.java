@@ -19,10 +19,23 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 
 /**
+ * An event that indicates an authentication attempt has occurred while handling an HttpServletRequest.  This is an
+ * intermediate interface - there is no concrete AuthenticationRequest implementation.  Instead event listeners are
+ * usually interested in the {@link com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent
+ * SuccessfulAuthenticationRequestEvent} and {@link com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent
+ * FailedAuthenticationRequestEvent} sub-interfaces.
+ *
+ * @see com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent
+ * @see com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent
  * @since 1.0.RC3
  */
 public interface AuthenticationRequestEvent extends RequestEvent {
 
+    /**
+     * Returns the {@link AuthenticationRequest} used during the authentication attempt.
+     *
+     * @return the {@link AuthenticationRequest} used during the authentication attempt.
+     */
     AuthenticationRequest getAuthenticationRequest();
 
 }

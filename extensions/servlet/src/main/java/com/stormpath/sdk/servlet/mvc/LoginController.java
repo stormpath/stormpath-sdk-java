@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public class LoginController extends FormController {
 
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);

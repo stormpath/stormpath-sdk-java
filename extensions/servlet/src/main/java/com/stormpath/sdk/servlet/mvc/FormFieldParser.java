@@ -19,9 +19,19 @@ import com.stormpath.sdk.servlet.form.Field;
 
 import java.util.List;
 
+/**
+ * A form field parser can read a text string definition of what form fields should exist and return a list of fields
+ * that reflects that string definition.
+ *
+ * @since 1.0.RC4
+ */
 public interface FormFieldParser {
 
+    /**
+     * Returns a list of fields that reflect the specified string definition.
+     *
+     * @param fieldsDefinition the definition of the fields to create
+     * @return a list of fields that reflect the specified string definition.
+     */
     List<Field> parse(String fieldsDefinition);
-
-
 }

@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * @since 1.0.RC4
+ */
 public class LogoutController extends AbstractController {
 
     private String nextUri;

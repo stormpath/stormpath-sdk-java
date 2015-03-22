@@ -73,6 +73,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @since 1.0.RC4
+ */
 @Configuration
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
     implements ServletContextAware, InitializingBean {

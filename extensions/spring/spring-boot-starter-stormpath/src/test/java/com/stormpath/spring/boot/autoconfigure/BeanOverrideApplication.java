@@ -23,6 +23,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @since 1.0.RC4
+ */
 @Configuration
 @EnableAutoConfiguration
 public class BeanOverrideApplication {

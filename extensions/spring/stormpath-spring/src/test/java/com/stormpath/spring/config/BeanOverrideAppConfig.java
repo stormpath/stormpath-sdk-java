@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @since 1.0.RC4
+ */
 @Configuration
 @EnableStormpath
 public class BeanOverrideAppConfig {

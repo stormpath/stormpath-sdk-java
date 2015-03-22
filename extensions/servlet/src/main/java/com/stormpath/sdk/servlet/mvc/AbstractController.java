@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public abstract class AbstractController implements Controller {
 
     private static final HttpServlet DEFAULT_HANDLER = new HttpServlet(){};

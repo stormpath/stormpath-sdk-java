@@ -39,6 +39,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * @since 1.0.RC4
+ */
 public class AccessTokenController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(AccessTokenController.class);

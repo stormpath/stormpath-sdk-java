@@ -30,6 +30,9 @@ import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
 
+/**
+ * @since 1.0.RC4
+ */
 @ContextConfiguration(classes = MinimalAppConfig.class)
 class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
 

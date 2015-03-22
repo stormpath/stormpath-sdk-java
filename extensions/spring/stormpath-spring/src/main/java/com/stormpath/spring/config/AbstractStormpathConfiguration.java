@@ -36,6 +36,9 @@ import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @since 1.0.RC4
+ */
 public abstract class AbstractStormpathConfiguration {
 
     private static final String APP_HREF_ERROR =

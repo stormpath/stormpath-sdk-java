@@ -57,8 +57,7 @@ public class DefaultUserAgent implements UserAgent {
                // Down the rabbit hole...
                ua.startsWith("Lynx/") ||
                ua.startsWith("Links ") ||
-               ua.startsWith("Elinks ") || ua.startsWith("ELinks ") ||
-               ua.startsWith("ELinks/") ||
+               ua.startsWith("Elinks ") || ua.startsWith("ELinks ") || ua.startsWith("ELinks/") ||
                ua.startsWith("Midori/") ||
                ua.startsWith("w3m/") ||
                ua.startsWith("Webkit/") ||

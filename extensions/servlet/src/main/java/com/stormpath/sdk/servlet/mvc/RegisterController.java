@@ -45,6 +45,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC4
+ */
 public class RegisterController extends FormController {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterController.class);

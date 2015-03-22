@@ -23,6 +23,9 @@ import com.stormpath.sdk.servlet.form.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @since 1.0.RC4
+ */
 public class DefaultFormFieldsParser implements FormFieldParser {
 
     private final String CONFIG_PROPERTY_NAME;

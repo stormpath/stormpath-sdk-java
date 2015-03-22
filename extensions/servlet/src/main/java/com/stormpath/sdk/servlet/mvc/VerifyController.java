@@ -29,6 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @since 1.0.RC4
+ */
 public class VerifyController extends AbstractController {
 
     private String nextUri;

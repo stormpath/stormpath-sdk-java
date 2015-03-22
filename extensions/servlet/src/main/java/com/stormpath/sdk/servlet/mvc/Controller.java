@@ -18,8 +18,29 @@ package com.stormpath.sdk.servlet.mvc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Simple MVC Controller concept used by Stormpath components.  This allows Stormpath to work in any MVC environment
+ * (Servlet, Spring MVC, etc) by using its own concept - a simple adapter just needs to be created for each actual
+ * runtime environment.
+ *
+ * <p>This ensures that Stormpath request processing and view rendering logic is identical (and testable/verifiable)
+ * across any/all supported MVC runtime environments where Stormpath may be deployed.</p>
+ *
+ * @since 1.0.RC4
+ */
 public interface Controller {
 
+    /**
+     * Processes a view request (either to render or handle submission) and returns a {@link ViewModel} that represents
+     * the resulting view to be rendered.  A {@code null} return value indicates that the controller implementation
+     * handled the response and committed to it directly (setting status codes, writing directly to the response output
+     * stream), etc.
+     *
+     * @param request  inbound request.
+     * @param response outbound response.
+     * @return a View the view to be rendered or {@code null} if the response was handled (and committed) directly.
+     * @throws Exception
+     */
     ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

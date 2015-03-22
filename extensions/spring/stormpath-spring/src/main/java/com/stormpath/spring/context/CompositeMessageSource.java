@@ -24,6 +24,9 @@ import org.springframework.context.NoSuchMessageException;
 
 import java.util.Locale;
 
+/**
+ * @since 1.0.RC4
+ */
 public class CompositeMessageSource implements MessageSource {
 
     private static final Logger log = LoggerFactory.getLogger(CompositeMessageSource.class);

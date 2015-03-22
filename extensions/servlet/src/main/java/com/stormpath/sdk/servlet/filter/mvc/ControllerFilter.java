@@ -34,7 +34,8 @@ import java.util.Map;
 /**
  * A Servlet Filter that acts as an MVC {@link com.stormpath.sdk.servlet.mvc.Controller Controller} by delegating to an
  * internal Controller instance.  Because it acts as a controller and not a filter, requests will never proceed past
- * this one in the filter chain - it always handles the response directly.
+ * this one in the filter chain - it always handles the response directly.  This implies that when configured as part of
+ * a filter chain, it must always be the last filter in the chain.
  *
  * @since 1.0.RC4
  */
