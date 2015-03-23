@@ -408,12 +408,4 @@ public class DefaultClient implements Client {
     public GroupList getGroups(Map<String, Object> queryParams) {
         return getCurrentTenant().getGroups(queryParams);
     }
-
-//    /**
-//     * @since 1.0.RC4
-//     */
-//    @Override
-//    public <T extends Resource> T getResourceWithExpansionOptions(String href, Class<T> clazz, Class<Options> options) {
-//        return this.dataStore.getResourceWithExpansionOptions(href, clazz, options);
-//    }
 }

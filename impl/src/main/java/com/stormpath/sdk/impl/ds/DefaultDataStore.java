@@ -167,7 +167,7 @@ public class DefaultDataStore implements InternalDataStore {
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.notNull(clazz, "clazz argument cannot be null.");
         SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
         return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
     }
@@ -175,7 +175,7 @@ public class DefaultDataStore implements InternalDataStore {
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
         Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.notNull(clazz, "clazz argument cannot be null.");
         SanitizedQuery sanitized = QuerySanitizer.sanitize(href, queryParameters);
         return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
     }
@@ -183,7 +183,7 @@ public class DefaultDataStore implements InternalDataStore {
     @Override
     public <T extends Resource> T getResourceExpanded(String href, Class<T> clazz, Options options) {
         Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.notNull(clazz, "clazz argument cannot be null.");
         Assert.isInstanceOf(DefaultOptions.class, options, "The " + getClass().getName() + " implementation only functions with " +
                 DefaultOptions.class.getName() + " instances.");
         DefaultOptions defaultOptions = (DefaultOptions) options;
@@ -193,6 +193,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "clazz argument cannot be null.");
         Assert.isInstanceOf(DefaultCriteria.class, criteria,
                 "The " + getClass().getName() + " implementation only functions with " +
                         DefaultCriteria.class.getName() + " instances.");
@@ -203,7 +205,8 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private <T extends Resource> T getResource(String href, Class<T> clazz, QueryString qs) {
-
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "clazz argument cannot be null.");
         //need to qualify the href it to ensure our cache lookups work as expected
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
@@ -240,7 +243,7 @@ public class DefaultDataStore implements InternalDataStore {
     @Override
     public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
         Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(parent, "parent class argument cannot be null.");
+        Assert.notNull(parent, "parent argument cannot be null.");
         Assert.hasText(childIdProperty, "childIdProperty cannot be null or empty.");
         Assert.notEmpty(idClassMap, "idClassMap cannot be null or empty.");
 
@@ -284,26 +287,26 @@ public class DefaultDataStore implements InternalDataStore {
 
         QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(clazz, qs);
         Map<String, ?> data = null;
-//        if ((isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) && !qs.containsKey("expand")) {
-//
-//            if (isApiKeyCollectionQuery(clazz, filteredQs)) {
-//                String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
-//                Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
-//
-//                Map apiKeyData = getCachedValue(cacheHref, cacheClass);
-//
-//                if (!Collections.isEmpty(apiKeyData)) {
-//                    CollectionProperties.Builder builder = new CollectionProperties.Builder()
-//                            .setHref(href)
-//                            .setOffset(filteredQs.containsKey(OFFSET.getName()) ? Integer.valueOf(filteredQs.get(OFFSET.getName())) : 0)
-//                            .setLimit(filteredQs.containsKey(LIMIT.getName()) ? Integer.valueOf(filteredQs.get(LIMIT.getName())) : 25)
-//                            .setItemsMap(apiKeyData);
-//                    data = builder.build();
-//                }
-//            } else {
-//                data = getCachedValue(href, clazz);
-//            }
-//        }
+        if ((isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) && !qs.containsKey("expand")) {
+
+            if (isApiKeyCollectionQuery(clazz, filteredQs)) {
+                String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
+                Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
+
+                Map apiKeyData = getCachedValue(cacheHref, cacheClass);
+
+                if (!Collections.isEmpty(apiKeyData)) {
+                    CollectionProperties.Builder builder = new CollectionProperties.Builder()
+                            .setHref(href)
+                            .setOffset(filteredQs.containsKey(OFFSET.getName()) ? Integer.valueOf(filteredQs.get(OFFSET.getName())) : 0)
+                            .setLimit(filteredQs.containsKey(LIMIT.getName()) ? Integer.valueOf(filteredQs.get(LIMIT.getName())) : 25)
+                            .setItemsMap(apiKeyData);
+                    data = builder.build();
+                }
+            } else {
+                data = getCachedValue(href, clazz);
+            }
+        }
 
         Map<String, ?> returnResponseBody = data;
         if (Collections.isEmpty(data)) {
