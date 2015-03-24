@@ -47,4 +47,18 @@ public interface CollectionResource<T extends Resource> extends Resource, Iterab
      */
     public int getLimit();
 
+    /**
+     * Returns the total size (quantity of items) of this CollectionResource.
+     * <p/>
+     * The <code>size</code> property does not necessary express that all these items have been transferred from the backend.
+     * This value indicates the total quantity of items that the list contains but, in order to avoid retrieving a large
+     * amount of data at once from the backend, the list is actually paginated with the size specified by the <code>limit</code>.
+     * This means, that for example, if a list has a <code>size</code> of 100 and the <code>limit</code> is 25, the backend
+     * will be contacted four times and 25 items will be retrieved each time.
+     *
+     * @return the total quantity of items that this CollectionResource contains.
+     * @since 1.0.RC4
+     */
+    public int getSize();
+
 }

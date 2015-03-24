@@ -110,17 +110,21 @@ class DefaultApplicationTest {
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         def groupCriteria = createStrictMock(GroupCriteria)
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteria)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         def groupCriteriaMap = [name: "some+search"]
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         def accountCriteria = createStrictMock(AccountCriteria)
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteria)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         def accountCriteriaMap = [surname: "some+search"]
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
@@ -460,6 +464,7 @@ class DefaultApplicationTest {
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
+        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
@@ -537,6 +542,7 @@ class DefaultApplicationTest {
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
+        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
