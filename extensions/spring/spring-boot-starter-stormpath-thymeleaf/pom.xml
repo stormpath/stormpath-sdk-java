@@ -25,7 +25,7 @@
     </parent>
 
     <artifactId>spring-boot-starter-stormpath-thymeleaf</artifactId>
-    <name>Stormpath :: Spring :: Spring Boot Web Starter Thymeleaf</name>
+    <name>Stormpath :: Spring :: Boot :: Thymeleaf Views</name>
     <description>Spring Boot Web Starter for Stormpath with Thymeleaf views</description>
 
     <dependencies>
