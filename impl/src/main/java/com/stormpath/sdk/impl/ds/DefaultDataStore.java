@@ -57,8 +57,8 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.HREF_PROP_NAME;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 
 /**
  * @since 0.1
