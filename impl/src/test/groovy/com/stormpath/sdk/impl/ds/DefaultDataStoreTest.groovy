@@ -68,7 +68,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource(href, null, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "parent class argument cannot be null.")
+            assertEquals(e.getMessage(), "parent argument cannot be null.")
         }
 
         try {
@@ -382,7 +382,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResourceExpanded(href, null, emptyOptions)
             fail("should have thrown due to empty class")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Resource class argument cannot be null.")
+            assertEquals(e.getMessage(), "clazz argument cannot be null.")
         }
 
         try {
