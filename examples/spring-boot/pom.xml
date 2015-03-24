@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014 Stormpath, Inc.
+  ~ Copyright 2015 Stormpath, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,24 +16,38 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>1.0.RC4-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>stormpath-sdk-examples</artifactId>
-    <name>Stormpath Java SDK :: Examples</name>
-    <packaging>pom</packaging>
+    <artifactId>stormpath-sdk-examples-spring-boot</artifactId>
+    <name>Stormpath Java SDK :: Examples :: Spring Boot</name>
+    <description>A Spring Boot (non-web) application that uses Stormpath.</description>
 
-    <modules>
-        <module>servlet</module>
-        <module>spring</module>
-        <module>spring-webmvc</module>
-        <module>spring-boot</module>
-        <module>spring-boot-web</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.stormpath.spring</groupId>
+            <artifactId>spring-boot-starter-stormpath</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

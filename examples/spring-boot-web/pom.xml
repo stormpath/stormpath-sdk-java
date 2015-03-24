@@ -27,7 +27,7 @@
 
     <artifactId>stormpath-sdk-examples-spring-boot-web</artifactId>
     <name>Stormpath Java SDK :: Examples :: Spring Boot Webapp</name>
-    <description>A Spring Boot Webapp that uses Stormpath.</description>
+    <description>A Spring Boot web application that uses Stormpath.</description>
 
     <dependencies>
         <dependency>
