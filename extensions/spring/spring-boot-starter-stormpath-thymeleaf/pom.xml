@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>spring-boot-starter-stormpath-web</artifactId>
+            <artifactId>spring-boot-starter-stormpath-webmvc</artifactId>
         </dependency>
 
     </dependencies>

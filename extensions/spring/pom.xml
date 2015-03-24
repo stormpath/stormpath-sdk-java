@@ -40,7 +40,7 @@
         <module>stormpath-spring</module>
         <module>stormpath-spring-webmvc</module>
         <module>spring-boot-starter-stormpath</module>
-        <module>spring-boot-starter-stormpath-web</module>
+        <module>spring-boot-starter-stormpath-webmvc</module>
         <module>spring-boot-starter-stormpath-thymeleaf</module>
     </modules>
 

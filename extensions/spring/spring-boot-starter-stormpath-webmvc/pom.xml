@@ -24,9 +24,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>spring-boot-starter-stormpath-web</artifactId>
-    <name>Stormpath :: Spring :: Spring Boot Web Starter</name>
-    <description>Spring Boot Web Starter for Stormpath</description>
+    <artifactId>spring-boot-starter-stormpath-webmvc</artifactId>
+    <name>Stormpath :: Spring :: Spring Boot WebMVC Starter</name>
+    <description>Spring Boot WebMVC Starter for Stormpath</description>
 
     <dependencies>
 
