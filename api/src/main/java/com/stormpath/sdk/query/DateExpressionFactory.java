@@ -15,6 +15,10 @@
  */
 package com.stormpath.sdk.query;
 
+import com.stormpath.sdk.lang.Duration;
+
+import java.util.Date;
+
 /**
  * An {@code DateExpressionFactory} creates a single condition (matches) for resource properties of Date type.
  *
@@ -35,5 +39,76 @@ public interface DateExpressionFactory {
      * @return a new case-insensitive equals expression reflecting the property name and the specified value.
      */
     Criterion matches(String value);
+
+    /**
+     * Returns a new expression indicating the property value must be greater than the specified date.
+     * For example:
+     * .createdAt().gt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00")): matches only those entities created after 2014/01/01 at noon
+     *
+     * @param date the {@link Date} to compare the property value
+     * @return a new case-insensitive expression reflecting the property name and the specified value.
+     */
+    Criterion gt(Date date);
+
+    /**
+     * Returns a new expression indicating the property value must be greater than or equal to the specified date.
+     * For example:
+     * .createdAt().gt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00")): matches those entities created after or exactly at noon of 2014/01/01
+     *
+     * @param date the {@link Date} to compare the property value
+     * @return a new case-insensitive expression reflecting the property name and the specified value.
+     */
+    Criterion gte(Date date);
+
+    /**
+     * Returns a new expression indicating the property value must be less than the specified date.
+     * For example:
+     * .createdAt().lt(new Date()): matches only those entities created before the instant specified by {@code new Date()}
+     *
+     * @param date the {@link Date} to compare the property value
+     * @return a new case-insensitive expression reflecting the property name and the specified value.
+     */
+    Criterion lt(Date date);
+
+    /**
+     * Returns a new expression indicating the specified date must be greater than or equal to the property value.
+     * For example:
+     * .createdAt().gte(new Date()): matches those entities created before or at the exact instant specified by {@code new Date()}
+     *
+     * @param date the {@link Date} to compare the property value
+     * @return a new case-insensitive expression reflecting the property name and the specified value.
+     */
+    Criterion lte(Date date);
+
+    /**
+     * Returns a new expression indicating the specified date must be equal to the property value.
+     * For example:
+     * .createdAt().gte(new Date()): matches only those entities created at the exact instant specified by {@code new Date()}
+     *
+     * @param date the {@link Date} to compare the property value
+     * @return a new case-insensitive expression reflecting the property name and the specified value.
+     */
+    Criterion equals(Date date);
+
+    /**
+     * Returns a new expression indicating the property value must belong to the range specified by the {@code begin} and {@end} dates
+     * Using "in" is equivalent to gte(begin).lt(end) where begin time is inclusive and end time is exclusive.
+     * For example:
+     * .modifiedAt().in(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00"), new Date()) matches those entities modified after or exactly the noon of 2014/01/01 and before the exact instant represented by {@code new Date()}
+     *
+     * @param begin the {@link Date} to use as the range start
+     * @param end a {@link Date}  to use as the range end
+     * @return a new case-insensitive expression reflecting the property name and the specified value.
+     */
+    Criterion in(Date begin, Date end);
+
+    /**
+     * This is a convenience method used to calculate the end timestamp for the range based on the {@code begin} date and the specified {@link Duration}
+     *
+     * @param begin the {@link Date} to use as the range start
+     * @param duration the {@link Duration} used to calculate the end timestamp based on the value specified by {@code begin}
+     * @return
+     */
+    Criterion in(Date begin, Duration duration);
 
 }

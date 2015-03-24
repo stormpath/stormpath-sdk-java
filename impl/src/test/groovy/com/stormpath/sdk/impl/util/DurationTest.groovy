@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.util
 
+import com.stormpath.sdk.lang.Duration
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
