@@ -3,7 +3,7 @@
 About
 =====
 
-Building a web app, but not sure if the Stormpath Java Servlet Plugin is right for you?  This page will help you decide if is a good fit!
+Are you building a web app, but not sure if the Stormpath Java Servlet Plugin is right for you?  This page will help you decide if is a good fit!
 
 
 What is Stormpath?
@@ -31,7 +31,7 @@ Stormpath provides a simple REST API for all of the above.  For instance, if you
 In addition to allowing you to create users and groups, Stormpath also allows you to store custom data with each user account.  Let's say you want to store a user's birthday -- you can send Stormpath an ``HTTP POST`` request to the user's account URL and store *any* variable JSON data (birthdays, images, movies, links, etc.).  This information is encrypted and authenticated end-to-end, ensuring your user data is secure.
 
 What is the Stormpath Java Servlet Plugin?
--------------------------------------
+------------------------------------------
 
 The Stormpath Java Servlet Plugin is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your Java-based web application.
 

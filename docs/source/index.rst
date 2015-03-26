@@ -1,5 +1,5 @@
 Stormpath Java Servlet Plugin
-========================
+=============================
 
 The Stormpath Java Servlet Plugin is a drop-in plugin for web applications deployed to a `Servlet`_ container, like Tomcat or Jetty.  It makes it *incredibly* simple to add user management, authentication and authorization to your application.
 
