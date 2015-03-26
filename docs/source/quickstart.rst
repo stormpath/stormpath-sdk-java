@@ -51,7 +51,7 @@ On Windows, you can `set file permissions similarly`_.
 
 .. _servlet-plugin-jar:
 
-Add the Stormpath Servlet Plugin
+Add the Stormpath Java Servlet Plugin
 --------------------------------
 
 This step allows you to deploy Stormpath *without a single line of code or configuration*.  How amazing is that? Here's how.
