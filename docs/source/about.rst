@@ -3,17 +3,17 @@
 About
 =====
 
-Not sure if the Stormpath Servlet Plugin is for you?  This page will help you decide if is a good fit!
+Are you building a web app, but not sure if the Stormpath Java Servlet Plugin is right for you?  This page will help you decide if is a good fit!
 
 
 What is Stormpath?
 ------------------
 
-`Stormpath`_ is the ultimate REST API service for managing users, authentication and authorization. Stormpath allows you to do things like:
+`Stormpath`_ is a reliable, scalable API service for managing users, authentication and authorization. Stormpath allows your web application to do things like:
 
 - Create user accounts.
 - Edit user accounts.
-- Store user data with each account.
+- Store custom user data with each account.
 - Create groups and roles.
 - Automate account email verification and password reset email workflows.
 - Assign users various permissions (groups, roles, etc.).
@@ -26,14 +26,14 @@ What is Stormpath?
 - Allow users to authenticate with your application with OAuth
 - and more!
 
-Stormpath at its core provides a simple REST API for all of the above.  For instance, if you wanted to create a new user account given an email address and password, you could send Stormpath an ``HTTP POST`` request and Stormpath would create a new user account for you, securely hash its password using security best practices and and store it securely on Stormpath's cloud service.
+Stormpath provides a simple REST API for all of the above.  For instance, if you wanted to create a new user account given an email address and password, you could send Stormpath an ``HTTP POST`` request and Stormpath would create a new user account for you, securely hash its password using security best practices and and store it securely on Stormpath's cloud service.
 
 In addition to allowing you to create users and groups, Stormpath also allows you to store custom data with each user account.  Let's say you want to store a user's birthday -- you can send Stormpath an ``HTTP POST`` request to the user's account URL and store *any* variable JSON data (birthdays, images, movies, links, etc.).  This information is encrypted and authenticated end-to-end, ensuring your user data is secure.
 
-What is the Stormpath Servlet Plugin?
--------------------------------------
+What is the Stormpath Java Servlet Plugin?
+------------------------------------------
 
-The Stormpath Servlet Plugin is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your application.
+The Stormpath Java Servlet Plugin is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your Java-based web application.
 
 It aims to completely abstract away all user registration, login, authentication and authorization workloads as well as properly secure the web app.  It is completely flexible - use only the functionality you need or leverage the entire feature set.
 
@@ -41,21 +41,21 @@ It aims to completely abstract away all user registration, login, authentication
 Who should use Stormpath?
 -------------------------
 
-Stormpath is a great service and the Stormpath Servlet Plugin makes it even easier to use in servlet-based web applications, but it might not be for everyone!
+Stormpath is a powerful and secure service.  The Stormpath Java Servlet Plugin makes it even easier to use in servlet-based web applications on the JVM, but it might not be for everyone!
 
 You might want to use Stormpath if:
 
-- You want to make user creation, management, and security as simple as possible (you can get started with the Stormpath Servlet Plugin with ZERO lines of code *excluding settings*)!
-- User security is a top priority.  We're known for our security.
+- You want to make user creation, management, and security as simple as possible (you can get started with the Stormpath Java Servlet Plugin with ZERO lines of code *excluding settings*)
+- User security is a top priority.  The Stormpath API, our documents and integrations were built by Java security experts.
 - Scaling your userbase is a potential problem (Stormpath handles scaling your users transparently).
 - You need to store custom user data along with your user's basic information (email, password).
 - You would like to have automatic email verification for new user accounts.
 - You would like to configure and customize password strength rules.
 - You'd like to keep your user data separate from your other applications to increase platform stability / availability.
-- You are building a service oriented application, in which multiple independent services need access to the same user data.
-- You are a big organization who would like to use Stormpath, but need to host it yourself (Stormpath has private and on-premise editions you can use internally).
+- You are building a service oriented application or using a microservices based architecture, in which multiple independent services need access to the same user data.
+- You who would like to use Stormpath, but need to host it yourself (Stormpath has private and on-premise editions you can use internally).
 
-**Basically, Stormpath is a great match for applications of any size where security, development speed, and simplicity are top priorities.**
+**Stormpath is a great match for applications of any size where security, development speed, and simplicity are top priorities.**
 
 You might **NOT** want to use Stormpath if:
 
