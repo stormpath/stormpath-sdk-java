@@ -94,7 +94,7 @@ public interface DateExpressionFactory {
      * Returns a new expression indicating the property value must belong to the range specified by the {@code begin} and {@end} dates
      * Using "in" is equivalent to gte(begin).lt(end) where begin time is inclusive and end time is exclusive.
      * For example:
-     * .modifiedAt().in(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00"), new Date()) matches those entities modified after or exactly the noon of 2014/01/01 and before the exact instant represented by {@code new Date()}
+     * .modifiedAt().in(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00"), new Date()) matches those entities modified after or exactly at the noon of 2014/01/01 and before the exact instant represented by {@code new Date()}
      *
      * @param begin the {@link Date} to use as the range start
      * @param end a {@link Date}  to use as the range end
