@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -373,7 +374,10 @@ public abstract class AbstractResource implements Resource {
 
             //replace the existing link object (map with an href) with the newly constructed Resource instance.
             //Don't dirty the instance - we're just swapping out a property that already exists for the materialized version.
-            setProperty(key, resource, false);
+            //let's not materialize internal collection resources, so they are always retrieved from the backend: https://github.com/stormpath/stormpath-sdk-java/issues/160
+            if (!CollectionResource.class.isAssignableFrom(clazz)) {
+                setProperty(key, resource, false);
+            }
             return resource;
         }
 
@@ -426,6 +430,30 @@ public abstract class AbstractResource implements Resource {
         String name = property.getName();
         Map<String, String> reference = this.referenceFactory.createReference(name, value);
         setProperty(name, reference);
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    protected Map getMap(MapProperty mapProperty) {
+        return getMapProperty(mapProperty.getName());
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    protected Map getMapProperty(String key) {
+        Object value = getProperty(key);
+        if (value != null) {
+            if (value instanceof Map) {
+                return (Map) value;
+            }
+            String msg = "'" + key + "' property value type does not match the specified type. Specified type: Map. " +
+                    "Existing type: " + value.getClass().getName();
+            msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
+            throw new IllegalArgumentException(msg);
+        }
+        return null;
     }
 
     private int parseInt(String value) {
