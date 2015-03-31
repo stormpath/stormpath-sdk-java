@@ -247,8 +247,20 @@ public class UserAgent {
             String className = clazz.getSimpleName() + ".class";
             String classPath = clazz.getResource(className).toString();
 
-            //Let's remove "jar:file:" from the beginning and also the className
-            String jarPath = classPath.subSequence(9, classPath.lastIndexOf("!")).toString();
+            String jarPath = null;
+            if (classPath.startsWith("jar:file:")) {
+                //Let's remove "jar:file:" from the beginning and also the className
+                jarPath = classPath.subSequence(9, classPath.lastIndexOf("!")).toString();
+            } else if (classPath.startsWith("vfs:")) {
+                //Let's remove "vfs:" from the beginning and also the className
+                jarPath = classPath.subSequence(4, classPath.lastIndexOf(".jar") + 4).toString();
+            }
+
+            if (jarPath == null) {
+                //we were not able to obtain the jar path. Let's abort
+                return version;
+            }
+
             JarFile jarFile = new JarFile(jarPath);
             Enumeration<JarEntry> enumeration = jarFile.entries();
             String pomPropertiesPath = null;
@@ -269,7 +281,7 @@ public class UserAgent {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             //Either the jar file or the internal "pom.properties" file could not be read, there is nothing we can do...
         }
         return version;
@@ -367,5 +379,4 @@ public class UserAgent {
         //returning null so we can identify in the User-Agent String that we are not properly handling some WebLogic version
         return "null";
     }
-
 }

@@ -3,7 +3,7 @@
 Request Context
 ===============
 
-The Stormpath Servlet Plugin ensures important Stormpath objects are available to you during a request:
+The Stormpath Java Servlet Plugin ensures important Stormpath objects are available to you during a request:
 
 * The Stormpath SDK ``Client`` instance, in case you want to communicate with Stormpath for any behavior that the plugin does not automate.
 * The Stormpath ``Application`` instance that corresponds to your web application.
@@ -153,7 +153,7 @@ Again, if there is no Account associated with the request, ``getUserPrincipal()`
 Stormpath Application
 ---------------------
 
-The Stormpath Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.  You can access this ``Application`` for your own needs (for example, searching your application's user accounts, creating groups, etc.) using either the ``ApplicationResolver`` or request attributes.
+The Stormpath Java Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.  You can access this ``Application`` for your own needs (for example, searching your application's user accounts, creating groups, etc.) using either the ``ApplicationResolver`` or request attributes.
 
 Application Resolver
 ^^^^^^^^^^^^^^^^^^^^
@@ -217,7 +217,7 @@ which is less readable and not very convenient.
 Stormpath SDK Client
 --------------------
 
-The Stormpath Servlet Plugin uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
+The Stormpath Java Servlet Plugin uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
 
 Client Resolver
 ^^^^^^^^^^^^^^^

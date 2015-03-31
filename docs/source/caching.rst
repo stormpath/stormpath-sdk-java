@@ -3,7 +3,7 @@
 Caching
 =======
 
-The Stormpath Servlet Plugin delegates to an SDK Client, which supports caching to reduce round-trips to the Stormpath API servers and to improve performance.
+The Stormpath Java Servlet Plugin delegates to an SDK Client, which supports caching to reduce round-trips to the Stormpath API servers and to improve performance.
 
 The plugin enables a single (non-clustered) in-process memory cache for the SDK Client by default.  This behavior is relevant for web applications that are deployed to a single JVM only.  If your web application is deployed on multiple web hosts/nodes simultaneously (i.e. a striped or clustered application), then you will likely want to :ref:`enable a shared cache <shared cache>` instead to ensure that cached data remains coherent across all web application nodes.
 
