@@ -95,7 +95,7 @@ public interface TenantActions {
      * Returns a paginated list of all of the current tenant's {@link Application} resources.
      * <p/>
      * Tip: Instead of iterating over all applications, it might be more convenient (and practical) to execute a search
-     * for one or more directories using the {@link #getApplications(ApplicationCriteria)} method instead of this one.
+     * for one or more applications using the {@link #getApplications(ApplicationCriteria)} method instead of this one.
      *
      * @return a paginated list of all of the Tenant's {@link Application} resources.
      * @see #getApplications(com.stormpath.sdk.application.ApplicationCriteria)

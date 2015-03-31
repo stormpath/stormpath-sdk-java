@@ -19,6 +19,8 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
+import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
@@ -30,6 +32,7 @@ import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
+import org.testng.Assert
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -753,6 +756,96 @@ class AccountIT extends ClientIT {
 
         //Since we set offset = 1 in the second collection, the account must be different than the one obtained in the first collection
         assertNotEquals(accountHrefFromGroupCollectionWithLimit1, accountHrefFromGroupCollectionWithOffset1)
+    }
+
+    /**
+     * Test for https://github.com/stormpath/stormpath-sdk-java/issues/154
+     * @since 1.0.RC4
+     */
+    @Test
+    public void testGetApplications() {
+
+        def app = createTempApp()
+
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('Stormpath-SDK-Test-GetApplications'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@stormpath.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        def count = 0
+        for(Application application : account.getApplications()) {
+            count++
+        }
+        assertEquals(count, 1)
+
+        count = 0
+        for (Application application : account.getApplications(Applications.where(Applications.name().eqIgnoreCase("this app does not exist")))) {
+            count++
+        }
+        assertEquals(count, 0)
+
+        //Let's create a second app
+        def app1 = createApplication()
+        Directory dirForApp = app.getDefaultAccountStore()
+        app1.addAccountStore(dirForApp) //the directory where account resides is now also an account store of a different app,
+                                        // thus the account belongs to 2 applications now
+
+        count = 0
+        for(Application application : account.getApplications()) {
+            count++
+        }
+        assertEquals(count, 2)
+
+        count = 0
+        for (Application application : account.getApplications(Applications.where(Applications.name().eqIgnoreCase(app1.getName())))) {
+            count++
+        }
+        assertEquals(count, 1)
+
+        count = 0
+        def queryParams = new HashMap<String, Object>()
+        queryParams.put("name", app.getName())
+        for (Application application : account.getApplications(queryParams)) {
+            count++
+        }
+        assertEquals(count, 1)
+
+        ((Directory)app1.getDefaultAccountStore()).delete() //deleting app1's account store should not have any effect
+
+        count = 0
+        for(Application application : account.getApplications()) {
+            count++
+        }
+        assertEquals(count, 2)
+
+        app1.delete() //now, account should belong to a single app
+
+        count = 0
+        for(Application application : account.getApplications()) {
+            count++
+        }
+        assertEquals(count, 1)
+
+        //create a group
+        def group = client.instantiate(Group)
+        group.name = uniquify('Java SDK: AccountIT.testGetApplications')
+        deleteOnTeardown(group)
+
+        group = dirForApp.createGroup(group) //a new group in the account's dir is created
+        account.addGroup(group) //the account belongs to a new group now
+        def app2 = createTempApp()
+        app2.addAccountStore(group) //a new app (app2) is created and it has the account's group as an account store
+
+        count = 0
+        for(Application application : account.getApplications()) {
+            count++
+        }
+        assertEquals(count, 2)
+
     }
 
 
