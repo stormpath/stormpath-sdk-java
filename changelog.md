@@ -5,6 +5,8 @@
 - [Issue 140](https://github.com/stormpath/stormpath-sdk-java/issues/140): Verification token can now be obtained via the `EmailVerificationToken#getToken()` method.
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.
 - [Issue 151](https://github.com/stormpath/stormpath-sdk-java/issues/151): Fixed issue where `UserAgent` was not being able to read POM properties from Virtual File System.
+- [Issue 160](https://github.com/stormpath/stormpath-sdk-java/issues/160): Fixed Collection Resources metadata not updated when re-retrieving a collection.
+- [Issue 161](https://github.com/stormpath/stormpath-sdk-java/issues/161): Collection Resources now report total collection size.
 
 ### 1.0.RC3.1 ###
 
