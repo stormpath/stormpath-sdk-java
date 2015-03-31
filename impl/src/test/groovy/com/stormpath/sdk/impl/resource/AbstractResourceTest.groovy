@@ -16,10 +16,16 @@
 package com.stormpath.sdk.impl.resource
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplate
+import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
 import org.testng.annotations.Test
+
+import java.lang.reflect.Method
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.fail
 
 /**
  * @since 0.4.1
@@ -72,6 +78,51 @@ class AbstractResourceTest {
         assertEquals 'New Name', resource.getName() //dirty property retained even after materialization
 
         verify ds
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testMapProperty() {
+
+        def props =[
+                href: "https://api.stormpath.com/v1/emailTemplates/3HEMybJjMO2za0YmfTubDI",
+                name: "Default Password Reset Email Template",
+                description: "This is the password reset email template that is associated with the directory",
+                fromName: "Test Name",
+                fromEmailAddress: "test@stormpath.com",
+                subject: "Reset your Password",
+                textBody: "Forgot your password?\n\nWe've received a request to reset the password for this email address.",
+                htmlBody: "<p>Forgot your password?</p><br/><br/><p>We've received a request to reset the password for this email address.",
+                mimeType: "text/plain",
+                defaultModel: [
+                    linkBaseUrl: "https://api.stormpath.com/passwordReset"
+                ]
+        ]
+        InternalDataStore ds = createStrictMock(InternalDataStore)
+
+        def testResource = new TestResource(ds, props)
+
+
+        Method method = AbstractResource.getDeclaredMethod("getMapProperty", String)
+        method.setAccessible(true)
+
+        Object[] parameters = new Object[1]
+        parameters[0] = "defaultModel"
+
+        assertEquals(((Map) method.invoke(testResource, parameters)).get('linkBaseUrl'), "https://api.stormpath.com/passwordReset")
+
+        parameters[0] = "nonExistentMapProperty"
+        assertNull(method.invoke(testResource, parameters))
+
+        parameters[0] = "name"
+        try {
+            method.invoke(testResource, parameters)
+            fail("Should have thrown")
+        } catch (Exception e) {
+            assertEquals(e.getCause().toString(), "java.lang.IllegalArgumentException: 'name' property value type does not match the specified type. Specified type: Map. Existing type: java.lang.String.  Value: Default Password Reset Email Template")
+        }
     }
 
 }

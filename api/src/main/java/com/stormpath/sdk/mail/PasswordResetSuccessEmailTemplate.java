@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.resource;
+package com.stormpath.sdk.mail;
 
 /**
- * @since 0.8
+ *
+ * A special kind of {@link EmailTemplate} to customize properties for Password Reset Success Emails.
+ *
+ * @since 1.0.RC4
  */
-public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
+public interface PasswordResetSuccessEmailTemplate extends EmailTemplate<PasswordResetSuccessEmailTemplate> {
 
-    public StatusProperty(Class<T> clazz) {
-        super("status", clazz);
-    }
-
-    /**
-     * @since 1.0.RC4
-     */
-    public StatusProperty(String propertyName, Class<T> clazz) {
-        super(propertyName, clazz);
-    }
 }

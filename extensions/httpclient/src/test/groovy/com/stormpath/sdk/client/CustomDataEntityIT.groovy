@@ -236,5 +236,4 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
         assertEquals account.customData.hobby, 'Kendo'
     }
 
-
 }
