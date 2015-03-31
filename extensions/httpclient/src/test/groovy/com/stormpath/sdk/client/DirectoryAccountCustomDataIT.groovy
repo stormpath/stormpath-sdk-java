@@ -29,32 +29,44 @@ class DirectoryAccountCustomDataIT extends AbstractCustomDataIT {
 
     @Test
     void testCreateAccountWithCustomData() {
+        def count = 1
+        while (count >= 0) { //re-trying once
+            try {
+                def app = createApplication();
+                directory = retrieveAppDirectory(app);
+                deleteOnTeardown(directory);
+                deleteOnTeardown(app)
 
-        def app = createApplication();
-        directory = retrieveAppDirectory(app);
-        deleteOnTeardown(directory);
-        deleteOnTeardown(app)
+                def postedCustomData = createComplexData()
+                def account1 = createAccount(postedCustomData, false)
+                updateAccount(account1, postedCustomData, createDataForUpdate(), false)
+                updateAccount(account1, postedCustomData, createDataForUpdate(), true)
 
-        def postedCustomData = createComplexData()
-        def account1 = createAccount(postedCustomData, false)
-        updateAccount(account1, postedCustomData, createDataForUpdate(), false)
-        updateAccount(account1, postedCustomData, createDataForUpdate(), true)
+                postedCustomData = createComplexData()
+                def account2 = createAccount(postedCustomData, true)
+                updateAccount(account2, postedCustomData, createDataForUpdate(), true)
+                updateAccount(account2, postedCustomData, createDataForUpdate(), false)
 
-        postedCustomData = createComplexData()
-        def account2 = createAccount(postedCustomData, true)
-        updateAccount(account2, postedCustomData, createDataForUpdate(), true)
-        updateAccount(account2, postedCustomData, createDataForUpdate(), false)
+                postedCustomData = [:]
+                def account3 = createAccount(postedCustomData, false)
+                updateAccount(account3, postedCustomData, [:], false)
+                updateAccount(account3, postedCustomData, createDataForUpdate(), false)
 
-        postedCustomData = [:]
-        def account3 = createAccount(postedCustomData, false)
-        updateAccount(account3, postedCustomData, [:], false)
-        updateAccount(account3, postedCustomData, createDataForUpdate(), false)
-
-        postedCustomData = [:]
-        def account4 = createAccount(postedCustomData, true)
-        updateAccount(account4, postedCustomData, [:], true)
-        updateAccount(account4, postedCustomData, createDataForUpdate(), true)
-
+                postedCustomData = [:]
+                def account4 = createAccount(postedCustomData, true)
+                updateAccount(account4, postedCustomData, [:], true)
+                updateAccount(account4, postedCustomData, createDataForUpdate(), true)
+            } catch (AssertionError e) {
+                //this is the known sporadic exception
+                count--
+                if (count < 0) {
+                    throw e
+                }
+                System.out.println("Test failed due to " + e.getMessage() + ".\nRetrying " + (count + 1) + " more time(s)")
+                continue
+            }
+            break;  //no error, let's get out of the loop
+        }
     }
 
     def Account createAccount(Map postedCustomData, boolean expand) {

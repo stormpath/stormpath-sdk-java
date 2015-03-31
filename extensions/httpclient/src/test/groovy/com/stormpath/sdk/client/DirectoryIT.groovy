@@ -19,7 +19,9 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.impl.resource.AbstractCollectionResource
+import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
@@ -186,7 +188,102 @@ class DirectoryIT extends ClientIT {
             assertEquals(dir.getCustomData().size(), 4)
         }
         assertEquals(count, 1)
-
     }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testPasswordPolicy() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testPasswordPolicy")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+        def passwordPolicy = dir.getPasswordPolicy()
+        assertNotNull passwordPolicy.href
+        assertEquals passwordPolicy.getResetTokenTtlHours(), 24
+        assertEquals passwordPolicy.getResetEmailStatus(), EmailStatus.ENABLED
+        assertEquals passwordPolicy.getResetSuccessEmailStatus(), EmailStatus.ENABLED
+        passwordPolicy.setResetTokenTtlHours(100)
+                .setResetEmailStatus(EmailStatus.DISABLED)
+                .setResetSuccessEmailStatus(EmailStatus.DISABLED)
+        passwordPolicy.save()
+
+        //Let's check that the new state is properly retrieved in a new instance
+        def retrievedPasswordPolicy = client.getResource(passwordPolicy.href, PasswordPolicy.class)
+        assertEquals retrievedPasswordPolicy.getResetTokenTtlHours(), 100
+        assertEquals retrievedPasswordPolicy.getResetEmailStatus(), EmailStatus.DISABLED
+        assertEquals retrievedPasswordPolicy.getResetSuccessEmailStatus(), EmailStatus.DISABLED
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testListSize() {
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testListSize")
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Account account01 = client.instantiate(Account)
+        account01 = account01.setGivenName(uniquify('John01'))
+                .setSurname('DELETEME')
+                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account01)
+
+        assertEquals(dir.getAccounts().getSize(), 1)
+
+        def account02 = client.instantiate(Account)
+        account02 = account02.setGivenName(uniquify('John02'))
+                .setSurname('DELETEME')
+                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account02)
+
+        assertEquals(dir.getAccounts().getSize(), 2)
+
+        def list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(account01.email)))
+
+        assertEquals(list.getSize(), 1)
+
+        list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("listMustBeEmpty")))
+
+        assertEquals(list.getSize(), 0)
+
+        list = dir.getAccounts(Accounts.criteria().limitTo(1))
+        int count = 0
+
+        def firstAccount = null
+        def firstPage = null
+        for (Account account : list) {
+            def acrlist = (AbstractCollectionResource) list
+            assertEquals(acrlist.currentPage.items.size(), 1)
+            assertEquals(acrlist.currentPage.size, 2)
+
+            assertNotNull(account.getHref())
+            if(count == 0) {
+                firstAccount = account
+                firstPage = acrlist.currentPage
+            } else {
+                assertNotEquals(account.getHref(), firstAccount.getHref()) //let's check that the items are actually moving
+                assertNotSame(acrlist.currentPage, firstPage) //let's check that pages are actually moving
+            }
+
+            count++
+        }
+        assertEquals(count, 2)
+
+        account01.delete()
+        account02.delete()
+
+        assertEquals(dir.getAccounts().getSize(), 0)
+    }
+
+
 
 }

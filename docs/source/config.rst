@@ -10,7 +10,7 @@ Configuration
 No Config?
 ----------
 
-Refreshingly, the Stormpath Servlet Plugin doesn't require any configuration at all as long as the following conditions
+Refreshingly, the Stormpath Java Servlet Plugin doesn't require any configuration at all as long as the following conditions
 apply:
 
 #. You added the stormpath-servlet-plugin .jar and its transitive dependencies to your web application's ``/WEB-INF/lib`` directory.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the stormpath-servlet-plugin dependency <servlet-plugin-jar>` in your project build configuration.
@@ -29,7 +29,7 @@ Most plugin users do not need to modify the web application ``/WEB-INF/web.xml``
 
 However, some applications might experience a filter chain conflict that causes problems.
 
-At application startup, the Stormpath Servlet Plugin automatically enables a ``StormpathFilter`` to handle various request flows.  If your web application uses frameworks that make heavy use of servlet filters, like Spring MVC or Apache Shiro, these existing filters might cause an ordering conflict with the ``StormpathFilter``.
+At application startup, the Stormpath Java Servlet Plugin automatically enables a ``StormpathFilter`` to handle various request flows.  If your web application uses frameworks that make heavy use of servlet filters, like Spring MVC or Apache Shiro, these existing filters might cause an ordering conflict with the ``StormpathFilter``.
 
 If you are experiencing problems after adding the stormpath-servlet-plugin .jar to your web app's classpath, you'll need to explicitly specify where the ``StormpathFilter`` should reside in your application's filter chain.  Luckily the fix is really easy:
 
@@ -47,7 +47,7 @@ It is often easiest to specifying this at or near the top of your other filter m
 stormpath.properties
 --------------------
 
-If you need to customize behavior, the Stormpath Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a  convenient overrides mechanism using various property definition locations.
+If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a  convenient overrides mechanism using various property definition locations.
 
 All stormpath configuration properties are prefixed with ``stormpath.`` and take the following form (for example)
 
@@ -158,7 +158,7 @@ If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties
 SDK Client
 ----------
 
-The Stormpath Servlet Plugin depends on a Stormpath SDK ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
+The Stormpath Java Servlet Plugin depends on a Stormpath SDK ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
 
 API Key
 ~~~~~~~
@@ -215,7 +215,7 @@ You can also :ref:`access the client via a ServletRequest <request sdk client>`.
 Stormpath Application
 ---------------------
 
-The Stormpath Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.
+The Stormpath Java Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.
 
 If you only have one registered application with Stormpath, the plugin will automatically query Stormpath at startup, find the ``Application`` and use it, and no configuration is necessary.
 
@@ -255,7 +255,7 @@ You can also :ref:`access the application via a ServletRequest <request applicat
 Filters
 -------
 
-The Stormpath Servlet Plugin works largely by intercepting requests to certain URI paths in your application and then executing one or more servlet filters based on the URI being accessed.
+The Stormpath Java Servlet Plugin works largely by intercepting requests to certain URI paths in your application and then executing one or more servlet filters based on the URI being accessed.
 
 All of the Servlet Filters needed by the plugin are already configured, but if you wanted to, you could define your own Servlet Filters (or even override the plugin's defaults) as configuration properties via the following convention:
 

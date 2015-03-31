@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
@@ -51,6 +52,7 @@ import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.provider.ProviderData;
@@ -513,8 +515,20 @@ public class DefaultDataStore implements InternalDataStore {
 
         //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
         boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+        //since 1.0.RC4 : fix for https://github.com/stormpath/stormpath-sdk-java/issues/140 where Account remains disabled after
+        //successful verification due to an outdated `Account` state in the cache.
+        if (emailVerification && isCachingEnabled()) {
+            Cache cache = getCache(Account.class);
+            String accountHref = (String) responseBody.get(HREF_PROP_NAME);
+            if (Strings.hasText(accountHref)) {
+                cache.remove(accountHref);
+            }
+        }
 
-        if (isCacheUpdateEnabled(returnType) && !emailVerification) {
+        //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
+        boolean doNotCache = (resource instanceof PasswordResetToken && PasswordResetToken.class.isAssignableFrom(returnType)) || emailVerification;
+
+        if (isCacheUpdateEnabled(returnType) && !doNotCache) {
             //@since 1.0.RC3: Let's first check if the response is an actual Resource (meaning, that it has an href property)
             if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
                 //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
@@ -705,7 +719,14 @@ public class DefaultDataStore implements InternalDataStore {
             String name = entry.getKey();
             Object value = entry.getValue();
 
-            if (value instanceof Map) {
+            boolean isDefaultModelMap = ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
+            //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
+            //do need to have an href property
+            if (isDefaultModelMap) {
+                value = new LinkedHashMap<String, Object>((Map) value);
+            }
+
+            if (value instanceof Map && !isDefaultModelMap) {
                 //the value is a resource reference
                 Map<String, ?> nested = (Map<String, ?>) value;
 
@@ -893,10 +914,17 @@ public class DefaultDataStore implements InternalDataStore {
             return value;
         }
 
-        if (value instanceof Map) { //if the property is a reference, don't write the entire object - just the href will do:
-            //TODO need to change this to write the entire object because this code defeats the purpose of entity expansion
-            //     when this code gets called (returning the reference instead of the whole object that is returned from Stormpath)
-            return this.referenceFactory.createReference(propName, (Map) value);
+        if (value instanceof Map) {
+            //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
+            //do need to have an href property
+            if (resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) {
+                return value;
+            } else {
+                //if the property is a reference, don't write the entire object - just the href will do:
+                //TODO need to change this to write the entire object because this code defeats the purpose of entity expansion
+                //     when this code gets called (returning the reference instead of the whole object that is returned from Stormpath)
+                return this.referenceFactory.createReference(propName, (Map) value);
+            }
         }
 
         if (value instanceof Resource) {
