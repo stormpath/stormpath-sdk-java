@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.impl.tenant
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.application.ApplicationList
@@ -157,8 +159,9 @@ class DefaultTenantTest {
     }
 
     /**
-     * Asserts that https://github.com/stormpath/stormpath-sdk-java/issues/60 has been fixed
-     * @since 1.0.0 */
+     * Asserts that both https://github.com/stormpath/stormpath-sdk-java/issues/60 and https://github.com/stormpath/stormpath-sdk-java/issues/140 have been fixed
+     * @since 1.0.RC4
+     */
     @Test
     void testVerifyAccountEmail() {
 
@@ -174,6 +177,8 @@ class DefaultTenantTest {
         def cacheManager = createStrictMock(CacheManager)
         def response = createStrictMock(Response)
         def mapMarshaller = new JacksonMapMarshaller();
+        def accountCache = createStrictMock(Cache)
+        def account = createStrictMock(Account)
         InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(returnedProperties).getBytes());
 
         expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.POST, "https://api.stormpath.com/v1/accounts/emailVerificationTokens/fooVerificationEmail"))))).andReturn(response)
@@ -181,8 +186,10 @@ class DefaultTenantTest {
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(is)
         expect(response.getHttpStatus()).andReturn(200)
+        expect(cacheManager.getCache(Account.class.getName())).andReturn(accountCache)
+        expect(accountCache.remove(returnedProperties.href)).andReturn(account)
 
-        replay apiKey, cacheManager, requestExecutor, response
+        replay apiKey, cacheManager, requestExecutor, response, accountCache
 
         def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
         dataStore.cacheManager = cacheManager
@@ -193,7 +200,7 @@ class DefaultTenantTest {
         assertTrue(dataStore.isCachingEnabled())
         tenant.verifyAccountEmail(token)
 
-        verify apiKey, cacheManager, requestExecutor, response
+        verify apiKey, cacheManager, requestExecutor, response, accountCache
     }
 
     //@since 1.0.beta

@@ -23,6 +23,8 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -220,6 +222,24 @@ public class ImmutableAccount implements Account {
     public ApiKey createApiKey(ApiKeyOptions options) {
         immutable();
         return null;
+    }
+
+    /** @version 1.0.RC4 */
+    @Override
+    public ApplicationList getApplications() {
+        return account.getApplications();
+    }
+
+    /** @version 1.0.RC4 */
+    @Override
+    public ApplicationList getApplications(Map<String, Object> queryParams) {
+        return account.getApplications(queryParams);
+    }
+
+    /** @version 1.0.RC4 */
+    @Override
+    public ApplicationList getApplications(ApplicationCriteria criteria) {
+        return account.getApplications(criteria);
     }
 
     @Override

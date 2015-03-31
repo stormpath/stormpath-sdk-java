@@ -23,6 +23,9 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -76,11 +79,14 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
             new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, GroupMembership.class);
     static final CollectionReference<ApiKeyList, ApiKey> API_KEYS =
             new CollectionReference<ApiKeyList, ApiKey>("apiKeys", ApiKeyList.class, ApiKey.class);
+    // @since 1.0.RC4
+    static final CollectionReference<ApplicationList, Application> APPLICATIONS =
+            new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -319,5 +325,25 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         Assert.notNull(options, "options argument cannot be null.");
         String href = getApiKeys().getHref();
         return getDataStore().create(href, new DefaultApiKey(getDataStore()), options);
+    }
+
+    /** @since 1.0.RC4 */
+    @Override
+    public ApplicationList getApplications() {
+        return getResourceProperty(APPLICATIONS);
+    }
+
+    /** @since 1.0.RC4 */
+    @Override
+    public ApplicationList getApplications(Map<String, Object> queryParams) {
+        ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, queryParams);
+    }
+
+    /** @since 1.0.RC4 */
+    @Override
+    public ApplicationList getApplications(ApplicationCriteria criteria) {
+        ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, criteria);
     }
 }
