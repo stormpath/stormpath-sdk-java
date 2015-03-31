@@ -373,10 +373,12 @@ class DefaultAccountTest {
         expect(applicationList.getHref()).andReturn(properties.applications.href)
 
         //getApplications(Map)
+        expect(internalDataStore.instantiate(ApplicationList, properties.applications)).andReturn(applicationList)
         expect(internalDataStore.getResource(properties.applications.href, ApplicationList, map)).andReturn(applicationList)
         expect(applicationList.getHref()).andReturn(properties.applications.href)
 
         //getApplications(ApplicationCriteria)
+        expect(internalDataStore.instantiate(ApplicationList, properties.applications)).andReturn(applicationList)
         expect(internalDataStore.getResource(properties.applications.href, ApplicationList, applicationCriteria)).andReturn(applicationList)
 
         replay(internalDataStore, applicationList, map, applicationCriteria)
