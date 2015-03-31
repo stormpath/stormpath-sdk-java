@@ -67,11 +67,6 @@ However, this might not be a trivial exercise if you still wish to support both 
    If you want to execute custom behavior as a result of a failed login, it is generally recommended not to implement a custom ``UnauthenticatedHandler`` and instead react to :ref:`login events <login events>`.  These events are triggered in the event of an authentication by login form or by HTTP headers, so you can react to both scenarios.
 
 
-Authorization
--------------
-
-TBD
-
 Exclusions
 ----------
 

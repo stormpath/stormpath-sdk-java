@@ -99,12 +99,21 @@ You can customize this list with optional directives as necessary, but note:
 .. TIP::
     Re-ordering the comma-delimited list will automatically re-order the fields in the view :)
 
+.. _password strength:
+
+Password Strength
+^^^^^^^^^^^^^^^^^
+
+When you first fill out the registration form, you probably noticed that you couldn't register a user account without specifying a sufficiently strong password.  This is because, by default, Stormpath enforces certain password strength rules.
+
+If you'd like to change these password strength rules, you can do so easily by visiting the `Stormpath Admin Console`_, navigating to your your application's user account ``Directory``, and then changing the "Password Strength Policy".
+
 i18n
 ----
 
 The :ref:`i18n` message keys used in the default register view have names prefixed with ``stormpath.web.register.``:
 
-.. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
+.. literalinclude:: ../../../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
    :lines: 42-70
 

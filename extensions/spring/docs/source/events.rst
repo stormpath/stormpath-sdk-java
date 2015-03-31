@@ -13,13 +13,16 @@ When the plugin publishes various events, a ``RequestEventListener`` will be not
 #. Implement the ``com.stormpath.sdk.servlet.event.RequestEventListener`` interface directly and implement all event methods.
 #. Subclass the ``com.stormpath.sdk.servlet.event.RequestEventListenerAdapter`` and override only the event methods you are interested in.
 
-You may specify your implementation's fully qualified class name using the ``stormpath.web.event.listener`` configuration property:
+After you have an implementation, just declare your implementation as the ``stormpathRequestEventListener`` bean:
 
-.. code-block:: properties
+.. code-block:: java
 
-    stormpath.web.request.event.listener = com.stormpath.sdk.servlet.event.RequestEventListenerAdapter
+    @Bean
+    public RequestEventListener stormpathRequestEventListener() {
+        return new RequestEventListenerAdapter();
+    }
 
-As you can see, the default implementation is an instance of the adapter, which simply just logs each event to the ``debug`` log level.
+Unless overridden, the default implementation is an instance of the adapter, which simply just logs each event to the ``debug`` log level.
 
 Events
 ------
