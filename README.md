@@ -21,9 +21,9 @@ thoughts! support@stormpath.com
 
 Stormpath offers deep documentation and support for Java. 
 
-[Official Stormpath-Java Docs](http://docs.stormpath.com/)
-[API Docs for Java](https://docs.stormpath.com/java/apidocs/)
-[Stormpath Java Product Guide](https://docs.stormpath.com/java/product-guide/)
+- [Official Stormpath-Java Docs](http://docs.stormpath.com/)
+- [API Docs for Java](https://docs.stormpath.com/java/apidocs/)
+- [Stormpath Java Product Guide](https://docs.stormpath.com/java/product-guide/)
 
 Please email support@stormpath.com with any errors or issues with the documentation. 
 
