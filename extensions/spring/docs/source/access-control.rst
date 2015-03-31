@@ -3,7 +3,7 @@
 Access Control
 ==============
 
-The Stormpath Java Servlet Plugin allows you to easily control which of your web application's URI paths a user is allowed to access based on configurable rules.
+The |project| allows you to easily control which of your web application's URI paths a user is allowed to access based on configurable rules.
 
 The rules are implemented via simple Servlet :ref:`filters <filters>` and :ref:`configurable filter chains <uris>`, but in a simpler, easier to read, much more flexible, and more succinct definition format than you might be used to with ``web.xml`` configuration.
 

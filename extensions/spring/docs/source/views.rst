@@ -3,14 +3,14 @@
 Custom Views
 ============
 
-The Stormpath Java Servlet Plugin provides out-of-the-box template-based views for common URIs, like `/login`, `/register`, etc.  This page documents how you can easily customize or completely replace the views to have your own look and feel.
+The |project| provides out-of-the-box template-based views for common URIs, like `/login`, `/register`, etc.  This page documents how you can easily customize or completely replace the views to have your own look and feel.
 
 All of the default views are all based on the same principle: they are decorated by a common page template, and only the primary content in each rendered page changes.  Internationalization (i18n) is used to represent text on all default views so you can provide a nice translated view for each user based on their locale.  CSS styles largely control the view look and feel.
 
 JSP Views
 ---------
 
-The default views are JSPs rendered based on a common page template.  The template itself is also a JSP, but represented as a tag library - no 3rd party template libraries are required. This tag library is included in the Stormpath Java Servlet Plugin and available to any JSP view in your project.
+The default views are JSPs rendered based on a common page template.  The template itself is also a JSP, but represented as a tag library - no 3rd party template libraries are required. This tag library is included in the |project| and available to any JSP view in your project.
 
 A JSP view that should be rendered based on this template should reference this template tag library at the top of the JSP:
 

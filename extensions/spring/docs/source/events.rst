@@ -3,7 +3,7 @@
 Events
 ======
 
-The Stormpath Java Servlet Plugin will trigger events when interesting things happen.  You can listen for these events and implement custom behavior when desired.
+The |project| will trigger events when interesting things happen.  You can listen for these events and implement custom behavior when desired.
 
 RequestEventListener
 --------------------

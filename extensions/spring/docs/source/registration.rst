@@ -177,7 +177,7 @@ Verify Link Base URL
 
 The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
 
-When a user clicks the link in the email, the Stormpath Java Servlet Plugin will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verify.uri`` configuration property:
+When a user clicks the link in the email, the |project| will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verify.uri`` configuration property:
 
 .. code-block:: properties
 

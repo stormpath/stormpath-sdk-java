@@ -106,7 +106,7 @@ Change Password URI
 
 The Password Reset 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the password reset email.  For example, during development, this is often something like ``http://localhost:8080/change`` and in production, something like ``https://myapp.com/change``.
 
-When a user clicks the link in the email, the Stormpath Java Servlet Plugin will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.change.uri`` configuration property:
+When a user clicks the link in the email, the |project| will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.change.uri`` configuration property:
 
 .. code-block:: properties
 
