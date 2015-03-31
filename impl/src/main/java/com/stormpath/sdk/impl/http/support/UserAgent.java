@@ -19,7 +19,6 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -64,12 +63,24 @@ public class UserAgent {
     //SDK
     private static final String STORMPATH_SDK_STRING = "stormpath-sdk-java";
 
+    //Stormpath Java Servlet Plugin
+    private static final String STORMPATH_SDK_SERVLET_ID = "stormpath-servlet-java";
+    private static final String STORMPATH_SDK_SERVLET_CLASS = "com.stormpath.sdk.servlet.filter.StormpathFilter";
+
+    //Stormpath Spring Boot
+    private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_ID = "spring-boot-starter-stormpath";
+    private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS = "com.stormpath.spring.boot.autoconfigure.StormpathAutoConfiguration";
+
     //Integration Runtimes
     private static final String INTEGRATION_RUNTIME_SPRING_SECURITY_ID = "spring";
-    private static final String INTEGRATION_RUNTIME_SPRING_SECURITY_CLASS = "org.springframework.core.SpringVersion";
+    private static final String INTEGRATION_RUNTIME_SPRING_SECURITY_CLASS = "org.springframework.context.ApplicationContext";
+
+    //Rapid Prototyping
+    private static final String RAPID_PROTOTYPING_SPRING_BOOT_ID = "spring-boot";
+    private static final String RAPID_PROTOTYPING_SPRING_BOOT_CLASS = "org.springframework.boot.SpringApplication";
 
     //Runtime
-    private static final String SDK_RUNTIME_STRING = "java";
+    private static final String JAVA_SDK_RUNTIME_STRING = "java";
 
     ////Additional Information////
 
@@ -93,6 +104,8 @@ public class UserAgent {
     private static final String WEB_SERVER_GLASSFISH_CLASS = "com.sun.enterprise.glassfish.bootstrap.GlassFishMain";
     private static final String WEB_SERVER_WEBLOGIC_ID = "weblogic";
     private static final String WEB_SERVER_WEBLOGIC_CLASS = "weblogic.version";
+    private static final String WEB_SERVER_WILDFLY_ID = "wildfly";
+    private static final String WEB_SERVER_WILDFLY_CLASS = "org.jboss.as.security.ModuleName";
 
     private static final String VERSION_SEPARATOR = "/";
     private static final String ENTRY_SEPARATOR = " ";
@@ -108,22 +121,16 @@ public class UserAgent {
     }
 
     private static String createUserAgentString() {
-        String userAgent =  getIntegrationString() +
-                getStormpathSdkString() +
-                getIntegrationRuntimeString() +
-                getSDKRuntimeString() +
-                getOSString() +
-                getAdditionalInformation();
+        String userAgent =  getIntegrationString() +    // stormpath-shiro | stormpath-spring-security
+                getStormpathSDKComponentsString() +     // stormpath-servlet-java | spring-boot-starter-stormpath
+                getStormpathSdkString() +               // stormpath-sdk-java
+                getSecurityFrameworkString() +          // shiro | spring-security
+                getIntegrationRuntimeString() +         // spring
+                getSpringBootString() +                 // spring-boot
+                getWebServerString() +                  // tomcat | jetty | jboss | websphere | glassfish | weblogic | wildfly
+                getJavaSDKRuntimeString() +             // java
+                getOSString();                          // Mac OS X
         return userAgent.trim();
-    }
-
-    private static String getAdditionalInformation() {
-        String additionalInformation;
-        additionalInformation = getSecurityFrameworkString() + getWebServerString();
-        if(Strings.hasText(additionalInformation)) {
-            return "(" + additionalInformation.trim() + ")";
-        }
-        return "";
     }
 
     private static String getIntegrationString() {
@@ -152,12 +159,21 @@ public class UserAgent {
         return "";
     }
 
-    private static String getSDKRuntimeString() {
-        return SDK_RUNTIME_STRING + VERSION_SEPARATOR + System.getProperty("java.version") + ENTRY_SEPARATOR;
+    private static String getJavaSDKRuntimeString() {
+        return JAVA_SDK_RUNTIME_STRING + VERSION_SEPARATOR + System.getProperty("java.version") + ENTRY_SEPARATOR;
     }
 
     private static String getOSString() {
         return System.getProperty("os.name") + VERSION_SEPARATOR + System.getProperty("os.version") + ENTRY_SEPARATOR;
+    }
+
+    //Spring Boot
+    private static String getSpringBootString() {
+        String springBootStarter = getFullEntryStringUsingManifest(RAPID_PROTOTYPING_SPRING_BOOT_CLASS, RAPID_PROTOTYPING_SPRING_BOOT_ID);
+        if (Strings.hasText(springBootStarter)) {
+            return springBootStarter;
+        }
+        return "";
     }
 
     private static String getSecurityFrameworkString() {
@@ -171,6 +187,23 @@ public class UserAgent {
             return securityFrameworkString;
         }
         return "";
+    }
+
+    //Stormpath SDK Components
+    private static String getStormpathSDKComponentsString() {
+        StringBuffer stormpathComponentsString = new StringBuffer();
+
+        String sdkServletString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SERVLET_CLASS, STORMPATH_SDK_SERVLET_ID);
+        if (Strings.hasText(sdkServletString)) {
+            stormpathComponentsString.append(sdkServletString);
+        }
+
+        String stormpathSpringBootStarterString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS, STORMPATH_SDK_SPRING_BOOT_STARTER_ID);
+        if (Strings.hasText(stormpathSpringBootStarterString)) {
+            stormpathComponentsString.append(stormpathSpringBootStarterString);
+        }
+
+        return stormpathComponentsString.toString();
     }
 
     private static String getWebServerString() {
@@ -189,6 +222,11 @@ public class UserAgent {
             return webServerString;
         }
         webServerString = getFullEntryStringUsingManifest(WEB_SERVER_JETTY_CLASS, WEB_SERVER_JETTY_ID);
+        if(Strings.hasText(webServerString)) {
+            return webServerString;
+        }
+        //WildFly must be before JBoss
+        webServerString = getWildFlyEntryString();
         if(Strings.hasText(webServerString)) {
             return webServerString;
         }
@@ -222,6 +260,13 @@ public class UserAgent {
         return null;
     }
 
+    private static String getFullEntryStringUsingSDKVersion(String fqcn, String entryId) {
+        if (Classes.isAvailable(fqcn)) {
+            return entryId + VERSION_SEPARATOR + Version.getClientVersion() + ENTRY_SEPARATOR;
+        }
+        return null;
+    }
+
     private static String getWebSphereEntryString() {
         if (Classes.isAvailable(WEB_SERVER_WEBSPHERE_CLASS)) {
             return WEB_SERVER_WEBSPHERE_ID + VERSION_SEPARATOR + getWebSphereVersion() + ENTRY_SEPARATOR;
@@ -232,6 +277,23 @@ public class UserAgent {
     private static String getWebLogicEntryString() {
         if (Classes.isAvailable(WEB_SERVER_WEBLOGIC_CLASS)) {
             return WEB_SERVER_WEBLOGIC_ID + VERSION_SEPARATOR + getWebLogicVersion() + ENTRY_SEPARATOR;
+        }
+        return null;
+    }
+
+    private static String getWildFlyEntryString() {
+        try {
+            if (Classes.isAvailable(WEB_SERVER_WILDFLY_CLASS)) {
+                Package wildFlyPkg = Classes.forName(WEB_SERVER_WILDFLY_CLASS).getPackage();
+                if (wildFlyPkg != null) {
+                    if (Strings.hasText(wildFlyPkg.getImplementationTitle()) && wildFlyPkg.getImplementationTitle().contains("WildFly")) {
+                        return WEB_SERVER_WILDFLY_ID + VERSION_SEPARATOR + wildFlyPkg.getImplementationVersion() + ENTRY_SEPARATOR;
+                    }
+                }
+            }
+
+        } catch (Exception e){
+            //there was a problem obtaining the WildFly version
         }
         return null;
     }

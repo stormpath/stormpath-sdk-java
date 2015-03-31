@@ -4,6 +4,7 @@
 
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.
 - [Issue 151](https://github.com/stormpath/stormpath-sdk-java/issues/151): Fixed issue where `UserAgent` was not being able to read POM properties from Virtual File System.
+- [Issue 165](https://github.com/stormpath/stormpath-sdk-java/issues/165): Added the ability for the User Agent to detect: Stormpath Spring Boot, Stormpath Java Servlet, Spring Boot and Wildfly
 
 ### 1.0.RC3.1 ###
 
