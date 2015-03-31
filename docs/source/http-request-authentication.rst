@@ -3,7 +3,7 @@
 HTTP Request Authentication
 ===========================
 
-In addition to supporting a traditional server-side rendered :ref:`login <login>` form, the Stormpath Servlet Plugin also supports various HTTP request authentication schemes out of the box.  By default, this includes:
+In addition to supporting a traditional server-side rendered :ref:`login <login>` form, the Stormpath Java Servlet Plugin also supports various HTTP request authentication schemes out of the box.  By default, this includes:
 
 * HTTP Basic Authentication
 
@@ -47,7 +47,7 @@ A common use case is as follows:
 1.  A client-side user interface built with HTML, CSS and Javascript is loaded in the user's browser.
 2.  The client-side UI collects the user's username (or email address) and password, for example via a form.
 3.  The client-side UI submits the username/email and password pair to your server-side web application, typically as an AJAX HTTPS request.
-4.  The Stormpath Servlet Plugin will ensure the client is allowed to make the request and then authenticates the submitted credentials.
+4.  The Stormpath Java Servlet Plugin will ensure the client is allowed to make the request and then authenticates the submitted credentials.
 5.  If the authentication is successful, the plugin will return a 'bearer token' in the HTTP response to the Javascript application.
 6.  The client-side UI will send this bearer token over HTTPS on every future request, either in a cookie, or the request's ``Authorization`` header, or both.  For example:
 
@@ -55,7 +55,7 @@ A common use case is as follows:
 
        Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZ ... etc ...
 
-Under the hood, the Stormpath Servlet Plugin implements this behavior according to the OAuth 2 specification.  It implements the entire OAuth 2 'password grant' flow for you -  you don't have to implement any of this logic at all!
+Under the hood, the Stormpath Java Servlet Plugin implements this behavior according to the OAuth 2 specification.  It implements the entire OAuth 2 'password grant' flow for you -  you don't have to implement any of this logic at all!
 
 There is an added benefit to this design: you don't need server-side sessions to retain user identity state.  Server-stateless applications can often scale better than those with sessions since state does not need to be shared or clustered across server nodes.
 
