@@ -55,7 +55,7 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
     @Override
     public Criterion gt(Date date) {
-        Assert.isTrue(date instanceof Date, "date needs to be a valid Date object");
+        Assert.notNull(date, "date needs to be a valid Date object");
         DateFormat df = new ISO8601DateFormat();
         String value = EXCLUSIVE_OPENING + df.format(date).toString() + COMMA + INCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
@@ -63,7 +63,7 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
     @Override
     public Criterion gte(Date date) {
-        Assert.isTrue(date instanceof Date, "date needs to be a valid Date object");
+        Assert.notNull(date, "date needs to be a valid Date object");
         DateFormat df = new ISO8601DateFormat();
         String value = INCLUSIVE_OPENING + df.format(date).toString() + COMMA + INCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
@@ -71,7 +71,7 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
     @Override
     public Criterion lt(Date date) {
-        Assert.isTrue(date instanceof Date, "date needs to be a valid Date object");
+        Assert.notNull(date, "date needs to be a valid Date object");
         DateFormat df = new ISO8601DateFormat();
         String value = INCLUSIVE_OPENING + COMMA + df.format(date).toString() + EXCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
@@ -79,7 +79,7 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
     @Override
     public Criterion lte(Date date) {
-        Assert.isTrue(date instanceof Date, "date needs to be a valid Date object");
+        Assert.notNull(date, "date needs to be a valid Date object");
         DateFormat df = new ISO8601DateFormat();
         String value = INCLUSIVE_OPENING + COMMA + df.format(date).toString() + INCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
@@ -87,15 +87,15 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
     @Override
     public Criterion equals(Date date) {
-        Assert.isTrue(date instanceof Date, "date needs to be a valid Date object");
+        Assert.notNull(date, "date needs to be a valid Date object");
         DateFormat df = new ISO8601DateFormat();
         return new SimpleExpression(propertyName, df.format(date).toString(), Operator.EQUALS);
     }
 
     @Override
     public Criterion in(Date begin, Date end) {
-        Assert.isTrue(begin instanceof Date, "begin needs to be a valid Date object");
-        Assert.isTrue(end instanceof Date, "end needs to be a valid Date object");
+        Assert.notNull(begin, "begin needs to be a valid Date object");
+        Assert.notNull(end, "end needs to be a valid Date object");
         Assert.isTrue(begin.before(end), "begin date needs to be earlier than end date");
         DateFormat df = new ISO8601DateFormat();
         String value = INCLUSIVE_OPENING + df.format(begin).toString() + COMMA + df.format(end).toString() + EXCLUSIVE_CLOSING;
