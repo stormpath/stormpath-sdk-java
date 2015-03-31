@@ -441,5 +441,4 @@ public class UserAgent {
         //returning null so we can identify in the User-Agent String that we are not properly handling some WebLogic version
         return "null";
     }
-
 }
