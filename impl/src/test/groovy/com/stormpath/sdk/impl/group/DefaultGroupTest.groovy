@@ -92,6 +92,7 @@ class DefaultGroupTest {
         expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         def accountCriteriaMap = [name: "some+search"]
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         expect(internalDataStore.instantiate(GroupMembershipList, properties.accountMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.accountMemberships))
