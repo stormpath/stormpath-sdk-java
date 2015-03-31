@@ -2,6 +2,7 @@
 
 ### 1.0.RC4 ###
 
+- [Issue 132](https://github.com/stormpath/stormpath-sdk-java/issues/132): Prevent `PasswordResetEmail` to be cached.
 - [Issue 140](https://github.com/stormpath/stormpath-sdk-java/issues/140): Verification token can now be obtained via the `EmailVerificationToken#getToken()` method.
 - [Issue 150](https://github.com/stormpath/stormpath-sdk-java/issues/150): Added support for the `PasswordPolicy` resource in Directories.
 - [Issue 151](https://github.com/stormpath/stormpath-sdk-java/issues/151): Fixed issue where `UserAgent` was not being able to read POM properties from Virtual File System.
