@@ -39,6 +39,7 @@ import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
