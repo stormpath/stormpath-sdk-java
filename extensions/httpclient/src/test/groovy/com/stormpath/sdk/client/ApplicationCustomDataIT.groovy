@@ -116,8 +116,6 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
         updateTenant(tenant, postedCustomData, [:])
         updateTenant(tenant, postedCustomData, createDataForUpdate())
 
-        cleanTenantCustomData()
-
         application = null
     }
 
@@ -187,7 +185,6 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
     }
 
     def void initializeTenantCustomData(Map postedCustomData) {
-        cleanTenantCustomData()
 
         def tenant = client.currentTenant
 
@@ -196,10 +193,6 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
         tenant.save()
 
         assertValidCustomData(tenant.href + "/customData", postedCustomData, tenant.customData, false)
-    }
-
-    def cleanTenantCustomData() {
-        client.currentTenant.customData.delete()
     }
 
 }
