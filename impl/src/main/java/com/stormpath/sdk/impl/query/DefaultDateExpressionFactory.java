@@ -108,6 +108,7 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
         Assert.isTrue(duration instanceof Duration, "duration needs to be a valid Duration object");
         DateFormat df = new ISO8601DateFormat();
         Date endDate = this.calculateDateFromDuration(begin, duration);
+        Assert.isTrue(begin.before(endDate), "begin date needs to be earlier than end date" );
         String value = INCLUSIVE_OPENING + df.format(begin).toString() + COMMA + df.format(endDate).toString() + EXCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
@@ -126,6 +127,8 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
                 return TimeUnit.HOURS.toMillis(duration.getValue());
             case MINUTES:
                 return TimeUnit.MINUTES.toMillis(duration.getValue());
+            case SECONDS:
+                return TimeUnit.SECONDS.toMillis(duration.getValue());
             case MILLISECONDS:
                 return duration.getValue();
             case MICROSECONDS:

@@ -17,20 +17,17 @@ package com.stormpath.sdk.client
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
-import com.stormpath.sdk.query.Criterion
-import com.stormpath.sdk.query.DateExpressionFactory
 import org.testng.annotations.Test
-
 import java.text.DateFormat
-import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
 
@@ -250,5 +247,103 @@ class DirectoryIT extends ClientIT {
         def retrieved = accountList.iterator().next()
         assertEquals retrieved.href, account.href
         assertEquals dateFormatter.format(retrieved.createdAt), creationTimestamp
+    }
+
+    /**
+     * @since 1.0.RC4
+     */
+    @Test
+    void testGetDirectoriesWithDateCriteria() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: DirectoryIT.testGetDirectoriesWithDateCriteria")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+
+        Date dirCreationTimestamp = directory.createdAt
+        DateFormat df = new ISO8601DateFormat()
+
+        //matches
+        def creationTimestamp = df.format(directory.getCreatedAt());
+        def dirList = client.getDirectories(Directories.where(Directories.createdAt().matches(creationTimestamp)))
+        assertNotNull dirList.href
+
+        def retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //equals
+        dirList = client.getDirectories(Directories.where(Directories.createdAt().equals(dirCreationTimestamp)))
+        assertNotNull dirList.href
+
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //gt
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase("Java SDK: DirectoryIT.testGetDirectoriesWithDateCriteria"))
+                .and(Directories.createdAt().gt(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertFalse dirList.iterator().hasNext()
+
+        //gte
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().gte(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //lt
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().lt(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertFalse dirList.iterator().hasNext()
+
+        //lte
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().lte(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //in
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(dirCreationTimestamp)
+        cal.add(Calendar.SECOND, 2)
+        Date afterCreationDate = cal.getTime()
+
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().in(dirCreationTimestamp, afterCreationDate)))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //in
+        cal.setTime(dirCreationTimestamp)
+        cal.add(Calendar.SECOND, -10)
+        Date newDate = cal.getTime()
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().in(newDate, new Duration(1, TimeUnit.SECONDS))))
+        assertNotNull dirList.href
+        assertFalse dirList.iterator().hasNext()
+
+        //in
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().in(dirCreationTimestamp, new Duration(1, TimeUnit.MINUTES))))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
     }
 }
