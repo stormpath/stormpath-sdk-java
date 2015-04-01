@@ -21,7 +21,7 @@ Refreshingly, the |project| doesn't require any configuration at all as long as 
 If all of these conditions cannot be met, then you will have to specify some minimal configuration (but not much!) as described below.
 
 Property Overrides
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Wherever possible, sane default configuration values are used to automatically configure Stormpath beans loaded by Spring.
 
@@ -39,7 +39,7 @@ Simply just re-define the relevant ``stormpath.``\* property in one of your Spri
 .. _property security considerations:
 
 Security Considerations: Passwords and secret values
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It is **strongly** recommended that you do not specify the ``stormpath.apiKey.secret`` property - or any other password or secret property - in shared properties files. These files are usually committed to version control (like git) and shared with other developers.
 
@@ -51,7 +51,7 @@ If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties
 
 
 Bean Overrides
-~~~~~~~~~~~~~~
+--------------
 
 If property overrides are not sufficient or you need even finer control, you may wish to re-define a Stormpath bean entirely and provide your own custom implementation.
 

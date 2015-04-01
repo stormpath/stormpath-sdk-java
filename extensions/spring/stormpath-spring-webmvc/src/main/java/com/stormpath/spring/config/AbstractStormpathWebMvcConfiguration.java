@@ -97,6 +97,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
@@ -234,6 +235,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.head.fragmentSelector'] ?: 'head' }")
     protected String headFragmentSelector;
+
+    @Value("#{ @environment['stormpath.web.head.cssUris'] ?: 'https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css /assets/css/stormpath.css' }")
+    protected String headCssUris;
+
+    @Value("#{ @environment['stormpath.web.head.extraCssUris'] }")
+    protected String headExtraCssUris;
 
     // ================  Login Controller properties  ===================
 
@@ -400,7 +407,27 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         TemplateLayoutInterceptor interceptor = new TemplateLayoutInterceptor();
         interceptor.setHeadViewName(headView);
         interceptor.setHeadFragmentSelector(headFragmentSelector);
+
+        //deal w/ URIs:
+        String[] uris = StringUtils.tokenizeToStringArray(headCssUris, " \t");
+        Set<String> uriSet = new LinkedHashSet<String>();
+        if (uris != null && uris.length > 0) {
+            java.util.Collections.addAll(uriSet, uris);
+        }
+
+        uris = StringUtils.tokenizeToStringArray(headExtraCssUris, " \t");
+        if (uris != null && uris.length > 0) {
+            java.util.Collections.addAll(uriSet, uris);
+        }
+
+        if (!Collections.isEmpty(uriSet)) {
+            List<String> list = new ArrayList<String>();
+            list.addAll(uriSet);
+            interceptor.setHeadCssUris(list);
+        }
+
         interceptor.afterPropertiesSet();
+
         return interceptor;
     }
 
@@ -853,7 +880,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Set<String> stormpathAccessTokenAuthorizedOriginUris() {
-        return Strings.commaDelimitedListToSet(accessTokenAuthorizedOriginUris);
+        return Strings.delimitedListToSet(accessTokenAuthorizedOriginUris, " \t");
     }
 
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {

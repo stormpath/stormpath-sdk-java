@@ -7,9 +7,9 @@ In addition to supporting a traditional server-side rendered :ref:`login <login>
 
 * HTTP Basic Authentication
 
-* Password-based Bearer Token Authentication for Javascript clients and Single Page Applications (SPA)
+* Password-based Bearer Token Authentication for Javascript clients and Single Page Applications (SPA) and mobile clients
 
-* API Key authentication for machine clients (other servers or code libraries) that execute on behalf of a user account.
+* API Key authentication for machine clients (other servers or code libraries) that execute on behalf of a user account
 
 .. contents::
    :local:
@@ -18,7 +18,7 @@ In addition to supporting a traditional server-side rendered :ref:`login <login>
 HTTP Basic Authentication
 -------------------------
 
-Any HTTP request that uses the `HTTP Basic Authentication <http://tools.ietf.org/html/rfc2617#section-2>`_ protocol will be authenticated by the plugin automatically.
+Any HTTP request that uses the `HTTP Basic Authentication <http://tools.ietf.org/html/rfc2617#section-2>`_ protocol will be authenticated automatically.
 
 For example, using curl:
 
@@ -38,17 +38,17 @@ where:
 Token Authentication
 --------------------
 
-Token Authentication, also called 'Bearer Token Authentication', is a convenient authentication mechanism for user interfaces that are not based on traditional server-side rendered pages, for example, Javascript clients or Single Page Applications (SPAs).
+Token Authentication, also called 'Bearer Token Authentication', is a convenient authentication mechanism for user interfaces that are not based on traditional server-side rendered pages, for example, Javascript clients or Single Page Applications (SPAs) or mobile clients.
 
 Many times, these clients communicate with your application via a REST API and need to authenticate every request.  (Bearer) Token Authentication helps solve this challenge.
 
 A common use case is as follows:
 
-1.  A client-side user interface built with HTML, CSS and Javascript is loaded in the user's browser.
+1.  A rich client (JS/HTML/CSS) is loaded in a user's browser or a mobile application starts
 2.  The client-side UI collects the user's username (or email address) and password, for example via a form.
 3.  The client-side UI submits the username/email and password pair to your server-side web application, typically as an AJAX HTTPS request.
 4.  The |project| will ensure the client is allowed to make the request and then authenticates the submitted credentials.
-5.  If the authentication is successful, the plugin will return a 'bearer token' in the HTTP response to the Javascript application.
+5.  If the authentication is successful, the Starter will return a 'bearer token' in the HTTP response to the Javascript application.
 6.  The client-side UI will send this bearer token over HTTPS on every future request, either in a cookie, or the request's ``Authorization`` header, or both.  For example:
 
     .. code-block:: http
@@ -156,7 +156,7 @@ Here is an example JQuery snippet that will process the form submission (ideally
 
    </script>
 
-The Bearer Token will be saved as a secure, http-only cookie and sent back to the server on all future requests.  The plugin knows how to look for this cookie to authenticate the request.
+The Bearer Token will be saved as a secure, http-only cookie and sent back to the server on all future requests.  The Starter knows how to look for this cookie to authenticate the request.
 
 Or, if you prefer, your JavaScript code can inspect the HTTP response body and get the ``access_token`` value and then set the ``Authorization`` header with the value on future requests.  For example:
 
@@ -202,19 +202,20 @@ It is *not safe* to request a new token over standard HTTP connections and is ex
 
 A convenience allowance for localhost development is enabled however: the HTTPS requirement assertion does not apply if the client and server are both on localhost to allow for convenience while developing and testing.
 
-This is enabled via the following configuration property:
+This is enabled via the ``stormpathSecureResolver`` bean, an instance of ``Resolver<Boolean>`` that returns true for all scenarios except for localhost development.
 
-.. code-block:: properties
+If you want to provide your own implementation that reflects other scenarios, you can override the ``stormpathSecureResolver`` bean:
 
-   stormpath.web.accessToken.authorizer.secure.resolver = com.stormpath.sdk.servlet.config.SecureResolverFactory
+.. code-block:: java
 
-The ``com.stormpath.sdk.servlet.config.SecureResolverFactory`` returns a ``Resolver<Boolean>`` instance that will return true or false based on the inbound request.
-
-The default implementation returns a ``com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver`` instance, which, as the name implies, requires HTTPS for all requests except those that are sent from and to localhost.
+    @Bean
+    public Resolver<Boolean> stormpathSecureResolver() {
+        return MySecureResolver(); //implement me
+    }
 
 .. caution::
 
-   If you change this configuration value to specify your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation, please be aware that the OAuth 2 specification *requires* HTTPS.  If your implementation returns ``false`` at any time when you deploy your application to production, your web application *will* be vulnerable to identity hijacking attacks.
+   If you change this bean to return your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation, please be aware that the OAuth 2 specification *requires* HTTPS.  If your implementation returns ``false`` at any time when you deploy your application to production, your web application *will* be vulnerable to identity hijacking attacks.
 
 
 API Key Authentication
@@ -252,4 +253,3 @@ If a request is authenticated, and you want to know if the authentication was ba
        }
 
    }
-

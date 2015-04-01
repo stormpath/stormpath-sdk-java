@@ -35,7 +35,7 @@ Configure the Workflow
 
 #. On the Directory Workflows screen, select the ``Password Reset`` tab at the top and enable the workflow.
 
-   Ensure you change the ``Link Base Url`` text field to equal the fully qualified URL of your application's :ref:`password reset link base URL <forgot uri>`.  The plugin's default context-relative path for this feature is ``/change``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/change``.
+   Ensure you change the ``Link Base Url`` text field to equal the fully qualified URL of your application's :ref:`password reset link base URL <forgot uri>`.  The default context-relative path for this feature is ``/change``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/change``.
 
    .. image:: /_static/console-directory-workflows-pwreset.png
 
@@ -97,9 +97,20 @@ After the user submits their email address to send a 'reset password' email, the
 
     stormpath.web.forgot.nextUri = /login?status=forgot
 
-As you can see, this URI has a ``status=forgot`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that they should check their email inbox to look for the password reset email with instructions:
+As you can see, this URI has a ``status=forgot`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that they should check their email inbox to look for the password reset email with instructions:
 
 .. image:: /_static/forgot-result.png
+
+Forgot View
+-----------
+
+When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgot.view`` property:
+
+.. code-block:: properties
+
+    stormpath.web.forgot.view = stormpath/forgot
+
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 Change Password URI
 -------------------
@@ -126,7 +137,7 @@ After the user successfully specifies their new password, they will be redirecte
 
     stormpath.web.change.nextUri = /login?status=changed
 
-As you can see, this URI has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+As you can see, this URI has a ``status=changed`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
 .. image:: /_static/login-changed.png
 
@@ -138,6 +149,17 @@ If you want to change this path, set the ``stormpath.web.login.uri`` configurati
 
     # The context-relative path to the login view:
     stormpath.web.login.uri = /login
+
+Change Password View
+--------------------
+
+When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.change.view`` property:
+
+.. code-block:: properties
+
+    stormpath.web.change.view = stormpath/change
+
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 i18n
 ----

@@ -20,7 +20,7 @@ One of the very first things most web apps need is the ability to create a user 
 
 Pretty nice!  Not a single line of code required :)
 
-And while we think the default look and feel of the pages automatically rendered by the plugin are pretty nice, you have full control over the CSS and HTML for these pages - we'll cover customizing them later.
+And while we think the default look and feel of the pages automatically rendered are pretty nice, you have full control over the CSS and HTML for these pages - we'll cover customizing them later.
 
 URI
 ---
@@ -56,10 +56,21 @@ This will cause the user to be redirected ``/registerSuccess`` instead of the co
 
 Again, this functionality is only executed if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
 
-Form Fields
------------
+View
+----
 
-You can specify a which form fields will be displayed by editing the ``stormpath.web.register.form.fields`` configuration property.  For example, the default value:
+When the URI is visited a default template view named ``stormpath/register`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.register.view`` property:
+
+.. code-block:: properties
+
+    stormpath.web.register.view = stormpath/register
+
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+
+Form Fields
+^^^^^^^^^^^
+
+You can specify a which form fields will be displayed in the default view by editing the ``stormpath.web.register.form.fields`` configuration property.  For example, the default value:
 
 .. code-block:: properties
 
@@ -145,7 +156,7 @@ If you want to enable email verification for newly registered accounts, you have
 #. On the Directory Workflows screen, the 'Verification Email' workflow is shown first.  Ensure that you
 
    #. Enable the workflow, and
-   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The plugin's default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/verify``.
+   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/verify``.
 
    .. image:: /_static/console-directory-workflows-ann.png
 
@@ -199,7 +210,7 @@ When the user clicks the email verification link and the request is processed by
 
     stormpath.web.verify.nextUri = /login?status=verified
 
-As you can see, this URI has a ``status=verified`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+As you can see, this URI has a ``status=verified`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
 .. image:: /_static/login-verified.png
 

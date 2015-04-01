@@ -18,11 +18,14 @@ package com.stormpath.spring.mvc;
 import com.stormpath.sdk.lang.Strings;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 1.0.RC4
@@ -31,9 +34,11 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
 
     public static final String HEAD_VIEW_NAME_KEY = "headViewName";
     public static final String HEAD_FRAGMENT_SELECTOR_KEY = "headFragmentSelector";
+    public static final String HEAD_CSS_URIS_KEY = "headCssUris";
 
     private String headViewName;
     private String headFragmentSelector;
+    private List<String> headCssUris;
 
     public String getHeadViewName() {
         return headViewName;
@@ -49,6 +54,14 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
 
     public void setHeadFragmentSelector(String headFragmentSelector) {
         this.headFragmentSelector = headFragmentSelector;
+    }
+
+    public List<String> getHeadCssUris() {
+        return headCssUris;
+    }
+
+    public void setHeadCssUris(List<String> headCssUris) {
+        this.headCssUris = headCssUris;
     }
 
     @Override
@@ -75,6 +88,24 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
 
         if (Strings.hasText(headFragmentSelector) && !modelAndView.getModel().containsKey(HEAD_FRAGMENT_SELECTOR_KEY)) {
             modelAndView.addObject(HEAD_FRAGMENT_SELECTOR_KEY, headFragmentSelector);
+        }
+
+        if (!CollectionUtils.isEmpty(headCssUris) && !modelAndView.getModel().containsKey(HEAD_CSS_URIS_KEY)) {
+
+            List<String> modified = new ArrayList<String>(headCssUris.size());
+
+            for(String uri : headCssUris) {
+                if (uri.startsWith("http") || uri.startsWith("//")) {
+                    modified.add(uri);
+                } else {
+                    //context relative, prefix it w/ the context path:
+                    String contextPath = request.getContextPath();
+                    String contextRelative = contextPath + uri;
+                    modified.add(contextRelative);
+                }
+            }
+
+            modelAndView.addObject(HEAD_CSS_URIS_KEY, modified);
         }
     }
 

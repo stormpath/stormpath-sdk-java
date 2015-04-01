@@ -1161,6 +1161,16 @@ public abstract class Strings {
         return set;
     }
 
+    public static Set<String> delimitedListToSet(String str, String delimiters) {
+        if (str == null) {
+            return java.util.Collections.emptySet();
+        }
+        Set<String> set = new LinkedHashSet<String>();
+        String[] tokens = tokenizeToStringArray(str, delimiters);
+        java.util.Collections.addAll(set, tokens);
+        return set;
+    }
+
     /**
      * Convenience method to return a Collection as a delimited (e.g. CSV)
      * String. E.g. useful for <code>toString()</code> implementations.

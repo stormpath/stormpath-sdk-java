@@ -1,7 +1,7 @@
 .. _i18n.properties:
 
-B: i18n.properties
-==================
+i18n.properties
+===============
 
 In stormpath-sdk-servlet-|version|.jar: ``/com/stormpath/sdk/servlet/i18n.properties``
 

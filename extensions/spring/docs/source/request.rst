@@ -5,7 +5,7 @@ Request Context
 
 The |project| ensures important Stormpath objects are available to you during a request:
 
-* The Stormpath SDK ``Client`` instance, in case you want to communicate with Stormpath for any behavior that the plugin does not automate.
+* The Stormpath SDK ``Client`` instance, in case you want to communicate with Stormpath for any behavior that the |project| does not automate.
 * The Stormpath ``Application`` instance that corresponds to your web application.
 * A Stormpath ``Account`` instance that represents the current authenticated user account making a request to your web application.
 
@@ -120,7 +120,7 @@ The property value may be one of the following strings: ``username``, ``email``,
 * ``email``: returns ``account.getEmail()``
 * ``givenName``: returns ``account.getGivenName()``
 * ``href``: returns ``account.getHref()``
-* ``bypass``: disables the plugin behavior for this method and delegates to the Servlet Container implementation.
+* ``bypass``: disables the behavior for this method and delegates to the Servlet Container implementation.
 
 Again, if there is no Account associated with the request, ``getRemoteUser()`` will return ``null``.
 
@@ -144,7 +144,7 @@ The property value may be one of the following strings: ``account``, ``email``, 
 * ``username``: returns a ``com.stormpath.sdk.servlet.http.UsernamePrincipal`` matching ``account.getUsername()``.
 * ``givenname``: returns a ``com.stormpath.sdk.servlet.http.GivenNamePrincipal`` matching ``account.getGivenName()``.
 * ``href``: returns a ``com.stormpath.sdk.servlet.http.HrefPrincipal`` matching ``account.getHref()``.
-* ``bypass``: disables the plugin behavior for this method and delegates to the Servlet Container implementation.
+* ``bypass``: disables the behavior for this method and delegates to the Servlet Container implementation.
 
 Again, if there is no Account associated with the request, ``getUserPrincipal()`` will return ``null``.
 
@@ -153,12 +153,22 @@ Again, if there is no Account associated with the request, ``getUserPrincipal()`
 Stormpath Application
 ---------------------
 
-The |project| requires that your web application correspond to a registered ``Application`` record within Stormpath.  You can access this ``Application`` for your own needs (for example, searching your application's user accounts, creating groups, etc.) using either the ``ApplicationResolver`` or request attributes.
+The |project| requires that your web application correspond to a registered ``Application`` record within Stormpath.  You can access this ``Application`` for your own needs (for example, searching your application's user accounts, creating groups, etc.) using Spring autowiring, an ``ApplicationResolver`` or request attributes.
+
+Spring autowiring
+^^^^^^^^^^^^^^^^^
+
+The ``Application`` is created at application startup and is not request-specific, so the easiest thing to do is to obtain it by normal Spring autowiring:
+
+.. code-block:: java
+
+   @Autowired
+   private Application application;
 
 Application Resolver
 ^^^^^^^^^^^^^^^^^^^^
 
-A type-safe way to lookup the ``Application`` instance is to use the ``ApplicationResolver``:
+If you want to look up the Application using only the HttpServletRequest, you can do so in a type-safe way using the ``ApplicationResolver``:
 
 .. code-block:: java
 
@@ -217,12 +227,22 @@ which is less readable and not very convenient.
 Stormpath SDK Client
 --------------------
 
-The |project| uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
+The |project| uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using Spring autowiring, the ``ClientResolver`` or request attributes.
+
+Spring autowiring
+^^^^^^^^^^^^^^^^^
+
+The ``Client`` is created at application startup and is not request-specific, so the easiest thing to do is to obtain it by normal Spring autowiring:
+
+.. code-block:: java
+
+   @Autowired
+   private Client client;
 
 Client Resolver
 ^^^^^^^^^^^^^^^
 
-A type-safe way to lookup the ``Client`` instance is to use the ``ClientResolver``:
+If you want to look up the Client using only the HttpServletRequest, you can do so in a type-safe way using the ``ClientResolver``:
 
 .. code-block:: java
 

@@ -8,7 +8,7 @@ The |project| will trigger events when interesting things happen.  You can liste
 RequestEventListener
 --------------------
 
-When the plugin publishes various events, a ``RequestEventListener`` will be notified.  If you want to listen for events, you can implement your own ``RequestEventListener`` in one of two ways:
+When the |project| publishes various events, a ``RequestEventListener`` will be notified.  If you want to listen for events, you can implement your own ``RequestEventListener`` in one of two ways:
 
 #. Implement the ``com.stormpath.sdk.servlet.event.RequestEventListener`` interface directly and implement all event methods.
 #. Subclass the ``com.stormpath.sdk.servlet.event.RequestEventListenerAdapter`` and override only the event methods you are interested in.
@@ -27,7 +27,7 @@ Unless overridden, the default implementation is an instance of the adapter, whi
 Events
 ------
 
-The events currently published by the plugin are:
+The events currently published by the |project| are:
 
 ======================================== ==============================================================================
 Event Class                              Published when processing an HTTP request that:
