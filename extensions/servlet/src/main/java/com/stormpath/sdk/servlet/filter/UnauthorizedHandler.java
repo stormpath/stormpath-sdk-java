@@ -20,10 +20,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Request handler for requests that require authorization (valid access control decision), but no authorization was
+ * able to be obtained.
+ *
  * @since 1.0.RC3
  */
 public interface UnauthorizedHandler {
 
+    /**
+     * Returns {@code true} if the request should be able to continue through the filter chain to the final Servlet or
+     * MVC Controller destination, {@code false} if the handler processed the request directly and filter chain
+     * execution should stop immediately.
+     *
+     * @param request  inbound request
+     * @param response outbound response
+     * @return {@code true} if the request should be able to continue through the filter chain to the final Servlet or
+     * MVC Controller destination, {@code false} if the handler processed the request directly and filter chain
+     * execution should stop immediately.
+     * @throws ServletException if there is an error.  An exception will also discontinue filter chain processing
+     *                          immediately.
+     */
     boolean onUnauthorized(HttpServletRequest request, HttpServletResponse response) throws ServletException;
 
 }

@@ -39,6 +39,9 @@ import java.util.Locale;
  */
 public class MessageTag extends TagSupport {
 
+    public static final String MESSAGE_SOURCE_CONFIG_KEY = "stormpath.web.message.source";
+    public static final String LOCALE_RESOLVER_CONFIG_KEY = "stormpath.web.locale.resolver";
+
     private String key;
     private String var;
     private String scope = "page";
@@ -79,7 +82,7 @@ public class MessageTag extends TagSupport {
     protected MessageSource getMessageSource() throws JspException {
         Config config = getConfig();
         try {
-            return config.getInstance("stormpath.web.message.source");
+            return config.getInstance(MESSAGE_SOURCE_CONFIG_KEY);
         } catch (ServletException e) {
             throw new JspException(e.getMessage(), e);
         }
@@ -88,7 +91,7 @@ public class MessageTag extends TagSupport {
     protected Resolver<Locale> getLocaleResolver() throws JspException {
         Config config = getConfig();
         try {
-            return config.getInstance("stormpath.web.locale.resolver");
+            return config.getInstance(LOCALE_RESOLVER_CONFIG_KEY);
         } catch (ServletException e) {
             throw new JspException(e.getMessage(), e);
         }

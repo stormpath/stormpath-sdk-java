@@ -16,6 +16,9 @@
 package com.stormpath.sdk.servlet.account.event;
 
 /**
+ * An event triggered when processing an HttpServletRequest that results in a newly registered {@link
+ * com.stormpath.sdk.account.Account Account}.
+ *
  * @since 1.0.RC3
  */
 public interface RegisteredAccountRequestEvent extends AccountRequestEvent {}

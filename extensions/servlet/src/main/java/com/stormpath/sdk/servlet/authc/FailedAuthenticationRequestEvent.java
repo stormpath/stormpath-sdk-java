@@ -16,10 +16,17 @@
 package com.stormpath.sdk.servlet.authc;
 
 /**
+ * Event that indicates an authentication attempt executed while handling an HttpServletRequest has failed.
+ *
  * @since 1.0.RC3
  */
 public interface FailedAuthenticationRequestEvent extends AuthenticationRequestEvent {
 
+    /**
+     * Returns the exception that was triggered to indicate a failed authentication attempt.
+     *
+     * @return the exception that was triggered to indicate a failed authentication attempt.
+     */
     Exception getException();
 
 }

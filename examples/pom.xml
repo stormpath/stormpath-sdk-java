@@ -30,6 +30,10 @@
 
     <modules>
         <module>servlet</module>
+        <module>spring</module>
+        <module>spring-webmvc</module>
+        <module>spring-boot</module>
+        <module>spring-boot-webmvc</module>
     </modules>
 
 </project>

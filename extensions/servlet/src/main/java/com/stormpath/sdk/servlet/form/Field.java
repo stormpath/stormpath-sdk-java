@@ -16,21 +16,70 @@
 package com.stormpath.sdk.servlet.form;
 
 /**
+ * A {@link Form form} field, to be used when rendering views and processing form submissions.
+ *
  * @since 1.0.RC3
  */
 public interface Field {
 
+    /**
+     * The form field name.
+     *
+     * @return form field name.
+     */
     String getName();
 
+    /**
+     * The form field value.
+     *
+     * @return form field value.
+     */
     String getValue();
 
+    /**
+     * Form field label.  This value is usually an i18n message key instead of a raw language value.  This allows the
+     * view rendering to reference a message library using the return value as an i18n key for internationalized
+     * rendering.
+     *
+     * @return field label, usually an i18n message key for i18n-capable view rendering.
+     */
     String getLabel();
 
+    /**
+     * Form field value placeholder text.  This value is usually an i18n message key instead of a raw language value.
+     * This allows the view rendering to reference a message library using the return value as an i18n key for
+     * internationalized rendering.
+     *
+     * @return field value placeholder text, usually an i18n message key for i18n-capable view rendering.
+     */
     String getPlaceholder();
 
+    /**
+     * Returns {@code true} if the form field is required to be populated by the end user, {@code false} otherwise. When
+     * rendered in an html form, this would enable the field element's <code>required=&quot;required&quot;</code>
+     * attribute.
+     *
+     * @return {@code true} if the form field is required to be populated by the end user, {@code false} otherwise.
+     */
     boolean isRequired();
 
+    /**
+     * Returns {@code true} if the form field should be autofocused during view rendering, {@code false} otherwise.  A
+     * {@code true} value indicates that the text cursor should be placed in the form field immediately so the user can
+     * start filling out the form without having to click into the text field.  When rendered in an html form, this
+     * would enable the field element's <code>autofocus=&quot;autofocus&quot;</code> attribute.
+     *
+     * <p>Because only one field in a form can be auto-focused, if more than one field specifies a {@code true} value,
+     * only the first one will be autofocused.</p>
+     *
+     * @return {@code true} if the form field should be autofocused during view rendering, {@code false} otherwise.
+     */
     boolean isAutofocus();
 
+    /**
+     * Returns the form field type, for example, {@code text}, {@code password}, {@code hidden}, etc.
+     *
+     * @return the form field type, for example, {@code text}, {@code password}, {@code hidden}, etc.
+     */
     String getType();
 }
