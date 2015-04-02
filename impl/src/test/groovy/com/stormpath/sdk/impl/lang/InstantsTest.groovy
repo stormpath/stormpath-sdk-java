@@ -23,6 +23,8 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
 /**
+ * Utility class to create UTC-based dates and perform time conversions from UTC to other {@link TimeZone} timezones and vice versa
+ *
  * @since 1.0.RC4
  */
 class InstantsTest {
