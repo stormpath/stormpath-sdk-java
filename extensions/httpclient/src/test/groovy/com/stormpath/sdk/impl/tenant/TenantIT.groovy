@@ -19,18 +19,21 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
 
@@ -436,18 +439,95 @@ class TenantIT extends ClientIT {
     @Test
     void testGetApplicationsWithTimestampFilter(){
         def tenant = client.currentTenant
-        def app1 = createTempApp()
-        def app2 = createTempApp()
-
         DateFormat df = new ISO8601DateFormat();
-        String dateRange = "[".concat(df.format(app1.getCreatedAt())).concat(",").concat(df.format(app2.getCreatedAt())).concat("]")
-        def appList = tenant.getApplications(Applications.where(Applications.createdAt().matches(dateRange)))
 
-        assertNotNull appList
-        def qty = 0
-        for(Application app : appList) {
-            qty++
-        }
-        assertEquals qty, 2
+        Application application = client.instantiate(Application)
+        application.setName(uniquify("testGetApplicationsWithTimestampFilter app"))
+        application = tenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
+
+        Date appCreationTimestamp = application.createdAt
+
+        //matches
+        def creationTimestamp = df.format(application.getCreatedAt());
+        def appList = client.getApplications(Applications.where(Applications.createdAt().matches(creationTimestamp)))
+        assertNotNull appList.href
+
+        def retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //equals
+        appList = client.getApplications(Applications.where(Applications.createdAt().equals(appCreationTimestamp)))
+        assertNotNull appList.href
+
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //gt
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().gt(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        //gte
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().gte(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //lt
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().lt(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        //lte
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().lte(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //in
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(appCreationTimestamp)
+        cal.add(Calendar.SECOND, 2)
+        Date afterCreationDate = cal.getTime()
+
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().in(appCreationTimestamp, afterCreationDate)))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
+
+        //in
+        cal.setTime(appCreationTimestamp)
+        cal.add(Calendar.SECOND, -10)
+        Date newDate = cal.getTime()
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().in(newDate, new Duration(1, TimeUnit.SECONDS))))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        //in
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().in(appCreationTimestamp, new Duration(1, TimeUnit.MINUTES))))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals df.format(retrieved.createdAt), creationTimestamp
     }
 }

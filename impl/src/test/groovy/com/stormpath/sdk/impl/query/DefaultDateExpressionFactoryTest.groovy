@@ -77,6 +77,14 @@ class DefaultDateExpressionFactoryTest {
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "begin date needs to be earlier than end date")
         }
+
+        try {
+            Date thisMoment = new Date();
+            defaultDateExpressionFactory.in(thisMoment, thisMoment);
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "begin date needs to be earlier than end date")
+        }
     }
 
     @Test
