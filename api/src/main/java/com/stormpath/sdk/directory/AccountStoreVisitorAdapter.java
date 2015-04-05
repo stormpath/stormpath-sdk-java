@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.directory;
+
+import com.stormpath.sdk.group.Group;
 
 /**
- * A Facebook-specific {@link Provider} Resource.
+ * Adapter implementation of the {@link AccountStoreVisitor} interface where each method does nothing and returns
+ * quietly.
  *
- * @since 1.0.beta
+ * @since 1.0
  */
-public interface FacebookProvider extends ClientAccessibleProvider {
+public class AccountStoreVisitorAdapter implements AccountStoreVisitor {
 
+    @Override
+    public void visit(Group group) {
+        //no op
+    }
+
+    @Override
+    public void visit(Directory directory) {
+        //no op
+    }
 }

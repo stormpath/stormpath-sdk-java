@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,24 @@
 package com.stormpath.sdk.provider;
 
 /**
- * A Facebook-specific {@link Provider} Resource.
+ * A provider that may be accessed by clients based on a client ID and secret.
  *
- * @since 1.0.beta
+ * @since 1.0
  */
-public interface FacebookProvider extends ClientAccessibleProvider {
+public interface ClientAccessibleProvider extends Provider {
+
+    /**
+     * Returns the client application's ID.
+     *
+     * @return the client application's ID.
+     */
+    String getClientId();
+
+    /**
+     * Returns the client application's secret (credentials) that verifies the {@link #getClientId() clientId}.
+     *
+     * @return the client application's secret (credentials) that verifies the {@link #getClientId() clientId}.
+     */
+    String getClientSecret();
 
 }

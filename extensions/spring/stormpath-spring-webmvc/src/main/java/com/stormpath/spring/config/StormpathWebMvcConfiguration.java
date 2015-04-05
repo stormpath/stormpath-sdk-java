@@ -49,6 +49,8 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactoryResolver;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -438,6 +440,41 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
+    }
+
+    @Bean
+    public ProviderModelFactoryResolver stormpathLoginModelFactoryResolver() {
+        return super.stormpathLoginModelFactoryResolver();
+    }
+
+    @Bean
+    public Map<String,ProviderModelFactory> stormpathLoginModelFactoryMap() {
+        return super.stormpathLoginModelFactoryMap();
+    }
+
+    @Bean
+    public ProviderModelFactory stormpathGoogleLoginModelFactory() {
+        return super.stormpathGoogleLoginModelFactory();
+    }
+
+    @Bean
+    public ProviderModelFactory stormpathFacebookLoginModelFactory() {
+        return super.stormpathFacebookLoginModelFactory();
+    }
+
+    @Bean
+    public ProviderModelFactory stormpathLinkedinLoginModelFactory() {
+        return super.stormpathLinkedinLoginModelFactory();
+    }
+
+    @Bean
+    public ProviderModelFactory stormpathGithubLoginModelFactory() {
+        return super.stormpathGithubLoginModelFactory();
+    }
+
+    @Bean
+    public Controller stormpathGoogleLoginCallbackController() {
+        return super.stormpathGoogleLoginCallbackController();
     }
 
     @Bean

@@ -58,7 +58,6 @@ public interface RequestEventListener {
      */
     void on(VerifiedAccountRequestEvent e);
 
-
     /**
      * Called when a user account explicitly (manually) logs out of a web application.
      *

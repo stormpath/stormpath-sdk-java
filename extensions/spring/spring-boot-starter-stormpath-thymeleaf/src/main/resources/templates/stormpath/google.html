@@ -1,0 +1,45 @@
+<!--/*
+~ Copyright 2015 Stormpath, Inc.
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~     http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+*/-->
+<th:block xmlns:th="http://www.thymeleaf.org">
+    <button class="btn btn-social btn-google" onclick="googleLogin()" th:text="#{stormpath.web.google.button.value}">Google</button>
+    <script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+        function googleLogin() {
+
+            var clientId = /*[[${google['clientId']}]]*/ 'client_id';
+            var googleScopes = /*[[${google['scopes']}]]*/ 'scopes list here';
+            var hd = /*[[${google['hd']}]]*/ null;
+            var scopes = '';
+
+            if (googleScopes.length) {
+                scopes = googleScopes.join('+');
+            }
+
+            var finalUrl = 'https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=' +
+                    clientId +
+                    '&scope=email' + scopes +
+                    '&include_granted_scopes=true&redirect_uri=' +
+                    /*[[${google['serverUri'] + google['uri']}]]*/ '';
+
+            if (hd) {
+                finalUrl = finalUrl + '&hd=' + hd;
+            }
+
+            window.location.replace(finalUrl);
+        }
+    /*]]>*/
+    </script>
+</th:block>

@@ -25,7 +25,7 @@
 
                 <div class="box row">
 
-                    <div th:class="'email-password-area col-xs-12 ' + ${social? 'small col-sm-8' : 'large col-sm-12'}">
+                    <div th:class="'email-password-area col-xs-12 ' + ${!#lists.isEmpty(providerViewModels) ? 'small col-sm-8' : 'large col-sm-12'}">
 
                         <div class="header" th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
                                 <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Login|</span>
@@ -48,9 +48,9 @@
                             <input name="csrfToken" type="hidden" th:value="${form.csrfToken}"/>
 
                             <div th:each="field : ${form.fields}" form-group="true" th:class="'form-group group-' + ${field.name}">
-                                <label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>
+                                <label th:class="${!#lists.isEmpty(providerViewModels) ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>
 
-                                <div class="col-sm-8">
+                                <div th:class="${!#lists.isEmpty(providerViewModels) ? 'col-sm-12' : 'col-sm-8'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
                                            th:placeholder="#{${field.placeholder}}"
                                            th:autofocus="${field.autofocus}"
@@ -64,6 +64,14 @@
                             </div>
                         </form>
 
+                    </div>
+
+                    <div class="social-area col-xs-12 col-sm-4" th:if="${!#lists.isEmpty(providerViewModels)}">
+                        <div class="header">&nbsp;</div>
+                        <label th:text="#{stormpath.web.login.providers.title}">Easy 1-click login:</label>
+                        <!--/*/ <th-block data-th-each="providerViewModel : ${providerViewModels}"> /*/-->
+                        <!--/*/ <th:block th:include="${providerViewModel.viewName}"/> /*/-->
+                        <!--/*/ </th-block> /*/-->
                     </div>
 
                 </div>

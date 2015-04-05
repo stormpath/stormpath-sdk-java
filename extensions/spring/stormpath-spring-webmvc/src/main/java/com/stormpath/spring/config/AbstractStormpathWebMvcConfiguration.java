@@ -76,10 +76,15 @@ import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.GoogleLoginCallbackController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelFactoryResolver;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactoryResolver;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
@@ -256,6 +261,74 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.login.view'] ?: 'stormpath/login' }")
     protected String loginView;
 
+    // ================ Google Login Controller properties  ===================
+
+    @Value("#{ @environment['stormpath.web.google.enabled'] ?: true }")
+    protected boolean googleEnabled;
+
+    @Value("#{ @environment['stormpath.web.google.uri'] ?: '/google' }")
+    protected String googleUri;
+
+    @Value("#{ @environment['stormpath.web.google.nextUri'] ?: '/' }")
+    protected String googleNextUri;
+
+    @Value("#{ @environment['stormpath.web.google.view'] ?: 'stormpath/google' }")
+    protected String googleView;
+
+    @Value("#{ @environment['stormpath.web.google.scopes'] }")
+    protected String googleScopes; //TODO: convert to List<String>.  String sent to Google should be space-delimited
+
+    // ================ Facebook Login Controller properties  ===================
+
+    @Value("#{ @environment['stormpath.web.facebook.enabled'] ?: true }")
+    protected boolean facebookEnabled;
+
+    @Value("#{ @environment['stormpath.web.facebook.uri'] ?: '/facebook' }")
+    protected String facebookUri;
+
+    @Value("#{ @environment['stormpath.web.facebook.nextUri'] ?: '/' }")
+    protected String facebookNextUri;
+
+    @Value("#{ @environment['stormpath.web.facebook.view'] ?: 'stormpath/facebook' }")
+    protected String facebookView;
+
+    @Value("#{ @environment['stormpath.web.facebook.scopes'] }")
+    protected String facebookScopes; //TODO: convert to List<String>.  String sent to Facebook should be comma-delimited
+
+    // ================ LinkedIn Login Controller properties  ===================
+
+    @Value("#{ @environment['stormpath.web.linkedin.enabled'] ?: true }")
+    protected boolean linkedinEnabled;
+
+    @Value("#{ @environment['stormpath.web.linkedin.uri'] ?: '/linkedin' }")
+    protected String linkedinUri;
+
+    @Value("#{ @environment['stormpath.web.linkedin.nextUri'] ?: '/' }")
+    protected String linkedinNextUri;
+
+    @Value("#{ @environment['stormpath.web.linkedin.view'] ?: 'stormpath/linkedin' }")
+    protected String linkedinView;
+
+    @Value("#{ @environment['stormpath.web.linkedin.scopes'] }")
+    protected String linkedinScopes; //TODO: convert to List<String>.  String sent to LinkedIn should be space-delimited
+
+    // ================ GitHub Login Controller properties  ===================
+
+    @Value("#{ @environment['stormpath.web.github.enabled'] ?: true }")
+    protected boolean githubEnabled;
+
+    @Value("#{ @environment['stormpath.web.github.uri'] ?: '/github' }")
+    protected String githubUri;
+
+    @Value("#{ @environment['stormpath.web.github.nextUri'] ?: '/' }")
+    protected String githubNextUri;
+
+    @Value("#{ @environment['stormpath.web.github.view'] ?: 'stormpath/github' }")
+    protected String githubView;
+
+    @Value("#{ @environment['stormpath.web.github.scopes'] }")
+    protected String githubScopes; //TODO: convert to List<String>.  String sent to GitHub should be comma-delimited
+
     // ================  Forgot Password Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
@@ -367,6 +440,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (loginEnabled) {
             mappings.put(loginUri, stormpathLoginController());
         }
+        if (googleEnabled) {
+            mappings.put(googleUri, stormpathGoogleLoginCallbackController());
+        }
+
         if (logoutEnabled) {
             mappings.put(logoutUri, stormpathLogoutController());
         }
@@ -642,8 +719,61 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setForgotLoginUri(forgotUri);
         controller.setRegisterUri(registerUri);
         controller.setLogoutUri(logoutUri);
+        controller.setProviderModelFactoryResolver(stormpathLoginModelFactoryResolver());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+        controller.init();
+
+        return createSpringController(controller);
+    }
+
+    public ProviderModelFactoryResolver stormpathLoginModelFactoryResolver() {
+        Map<String,ProviderModelFactory> providerModelFactoryMap = stormpathLoginModelFactoryMap();
+        return new DefaultProviderModelFactoryResolver(providerModelFactoryMap);
+    }
+
+    public Map<String,ProviderModelFactory> stormpathLoginModelFactoryMap() {
+
+        Map<String,ProviderModelFactory> map = new LinkedHashMap<String, ProviderModelFactory>();
+
+        if (googleEnabled) {
+            map.put("google", stormpathGoogleLoginModelFactory());
+        }
+        if (facebookEnabled) {
+            map.put("facebook", stormpathFacebookLoginModelFactory());
+        }
+        if (linkedinEnabled) {
+            map.put("linkedin", stormpathLinkedinLoginModelFactory());
+        }
+        if (githubEnabled) {
+            map.put("github", stormpathGithubLoginModelFactory());
+        }
+        return map;
+    }
+
+    public ProviderModelFactory stormpathGoogleLoginModelFactory() {
+        return new DefaultProviderModelFactory(googleUri, googleView, googleScopes, stormpathServerUriResolver());
+    }
+
+    public ProviderModelFactory stormpathFacebookLoginModelFactory() {
+        return new DefaultProviderModelFactory(facebookUri, facebookView, facebookScopes, stormpathServerUriResolver());
+    }
+
+    public ProviderModelFactory stormpathLinkedinLoginModelFactory() {
+        return new DefaultProviderModelFactory(linkedinUri, linkedinView, linkedinScopes, stormpathServerUriResolver());
+    }
+
+    public ProviderModelFactory stormpathGithubLoginModelFactory() {
+        return new DefaultProviderModelFactory(githubUri, githubView, githubScopes, stormpathServerUriResolver());
+    }
+
+    public Controller stormpathGoogleLoginCallbackController() {
+
+        GoogleLoginCallbackController controller = new GoogleLoginCallbackController();
+        controller.setNextUri(googleNextUri);
+        controller.setLogoutUri(logoutUri);
+        controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setEventPublisher(stormpathRequestEventPublisher());
         controller.init();
 
         return createSpringController(controller);

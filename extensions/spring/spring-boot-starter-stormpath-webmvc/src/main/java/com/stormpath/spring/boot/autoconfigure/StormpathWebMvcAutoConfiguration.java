@@ -46,6 +46,8 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactoryResolver;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,6 +87,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -282,6 +285,48 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name="stormpathLoginController")
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ProviderModelFactoryResolver stormpathLoginModelFactoryResolver() {
+        return super.stormpathLoginModelFactoryResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathLoginModelFactoryMap")
+    public Map<String,ProviderModelFactory> stormpathLoginModelFactoryMap() {
+        return super.stormpathLoginModelFactoryMap();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathGoogleLoginModelFactory")
+    public ProviderModelFactory stormpathGoogleLoginModelFactory() {
+        return super.stormpathGoogleLoginModelFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathFacebookLoginModelFactory")
+    public ProviderModelFactory stormpathFacebookLoginModelFactory() {
+        return super.stormpathFacebookLoginModelFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathLinkedinLoginModelFactory")
+    public ProviderModelFactory stormpathLinkedinLoginModelFactory() {
+        return super.stormpathLinkedinLoginModelFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathGithubLoginModelFactory")
+    public ProviderModelFactory stormpathGithubLoginModelFactory() {
+        return super.stormpathGithubLoginModelFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathGoogleLoginCallbackController")
+    public Controller stormpathGoogleLoginCallbackController() {
+        return super.stormpathGoogleLoginCallbackController();
     }
 
     @Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.servlet.mvc.provider;
 
 /**
- * A Facebook-specific {@link Provider} Resource.
- *
- * @since 1.0.beta
+ * @since 1.0
  */
-public interface FacebookProvider extends ClientAccessibleProvider {
+public interface ProviderModelFactoryResolver {
+
+    ProviderModelFactory getProviderModelFactory(ProviderModelContext context);
 
 }

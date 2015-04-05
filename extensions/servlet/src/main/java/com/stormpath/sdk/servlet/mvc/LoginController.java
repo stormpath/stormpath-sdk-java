@@ -16,15 +16,31 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.AccountStoreMapping;
+import com.stormpath.sdk.application.AccountStoreMappingList;
+import com.stormpath.sdk.application.AccountStoreMappings;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
+import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryStatus;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelContext;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelContext;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderModelFactoryResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +62,7 @@ public class LoginController extends FormController {
     private String registerUri;
     private String logoutUri;
     private Saver<AuthenticationResult> authenticationResultSaver;
+    private ProviderModelFactoryResolver providerModelFactoryResolver;
 
     public void init() {
         super.init();
@@ -54,6 +71,7 @@ public class LoginController extends FormController {
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
+        Assert.notNull(this.providerModelFactoryResolver, "providerModelFactoryResolver property cannot be null.");
     }
 
     public String getNextUri() {
@@ -98,6 +116,14 @@ public class LoginController extends FormController {
         this.authenticationResultSaver = authenticationResultSaver;
     }
 
+    public ProviderModelFactoryResolver getProviderModelFactoryResolver() {
+        return providerModelFactoryResolver;
+    }
+
+    public void setProviderModelFactoryResolver(ProviderModelFactoryResolver providerModelFactoryResolver) {
+        this.providerModelFactoryResolver = providerModelFactoryResolver;
+    }
+
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (AccountResolver.INSTANCE.hasAccount(request)) {
@@ -123,6 +149,49 @@ public class LoginController extends FormController {
                                Map<String, Object> model) {
         model.put("forgotLoginUri", getForgotLoginUri());
         model.put("registerUri", getRegisterUri());
+        appendProviderModel(new DefaultModelContext(request, response, form, errors, model));
+    }
+
+    protected void appendProviderModel(final ModelContext modelContext) {
+
+        final List<ViewModel> providerViewModels = new ArrayList<ViewModel>();
+
+        final AccountStoreVisitor visitor = new AccountStoreVisitorAdapter() {
+            @Override
+            public void visit(Directory directory) {
+
+                if (directory.getStatus() != DirectoryStatus.ENABLED) {
+                    return;
+                }
+
+                Provider provider = directory.getProvider();
+                ProviderModelContext ctx = new DefaultProviderModelContext(modelContext, provider);
+                ProviderModelFactory factory = getProviderModelFactory(ctx);
+                ViewModel providerViewModel = factory.createModel(ctx);
+                if (providerViewModel != null) {
+                    providerViewModels.add(providerViewModel);
+                    String providerId = provider.getProviderId();
+                    modelContext.getModel().put(providerId, providerViewModel.getModel());
+                }
+            }
+        };
+
+        Application application = ApplicationResolver.INSTANCE.getApplication(modelContext.getRequest());
+        AccountStoreMappingList list =
+            application.getAccountStoreMappings(AccountStoreMappings.criteria().withAccountStore());
+
+        for (AccountStoreMapping m : list) {
+            AccountStore store = m.getAccountStore();
+            store.accept(visitor);
+        }
+
+        if (!Collections.isEmpty(providerViewModels)) {
+            modelContext.getModel().put("providerViewModels", providerViewModels);
+        }
+    }
+
+    protected ProviderModelFactory getProviderModelFactory(ProviderModelContext ctx) {
+        return getProviderModelFactoryResolver().getProviderModelFactory(ctx);
     }
 
     @Override
