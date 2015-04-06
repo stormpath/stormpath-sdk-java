@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.0 ###
+
+- [Issue 127](https://github.com/stormpath/stormpath-sdk-java/issues/127): Added the `single()` method to collection resources (e.g. `ApplicationList`, `AccountList`, etc.) to be used when a single item is expected in the list.
+
 ### 1.0.RC4 ###
 
 This release adds the following:
