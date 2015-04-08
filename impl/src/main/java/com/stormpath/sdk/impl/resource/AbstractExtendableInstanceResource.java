@@ -85,7 +85,7 @@ public abstract class AbstractExtendableInstanceResource extends AbstractInstanc
     }
 
     /**
-     * @since 1.0.RC4
+     * @since 1.0
      */
     @Override
     public Date getCreatedAt() {

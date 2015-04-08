@@ -26,6 +26,9 @@ import java.util.concurrent.TimeUnit
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
+/**
+ * @since 1.0
+ */
 class DefaultDateExpressionFactoryTest {
 
     private static final DefaultDateExpressionFactory defaultDateExpressionFactory = new DefaultDateExpressionFactory("test");

@@ -22,12 +22,12 @@ import java.util.Date;
 /**
  * An {@code DateExpressionFactory} creates a single condition (matches) for resource properties of Date type.
  *
- * @since 1.0.RC4
+ * @since 1.0
  */
 public interface DateExpressionFactory {
 
     /**
-     * Returns a new equals expression indicating the specified value should match the property value.
+     * Convenience method that returns a new equals expression as a String expression, indicating the specified value should match the property value.
      * Multiple values are allowed, for example:
      * .createdAt().matches("[,2014-04-05T12:00:00]"): matches all entities created between the beginning of time and noon of 2014/04/05
      * .createdAt().matches("[2015-01-01, 2015-02-01)"): matches all entities created/modified between 2015/01/01 and 2015/02/01, excluding those created on 2015/02/01

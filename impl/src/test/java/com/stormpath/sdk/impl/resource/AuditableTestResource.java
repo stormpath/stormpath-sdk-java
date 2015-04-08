@@ -5,6 +5,9 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * @since 1.0
+ */
 public class AuditableTestResource extends AbstractExtendableInstanceResource {
 
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");

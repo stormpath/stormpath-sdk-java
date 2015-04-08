@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @since 1.0.RC4
+ * @since 1.0
  */
 public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
@@ -42,12 +42,6 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
         this.propertyName = propertyName;
     }
 
-    /**
-     * Convenience method that returns a new equals expression reflecting the specified String value.
-     *
-     * @param value the value that should equal the property value.
-     * @return a new equals expression reflecting the current property name and the specified value.
-     */
     @Override
     public SimpleExpression matches(String value) {
         return new SimpleExpression(propertyName, value, Operator.EQUALS);

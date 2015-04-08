@@ -111,7 +111,7 @@ public final class Applications {
      *
      * @return a new {@link com.stormpath.sdk.application.Application#getCreatedAt() createdAt}-specific {@link com.stormpath.sdk.query.DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link com.stormpath.sdk.application.ApplicationCriteria} query.
-     * @since 1.0.RC4
+     * @since 1.0
      */
     public static DateExpressionFactory createdAt(){
         return newDateExpressionFactory("createdAt");
@@ -137,7 +137,7 @@ public final class Applications {
      *
      * @return a new {@link com.stormpath.sdk.application.Application#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link com.stormpath.sdk.application.ApplicationCriteria} query.
-     * @since 1.0.RC4
+     * @since 1.0
      */
     public static DateExpressionFactory modifiedAt(){
         return newDateExpressionFactory("modifiedAt");
