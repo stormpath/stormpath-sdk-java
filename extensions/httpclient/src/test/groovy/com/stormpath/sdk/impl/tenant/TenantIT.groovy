@@ -393,7 +393,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4
+     * @since 1.0
      */
     @Test
     void testGetDirectoriesWithTimestampFilter() {
