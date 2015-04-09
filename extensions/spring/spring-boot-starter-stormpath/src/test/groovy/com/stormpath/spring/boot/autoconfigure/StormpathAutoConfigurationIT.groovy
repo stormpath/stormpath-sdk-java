@@ -20,7 +20,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
-import com.stormpath.sdk.impl.util.Duration
+import com.stormpath.sdk.lang.Duration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
