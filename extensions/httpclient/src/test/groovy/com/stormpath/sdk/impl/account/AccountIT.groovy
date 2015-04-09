@@ -659,25 +659,22 @@ class AccountIT extends ClientIT {
         group01 = app.createGroup(group01)
         account.addGroup(group01)
         deleteOnTeardown(group01)
-        String group01creation = df.format(group01.createdAt)
+
+        def groupList = account.getGroups(Groups.where(Groups.name().eqIgnoreCase(group01.name)).and(Groups.createdAt().equals(group01.getCreatedAt())))
+        assertNotNull groupList
+        def retrieved = groupList.iterator().next()
+        assertEquals retrieved.href, group01.href
 
         def group02 = client.instantiate(Group)
         group02.name = uniquify("StormpathTimestampTest Group02")
         group02 = app.createGroup(group02)
         account.addGroup(group02)
         deleteOnTeardown(group02)
-        String group02creation = df.format(group02.createdAt)
 
-        def groupList = account.getGroups(Groups.where(Groups.createdAt().matches(group01creation)))
-
+        groupList = account.getGroups(Groups.where(Groups.name().eqIgnoreCase(group02.name)).and(Groups.createdAt().equals(group02.getCreatedAt())))
         assertNotNull groupList
-        assertEquals groupList.iterator().next().href, group01.href
-
-        groupList = account.getGroups(Groups.where(Groups.createdAt().matches(group02creation)))
-
-        assertNotNull groupList
-        assertEquals groupList.iterator().next().href, group02.href
-
+        retrieved = groupList.iterator().next()
+        assertEquals retrieved.href, group02.href
     }
 
     /**
