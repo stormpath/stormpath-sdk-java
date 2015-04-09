@@ -26,5 +26,8 @@ public interface Page<T> {
 
     int getLimit();
 
+    /** @since 1.0.RC4 */
+    int getSize();
+
     Collection<T> getItems();
 }

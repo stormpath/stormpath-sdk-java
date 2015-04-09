@@ -21,9 +21,11 @@ thoughts! support@stormpath.com
 
 Stormpath offers deep documentation and support for Java. 
 
-[Official Stormpath-Java Docs](http://docs.stormpath.com/)
-[API Docs for Java](https://docs.stormpath.com/java/apidocs/)
-[Stormpath Java Product Guide](https://docs.stormpath.com/java/product-guide/)
+- [Official Stormpath Docs](http://docs.stormpath.com/)
+- [API Docs for Java](https://docs.stormpath.com/java/apidocs/)
+- [Stormpath Java Product Guide](https://docs.stormpath.com/java/product-guide/)
+- [Stormpath Servlet Plugin for Java Webapps](https://docs.stormpath.com/java/servlet-plugin/)
+- [Spring Boot Stormpath Web Starter](https://docs.stormpath.com/java/spring-boot-web/)
 
 Please email support@stormpath.com with any errors or issues with the documentation. 
 
@@ -32,12 +34,18 @@ Please email support@stormpath.com with any errors or issues with the documentat
 Below are some resources you might find useful!
 
 - [Java Quickstart](http://docs.stormpath.com/java/quickstart/) to get started. 
-- [Java WebApp Quickstart](https://docs.stormpath.com/java/servlet-plugin/quickstart.html) 
+- [Java WebApp Quickstart](https://docs.stormpath.com/java/servlet-plugin/quickstart.html)
+- [Spring Boot Webapp Quickstart](https://docs.stormpath.com/java/spring-boot-web/quickstart.html)
 - [Stormpath Java SDK](https://github.com/stormpath/stormpath-sdk-java)
 - [Stormpath Servlet Plugin for Java Webapps](https://docs.stormpath.com/java/servlet-plugin/)
+- [Spring Boot Stormpath Web Starter](https://docs.stormpath.com/java/spring-boot-web/)
 
 **Spring Support**
-- [Stormapth-Spring Sample App](https://github.com/stormpath/stormpath-spring-samples)
+- [Spring Boot Stormpath Web Starter](https://docs.stormpath.com/java/spring-boot-web/)
+- [Example Stormapth Spring App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring)
+- [Example Stormpath Spring Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-webmvc)
+- [Example Stormpath Spring Boot App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot)
+- [Example Stormpath Spring Boot Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot-webmvc)
 
 **Spring Security Support**
 - [Stormpath Spring Security Plugin](https://github.com/stormpath/stormpath-spring-security)
@@ -56,6 +64,8 @@ Below are some resources you might find useful!
 Any Java application can use our general [Stormpath Java API Quickstart](http://docs.stormpath.com/java/quickstart/) to get started. 
 
 We also have a [Java WebApp Quickstart](https://docs.stormpath.com/java/servlet-plugin/quickstart.html) for the Stormpath Servlet Plugin - a drop-in plugin for web applications deployed to a Servlet container, like Tomcat or Jetty.  
+
+If you're building a Spring Boot application, the [Spring Boot Webapp Quickstart](https://docs.stormpath.com/java/spring-boot-web/quickstart.html) will get you up and running quickly.
 
 ## Build Instructions
 

@@ -58,8 +58,11 @@ public class CookieSaver implements Saver<String> {
             cookie.setDomain(val);
         }
 
-        val = cfg.getPath();
-        if (val == null || delete) {
+        val = Strings.clean(cfg.getPath());
+        if (!Strings.hasText(val)) {
+            val = Strings.clean(request.getContextPath());
+        }
+        if (!Strings.hasText(val) || delete) {
             val = "/";
         }
         cookie.setPath(val);

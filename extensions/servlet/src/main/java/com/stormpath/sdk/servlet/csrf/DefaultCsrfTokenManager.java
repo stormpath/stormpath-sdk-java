@@ -31,17 +31,32 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
+ * Default implementation of the {@link com.stormpath.sdk.servlet.csrf.CsrfTokenManager} interface.  To ensure correct
+ * behavior, the specified TTL <em>MUST</em> be the equal to or greater than the specified nonce cache's TTL.
+ *
  * @since 1.0.RC3
  */
 public class DefaultCsrfTokenManager implements CsrfTokenManager {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultCsrfTokenManager.class);
 
-    private final Cache<String,String> nonceCache;
+    private final Cache<String, String> nonceCache;
     private final String signingKey;
     private final long ttlMillis;
 
-    public DefaultCsrfTokenManager(Cache<String,String> nonceCache, String signingKey, long ttlMillis) {
+    /**
+     * Instantiates a new DefaultCacheManager.
+     *
+     * @param nonceCache a cache to place used CSRF tokens.  This is required to ensure the consumed token is never used
+     *                   again, which is mandatory for CSRF protection.  This cache <em>MUST</em> have a TTL value equal
+     *                   to or greater than {@code ttlMillis}. Cache key: a unique token ID, Cache value: the used
+     *                   token
+     * @param signingKey a (hopefully secure-random) cryptographic signing key used to digitally sign the CSRF token to
+     *                   ensure it cannot be tampered with by HTTP clients.
+     * @param ttlMillis  the length of time in milliseconds for which a generated CSRF token is valid.  When a token is
+     *                   created, it cannot be used after this duration, even if it has not been consumed yet.
+     */
+    public DefaultCsrfTokenManager(Cache<String, String> nonceCache, String signingKey, long ttlMillis) {
         Assert.notNull(nonceCache, "nonce cache cannot be null.");
         this.nonceCache = nonceCache;
         Assert.hasText(signingKey, "signingKey cannot be null or empty.");
@@ -58,13 +73,8 @@ public class DefaultCsrfTokenManager implements CsrfTokenManager {
         Date now = new Date();
         Date exp = new Date(System.currentTimeMillis() + ttlMillis);
 
-        return Jwts.builder()
-                   .setId(id)
-                   .setIssuedAt(now)
-                   .setNotBefore(now)
-                   .setExpiration(exp)
-                   .signWith(SignatureAlgorithm.HS256, signingKey)
-                   .compact();
+        return Jwts.builder().setId(id).setIssuedAt(now).setNotBefore(now).setExpiration(exp)
+                   .signWith(SignatureAlgorithm.HS256, signingKey).compact();
     }
 
     protected Client getClient(HttpServletRequest request) {

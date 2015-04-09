@@ -18,10 +18,27 @@ package com.stormpath.sdk.servlet.authc;
 import com.stormpath.sdk.authc.AuthenticationResult;
 
 /**
+ * Event that indicates an authentication attempt executed while handling an HttpServletRequest was successful.
+ *
  * @since 1.0.RC3
  */
 public interface SuccessfulAuthenticationRequestEvent extends AuthenticationRequestEvent {
 
+    /**
+     * The result of the successful authentication attempt.  If you need to perform logic based the <em>type</em> of
+     * authentication that was executed, you can use an {@link com.stormpath.sdk.authc.AuthenticationResultVisitor
+     * AuthenticationResultVisitor}, For example:
+     *
+     * <pre>
+     * authenticationResult.accept(new {@link com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter AuthenticationResultVisitorAdapter}() {
+     *
+     *     //override the methods of interest
+     * };
+     * </pre>
+     *
+     * @return result of the successful authentication attempt.
+     * @see com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter AuthenticationResultVisitorAdapter for a more complete code example.
+     */
     AuthenticationResult getAuthenticationResult();
 
 }

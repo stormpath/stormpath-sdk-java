@@ -15,60 +15,22 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
-import com.stormpath.sdk.servlet.util.ServletUtils;
+import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.mvc.LogoutController;
 
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.ServletException;
 
 /**
  * @since 1.0.RC3
  */
-public class LogoutFilter extends HttpFilter {
-
-    protected String getLogoutNextUrl() {
-        return getConfig().getLogoutNextUrl();
-    }
+public class LogoutFilter extends ControllerFilter {
 
     @Override
-    protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws Exception {
-
-        //clear out any authentication/account state:
-        request.logout();
-
-        //it is a security risk to not terminate a session (if one exists) on logout:
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-
-        String next = request.getParameter("next");
-
-        if (!Strings.hasText(next)) {
-            next = getLogoutNextUrl();
-        }
-
-        if (isHtmlPreferred(request)) {
-            ServletUtils.issueRedirect(request, response, next, null, true, true);
-        } else {
-            //probably an ajax or non-browser client - return 200 ok:
-            response.setStatus(HttpServletResponse.SC_OK);
-        }
-
-        //don't continue the chain - we want to short circuit and redirect
-    }
-
-    protected boolean isHtmlPreferred(HttpServletRequest request) {
-        UserAgent ua = getUserAgent(request);
-        return ua.isHtmlPreferred();
-    }
-
-    protected UserAgent getUserAgent(HttpServletRequest request) {
-        return new DefaultUserAgent(request);
+    protected void onInit() throws ServletException {
+        LogoutController c = new LogoutController();
+        c.setNextUri(getConfig().getLogoutNextUrl());
+        c.init();
+        setController(c);
+        super.onInit();
     }
 }

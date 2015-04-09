@@ -48,25 +48,21 @@ public class StormpathFilter extends HttpFilter {
         this.applicationRequestAttributeNames = java.util.Collections.emptySet();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
         Assert.notNull(filterChainResolver, "FilterChainResolver cannot be null.");
         this.filterChainResolver = filterChainResolver;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void setClientRequestAttributeNames(Set<String> clientRequestAttributeNames) {
         this.clientRequestAttributeNames =
             clientRequestAttributeNames != null ? clientRequestAttributeNames : new LinkedHashSet<String>();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void setApplicationRequestAttributeNames(Set<String> applicationRequestAttributeNames) {
         this.applicationRequestAttributeNames =
             applicationRequestAttributeNames != null ? applicationRequestAttributeNames : new LinkedHashSet<String>();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void setWrappedServletRequestFactory(WrappedServletRequestFactory factory) {
         Assert.notNull(factory, "WrappedServletRequestFactory cannot be null.");
         this.factory = factory;
@@ -146,8 +142,7 @@ public class StormpathFilter extends HttpFilter {
         }
     }
 
-    protected void
-    setApplicationRequestAttributes(HttpServletRequest request) {
+    protected void setApplicationRequestAttributes(HttpServletRequest request) {
         String name = Application.class.getName();
         Application application = (Application) request.getServletContext().getAttribute(name);
         //this must always be set:
