@@ -65,9 +65,9 @@ public interface CollectionResource<T extends Resource> extends Resource, Iterab
      * intended to be used in cases where the returned list is explicitly expected to contain a single element. This operation will throw
      * an exception if this list contains zero or more than one element.
      *
-     * <p>This method is not backed by any specific property obtained from the backend, as already mentioned, this is a convenience method.
+     * <p>This method is not backed by any specific property obtained from the backend, as already mentioned, this is a convenience method.</p>
      *
-     * @return the single unique resource that is expect to be contained within this list</p>.
+     * @return the single unique resource that is expect to be contained within this list.
      * @throws java.lang.IllegalStateException if this list contains either zero or more than one element.
      * @since 1.0
      */
