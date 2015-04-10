@@ -1,5 +1,11 @@
 ## Change Log ##
 
+### 1.0.RC4.1 ##
+
+This release adds ID Site functionality for Spring Web and Spring Boot applications.
+
+Please see the [1.0.RC4.1](https://github.com/stormpath/stormpath-sdk-java/milestones/1.0.RC4.1) issues list for more information.
+
 ### 1.0.RC4 ###
 
 This release adds the following:
