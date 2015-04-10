@@ -76,6 +76,9 @@ import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
@@ -338,6 +341,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.accessToken.origin.authorizer.originUris'] }")
     protected String accessTokenAuthorizedOriginUris;
 
+    // ================  ID Site properties  ===================
+
+    @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
+    protected boolean idSiteEnabled;
+
+    @Value("#{ @environment['stormpath.web.idSite.login.uri'] }")
+    protected String idSiteLoginUri; //null by default as it is assumed the id site root is the same as the login page (usually)
+
+    @Value("#{ @environment['stormpath.web.idSite.register.uri'] ?: '/#/register' }")
+    protected String idSiteRegisterUri;
+
+    @Value("#{ @environment['stormpath.web.idSite.forgot.uri'] ?: '/#/forgot' }")
+    protected String idSiteForgotUri;
+
+    @Value("#{ @environment['stormpath.web.idSite.result.uri'] ?: '/idSiteResult' }")
+    protected String idSiteResultUri;
+
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
 
@@ -384,6 +404,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (accessTokenEnabled) {
             mappings.put(accessTokenUri, stormpathAccessTokenController());
+        }
+        if (idSiteEnabled) {
+            mappings.put(idSiteResultUri, stormpathIdSiteResultController());
         }
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
@@ -634,8 +657,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolvers;
     }
 
+    protected Controller createIdSiteController(String idSiteUri) {
+        IdSiteController controller = new IdSiteController();
+        controller.setServerUriResolver(stormpathServerUriResolver());
+        controller.setIdSiteUri(idSiteUri);
+        controller.setCallbackUri(idSiteResultUri);
+        controller.init();
+        return createSpringController(controller);
+    }
+
     public Controller stormpathLoginController() {
 
+        if (idSiteEnabled) {
+            return createIdSiteController(idSiteLoginUri);
+        }
+
+        //otherwise standard login controller:
         LoginController controller = new LoginController();
         controller.setView(loginView);
         controller.setNextUri(loginNextUri);
@@ -650,6 +687,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathForgotPasswordController() {
+
+        if (idSiteEnabled) {
+            return createIdSiteController(idSiteForgotUri);
+        }
 
         ForgotPasswordController controller = new ForgotPasswordController();
         controller.setView(forgotView);
@@ -813,6 +854,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathRegisterController() {
 
+        if (idSiteEnabled) {
+            return createIdSiteController(idSiteRegisterUri);
+        }
+
+        //otherwise standard registration:
         RegisterController controller = new RegisterController();
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setClient(client);
@@ -832,6 +878,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathVerifyController() {
 
+        if (idSiteEnabled) {
+            return createIdSiteController(null);
+        }
+
         VerifyController controller = new VerifyController();
         controller.setNextUri(verifyNextUri);
         controller.setLogoutUri(logoutUri);
@@ -843,6 +893,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathChangePasswordController() {
+
+        if (idSiteEnabled) {
+            return createIdSiteController(null);
+        }
 
         ChangePasswordController controller = new ChangePasswordController();
         controller.setView(changePasswordView);
@@ -870,6 +924,17 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(c);
     }
 
+    public Controller stormpathIdSiteResultController() {
+        IdSiteResultController controller = new IdSiteResultController();
+        controller.setLoginNextUri(loginNextUri);
+        controller.setRegisterNextUri(registerNextUri);
+        controller.setLogoutController(stormpathMvcLogoutController());
+        controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setEventPublisher(stormpathRequestEventPublisher());
+        controller.init();
+        return createSpringController(controller);
+    }
+
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
         return new DefaultAccessTokenAuthenticationRequestFactory(stormpathUsernamePasswordRequestFactory());
     }
@@ -892,11 +957,25 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultServerUriResolver();
     }
 
-    public Controller stormpathLogoutController() {
+    public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
+
         LogoutController controller = new LogoutController();
+
+        if (idSiteEnabled) {
+            IdSiteLogoutController c = new IdSiteLogoutController();
+            c.setServerUriResolver(stormpathServerUriResolver());
+            c.setIdSiteResultUri(idSiteResultUri);
+            controller = c;
+        }
+
         controller.setNextUri(logoutNextUri);
         controller.init();
-        return createSpringController(controller);
+
+        return controller;
+    }
+
+    public Controller stormpathLogoutController() {
+        return createSpringController(stormpathMvcLogoutController());
     }
 
     public FilterChainResolver stormpathFilterChainResolver() {

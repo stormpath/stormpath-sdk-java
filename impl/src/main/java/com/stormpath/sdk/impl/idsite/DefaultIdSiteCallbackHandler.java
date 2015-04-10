@@ -117,23 +117,33 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         nonceStore.putNonce(responseNonce);
 
         String issuer = getRequiredValue(jsonPayload, ISSUER_PARAM_NAME);
-        String accountHref = getRequiredValue(jsonPayload, SUBJECT_PARAM_NAME);
+
+        //the 'sub' field can be null if calling /sso/logout when the subject is already logged out:
+        String accountHref = getOptionalValue(jsonPayload, SUBJECT_PARAM_NAME);
+        boolean accountHrefPresent = Strings.hasText(accountHref);
+        //but this is only legal during the logout scenario, so assert this:
+        IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
+        if (!accountHrefPresent && !IdSiteResultStatus.LOGOUT.equals(resultStatus)) {
+            throw new InvalidJwtException(InvalidJwtException.JWT_RESPONSE_MISSING_PARAMETER_ERROR);
+        }
+
         Boolean isNewAccount = getRequiredValue(jsonPayload, IS_NEW_SUBJECT_PARAM_NAME);
         String state = getOptionalValue(jsonPayload, STATE_PARAM_NAME);
 
-        Map<String, Object> account = new HashMap<String, Object>();
-        account.put(DefaultAccountResult.HREF_PROP_NAME, accountHref);
-
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
-        properties.put(DefaultAccountResult.ACCOUNT.getName(), account);
         properties.put(DefaultAccountResult.NEW_ACCOUNT.getName(), isNewAccount);
         properties.put(DefaultAccountResult.STATE.getName(), state);
+
+        if (accountHrefPresent) {
+            Map<String, Object> account = new HashMap<String, Object>();
+            account.put(DefaultAccountResult.HREF_PROP_NAME, accountHref);
+            properties.put(DefaultAccountResult.ACCOUNT.getName(), account);
+        }
 
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
         //@since 1.0.RC3
         if(this.resultListener != null) {
-            IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
             dispatchResponseStatus(resultStatus, properties);
         }
 
