@@ -56,7 +56,11 @@ public class DefaultApplicationResolver implements ApplicationResolver {
 
     @Override
     public Application getApplication(final ServletRequest servletRequest) {
-        return getApplication(servletRequest.getServletContext());
+        Application application = (Application)servletRequest.getAttribute(Application.class.getName());
+        if (application != null) {
+            application = getApplication(servletRequest.getServletContext());
+        }
+        return application;
     }
 
     @Override
