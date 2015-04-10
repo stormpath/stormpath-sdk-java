@@ -455,7 +455,6 @@
                         <exclude>**/*ManualIT.java</exclude>
                         <exclude>**/*ManualIT.groovy</exclude>
                     </excludes>
-                    <excludedGroups>com.stormpath.spring.config.MinimalStormpathConfigurationIT</excludedGroups>
                 </configuration>
                 <executions>
                     <execution>
