@@ -35,7 +35,6 @@
         <module>servlet-plugin</module>
         <module>httpclient</module>
         <module>spring</module>
-        <module>spring-security</module>
     </modules>
 
 </project>
