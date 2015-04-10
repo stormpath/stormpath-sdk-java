@@ -28,7 +28,7 @@ public class IdSiteController extends AbstractController {
 
     private ServerUriResolver serverUriResolver;
 
-    private String nextUri = "/"; //default unless configured otherwise
+    private String callbackUri;
 
     private String idSiteUri;
 
@@ -36,8 +36,8 @@ public class IdSiteController extends AbstractController {
         this.serverUriResolver = serverUriResolver;
     }
 
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
+    public void setCallbackUri(String callbackUri) {
+        this.callbackUri = callbackUri;
     }
 
     public void setIdSiteUri(String idSiteUri) {
@@ -46,7 +46,7 @@ public class IdSiteController extends AbstractController {
 
     public void init() {
         Assert.notNull(serverUriResolver, "Application must be configured.");
-        Assert.notNull(nextUri, "nextUri must be configured.");
+        Assert.notNull(callbackUri, "callbackUri must be configured.");
     }
 
     protected Application getApplication(HttpServletRequest request) {
@@ -55,7 +55,7 @@ public class IdSiteController extends AbstractController {
 
     protected String buildCallbackUri(HttpServletRequest request) {
 
-        String callbackUri = this.serverUriResolver.getServerUri(request);
+        String uri = this.serverUriResolver.getServerUri(request);
 
         String contextPath = request.getContextPath();
         if (contextPath == null || contextPath.equals("/")) {
@@ -65,9 +65,9 @@ public class IdSiteController extends AbstractController {
             contextPath = contextPath.substring(0, contextPath.length() - 1);
         }
 
-        callbackUri += contextPath + nextUri;
+        uri += contextPath + this.callbackUri;
 
-        return callbackUri;
+        return uri;
     }
 
     @Override

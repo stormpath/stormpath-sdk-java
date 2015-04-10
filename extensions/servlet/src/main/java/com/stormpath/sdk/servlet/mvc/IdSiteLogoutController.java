@@ -26,10 +26,15 @@ import javax.servlet.http.HttpServletResponse;
 public class IdSiteLogoutController extends LogoutController {
 
     private ServerUriResolver serverUriResolver;
-    private Controller idSiteController;
+    private String idSiteResultUri;
+    private Controller idSiteController; //not injected - created during init()
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
+    }
+
+    public void setIdSiteResultUri(String idSiteResultUri) {
+        this.idSiteResultUri = idSiteResultUri;
     }
 
     public void init() {
@@ -37,7 +42,7 @@ public class IdSiteLogoutController extends LogoutController {
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
         IdSiteController controller = new LogoutIdSiteController();
         controller.setServerUriResolver(serverUriResolver);
-        controller.setNextUri(getNextUri());
+        controller.setCallbackUri(idSiteResultUri);
         controller.init();
         this.idSiteController = controller;
     }
@@ -45,6 +50,7 @@ public class IdSiteLogoutController extends LogoutController {
     @Override
     public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+        //ensure the local application user state is cleared no matter what:
         ViewModel vm = super.handleRequest(request, response);
 
         if (request.getAttribute(LogoutResult.class.getName()) != null) {
@@ -52,7 +58,7 @@ public class IdSiteLogoutController extends LogoutController {
             return vm;
         }
 
-        //otherwise redirect to ID Site to perform the SSO logout:
+        //redirect to ID Site to perform the SSO logout to effectively log out the user across all applications:
         return idSiteController.handleRequest(request, response);
     }
 

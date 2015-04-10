@@ -657,11 +657,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolvers;
     }
 
-    protected Controller createIdSiteController(String idSiteUri, String nextUri) {
+    protected Controller createIdSiteController(String idSiteUri) {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
-        controller.setNextUri(nextUri);
+        controller.setCallbackUri(idSiteResultUri);
         controller.init();
         return createSpringController(controller);
     }
@@ -669,7 +669,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathLoginController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteLoginUri, loginNextUri);
+            return createIdSiteController(idSiteLoginUri);
         }
 
         //otherwise standard login controller:
@@ -689,7 +689,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathForgotPasswordController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteForgotUri, forgotNextUri);
+            return createIdSiteController(idSiteForgotUri);
         }
 
         ForgotPasswordController controller = new ForgotPasswordController();
@@ -855,7 +855,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRegisterController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteRegisterUri, registerNextUri);
+            return createIdSiteController(idSiteRegisterUri);
         }
 
         //otherwise standard registration:
@@ -879,7 +879,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathVerifyController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(null, verifyNextUri);
+            return createIdSiteController(null);
         }
 
         VerifyController controller = new VerifyController();
@@ -895,7 +895,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathChangePasswordController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(null, changePasswordNextUri);
+            return createIdSiteController(null);
         }
 
         ChangePasswordController controller = new ChangePasswordController();
@@ -964,6 +964,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (idSiteEnabled) {
             IdSiteLogoutController c = new IdSiteLogoutController();
             c.setServerUriResolver(stormpathServerUriResolver());
+            c.setIdSiteResultUri(idSiteResultUri);
             controller = c;
         }
 
