@@ -5,7 +5,13 @@ Custom Views
 
 The |project| provides out-of-the-box template files to render views at supported URIs, like ``/login``, ``/register``, etc.  This page documents how you can easily customize or completely replace the views to have your own look and feel.
 
-All of the default views are all based on the same principle: they are a standard html templates styled with shared `Bootstrap <http://getbootstrap.com/>`_ CSS. Internationalization (i18n) is used to represent text on all default views so you can provide a nice translated view for each user based on their locale.  CSS styles control the view look and feel.
+.. tip::
+
+   This page discusses templates for views that are local only to the application where the |project| is enabled.
+
+   If you have multiple applications that need a unified registration, login (SSO - Single Sign On) and forgot-password experience, please see the :ref:`ID Site section <idsite>` instead.
+
+All of the default built-in views are all based on the same principle: they are a standard html templates styled with shared `Bootstrap <http://getbootstrap.com/>`_ CSS. Internationalization (i18n) is used to represent text on all default views so you can provide a nice translated view for each user based on their locale.  CSS styles control the view look and feel.
 
 Thymeleaf Views
 ---------------

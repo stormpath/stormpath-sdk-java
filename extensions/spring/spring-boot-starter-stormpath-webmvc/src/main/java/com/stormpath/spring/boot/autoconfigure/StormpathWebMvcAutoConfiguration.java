@@ -381,9 +381,21 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name="stormpathMvcLogoutController")
+    public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
+        return super.stormpathMvcLogoutController();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name="stormpathLogoutController")
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathIdSiteResultController")
+    public Controller stormpathIdSiteResultController() {
+        return super.stormpathIdSiteResultController();
     }
 
     @SuppressWarnings("UnusedDeclaration")
