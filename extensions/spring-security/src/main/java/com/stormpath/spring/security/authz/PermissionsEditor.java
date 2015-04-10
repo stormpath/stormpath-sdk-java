@@ -52,4 +52,5 @@ public interface PermissionsEditor {
      * @return an immutable view of the stored permission strings.
      */
     Set<String> getPermissionStrings();
+
 }
