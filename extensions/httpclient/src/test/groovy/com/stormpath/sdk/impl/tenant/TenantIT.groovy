@@ -396,29 +396,6 @@ class TenantIT extends ClientIT {
      * @since 1.0
      */
     @Test
-    void testGetDirectoriesWithTimestampFilter() {
-        def tenant = client.currentTenant
-        Directory directory = client.instantiate(Directory)
-        directory.name = uniquify("Java SDK: TenantIT.testGetDirectoriesWithTimestampFilters")
-        directory = client.createDirectory(directory);
-        deleteOnTeardown(directory)
-        assertNotNull directory.href
-
-        DateFormat df = new ISO8601DateFormat();
-        String creationTimestamp = df.format(directory.createdAt)
-
-        def dirList = tenant.getDirectories(Directories.where(Directories.createdAt().matches(creationTimestamp)))
-
-        assertNotNull dirList
-        def retrieved = dirList.iterator().next()
-        assertEquals retrieved.href, directory.href
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
-    }
-
-    /**
-     * @since 1.0
-     */
-    @Test
     void testGetDirectoriesWithWrongTimestampFilter() {
         def tenant = client.currentTenant
         Directory directory = client.instantiate(Directory)
@@ -442,7 +419,6 @@ class TenantIT extends ClientIT {
     @Test
     void testGetApplicationsWithTimestampFilter(){
         def tenant = client.currentTenant
-        DateFormat df = new ISO8601DateFormat();
 
         Application application = client.instantiate(Application)
         application.setName(uniquify("testGetApplicationsWithTimestampFilter app"))
@@ -450,22 +426,13 @@ class TenantIT extends ClientIT {
 
         Date appCreationTimestamp = application.createdAt
 
-        //matches
-        def creationTimestamp = df.format(application.getCreatedAt());
-        def appList = client.getApplications(Applications.where(Applications.createdAt().matches(creationTimestamp)))
+        //equals
+        def appList = client.getApplications(Applications.where(Applications.createdAt().equals(appCreationTimestamp)))
         assertNotNull appList.href
 
         def retrieved = appList.iterator().next()
         assertEquals retrieved.href, application.href
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
-
-        //equals
-        appList = client.getApplications(Applications.where(Applications.createdAt().equals(appCreationTimestamp)))
-        assertNotNull appList.href
-
-        retrieved = appList.iterator().next()
-        assertEquals retrieved.href, application.href
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, application.createdAt
 
         //gt
         appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
@@ -481,7 +448,7 @@ class TenantIT extends ClientIT {
         retrieved = appList.iterator().next()
         assertEquals retrieved.href, application.href
         assertEquals retrieved.name, application.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, application.createdAt
 
         //lt
         appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
@@ -497,7 +464,7 @@ class TenantIT extends ClientIT {
         retrieved = appList.iterator().next()
         assertEquals retrieved.href, application.href
         assertEquals retrieved.name, application.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, application.createdAt
 
         //in
         Calendar cal = Calendar.getInstance()
@@ -512,7 +479,7 @@ class TenantIT extends ClientIT {
         retrieved = appList.iterator().next()
         assertEquals retrieved.href, application.href
         assertEquals retrieved.name, application.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, application.createdAt
 
         //in
         cal.setTime(appCreationTimestamp)
@@ -531,6 +498,6 @@ class TenantIT extends ClientIT {
         retrieved = appList.iterator().next()
         assertEquals retrieved.href, application.href
         assertEquals retrieved.name, application.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, application.createdAt
     }
 }
