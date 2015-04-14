@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.client
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.Directories
@@ -26,7 +25,6 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
-import java.text.DateFormat
 import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
@@ -231,24 +229,14 @@ class DirectoryIT extends ClientIT {
         deleteOnTeardown(directory)
 
         Date dirCreationTimestamp = directory.createdAt
-        DateFormat df = new ISO8601DateFormat()
 
-        //matches
-        def creationTimestamp = df.format(directory.getCreatedAt());
-        def dirList = client.getDirectories(Directories.where(Directories.createdAt().matches(creationTimestamp)))
+        //equals
+        def dirList = client.getDirectories(Directories.where(Directories.createdAt().equals(directory.createdAt)))
         assertNotNull dirList.href
 
         def retrieved = dirList.iterator().next()
         assertEquals retrieved.href, directory.href
-        assertEquals retrieved.getCreatedAt(), directory.getCreatedAt()
-
-        //equals
-        dirList = client.getDirectories(Directories.where(Directories.createdAt().equals(directory.getCreatedAt())))
-        assertNotNull dirList.href
-
-        retrieved = dirList.iterator().next()
-        assertEquals retrieved.href, directory.href
-        assertEquals retrieved.createdAt, directory.getCreatedAt()
+        assertEquals retrieved.createdAt, directory.createdAt
 
         //gt
         dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
@@ -264,7 +252,7 @@ class DirectoryIT extends ClientIT {
         retrieved = dirList.iterator().next()
         assertEquals retrieved.href, directory.href
         assertEquals retrieved.name, directory.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, directory.createdAt
 
         //lt
         dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
@@ -280,7 +268,7 @@ class DirectoryIT extends ClientIT {
         retrieved = dirList.iterator().next()
         assertEquals retrieved.href, directory.href
         assertEquals retrieved.name, directory.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, directory.createdAt
 
         //in
         Calendar cal = Calendar.getInstance()
@@ -295,7 +283,7 @@ class DirectoryIT extends ClientIT {
         retrieved = dirList.iterator().next()
         assertEquals retrieved.href, directory.href
         assertEquals retrieved.name, directory.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, directory.createdAt
 
         //in
         cal.setTime(dirCreationTimestamp)
@@ -314,7 +302,7 @@ class DirectoryIT extends ClientIT {
         retrieved = dirList.iterator().next()
         assertEquals retrieved.href, directory.href
         assertEquals retrieved.name, directory.name
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, directory.createdAt
     }
 
     /**
@@ -336,23 +324,14 @@ class DirectoryIT extends ClientIT {
         dir.createAccount(account)
 
         Date accountCreationTimestamp = account.createdAt
-        DateFormat df = new ISO8601DateFormat()
-
-        //matches
-        def creationTimestamp = df.format(account.getCreatedAt());
-        def accList = dir.getAccounts(Accounts.where(Accounts.createdAt().matches(creationTimestamp)))
-        assertNotNull accList.href
-        def retrieved = accList.iterator().next()
-        assertEquals retrieved.href, account.href
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
 
         //equals
-        accList = dir.getAccounts(Accounts.where(Accounts.createdAt().equals(accountCreationTimestamp)))
+        def accList = dir.getAccounts(Accounts.where(Accounts.createdAt().equals(accountCreationTimestamp)))
         assertNotNull accList.href
 
-        retrieved = accList.iterator().next()
+        def retrieved = accList.iterator().next()
         assertEquals retrieved.href, account.href
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, account.createdAt
 
         //gt
         accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
@@ -368,7 +347,7 @@ class DirectoryIT extends ClientIT {
         retrieved = accList.iterator().next()
         assertEquals retrieved.href, account.href
         assertEquals retrieved.surname, account.surname
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, account.createdAt
 
         //lt
         accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
@@ -384,7 +363,7 @@ class DirectoryIT extends ClientIT {
         retrieved = accList.iterator().next()
         assertEquals retrieved.href, account.href
         assertEquals retrieved.surname, account.surname
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, account.createdAt
 
         //in
         Calendar cal = Calendar.getInstance()
@@ -399,7 +378,7 @@ class DirectoryIT extends ClientIT {
         retrieved = accList.iterator().next()
         assertEquals retrieved.href, account.href
         assertEquals retrieved.surname, account.surname
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, account.createdAt
 
         //in
         cal.setTime(accountCreationTimestamp)
@@ -418,6 +397,6 @@ class DirectoryIT extends ClientIT {
         retrieved = accList.iterator().next()
         assertEquals retrieved.href, account.href
         assertEquals retrieved.surname, account.surname
-        assertEquals df.format(retrieved.createdAt), creationTimestamp
+        assertEquals retrieved.createdAt, account.createdAt
     }
 }

@@ -15,12 +15,11 @@
 */
 package com.stormpath.sdk.impl.query;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Duration;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
-import java.text.DateFormat;
+import org.joda.time.DateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -50,40 +49,40 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
     @Override
     public Criterion gt(Date date) {
         Assert.notNull(date, "date needs to be a valid Date object");
-        DateFormat df = new ISO8601DateFormat();
-        String value = EXCLUSIVE_OPENING + df.format(date).toString() + COMMA + INCLUSIVE_CLOSING;
+        DateTime dateTime = new DateTime(date);
+        String value = EXCLUSIVE_OPENING + dateTime.toString() + COMMA + INCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
 
     @Override
     public Criterion gte(Date date) {
         Assert.notNull(date, "date needs to be a valid Date object");
-        DateFormat df = new ISO8601DateFormat();
-        String value = INCLUSIVE_OPENING + df.format(date).toString() + COMMA + INCLUSIVE_CLOSING;
+        DateTime dateTime = new DateTime(date);
+        String value = INCLUSIVE_OPENING + dateTime.toString() + COMMA + INCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
 
     @Override
     public Criterion lt(Date date) {
         Assert.notNull(date, "date needs to be a valid Date object");
-        DateFormat df = new ISO8601DateFormat();
-        String value = INCLUSIVE_OPENING + COMMA + df.format(date).toString() + EXCLUSIVE_CLOSING;
+        DateTime dateTime = new DateTime(date);
+        String value = INCLUSIVE_OPENING + COMMA + dateTime.toString() + EXCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
 
     @Override
     public Criterion lte(Date date) {
         Assert.notNull(date, "date needs to be a valid Date object");
-        DateFormat df = new ISO8601DateFormat();
-        String value = INCLUSIVE_OPENING + COMMA + df.format(date).toString() + INCLUSIVE_CLOSING;
+        DateTime dateTime = new DateTime(date);
+        String value = INCLUSIVE_OPENING + COMMA + dateTime.toString() + INCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
 
     @Override
     public Criterion equals(Date date) {
         Assert.notNull(date, "date needs to be a valid Date object");
-        DateFormat df = new ISO8601DateFormat();
-        return new SimpleExpression(propertyName, df.format(date).toString(), Operator.EQUALS);
+        DateTime dateTime = new DateTime(date);
+        return new SimpleExpression(propertyName, dateTime.toString(), Operator.EQUALS);
     }
 
     @Override
@@ -91,8 +90,9 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
         Assert.notNull(begin, "begin needs to be a valid Date object");
         Assert.notNull(end, "end needs to be a valid Date object");
         Assert.isTrue(begin.before(end), "begin date needs to be earlier than end date");
-        DateFormat df = new ISO8601DateFormat();
-        String value = INCLUSIVE_OPENING + df.format(begin).toString() + COMMA + df.format(end).toString() + EXCLUSIVE_CLOSING;
+        DateTime beginDateTime = new DateTime(begin);
+        DateTime endDateTime = new DateTime(end);
+        String value = INCLUSIVE_OPENING + beginDateTime.toString() + COMMA + endDateTime.toString() + EXCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
 
@@ -100,10 +100,11 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
     public Criterion in(Date begin, Duration duration) {
         Assert.isTrue(begin instanceof Date, "begin needs to be a valid Date object");
         Assert.isTrue(duration instanceof Duration, "duration needs to be a valid Duration object");
-        DateFormat df = new ISO8601DateFormat();
+        DateTime beginDateTime = new DateTime(begin);
         Date endDate = this.calculateDateFromDuration(begin, duration);
         Assert.isTrue(begin.before(endDate), "begin date needs to be earlier than end date" );
-        String value = INCLUSIVE_OPENING + df.format(begin).toString() + COMMA + df.format(endDate).toString() + EXCLUSIVE_CLOSING;
+        DateTime endDateTime = new DateTime(endDate);
+        String value = INCLUSIVE_OPENING + beginDateTime.toString() + COMMA + endDateTime.toString() + EXCLUSIVE_CLOSING;
         return new SimpleExpression(propertyName, value, Operator.EQUALS);
     }
 

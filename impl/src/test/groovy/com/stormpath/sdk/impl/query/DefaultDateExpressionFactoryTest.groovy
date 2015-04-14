@@ -18,11 +18,10 @@ package com.stormpath.sdk.impl.query
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.query.Criterion
+import org.joda.time.DateTime
 import org.testng.annotations.Test
-
 import java.text.DateFormat
 import java.util.concurrent.TimeUnit
-
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
@@ -92,8 +91,11 @@ class DefaultDateExpressionFactoryTest {
 
     @Test
     void testMethods(){
-        Date date1 = new Date();
-        String iso8601Date1 = df.format(date1);
+
+        Date date = new Date();
+        DateTime dateTime = new DateTime(date);
+
+        String iso8601Date1 = dateTime.toString();
 
         //matches
         String expectedString = PROPERTY_NAME + OPERATOR + iso8601Date1;
@@ -102,38 +104,40 @@ class DefaultDateExpressionFactoryTest {
 
         //gt
         expectedString = PROPERTY_NAME + OPERATOR + EXCLUSIVE_OPENING + iso8601Date1 + COMMA + INCLUSIVE_CLOSING;
-        c = defaultDateExpressionFactory.gt(date1);
+        c = defaultDateExpressionFactory.gt(dateTime.toDate());
         assertEquals c.toString(), expectedString
 
         //gte
         expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + iso8601Date1 + COMMA + INCLUSIVE_CLOSING;
-        c = defaultDateExpressionFactory.gte(date1);
+        c = defaultDateExpressionFactory.gte(dateTime.toDate());
         assertEquals c.toString(), expectedString
 
         //lt
         expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + COMMA + iso8601Date1 + EXCLUSIVE_CLOSING;
-        c = defaultDateExpressionFactory.lt(date1);
+        c = defaultDateExpressionFactory.lt(dateTime.toDate());
         assertEquals c.toString(), expectedString
 
         //lte
         expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + COMMA + iso8601Date1 + INCLUSIVE_CLOSING;
-        c = defaultDateExpressionFactory.lte(date1);
+        c = defaultDateExpressionFactory.lte(dateTime.toDate());
         assertEquals c.toString(), expectedString
 
         Date date2 = new Date();
+        DateTime dateTime2 = new DateTime(date2);
 
         //in
-        expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + iso8601Date1 + COMMA + df.format(date2) + EXCLUSIVE_CLOSING;
-        c = defaultDateExpressionFactory.in(date1, date2);
+        expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + iso8601Date1 + COMMA + dateTime2.toString() + EXCLUSIVE_CLOSING;
+        c = defaultDateExpressionFactory.in(dateTime.toDate(), dateTime2.toDate());
         assertEquals c.toString(), expectedString
 
         //in
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date1);
+        cal.setTime(date);
         cal.add(Calendar.DATE, 1);
         date2 = cal.getTime();
-        expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + iso8601Date1 + COMMA + df.format(date2) + EXCLUSIVE_CLOSING;
-        c = defaultDateExpressionFactory.in(date1, new Duration(1, TimeUnit.DAYS));
+        dateTime2 = new DateTime(date2);
+        expectedString = PROPERTY_NAME + OPERATOR + INCLUSIVE_OPENING + iso8601Date1 + COMMA + dateTime2.toString() + EXCLUSIVE_CLOSING;
+        c = defaultDateExpressionFactory.in(dateTime.toDate(), new Duration(1, TimeUnit.DAYS));
         assertEquals c.toString(), expectedString
     }
 }
