@@ -15,10 +15,9 @@
 */
 package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplateList;
+import com.stormpath.sdk.mail.UnModeledEmailTemplateList;
 import com.stormpath.sdk.mail.EmailStatus;
 import com.stormpath.sdk.mail.ModeledEmailTemplateList;
-import com.stormpath.sdk.mail.WelcomeEmailTemplateList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
@@ -39,22 +38,22 @@ public interface AccountCreationPolicy extends Resource, Saveable {
     ModeledEmailTemplateList getAccountVerificationEmailTemplates();
 
     /**
-     * Returns the {@link AccountVerificationSuccessEmailTemplateList} collection that contains the ‘verification success email’
+     * Returns the {@link com.stormpath.sdk.mail.UnModeledEmailTemplateList} collection that contains the ‘verification success email’
      * templates that can be used for sending the ‘verification success email’ for new accounts.
      *
-     * @return the {@link AccountVerificationSuccessEmailTemplateList} collection that contains the ‘verification success email’
+     * @return the {@link com.stormpath.sdk.mail.UnModeledEmailTemplateList} collection that contains the ‘verification success email’
      * templates that can be used for sending the ‘verification success email’ for new accounts.
      */
-    AccountVerificationSuccessEmailTemplateList getAccountVerificationSuccessEmailTemplates();
+    UnModeledEmailTemplateList getAccountVerificationSuccessEmailTemplates();
 
     /**
-     * Returns the {@link WelcomeEmailTemplateList} collection that contains the ‘welcome email’
+     * Returns the {@link UnModeledEmailTemplateList} collection that contains the ‘welcome email’
      * templates that can be used for sending a 'welcome email' to a newly registered account.
      *
-     * @return the {@link WelcomeEmailTemplateList} collection that contains the ‘welcome email’
+     * @return the {@link UnModeledEmailTemplateList} collection that contains the ‘welcome email’
      * templates that can be used for sending a 'welcome email' to a newly registered account.
      */
-    WelcomeEmailTemplateList getWelcomeEmailTemplates();
+    UnModeledEmailTemplateList getWelcomeEmailTemplates();
 
     /**
      * Returns the Account Verification Email Status

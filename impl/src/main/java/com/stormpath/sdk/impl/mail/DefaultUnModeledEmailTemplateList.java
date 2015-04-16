@@ -19,35 +19,35 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplate;
-import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplateList;
+import com.stormpath.sdk.mail.UnModeledEmailTemplate;
+import com.stormpath.sdk.mail.UnModeledEmailTemplateList;
 
 import java.util.Map;
 
 /**
  * @since 1.0.RC4
  */
-public class DefaultAccountVerificationSuccessEmailTemplateList extends AbstractCollectionResource<AccountVerificationSuccessEmailTemplate> implements AccountVerificationSuccessEmailTemplateList {
+public class DefaultUnModeledEmailTemplateList extends AbstractCollectionResource<UnModeledEmailTemplate> implements UnModeledEmailTemplateList {
 
-    private static final ArrayProperty<AccountVerificationSuccessEmailTemplate> ITEMS = new ArrayProperty<AccountVerificationSuccessEmailTemplate>("items", AccountVerificationSuccessEmailTemplate.class);
+    private static final ArrayProperty<UnModeledEmailTemplate> ITEMS = new ArrayProperty<UnModeledEmailTemplate>("items", UnModeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
-    public DefaultAccountVerificationSuccessEmailTemplateList(InternalDataStore dataStore) {
+    public DefaultUnModeledEmailTemplateList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAccountVerificationSuccessEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultUnModeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
-    public DefaultAccountVerificationSuccessEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
+    public DefaultUnModeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
     @Override
-    protected Class<AccountVerificationSuccessEmailTemplate> getItemType() {
-        return AccountVerificationSuccessEmailTemplate.class;
+    protected Class<UnModeledEmailTemplate> getItemType() {
+        return UnModeledEmailTemplate.class;
     }
 
     @Override

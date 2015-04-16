@@ -17,10 +17,10 @@ package com.stormpath.sdk.mail;
 import com.stormpath.sdk.resource.CollectionResource;
 /**
  *
- * A {@link CollectionResource} containing {@link AccountVerificationSuccessEmailTemplate} instances.
+ * A {@link CollectionResource} containing {@link UnModeledEmailTemplate} instances.
  *
  * @since 1.0.RC4
  */
-public interface AccountVerificationSuccessEmailTemplateList extends CollectionResource<AccountVerificationSuccessEmailTemplate> {
+public interface UnModeledEmailTemplateList extends CollectionResource<UnModeledEmailTemplate> {
 
 }

@@ -102,6 +102,6 @@ public interface PasswordPolicy extends Resource, Saveable {
      *
      * @return the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection holding the set of email templates available when notifying about a successful password reset operation.
      */
-    PasswordResetSuccessEmailTemplateList getResetSuccessEmailTemplates();
+    UnModeledEmailTemplateList getResetSuccessEmailTemplates();
 
 }

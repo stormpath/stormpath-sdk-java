@@ -17,23 +17,23 @@ package com.stormpath.sdk.impl.mail;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplate;
+import com.stormpath.sdk.mail.UnModeledEmailTemplate;
 
 import java.util.Map;
 
 /**
  * @since 1.0.RC4
  */
-public class DefaultAccountVerificationSuccessEmailTemplate extends AbstractEmailTemplate<AccountVerificationSuccessEmailTemplate> implements AccountVerificationSuccessEmailTemplate {
+public class DefaultUnModeledEmailTemplate extends AbstractEmailTemplate<UnModeledEmailTemplate> implements UnModeledEmailTemplate {
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, DESCRIPTION, FROM_NAME, FROM_EMAIL_ADDRESS, SUBJECT, TEXT_BODY, HTML_BODY, MIME_TYPE);
 
-    public DefaultAccountVerificationSuccessEmailTemplate(InternalDataStore dataStore) {
+    public DefaultUnModeledEmailTemplate(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAccountVerificationSuccessEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultUnModeledEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

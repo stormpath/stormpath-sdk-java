@@ -38,11 +38,11 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> ACCOUNT_VERIFICATION_EMAIL_TEMPLATES =
             new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("verificationEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);
 
-    static final CollectionReference<AccountVerificationSuccessEmailTemplateList, AccountVerificationSuccessEmailTemplate> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES =
-            new CollectionReference<AccountVerificationSuccessEmailTemplateList, AccountVerificationSuccessEmailTemplate>("verificationSuccessEmailTemplates", AccountVerificationSuccessEmailTemplateList.class, AccountVerificationSuccessEmailTemplate.class);
+    static final CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES =
+            new CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate>("verificationSuccessEmailTemplates", UnModeledEmailTemplateList.class, UnModeledEmailTemplate.class);
 
-    static final CollectionReference<WelcomeEmailTemplateList, WelcomeEmailTemplate> WELCOME_EMAIL_TEMPLATES =
-            new CollectionReference<WelcomeEmailTemplateList, WelcomeEmailTemplate>("welcomeEmailTemplates", WelcomeEmailTemplateList.class, WelcomeEmailTemplate.class);
+    static final CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate> WELCOME_EMAIL_TEMPLATES =
+            new CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate>("welcomeEmailTemplates", UnModeledEmailTemplateList.class, UnModeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             ACCOUNT_VERIFICATION_EMAIL_STATUS, ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS, WELCOME_EMAIL_STATUS, ACCOUNT_VERIFICATION_EMAIL_TEMPLATES,
@@ -67,12 +67,12 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     }
 
     @Override
-    public AccountVerificationSuccessEmailTemplateList getAccountVerificationSuccessEmailTemplates() {
+    public UnModeledEmailTemplateList getAccountVerificationSuccessEmailTemplates() {
         return getResourceProperty(ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES);
     }
 
     @Override
-    public WelcomeEmailTemplateList getWelcomeEmailTemplates() {
+    public UnModeledEmailTemplateList getWelcomeEmailTemplates() {
         return getResourceProperty(WELCOME_EMAIL_TEMPLATES);
     }
 

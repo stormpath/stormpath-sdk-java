@@ -17,15 +17,15 @@ package com.stormpath.sdk.impl.directory
 
 import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.mail.DefaultAccountVerificationSuccessEmailTemplateList
 import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
-import com.stormpath.sdk.impl.mail.DefaultWelcomeEmailTemplateList
+import com.stormpath.sdk.impl.mail.DefaultUnModeledEmailTemplateList
+
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.StatusProperty
-import com.stormpath.sdk.mail.AccountVerificationSuccessEmailTemplateList
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.mail.ModeledEmailTemplateList
-import com.stormpath.sdk.mail.WelcomeEmailTemplateList
+import com.stormpath.sdk.mail.UnModeledEmailTemplateList
+
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -68,11 +68,11 @@ class DefaultAccountCreationPolicyTest {
         expect(internalDataStore.instantiate(ModeledEmailTemplateList, properties.verificationEmailTemplates)).
                 andReturn(new DefaultModeledEmailTemplateList(internalDataStore, properties.verificationEmailTemplates))
 
-        expect(internalDataStore.instantiate(AccountVerificationSuccessEmailTemplateList, properties.verificationSuccessEmailTemplates)).
-                andReturn(new DefaultAccountVerificationSuccessEmailTemplateList(internalDataStore, properties.verificationSuccessEmailTemplates))
+        expect(internalDataStore.instantiate(UnModeledEmailTemplateList, properties.verificationSuccessEmailTemplates)).
+                andReturn(new DefaultUnModeledEmailTemplateList(internalDataStore, properties.verificationSuccessEmailTemplates))
 
-        expect(internalDataStore.instantiate(WelcomeEmailTemplateList, properties.welcomeEmailTemplates)).
-                andReturn(new DefaultWelcomeEmailTemplateList(internalDataStore, properties.welcomeEmailTemplates))
+        expect(internalDataStore.instantiate(UnModeledEmailTemplateList, properties.welcomeEmailTemplates)).
+                andReturn(new DefaultUnModeledEmailTemplateList(internalDataStore, properties.welcomeEmailTemplates))
 
         replay internalDataStore
 
@@ -91,10 +91,10 @@ class DefaultAccountCreationPolicyTest {
         assertTrue(verificationTemplates instanceof DefaultModeledEmailTemplateList && verificationTemplates.getHref().equals(properties.verificationEmailTemplates.href))
 
         def verificationSucessTemplates = accountCreationPolicy.getAccountVerificationSuccessEmailTemplates()
-        assertTrue(verificationSucessTemplates instanceof AccountVerificationSuccessEmailTemplateList && verificationSucessTemplates.getHref().equals(properties.verificationSuccessEmailTemplates.href))
+        assertTrue(verificationSucessTemplates instanceof UnModeledEmailTemplateList && verificationSucessTemplates.getHref().equals(properties.verificationSuccessEmailTemplates.href))
 
         def welcomeTemplates = accountCreationPolicy.getWelcomeEmailTemplates()
-        assertTrue(welcomeTemplates instanceof WelcomeEmailTemplateList && welcomeTemplates.getHref().equals(properties.welcomeEmailTemplates.href))
+        assertTrue(welcomeTemplates instanceof UnModeledEmailTemplateList && welcomeTemplates.getHref().equals(properties.welcomeEmailTemplates.href))
 
         verify internalDataStore
 
@@ -119,14 +119,14 @@ class DefaultAccountCreationPolicyTest {
             accountCreationPolicy.setVerificationEmailStatus(null); //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "verificationEmailStatus cannot be null.")
+            assertEquals(e.getMessage(), "accountVerificationEmailStatus cannot be null.")
         }
 
         try {
             accountCreationPolicy.setVerificationSuccessEmailStatus(null); //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "verificationSuccessEmailStatus cannot be null.")
+            assertEquals(e.getMessage(), "accountVerificationSuccessEmailStatus cannot be null.")
         }
 
         try {

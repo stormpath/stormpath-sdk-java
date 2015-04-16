@@ -33,7 +33,7 @@ class DefaultWelcomeEmailTemplateTest {
     @Test
     void testGetPropertyDescriptors() {
 
-        EmailTemplate emailTemplate = new DefaultWelcomeEmailTemplate(createStrictMock(InternalDataStore))
+        EmailTemplate emailTemplate = new DefaultUnModeledEmailTemplate(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = emailTemplate.getPropertyDescriptors()
 
@@ -65,7 +65,7 @@ class DefaultWelcomeEmailTemplateTest {
                 mimeType: "text/plain"
         ]
 
-        EmailTemplate emailTemplate = new DefaultWelcomeEmailTemplate(internalDataStore, properties)
+        EmailTemplate emailTemplate = new DefaultUnModeledEmailTemplate(internalDataStore, properties)
         assertEquals(emailTemplate.getName(), "Test Email")
         assertEquals(emailTemplate.getDescription(), "Test Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
