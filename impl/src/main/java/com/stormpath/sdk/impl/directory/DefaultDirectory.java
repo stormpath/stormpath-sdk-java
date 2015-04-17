@@ -28,7 +28,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4
+ * @since 0.2
  */
 public class DefaultDirectory extends AbstractExtendableInstanceResource implements Directory {
 
@@ -251,7 +251,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     }
 
     /**
-     * @since 1.0
+     * @since 1.0-SNAPSHOT
      */
     @Override
     public AccountCreationPolicy getAccountCreationPolicy() {

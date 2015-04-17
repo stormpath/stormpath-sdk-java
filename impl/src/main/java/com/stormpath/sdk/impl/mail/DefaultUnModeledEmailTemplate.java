@@ -22,7 +22,7 @@ import com.stormpath.sdk.mail.UnModeledEmailTemplate;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
 public class DefaultUnModeledEmailTemplate extends AbstractEmailTemplate<UnModeledEmailTemplate> implements UnModeledEmailTemplate {
 

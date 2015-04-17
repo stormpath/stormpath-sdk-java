@@ -25,7 +25,7 @@ import com.stormpath.sdk.mail.UnModeledEmailTemplateList;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
 public class DefaultUnModeledEmailTemplateList extends AbstractCollectionResource<UnModeledEmailTemplate> implements UnModeledEmailTemplateList {
 

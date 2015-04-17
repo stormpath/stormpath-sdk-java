@@ -27,7 +27,7 @@ import com.stormpath.sdk.mail.*;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
 public class DefaultAccountCreationPolicy extends AbstractInstanceResource implements AccountCreationPolicy {
 

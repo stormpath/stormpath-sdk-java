@@ -19,7 +19,7 @@ package com.stormpath.sdk.mail;
  * The UnModeledEmailTemplate is an {@link EmailTemplate} resource that will be sent to the user after the newly-created account has been successfully verified.
  * For example, this email can be used to notify the user about his admittance to start using your service as a fully registered user.
  *
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
 public interface UnModeledEmailTemplate extends EmailTemplate<UnModeledEmailTemplate> {
 

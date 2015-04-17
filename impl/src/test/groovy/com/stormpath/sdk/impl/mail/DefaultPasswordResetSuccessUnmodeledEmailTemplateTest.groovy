@@ -25,9 +25,9 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
-class DefaultPasswordResetSuccessEmailTest {
+class DefaultPasswordResetSuccessUnmodeledEmailTemplateTest {
 
     @Test
     void testGetPropertyDescriptors() {

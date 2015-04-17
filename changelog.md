@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.0-SNAPSHOT ##
+
+- [Issue 175](https://github.com/stormpath/stormpath-sdk-java/issues/175): Added support for the `AccountCreationPolicy` resource in Directories.
+
 ### 1.0.RC4.1 ##
 
 This release adds ID Site functionality for Spring Web and Spring Boot applications.

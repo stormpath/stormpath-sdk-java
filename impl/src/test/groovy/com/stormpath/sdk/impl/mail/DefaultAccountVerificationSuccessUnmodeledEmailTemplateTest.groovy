@@ -26,9 +26,9 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
-class DefaultAccountVerificationSuccessEmailTemplateTest {
+class DefaultAccountVerificationSuccessUnmodeledEmailTemplateTest {
 
     @Test
     void testGetPropertyDescriptors() {

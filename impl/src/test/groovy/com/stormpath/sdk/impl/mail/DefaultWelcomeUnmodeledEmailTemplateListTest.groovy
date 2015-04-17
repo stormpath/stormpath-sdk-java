@@ -27,9 +27,9 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
-class DefaultAccountVerificationSuccessEmailTemplateListTest {
+class DefaultWelcomeUnmodeledEmailTemplateListTest {
 
     @Test
     void testAll() {
@@ -37,12 +37,12 @@ class DefaultAccountVerificationSuccessEmailTemplateListTest {
         def internalDataStore = createStrictMock(InternalDataStore)
 
         UnModeledEmailTemplateList resourceWithDS = new DefaultUnModeledEmailTemplateList(internalDataStore)
-        UnModeledEmailTemplateList resourceWithProps = new DefaultUnModeledEmailTemplateList(internalDataStore, [href: "https://api.stormpath.com/v1/accountCreationPolicies/35YM3OwioW9PVtfLOh6q1e/verificationEmailTemplates"])
-        UnModeledEmailTemplateList resourceWithQueryString = new DefaultUnModeledEmailTemplateList(internalDataStore, [href: "https://api.stormpath.com/v1/accountCreationPolicies/35YM3OwioW9PVtfLOh6q1e/verificationEmailTemplates"], [qp: "test"])
+        UnModeledEmailTemplateList resourceWithProps = new DefaultUnModeledEmailTemplateList(internalDataStore, [href: "https://api.stormpath.com/v1/accountCreationPolicies/35YM3OwioW9PVtfLOh6q1e/welcomeEmailTemplates"])
+        UnModeledEmailTemplateList resourceWithQueryString = new DefaultUnModeledEmailTemplateList(internalDataStore, [href: "https://api.stormpath.com/v1/accountCreationPolicies/35YM3OwioW9PVtfLOh6q1e/welcomeEmailTemplates"], [qp: "test"])
 
-        assertTrue(resourceWithDS instanceof DefaultUnModeledEmailTemplateList
-                && resourceWithProps instanceof DefaultUnModeledEmailTemplateList
-                && resourceWithQueryString instanceof DefaultUnModeledEmailTemplateList)
+        assertTrue(resourceWithDS instanceof UnModeledEmailTemplateList
+                && resourceWithProps instanceof UnModeledEmailTemplateList
+                && resourceWithQueryString instanceof UnModeledEmailTemplateList)
 
         assertEquals(resourceWithQueryString.getItemType(), UnModeledEmailTemplate)
 

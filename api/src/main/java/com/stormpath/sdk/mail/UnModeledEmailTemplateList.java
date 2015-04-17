@@ -19,7 +19,7 @@ import com.stormpath.sdk.resource.CollectionResource;
  *
  * A {@link CollectionResource} containing {@link UnModeledEmailTemplate} instances.
  *
- * @since 1.0.RC4
+ * @since 1.0-SNAPSHOT
  */
 public interface UnModeledEmailTemplateList extends CollectionResource<UnModeledEmailTemplate> {
 
