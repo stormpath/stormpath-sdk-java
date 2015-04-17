@@ -22,17 +22,47 @@ import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 
 /**
+ * A {@code RequestEventListener} implementation can react to interest events triggered while handling an {@code
+ * HttpServletRequest}.
+ *
  * @since 1.0.RC3
  */
 public interface RequestEventListener {
 
+    /**
+     * Called when an authentication attempt executed while handling an HttpServletRequest was successful.
+     *
+     * @param e event
+     */
     void on(SuccessfulAuthenticationRequestEvent e);
 
+    /**
+     * Called when an authentication attempt executed while handling an HttpServletRequest has failed.
+     *
+     * @param e event
+     */
     void on(FailedAuthenticationRequestEvent e);
 
+    /**
+     * Called when processing an HttpServletRequest that results in a newly registered {@link
+     * com.stormpath.sdk.account.Account Account}.
+     *
+     * @param e event
+     */
     void on(RegisteredAccountRequestEvent e);
 
+    /**
+     * Called when processing an HttpServletRequest that indicates an account's email address has been verified.
+     *
+     * @param e event
+     */
     void on(VerifiedAccountRequestEvent e);
 
+
+    /**
+     * Called when a user account explicitly (manually) logs out of a web application.
+     *
+     * @param e event
+     */
     void on(LogoutRequestEvent e);
 }

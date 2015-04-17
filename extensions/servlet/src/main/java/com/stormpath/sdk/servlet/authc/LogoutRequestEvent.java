@@ -18,6 +18,8 @@ package com.stormpath.sdk.servlet.authc;
 import com.stormpath.sdk.servlet.account.event.AccountRequestEvent;
 
 /**
+ * An event triggered when a user account explicitly (manually) logs out of a web application.
+ *
  * @since 1.0.RC3
  */
 public interface LogoutRequestEvent extends AccountRequestEvent {}

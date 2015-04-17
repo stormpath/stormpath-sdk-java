@@ -93,10 +93,14 @@ class DefaultDirectoryTest {
                 andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         def accountCriteria = createStrictMock(AccountCriteria)
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).
+                andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteria)).
                 andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         def accountCriteriaMap = [username: "some+search"]
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).
+                andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteriaMap)).
                 andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
@@ -104,10 +108,14 @@ class DefaultDirectoryTest {
                 andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         def groupCriteria = createStrictMock(GroupCriteria)
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).
+                andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteria)).
                 andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         def groupCriteriaMap = [name: "some+search"]
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).
+                andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).
@@ -125,10 +133,16 @@ class DefaultDirectoryTest {
         expect(internalDataStore.delete(EasyMock.anyObject(DefaultDirectory)))
 
         def account = createStrictMock(Account)
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).
+                andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts", account)).andReturn(account)
 
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).
+                andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts?registrationWorkflowEnabled=true", account)).andReturn(account)
 
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).
+                andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts?registrationWorkflowEnabled=false", account)).andReturn(account)
 
         expect(createAccountRequest.getAccount()).andReturn(account)
@@ -136,15 +150,22 @@ class DefaultDirectoryTest {
         expect(createAccountRequest.isAccountOptionsSpecified()).andReturn(true)
         def accountOptions = Accounts.options().withTenant()
         expect(createAccountRequest.getAccountOptions()).andReturn(accountOptions)
+
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).
+                andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/accounts", account, accountOptions)).andReturn(account)
 
         def group = createStrictMock(Group)
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).
+                andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups", group)).andReturn(group)
 
         expect(createGroupRequest.getGroup()).andReturn(group)
         expect(createGroupRequest.isGroupOptionsSpecified()).andReturn(true)
         def groupOptions = Groups.options().withDirectory()
         expect(createGroupRequest.getGroupOptions()).andReturn(groupOptions)
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).
+                andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.create("https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/groups", group, groupOptions)).andReturn(group)
 
         replay internalDataStore, accountCriteria, groupCriteria, account, group, createAccountRequest, createGroupRequest

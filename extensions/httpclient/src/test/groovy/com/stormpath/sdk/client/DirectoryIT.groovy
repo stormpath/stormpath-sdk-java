@@ -21,6 +21,7 @@ import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
@@ -245,7 +246,5 @@ class DirectoryIT extends ClientIT {
         assertEquals(retrievedAccountCreationPolicy.getVerificationSuccessEmailStatus(), EmailStatus.ENABLED)
         assertEquals(retrievedAccountCreationPolicy.getWelcomeEmailStatus(), EmailStatus.ENABLED)
     }
-
-
 
 }

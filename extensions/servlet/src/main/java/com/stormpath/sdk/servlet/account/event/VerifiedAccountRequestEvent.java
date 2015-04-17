@@ -16,6 +16,9 @@
 package com.stormpath.sdk.servlet.account.event;
 
 /**
+ * An event triggered when processing an HttpServletRequest that indicates an account's email address has been
+ * verified.
+ *
  * @since 1.0.RC3
  */
 public interface VerifiedAccountRequestEvent extends AccountRequestEvent {

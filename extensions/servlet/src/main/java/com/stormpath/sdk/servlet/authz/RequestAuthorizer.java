@@ -19,10 +19,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Asserts that a request is authorized to be executed, and if not, throws an exception to indicate the filter chain
+ * should not continue.
+ *
  * @since 1.0.RC3
  */
 public interface RequestAuthorizer {
 
+    /**
+     * Asserts that a request is authorized to be executed, and if not, throws an exception to indicate the filter chain
+     * should not continue.
+     *
+     * @param request  inbound request
+     * @param response outbound response
+     */
     void assertAuthorized(HttpServletRequest request, HttpServletResponse response);
-
 }

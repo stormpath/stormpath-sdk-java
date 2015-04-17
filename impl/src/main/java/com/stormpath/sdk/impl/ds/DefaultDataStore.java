@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
@@ -514,8 +515,20 @@ public class DefaultDataStore implements InternalDataStore {
 
         //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
         boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
+        //since 1.0.RC4 : fix for https://github.com/stormpath/stormpath-sdk-java/issues/140 where Account remains disabled after
+        //successful verification due to an outdated `Account` state in the cache.
+        if (emailVerification && isCachingEnabled()) {
+            Cache cache = getCache(Account.class);
+            String accountHref = (String) responseBody.get(HREF_PROP_NAME);
+            if (Strings.hasText(accountHref)) {
+                cache.remove(accountHref);
+            }
+        }
 
-        if (isCacheUpdateEnabled(returnType) && !emailVerification) {
+        //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
+        boolean doNotCache = (resource instanceof PasswordResetToken && PasswordResetToken.class.isAssignableFrom(returnType)) || emailVerification;
+
+        if (isCacheUpdateEnabled(returnType) && !doNotCache) {
             //@since 1.0.RC3: Let's first check if the response is an actual Resource (meaning, that it has an href property)
             if (Strings.hasText((String)returnResponseBody.get(HREF_PROP_NAME))) {
                 //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached

@@ -46,6 +46,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -242,14 +243,17 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
                     Response response = toSdkResponse(httpResponse);
 
-                    if (response.getHttpStatus() == 429) {
+                    int httpStatus = response.getHttpStatus();
+
+                    if (httpStatus == 429) {
                         throw new RestException("HTTP 429: Too Many Requests.  Exceeded request rate limit in the allotted amount of time.");
                     }
-
-                    if (!response.isServerError() || retryCount > this.numRetries) {
-                        return response;
+                    if ((httpStatus == 503 || httpStatus == 504) && retryCount <= this.numRetries) {
+                        //allow the loop to continue to execute a retry request
+                        continue;
                     }
-                    //otherwise allow the loop to continue to execute a retry request
+
+                    return response;
                 }
             } catch (Throwable t) {
                 log.warn("Unable to execute HTTP request: " + t.getMessage());
@@ -338,7 +342,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         if (t instanceof NoHttpResponseException ||
                 t instanceof SocketException ||
-                t instanceof SocketTimeoutException) {
+                t instanceof SocketTimeoutException ||
+                t instanceof ConnectTimeoutException) {
             if (log.isDebugEnabled()) {
                 log.debug("Retrying on " + t.getClass().getName()
                         + ": " + t.getMessage());

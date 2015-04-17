@@ -18,6 +18,8 @@ package com.stormpath.sdk.servlet.filter;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * Returns the root/base server URI for a specified request.
+ *
  * @since 1.0.RC3
  */
 public interface ServerUriResolver {

@@ -19,10 +19,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Request handler for requests that require authentication, but no authentication was able to be obtained.
+ *
  * @since 1.0.RC3
  */
 public interface UnauthenticatedHandler {
 
+    /**
+     * Returns {@code true} if the request should be able to continue through the filter chain to the final Servlet or
+     * MVC Controller destination, {@code false} if the handler processed the request directly and filter chain
+     * execution should stop immediately.
+     *
+     * @param request  inbound request
+     * @param response outbound response
+     * @return {@code true} if the request should be able to continue through the filter chain to the final Servlet or
+     * MVC Controller destination, {@code false} if the handler processed the request directly and filter chain
+     * execution should stop immediately.
+     * @throws Exception if there is an error.  An Exception will also discontinue filter chain processing immediately.
+     */
     boolean onAuthenticationRequired(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

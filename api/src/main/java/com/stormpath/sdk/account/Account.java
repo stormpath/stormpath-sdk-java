@@ -19,7 +19,8 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -447,4 +448,61 @@ public interface Account extends Resource, Saveable, Deletable, Extendable {
      * @since 1.0.RC
      */
     ApiKey createApiKey(ApiKeyOptions options);
+
+    /**
+     * Returns a paginated list of the applications that the account may login to. You may control which accounts may log in
+     * to specific applications by managing an application's mapped {@link com.stormpath.sdk.directory.AccountStore AccountStore}s.
+     * <p/>
+     * Tip: Instead of iterating over all applications, it might be more convenient (and practical) to execute a search
+     * for one or more applications using the {@link #getApplications(ApplicationCriteria)} method instead of this one.
+     *
+     * @return a paginated list of all of the Account's {@link com.stormpath.sdk.application.Application Application} resources.
+     * @see #getApplications(com.stormpath.sdk.application.ApplicationCriteria)
+     * @see #getApplications(java.util.Map)
+     * @see com.stormpath.sdk.application.Application#getAccountStoreMappings()
+     * @see com.stormpath.sdk.application.Application#addAccountStore(com.stormpath.sdk.directory.AccountStore)
+     * @since 1.0.RC4
+     */
+    ApplicationList getApplications();
+
+    /**
+     * Returns a paginated list of the applications that the account may login to that match the specified query criteria.
+     * You may control which accounts may log in to specific applications by managing an application's mapped
+     * {@link com.stormpath.sdk.directory.AccountStore AccountStore}s.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/applications?param1=value1&amp;param2=value2&amp;...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Account's applications that match the specified query criteria.
+     * @see com.stormpath.sdk.application.Application#getAccountStoreMappings()
+     * @see com.stormpath.sdk.application.Application#addAccountStore(com.stormpath.sdk.directory.AccountStore)
+     * @since 1.0.RC4
+     */
+    ApplicationList getApplications(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the applications that the account may login to that match the specified query criteria.
+     * The {@link com.stormpath.sdk.application.Applications Applications} utility class is available to help construct
+     * the criteria DSL. For example:
+     * <pre>
+     * account.getApplications(Applications
+     *     .where(Applications.description().containsIgnoreCase("foo"))
+     *     .and(Applications.name().startsWithIgnoreCase("bar"))
+     *     .orderByName().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the  the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Account's applications that match the specified query criteria.
+     * @see com.stormpath.sdk.application.Application#getAccountStoreMappings()
+     * @see com.stormpath.sdk.application.Application#addAccountStore(com.stormpath.sdk.directory.AccountStore)
+     * @since 1.0.RC4
+     */
+    ApplicationList getApplications(ApplicationCriteria criteria);
 }

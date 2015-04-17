@@ -20,32 +20,32 @@ import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 
 /**
- * AuthenticationResultVisitorAdapter is an implementation of the {@link AuthenticationResultVisitor} that throws
- * {@link UnsupportedOperationException} in all methods by default.
- * <p/>
- * The purpose of this adapter is to provide a default implementation that can be adapted to execute the desired
- * behavior in the expected result .
- * <p/>
+ * AuthenticationResultVisitorAdapter is an implementation of the {@link AuthenticationResultVisitor} that throws {@link
+ * UnsupportedOperationException} in all methods by default.
+ *
+ * <p>The purpose of this adapter is to provide a default implementation that can be adapted to execute the desired
+ * behavior in the expected result.</p>
+ *
  * <pre>
- *
- *  ...
- *
  *  AuthenticationResult authResult = application.authenticateApiRequest(httpRequest).execute();
  *
  *  authResult.accept(new AuthenticationResultVisitorAdapter() {
  *
+ *      &#64;Override
  *      public void visit(ApiAuthenticationResult result) {
  *          Account account = result.getAccount();
  *          ApiKey apiKey = result.getApiKey();
  *          ...
  *      }
  *
+ *      &#64;Override
  *      public void visit(OauthAuthenticationResult result) {
  *          Account account = result.getAccount();
  *          Set<String> scope = result.getScope();
  *          ...
  *      }
  *
+ *      &#64;Override
  *      public void visit(AccessTokenResult result) {
  *          TokenResponse tokenResponse = result.getTokenResponse();
  *          ...

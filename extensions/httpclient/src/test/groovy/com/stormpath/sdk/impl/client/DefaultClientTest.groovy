@@ -260,7 +260,7 @@ class DefaultClientTest {
      * @since 1.0.RC
      */
     @Test
-    void testTenatActions() {
+    void testTenantActions() {
 
         def apiKey = createStrictMock(ApiKey)
         def dataStore = createStrictMock(DataStore)

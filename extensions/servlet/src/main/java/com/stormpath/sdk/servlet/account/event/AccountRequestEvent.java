@@ -19,10 +19,18 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 
 /**
+ * An event triggered when something interesting happens to a particular {@link Account} while handling an
+ * HttpServletRequest.
+ *
  * @since 1.0.RC3
  */
 public interface AccountRequestEvent extends RequestEvent {
 
+    /**
+     * Returns the {@code Account} associated with the event.
+     *
+     * @return the {@code Account} associated with the event.
+     */
     Account getAccount();
 
 }
