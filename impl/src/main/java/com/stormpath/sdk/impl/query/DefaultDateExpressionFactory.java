@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @since 1.0
+ * @since 1.0-SNAPSHOT
  */
 public class DefaultDateExpressionFactory implements DateExpressionFactory {
 

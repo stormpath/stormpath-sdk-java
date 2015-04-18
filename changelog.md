@@ -1,6 +1,6 @@
 ## Change Log ##
 
-### 1.0 ###
+### 1.0-SNAPSHOT ###
 
 - New feature: Functionality to expose and query createdAt and modifiedAt properties (JSDK-181)
 

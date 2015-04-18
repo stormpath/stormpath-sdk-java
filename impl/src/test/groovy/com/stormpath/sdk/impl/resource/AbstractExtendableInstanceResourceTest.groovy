@@ -26,7 +26,7 @@ import static org.easymock.EasyMock.replay
 import static org.testng.Assert.assertEquals
 
 /**
- * @since 1.0
+ * @since 1.0-SNAPSHOT
  */
 class AbstractExtendableInstanceResourceTest {
 

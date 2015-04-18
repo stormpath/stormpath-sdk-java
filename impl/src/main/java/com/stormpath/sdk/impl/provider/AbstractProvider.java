@@ -53,7 +53,7 @@ public abstract class AbstractProvider extends AbstractResource implements Provi
     }
 
     /**
-     * @since 1.0
+     * @since 1.0-SNAPSHOT
      */
     @Override
     public Date getCreatedAt() {

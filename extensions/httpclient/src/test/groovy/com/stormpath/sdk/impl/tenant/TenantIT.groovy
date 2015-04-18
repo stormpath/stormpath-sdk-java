@@ -222,7 +222,9 @@ class TenantIT extends ClientIT {
         }
     }
 
-    //@since 1.0.RC3
+    /**
+     * @since 1.0-SNAPSHOT
+     */
     @Test
     void testGetAccountsWithCriteria() {
         def uniqueEmail = uniquify("myUnique") + "@email.com"

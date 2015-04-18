@@ -26,7 +26,7 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
 /**
- * @since 1.0
+ * @since 1.0-SNAPSHOT
  */
 class DefaultDateExpressionFactoryTest {
 

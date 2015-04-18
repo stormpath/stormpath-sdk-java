@@ -18,7 +18,7 @@ package com.stormpath.sdk.resource;
 import java.util.Date;
 
 /**
- * @since 1.0
+ * @since 1.0-SNAPSHOT
  */
 public interface Auditable {
 

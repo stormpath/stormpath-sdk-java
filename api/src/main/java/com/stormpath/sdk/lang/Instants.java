@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.Date;
 
 /**
- * @since 1.0
+ * @since 1.0-SNAPSHOT
  */
 public class Instants {
 

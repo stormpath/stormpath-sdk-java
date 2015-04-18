@@ -263,7 +263,7 @@ public final class Accounts {
      *
      * @return a new {@link Account#getCreatedAt() createdAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link AccountCriteria} query.
-     * @since 1.0
+     * @since 1.0-SNAPSHOT
      */
     public static DateExpressionFactory createdAt(){
         return newDateExpressionFactory("createdAt");
@@ -289,7 +289,7 @@ public final class Accounts {
      *
      * @return a new {@link Account#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link AccountCriteria} query.
-     * @since 1.0
+     * @since 1.0-SNAPSHOT
      */
     public static DateExpressionFactory modifiedAt(){
         return newDateExpressionFactory("modifiedAt");

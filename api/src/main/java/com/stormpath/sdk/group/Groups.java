@@ -221,7 +221,7 @@ public final class Groups {
      *
      * @return a new {@link Group#getCreatedAt() createdAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link GroupCriteria} query.
-     * @since 1.0
+     * @since 1.0-SNAPSHOT
      */
     public static DateExpressionFactory createdAt(){
         return newDateExpressionFactory("createdAt");
@@ -247,7 +247,7 @@ public final class Groups {
      *
      * @return a new {@link Group#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link GroupCriteria} query.
-     * @since 1.0
+     * @since 1.0-SNAPSHOT
      */
     public static DateExpressionFactory modifiedAt(){
         return newDateExpressionFactory("modifiedAt");
