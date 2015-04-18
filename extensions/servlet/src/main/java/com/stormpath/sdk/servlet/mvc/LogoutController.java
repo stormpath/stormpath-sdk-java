@@ -31,16 +31,16 @@ public class LogoutController extends AbstractController {
 
     private String nextUri;
 
-    public void init() {
-        Assert.hasText(nextUri, "nextUri property cannot be null or empty.");
-    }
-
     public String getNextUri() {
         return nextUri;
     }
 
     public void setNextUri(String nextUri) {
         this.nextUri = nextUri;
+    }
+
+    public void init() {
+        Assert.hasText(nextUri, "nextUri property cannot be null or empty.");
     }
 
     @Override
