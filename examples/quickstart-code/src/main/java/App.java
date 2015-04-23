@@ -1,5 +1,3 @@
-package src;
-
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
@@ -26,7 +24,7 @@ import java.util.Map;
  * The main method receives one argument:
  * - The location of the apikey.properties file
  */
-public class Main {
+public class App {
 
     public static void main(String[] args) {
 
