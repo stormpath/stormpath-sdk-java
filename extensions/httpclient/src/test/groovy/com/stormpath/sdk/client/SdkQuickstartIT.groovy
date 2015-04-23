@@ -25,7 +25,6 @@ import com.stormpath.sdk.authc.AuthenticationRequest
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.CustomData
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 import com.stormpath.sdk.api.ApiKeys
@@ -157,8 +156,5 @@ class SdkQuickstartIT extends ClientIT {
 
         assertNotNull retrievedAccount
         assertEquals retrievedAccount.href, account.href
-
-
     }
-
 }
