@@ -19,6 +19,7 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -28,6 +29,6 @@ public class CustomTestGroupGrantedAuthorityResolver implements GroupGrantedAuth
 
     @Override
     public Set<GrantedAuthority> resolveGrantedAuthorities(Group group) {
-        return null;
+        return Collections.EMPTY_SET;
     }
 }

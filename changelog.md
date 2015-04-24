@@ -3,6 +3,7 @@
 ### 1.0 ##
 
 - [Issue 175](https://github.com/stormpath/stormpath-sdk-java/issues/175): The Spring Security Plugin now resides inside the Java SDK codebase.
+- [Issue 179](https://github.com/stormpath/stormpath-sdk-java/issues/179): The Spring Security Plugin is now available through Spring Boot.
 
 ### 1.0.RC4.1 ##
 

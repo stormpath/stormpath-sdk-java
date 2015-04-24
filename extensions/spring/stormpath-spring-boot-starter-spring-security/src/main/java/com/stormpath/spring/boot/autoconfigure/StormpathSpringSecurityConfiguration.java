@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.annotation.Order;
 
 /**
  * @since 1.0
@@ -43,7 +42,6 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ StormpathAuthenticationProvider.class})
 @AutoConfigureAfter({ StormpathAutoConfiguration.class})
 @PropertySource("classpath:com/stormpath/spring/config/PropertyOverrideAppConfig.properties")
-@Order(value = Integer.MAX_VALUE)
 public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathSpringSecurityConfiguration.class);
@@ -63,7 +61,6 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfi
     @Value("#{ @environment['stormpath.spring.security.provider.authenticationTokenFactory'] }")
     protected String authenticationTokenFactoryFQN;
 
-    @ConditionalOnMissingBean(name = "groupGrantedAuthorityResolver")
     protected GroupGrantedAuthorityResolver groupGrantedAuthorityResolver() {
         Object object = instantiate(groupGrantedAuthorityResolverFQN);
         if (object != null) {
@@ -77,7 +74,6 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfi
         return null;
     }
 
-    @ConditionalOnMissingBean(name = "groupPermissionResolver")
     protected GroupPermissionResolver groupPermissionResolver() {
         Object object = instantiate(groupPermissionResolverFQN);
         if (object != null) {
@@ -91,7 +87,6 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfi
         return null;
     }
 
-    @ConditionalOnMissingBean(name = "accountGrantedAuthorityResolver")
     protected AccountGrantedAuthorityResolver accountGrantedAuthorityResolver() {
         Object object = instantiate(accountGrantedAuthorityResolverFQN);
         if (object != null) {
@@ -105,7 +100,6 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfi
         return null;
     }
 
-    @ConditionalOnMissingBean(name = "accountPermissionResolver")
     protected AccountPermissionResolver accountPermissionResolver() {
         Object object = instantiate(accountPermissionResolverFQN);
         if (object != null) {
@@ -119,7 +113,6 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfi
         return null;
     }
 
-    @ConditionalOnMissingBean(name = "authenticationTokenFactory")
     protected AuthenticationTokenFactory authenticationTokenFactory() {
         Object object = instantiate(authenticationTokenFactoryFQN);
         if (object != null) {
