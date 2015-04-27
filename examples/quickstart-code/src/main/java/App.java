@@ -1,8 +1,6 @@
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.Applications;
@@ -20,20 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class demonstrates the code found in the Stormpath Java SDK QuickStart
- * The main method receives one argument:
- * - The location of the apikey.properties file
+ * This class demonstrates the code found in the Stormpath Java SDK QuickStart Guide
  */
 public class App {
 
     public static void main(String[] args) {
 
-        String path = args[0];
-        ApiKey apiKey = ApiKeys.builder().setFileLocation(path).build();
-
         // Instantiate a builder for your client and set required properties
         ClientBuilder builder = Clients.builder();
-        builder.setApiKey(apiKey);
 
         // Build the client instance that you will use throughout your application code
         Client client = builder.build();
