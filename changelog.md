@@ -1,8 +1,10 @@
 ## Change Log ##
 
-### 1.0 ##
+### 1.0.RC4.2 ##
 
-- [Issue 184](https://github.com/stormpath/stormpath-sdk-java/issues/184): IDSite url is now dynamically constructed based on the current application's url.
+This release adds the capability for the ID Site URL to be constructed following the base url obtained from the application href.
+
+Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/milestones/1.0.RC4.2) issues list for more information.
 
 ### 1.0.RC4.1 ##
 

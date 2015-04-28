@@ -616,7 +616,7 @@ class DefaultApplicationTest {
 
     /**
      * Testing fix for https://github.com/stormpath/stormpath-sdk-java/issues/184
-     * @since 1.0
+     * @since 1.0.RC4.2
      */
     @Test
     void testCreateSsoRedirectUrlNotHardcoded() {
