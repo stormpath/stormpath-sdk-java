@@ -37,8 +37,10 @@ import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
  */
 public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
-    public static final String SSO_ENDPOINT = "http://api.stormpath.com/sso";
-    public static final String SSO_LOGOUT_ENDPOINT = SSO_ENDPOINT + "/logout";
+
+    public final String ssoEndpoint;
+
+    public static String SSO_LOGOUT_SUFFIX = "/logout";
 
     private final InternalDataStore internalDataStore;
 
@@ -56,6 +58,7 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
         Assert.hasText(applicationHref, "applicationHref cannot be null or empty");
 
+        this.ssoEndpoint = getBaseUrl(applicationHref) + "/sso";
         this.internalDataStore = internalDataStore;
         this.applicationHref = applicationHref;
     }
@@ -121,9 +124,9 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
             String endpoint;
 
             if (logout) {
-                endpoint = SSO_LOGOUT_ENDPOINT;
+                endpoint = ssoEndpoint + SSO_LOGOUT_SUFFIX;
             } else {
-                endpoint = SSO_ENDPOINT;
+                endpoint = ssoEndpoint;
             }
 
             @SuppressWarnings("StringBufferReplaceableByString")
@@ -136,4 +139,34 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
         }
 
     }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/184.
+     * Base URL for IDSite is constructed from the applicationHref received in the constructor.
+     *
+     * @version 1.0.
+     */
+    protected String getBaseUrl(String href) {
+
+        String baseUrl;
+        try {
+            final String DOUBLE_SLASH = "//";
+
+            int doubleSlashIndex = href.indexOf(DOUBLE_SLASH);
+            int singleSlashIndex = href.indexOf("/", doubleSlashIndex + DOUBLE_SLASH.length());
+            singleSlashIndex = singleSlashIndex != -1 ? singleSlashIndex : href.length();
+
+            baseUrl = href.substring(0, singleSlashIndex);
+
+        } catch (Exception e) {
+            throw new IllegalStateException("IDSite base URL could not be constructed.");
+        }
+
+        if (!Strings.hasText(baseUrl)) {
+            throw new IllegalStateException("IDSite base URL could not be constructed.");
+        }
+
+        return baseUrl;
+    }
+
 }

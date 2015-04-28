@@ -615,6 +615,22 @@ class DefaultApplicationTest {
     }
 
     /**
+     * Testing fix for https://github.com/stormpath/stormpath-sdk-java/issues/184
+     * @since 1.0
+     */
+    @Test
+    void testCreateSsoRedirectUrlNotHardcoded() {
+        def properties = [href: "https://enterprise.stormpath.com/v1/applications/jefoifj93riu23ioj"]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        def ssoRedirectUrlBuilder = defaultApplication.newIdSiteUrlBuilder()
+
+        assertEquals(ssoRedirectUrlBuilder.ssoEndpoint, properties.href.substring(0, properties.href.indexOf("/", 8)) + "/sso")
+    }
+
+    /**
      * @since 1.0.RC
      */
     @Test
