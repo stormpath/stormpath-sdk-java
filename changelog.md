@@ -4,7 +4,7 @@
 
 This release adds the capability for the ID Site URL to be constructed following the base url obtained from the application href.
 
-Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/milestones/1.0.RC4.2) issues list for more information.
+Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.2+is%3Aclosed) issues list for more information.
 
 ### 1.0.RC4.1 ##
 
