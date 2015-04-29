@@ -85,4 +85,6 @@ public interface OauthRequestAuthenticator extends ApiRequestAuthenticator {
      */
     OauthAuthenticationResult execute();
 
+//    OauthAuthenticationResult authenticate(Object httpRequest);
+
 }

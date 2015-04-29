@@ -19,7 +19,9 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import com.stormpath.sdk.oauth.RequestLocation;
@@ -34,12 +36,19 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
 
     private RequestLocation[] locations;
 
-    private final HttpServletRequest httpServletRequest;
+    private HttpServletRequest httpServletRequest;
+
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
     DefaultResourceRequestAuthenticator(HttpServletRequest httpServletRequest, Application application) {
         Assert.notNull(httpServletRequest);
         Assert.notNull(application, "application cannot be null.");
         this.httpServletRequest = httpServletRequest;
+        this.application = application;
+    }
+
+    DefaultResourceRequestAuthenticator(Application application) {
+        Assert.notNull(application, "application cannot be null or empty.");
         this.application = application;
     }
 
@@ -71,4 +80,31 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
         return (OauthAuthenticationResult) result;
     }
 
+    @Override
+    public OauthAuthenticationResult authenticate(Object httpRequest) {
+        RequestLocation[] locations = this.locations != null ? this.locations :
+                new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = (HttpServletRequest) httpRequest;
+        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+        }
+        AuthenticationRequest request;
+
+        try {
+            request = new ResourceAuthenticationRequest(httpServletRequest, locations);
+        } catch (Exception e) {
+            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class,
+                    OauthAuthenticationException.INVALID_REQUEST);
+        }
+
+        AuthenticationResult result = application.authenticateAccount(request);
+        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
+        return (OauthAuthenticationResult) result;
+    }
 }

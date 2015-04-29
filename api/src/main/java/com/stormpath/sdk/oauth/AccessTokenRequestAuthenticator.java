@@ -89,6 +89,22 @@ public interface AccessTokenRequestAuthenticator {
      * Executes this authentication request.
      *
      * @return the result of the authentication request in the form of a {@link AccessTokenResult}.
+     *
+     * @deprecated this method will be removed soon. Use {@link com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator#authenticate(Object)} instead
      */
     public AccessTokenResult execute();
+
+    /**
+     * Authenticates an OAuth-based HTTP request submitted to your application's API, returning a result that
+     * reflects the successfully authenticated {@link com.stormpath.sdk.account.Account} that made the request and the {@link com.stormpath.sdk.api.ApiKey} used to
+     * authenticate the request.  Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
+     *
+     * @param httpRequest either a <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                    {@code javax.servlet.http.HttpServletRequest}</a> instance (if your app runs in a
+     *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
+     * @return an {@link AccessTokenResult} that represents the result of the authentication attempt.
+     */
+    public AccessTokenResult authenticate(Object httpRequest);
+
 }

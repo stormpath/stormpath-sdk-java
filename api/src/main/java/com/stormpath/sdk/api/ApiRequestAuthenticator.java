@@ -35,6 +35,24 @@ public interface ApiRequestAuthenticator {
      *
      * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
      * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     *
+     * @deprecated this method will be removed soon. Use {@link ApiRequestAuthenticator#authenticate(Object)} instead
      */
     ApiAuthenticationResult execute();
+
+    /**
+     * Authenticates an HTTP request submitted to your application's API, returning a result that reflects the
+     * successfully authenticated {@link com.stormpath.sdk.account.Account} that made the request and the {@link ApiKey} used to authenticate
+     * the request.  Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
+     * <p>
+     * This method will automatically authenticate <em>both</em> HTTP Basic and OAuth 2 requests.  However, if you
+     * require more specific or customized OAuth request processing, use the
+     * {@link com.stormpath.sdk.oauth.OauthRequestAuthenticator#authenticate(Object)} method instead; that method allows you to customize how an OAuth request
+     * is processed.
+     * For example, you will likely want to call {@link com.stormpath.sdk.oauth.OauthRequestAuthenticator#authenticate(Object)} for requests
+     * directed to your application's specific OAuth 2 token and authorization urls (often referenced as
+     * {@code /oauth2/token} and {@code /oauth2/authorize} in OAuth 2 documentation).
+     * </p>
+     * */
+    ApiAuthenticationResult authenticate(Object httpRequest);
 }

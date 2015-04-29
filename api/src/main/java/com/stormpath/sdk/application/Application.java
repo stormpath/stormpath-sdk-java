@@ -968,8 +968,10 @@ public interface Application extends Resource, Saveable, Deletable, Extendable {
      * @throws ResourceException if unable to authenticate the request
      * @see Application#authenticateOauthRequest(Object)
      * @since 1.0.RC
+     *
+     * @deprecated in 1.0-SNAPSHOT and will be removed before 1.0 final. Use {@link com.stormpath.sdk...} instead.
      */
-    ApiAuthenticationResult authenticateApiRequest(Object httpRequest) throws IllegalArgumentException, ResourceException;
+//    ApiAuthenticationResult authenticateApiRequest(Object httpRequest) throws IllegalArgumentException, ResourceException;
 
     /**
      * Authenticates an OAuth-based HTTP request submitted to your application's API, returning a result that
@@ -1170,8 +1172,10 @@ public interface Application extends Resource, Saveable, Deletable, Extendable {
      *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
      * @see Application#authenticateApiRequest(Object)
      * @since 1.0.RC
+     *
+     * @deprecated in 1.0-SNAPSHOT and will be removed before 1.0 final. Use {@link com.stormpath.sdk...} instead.
      */
-    OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
+//    OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
 
     /**
      * Creates a new {@link IdSiteUrlBuilder} that allows you to build a URL you can use to redirect your

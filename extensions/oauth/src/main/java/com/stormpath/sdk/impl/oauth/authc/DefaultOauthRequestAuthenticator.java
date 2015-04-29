@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
+import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -38,7 +39,7 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
-    private final HttpServletRequest httpServletRequest;
+    private HttpServletRequest httpServletRequest;
 
     private final Application application;
 
@@ -58,9 +59,14 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
         this.application = application;
     }
 
+    public DefaultOauthRequestAuthenticator(Application application) {
+        Assert.notNull(application, "application cannot  be null.");
+        this.application = application;
+    }
+
     @Override
     public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory) {
-        return new DefaultAccessTokenRequestAuthenticator(application, httpServletRequest, scopeFactory);
+        return new DefaultAccessTokenRequestAuthenticator(application, scopeFactory);
     }
 
     @Override
@@ -70,7 +76,7 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
     @Override
     public ResourceRequestAuthenticator inLocation(RequestLocation... locations) {
-        return new DefaultResourceRequestAuthenticator(httpServletRequest, application).inLocation(locations);
+        return new DefaultResourceRequestAuthenticator(application).inLocation(locations);
     }
 
     @Override
@@ -84,6 +90,29 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
         Assert.isInstanceOf(OauthAuthenticationResult.class, result);
 
+        return (OauthAuthenticationResult) result;
+    }
+
+
+    @Override
+    public OauthAuthenticationResult authenticate(Object httpRequest) {
+
+        Assert.notNull(httpRequest, "httpRequest cannot be null.");
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = (HttpServletRequest) httpRequest;
+        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+        }
+
+        OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();
+        AuthenticationRequest request = factory.createFrom(httpServletRequest);
+        AuthenticationResult result = application.authenticateAccount(request);
+        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
         return (OauthAuthenticationResult) result;
     }
 }

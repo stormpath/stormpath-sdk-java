@@ -524,22 +524,22 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return href;
     }
 
-    @Override
-    public ApiAuthenticationResult authenticateApiRequest(Object httpRequest) {
-        validateHttpRequest(httpRequest);
-        return new DefaultApiRequestAuthenticator(this, httpRequest).execute();
-    }
-
-    @Override
-    public OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
-        if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
-            throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
-        }
-        validateHttpRequest(httpRequest);
-        Constructor<OauthRequestAuthenticator> ctor =
-            Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, Object.class);
-        return Classes.instantiate(ctor, this, httpRequest);
-    }
+//    @Override
+//    public ApiAuthenticationResult authenticateApiRequest(Object httpRequest) {
+//        validateHttpRequest(httpRequest);
+//        return new DefaultApiRequestAuthenticator(this, httpRequest).execute();
+//    }
+//
+//    @Override
+//    public OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
+//        if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
+//            throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
+//        }
+//        validateHttpRequest(httpRequest);
+//        Constructor<OauthRequestAuthenticator> ctor =
+//            Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, Object.class);
+//        return Classes.instantiate(ctor, this, httpRequest);
+//    }
 
     /** @since 1.0.RC */
     @Override

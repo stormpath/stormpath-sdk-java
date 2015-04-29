@@ -19,7 +19,9 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
 import com.stormpath.sdk.oauth.AccessTokenResult;
@@ -32,7 +34,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DefaultAccessTokenRequestAuthenticator implements AccessTokenRequestAuthenticator {
 
-    private final HttpServletRequest httpServletRequest;
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
+
+    private HttpServletRequest httpServletRequest;
 
     private final Application application;
 
@@ -47,6 +51,19 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         this.scopeFactory = scopeFactory;
         this.application = application;
         this.httpServletRequest = httpServletRequest;
+    }
+
+    DefaultAccessTokenRequestAuthenticator(Application application,
+                                           ScopeFactory scopeFactory) {
+        Assert.notNull(application, "application cannot be null or empty.");
+
+        this.scopeFactory = scopeFactory;
+        this.application = application;
+    }
+
+    DefaultAccessTokenRequestAuthenticator(Application application) {
+        Assert.notNull(application, "application cannot be null or empty.");
+        this.application = application;
     }
 
     @Override
@@ -70,6 +87,36 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         } catch (Exception e) {
             throw ApiAuthenticationExceptionFactory
                 .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+        }
+
+        AuthenticationResult authenticationResult = application.authenticateAccount(request);
+
+        Assert.isInstanceOf(AccessTokenResult.class, authenticationResult);
+
+        return (AccessTokenResult) authenticationResult;
+    }
+
+    @Override
+    public AccessTokenResult authenticate(Object httpRequest) {
+
+        Assert.notNull(httpRequest, "httpRequest cannot be null or empty.");
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = (HttpServletRequest) httpRequest;
+        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+        }
+
+        AuthenticationRequest request;
+        try {
+            request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
+        } catch (Exception e) {
+            throw ApiAuthenticationExceptionFactory
+                    .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

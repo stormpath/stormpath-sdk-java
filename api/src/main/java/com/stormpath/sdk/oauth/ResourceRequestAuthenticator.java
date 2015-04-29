@@ -53,8 +53,22 @@ public interface ResourceRequestAuthenticator {
      * application.authenticateOauthRequest(httpRequest)} for more information.
      *
      * @return the result of the authentication attempt.
+     * @deprecated this method will be removed soon. Use {@link ResourceRequestAuthenticator#authenticate(Object)} instead
      */
     OauthAuthenticationResult execute();
+
+    /**
+     * Authenticates an OAuth-based HTTP request using a bearer Access Token and returns the corresponding result.
+     * The result type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult}.
+     * Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
+     *
+     * @param httpRequest either a <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                    {@code javax.servlet.http.HttpServletRequest}</a> instance (if your app runs in a
+     *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
+     * @return the result of the authentication attempt.
+     */
+    OauthAuthenticationResult authenticate(Object httpRequest);
 
 }
 
