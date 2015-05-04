@@ -33,6 +33,7 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -245,7 +246,7 @@ public class LoginController extends FormController {
         final Account account = getAccount(req);
 
         //simulate a result for the benefit of the 'saveResult' method signature:
-        AuthenticationResult result = createAuthenticationResult(account);
+        AuthenticationResult result = new TransientAuthenticationResult(account);
         saveResult(req, resp, result);
 
         String next = form.getNext();
@@ -263,26 +264,5 @@ public class LoginController extends FormController {
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
         getAuthenticationResultSaver().set(request, response, result);
-    }
-
-    protected AuthenticationResult createAuthenticationResult(final Account account) {
-        return new AuthenticationResult() {
-            @Override
-            public Account getAccount() {
-                return account;
-            }
-
-            @Override
-            public void accept(AuthenticationResultVisitor visitor) {
-                visitor.visit(this);
-
-            }
-
-            @Override
-            public String getHref() {
-                return account.getHref();
-            }
-        };
-
     }
 }

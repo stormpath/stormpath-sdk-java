@@ -538,6 +538,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    public Controller stormpathIdSiteResultController() {
+        return super.stormpathIdSiteResultController();
+    }
+
+    @Bean
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
         return super.stormpathAccessTokenAuthenticationRequestFactory();
     }
@@ -555,6 +560,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public ServerUriResolver stormpathServerUriResolver() {
         return super.stormpathServerUriResolver();
+    }
+
+    @Bean
+    public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
+        return super.stormpathMvcLogoutController();
     }
 
     @Bean

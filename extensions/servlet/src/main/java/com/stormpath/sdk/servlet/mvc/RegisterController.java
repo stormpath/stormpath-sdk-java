@@ -19,13 +19,13 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.DefaultField;
@@ -287,25 +287,8 @@ public class RegisterController extends FormController {
 
             //the user does not need to verify their email address, so just assume they are authenticated
             //(since they specified their password during registration):
-
-            final Account theAccount = account;
-            this.authenticationResultSaver.set(req, resp, new AuthenticationResult() {
-                @Override
-                public Account getAccount() {
-                    return theAccount;
-                }
-
-                @Override
-                public void accept(AuthenticationResultVisitor visitor) {
-                    visitor.visit(this);
-
-                }
-
-                @Override
-                public String getHref() {
-                    return null;
-                }
-            });
+            final AuthenticationResult result = new TransientAuthenticationResult(account);
+            this.authenticationResultSaver.set(req, resp, result);
 
         } else if (status == AccountStatus.UNVERIFIED) {
 

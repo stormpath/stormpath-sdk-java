@@ -1,5 +1,17 @@
 ## Change Log ##
 
+### 1.0.RC4.2 ##
+
+This release adds the capability for the ID Site URL to be constructed following the base url obtained from the application href.
+
+Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.2+is%3Aclosed) issues list for more information.
+
+### 1.0.RC4.1 ##
+
+This release adds ID Site functionality for Spring Web and Spring Boot applications.
+
+Please see the [1.0.RC4.1](https://github.com/stormpath/stormpath-sdk-java/milestones/1.0.RC4.1) issues list for more information.
+
 ### 1.0.RC4 ###
 
 This release adds the following:

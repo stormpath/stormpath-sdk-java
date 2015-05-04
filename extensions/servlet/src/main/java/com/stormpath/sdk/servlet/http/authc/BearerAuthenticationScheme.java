@@ -26,6 +26,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OauthException;
@@ -198,24 +199,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
                 throw new OauthException(OauthErrorCode.INVALID_CLIENT, "account is disabled.", null);
             }
 
-            authcResult = new AuthenticationResult() {
-                @Override
-                public Account getAccount() {
-                    return account;
-                }
-
-                @Override
-                public void accept(AuthenticationResultVisitor visitor) {
-                    visitor.visit(this);
-
-                }
-
-                @Override
-                public String getHref() {
-                    //there is no href of this result itself (account href != result href)
-                    return null;
-                }
-            };
+            authcResult = new TransientAuthenticationResult(account);
         }
 
         return new DefaultHttpAuthenticationResult(request, response, authcResult);
