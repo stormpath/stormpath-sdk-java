@@ -21,7 +21,6 @@ import com.stormpath.sdk.application.AccountStoreMappingList;
 import com.stormpath.sdk.application.AccountStoreMappings;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
