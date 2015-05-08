@@ -200,6 +200,11 @@
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security-webmvc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-webmvc</artifactId>
                 <version>${project.version}</version>
             </dependency>
