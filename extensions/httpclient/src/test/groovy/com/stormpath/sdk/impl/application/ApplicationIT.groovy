@@ -405,6 +405,10 @@ class ApplicationIT extends ClientIT {
 
         def ssoRedirectUrlBuilder = app.newIdSiteUrlBuilder()
 
+        String[] parts = com.stormpath.sdk.lang.Strings.split(app.getHref(), (char) "/")
+
+        assertEquals ssoRedirectUrlBuilder.ssoEndpoint, parts[0] + "//" + parts[2] + "/sso"
+
         def ssoURL = ssoRedirectUrlBuilder.setCallbackUri("https://mycallbackuri.com/path").setPath("/mypath").setState("anyState").build()
 
         assertNotNull ssoURL
@@ -412,6 +416,7 @@ class ApplicationIT extends ClientIT {
         String[] ssoUrlPath = ssoURL.split("jwtRequest=")
 
         assertEquals 2, ssoUrlPath.length
+        assertTrue ssoURL.startsWith(app.getHref().substring(0, app.getHref().indexOf("/", 8)))
 
         StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
 
@@ -474,7 +479,7 @@ class ApplicationIT extends ClientIT {
 
         def jsonPayload = objectMapper.readValue(decodedJsonPayload, Map)
 
-        assertTrue ssoURL.startsWith(ssoRedirectUrlBuilder.SSO_ENDPOINT + "/logout?jwtRequest=")
+        assertTrue ssoURL.startsWith(ssoRedirectUrlBuilder.ssoEndpoint + "/logout?jwtRequest=")
         assertEquals jsonPayload.cb_uri, "https://mycallbackuri.com/path"
         assertEquals jsonPayload.iss, client.dataStore.apiKey.id
         assertEquals jsonPayload.sub, app.href

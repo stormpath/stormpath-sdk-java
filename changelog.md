@@ -1,9 +1,10 @@
 ## Change Log ##
 
-### 1.0 ##
+### 1.0.RC4.2 ##
 
-- [Issue 175](https://github.com/stormpath/stormpath-sdk-java/issues/175): The Spring Security Plugin now resides inside the Java SDK codebase.
-- [Issue 179](https://github.com/stormpath/stormpath-sdk-java/issues/179): The Spring Security Plugin is now available through Spring Boot.
+This release adds the capability for the ID Site URL to be constructed following the base url obtained from the application href.
+
+Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.2+is%3Aclosed) issues list for more information.
 
 ### 1.0.RC4.1 ##
 
