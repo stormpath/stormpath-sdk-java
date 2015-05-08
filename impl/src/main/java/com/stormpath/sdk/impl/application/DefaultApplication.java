@@ -527,7 +527,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public ApiAuthenticationResult authenticateApiRequest(Object httpRequest) {
         validateHttpRequest(httpRequest);
-        return new DefaultApiRequestAuthenticator(this, httpRequest).execute();
+        return new DefaultApiRequestAuthenticator(this, (HttpRequest) httpRequest).execute();
     }
 
     @Override

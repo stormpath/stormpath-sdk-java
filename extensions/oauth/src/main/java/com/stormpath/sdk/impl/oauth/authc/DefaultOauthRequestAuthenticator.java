@@ -15,11 +15,12 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
-import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
@@ -37,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 @SuppressWarnings("UnusedDeclaration") //used via reflection from API module
 public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticator {
 
-    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported class: [%s].";
 
     private HttpServletRequest httpServletRequest;
 
@@ -59,7 +60,7 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
         this.application = application;
     }
 
-    public DefaultOauthRequestAuthenticator(Application application) {
+    public DefaultOauthRequestAuthenticator(DefaultApplication application) {
         Assert.notNull(application, "application cannot  be null.");
         this.application = application;
     }
@@ -93,9 +94,30 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
         return (OauthAuthenticationResult) result;
     }
 
-
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
     @Override
-    public OauthAuthenticationResult authenticate(Object httpRequest) {
+    public OauthAuthenticationResult authenticate(HttpRequest httpRequest) {
+
+        Assert.notNull(httpRequest, "httpRequest cannot be null.");
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName()));
+        }
+
+        OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();
+        AuthenticationRequest request = factory.createFrom(httpServletRequest);
+        AuthenticationResult result = application.authenticateAccount(request);
+        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
+        return (OauthAuthenticationResult) result;
+    }
+
+    public OauthAuthenticationResult authenticate(HttpServletRequest httpRequest) {
 
         Assert.notNull(httpRequest, "httpRequest cannot be null.");
 
@@ -103,10 +125,8 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
-        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
         } else {
-            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpServletRequest.class.getName()));
         }
 
         OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();

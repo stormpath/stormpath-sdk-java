@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.0.RC4.3-SNAPSHOT ###
+
+- Refactor API Authentication (https://github.com/stormpath/stormpath-sdk-java/issues/153)
+
 ### 1.0.RC4.1 ##
 
 This release adds ID Site functionality for Spring Web and Spring Boot applications.

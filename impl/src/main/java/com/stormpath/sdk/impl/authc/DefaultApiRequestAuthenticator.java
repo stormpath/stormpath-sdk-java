@@ -21,10 +21,9 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,11 +41,6 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
     private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
             "com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator";
 
-//    private static final String OAUTH_AUTHENTICATION_REQUEST_DISPATCHER_FQCN =
-//            "com.stormpath.sdk.impl.oauth.authc.OauthAuthenticationRequestDispatcher";
-
-    private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
-
     private static final Set<Class> HTTP_REQUEST_SUPPORTED_CLASSES;
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG =
@@ -54,18 +48,11 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
     static {
         Set<Class> supportedClasses = new HashSet<Class>();
-
         supportedClasses.add(HttpRequest.class);
-
-        if (Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN)) {
-            supportedClasses.add(Classes.forName(HTTP_SERVLET_REQUEST_FQCN));
-        }
-
         HTTP_REQUEST_SUPPORTED_CLASSES = supportedClasses;
     }
 
-
-    public DefaultApiRequestAuthenticator(Application application, Object httpRequest) {
+    public DefaultApiRequestAuthenticator(Application application, HttpRequest httpRequest) {
 
         Assert.notNull(application, "application argument cannot be null.");
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
@@ -74,25 +61,21 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
         if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
             this.httpRequest = (HttpRequest) httpRequest;
         } else {
-            Assert.isTrue(Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN),
-                          "The " + HTTP_SERVLET_REQUEST_FQCN + " class must be in the runtime classpath.");
-
-            Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
+            Assert.isInstanceOf(com.stormpath.sdk.impl.http.ServletHttpRequest.class, httpRequest,
                                 "The specified httpRequest argument must be an instance of " +
-            HttpRequest.class.getName() + " or " + HTTP_SERVLET_REQUEST_FQCN);
+            HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
 
-            javax.servlet.http.HttpServletRequest httpServletRequest =
-                (javax.servlet.http.HttpServletRequest)httpRequest;
 
-            this.httpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpServletRequest);
+            this.httpRequest = (ServletHttpRequest) httpRequest;
         }
     }
 
-    public DefaultApiRequestAuthenticator(Application application) {
-
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    public DefaultApiRequestAuthenticator(DefaultApplication application) {
         Assert.notNull(application, "application argument cannot be null.");
         this.application = application;
-
     }
 
     @Override
@@ -103,30 +86,24 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
         return (ApiAuthenticationResult) result;
     }
 
-
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
     @Override
-    public ApiAuthenticationResult authenticate(Object httpRequest) {
+    public ApiAuthenticationResult authenticate(HttpRequest httpRequest) {
 
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
 
         if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
             this.httpRequest = (HttpRequest) httpRequest;
         } else {
-            Assert.isTrue(Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN),
-                    "The " + HTTP_SERVLET_REQUEST_FQCN + " class must be in the runtime classpath.");
-
-            Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
+            Assert.isInstanceOf(com.stormpath.sdk.impl.http.ServletHttpRequest.class, httpRequest,
                     "The specified httpRequest argument must be an instance of " +
-                            HttpRequest.class.getName() + " or " + HTTP_SERVLET_REQUEST_FQCN);
-
-            javax.servlet.http.HttpServletRequest httpServletRequest =
-                    (javax.servlet.http.HttpServletRequest)httpRequest;
-
-            this.httpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpServletRequest);
+                            HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
+            this.httpRequest = (ServletHttpRequest) httpRequest;
         }
 
-        //api
-        return new DefaultApiRequestAuthenticator(this.application, this.httpRequest).execute();
+        return this.execute();
     }
 
     @SuppressWarnings("unchecked")
