@@ -105,6 +105,7 @@
         <servlet.version>3.0.1</servlet.version>
         <spring.version>4.1.4.RELEASE</spring.version>
         <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
+        <spring.security.version>4.0.0.RELEASE</spring.security.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
@@ -307,6 +308,17 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
