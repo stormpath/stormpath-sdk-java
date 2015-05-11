@@ -195,6 +195,16 @@
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security-webmvc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-webmvc</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -211,6 +221,11 @@
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>spring-boot-starter-stormpath-thymeleaf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-boot-starter-spring-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
