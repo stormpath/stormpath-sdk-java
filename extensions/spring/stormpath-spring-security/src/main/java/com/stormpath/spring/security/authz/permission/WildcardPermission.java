@@ -15,8 +15,8 @@
  */
 package com.stormpath.spring.security.authz.permission;
 
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.spring.security.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -145,11 +145,11 @@ public class WildcardPermission implements Permission, Serializable {
 
         wildcardString = wildcardString.trim();
 
-        List<String> parts = CollectionUtils.asList(wildcardString.split(PART_DIVIDER_TOKEN));
+        List<String> parts = Collections.toList(wildcardString.split(PART_DIVIDER_TOKEN));
 
         this.parts = new ArrayList<Set<String>>();
         for (String part : parts) {
-            Set<String> subparts = CollectionUtils.asSet(part.split(SUBPART_DIVIDER_TOKEN));
+            Set<String> subparts = Collections.toSet(part.split(SUBPART_DIVIDER_TOKEN));
             if (subparts.isEmpty()) {
                 throw new IllegalArgumentException("Wildcard string cannot contain parts with only dividers. Make sure permission strings are properly formatted.");
             }

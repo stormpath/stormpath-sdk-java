@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.security.util
+package com.stormpath.sdk.lang
 
 import org.junit.Test
 
-import static org.junit.Assert.*
-
-class StringUtilsTest {
+class CollectionsTest {
 
     @Test
-    public void clean() {
-        assertNull(StringUtils.clean(null));
-        assertNull(StringUtils.clean("  "));
-        assertEquals("foo", StringUtils.clean(" foo     "));
-        assertEquals("foo", StringUtils.clean("foo"));
+    public void testEmptyList() {
+
+        def list1 = Collections.toList(null)
+        org.junit.Assert.assertTrue(list1 instanceof List);
+        org.junit.Assert.assertTrue(list1.size() == 0);
+
+        def list2 = Collections.toList()
+        org.junit.Assert.assertTrue(list2 instanceof List);
+        org.junit.Assert.assertTrue(list2.size() == 0);
+
     }
-
-
 }
-

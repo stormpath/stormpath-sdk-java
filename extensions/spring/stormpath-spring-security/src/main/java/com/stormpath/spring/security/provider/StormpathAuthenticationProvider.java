@@ -22,9 +22,9 @@ import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
-import com.stormpath.spring.security.util.StringUtils;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -353,9 +353,9 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         try {
             account = application.authenticateAccount(request).getAccount();
         } catch (ResourceException e) {
-            String msg = StringUtils.clean(e.getMessage());
+            String msg = Strings.clean(e.getMessage());
             if (msg == null) {
-                msg = StringUtils.clean(e.getDeveloperMessage());
+                msg = Strings.clean(e.getDeveloperMessage());
             }
             if (msg == null) {
                 msg = "Invalid login or password.";

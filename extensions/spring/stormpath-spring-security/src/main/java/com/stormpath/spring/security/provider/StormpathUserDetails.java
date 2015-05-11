@@ -17,7 +17,7 @@ package com.stormpath.spring.security.provider;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.spring.security.util.StringUtils;
+import com.stormpath.sdk.lang.Strings;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -111,7 +111,7 @@ public class StormpathUserDetails implements UserDetails {
     }
 
     private void nullSafePut(Map<String, String> props, String propName, String value) {
-        value = StringUtils.clean(value);
+        value = Strings.clean(value);
         if (value != null) {
             props.put(propName, value);
         }

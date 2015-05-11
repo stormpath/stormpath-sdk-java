@@ -63,7 +63,7 @@ import java.util.Set;
  * <p/>
  * For example, in code:
  * <pre>
- * Set&lt;DefaultGroupGrantedAuthorityResolver.Mode&gt; modes = CollectionUtils.asSet(
+ * Set&lt;DefaultGroupGrantedAuthorityResolver.Mode&gt; modes = Collections.toSet(
  *     DefaultGroupGrantedAuthorityResolver.Mode.HREF, DefaultGroupGrantedAuthorityResolver.Mode.ID
  * );
  * groupRoleResolver.setModes(modes);
