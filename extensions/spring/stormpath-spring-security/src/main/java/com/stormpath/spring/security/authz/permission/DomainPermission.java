@@ -34,8 +34,8 @@
  */
 package com.stormpath.spring.security.authz.permission;
 
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.spring.security.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Set;
@@ -66,14 +66,14 @@ public class DomainPermission extends WildcardPermission {
 
     public DomainPermission(String actions) {
         domain = getDomain(getClass());
-        this.actions = CollectionUtils.asSet(StringUtils.tokenizeToStringArray(actions, SUBPART_DIVIDER_TOKEN));
+        this.actions = Collections.toSet(StringUtils.tokenizeToStringArray(actions, SUBPART_DIVIDER_TOKEN));
         encodeParts(domain, actions, null);
     }
 
     public DomainPermission(String actions, String targets) {
         this.domain = getDomain(getClass());
-        this.actions = CollectionUtils.asSet(StringUtils.tokenizeToStringArray(actions, SUBPART_DIVIDER_TOKEN));
-        this.targets = CollectionUtils.asSet(StringUtils.tokenizeToStringArray(targets, SUBPART_DIVIDER_TOKEN));
+        this.actions = Collections.toSet(StringUtils.tokenizeToStringArray(actions, SUBPART_DIVIDER_TOKEN));
+        this.targets = Collections.toSet(StringUtils.tokenizeToStringArray(targets, SUBPART_DIVIDER_TOKEN));
         encodeParts(this.domain, actions, targets);
     }
 

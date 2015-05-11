@@ -20,9 +20,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public abstract class Collections {
 
@@ -93,9 +95,33 @@ public abstract class Collections {
         if (elements == null || elements.length == 0) {
             return java.util.Collections.emptyList();
         }
-        List<T> list = new ArrayList<T>(elements.length);
+        // Avoid integer overflow when a large array is passed in
+        int capacity = computeListCapacity(elements.length);
+        ArrayList<T> list = new ArrayList<T>(capacity);
         java.util.Collections.addAll(list, elements);
         return list;
+    }
+
+    /**
+     * Returns a new {@link Set} that contains the specified elements or an empty Set if the elements are null or empty.
+     *
+     * @param elements elements to add to the new set
+     * @param <E> the type of elements in the set
+     * @return a new {@link Set} that contains the specified elements or an empty Set if the elements are null or empty.
+     * @since 1.0
+     */
+    public static <E> Set<E> toSet(E... elements) {
+        if (elements == null || elements.length == 0) {
+            return java.util.Collections.emptySet();
+        }
+        LinkedHashSet<E> set = new LinkedHashSet<E>(elements.length * 4 / 3 + 1);
+        java.util.Collections.addAll(set, elements);
+        return set;
+    }
+
+    //since 1.0
+    static int computeListCapacity(int arraySize) {
+        return (int) Math.min(5L + arraySize + (arraySize / 10), Integer.MAX_VALUE);
     }
 
     /**
