@@ -15,13 +15,11 @@
 */
 package com.stormpath.sdk.servlet.oauth.impl;
 
-import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator;
-import com.stormpath.sdk.servlet.util.Servlets;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -104,10 +104,12 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
         Class httpRequestClass = httpRequest.getClass();
 
-        if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = (HttpServletRequest) httpRequest;
+        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
         } else {
-            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName()));
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }
 
         OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();

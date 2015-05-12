@@ -94,13 +94,13 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
 
-        if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
-            this.httpRequest = (HttpRequest) httpRequest;
+        if (ServletHttpRequest.class.isAssignableFrom(httpRequest.getClass())){
+            this.httpRequest = (ServletHttpRequest) httpRequest;
         } else {
-            Assert.isInstanceOf(com.stormpath.sdk.impl.http.ServletHttpRequest.class, httpRequest,
+            Assert.isInstanceOf(HttpRequest.class, httpRequest,
                     "The specified httpRequest argument must be an instance of " +
                             HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
-            this.httpRequest = (ServletHttpRequest) httpRequest;
+            this.httpRequest = httpRequest;
         }
 
         return this.execute();
