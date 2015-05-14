@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.security.client
+package com.stormpath.spring.config
 
-import com.stormpath.sdk.client.ClientBuilder
 import org.junit.Before
 import org.junit.Test
 
-import static org.easymock.EasyMock.createMock
-import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotNull
 
-class ClientFactoryTest {
+class ClientFactoryBeanTest {
 
-    ClientFactory clientFactory
+    ClientFactoryBean clientFactoryBean
 
     @Before
     void setUp() {
-        clientFactory = new ClientFactory()
+        clientFactoryBean = new ClientFactoryBean()
     }
 
     @Test
     public void testGetClientBuilder() {
-        assertNotNull clientFactory.getClientBuilder()
-    }
-
-    @Test
-    public void testSetClientBuilder() {
-        def builder = createMock(ClientBuilder)
-        clientFactory.setClientBuilder(builder)
-        assertEquals builder, clientFactory.getClientBuilder()
+        assertNotNull clientFactoryBean.builder
     }
 }
-

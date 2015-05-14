@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.security.cache
+package com.stormpath.spring.cache
 
-import org.easymock.EasyMock
 import org.junit.Assert
 import org.junit.Test
+import org.springframework.cache.concurrent.ConcurrentMapCache
+import org.springframework.cache.support.SimpleCacheManager
 
 /**
  * @since 0.2.0
@@ -32,21 +33,16 @@ class SpringCacheManagerTest {
     @Test
     void testGetCache() {
 
-        def springCacheManager = EasyMock.createStrictMock(org.springframework.cache.CacheManager)
-        def springCache = EasyMock.createStrictMock(org.springframework.cache.Cache )
-
         def cacheName = 'name'
-
-        EasyMock.expect(springCacheManager.getCache(EasyMock.same(cacheName))).andReturn springCache
-
-        EasyMock.replay springCache, springCacheManager
+        def springCacheManager = new SimpleCacheManager();
+        def springCache = new ConcurrentMapCache(cacheName)
+        springCacheManager.setCaches([springCache])
+        springCacheManager.afterPropertiesSet()
 
         SpringCacheManager cacheManager = new SpringCacheManager(springCacheManager)
         def cache = cacheManager.getCache(cacheName)
         Assert.assertNotNull(cache)
-        Assert.assertSame springCache, cache.SPRING_CACHE
-
-        EasyMock.verify springCache, springCacheManager
+        Assert.assertSame springCache, cache.springCache
     }
 
 }
