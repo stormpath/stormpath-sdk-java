@@ -23,10 +23,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class AuthenticationFilter extends AccessControlFilter {
 
+    protected boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return request.getRemoteUser() != null; //non-null if authenticated
+    }
+
     @Override
     protected boolean isAccessAllowed(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return request.getRemoteUser() != null //non-null if authenticated
-               || isLoginRequest(request); //allow them to visit the login URL otherwise they might not be able to login :)
+        return isAuthenticated(request,response) ||
+               isLoginRequest(request); //allow them to visit the login URL otherwise they might not be able to login :)
     }
 
     @Override
