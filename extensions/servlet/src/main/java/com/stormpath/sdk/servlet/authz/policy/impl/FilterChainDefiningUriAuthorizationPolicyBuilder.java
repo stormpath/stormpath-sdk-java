@@ -18,16 +18,15 @@ package com.stormpath.sdk.servlet.authz.policy.impl;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.authz.policy.AuthorizationPolicyBuilder;
+import com.stormpath.sdk.servlet.authz.policy.UriAuthorizationPolicyBuilder;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FilterChainDefiningAuthorizationPolicyBuilder implements AuthorizationPolicyBuilder {
+public class FilterChainDefiningUriAuthorizationPolicyBuilder implements UriAuthorizationPolicyBuilder {
 
     public static final String NEGATION_BEFORE_AUTHENTICATED_MSG =
         "Negation (calling the 'not()' method) is not supported before specifying the 'authenticated' rule.  " +
@@ -45,23 +44,23 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
     private boolean last = false;
     private boolean negateNext = false;
     private boolean unrestricted = false;
-    private boolean isWhereClauseAnAccountExpression = false;
+    private boolean accountRuleEnabled = false;
 
     private List<String> currentPatterns;
     private List<String> currentRules;
 
     private final Map<String, String> chainDefinitions;
 
-    public FilterChainDefiningAuthorizationPolicyBuilder() {
+    public FilterChainDefiningUriAuthorizationPolicyBuilder() {
         currentPatterns = new ArrayList<String>();
         currentRules = new ArrayList<String>();
         chainDefinitions = new LinkedHashMap<String, String>();
     }
 
     @Override
-    public AuthorizationPolicyBuilder to(String... uriAntPatterns) {
+    public UriAuthorizationPolicyBuilder to(String... uriAntPatterns) {
 
-        Assert.notEmpty(uriAntPatterns, "uri patterns argument cannot be null or empty.");
+        Assert.notEmpty(uriAntPatterns, "URI pattern argument(s) cannot be null or empty.");
 
         if (last) {
             throw new IllegalArgumentException("Cannot define more rules after 'toAnythingElse'");
@@ -69,7 +68,13 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
 
         completePreviousChain();
 
-        currentPatterns.addAll(Arrays.asList(uriAntPatterns));
+        List<String> patterns = new ArrayList<String>(uriAntPatterns.length);
+        for(String pattern : uriAntPatterns) {
+            Assert.hasText(pattern, "URI pattern array element cannot be null or whitespace.");
+            patterns.add(pattern);
+        }
+
+        currentPatterns = patterns;
         started = true;
 
         return this;
@@ -85,7 +90,7 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
 
     private void completeRule() {
         negateNext = false;
-        isWhereClauseAnAccountExpression = false;
+        accountRuleEnabled = false;
     }
 
     private void reset() {
@@ -93,11 +98,12 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
         currentRules = new ArrayList<String>();
         unrestricted = false;
         negateNext = false;
-        isWhereClauseAnAccountExpression = false;
+        accountRuleEnabled = false;
     }
 
     protected void assertPatternsExist() {
-        Assert.notEmpty(currentPatterns, "You must specify one or more URI patterns first before defining an authorization rule.");
+        Assert.notEmpty(currentPatterns,
+                        "You must specify one or more URI patterns first before defining an authorization rule.");
     }
 
     private void doCompleteChain() {
@@ -108,7 +114,7 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
         }
 
         StringBuilder chainDefinitionBuilder = new StringBuilder();
-        for(String rule : currentRules) {
+        for (String rule : currentRules) {
             if (chainDefinitionBuilder.length() != 0) {
                 chainDefinitionBuilder.append(",");
             }
@@ -117,13 +123,13 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
 
         String chainDefinition = chainDefinitionBuilder.toString();
 
-        for(String pattern : currentPatterns) {
+        for (String pattern : currentPatterns) {
             chainDefinitions.put(pattern, chainDefinition);
         }
     }
 
     @Override
-    public AuthorizationPolicyBuilder toAnythingElse() {
+    public UriAuthorizationPolicyBuilder toAnythingElse() {
         Assert.isTrue(!last, "Cannot specify 'toAnythingElse' multiple times.");
         completePreviousChain();
         currentPatterns.add("/**");
@@ -133,37 +139,47 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
     }
 
     @Override
-    public AuthorizationPolicyBuilder are() {
+    public UriAuthorizationPolicyBuilder are() {
         started = true;
         assertPatternsExist();
         return this;
     }
 
+    /*
     @Override
-    public AuthorizationPolicyBuilder not() {
+    public UriAuthorizationPolicyBuilder not() {
         started = true;
         assertPatternsExist();
         assertRestrictable();
         negateNext = !negateNext;
         return this;
     }
+    */
 
     @Override
-    public AuthorizationPolicyBuilder fromAccounts() {
+    public UriAuthorizationPolicyBuilder fromAccounts() {
         started = true;
         assertPatternsExist();
         assertRestrictable();
-        isWhereClauseAnAccountExpression = true;
+        currentRules.add(DefaultFilter.account.name());
+        accountRuleEnabled = true;
         return this;
     }
 
     @Override
-    public AuthorizationPolicyBuilder where(String authzExpression) {
+    public UriAuthorizationPolicyBuilder where(String authzExpression) {
         started = true;
         assertRestrictable();
         assertPatternsExist();
 
-        //TODO implement me (need to support negation in the AccountAuthorizationFilter)
+        String expr = Strings.clean(authzExpression);
+        Assert.notNull(expr, "'where' expression cannot be null or empty whitespace.");
+
+        if (accountRuleEnabled) {
+            currentRules.remove(currentRules.size() - 1);
+        }
+
+        currentRules.add(DefaultFilter.account + "(" + expr + ")");
 
         completeRule();
 
@@ -171,7 +187,7 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
     }
 
     @Override
-    public AuthorizationPolicyBuilder authenticated() {
+    public UriAuthorizationPolicyBuilder authenticated() {
         started = true;
         assertPatternsExist();
         assertRestrictable();
@@ -205,7 +221,7 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
     }
 
     @Override
-    public AuthorizationPolicyBuilder unrestricted() {
+    public UriAuthorizationPolicyBuilder unrestricted() {
         started = true;
         assertPatternsExist();
         Assert.isTrue(!negateNext, NEGATION_BEFORE_UNRESTRICTED_MSG);
@@ -223,10 +239,18 @@ public class FilterChainDefiningAuthorizationPolicyBuilder implements Authorizat
     }
 
     @Override
-    public AuthorizationPolicyBuilder and() {
+    public UriAuthorizationPolicyBuilder and() {
         started = true;
         assertPatternsExist();
         completeRule();
         return this;
+    }
+
+    public Map<String, String> getChainDefinitions() {
+        if (!started) {
+            throw new IllegalArgumentException("No patterns or rules have been specified.");
+        }
+        completePreviousChain();
+        return chainDefinitions;
     }
 }

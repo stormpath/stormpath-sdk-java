@@ -15,23 +15,25 @@
  */
 package com.stormpath.sdk.servlet.authz.policy;
 
-public interface AuthorizationPolicyBuilder {
+public interface UriAuthorizationPolicyBuilder {
 
-    AuthorizationPolicyBuilder to(String... uriAntPatterns);
+    UriAuthorizationPolicyBuilder to(String... uriAntPatterns);
 
-    AuthorizationPolicyBuilder toAnythingElse();
+    UriAuthorizationPolicyBuilder toAnythingElse();
 
-    AuthorizationPolicyBuilder are();
+    UriAuthorizationPolicyBuilder are();
 
-    AuthorizationPolicyBuilder not();
+    /*
+    UriAuthorizationPolicyBuilder not();
+    */
 
-    AuthorizationPolicyBuilder fromAccounts();
+    UriAuthorizationPolicyBuilder fromAccounts();
 
-    AuthorizationPolicyBuilder where(String authzExpression);
+    UriAuthorizationPolicyBuilder where(String authzExpression);
 
-    AuthorizationPolicyBuilder authenticated();
+    UriAuthorizationPolicyBuilder authenticated();
 
-    AuthorizationPolicyBuilder unrestricted();
+    UriAuthorizationPolicyBuilder unrestricted();
 
-    AuthorizationPolicyBuilder and();
+    UriAuthorizationPolicyBuilder and();
 }
