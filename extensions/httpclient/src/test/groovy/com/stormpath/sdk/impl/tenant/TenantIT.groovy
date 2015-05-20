@@ -105,7 +105,14 @@ class TenantIT extends ClientIT {
     @Test
     void testCurrentTenantWithOptions(){
 
-        def tenant = client.getCurrentTenant()
+        TenantOptions options = Tenants.options().withDirectories().withApplications()
+
+        def tenant = client.getCurrentTenant(options)
+
+        def apps = tenant.applications.size
+
+        def dirs = tenant.directories.size
+
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -121,12 +128,12 @@ class TenantIT extends ClientIT {
 
         assertNotNull app.href
 
-        TenantOptions options = Tenants.options().withDirectories().withApplications()
-
         tenant = client.getCurrentTenant(options)
 
-        assertTrue tenant.directories.size > 0
-        assertTrue tenant.applications.size > 0
+        // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
+        // https://github.com/stormpath/stormpath-sdk-java/issues/164
+        assertEquals dirs + 1, tenant.directories.size
+        assertEquals apps + 1, tenant.applications.size
     }
 
     //@since 1.0.beta
