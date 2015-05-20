@@ -25,8 +25,11 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.TenantOptions
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
 
 /**
@@ -94,6 +97,36 @@ class TenantIT extends ClientIT {
         println '"cacheManager": ' + s;
 
         Thread.sleep(20)
+    }
+
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    @Test
+    void testCurrentTenantWithOptions(){
+
+        def tenant = client.getCurrentTenant()
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
+        dir = tenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        assertNotNull dir.href
+
+        Application app = client.instantiate(Application)
+        app.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions App"))
+        app = tenant.createApplication(newCreateRequestFor(app).build())
+        deleteOnTeardown(app)
+
+        assertNotNull app.href
+
+        TenantOptions options = Tenants.options().withDirectories().withApplications()
+
+        tenant = client.getCurrentTenant(options)
+
+        assertTrue tenant.directories.size > 0
+        assertTrue tenant.applications.size > 0
     }
 
     //@since 1.0.beta

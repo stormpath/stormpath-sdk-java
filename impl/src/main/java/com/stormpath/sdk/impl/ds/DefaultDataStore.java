@@ -290,7 +290,10 @@ public class DefaultDataStore implements InternalDataStore {
 
         QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(clazz, qs);
         Map<String, ?> data = null;
-        if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) {
+        // Workaround for the cache problem with expansions or custom data
+        // https://github.com/stormpath/stormpath-sdk-java/issues/164
+        // TODO fix the cache to support resource expansions
+        if ((isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) && !qs.containsKey("expand")) {
 
             if (isApiKeyCollectionQuery(clazz, filteredQs)) {
                 String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
@@ -317,7 +320,10 @@ public class DefaultDataStore implements InternalDataStore {
             Request request = createRequest(HttpMethod.GET, href, filteredQs);
             data = executeRequest(request);
 
-            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
+            // Workaround for the cache problem with expansions or custom data
+            // https://github.com/stormpath/stormpath-sdk-java/issues/164
+            // TODO fix the cache to support resource expansions
+            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz) && !qs.containsKey("expand")) {
                 //cache for further use:
                 cache(clazz, data, filteredQs);
             }

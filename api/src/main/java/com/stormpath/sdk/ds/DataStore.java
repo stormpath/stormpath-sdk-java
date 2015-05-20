@@ -17,6 +17,7 @@ package com.stormpath.sdk.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -52,6 +53,23 @@ public interface DataStore {
      * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
      */
     <T extends Resource> T getResource(String href, Class<T> clazz);
+
+    /**
+     * Looks up (retrieves) the resource at the specified {@code href} URL, customized by the specified {@code criteria} and returns the resource as an instance of
+     * the specified {@code clazz}. <p/> The {@code Class} argument must represent an interface that is a sub-interface
+     * of {@link Resource}, for example {@link com.stormpath.sdk.account.Account Account}, {@link
+     * com.stormpath.sdk.directory.Directory Directory}, etc. <p/> The {@code criteria} argument must represent an interface that is a sub-interface
+     * of {@link Criteria}, for example (@link AccountCriteria AccountCriteria}, {@link com.stormpath.sdk.tenant.TenantCriteria TenantCriteria}, etc.
+     *
+     * @param href the resource URL of the resource to retrieve.
+     * @param clazz the {@link Resource} sub-interface to instantiate.
+     * @param criteria the (@link Criteria} criteria to use when retrieving the resource.
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @return an instance of the specified class based on the data returned from the specified {@code href} URL and the specified {@code criteria}.
+     *
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria);
 
     /**
      * Returns the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.

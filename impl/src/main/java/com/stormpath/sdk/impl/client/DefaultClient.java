@@ -34,11 +34,17 @@ import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.query.DefaultCriteria;
+import com.stormpath.sdk.impl.tenant.DefaultTenantCriteria;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantActions;
+import com.stormpath.sdk.tenant.TenantCriteria;
+import com.stormpath.sdk.tenant.TenantOptions;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -221,6 +227,11 @@ public class DefaultClient implements Client {
         return this.dataStore.getResource(href, clazz);
     }
 
+    @Override
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
+        return this.dataStore.getResource(href, clazz, criteria);
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -391,4 +402,21 @@ public class DefaultClient implements Client {
         return getCurrentTenant().getGroups(queryParams);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    @Override
+    public Tenant getCurrentTenant(TenantOptions tenantOptions) {
+        String href = currentTenantHref;
+        if (href == null) {
+            href = "/tenants/current";
+        }
+
+        TenantCriteria tenantCriteria = new DefaultTenantCriteria(tenantOptions);
+        Tenant current = this.dataStore.getResource(href, Tenant.class, tenantCriteria);
+        this.currentTenantHref = current.getHref();
+        return current;
+    }
 }
