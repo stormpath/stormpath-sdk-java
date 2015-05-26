@@ -28,7 +28,7 @@ import java.lang.reflect.Constructor;
 /**
  * Static utility/helper methods for working with {@link Application} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * Application-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
+ * Application-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
  * <b>Applications.where(Applications.name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>Applications.status()</b>.eq(ApplicationStatus.ENABLED))

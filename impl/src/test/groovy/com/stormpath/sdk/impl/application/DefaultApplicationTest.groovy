@@ -36,8 +36,8 @@ import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.directory.DefaultCustomData
-import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.directory.DefaultDirectory
+import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -48,7 +48,10 @@ import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
-import com.stormpath.sdk.impl.resource.*
+import com.stormpath.sdk.impl.resource.CollectionReference
+import com.stormpath.sdk.impl.resource.ResourceReference
+import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.*
@@ -57,6 +60,7 @@ import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
+
 import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
@@ -612,6 +616,22 @@ class DefaultApplicationTest {
         assertTrue(ssoRedirectUrlBuilder instanceof DefaultIdSiteUrlBuilder)
         assertEquals(ssoRedirectUrlBuilder.internalDataStore, internalDataStore)
         assertEquals(ssoRedirectUrlBuilder.applicationHref, properties.href)
+    }
+
+    /**
+     * Testing fix for https://github.com/stormpath/stormpath-sdk-java/issues/184
+     * @since 1.0.RC4.2
+     */
+    @Test
+    void testCreateSsoRedirectUrlNotHardcoded() {
+        def properties = [href: "https://enterprise.stormpath.com/v1/applications/jefoifj93riu23ioj"]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        def ssoRedirectUrlBuilder = defaultApplication.newIdSiteUrlBuilder()
+
+        assertEquals(ssoRedirectUrlBuilder.ssoEndpoint, properties.href.substring(0, properties.href.indexOf("/", 8)) + "/sso")
     }
 
     /**

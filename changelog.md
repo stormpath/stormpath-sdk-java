@@ -1,8 +1,18 @@
 ## Change Log ##
 
-### 1.0.RC4.3-SNAPSHOT ###
+### 1.0 ##
 
-- Refactor API Authentication (https://github.com/stormpath/stormpath-sdk-java/issues/153)
+Notes:
+
+- The previous [Spring Security support project](https://github.com/stormpath/stormpath-spring-security) now resides in this project codebase and will have the same versions of the Java SDK moving forward.
+
+- Please see the [1.0](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0+is%3Aclosed) issues list for more information.
+
+### 1.0.RC4.2 ##
+
+This release adds the capability for the ID Site URL to be constructed following the base url obtained from the application href.
+
+Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.2+is%3Aclosed) issues list for more information.
 
 ### 1.0.RC4.1 ##
 
