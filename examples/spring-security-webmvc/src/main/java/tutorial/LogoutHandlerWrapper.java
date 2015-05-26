@@ -43,7 +43,7 @@ import java.io.IOException;
 /**
  * Date: 5/20/15
  */
-@Component
+//@Component
 //public class LogoutHandlerWrapper implements LogoutSuccessHandler {
 //public class LogoutHandlerWrapper extends SimpleUrlLogoutSuccessHandler {
 public class LogoutHandlerWrapper extends LogoutController implements LogoutSuccessHandler {

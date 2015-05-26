@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package com.stormpath.spring.config;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
-import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
-import com.stormpath.sdk.servlet.mvc.DefaultViewModel;
-import com.stormpath.sdk.servlet.mvc.LoginController;
-import com.stormpath.spring.config.StormpathWebMvcConfiguration;
 import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -46,7 +38,8 @@ import java.io.IOException;
 /**
  * Date: 5/20/15
  */
-//@Component
+@Component
+//@ComponentScan
 //public class LoginSuccessHandler extends LoginController implements AuthenticationSuccessHandler {
 public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 

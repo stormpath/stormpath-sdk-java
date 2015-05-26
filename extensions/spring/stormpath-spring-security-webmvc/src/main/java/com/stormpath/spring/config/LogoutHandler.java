@@ -13,28 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package com.stormpath.spring.config;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
-import com.stormpath.spring.config.StormpathWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Date: 5/20/15
  */
-//@Component
+@Component
 //public class LogoutHandlerWrapper implements LogoutSuccessHandler {
 public class LogoutHandler implements org.springframework.security.web.authentication.logout.LogoutHandler {
 //public class LogoutHandlerWrapper extends LogoutController implements LogoutSuccessHandler {

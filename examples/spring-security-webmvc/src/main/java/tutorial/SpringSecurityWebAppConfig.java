@@ -63,40 +63,49 @@ public class SpringSecurityWebAppConfig extends StormpathSpringSecurityWebAppCon
 //    }
 
     //The access control settings are defined here
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//
+//        http
+//                .authorizeRequests()
+//                        //.accessDecisionManager(accessDecisionManager())
+//                .antMatchers("/restricted").hasAuthority(roleA)
+//                .antMatchers("/register").hasAuthority(roleA)
+////                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getRegisterUrl()).permitAll()
+////                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getForgotPasswordUrl()).permitAll()
+////                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getChangePasswordUrl()).permitAll()
+//                //.antMatchers("/WEB-INF/jsp/stormpath/*").permitAll()
+//                //.antMatchers("/assets/css/*").permitAll()
+//                .and()
+//                .formLogin()
+//                //.loginProcessingUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+//                .successHandler(successHandler())
+//                //.successHandler(successHandler())
+//                //.loginProcessingUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+//                .loginPage(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+//                //.permitAll()
+//                //.defaultSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginNextUrl())
+//                                //.successHandler()
+//                .usernameParameter("login")
+//                .passwordParameter("password")
+//                .and()
+//                .logout()
+//                .logoutUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutUrl())
+//                //.addLogoutHandler(logoutHandler())
+//                //.logoutSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutNextUrl())
+//                //.logoutSuccessHandler(logoutSuccessHandler())
+//                .and()
+//                .httpBasic()
+//                .and()
+//                .csrf().disable();
+//    }
 
+    @Override
+    protected void config(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                        //.accessDecisionManager(accessDecisionManager())
                 .antMatchers("/restricted").hasAuthority(roleA)
-//                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getRegisterUrl()).permitAll()
-//                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getForgotPasswordUrl()).permitAll()
-//                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getChangePasswordUrl()).permitAll()
-                //.antMatchers("/WEB-INF/jsp/stormpath/*").permitAll()
-                //.antMatchers("/assets/css/*").permitAll()
-                .and()
-                .formLogin()
-                //.loginProcessingUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
-                //.successHandler(successHandler())
-                .successHandler(successHandler())
-                //.loginProcessingUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
-                .loginPage(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
-                //.permitAll()
-                //.defaultSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginNextUrl())
-                                //.successHandler()
-                .usernameParameter("login")
-                .passwordParameter("password")
-                .and()
-                .logout()
-                .logoutUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutUrl())
-                .addLogoutHandler(logoutHandler())
-                //.logoutSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutNextUrl())
-                //.logoutSuccessHandler(logoutSuccessHandler())
-                .and()
-                .httpBasic()
-                .and()
-                .csrf().disable();
+                .antMatchers("/register").hasAuthority(roleA);
     }
 
 //    @Bean
@@ -106,25 +115,25 @@ public class SpringSecurityWebAppConfig extends StormpathSpringSecurityWebAppCon
 //        return auth;
 //    }
 
-    @Bean
-    public AuthenticationSuccessHandler successHandler() {
-        //SavedRequestAwareAuthenticationSuccessHandler successHandler = new HandlerWrapper2();
-        AuthenticationSuccessHandler successHandler = new LoginSuccessHandler();
-        //successHandler.setTargetUrlParameter("/restricted");
-        return successHandler;
-    }
-
-    @Bean
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        LogoutSuccessHandler handler = new LogoutHandlerWrapper();
-        return handler;
-    }
-
-    @Bean
-    public LogoutHandler logoutHandler() {
-        LogoutHandler handler = new tutorial.LogoutHandler();
-        return handler;
-    }
+//    @Bean
+//    public AuthenticationSuccessHandler successHandler() {
+//        //SavedRequestAwareAuthenticationSuccessHandler successHandler = new HandlerWrapper2();
+//        AuthenticationSuccessHandler successHandler = new LoginSuccessHandler();
+//        //successHandler.setTargetUrlParameter("/restricted");
+//        return successHandler;
+//    }
+//
+//    @Bean
+//    public LogoutSuccessHandler logoutSuccessHandler() {
+//        LogoutSuccessHandler handler = new LogoutHandlerWrapper();
+//        return handler;
+//    }
+//
+//    @Bean
+//    public LogoutHandler logoutHandler() {
+//        LogoutHandler handler = new tutorial.LogoutHandler();
+//        return handler;
+//    }
 
 //    @Override
 //    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

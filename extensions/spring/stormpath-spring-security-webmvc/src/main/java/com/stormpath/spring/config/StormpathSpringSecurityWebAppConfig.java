@@ -37,6 +37,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +61,12 @@ public abstract class StormpathSpringSecurityWebAppConfig extends WebSecurityCon
 
     @Autowired
     protected StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
+
+    @Autowired
+    protected LoginSuccessHandler loginSuccessHandler;
+
+    @Autowired
+    protected LogoutHandler logoutHandler;
 
     /**
      * This bean and the @PropertySource annotation above allow you to configure Stormpath beans with properties
@@ -104,9 +112,39 @@ public abstract class StormpathSpringSecurityWebAppConfig extends WebSecurityCon
 //                .csrf().disable();
 //    }
 
+        //The access control settings are defined here
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected final void configure(HttpSecurity http) throws Exception {
+
+        http
+                .formLogin()
+                .loginPage(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+                .defaultSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginNextUrl())
+                .successHandler(loginSuccessHandler)
+                .usernameParameter("login")
+                .passwordParameter("password")
+                .and()
+                .logout()
+                .logoutUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutUrl())
+                .logoutSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutNextUrl())
+                .addLogoutHandler(logoutHandler)
+                .and()
+                .httpBasic()
+                .and()
+                .csrf().disable();
+
+        config(http);
+    }
+
+    protected abstract void config(HttpSecurity http) throws Exception;
+
+    @Override
+    protected final void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(this.stormpathAuthenticationProvider);
+        config(auth);
+    }
+
+    protected void config(AuthenticationManagerBuilder auth) throws Exception {
     }
 
 //    @Override
@@ -144,6 +182,20 @@ public abstract class StormpathSpringSecurityWebAppConfig extends WebSecurityCon
 //    @Bean
 //    public String getApplicationRestUrl() {
 //        return this.applicationRestUrl;
+//    }
+
+//    @Bean
+//    public AuthenticationSuccessHandler loginSuccessHandler() {
+//        //SavedRequestAwareAuthenticationSuccessHandler successHandler = new HandlerWrapper2();
+//        AuthenticationSuccessHandler successHandler = new LoginSuccessHandler();
+//        //successHandler.setTargetUrlParameter("/restricted");
+//        return successHandler;
+//    }
+
+//    @Bean
+//    public org.springframework.security.web.authentication.logout.LogoutHandler logoutHandler() {
+//        org.springframework.security.web.authentication.logout.LogoutHandler handler = new LogoutHandler();
+//        return handler;
 //    }
 
 }
