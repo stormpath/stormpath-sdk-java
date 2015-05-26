@@ -28,7 +28,7 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="org.springframework" level="INFO"/>
-    <logger name="com.stormpath" level="INFO"/>
+    <logger name="org.springframework" level="DEBUG"/>
+    <logger name="com.stormpath" level="DEBUG"/>
 
 </configuration>

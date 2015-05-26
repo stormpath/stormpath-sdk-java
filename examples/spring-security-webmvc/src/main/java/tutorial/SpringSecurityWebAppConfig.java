@@ -15,62 +15,52 @@
  */
 package tutorial;
 
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.spring.config.EnableStormpath;
-import com.stormpath.spring.config.EnableStormpathSpringSecurityWebMvc;
-import com.stormpath.spring.config.StormpathConfiguration;
-import com.stormpath.spring.config.StormpathWebMvcConfiguration;
-import com.stormpath.spring.security.provider.StormpathAuthenticationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.spring.config.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.security.access.vote.AffirmativeBased;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
-import org.springframework.security.web.access.expression.WebExpressionVoter;
-
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
-@EnableWebSecurity
-@EnableWebMvcSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-@EnableStormpathSpringSecurityWebMvc //Stormpath Spring Security web mvc beans plus out-of-the-box views
+//@EnableWebSecurity
+//@EnableWebMvcSecurity
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+//@EnableStormpathSpringSecurityWebMvc //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @ComponentScan
 @PropertySource("classpath:application.properties")
-public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+public class SpringSecurityWebAppConfig extends StormpathSpringSecurityWebAppConfig {
 
     //Let's specify some role here so we can later grant it access to restricted resources
     final String roleA = "https://api.stormpath.com/v1/groups/46O9eBTN4oLtjJMSWLxnwJ";
 
-    @Autowired
-    private StormpathAuthenticationProvider stormpathAuthenticationProvider;
+//    private HandlerWrapper handlerWrapper = new HandlerWrapper();
 
-    @Autowired
-    private StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
+//    @Autowired
+//    private StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
 
-    /**
-     * This bean and the @PropertySource annotation above allow you to configure Stormpath beans with properties
-     * prefixed with {@code stormpath.}, i.e. {@code stormpath.application.href}, {@code stormpath.apiKey.file}, etc.
-     *
-     * <p>Combine this with Spring's Profile support to override property values based on specific runtime environments,
-     * e.g. development, production, etc.</p>
-     *
-     * @return the application's PropertySourcesPlaceholderConfigurer that enables property placeholder substitution.
-     */
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
+//    /**
+//     * This bean and the @PropertySource annotation above allow you to configure Stormpath beans with properties
+//     * prefixed with {@code stormpath.}, i.e. {@code stormpath.application.href}, {@code stormpath.apiKey.file}, etc.
+//     *
+//     * <p>Combine this with Spring's Profile support to override property values based on specific runtime environments,
+//     * e.g. development, production, etc.</p>
+//     *
+//     * @return the application's PropertySourcesPlaceholderConfigurer that enables property placeholder substitution.
+//     */
+//    @Bean
+//    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+//        return new PropertySourcesPlaceholderConfigurer();
+//    }
 
     //The access control settings are defined here
     @Override
@@ -78,27 +68,62 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                    //.accessDecisionManager(accessDecisionManager())
-                    .antMatchers("/restricted").hasAuthority(roleA)
+                        //.accessDecisionManager(accessDecisionManager())
+                .antMatchers("/restricted").hasAuthority(roleA)
 //                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getRegisterUrl()).permitAll()
 //                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getForgotPasswordUrl()).permitAll()
 //                    .antMatchers(stormpathWebMvcConfiguration.stormpathInternalConfig().getChangePasswordUrl()).permitAll()
-                      //.antMatchers("/WEB-INF/jsp/stormpath/*").permitAll()
-                      //.antMatchers("/assets/css/*").permitAll()
-                    .and()
+                //.antMatchers("/WEB-INF/jsp/stormpath/*").permitAll()
+                //.antMatchers("/assets/css/*").permitAll()
+                .and()
                 .formLogin()
-                    .loginPage(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
-                    .defaultSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginNextUrl())
-                    .usernameParameter("login")
-                    .passwordParameter("password")
-                    .and()
+                //.loginProcessingUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+                //.successHandler(successHandler())
+                .successHandler(successHandler())
+                //.loginProcessingUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+                .loginPage(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
+                //.permitAll()
+                //.defaultSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginNextUrl())
+                                //.successHandler()
+                .usernameParameter("login")
+                .passwordParameter("password")
+                .and()
                 .logout()
-                    .logoutUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutUrl())
-                .logoutSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutNextUrl())
-                    .and()
+                .logoutUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutUrl())
+                .addLogoutHandler(logoutHandler())
+                //.logoutSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutNextUrl())
+                //.logoutSuccessHandler(logoutSuccessHandler())
+                .and()
                 .httpBasic()
-                    .and()
-                    .csrf().disable();
+                .and()
+                .csrf().disable();
+    }
+
+//    @Bean
+//    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+//        AuthenticationSuccessHandler auth = new HandlerWrapper2();
+//        //auth.setTargetUrlParameter("targetUrl");
+//        return auth;
+//    }
+
+    @Bean
+    public AuthenticationSuccessHandler successHandler() {
+        //SavedRequestAwareAuthenticationSuccessHandler successHandler = new HandlerWrapper2();
+        AuthenticationSuccessHandler successHandler = new LoginSuccessHandler();
+        //successHandler.setTargetUrlParameter("/restricted");
+        return successHandler;
+    }
+
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        LogoutSuccessHandler handler = new LogoutHandlerWrapper();
+        return handler;
+    }
+
+    @Bean
+    public LogoutHandler logoutHandler() {
+        LogoutHandler handler = new tutorial.LogoutHandler();
+        return handler;
     }
 
 //    @Override
@@ -123,16 +148,16 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 //    }
 
 
-    @Bean
-    public AuthenticationManager getAuthenticationManager() throws Exception {
-        return this.authenticationManagerBean();
-    }
+//    @Bean
+//    public AuthenticationManager getAuthenticationManager() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
 
-    //Let's add the StormpathAuthenticationProvider to the AuthenticationManager
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(stormpathAuthenticationProvider);
-    }
+//    //Let's add the StormpathAuthenticationProvider to the AuthenticationManager
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.authenticationProvider(stormpathAuthenticationProvider);
+//    }
 
 //    //Prevents the addition of the "ROLE_" prefix in authorities
 //    @Bean

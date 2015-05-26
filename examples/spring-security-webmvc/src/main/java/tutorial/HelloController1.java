@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-public class HelloController {
+public class HelloController1 {
 
     @RequestMapping("/")
     String home(HttpServletRequest request) {
@@ -36,6 +36,14 @@ public class HelloController {
         }
 
         return "Hello " + name + "!";
+    }
+
+    @RequestMapping("/restricted")
+    String restricted(HttpServletRequest request) {
+
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+        return account.getGivenName() + ". This is a restricted resource and you have enough privileges to see it!";
+
     }
 
 }
