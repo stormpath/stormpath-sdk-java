@@ -392,14 +392,15 @@ class TenantIT extends ClientIT {
     void testSaveWithResponseOptions(){
         def tenant = client.getCurrentTenant()
         def href = tenant.getHref()
-        tenant.getCustomData().put("testData", "testDataValue")
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testSaveWithResponseOptions-dir")
-        dir = client.currentTenant.createDirectory(dir)
+        dir = tenant.createDirectory(dir)
         deleteOnTeardown(dir)
 
-        def retrieved = tenant.saveWithResponseOptions(Tenants.options().withCustomData())
+        tenant.getCustomData().put("testData", "testDataValue")
+
+        def retrieved = tenant.saveWithResponseOptions(Tenants.options().withDirectories().withCustomData())
         assertEquals href, retrieved.getHref()
         assertEquals "testDataValue", retrieved.getCustomData().get("testData")
         assertTrue retrieved.getDirectories().iterator().hasNext()
