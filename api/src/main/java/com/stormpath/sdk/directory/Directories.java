@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 /**
  * Static utility/helper methods for working with {@link Directory} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * Directory-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. fpr example:
+ * Directory-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
  * <b>Directories.where(Directories.name()</b>.containsIgnoreCase("Foo")<b>)</b>
  *     .and(<b>Directories.status()</b>.eq(DirectoryStatus.ENABLED))
