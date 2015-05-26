@@ -104,7 +104,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
         assertTrue(signature.size() > 0 )
 
         //Verify URL
-        assertTrue ssoRedirectUrl.startsWith(builder.SSO_ENDPOINT + "?jwtRequest=")
+        assertTrue ssoRedirectUrl.startsWith(builder.ssoEndpoint + "?jwtRequest=")
 
         verify internalDataStore, apiKey
     }
@@ -158,7 +158,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
         assertTrue(signature.size() > 0 )
 
         //Verify URL
-        assertTrue ssoRedirectUrl.startsWith(builder.SSO_ENDPOINT + "?jwtRequest=")
+        assertTrue ssoRedirectUrl.startsWith(builder.ssoEndpoint + "?jwtRequest=")
 
         verify internalDataStore, apiKey
     }
@@ -214,7 +214,7 @@ public class DefaultSsoRedirectUrlBuilderTest {
         assertTrue(signature.size() > 0 )
 
         //Verify URL
-        assertTrue ssoRedirectUrl.startsWith(builder.SSO_ENDPOINT + "/logout?jwtRequest=")
+        assertTrue ssoRedirectUrl.startsWith(builder.ssoEndpoint + "/logout?jwtRequest=")
 
         verify internalDataStore, apiKey
     }
