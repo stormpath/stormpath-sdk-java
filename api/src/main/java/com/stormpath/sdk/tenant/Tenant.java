@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.tenant;
 
+import com.stormpath.sdk.directory.DirectoryOptions;
 import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -72,5 +73,16 @@ public interface Tenant extends Resource, Saveable, TenantActions, Extendable {
      *         permanent identifier.
      */
     String getKey();
+
+    /**
+     * Saves this {@link Tenant} resource and ensures the returned {@link Tenant} response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the tenant.
+     *
+     * @param responseOptions The {@code TenantOptions} to use to customize the Tenant resource returned in the save response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    Tenant saveWithResponseOptions(TenantOptions responseOptions);
 
 }

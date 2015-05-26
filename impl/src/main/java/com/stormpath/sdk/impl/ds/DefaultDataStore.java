@@ -525,6 +525,7 @@ public class DefaultDataStore implements InternalDataStore {
             }
         }
 
+        // (qs != null && qs.containsKey("expand"))
         //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
         boolean doNotCache = (resource instanceof PasswordResetToken && PasswordResetToken.class.isAssignableFrom(returnType)) || emailVerification;
 

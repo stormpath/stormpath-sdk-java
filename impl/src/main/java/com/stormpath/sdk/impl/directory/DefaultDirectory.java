@@ -20,9 +20,7 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.directory.AccountStoreVisitor;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryStatus;
+import com.stormpath.sdk.directory.*;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -37,7 +35,6 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.directory.PasswordPolicy;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -265,4 +262,14 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         return getResourceProperty(PASSWORD_POLICY);
     }
 
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    @Override
+    public Directory saveWithResponseOptions(DirectoryOptions responseOptions) {
+        Assert.notNull(responseOptions, "responseOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, responseOptions);
+        return this;
+    }
 }

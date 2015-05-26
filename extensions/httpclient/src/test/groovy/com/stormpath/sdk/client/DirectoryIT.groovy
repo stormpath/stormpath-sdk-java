@@ -24,6 +24,7 @@ import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -223,67 +224,36 @@ class DirectoryIT extends ClientIT {
     void testListSize() {
 
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testListSize")
-        dir = client.currentTenant.createDirectory(dir)
+        dir.name = uniquify("Java SDK: DirectoryIT.testSaveWithResponseOptions")
+        dir = client.currentTenant.createDirectory(dir);
         deleteOnTeardown(dir)
+        def href = dir.getHref()
+
+        dir.getCustomData().put("testKey", "testValue")
 
         Account account01 = client.instantiate(Account)
-        account01 = account01.setGivenName(uniquify('John01'))
-                .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+        account01 = account01.setGivenName(uniquify('John'))
+                .setSurname('Doe')
+                .setEmail(uniquify("johndoe") + "@stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
+        deleteOnTeardown(account01)
 
-        assertEquals(dir.getAccounts().getSize(), 1)
-
-        def account02 = client.instantiate(Account)
-        account02 = account02.setGivenName(uniquify('John02'))
-                .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+        Account account02 = client.instantiate(Account)
+        account02 = account02.setGivenName(uniquify('John'))
+                .setSurname('Doe 2')
+                .setEmail(uniquify("johndoe2") + "@stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
+        deleteOnTeardown(account02)
 
-        assertEquals(dir.getAccounts().getSize(), 2)
+        def retrieved = dir.saveWithResponseOptions(Directories.options().withAccounts().withCustomData())
 
-        def list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(account01.email)))
-
-        assertEquals(list.getSize(), 1)
-
-        list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("listMustBeEmpty")))
-
-        assertEquals(list.getSize(), 0)
-
-        list = dir.getAccounts(Accounts.criteria().limitTo(1))
-        int count = 0
-
-        def firstAccount = null
-        def firstPage = null
-        for (Account account : list) {
-            def acrlist = (AbstractCollectionResource) list
-            assertEquals(acrlist.currentPage.items.size(), 1)
-            assertEquals(acrlist.currentPage.size, 2)
-
-            assertNotNull(account.getHref())
-            if(count == 0) {
-                firstAccount = account
-                firstPage = acrlist.currentPage
-            } else {
-                assertNotEquals(account.getHref(), firstAccount.getHref()) //let's check that the items are actually moving
-                assertNotSame(acrlist.currentPage, firstPage) //let's check that pages are actually moving
-            }
-
-            count++
-        }
-        assertEquals(count, 2)
-
-        account01.delete()
-        account02.delete()
-
-        assertEquals(dir.getAccounts().getSize(), 0)
+        assertEquals href, retrieved.getHref()
+        assertEquals "testValue", retrieved.getCustomData().get("testKey")
+        assertTrue retrieved.getAccounts().iterator().hasNext()
+        assertTrue retrieved.getAccounts().iterator().hasNext()
     }
-
-
-
 }

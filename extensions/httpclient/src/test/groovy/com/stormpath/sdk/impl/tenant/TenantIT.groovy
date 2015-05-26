@@ -25,6 +25,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -384,4 +385,23 @@ class TenantIT extends ClientIT {
         assertEquals(((GithubProvider)provider).getClientSecret(), clientSecret)
     }
 
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    @Test
+    void testSaveWithResponseOptions(){
+        def tenant = client.getCurrentTenant()
+        def href = tenant.getHref()
+        tenant.getCustomData().put("testData", "testDataValue")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testSaveWithResponseOptions-dir")
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        def retrieved = tenant.saveWithResponseOptions(Tenants.options().withCustomData())
+        assertEquals href, retrieved.getHref()
+        assertEquals "testDataValue", retrieved.getCustomData().get("testData")
+        assertTrue retrieved.getDirectories().iterator().hasNext()
+    }
 }

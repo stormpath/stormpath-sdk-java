@@ -86,7 +86,7 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = 'deleteme@nowhere.com'
+        def email = 'deleteme0@nowhere.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -487,7 +487,7 @@ class ApplicationIT extends ClientIT {
 
     def Account createTestAccount(Application app) {
 
-        def email = 'deleteme@nowhere.com'
+        def email = 'deleteme1@nowhere.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -832,4 +832,30 @@ class ApplicationIT extends ClientIT {
         assertEquals(qty, expectedSize)
     }
 
+    /**
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    @Test
+    void testSaveWithResponseOptions(){
+
+        def app = createTempApp()
+        def href = app.getHref()
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'Jonathan'
+        account.surname = 'Doe'
+        account.email = 'deleteme23@nowhere.com'
+        account.password = 'Changeme1!'
+        app.createAccount(account)
+        deleteOnTeardown(account)
+
+        app.getCustomData().put("testKey", "testValue")
+
+        def retrieved = app.saveWithResponseOptions(Applications.options().withAccounts().withCustomData())
+
+        assertEquals href, retrieved.getHref()
+        assertEquals "testValue", retrieved.getCustomData().get("testKey")
+        assertTrue retrieved.getAccounts().iterator().hasNext()
+        assertEquals retrieved.getAccounts().iterator().next().email, account.email
+    }
 }

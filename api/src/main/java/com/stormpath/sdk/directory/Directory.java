@@ -359,4 +359,15 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @since 1.0.RC4
      */
     PasswordPolicy getPasswordPolicy();
+
+    /**
+     * Saves this {@link Directory} resource and ensures the returned {@link Directory} response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the directory.
+     *
+     * @param responseOptions The {@code DirectoryOptions} to use to customize the Directory resource returned in the save response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.3-SNAPSHOT
+     */
+    Directory saveWithResponseOptions(DirectoryOptions responseOptions);
 }
