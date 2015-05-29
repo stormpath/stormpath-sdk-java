@@ -977,7 +977,9 @@ public class DefaultDataStore implements InternalDataStore {
         if (response.hasBody()) {
             String bodyString = toString(response.getBody());
             log.trace("Obtained response body: \n{}", bodyString);
-            out = mapMarshaller.unmarshal(bodyString);
+            if (Strings.hasText(bodyString)) {
+                out = mapMarshaller.unmarshal(bodyString);
+            }
         }
 
         return out;
@@ -1020,6 +1022,7 @@ public class DefaultDataStore implements InternalDataStore {
         try {
             return new Scanner(is, "UTF-8").useDelimiter("\\A").next();
         } catch (java.util.NoSuchElementException e) {
+            log.trace("Response body input stream did not contain any content.", e);
             return null;
         }
     }
