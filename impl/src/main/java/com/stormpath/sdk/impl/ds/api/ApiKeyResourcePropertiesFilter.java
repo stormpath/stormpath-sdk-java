@@ -33,7 +33,7 @@ import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 /**
  * @since 1.0.RC
  */
-public class ApiKeyResourcePropertiesFilter implements PropertiesFilter<Class, Map<String, ?>> {
+public class ApiKeyResourcePropertiesFilter implements PropertiesFilter<Map<String,?>> {
 
     private final ApiKey apiKey;
 

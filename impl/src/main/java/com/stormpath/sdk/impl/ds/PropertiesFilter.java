@@ -34,9 +34,8 @@ import java.util.Map;
  * @see ApiKeyCachePropertiesFilter
  * @see ApiKeyResourcePropertiesFilter
  * @see ApiKeyQueryPropertiesFilter
- * @see QueryPropertiesFilter
  */
-public interface PropertiesFilter<C extends Class,  T extends Map> {
+public interface PropertiesFilter<T extends Map<String,?>> {
 
     /**
      * Filters the provided {@code properties} {@link Map} and returns the filtered {@link Map}.
@@ -49,7 +48,6 @@ public interface PropertiesFilter<C extends Class,  T extends Map> {
      * @see ApiKeyCachePropertiesFilter#filter(Class, Map)
      * @see ApiKeyResourcePropertiesFilter#filter(Class, Map)
      * @see ApiKeyQueryPropertiesFilter#filter(Class, Map)
-     * @see QueryPropertiesFilter#filter(Class, Map)
      */
-    T filter(C clazz, T properties);
+    T filter(Class clazz, T properties);
 }

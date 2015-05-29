@@ -68,7 +68,6 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -99,8 +98,8 @@ public class DefaultDataStore implements InternalDataStore {
     private volatile CacheManager cacheManager;
     private volatile CacheRegionNameResolver cacheRegionNameResolver;
     private final ApiKey apiKey;
-    private final PropertiesFilterProcessor resourceDataFilterProcessor;
-    private final PropertiesFilterProcessor queryStringFilterProcessor;
+    private final PropertiesFilterProcessor<Map<String,?>> resourceDataFilterProcessor;
+    private final PropertiesFilterProcessor<QueryString> queryStringFilterProcessor;
     private volatile Map<String, Enlistment> hrefMapStore;
 
     /**
@@ -142,18 +141,23 @@ public class DefaultDataStore implements InternalDataStore {
         this.hrefMapStore = new SoftHashMap<String, Enlistment>();
         this.apiKey = apiKey;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
-        this.resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyCachePropertiesFilter(apiKey)));
+        List<PropertiesFilter<Map<String,?>>> l = new ArrayList<PropertiesFilter<Map<String, ?>>>(1);
+        l.add(new ApiKeyCachePropertiesFilter(apiKey));
+        this.resourceDataFilterProcessor = new DefaultPropertiesFilterProcessor<Map<String,?>>(l);
         // Adding another processor for query strings because we don't want to mix
         // the processing (filtering) of the query strings with the processing of the resource properties,
         // even though they're both (resource properties and query string objects) Maps that might apply
         // to the be added to the same filter. This separation also improves requests performance.
-        this.queryStringFilterProcessor = new DefaultPropertiesFilterProcessor(Collections.toList(new ApiKeyQueryPropertiesFilter()));
+        List<PropertiesFilter<QueryString>> l2 = new ArrayList<PropertiesFilter<QueryString>>(1);
+        l2.add(new ApiKeyQueryPropertiesFilter());
+        this.queryStringFilterProcessor = new DefaultPropertiesFilterProcessor<QueryString>(l2);
     }
 
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
+    @SuppressWarnings("unused")
     public void setCacheRegionNameResolver(CacheRegionNameResolver cacheRegionNameResolver) {
         this.cacheRegionNameResolver = cacheRegionNameResolver;
     }
@@ -245,7 +249,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @param idClassMap a mapping to be able to know which class corresponds to each <code>childIdProperty</code> value.
      * @param <T> the root of the hierarchy of the Resource we want to instantiate.
      * @param <R> the sub-class of the root Resource.
-     * @return
+     * @return the retrieved resource
      */
     @Override
     public <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> idClassMap) {
@@ -275,7 +279,11 @@ public class DefaultDataStore implements InternalDataStore {
             throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
         }
 
-        Object childClassName = data.get(childIdProperty);
+        String childClassName = null;
+        Object val = data.get(childIdProperty);
+        if (val != null) {
+            childClassName = String.valueOf(val);
+        }
         Class<? extends R> childClass = idClassMap.get(childClassName);
 
         if(childClass == null) {
@@ -287,15 +295,15 @@ public class DefaultDataStore implements InternalDataStore {
 
     private Map<String, ?> retrieveResponseValue(String href, Class<? extends Resource> clazz, QueryString qs) {
 
-        QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(clazz, qs);
+        QueryString filteredQs = queryStringFilterProcessor.process(clazz, qs);
         Map<String, ?> data = null;
         if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) {
 
             if (isApiKeyCollectionQuery(clazz, filteredQs)) {
                 String cacheHref = baseUrl + "/apiKeys/" + filteredQs.get(ID.getName());
-                Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
+                Class<ApiKey> cacheClass = com.stormpath.sdk.api.ApiKey.class;
 
-                Map apiKeyData = getCachedValue(cacheHref, cacheClass);
+                Map<String,?> apiKeyData = getCachedValue(cacheHref, cacheClass);
 
                 if (!Collections.isEmpty(apiKeyData)) {
                     CollectionProperties.Builder builder = new CollectionProperties.Builder()
@@ -335,10 +343,10 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private Map<String,?> filterResourceData(Class clazz, QueryString qs, Map<String,?> data) {
-        List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
-        List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
+        List<PropertiesFilter<Map<String,?>>> resourceDataFilters = resourceDataFilterProcessor.getFilters();
+        List<PropertiesFilter<Map<String,?>>> filters = new ArrayList<PropertiesFilter<Map<String,?>>>(resourceDataFilters);
         filters.add(new ApiKeyResourcePropertiesFilter(apiKey, qs));
-        PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
+        PropertiesFilterProcessor<Map<String,?>> processor = new DefaultPropertiesFilterProcessor<Map<String,?>>(filters);
         return processor.process(clazz, data);
     }
 
@@ -421,6 +429,7 @@ public class DefaultDataStore implements InternalDataStore {
         aResource.setProperties(props);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource & Saveable> void save(T resource, Options options) {
         Assert.notNull(resource, "resource argument cannot be null.");
@@ -440,7 +449,7 @@ public class DefaultDataStore implements InternalDataStore {
         DefaultOptions defaultOptions = (DefaultOptions) options;
         QueryString qs = queryStringFactory.createQueryString(href, defaultOptions);
 
-        Class<T> clazz = (Class<T>) resource.getClass();
+        Class<T> clazz = (Class<T>)resource.getClass();
 
         T returnValue = save(href, resource, clazz, qs);
 
@@ -480,7 +489,7 @@ public class DefaultDataStore implements InternalDataStore {
         StringInputStream body = new StringInputStream(bodyString);
         long length = body.available();
 
-        QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(returnType, qs);
+        QueryString filteredQs = queryStringFilterProcessor.process(returnType, qs);
         Request request = new DefaultRequest(HttpMethod.POST, href, filteredQs, null, body, length);
 
         Response response = execute(request);
@@ -510,6 +519,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         //asserts invariant given that we should have returned if the responseBody is null or empty:
+        //noinspection ConstantConditions
         assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
         //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
@@ -517,9 +527,9 @@ public class DefaultDataStore implements InternalDataStore {
         //since 1.0.RC4 : fix for https://github.com/stormpath/stormpath-sdk-java/issues/140 where Account remains disabled after
         //successful verification due to an outdated `Account` state in the cache.
         if (emailVerification && isCachingEnabled()) {
-            Cache cache = getCache(Account.class);
             String accountHref = (String) responseBody.get(HREF_PROP_NAME);
             if (Strings.hasText(accountHref)) {
+                Cache<String,?> cache = getCache(Account.class);
                 cache.remove(accountHref);
             }
         }
@@ -660,6 +670,7 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
+    @SuppressWarnings("UnusedParameters")
     private <T extends Resource> boolean isCacheUpdateEnabled(Class<T> clazz) {
         //we _do_ allow the cache to be updated with data associated with a collection resource.  The collection
         //resource itself won't be cached, but any of its nested instance resources will be.
@@ -831,7 +842,8 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
-    private <T extends Resource> Map<String, ?> getCachedValue(String href, Class<T> clazz) {
+    private Map<String, ?> getCachedValue(String href, Class<? extends Resource> clazz) {
+
         Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(clazz, "Class argument cannot be null.");
         Cache<String, Map<String, ?>> cache = getCache(clazz);
@@ -986,7 +998,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     protected void applyDefaultRequestHeaders(Request request) {
-        request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        request.getHeaders().setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_JSON));
         request.getHeaders().set("User-Agent", USER_AGENT_STRING);
         if (request.getBody() != null) {
             //this data store currently only deals with JSON messages:
@@ -1040,6 +1052,7 @@ public class DefaultDataStore implements InternalDataStore {
      * Resource instances referencing the same Href.
      * @since 1.0.RC3
      */
+    @SuppressWarnings({ "SuspiciousMethodCalls", "unchecked" })
     private Enlistment toEnlistment(Map data) {
         Enlistment enlistment;
         Object responseHref = data.get("href");
