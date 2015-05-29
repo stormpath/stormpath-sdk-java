@@ -32,6 +32,7 @@
 
     <dependencies>
 
+        <!-- Compile-time dependencies: -->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-spring-security-webmvc</artifactId>

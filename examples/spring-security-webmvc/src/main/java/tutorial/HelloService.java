@@ -29,9 +29,9 @@ public class HelloService {
     public static final String roleA = "GROUP_HREF_HERE";
 
     /**
-     * If the user has a Custom Data entry in his Stormpath Account or Group containing something like
+     * Only users who have a Custom Data entry in their Stormpath Account or Group containing something like
      * <code>"springSecurityPermissions":["say:*"]</code> or <code>"springSecurityGrantedAuthorities":["say:hello"]</code>
-     * this method will be executed. Otherwise it will not.
+     * will be allowed to execute this method.
      */
     @PreAuthorize("hasRole('" + roleA + "') and hasPermission('say', 'hello')")
     public String sayHello(Account account) {
