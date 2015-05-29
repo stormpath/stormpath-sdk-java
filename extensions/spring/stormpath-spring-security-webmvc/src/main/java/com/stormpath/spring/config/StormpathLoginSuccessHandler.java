@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package com.stormpath.spring.config;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
-import com.stormpath.sdk.servlet.mvc.LoginController;
-import com.stormpath.spring.config.StormpathWebMvcConfiguration;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -32,44 +31,32 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Date: 5/20/15
+ * @since 1.0.RC4.3
  */
 @Component
-public class HandlerWrapper2 extends SavedRequestAwareAuthenticationSuccessHandler {
-
+public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
     protected StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
 
     @Autowired
-    protected HandlerWrapper handlerWrapper;
-
-    public HandlerWrapper2() {
-        System.out.println();
-    }
+    protected Client stormpathClient;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
-
-//        AuthenticationResult authencationResult = new AuthenticationResult() {
-//            @Override
-//            public Account getAccount() {
-//                return (Account) authentication.getPrincipal();
-//            }
-//
-//            @Override
-//            public void accept(AuthenticationResultVisitor visitor) {
-//            }
-//
-//            @Override
-//            public String getHref() {
-//                return getAccount().getHref();
-//            }
-//        };
-
-        handlerWrapper.onAuthenticationSuccess(request, response, authentication);
-        //this.saveResult(request, response, authencationResult);
+        saveAccount(request, response, authentication);
+        super.onAuthenticationSuccess(request, response, authentication);
     }
 
+    protected void saveAccount(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
+        Account account = getAccount(authentication);
+        AuthenticationResult result = new TransientAuthenticationResult(account);
+        stormpathWebMvcConfiguration.stormpathAuthenticationResultSaver().set(request, response, result);
+    }
+
+    private Account getAccount(Authentication authentication) {
+        String accountHref = ((StormpathUserDetails) authentication.getPrincipal()).getProperties().get("href");
+        return stormpathClient.getResource(accountHref, Account.class);
+    }
 
 }

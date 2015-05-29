@@ -32,27 +32,10 @@
 
     <dependencies>
 
-        <!-- Compile-time dependencies: -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-webmvc</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.spring</groupId>-->
-            <!--<artifactId>stormpath-spring-security</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-spring-security-webmvc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-spring</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.spring</groupId>-->
-            <!--<artifactId>stormpath-spring-webmvc</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

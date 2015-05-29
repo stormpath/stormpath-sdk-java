@@ -15,7 +15,7 @@
  */
 package tutorial;
 
-import com.stormpath.spring.config.StormpathConfiguration;
+import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -30,6 +30,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import java.util.EnumSet;
 
+/**
+ * @since 1.0.RC4.3
+ */
 public class WebAppInitializer implements WebApplicationInitializer {
 
     @Override
@@ -37,6 +40,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.register(SpringSecurityWebAppConfig.class);
+        context.register(StormpathMethodSecurityConfiguration.class);
         sc.addListener(new ContextLoaderListener(context));
 
         ServletRegistration.Dynamic dispatcher = sc.addServlet("dispatcher", new DispatcherServlet(context));
@@ -48,7 +52,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         EnumSet<DispatcherType> types =
                 EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
         filter.addMappingForUrlPatterns(types, false, "/*");
-        //filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
 
         //Spring Security Filter
         FilterRegistration.Dynamic securityFilter = sc.addFilter(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);

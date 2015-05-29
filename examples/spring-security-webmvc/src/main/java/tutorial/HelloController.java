@@ -17,13 +17,20 @@ package tutorial;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @since 1.0.RC4.3
+ */
 @RestController
-public class HelloController1 {
+public class HelloController {
+
+    @Autowired
+    private HelloService helloService;
 
     @RequestMapping("/")
     String home(HttpServletRequest request) {
@@ -40,10 +47,7 @@ public class HelloController1 {
 
     @RequestMapping("/restricted")
     String restricted(HttpServletRequest request) {
-
-        Account account = AccountResolver.INSTANCE.getAccount(request);
-        return account.getGivenName() + ". This is a restricted resource and you have enough privileges to see it!";
-
+        return helloService.sayHello(AccountResolver.INSTANCE.getAccount(request));
     }
 
 }
