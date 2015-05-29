@@ -179,6 +179,16 @@ public class DefaultDataStore implements InternalDataStore {
         return this.resourceFactory.instantiate(clazz, properties);
     }
 
+    private <T extends Resource> T instantiate(Class<T> clazz, Map<String,?> properties, QueryString qs) {
+
+        if (CollectionResource.class.isAssignableFrom(clazz)) {
+            //only collections can support a query string constructor argument:
+            return this.resourceFactory.instantiate(clazz, properties, qs);
+        }
+        //otherwise it must be an instance resource, so use the two-arg constructor:
+        return this.resourceFactory.instantiate(clazz, properties);
+    }
+
     /* =====================================================================
        Resource Retrieval
        ===================================================================== */
@@ -200,8 +210,8 @@ public class DefaultDataStore implements InternalDataStore {
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
         Assert.isInstanceOf(DefaultCriteria.class, criteria,
-                "The " + getClass().getName() + " implementation only functions with " +
-                        DefaultCriteria.class.getName() + " instances.");
+                            "The " + getClass().getName() + " implementation only functions with " +
+                            DefaultCriteria.class.getName() + " instances.");
 
         DefaultCriteria dc = (DefaultCriteria) criteria;
         QueryString qs = queryStringFactory.createQueryString(href, dc);
@@ -221,12 +231,7 @@ public class DefaultDataStore implements InternalDataStore {
             data = toEnlistment(data);
         }
 
-        if (CollectionResource.class.isAssignableFrom(clazz)) {
-            //only collections can support a query string constructor argument:
-            return this.resourceFactory.instantiate(clazz, data, qs);
-        }
-        //otherwise it must be an instance resource, so use the two-arg constructor:
-        return this.resourceFactory.instantiate(clazz, data);
+        return instantiate(clazz, data, qs);
     }
 
     /**
@@ -278,12 +283,7 @@ public class DefaultDataStore implements InternalDataStore {
             throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
         }
 
-        if (CollectionResource.class.isAssignableFrom(childClass)) {
-            //only collections can support a query string constructor argument:
-            return this.resourceFactory.instantiate(childClass, data, qs);
-        }
-        //otherwise it must be an instance resource, so use the two-arg constructor:
-        return this.resourceFactory.instantiate(childClass, data);
+        return instantiate(childClass, data, qs);
     }
 
     private Map<String, ?> retrieveResponseValue(String href, Class clazz, QueryString qs) {
@@ -370,8 +370,8 @@ public class DefaultDataStore implements InternalDataStore {
     @SuppressWarnings("unchecked")
     public <T extends Resource> T create(String parentHref, T resource, Options options) {
         Assert.isInstanceOf(DefaultOptions.class, options,
-                "The " + getClass().getName() + " implementation only functions with " +
-                        DefaultOptions.class.getName() + " instances.");
+                            "The " + getClass().getName() + " implementation only functions with " +
+                            DefaultOptions.class.getName() + " instances.");
 
         DefaultOptions defaultOptions = (DefaultOptions) options;
         QueryString qs = queryStringFactory.createQueryString(parentHref, defaultOptions);
@@ -480,8 +480,8 @@ public class DefaultDataStore implements InternalDataStore {
         QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(returnType, qs);
         Request request = new DefaultRequest(HttpMethod.POST, href, filteredQs, null, body, length);
 
-        Response response = executeRequestGetFullResponse(request);
-        Map<String, Object> responseBody = getBodyFromSuccessfulResponse(response);
+        Response response = execute(request);
+        Map<String, Object> responseBody = getBody(response);
 
         //since 1.0.beta: provider's account creation status (whether it is new or not) is returned in the HTTP response
         //status. The resource factory does not provide a way to pass such information when instantiating a resource. Thus,
@@ -610,32 +610,33 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> void delete(T resource) {
-        Assert.notNull(resource, "resource argument cannot be null.");
-        Assert.isInstanceOf(AbstractResource.class, resource);
-
-        AbstractResource abstractResource = (AbstractResource) resource;
-        String href = abstractResource.getHref();
-
-        uncache(abstractResource);
-
-        Request request = createRequest(HttpMethod.DELETE, href, null);
-        executeRequest(request);
+        doDelete(resource, null);
     }
 
     @Override
     public <T extends Resource> void deleteResourceProperty(T resource, String propertyName) {
-        Assert.notNull(resource, "resource argument cannot be null.");
-        Assert.isInstanceOf(AbstractResource.class, resource);
         Assert.hasText(propertyName, "propertyName cannot be null or empty.");
+        doDelete(resource, propertyName);
+    }
+
+    private <T extends Resource> void doDelete(T resource, String possiblyNullPropertyName) {
+
+        Assert.notNull(resource, "resource argument cannot be null.");
+        Assert.isInstanceOf(AbstractResource.class, resource, "Resource argument must be an AbstractResource.");
 
         AbstractResource abstractResource = (AbstractResource) resource;
         String href = abstractResource.getHref();
-        href = href + "/" + propertyName;
+
+        if (Strings.hasText(possiblyNullPropertyName)) { //delete just that property, not the entire resource:
+            href = href + "/" + possiblyNullPropertyName;
+        }
 
         uncache(abstractResource);
 
         Request request = createRequest(HttpMethod.DELETE, href, null);
-        executeRequest(request);
+
+        //no need to marshal the response body since DELETE responses are HTTP 204 and do not return body content:
+        execute(request);
     }
 
     /* =====================================================================
@@ -946,54 +947,44 @@ public class DefaultDataStore implements InternalDataStore {
      */
     @SuppressWarnings("unchecked")
     private Map<String, Object> executeRequest(Request request) {
-        Response response = executeRequestGetFullResponse(request);
-        return getBodyFromSuccessfulResponse(response);
+        Response response = execute(request);
+        return getBody(response);
     }
 
     /**
      * @since 1.0.beta
      */
-    private Response executeRequestGetFullResponse(Request request) {
+    private Response execute(Request request) {
+
         applyDefaultRequestHeaders(request);
 
         Response response = this.requestExecutor.executeRequest(request);
         log.trace("Executed HTTP request.");
 
         if (response.isError()) {
-            String body;
-            Map<String, Object> mapBody = null;
-            if (response.hasBody()) {
-                body = toString(response.getBody());
-                log.trace("Obtained response body: \n{}", body);
-                mapBody = mapMarshaller.unmarshal(body);
-            }
-            DefaultError error = new DefaultError(mapBody);
+            Map<String, Object> body = getBody(response);
+            DefaultError error = new DefaultError(body);
             throw new ResourceException(error);
         }
 
         return response;
     }
 
-    /**
-     * @since 1.0.beta
-     */
-    private Map<String, Object> getBodyFromSuccessfulResponse(Response response) {
-        String body = null;
+    @SuppressWarnings("unchecked")
+    private Map<String,Object> getBody(Response response) {
+
+        Assert.notNull(response, "response argument cannot be null.");
+
+        Map<String,Object> out = null;
 
         if (response.hasBody()) {
-            body = toString(response.getBody());
+            String bodyString = toString(response.getBody());
+            log.trace("Obtained response body: \n{}", bodyString);
+            out = mapMarshaller.unmarshal(bodyString);
         }
 
-        Map<String, Object> mapBody = null;
-
-        if (body != null) {
-            log.trace("Obtained response body: \n{}", body);
-            mapBody = mapMarshaller.unmarshal(body);
-        }
-
-        return mapBody;
+        return out;
     }
-
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
