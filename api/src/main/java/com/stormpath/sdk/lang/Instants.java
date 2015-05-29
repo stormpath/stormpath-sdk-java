@@ -15,20 +15,20 @@
 */
 package com.stormpath.sdk.lang;
 
-import java.time.*;
 import java.util.*;
 import java.util.Date;
 
 /**
+ * Utility class to create UTC-based dates and perform time conversions from UTC to other {@link TimeZone} timezones and vice versa
+ *
  * @since 1.0-SNAPSHOT
  */
 public class Instants {
 
     public static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone("UTC");
-    public static final ZoneId UTC_ZONE_ID = UTC_TIMEZONE.toZoneId();
 
     /**
-     * Converts a given time from UTC to the corresponding time in the specified {@link TimeZone}
+     * Converts a given time from UTC (Coordinated Universal Time) to the corresponding time in the specified {@link TimeZone}
      * @param time the UTC instant to convert, represented as the number of milliseconds that have elapsed since midnight, January 1, 1970
      * @param to the target {@link TimeZone} for the conversion
      * @return the long representation of the instant converted to the specified {@link TimeZone}
@@ -38,7 +38,7 @@ public class Instants {
     }
 
     /**
-     * Converts a given time from the specified {@link TimeZone} to the corresponding UTC time
+     * Converts a given time from the specified {@link TimeZone} to the corresponding UTC (Coordinated Universal Time) time
      * @param time the instant to convert, represented as the number of milliseconds that have elapsed since midnight, January 1, 1970
      * @param from the original {@link TimeZone}
      * @return the UTC instant, represented as the number of milliseconds that have elapsed since midnight, January 1, 1970
@@ -59,79 +59,111 @@ public class Instants {
     }
 
     /**
-     * Creates an UTC-based {@Link Date} from the provided {@code year}
-     * @param year  the year to represent, from MIN_YEAR to MAX_YEAR
+     * Creates an UTC-based {@Link Date} using the provided {@code year}.
+     * Uses the current date and time, sets the specified {@code year} and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the year to represent
      * @return the UTC-based {@link Date}
      */
     public static Date of(int year){
-        LocalDateTime zonedDateTime = LocalDateTime.of(year, Month.JANUARY, 1, 0, 0);
-        return Date.from(zonedDateTime.atZone(UTC_ZONE_ID).toInstant());
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
     }
 
     /**
-     * Creates an UTC-based {@Link Date} from the provided {@code year} and {@code month}
-     * @param year  the year to represent, from MIN_YEAR to MAX_YEAR
-     * @param month  the month-of-year to represent, from 1 (January) to 12 (December)
+     * Creates an UTC-based {@Link Date} from the provided {@code year} and {@code month}.
+     * Uses the current date and time, sets the specified {@code year} and {@code month}, and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the year to represent
+     * @param month  the month-of-year to represent, from 0 (January) to 11 (December)
      * @return the UTC-based {@link Date}
      */
     public static Date of(int year, int month){
-        Assert.isTrue(1 <= month && month <= 12, "month param must be a value from 1 (January) to 12 (December)");
-        LocalDateTime zonedDateTime = LocalDateTime.of(year, Month.of(month), 1, 0, 0);
-        return Date.from(zonedDateTime.atZone(UTC_ZONE_ID).toInstant());
+        Assert.isTrue(0 <= month && month <= 11, "month param must be a value from 0 (January) to 11 (December)");
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
     }
 
     /**
      * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month} and {@code day}
-     * @param year  the year to represent, from MIN_YEAR to MAX_YEAR
-     * @param month  the month-of-year to represent, from 1 (January) to 12 (December)
+     * Uses the current date and time, sets the specified {@code year}, {@code month} and {@code day}, and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the year to represent
+     * @param month  the month-of-year to represent, from 0 (January) to 11 (December)
      * @param day  the day-of-month to represent, from 1 to 31
      * @return the UTC-based {@link Date}
      */
     public static Date of(int year, int month, int day){
-        Assert.isTrue(1 <= month && month <= 12, "month param must be a value from 1 (January) to 12 (December)");
+        Assert.isTrue(0 <= month && month <= 11, "month param must be a value from 0 (January) to 11 (December)");
         Assert.isTrue(1 <= day && day <= 31, "day param must be a value from 1 to 31");
-        LocalDateTime zonedDateTime = LocalDateTime.of(year, Month.of(month), day, 0, 0);
-        return Date.from(zonedDateTime.atZone(UTC_ZONE_ID).toInstant());
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
     }
 
     /**
-     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day} and {@code hour}
-     * @param year  the year to represent, from MIN_YEAR to MAX_YEAR
-     * @param month  the month-of-year to represent, from 1 (January) to 12 (December)
+     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day} and {@code hour}.
+     * Uses the current date and time, sets the specified {@code year}, {@code month}, {@code day} and {@code hour}, and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the year to represent
+     * @param month  the month-of-year to represent, from 0 (January) to 11 (December)
      * @param day  the day-of-month to represent, from 1 to 31
      * @param hour  the hour-of-day to represent, from 0 to 23
      * @return the UTC-based {@link Date}
      */
     public static Date of(int year, int month, int day, int hour){
-        Assert.isTrue(1 <= month && month <= 12, "month param must be a value from 1 (January) to 12 (December)");
+        Assert.isTrue(0 <= month && month <= 11, "month param must be a value from 0 (January) to 11 (December)");
         Assert.isTrue(1 <= day && day <= 31, "day param must be a value from 1 to 31");
         Assert.isTrue(0 <= hour && hour <= 23, "hour param must be a value from 0 to 23");
-        LocalDateTime zonedDateTime = LocalDateTime.of(year, Month.of(month), day, hour, 0);
-        return Date.from(zonedDateTime.atZone(UTC_ZONE_ID).toInstant());
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
     }
 
     /**
-     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day}, {@code hour} and {@code minute}
-     * @param year  the year to represent, from MIN_YEAR to MAX_YEAR
-     * @param month  the month-of-year to represent, from 1 (January) to 12 (December)
+     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day}, {@code hour} and {@code minute}.
+     * Uses the current date and time, sets the specified {@code year}, {@code month}, {@code day}, {@code hour} and {@code minute}, and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the year to represent
+     * @param month  the month-of-year to represent, from 0 (January) to 11 (December)
      * @param day  the day-of-month to represent, from 1 to 31
      * @param hour  the hour-of-day to represent, from 0 to 23
      * @param minute  the minute-of-hour to represent, from 0 to 59
      * @return the UTC-based {@link Date}
      */
     public static Date of(int year, int month, int day, int hour, int minute){
-        Assert.isTrue(1 <= month && month <= 12, "month param must be a value from 1 (January) to 12 (December)");
+        Assert.isTrue(0 <= month && month <= 11, "month param must be a value from 0 (January) to 11 (December)");
         Assert.isTrue(1 <= day && day <= 31, "day param must be a value from 1 to 31");
         Assert.isTrue(0 <= hour && hour <= 23, "hour param must be a value from 0 to 23");
         Assert.isTrue(0 <= minute && minute <= 59, "minute param must be a value from 0 to 59");
-        LocalDateTime zonedDateTime = LocalDateTime.of(year, Month.of(month), day, hour, minute);
-        return Date.from(zonedDateTime.atZone(UTC_ZONE_ID).toInstant());
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
     }
 
     /**
-     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day}, {@code hour}, {@code minute} and {@code second}
-     * @param year  the year to represent, from MIN_YEAR to MAX_YEAR
-     * @param month  the month-of-year to represent, from 1 (January) to 12 (December)
+     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day}, {@code hour}, {@code minute} and {@code second}.
+     * Uses the current date and time, sets the specified {@code year}, {@code month}, {@code day}, {@code hour}, {@code minute} and {@code second}, and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the year to represent
+     * @param month  the month-of-year to represent, from 0 (January) to 11 (December)
      * @param day  the day-of-month to represent, from 1 to 31
      * @param hour  the hour-of-day to represent, from 0 to 23
      * @param minute  the minute-of-hour to represent, from 0 to 59
@@ -139,13 +171,51 @@ public class Instants {
      * @return the UTC-based {@link Date}
      */
     public static Date of(int year, int month, int day, int hour, int minute, int second){
-        Assert.isTrue(1 <= month && month <= 12, "month param must be a value from 1 (January) to 12 (December)");
+        Assert.isTrue(0 <= month && month <= 11, "month param must be a value from 0 (January) to 11 (December)");
         Assert.isTrue(1 <= day && day <= 31, "day param must be a value from 1 to 31");
         Assert.isTrue(0 <= hour && hour <= 23, "hour param must be a value from 1 to 23");
         Assert.isTrue(0 <= minute && minute <= 59, "minute param must be a value from 0 to 59");
         Assert.isTrue(0 <= second && second <= 59, "second param must be a value from 0 to 59");
-        LocalDateTime zonedDateTime = LocalDateTime.of(year, Month.of(month), day, hour, minute, second);
-        return Date.from(zonedDateTime.atZone(UTC_ZONE_ID).toInstant());
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, second);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
+    }
+
+    /**
+     * Creates an UTC-based {@Link Date} from the provided {@code year}, {@code month}, {@code day}, {@code hour}, {@code minute} and {@code second}.
+     * Uses the current date and time, sets the specified {@code year}, {@code month}, {@code day}, {@code hour}, {@code minute} and {@code second}, and returns the Date converted to a UTC timestamp.
+     *
+     * @param year  the YEAR to represent
+     * @param month  the MONTH to represent, from 0 (January) to 11 (December)
+     * @param day  the DAY_OF_MONTH to represent, from 1 to 31
+     * @param hour  the HOUR_OF_DAY to represent, from 0 to 23
+     * @param minute  the MINUTE to represent, from 0 to 59
+     * @param second  the SECOND to represent, from 0 to 59
+     * @param millisecond the MILLISECOND to represent, from 0 to 59
+     * @return the UTC-based {@link Date}
+     */
+    public static Date of(int year, int month, int day, int hour, int minute, int second, int millisecond){
+        Assert.isTrue(0 <= month && month <= 11, "month param must be a value from 0 (January) to 11 (December)");
+        Assert.isTrue(1 <= day && day <= 31, "day param must be a value from 1 to 31");
+        Assert.isTrue(0 <= hour && hour <= 23, "hour param must be a value from 1 to 23");
+        Assert.isTrue(0 <= minute && minute <= 59, "minute param must be a value from 0 to 59");
+        Assert.isTrue(0 <= second && second <= 59, "second param must be a value from 0 to 59");
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, second);
+        cal.set(Calendar.MILLISECOND, millisecond);
+        TimeZone fromTimeZone = cal.getTimeZone();
+        return new Date(convertDate(cal.getTimeInMillis(), fromTimeZone, UTC_TIMEZONE));
     }
 
     private static long getTimeZoneOffset(long time, TimeZone from, TimeZone to) {
