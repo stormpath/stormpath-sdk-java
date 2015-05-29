@@ -87,8 +87,11 @@ public class DefaultDataStore implements InternalDataStore {
     private static final Logger log = LoggerFactory.getLogger(DefaultDataStore.class);
 
     public static final String DEFAULT_SERVER_HOST = "api.stormpath.com";
-
     public static final int DEFAULT_API_VERSION = 1;
+
+    public static final String DEFAULT_CRITERIA_MSG =
+        "The " + DefaultDataStore.class.getName() + " implementation only functions with " +
+        DefaultCriteria.class.getName() + " instances.";
 
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
@@ -195,34 +198,30 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
-        Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(clazz, "Resource class argument cannot be null.");
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
-        return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
+        return getResource(href, clazz, (Map<String,Object>)null);
     }
 
-    @Override
-    public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, queryParameters);
-        return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
-        Assert.isInstanceOf(DefaultCriteria.class, criteria,
-                            "The " + getClass().getName() + " implementation only functions with " +
-                            DefaultCriteria.class.getName() + " instances.");
-
+        Assert.isInstanceOf(DefaultCriteria.class, criteria, DEFAULT_CRITERIA_MSG);
         DefaultCriteria dc = (DefaultCriteria) criteria;
         QueryString qs = queryStringFactory.createQueryString(href, dc);
-        return getResource(href, clazz, qs);
+        return (T)getResource(href, clazz, (Map)qs);
     }
 
-    private <T extends Resource> T getResource(String href, Class<T> clazz, QueryString qs) {
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String,Object> queryParameters) {
 
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "Resource class argument cannot be null.");
+
+        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, queryParameters);
+        href = sanitized.getHrefWithoutQuery();
         //need to qualify the href it to ensure our cache lookups work as expected
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
+
+        QueryString qs = sanitized.getQuery();
 
         Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
 
@@ -286,14 +285,14 @@ public class DefaultDataStore implements InternalDataStore {
         return instantiate(childClass, data, qs);
     }
 
-    private Map<String, ?> retrieveResponseValue(String href, Class clazz, QueryString qs) {
+    private Map<String, ?> retrieveResponseValue(String href, Class<? extends Resource> clazz, QueryString qs) {
 
         QueryString filteredQs = (QueryString) queryStringFilterProcessor.process(clazz, qs);
         Map<String, ?> data = null;
         if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, filteredQs)) {
 
             if (isApiKeyCollectionQuery(clazz, filteredQs)) {
-                String cacheHref = new String(baseUrl + "/apiKeys/" + filteredQs.get(ID.getName()));
+                String cacheHref = baseUrl + "/apiKeys/" + filteredQs.get(ID.getName());
                 Class cacheClass = com.stormpath.sdk.api.ApiKey.class;
 
                 Map apiKeyData = getCachedValue(cacheHref, cacheClass);
@@ -311,32 +310,36 @@ public class DefaultDataStore implements InternalDataStore {
             }
         }
 
-        Map<String, ?> returnResponseBody = data;
-        if (Collections.isEmpty(data)) {
-            //not cached - execute a request:
-            Request request = createRequest(HttpMethod.GET, href, filteredQs);
-            data = executeRequest(request);
-
-            if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
-                //cache for further use:
-                cache(clazz, data, filteredQs);
-            }
-
-            // Adding the ApiKeyResourcePropertiesFilter here because if the resource was cached, the ApiKeyCachePropertiesFilter
-            // already took care of decrypting the api key secret to return to the user.
-            // Transitory filters serve the purpose of filtering the resource properties to return to the user,
-            // based on the current request.
-            // For example: decrypting the api key secret to return to the user
-            // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
-            // be added when initializing the filter (they depend on the current request).
-            List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
-            List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
-            filters.add(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
-            PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
-            returnResponseBody = processor.process(clazz, data);
+        if (!Collections.isEmpty(data)) {
+            //found in the cache - return immediately:
+            return data;
         }
 
-        return returnResponseBody;
+        //not cached - execute a request:
+        Request request = createRequest(HttpMethod.GET, href, filteredQs);
+        data = executeRequest(request);
+
+        if (!Collections.isEmpty(data) && isCacheUpdateEnabled(clazz)) {
+            //cache for further use:
+            cache(clazz, data, filteredQs);
+        }
+
+        // Adding the ApiKeyResourcePropertiesFilter here because if the resource was cached, the ApiKeyCachePropertiesFilter
+        // already took care of decrypting the api key secret to return to the user.
+        // Transitory filters serve the purpose of filtering the resource properties to return to the user,
+        // based on the current request.
+        // For example: decrypting the api key secret to return to the user
+        // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
+        // be added when initializing the filter (they depend on the current request).
+        return filterResourceData(clazz, filteredQs, data);
+    }
+
+    private Map<String,?> filterResourceData(Class clazz, QueryString qs, Map<String,?> data) {
+        List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
+        List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
+        filters.add(new ApiKeyResourcePropertiesFilter(apiKey, qs));
+        PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
+        return processor.process(clazz, data);
     }
 
 
@@ -425,8 +428,8 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.isInstanceOf(Saveable.class, resource);
 
         Assert.isInstanceOf(DefaultOptions.class, options,
-                "The " + getClass().getName() + " implementation only functions with " +
-                        DefaultOptions.class.getName() + " instances.");
+                            "The " + getClass().getName() + " implementation only functions with " +
+                            DefaultOptions.class.getName() + " instances.");
 
         AbstractResource aResource = (AbstractResource) resource;
 
@@ -500,11 +503,7 @@ public class DefaultDataStore implements InternalDataStore {
         // For example: decrypting the api key secret to return to the user
         // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
         // be added when initializing the filter (they depend on the current request).
-        List<PropertiesFilter> resourceDataFilters = resourceDataFilterProcessor.getFilters();
-        List<PropertiesFilter> filters = new ArrayList<PropertiesFilter>(resourceDataFilters);
-        filters.add(new ApiKeyResourcePropertiesFilter(apiKey, filteredQs));
-        PropertiesFilterProcessor processor = new DefaultPropertiesFilterProcessor(filters);
-        Map<String,?> returnResponseBody = processor.process(returnType, responseBody);
+        Map<String,?> returnResponseBody = filterResourceData(returnType, filteredQs, responseBody);
 
         if (Collections.isEmpty(responseBody)) {
             return null;
@@ -587,8 +586,6 @@ public class DefaultDataStore implements InternalDataStore {
         if (Collections.isEmpty(customData)) {
             return;
         }
-
-        assert customData != null;
 
         Map<String, Object> customDataToCache = new LinkedHashMap<String, Object>();
         String customDataHref = directoryEntityHref + "/customData";
