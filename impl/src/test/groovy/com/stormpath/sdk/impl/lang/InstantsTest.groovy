@@ -15,10 +15,8 @@
 */
 package com.stormpath.sdk.impl.lang
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.lang.Instants
 import org.testng.annotations.Test
-import java.text.DateFormat
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
@@ -26,8 +24,6 @@ import static org.testng.Assert.fail
  * @since 1.0-SNAPSHOT
  */
 class InstantsTest {
-
-    private static final DateFormat dateFormat = new ISO8601DateFormat();
 
     @Test
     void testMethodErrors(){
