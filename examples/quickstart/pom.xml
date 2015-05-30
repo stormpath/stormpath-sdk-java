@@ -4,10 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>quickstart-code</groupId>
-    <artifactId>quickstart-code</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>com.stormpath.sdk</groupId>
+        <artifactId>stormpath-sdk-root</artifactId>
+        <version>1.0.RC4.3-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
+    <artifactId>stormpath-sdk-examples-quickstart</artifactId>
     <name>Stormpath Java SDK :: Examples :: Quickstart Code</name>
     <description>A simple (non-web) application to demonstrate the example code in the Stormpath Java Quickstart</description>
     <packaging>jar</packaging>
@@ -16,12 +20,15 @@
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-api</artifactId>
-            <version>1.0.RC4.1</version>
         </dependency>
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-httpclient</artifactId>
-            <version>1.0.RC4.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

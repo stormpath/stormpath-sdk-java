@@ -190,13 +190,13 @@ Authentication Scheme
 
 The Stormpath SDK Client communicates with Stormpath using a very secure `cryptographic digest`_-based authentication scheme.
 
-If you deploy your app on Google App Engine however, you might experience some problems.  You can change the scheme to use ``basic`` authentication by setting the following configuration property and value:
+If you deploy your app on Google Quickstart Engine however, you might experience some problems.  You can change the scheme to use ``basic`` authentication by setting the following configuration property and value:
 
 .. code-block:: properties
 
    stormpath.authentication.scheme = basic
 
-If your application is not deployed on Google App Engine, we recommend that you *do not* set this property.
+If your application is not deployed on Google Quickstart Engine, we recommend that you *do not* set this property.
 
 Usage
 ~~~~~

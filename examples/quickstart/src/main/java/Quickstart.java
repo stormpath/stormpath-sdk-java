@@ -13,6 +13,8 @@ import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,11 +24,11 @@ import java.util.Map;
  *
  * @since 1.0.RC4.3
  */
-public class App {
+public class Quickstart {
+
+    private static final Logger log = LoggerFactory.getLogger(Quickstart.class);
 
     public static void main(String[] args) {
-
-        private static final Logger log = LoggerFactory.getLogger(App.class);
 
         // Instantiate a builder for your Client. If needed, settings like Proxy and Caching can be defined here.
         ClientBuilder builder = Clients.builder();
@@ -52,10 +54,10 @@ public class App {
         Account account = client.instantiate(Account.class);
 
         //Set the account properties
-        account.setGivenName("Joe");
-                .setSurname("Stormtrooper");
-                .setUsername("tk421");  // optional, defaults to email if unset
-                .setEmail("tk421@stormpath.com");
+        account.setGivenName("Joe")
+                .setSurname("Stormtrooper")
+                .setUsername("tk421")  // optional, defaults to email if unset
+                .setEmail("tk421@stormpath.com")
                 .setPassword("Changeme1");
         CustomData customData = account.getCustomData();
         customData.put("favoriteColor", "white");

@@ -42,7 +42,7 @@
             <br/>
             <br/>
 
-            <h2>What This Sample App Demonstrates</h2>
+            <h2>What This Sample Quickstart Demonstrates</h2>
 
             <br/>
             <br/>

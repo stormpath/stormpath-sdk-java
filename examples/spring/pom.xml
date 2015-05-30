@@ -78,7 +78,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>App</mainClass>
+                    <mainClass>Quickstart</mainClass>
                     <systemProperties>
                         <systemProperty>
                             <key>logback.configurationFile</key>

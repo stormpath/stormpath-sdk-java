@@ -51,6 +51,10 @@ class SdkQuickstartIT extends ClientIT {
 
         assertNotNull client
         assertEquals client.getApiKey().getId(), apiKey.getId()
+
+        //Retrieves the current tenant for the just instantiated client
+        def tenant = client.getCurrentTenant()
+        assertNotNull tenant.getHref()
     }
 
     @Test
