@@ -19,20 +19,24 @@ import java.util.Map;
 
 /**
  * This class demonstrates the code found in the Stormpath Java SDK QuickStart Guide
+ *
+ * @since 1.0.RC4.3
  */
 public class App {
 
     public static void main(String[] args) {
 
-        // Instantiate a builder for your client and set required properties
+        private static final Logger log = LoggerFactory.getLogger(App.class);
+
+        // Instantiate a builder for your Client. If needed, settings like Proxy and Caching can be defined here.
         ClientBuilder builder = Clients.builder();
 
-        // Build the client instance that you will use throughout your application code
+        //No need to define anything else; build the Client instance. The ApiKey information will be automatically sought.
         Client client = builder.build();
 
-        // Obtain your default tenant
+        // Obtain your current tenant
         Tenant tenant = client.getCurrentTenant();
-        System.out.println("Current Tenant: " + tenant.getHref() + ", " + tenant.getName());
+        log.info("Current Tenant: " + tenant.getHref() + ", " + tenant.getName());
 
         // Retrieve your application
         ApplicationList applications = tenant.getApplications(
@@ -40,7 +44,7 @@ public class App {
         );
 
         Application application = applications.iterator().next();
-        System.out.println("Application: " + application.getHref() + ", " + application.getName());
+        log.info("Application: " + application.getHref() + ", " + application.getName());
 
         // Create a User Account
 
@@ -49,10 +53,10 @@ public class App {
 
         //Set the account properties
         account.setGivenName("Joe");
-        account.setSurname("Stormtrooper");
-        account.setUsername("tk421"); //optional, defaults to email if unset
-        account.setEmail("tk421@stormpath.com");
-        account.setPassword("Changeme1");
+                .setSurname("Stormtrooper");
+                .setUsername("tk421");  // optional, defaults to email if unset
+                .setEmail("tk421@stormpath.com");
+                .setPassword("Changeme1");
         CustomData customData = account.getCustomData();
         customData.put("favoriteColor", "white");
 
@@ -61,8 +65,8 @@ public class App {
 
         // Print account details
 
-        System.out.println("Given Name: " + account.getGivenName());
-        System.out.println("Favorite Color: " + account.getCustomData().get("favoriteColor"));
+        log.info("Given Name: " + account.getGivenName());
+        log.info("Favorite Color: " + account.getCustomData().get("favoriteColor"));
 
         // Search for a User Account
 
@@ -71,7 +75,7 @@ public class App {
         AccountList accounts = application.getAccounts(queryParams);
         account = accounts.iterator().next();
 
-        System.out.println("Found Account: " + account.getHref() + ", " + account.getEmail());
+        log.info("Found Account: " + account.getHref() + ", " + account.getEmail());
 
         // Authenticate a User Account
 
@@ -85,9 +89,9 @@ public class App {
         try {
             AuthenticationResult result = application.authenticateAccount(request);
             account = result.getAccount();
-            System.out.println("Authenticated Account: " + account.getUsername() + ", Email: " + account.getEmail());
+            log.info("Authenticated Account: " + account.getUsername() + ", Email: " + account.getEmail());
         } catch (ResourceException ex) {
-            System.out.println(ex.getStatus() + " " + ex.getMessage());
+            log.error(ex.getMessage());
         }
     }
 }
