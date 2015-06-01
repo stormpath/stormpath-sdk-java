@@ -237,7 +237,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         QueryString qs = sanitized.getQuery();
 
-        Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
+        Map<String, ?> data = getResourceData(href, clazz, qs);
 
         //@since 1.0.RC3
         if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) &&
@@ -285,7 +285,7 @@ public class DefaultDataStore implements InternalDataStore {
         //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
 
-        Map<String, ?> data = retrieveResponseValue(href, parent, qs);
+        Map<String, ?> data = getResourceData(href, parent, qs);
 
         //@since 1.0.RC3
         if (!Collections.isEmpty(data) && data.get("href") != null &&
@@ -311,7 +311,7 @@ public class DefaultDataStore implements InternalDataStore {
         return instantiate(childClass, data, qs);
     }
 
-    private Map<String, ?> retrieveResponseValue(String href, Class<? extends Resource> clazz, QueryString qs) {
+    private Map<String, ?> getResourceData(String href, Class<? extends Resource> clazz, QueryString qs) {
 
         QueryString filteredQs = queryStringFilterProcessor.process(clazz, qs);
         Map<String, ?> data = null;
@@ -660,13 +660,13 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.isInstanceOf(AbstractResource.class, resource, "Resource argument must be an AbstractResource.");
 
         AbstractResource abstractResource = (AbstractResource) resource;
+        uncache(abstractResource);
+
         String href = abstractResource.getHref();
 
         if (Strings.hasText(possiblyNullPropertyName)) { //delete just that property, not the entire resource:
             href = href + "/" + possiblyNullPropertyName;
         }
-
-        uncache(abstractResource);
 
         Request request = createRequest(HttpMethod.DELETE, href, null);
 
@@ -984,7 +984,7 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 1.0.beta
      */
-    private Response execute(Request request) {
+    private Response execute(Request request) throws ResourceException {
 
         applyDefaultRequestHeaders(request);
 
@@ -1039,7 +1039,26 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     protected boolean isFullyQualified(String href) {
-        return href.toLowerCase().startsWith("http");
+
+        if (href == null || href.length() < 5) {
+            return false;
+        }
+
+        char c = href.charAt(0);
+        if (c == 'h' || c == 'H') {
+            c = href.charAt(1);
+            if (c == 't' || c == 'T') {
+                c = href.charAt(2);
+                if (c == 't' || c == 'T') {
+                    c = href.charAt(3);
+                    if (c == 'p' || c == 'P') {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     protected String qualify(String href) {
