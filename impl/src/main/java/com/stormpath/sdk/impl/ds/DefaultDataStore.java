@@ -1031,16 +1031,34 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 1.0.RC3
      */
     @SuppressWarnings({ "SuspiciousMethodCalls", "unchecked" })
-    private Enlistment toEnlistment(Map data) {
-        Enlistment enlistment;
-        Object responseHref = data.get("href");
-        if (this.hrefMapStore.containsKey(responseHref)) {
-            enlistment = this.hrefMapStore.get(responseHref);
-            enlistment.setProperties((Map<String, Object>) data);
-        } else {
-            enlistment = new Enlistment((Map<String, Object>) data);
-            this.hrefMapStore.put((String) responseHref, enlistment);
+    private Enlistment toEnlistment(final Map data) {
+
+        Assert.notEmpty(data, "data cannot be null or empty.");
+        String href = (String)data.get("href");
+        Assert.hasText(href, "href cannot be null or empty.");
+
+        Map modified = new LinkedHashMap<String, Object>(data.size());
+
+        //since 1.0.RC4.3 - need to recursively add enlistments if the data is expanded:
+        for(Object o : data.entrySet()) {
+            Map.Entry entry = (Map.Entry)o;
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof Map && isMaterialized((Map<String,?>)value)) {
+                value = toEnlistment((Map)value);
+            }
+            modified.put(key, value);
         }
+
+        Enlistment enlistment;
+        if (this.hrefMapStore.containsKey(href)) {
+            enlistment = this.hrefMapStore.get(href);
+            enlistment.setProperties((Map<String, Object>) modified);
+        } else {
+            enlistment = new Enlistment((Map<String, Object>) modified);
+            this.hrefMapStore.put(href, enlistment);
+        }
+
         return enlistment;
     }
 }
