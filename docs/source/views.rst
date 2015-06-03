@@ -153,7 +153,7 @@ If you do wish to use your own page template, here is how:
 
    .. code-block:: jsp
 
-     <%@tag description="My Quickstart page template" pageEncoding="UTF-8"%>
+     <%@tag description="My App page template" pageEncoding="UTF-8"%>
      <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
      <%-- Any other taglibs --%>
      <%@attribute name="title" required="false" %>
@@ -173,7 +173,7 @@ If you do wish to use your own page template, here is how:
 
    The important points to note:
 
-   * ``<%@tag description="My Quickstart page template" pageEncoding="UTF-8"%>`` must be at the top of the file
+   * ``<%@tag description="My App page template" pageEncoding="UTF-8"%>`` must be at the top of the file
    * ``<jsp:doBody/>`` must be somewhere in the template.  This will be substituted at runtime with the actual page content.
    * A ``title`` page attribute is supported.  This can be specified in views that use the template via ``<jsp:attribute name="title">Value Here</jsp:attribute>``
 

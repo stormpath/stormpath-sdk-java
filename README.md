@@ -42,14 +42,14 @@ Below are some resources you might find useful!
 
 **Spring Support**
 - [Spring Boot Stormpath Web Starter](https://docs.stormpath.com/java/spring-boot-web/)
-- [Example Stormapth Spring Quickstart](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring)
-- [Example Stormpath Spring Web Quickstart](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-webmvc)
-- [Example Stormpath Spring Boot Quickstart](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot)
-- [Example Stormpath Spring Boot Web Quickstart](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot-webmvc)
+- [Example Stormapth Spring App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring)
+- [Example Stormpath Spring Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-webmvc)
+- [Example Stormpath Spring Boot App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot)
+- [Example Stormpath Spring Boot Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot-webmvc)
 
 **Spring Security Support**
 - [Stormpath Spring Security Plugin](https://github.com/stormpath/stormpath-spring-security)
-- [Stormpath Spring Security Sample Quickstart](https://github.com/stormpath/stormpath-spring-security-example)
+- [Stormpath Spring Security Sample App](https://github.com/stormpath/stormpath-spring-security-example)
 
 **Apache Shiro Support**
 - [Stormpath-Shiro Plugin](https://github.com/stormpath/stormpath-shiro)

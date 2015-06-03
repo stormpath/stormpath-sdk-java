@@ -115,7 +115,7 @@
         <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
         <skipITs>true</skipITs>
 
-        <!-- Sample Quickstart Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
+        <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
 
     </properties>
