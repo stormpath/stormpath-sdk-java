@@ -23,12 +23,7 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GithubProvider
-import com.stormpath.sdk.provider.GoogleProviderData
-import com.stormpath.sdk.provider.Provider
-import com.stormpath.sdk.provider.ProviderData
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -71,7 +66,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource(href, null, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "parent class argument cannot be null.")
+            assertEquals(e.getMessage(), "Resource class argument cannot be null.")
         }
 
         try {
@@ -204,7 +199,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider", Provider, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "providerId could not be found in: null.")
+            assertEquals(e.getMessage(), "Unable to obtain resource data from the API server or from cache.")
         }
 
         verify(requestExecutor, response, facebookProvider)

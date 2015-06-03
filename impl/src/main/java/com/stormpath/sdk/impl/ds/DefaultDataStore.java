@@ -294,7 +294,10 @@ public class DefaultDataStore implements InternalDataStore {
         Response response = execute(request);
         Map<String,?> body = getBody(response);
 
-        Assert.notEmpty(body, "Unable to obtain resource data from server or from cache.");
+        if (Collections.isEmpty(body)) {
+            throw new IllegalStateException("Unable to obtain resource data from the API server or from cache.");
+
+        }
 
         if (isCacheUpdateEnabled(clazz)) {
             //cache for further use:
