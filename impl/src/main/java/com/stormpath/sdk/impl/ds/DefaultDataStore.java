@@ -384,136 +384,70 @@ public class DefaultDataStore implements InternalDataStore {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource> T create(String parentHref, T resource) {
-
-        Class<T> clazz = (Class<T>) resource.getClass();
-
-        T returnValue = create(parentHref, resource, clazz);
-
-        //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource in = (AbstractResource) resource;
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-
-        //@since 1.0.RC3
-        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) &&
-            props.get("href") != null) {
-            in.setProperties(toEnlistment(props));
-        } else {
-            in.setProperties(props);
-        }
-
-        return (T) in;
+        return (T)save(parentHref, resource, resource.getClass(), null);
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends Resource> T create(String parentHref, T resource, Options options) {
-
-        Assert.isInstanceOf(DefaultOptions.class, options, DEFAULT_OPTIONS_MSG);
-
-        DefaultOptions defaultOptions = (DefaultOptions) options;
-        QueryString qs = queryStringFactory.createQueryString(parentHref, defaultOptions);
-
-        Class<T> clazz = (Class<T>) resource.getClass();
-
-        T returnValue = save(parentHref, resource, clazz, qs);
-
-        //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource in = (AbstractResource) resource;
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-
-        //@since 1.0.RC3
-        if (!Collections.isEmpty(props) && !CollectionResource.class.isAssignableFrom(clazz) &&
-            props.get("href") != null) {
-            in.setProperties(toEnlistment(props));
-        } else {
-            in.setProperties(props);
-        }
-
-        return (T) in;
+        QueryString qs = toQueryString(parentHref, options);
+        return (T)save(parentHref, resource, resource.getClass(), qs);
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType) {
+        return save(parentHref, resource, returnType, null);
+    }
+
     @Override
     public <T extends Resource & Saveable> void save(T resource) {
-        Assert.notNull(resource, "resource argument cannot be null.");
-        Assert.isInstanceOf(AbstractResource.class, resource);
-        Assert.isInstanceOf(Saveable.class, resource);
-
-        AbstractResource aResource = (AbstractResource) resource;
-
-        String href = aResource.getHref();
-        Assert.hasLength(href, HREF_REQD_MSG);
-
-        Class<T> clazz = (Class<T>) resource.getClass();
-
-        T returnValue = save(href, resource, clazz);
-
-        //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-        aResource.setProperties(props);
+        save(resource, (Options)null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource & Saveable> void save(T resource, Options options) {
-        Assert.notNull(resource, "resource argument cannot be null.");
-        Assert.isInstanceOf(AbstractResource.class, resource);
-        Assert.isInstanceOf(Saveable.class, resource);
-
-        Assert.isInstanceOf(DefaultOptions.class, options, DEFAULT_OPTIONS_MSG);
-
-        AbstractResource aResource = (AbstractResource) resource;
-
-        String href = aResource.getHref();
-        Assert.hasLength(href, HREF_REQD_MSG);
-
-        DefaultOptions defaultOptions = (DefaultOptions) options;
-        QueryString qs = queryStringFactory.createQueryString(href, defaultOptions);
-
-        Class<T> clazz = (Class<T>) resource.getClass();
-
-        T returnValue = save(href, resource, clazz, qs);
-
-        //ensure the caller's argument is updated with what is returned from the server:
-        AbstractResource ret = (AbstractResource) returnValue;
-        LinkedHashMap<String, Object> props = toMap(ret, false);
-        aResource.setProperties(props);
-    }
-
-    @Override
-    public <T extends Resource, R extends Resource> R create(String parentHref, T resource,
-                                                             Class<? extends R> returnType) {
-        return save(parentHref, resource, returnType);
+        Assert.notNull(options, "options argument cannot be null.");
+        String href = resource.getHref();
+        Assert.hasText(href, HREF_REQD_MSG);
+        QueryString qs = toQueryString(href, options);
+        save(href, resource, resource.getClass(), qs);
     }
 
     @Override
     public <T extends Resource & Saveable, R extends Resource> R save(T resource, Class<? extends R> returnType) {
-        return save(resource.getHref(), resource, returnType);
+        Assert.hasText(resource.getHref(), HREF_REQD_MSG);
+        return save(resource.getHref(), resource, returnType, null);
     }
 
-    private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType) {
-        return save(href, resource, returnType, null);
+    private QueryString toQueryString(String href, Options options) {
+        if (options == null) {
+            return null;
+        }
+        Assert.isInstanceOf(DefaultOptions.class, options, DEFAULT_OPTIONS_MSG);
+        DefaultOptions defaultOptions = (DefaultOptions)options;
+        return queryStringFactory.createQueryString(href, defaultOptions);
     }
 
-    private <T extends Resource, R extends Resource> R save(String href, T resource, Class<? extends R> returnType,
-                                                            QueryString qs) {
+    @SuppressWarnings("unchecked")
+    private <T extends Resource, R extends Resource> R save(String href, final T resource, Class<? extends R> returnType, QueryString qs) {
+
+        Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource);
+        Assert.isTrue(!CollectionResource.class.isAssignableFrom(resource.getClass()), "Collections cannot be persisted.");
 
+        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, qs);
+        href = sanitized.getHrefWithoutQuery();
+        //need to qualify the href it to ensure our cache lookups work as expected
+        //(cache key = fully qualified href):
         href = ensureFullyQualified(href);
 
-        AbstractResource abstractResource = (AbstractResource) resource;
-
+        final AbstractResource abstractResource = (AbstractResource) resource;
         LinkedHashMap<String, Object> props = toMap(abstractResource, true);
-
         String bodyString = mapMarshaller.marshal(props);
-
         StringInputStream body = new StringInputStream(bodyString);
         long length = body.available();
-
         QueryString filteredQs = queryStringFilterProcessor.process(returnType, qs);
         Request request = new DefaultRequest(HttpMethod.POST, href, filteredQs, null, body, length);
 
@@ -542,10 +476,6 @@ public class DefaultDataStore implements InternalDataStore {
         if (Collections.isEmpty(responseBody)) {
             return null;
         }
-
-        //asserts invariant given that we should have returned if the responseBody is null or empty:
-        //noinspection ConstantConditions
-        assert responseBody != null && !responseBody.isEmpty() : "Response body must be non-empty.";
 
         //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
         boolean emailVerification = resource instanceof EmailVerificationToken && returnType.equals(Account.class);
@@ -585,8 +515,13 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         //@since 1.0.RC3
-        if (!Collections.isEmpty(returnResponseBody) && returnResponseBody.get("href") != null) {
+        if (isMaterialized(returnResponseBody)) {
             returnResponseBody = toEnlistment(returnResponseBody);
+        }
+
+        //ensure the caller's argument is updated with what is returned from the server if the types are the same:
+        if (returnType.equals(abstractResource.getClass())) {
+            abstractResource.setProperties((Map<String,Object>)returnResponseBody);
         }
 
         return resourceFactory.instantiate(returnType, returnResponseBody);

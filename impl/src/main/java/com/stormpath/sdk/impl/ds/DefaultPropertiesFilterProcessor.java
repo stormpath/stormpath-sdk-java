@@ -44,6 +44,11 @@ public class DefaultPropertiesFilterProcessor<T extends Map<String,?>> implement
      */
     @Override
     public T process(Class clazz, T properties) {
+
+        if (properties == null) {
+            return null;
+        }
+
         T result = properties;
         for (PropertiesFilter<T> filter : filters) {
             result = filter.filter(clazz, result);
