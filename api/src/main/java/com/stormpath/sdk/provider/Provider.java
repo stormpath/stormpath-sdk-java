@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.provider;
 
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Date;
@@ -26,7 +27,7 @@ import java.util.Date;
  * @see FacebookProvider
  * @since 1.0.beta
  */
-public interface Provider extends Resource {
+public interface Provider extends Resource, Auditable {
 
     /**
      * Returns the customData's created date.

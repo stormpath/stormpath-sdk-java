@@ -18,7 +18,11 @@ package com.stormpath.sdk.resource;
 import java.util.Date;
 
 /**
- * @since 1.0-SNAPSHOT
+ * Interface to be implemented by {@link Resource Resources} that contain and can be retrieved using the {@code Resource#createdAt} and {@code Resource#modifiedAt} fields as part of the query {@link com.stormpath.sdk.query.Criteria Criteria}.
+ * For example: {@link com.stormpath.sdk.account.Account Account}, {@link com.stormpath.sdk.application.Application Application},
+ * {@link com.stormpath.sdk.directory.Directory Directory} and {@link com.stormpath.sdk.group.Group Group}.
+ *
+ * @since 1.0.RC4.3
  */
 public interface Auditable {
 

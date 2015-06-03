@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.3
  */
 public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
@@ -110,11 +110,11 @@ public class DefaultDateExpressionFactory implements DateExpressionFactory {
 
     private Date calculateDateFromDuration(Date begin, Duration duration){
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(begin.getTime() + this.DurationToIntMillis(duration));
+        cal.setTimeInMillis(begin.getTime() + this.durationToMillis(duration));
         return cal.getTime();
     }
 
-    private long DurationToIntMillis(Duration duration){
+    private long durationToMillis(Duration duration){
         switch (duration.getTimeUnit()){
             case DAYS:
                 return TimeUnit.DAYS.toMillis(duration.getValue());

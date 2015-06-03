@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * @since 1.0.0
  */
-public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource implements Auditable, Saveable, Extendable {
+public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource implements Auditable, Extendable {
 
     public static final ResourceReference<CustomData> CUSTOM_DATA = new ResourceReference<CustomData>("customData", CustomData.class);
 
@@ -85,7 +85,7 @@ public abstract class AbstractExtendableInstanceResource extends AbstractInstanc
     }
 
     /**
-     * @since 1.0-SNAPSHOT
+     * @since 1.0.RC4.3
      */
     @Override
     public Date getCreatedAt() {

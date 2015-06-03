@@ -26,9 +26,9 @@ import static org.easymock.EasyMock.replay
 import static org.testng.Assert.assertEquals
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.3
  */
-class AbstractExtendableInstanceResourceTest {
+class AuditableResourceTest {
 
     @Test
     void testDefault() {

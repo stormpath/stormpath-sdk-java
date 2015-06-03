@@ -21,7 +21,7 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.3
  */
 class InstantsTest {
 

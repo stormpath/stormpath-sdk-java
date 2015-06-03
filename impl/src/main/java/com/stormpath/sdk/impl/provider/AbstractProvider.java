@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
-public abstract class AbstractProvider extends AbstractResource implements Provider, Auditable {
+public abstract class AbstractProvider extends AbstractResource implements Provider {
 
     // SIMPLE PROPERTIES
     static final StringProperty PROVIDER_ID = new StringProperty("providerId");
@@ -53,7 +53,7 @@ public abstract class AbstractProvider extends AbstractResource implements Provi
     }
 
     /**
-     * @since 1.0-SNAPSHOT
+     * @since 1.0.RC4.3
      */
     @Override
     public Date getCreatedAt() {

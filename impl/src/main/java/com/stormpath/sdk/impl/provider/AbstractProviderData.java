@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
-public abstract class AbstractProviderData extends AbstractResource implements ProviderData, Auditable {
+public abstract class AbstractProviderData extends AbstractResource implements ProviderData {
 
     // SIMPLE PROPERTIES
     static final StringProperty PROVIDER_ID = new StringProperty("providerId");

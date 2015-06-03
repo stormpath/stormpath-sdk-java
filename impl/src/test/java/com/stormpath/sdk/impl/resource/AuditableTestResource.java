@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @since 1.0-SNAPSHOT
+ * This is a resource created for testing purposes only.
+ *
+ * @since 1.0.RC4.3
  */
 public class AuditableTestResource extends AbstractExtendableInstanceResource {
 

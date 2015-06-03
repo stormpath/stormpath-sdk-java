@@ -259,7 +259,7 @@ public class ImmutableAccount implements Account {
     }
 
     /**
-     * @since 1.0-SNAPSHOT
+     * @since 1.0.RC4.3
      */
     @Override
     public Date getCreatedAt() {

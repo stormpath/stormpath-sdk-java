@@ -22,18 +22,20 @@ import java.util.Date;
 /**
  * An {@code DateExpressionFactory} creates a single condition (matches) for resource properties of Date type.
  *
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.3
  */
 public interface DateExpressionFactory {
 
     /**
      * Convenience method that returns a new equals expression as a String expression, indicating the specified value should match the property value.
      * Multiple values are allowed, for example:
-     * .createdAt().matches("[,2014-04-05T12:00:00]"): matches all entities created between the beginning of time and noon of 2014/04/05
-     * .createdAt().matches("[2015-01-01, 2015-02-01)"): matches all entities created/modified between 2015/01/01 and 2015/02/01, excluding those created on 2015/02/01
-     * .createdAt().matches("[2015-02-01T12:00:00,]"): matches all entities created between noon of 2015-02-01 and now
-     * .modifiedAt().matches("2015-01"): is equivalent to "[2015-01-01T00:00:00.000Z,2015-02-01T00:00:00.000Z)" and matches all entities modified during January 2015
-     * .modifiedAt().matches("2015-01-03T11:23:14.233"): matches all entities modified only at that exact instant represented by the ISO-8601 Timestamp
+     * <pre>
+     * account.createdAt().matches("[,2014-04-05T12:00:00]"): matches all Accounts created between the beginning of time and noon of 2014/04/05
+     * account.createdAt().matches("[2015-01-01, 2015-02-01)"): matches all Accounts created/modified between 2015/01/01 and 2015/02/01, excluding those created on 2015/02/01
+     * account.createdAt().matches("[2015-02-01T12:00:00,]"): matches all Accounts created between noon of 2015-02-01 and now
+     * account.modifiedAt().matches("2015-01"): is equivalent to "[2015-01-01T00:00:00.000Z,2015-02-01T00:00:00.000Z)" and matches all Accounts modified during January 2015
+     * account.modifiedAt().matches("2015-01-03T11:23:14.233"): matches all Accounts modified only at that exact instant represented by the ISO-8601 Timestamp
+     * </pre>
      *
      * @param value the value that should equal the property value (ignoring case).
      * @return a new case-insensitive equals expression reflecting the property name and the specified value.
@@ -43,7 +45,9 @@ public interface DateExpressionFactory {
     /**
      * Returns a new expression indicating the property value must be greater than the specified date.
      * For example:
-     * .createdAt().gt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00")): matches only those entities created after 2014/01/01 at noon
+     * <pre>
+     * application.createdAt().gt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00")): matches only those Applications created after 2014/01/01 at noon
+     * </pre>
      *
      * @param date the {@link Date} to compare the property value
      * @return a new case-insensitive expression reflecting the property name and the specified value.
@@ -53,7 +57,9 @@ public interface DateExpressionFactory {
     /**
      * Returns a new expression indicating the property value must be greater than or equal to the specified date.
      * For example:
-     * .createdAt().gt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00")): matches those entities created after or exactly at noon of 2014/01/01
+     * <pre>
+     * application.createdAt().gt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00")): matches those applications created after or exactly at noon of 2014/01/01
+     * </pre>
      *
      * @param date the {@link Date} to compare the property value
      * @return a new case-insensitive expression reflecting the property name and the specified value.
@@ -63,7 +69,9 @@ public interface DateExpressionFactory {
     /**
      * Returns a new expression indicating the property value must be less than the specified date.
      * For example:
-     * .createdAt().lt(new Date()): matches only those entities created before the instant specified by {@code new Date()}
+     * <pre>
+     * application.createdAt().lt(new Date()): matches only those applications created before the instant specified by {@code new Date()}
+     * </pre>
      *
      * @param date the {@link Date} to compare the property value
      * @return a new case-insensitive expression reflecting the property name and the specified value.
@@ -73,7 +81,9 @@ public interface DateExpressionFactory {
     /**
      * Returns a new expression indicating the specified date must be greater than or equal to the property value.
      * For example:
-     * .createdAt().gte(new Date()): matches those entities created before or at the exact instant specified by {@code new Date()}
+     * <pre>
+     * application.createdAt().gte(new Date()): matches those applications created before or at the exact instant specified by {@code new Date()}
+     * </pre>
      *
      * @param date the {@link Date} to compare the property value
      * @return a new case-insensitive expression reflecting the property name and the specified value.
@@ -83,7 +93,9 @@ public interface DateExpressionFactory {
     /**
      * Returns a new expression indicating the specified date must be equal to the property value.
      * For example:
-     * .createdAt().gte(new Date()): matches only those entities created at the exact instant specified by {@code new Date()}
+     * <pre>
+     * application.createdAt().gte(new Date()): matches only those applications created at the exact instant specified by {@code new Date()}
+     * </pre>
      *
      * @param date the {@link Date} to compare the property value
      * @return a new case-insensitive expression reflecting the property name and the specified value.
@@ -94,7 +106,9 @@ public interface DateExpressionFactory {
      * Returns a new expression indicating the property value must belong to the range specified by the {@code begin} and {@end} dates
      * Using "in" is equivalent to gte(begin).lt(end) where begin time is inclusive and end time is exclusive.
      * For example:
-     * .modifiedAt().in(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00"), new Date()) matches those entities modified after or exactly at the noon of 2014/01/01 and before the exact instant represented by {@code new Date()}
+     * <pre>
+     * application.modifiedAt().in(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2014-01-01T12:00:00"), new Date()) matches those applications modified after or exactly at the noon of 2014/01/01 and before the exact instant represented by {@code new Date()}
+     * </pre>
      *
      * @param begin the {@link Date} to use as the range start
      * @param end a {@link Date}  to use as the range end
@@ -110,5 +124,4 @@ public interface DateExpressionFactory {
      * @return
      */
     Criterion in(Date begin, Duration duration);
-
 }
