@@ -16,6 +16,8 @@
 package quickstart
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
@@ -44,7 +46,7 @@ class QuickstartTest {
     void testCode() {
         try {
             String[] args={}
-            //Quickstart.main(args)
+            Quickstart.main(args)
             assert true
         } catch(Exception e){
             fail()
@@ -63,17 +65,23 @@ class QuickstartTest {
                 Applications.where(Applications.name().eqIgnoreCase("My Application"))
         );
 
-        Application application = applications.iterator().next();
-        def accounts = application.getAccounts()
-        for (Account a: accounts){
-            if (a.getSurname().equals("Stormtrooper") && (a.getGivenName().equals("Joe"))){
-                try {
-                    a.delete()
-                } catch (Throwable t) {
-                    log.error('Unable to delete resource ' + t)
-                }
-            }
+        Application application;
+
+        if (applications.iterator().hasNext()){
+            application = applications.iterator().next()
         }
 
+        AccountList accounts = application.getAccounts(
+            Accounts.where(Accounts.surname().eqIgnoreCase("Quickstart_Stormtrooper"))
+        );
+
+        if (accounts.iterator().hasNext()){
+            Account account = accounts.iterator().next()
+            try {
+                account.delete()
+            } catch (Throwable t) {
+                log.error('Unable to delete resource ' + t)
+            }
+        }
     }
 }

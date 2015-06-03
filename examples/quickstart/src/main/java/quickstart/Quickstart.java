@@ -73,7 +73,7 @@ public class Quickstart {
 
         //Set the account properties
         account.setGivenName("Joe")
-                .setSurname("Stormtrooper")
+                .setSurname("Quickstart_Stormtrooper")
                 .setUsername("tk421" + UUID.randomUUID().toString().replace("-", ""))  // optional, defaults to email if unset
                 .setEmail(UUID.randomUUID().toString().replace("-", "").concat("@stormpath.com"))
                 .setPassword("Changeme1");
