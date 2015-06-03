@@ -17,14 +17,13 @@ package quickstart;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.cache.Caches;
-import com.stormpath.sdk.client.ApiKeys;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
