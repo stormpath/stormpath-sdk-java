@@ -440,6 +440,7 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.isTrue(!CollectionResource.class.isAssignableFrom(resource.getClass()), "Collections cannot be persisted.");
 
         SanitizedQuery sanitized = QuerySanitizer.sanitize(href, qs);
+        qs = sanitized.getQuery();
         href = sanitized.getHrefWithoutQuery();
         //need to qualify the href it to ensure our cache lookups work as expected
         //(cache key = fully qualified href):
