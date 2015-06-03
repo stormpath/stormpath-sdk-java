@@ -401,7 +401,9 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource & Saveable> void save(T resource) {
-        save(resource, (Options)null);
+        String href = resource.getHref();
+        Assert.hasText(href, HREF_REQD_MSG);
+        save(href, resource, resource.getClass(), null);
     }
 
     @Override
