@@ -17,7 +17,6 @@ package quickstart;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.Applications;
