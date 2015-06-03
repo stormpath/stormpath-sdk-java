@@ -26,7 +26,9 @@ import java.util.Map;
  */
 public class QuerySanitizer {
 
-    public static SanitizedQuery sanitize(String href, Map<String,Object> queryParams) {
+
+
+    public static SanitizedQuery sanitize(String href, Map<String,?> queryParams) {
         Assert.notNull(href, "href argument cannot be null.");
 
         QueryString query = new QueryString(queryParams); //create a copy so we don't manipulate the argument

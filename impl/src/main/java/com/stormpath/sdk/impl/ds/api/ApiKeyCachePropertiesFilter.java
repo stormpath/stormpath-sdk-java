@@ -29,7 +29,7 @@ import static com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter.*;
 /**
  * @since 1.0.RC
  */
-public class ApiKeyCachePropertiesFilter implements PropertiesFilter<Class, Map<String, ?>> {
+public class ApiKeyCachePropertiesFilter implements PropertiesFilter<Map<String,?>> {
 
     private final ApiKey apiKey;
 
@@ -55,7 +55,7 @@ public class ApiKeyCachePropertiesFilter implements PropertiesFilter<Class, Map<
      * </p>
      *
      * @param clazz the class type of the class holding the properties.
-     * @param resourceProperties The map used to filter the cached api key properties
+     * @param properties The map used to filter the cached api key properties
      *                           and decrypt its secret value.
      *
      * @return the map with the properties of the api key, decrypting the api key secret.
@@ -63,37 +63,37 @@ public class ApiKeyCachePropertiesFilter implements PropertiesFilter<Class, Map<
      *          api key meta data to decrypt the secret, the same {@code resourceProperties}
      *          is returned.
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, ?> filter(Class clazz, Map<String, ?> resourceProperties) {
-
+    public Map<String,?> filter(Class clazz, Map<String,?> properties) {
         String apiKeyMetaDataName = API_KEY_META_DATA.toString();
         if (clazz != null
-                && ApiKey.class.isAssignableFrom(clazz)
-                && resourceProperties != null
-                && resourceProperties.containsKey(apiKeyMetaDataName)
-                && resourceProperties.get(apiKeyMetaDataName) != null
-                && Boolean.valueOf((Boolean) ((Map) resourceProperties.get(apiKeyMetaDataName)).get(ENCRYPT_SECRET.getName()))
-                && ((Map) resourceProperties.get(apiKeyMetaDataName)).containsKey(ENCRYPTION_KEY_SALT.getName())) {
+            && ApiKey.class.isAssignableFrom(clazz)
+            && properties != null
+            && properties.containsKey(apiKeyMetaDataName)
+            && properties.get(apiKeyMetaDataName) != null
+            && (Boolean) ((Map) properties.get(apiKeyMetaDataName)).get(ENCRYPT_SECRET.getName())
+            && ((Map) properties.get(apiKeyMetaDataName)).containsKey(ENCRYPTION_KEY_SALT.getName())) {
 
-            Map<String, Object> apiKeyCache = new LinkedHashMap<String, Object>(resourceProperties);
+            Map<String, Object> apiKeyCache = new LinkedHashMap<String, Object>(properties);
             apiKeyCache.remove(apiKeyMetaDataName);
 
-            Map<String, ?> apiKeyMetaData = (Map<String, ?>) resourceProperties.get(apiKeyMetaDataName);
+            Map<String, ?> apiKeyMetaData = (Map<String, ?>) properties.get(apiKeyMetaDataName);
 
             ApiKeySecretEncryptionService.Builder builder = new ApiKeySecretEncryptionService.Builder()
-                    .setPassword(apiKey.getSecret().toCharArray())
-                    .setIterations((Integer) apiKeyMetaData.get(ENCRYPTION_KEY_ITERATIONS.getName()))
-                    .setKeySize((Integer) apiKeyMetaData.get(ENCRYPTION_KEY_SIZE.getName()))
-                    .setBase64Salt(((String) apiKeyMetaData.get(ENCRYPTION_KEY_SALT.getName())).getBytes());
+                .setPassword(apiKey.getSecret().toCharArray())
+                .setIterations((Integer) apiKeyMetaData.get(ENCRYPTION_KEY_ITERATIONS.getName()))
+                .setKeySize((Integer) apiKeyMetaData.get(ENCRYPTION_KEY_SIZE.getName()))
+                .setBase64Salt(((String) apiKeyMetaData.get(ENCRYPTION_KEY_SALT.getName())).getBytes());
 
-            String unEncryptedSecret = builder.build().decryptBase64String((String) resourceProperties.get("secret"));
+            String unEncryptedSecret = builder.build().decryptBase64String((String) properties.get("secret"));
 
             apiKeyCache.put("secret", unEncryptedSecret);
 
             return apiKeyCache;
         }
 
-        return resourceProperties;
+        return properties;
     }
 
 }

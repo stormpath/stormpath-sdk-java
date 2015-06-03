@@ -25,7 +25,7 @@ import java.util.Map;
  * @see DefaultPropertiesFilterProcessor
  * @since 1.0.RC
  */
-public interface PropertiesFilterProcessor<T extends Map, F extends PropertiesFilter, C extends Class> {
+public interface PropertiesFilterProcessor<T extends Map<String,?>> {
 
     /**
      * Processes the filters based on the provided {@code clazz} type and {@code properties} parameters.
@@ -34,7 +34,7 @@ public interface PropertiesFilterProcessor<T extends Map, F extends PropertiesFi
      * @param properties the properties {@link Map} to be filtered.
      * @return the filtered {@link Map}.
      */
-    T process(C clazz, T properties);
+    T process(Class clazz, T properties);
 
-    List<PropertiesFilter> getFilters();
+    List<PropertiesFilter<T>> getFilters();
 }
