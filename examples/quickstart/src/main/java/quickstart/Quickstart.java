@@ -23,6 +23,8 @@ import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.cache.Caches;
+import com.stormpath.sdk.client.ApiKeys;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class demonstrates the code found in the Stormpath Java SDK QuickStart Guide
@@ -72,8 +75,8 @@ public class Quickstart {
         //Set the account properties
         account.setGivenName("Joe")
                 .setSurname("Stormtrooper")
-                .setUsername("tk421")  // optional, defaults to email if unset
-                .setEmail("tk421@stormpath.com")
+                .setUsername("tk421" + UUID.randomUUID().toString().replace("-", ""))  // optional, defaults to email if unset
+                .setEmail(UUID.randomUUID().toString().replace("-", "").concat("@stormpath.com"))
                 .setPassword("Changeme1");
         CustomData customData = account.getCustomData();
         customData.put("favoriteColor", "white");
@@ -89,7 +92,7 @@ public class Quickstart {
         // Search for a User Account
 
         Map<String, Object> queryParams = new HashMap<String, Object>();
-        queryParams.put("email", "tk421@stormpath.com");
+        queryParams.put("email", account.getEmail());
         AccountList accounts = application.getAccounts(queryParams);
         account = accounts.iterator().next();
 
@@ -97,7 +100,7 @@ public class Quickstart {
 
         // Authenticate a User Account
 
-        String usernameOrEmail = "tk421@stormpath.com";
+        String usernameOrEmail = account.getEmail();
         String rawPassword = "Changeme1";
 
         // Create an authentication request using the credentials
