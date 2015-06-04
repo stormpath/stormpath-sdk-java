@@ -77,7 +77,8 @@ class ApiKeyIT extends ClientIT {
 
         def client = buildClient(false)
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
-        assertEquals apiKey, retrievedApiKey
+        assertEquals apiKey.href, retrievedApiKey.href
+        assertEquals apiKey.id, retrievedApiKey.id
 
         //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
     }

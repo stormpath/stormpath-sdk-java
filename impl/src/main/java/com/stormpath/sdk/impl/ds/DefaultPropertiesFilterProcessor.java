@@ -25,12 +25,11 @@ import java.util.Map;
  * @see PropertiesFilter
  * @since 1.0.RC
  */
-public class DefaultPropertiesFilterProcessor
-    implements PropertiesFilterProcessor<Map<String, ?>, PropertiesFilter, Class> {
+public class DefaultPropertiesFilterProcessor<T extends Map<String,?>> implements PropertiesFilterProcessor<T> {
 
-    private final List<PropertiesFilter> filters;
+    private final List<PropertiesFilter<T>> filters;
 
-    public DefaultPropertiesFilterProcessor(List<? extends PropertiesFilter> filters) {
+    public DefaultPropertiesFilterProcessor(List<PropertiesFilter<T>> filters) {
         this.filters = java.util.Collections.unmodifiableList(filters);
     }
 
@@ -39,14 +38,19 @@ public class DefaultPropertiesFilterProcessor
      * calling all the filters.
      *
      * @param clazz              the provided class type.
-     * @param resourceProperties the resource properties that will be filtered by the added filters contained.
+     * @param properties the resource properties that will be filtered by the added filters contained.
      * @return a {@link Map} containing the result of calling all the filters.
      * @see PropertiesFilter#filter(Class, Map)
      */
     @Override
-    public Map<String, ?> process(Class clazz, Map<String, ?> resourceProperties) {
-        Map<String, ?> result = resourceProperties;
-        for (PropertiesFilter filter : filters) {
+    public T process(Class clazz, T properties) {
+
+        if (properties == null) {
+            return null;
+        }
+
+        T result = properties;
+        for (PropertiesFilter<T> filter : filters) {
             result = filter.filter(clazz, result);
         }
 
@@ -54,7 +58,7 @@ public class DefaultPropertiesFilterProcessor
     }
 
     @Override
-    public List<PropertiesFilter> getFilters() {
+    public List<PropertiesFilter<T>> getFilters() {
         return this.filters;
     }
 }

@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.ds.api;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
-import com.stormpath.sdk.impl.ds.QueryPropertiesFilter;
+import com.stormpath.sdk.impl.ds.PropertiesFilter;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
@@ -32,7 +32,7 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 /**
  * @since 1.0.RC
  */
-public class ApiKeyQueryPropertiesFilter implements QueryPropertiesFilter {
+public class ApiKeyQueryPropertiesFilter implements PropertiesFilter<QueryString> {
 
     private final SaltGenerator saltGenerator;
     private final QueryStringFactory queryStringFactory;
