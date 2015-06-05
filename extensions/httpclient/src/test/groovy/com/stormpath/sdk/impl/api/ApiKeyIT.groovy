@@ -60,9 +60,8 @@ class ApiKeyIT extends ClientIT {
         assertEquals apiKey.status, ApiKeyStatus.DISABLED
 
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
-        assertEquals apiKey, retrievedApiKey
-
-        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
+        assertEquals apiKey.href, retrievedApiKey.href
+        assertEquals apiKey.id, retrievedApiKey.id
     }
 
     @Test
@@ -79,8 +78,6 @@ class ApiKeyIT extends ClientIT {
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
         assertEquals apiKey.href, retrievedApiKey.href
         assertEquals apiKey.id, retrievedApiKey.id
-
-        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
     }
 
     @Test

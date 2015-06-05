@@ -29,6 +29,10 @@ import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.ds.api.ApiKeyCachePropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryPropertiesFilter;
 import com.stormpath.sdk.impl.ds.api.ApiKeyResourcePropertiesFilter;
+import com.stormpath.sdk.impl.ds.cache.CacheResolver;
+import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
+import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
+import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.MediaType;
@@ -43,6 +47,7 @@ import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.CollectionProperties;
@@ -112,6 +117,8 @@ public class DefaultDataStore implements InternalDataStore {
     private final PropertiesFilterProcessor<QueryString> queryStringFilterProcessor;
     private volatile Map<String, Enlistment> hrefMapStore;
 
+    private final List<Filter> filters;
+
     /**
      * @since 0.9
      */
@@ -163,6 +170,13 @@ public class DefaultDataStore implements InternalDataStore {
         List<PropertiesFilter<QueryString>> l2 = new ArrayList<PropertiesFilter<QueryString>>(1);
         l2.add(new ApiKeyQueryPropertiesFilter());
         this.queryStringFilterProcessor = new DefaultPropertiesFilterProcessor<QueryString>(l2);
+
+        this.filters = new ArrayList<Filter>();
+        this.filters.add(new ApiKeyQueryPropertiesFilter());
+
+        CacheResolver cacheResolver = new DefaultCacheResolver(this.cacheManager, this.cacheRegionNameResolver);
+        this.filters.add(new ReadCacheFilter(this.baseUrl, cacheResolver));
+        this.filters.add(new WriteCacheFilter(cacheResolver, this.referenceFactory));
     }
 
     public void setCacheManager(CacheManager cacheManager) {
@@ -226,8 +240,8 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
-        ResourceData data = getResourceData(href, clazz, queryParameters);
-        return instantiate(clazz, data.getData(), data.getUri().getQuery());
+        ResourceDataResult result = getResourceData(href, clazz, queryParameters);
+        return instantiate(clazz, result.getData(), result.getUri().getQuery());
     }
 
     /**
@@ -253,8 +267,8 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.hasText(childIdProperty, "childIdProperty cannot be null or empty.");
         Assert.notEmpty(idClassMap, "idClassMap cannot be null or empty.");
 
-        ResourceData rdata = getResourceData(href, parent, null);
-        Map<String,?> data = rdata.getData();
+        ResourceDataResult result = getResourceData(href, parent, null);
+        Map<String,?> data = result.getData();
 
         if (Collections.isEmpty(data)) {
             throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
@@ -271,15 +285,28 @@ public class DefaultDataStore implements InternalDataStore {
             throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
         }
 
-        return instantiate(childClass, data, rdata.getUri().getQuery());
+        return instantiate(childClass, data, result.getUri().getQuery());
     }
 
-    private ResourceData getResourceData(String href, Class<? extends Resource> clazz, Map<String,?> queryParameters) {
+    @SuppressWarnings("unchecked")
+    private ResourceDataResult getResourceData(String href, Class<? extends Resource> clazz, Map<String,?> queryParameters) {
 
         Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(clazz, "Resource class argument cannot be null.");
-        CanonicalUri uri = canonicalize(href, queryParameters);
 
+        CanonicalUri uri = canonicalize(href, queryParameters);
+        ResourceDataRequest req = new DefaultResourceDataRequest(uri, clazz, ResourceAction.READ);
+
+        FilterChain chain = new DefaultFilterChain(this.filters, new FilterChain() {
+            @Override
+            public ResourceDataResult filter(ResourceDataRequest request) {
+                return doGetResourceData(request);
+            }
+        });
+
+        return chain.filter(req);
+
+        /*
         final QueryString query = queryStringFilterProcessor.process(clazz, uri.getQuery());
         href = uri.getAbsolutePath();
         uri = new DefaultCanonicalUri(href, query); //reflect the filtered query
@@ -296,7 +323,6 @@ public class DefaultDataStore implements InternalDataStore {
 
         if (Collections.isEmpty(body)) {
             throw new IllegalStateException("Unable to obtain resource data from the API server or from cache.");
-
         }
 
         if (isCacheUpdateEnabled(clazz)) {
@@ -314,23 +340,66 @@ public class DefaultDataStore implements InternalDataStore {
         body = filterResourceData(clazz, query, body);
 
         //@since 1.0.RC3
-        if (isInstanceResource(body)) {
+        if (AbstractInstanceResource.isInstanceResource(body)) {
             body = toEnlistment(body);
         }
 
-        return new ResourceData(uri, body, clazz);
+        return new ResourceData(uri, (Map<String,Object>)body, clazz);
+        */
     }
 
-    private ResourceData getCachedResourceData(CanonicalUri uri, Class<? extends Resource> clazz) {
+    @SuppressWarnings("unchecked")
+    private ResourceDataResult doGetResourceData(ResourceDataRequest req) {
 
+        //not cached - execute a request:
+        final Class clazz = req.getResourceClass();
+
+        Request request = new DefaultRequest(HttpMethod.GET, req.getUri().getAbsolutePath(), req.getUri().getQuery());
+        Response response = execute(request);
+        Map<String,?> body = getBody(response);
+
+        if (Collections.isEmpty(body)) {
+            throw new IllegalStateException("Unable to obtain resource data from the API server or from cache.");
+        }
+
+        if (isCacheUpdateEnabled(clazz)) {
+            //cache for further use:
+            cache(clazz, body, req.getUri().getQuery());
+        }
+
+        // Adding the ApiKeyResourcePropertiesFilter here because if the resource was cached, the ApiKeyCachePropertiesFilter
+        // already took care of decrypting the api key secret to return to the user.
+        // Transitory filters serve the purpose of filtering the resource properties to return to the user,
+        // based on the current request.
+        // For example: decrypting the api key secret to return to the user
+        // with the current request content (query strings, etc.); which is why they are transitory, because they cannot
+        // be added when initializing the filter (they depend on the current request).
+        body = filterResourceData(clazz, req.getUri().getQuery(), body);
+
+        //@since 1.0.RC3
+        if (AbstractInstanceResource.isInstanceResource(body)) {
+            body = toEnlistment(body);
+        }
+
+        return new DefaultResourceDataResult(req.getUri(), (Map<String,Object>)body, clazz);
+    }
+
+
+
+    private ResourceDataResult getCachedResourceData(ResourceDataRequest request) {
+
+        final CanonicalUri uri = request.getUri();
         final String href = uri.getAbsolutePath();
         final QueryString query = uri.getQuery();
+        final Class clazz = request.getResourceClass();
 
         Map<String, ?> data = null;
 
-        if (isCacheRetrievalEnabled(clazz) || isApiKeyCollectionQuery(clazz, query)) {
+        boolean isApiKeyColQuery = isApiKeyCollectionQuery(request);
 
-            if (isApiKeyCollectionQuery(clazz, query)) {
+        if (isCacheRetrievalEnabled(request) || isApiKeyColQuery) {
+
+            if (isApiKeyColQuery) {
 
                 String cacheHref = baseUrl + "/apiKeys/" + query.get(ID.getName());
                 Class<ApiKey> cacheClass = com.stormpath.sdk.api.ApiKey.class;
@@ -352,7 +421,7 @@ public class DefaultDataStore implements InternalDataStore {
             return null;
         }
 
-        return new ResourceData(uri, data, clazz);
+        return new DefaultResourceDataResult(uri, (Map<String,Object>)data, clazz);
     }
 
     private Map<String, ?> filterResourceData(Class clazz, QueryString qs, Map<String, ?> data) {
@@ -509,7 +578,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         //@since 1.0.RC3
-        if (isMaterialized(returnResponseBody)) {
+        if (AbstractResource.isMaterialized(returnResponseBody)) {
             returnResponseBody = toEnlistment(returnResponseBody);
         }
 
@@ -624,6 +693,10 @@ public class DefaultDataStore implements InternalDataStore {
         return isCachingEnabled() && !CollectionResource.class.isAssignableFrom(clazz);
     }
 
+    private boolean isCacheRetrievalEnabled(ResourceDataRequest request) {
+        return isCacheRetrievalEnabled(request.getResourceClass());
+    }
+
     /**
      * @since 0.8
      */
@@ -701,7 +774,7 @@ public class DefaultDataStore implements InternalDataStore {
                 Assert.notNull(nested.get(AbstractResource.HREF_PROP_NAME),
                                "Resource references must have an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
 
-                if (isMaterialized(nested)) {
+                if (AbstractResource.isMaterialized(nested)) {
                     //If there is more than one attribute (more than just 'href') it is not just a simple reference
                     //anymore - it has been materialized to its full set of attributes.  Because we have a full
                     //materialized resource, we need to recursively cache it (and any of its referenced materialized
@@ -743,7 +816,7 @@ public class DefaultDataStore implements InternalDataStore {
                     Object element = o;
                     if (o instanceof Map) {
                         Map referenceData = (Map) o;
-                        if (isMaterialized(referenceData)) {
+                        if (AbstractResource.isMaterialized(referenceData)) {
                             cache(itemType, referenceData, queryString);
                             element = this.referenceFactory.createReference(referenceData);
                         }
@@ -769,21 +842,6 @@ public class DefaultDataStore implements InternalDataStore {
     /**
      * @since 0.8
      */
-    private boolean isMaterialized(Map<String, ?> props) {
-        return props != null && props.get(AbstractResource.HREF_PROP_NAME) != null && props.size() > 1;
-    }
-
-    private boolean isInstanceResource(Map<String,?> props) {
-        return isMaterialized(props) && !props.containsKey("items");
-    }
-
-    //private boolean isCollectionResource(Map<String,?> props) {
-    //    return isMaterialized(props) && (props.get("items") instanceof Iterable);
-    //}
-
-    /**
-     * @since 0.8
-     */
     private <T extends Resource> Property getPropertyDescriptor(Class<T> clazz, String propertyName) {
         Map<String, Property> descriptors = getPropertyDescriptors(clazz);
         return descriptors.get(propertyName);
@@ -794,7 +852,7 @@ public class DefaultDataStore implements InternalDataStore {
      */
     @SuppressWarnings("unchecked")
     private <T extends Resource> Map<String, Property> getPropertyDescriptors(Class<T> clazz) {
-        Class implClass = DefaultResourceFactory.getImplementationClass(clazz);
+        Class<T> implClass = DefaultResourceFactory.getImplementationClass(clazz);
         try {
             Field field = implClass.getDeclaredField("PROPERTY_DESCRIPTORS");
             field.setAccessible(true);
@@ -827,7 +885,7 @@ public class DefaultDataStore implements InternalDataStore {
     @SuppressWarnings("unchecked")
     private <T extends Resource> void uncache(T resource) {
         Assert.notNull(resource, "Resource argument cannot be null.");
-        Cache cache = getCache(resource.getClass());
+        Cache<String, Map<String, ?>> cache = getCache(resource.getClass());
         String href = resource.getHref();
         cache.remove(href);
     }
@@ -1021,6 +1079,11 @@ public class DefaultDataStore implements InternalDataStore {
         return ApiKeyList.class.isAssignableFrom(clazz) && qs != null && qs.containsKey(ID.getName());
     }
 
+    private boolean isApiKeyCollectionQuery(ResourceDataRequest request) {
+        return ApiKeyList.class.isAssignableFrom(request.getResourceClass()) &&
+               request.getUri().hasQuery() && request.getUri().getQuery().containsKey(ID.getName());
+    }
+
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all Resource
      * instances referencing the same Href.
@@ -1028,7 +1091,7 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 1.0.RC3
      */
     @SuppressWarnings({ "SuspiciousMethodCalls", "unchecked" })
-    private Enlistment toEnlistment(final Map data) {
+    private Enlistment toEnlistment(final Map<String, ?> data) {
 
         Assert.notEmpty(data, "data cannot be null or empty.");
         String href = (String)data.get("href");
@@ -1041,8 +1104,8 @@ public class DefaultDataStore implements InternalDataStore {
             Map.Entry entry = (Map.Entry)o;
             Object key = entry.getKey();
             Object value = entry.getValue();
-            if (value instanceof Map && isInstanceResource((Map<String, ?>) value)) {
-                value = toEnlistment((Map)value);
+            if (value instanceof Map && AbstractInstanceResource.isInstanceResource((Map<String, ?>) value)) {
+                value = toEnlistment((Map<String, ?>)value);
             }
             modified.put(key, value);
         }
@@ -1057,33 +1120,5 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         return enlistment;
-    }
-
-    private static class ResourceData {
-
-        private final CanonicalUri uri;
-        private final Map<String,?> data;
-        private final Class<? extends Resource> resourceClass;
-
-        public ResourceData(CanonicalUri uri, Map<String, ?> data, Class<? extends Resource> resourceClass) {
-            Assert.notNull(uri);
-            Assert.notEmpty(data);
-            Assert.notNull(resourceClass);
-            this.uri = uri;
-            this.data = data;
-            this.resourceClass = resourceClass;
-        }
-
-        public CanonicalUri getUri() {
-            return uri;
-        }
-
-        public Map<String, ?> getData() {
-            return data;
-        }
-
-        public Class<? extends Resource> getResourceClass() {
-            return resourceClass;
-        }
     }
 }

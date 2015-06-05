@@ -59,6 +59,19 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         }
     }
 
+    /**
+     * Returns {@code true} if the specified data map represents a materialized collection resource data set, {@code
+     * false} otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized collection resource data set, {@code
+     * false} otherwise.
+     * @since 1.0.RC4.3
+     */
+    public static boolean isCollectionResource(Map<String,?> props) {
+        return isMaterialized(props) && (props.get("items") instanceof Iterable);
+    }
+
     @Override
     public int getOffset() {
         return getInt(OFFSET);

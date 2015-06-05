@@ -18,12 +18,20 @@ package com.stormpath.sdk.impl.ds.api;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
+import com.stormpath.sdk.impl.ds.DefaultResourceDataRequest;
+import com.stormpath.sdk.impl.ds.Filter;
+import com.stormpath.sdk.impl.ds.FilterChain;
 import com.stormpath.sdk.impl.ds.PropertiesFilter;
+import com.stormpath.sdk.impl.ds.ResourceDataRequest;
+import com.stormpath.sdk.impl.ds.ResourceDataResult;
+import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
+import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.security.DefaultSaltGenerator;
 import com.stormpath.sdk.impl.security.SaltGenerator;
+import com.stormpath.sdk.lang.Collections;
 
 import java.util.Map;
 
@@ -32,7 +40,7 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 /**
  * @since 1.0.RC
  */
-public class ApiKeyQueryPropertiesFilter implements PropertiesFilter<QueryString> {
+public class ApiKeyQueryPropertiesFilter implements PropertiesFilter<QueryString>, Filter {
 
     private final SaltGenerator saltGenerator;
     private final QueryStringFactory queryStringFactory;
@@ -95,5 +103,34 @@ public class ApiKeyQueryPropertiesFilter implements PropertiesFilter<QueryString
         }
 
         return queryString;
+    }
+
+    @Override
+    public ResourceDataResult filter(ResourceDataRequest request, FilterChain chain) {
+
+        Class clazz = request.getResourceClass();
+        QueryString queryParams = request.getUri().getQuery();
+        boolean isRequestQueryEmpty = Collections.isEmpty(queryParams);
+
+        if ((ApiKey.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz))
+            && (isRequestQueryEmpty || !queryParams.containsKey(ENCRYPT_SECRET.getName()))) {
+
+            DefaultApiKeyCriteria criteria = new DefaultApiKeyCriteria();
+            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPT_SECRET.getName()).eq(Boolean.TRUE));
+            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SIZE.getName()).eq(128));
+            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_ITERATIONS.getName()).eq(1024));
+            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SALT.getName()).eq(saltGenerator.generate()));
+
+            QueryString encryptionQueryParams = queryStringFactory.createQueryString(criteria);
+
+            if (queryParams == null) {
+                CanonicalUri uri = new DefaultCanonicalUri(request.getUri().getAbsolutePath(), encryptionQueryParams);
+                request = new DefaultResourceDataRequest(uri, request.getResourceClass(), request.getAction());
+            } else {
+                queryParams.putAll(encryptionQueryParams);
+            }
+        }
+
+        return chain.filter(request);
     }
 }
