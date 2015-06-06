@@ -273,7 +273,7 @@ public class DefaultDataStore implements InternalDataStore {
         });
 
         CanonicalUri uri = canonicalize(href, queryParameters);
-        ResourceDataRequest req = new DefaultResourceDataRequest(ResourceAction.READ, uri, clazz);
+        ResourceDataRequest req = new DefaultResourceDataRequest(ResourceAction.READ, uri, clazz, new HashMap<String,Object>());
         return chain.filter(req);
     }
 
@@ -347,7 +347,7 @@ public class DefaultDataStore implements InternalDataStore {
             @Override
             public ResourceDataResult filter(final ResourceDataRequest req) {
 
-                String bodyString = mapMarshaller.marshal(props);
+                String bodyString = mapMarshaller.marshal(req.getData());
                 StringInputStream body = new StringInputStream(bodyString);
                 long length = body.available();
 
@@ -369,7 +369,7 @@ public class DefaultDataStore implements InternalDataStore {
         });
 
         ResourceAction action = create ? ResourceAction.CREATE : ResourceAction.UPDATE;
-        ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass());
+        ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props);
 
         ResourceDataResult result = chain.filter(request);
 
@@ -426,7 +426,7 @@ public class DefaultDataStore implements InternalDataStore {
         });
 
         final CanonicalUri resourceUri = canonicalize(resourceHref, null);
-        ResourceDataRequest request = new DefaultResourceDataRequest(ResourceAction.DELETE, resourceUri, resource.getClass());
+        ResourceDataRequest request = new DefaultResourceDataRequest(ResourceAction.DELETE, resourceUri, resource.getClass(), new HashMap<String, Object>());
         chain.filter(request);
     }
 
