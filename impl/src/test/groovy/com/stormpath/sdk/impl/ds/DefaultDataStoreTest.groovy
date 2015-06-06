@@ -292,7 +292,6 @@ class DefaultDataStoreTest {
         expect(response.isError()).andReturn(false)
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(providerAccountResponseIS)
-        expect(response.getHttpStatus()).andReturn(201)
 
         replay(requestExecutor, response)
 
@@ -300,8 +299,7 @@ class DefaultDataStoreTest {
                 .withDefaultTimeToIdle(1, TimeUnit.HOURS)
                 .withDefaultTimeToLive(1, TimeUnit.HOURS)
                 .build();
-        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
-        defaultDataStore.setCacheManager(cache)
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cache)
         def app = new DefaultApplication(defaultDataStore, appProperties)
 
         defaultDataStore.getResource(providerResponseMap.href, Provider, childIdProperty, map)

@@ -25,7 +25,7 @@ public class DefaultResourceDataRequest extends DefaultResourceMessage implement
 
     private final ResourceAction action;
 
-    public DefaultResourceDataRequest(CanonicalUri uri, Class<? extends Resource> resourceClass, ResourceAction action) {
+    public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass) {
         super(uri, resourceClass, new LinkedHashMap<String,Object>());
         Assert.notNull(action, "resource action cannot be null.");
         this.action = action;

@@ -17,14 +17,13 @@ package com.stormpath.sdk.impl.ds.cache;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.impl.ds.DefaultResourceDataResult;
-import com.stormpath.sdk.impl.ds.Filter;
 import com.stormpath.sdk.impl.ds.FilterChain;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.provider.ProviderAccountAccess;
 import com.stormpath.sdk.impl.resource.CollectionProperties;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -36,16 +35,14 @@ import java.util.Map;
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
 import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 
-public class ReadCacheFilter implements Filter {
+public class ReadCacheFilter extends AbstractCacheFilter {
 
     private final String baseUrl;
-    private final CacheResolver cacheResolver;
 
     public ReadCacheFilter(String baseUrl, CacheResolver cacheResolver) {
+        super(cacheResolver);
         Assert.hasText(baseUrl, "baseUrl cannot be null or empty.");
-        Assert.notNull(cacheResolver, "cacheResolver cannot be null.");
         this.baseUrl = baseUrl;
-        this.cacheResolver = cacheResolver;
     }
 
     @Override
@@ -110,20 +107,15 @@ public class ReadCacheFilter implements Filter {
     }
 
     private boolean isCacheRetrievalEnabled(ResourceDataRequest request) {
+
+        //we don't cache ProviderAccountResults:
+        if (ProviderAccountAccess.class.isAssignableFrom(request.getResourceClass())) {
+            return false;
+        }
+
         //we currently don't cache CollectionResources themselves (only their internal instance resources).  So we
         //return false in this case so a new cache region isn't auto created unnecessarily
         //(cacheManager.getCache(name) will auto-create a region if called and it does not yet exist)
         return !CollectionResource.class.isAssignableFrom(request.getResourceClass());
-    }
-
-    private Map<String, ?> getCachedValue(String href, Class<? extends Resource> clazz) {
-        Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(clazz, "Class argument cannot be null.");
-        Cache<String, Map<String, ?>> cache = getCache(clazz);
-        return cache.get(href);
-    }
-
-    private <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz) {
-        return this.cacheResolver.getCache(clazz);
     }
 }

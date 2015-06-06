@@ -125,7 +125,7 @@ public class ApiKeyQueryPropertiesFilter implements PropertiesFilter<QueryString
 
             if (queryParams == null) {
                 CanonicalUri uri = new DefaultCanonicalUri(request.getUri().getAbsolutePath(), encryptionQueryParams);
-                request = new DefaultResourceDataRequest(uri, request.getResourceClass(), request.getAction());
+                request = new DefaultResourceDataRequest(request.getAction(), uri, request.getResourceClass());
             } else {
                 queryParams.putAll(encryptionQueryParams);
             }

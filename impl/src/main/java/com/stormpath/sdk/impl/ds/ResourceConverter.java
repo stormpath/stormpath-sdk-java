@@ -15,6 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-public interface ResourceDataResult extends ResourceMessage {
+import com.stormpath.sdk.impl.resource.AbstractResource;
+
+import java.util.Map;
+
+public interface ResourceConverter {
+
+    Map<String,Object> convert(AbstractResource resource);
 
 }

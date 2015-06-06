@@ -15,17 +15,22 @@
  */
 package com.stormpath.sdk.impl.ds.cache;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.ds.CacheMapInitializer;
 import com.stormpath.sdk.impl.ds.DefaultCacheMapInitializer;
 import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
-import com.stormpath.sdk.impl.ds.Filter;
 import com.stormpath.sdk.impl.ds.FilterChain;
+import com.stormpath.sdk.impl.ds.ResourceAction;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
@@ -33,7 +38,9 @@ import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
@@ -44,16 +51,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WriteCacheFilter implements Filter {
+import static com.stormpath.sdk.impl.resource.AbstractResource.*;
+
+public class WriteCacheFilter extends AbstractCacheFilter {
 
     private final ReferenceFactory referenceFactory;
-    private final CacheResolver cacheResolver;
     private final CacheMapInitializer cacheMapInitializer;
 
     public WriteCacheFilter(CacheResolver cacheResolver, ReferenceFactory referenceFactory) {
-        Assert.notNull(cacheResolver, "cacheResolver cannot be null.");
+        super(cacheResolver);
         Assert.notNull(referenceFactory, "referenceFactory cannot be null.");
-        this.cacheResolver = cacheResolver;
         this.referenceFactory = referenceFactory;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
     }
@@ -61,11 +68,112 @@ public class WriteCacheFilter implements Filter {
     @Override
     public ResourceDataResult filter(ResourceDataRequest request, FilterChain chain) {
 
+        if (request.getAction() == ResourceAction.DELETE) {
+            uncache(request.getUri().getAbsolutePath(), request.getResourceClass());
+        }
+
         ResourceDataResult result = chain.filter(request);
 
-        cache(result.getResourceClass(), result.getData(), result.getUri().getQuery());
+        if (isCacheable(request, result)) {
+            cache(result.getResourceClass(), result.getData(), result.getUri().getQuery());
+        }
+
+        //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
+        //If the resource saved has nested custom data, and any custom data was specified when saving the resource,
+        //we need to ensure that the custom data is cached properly since it won't be returned by the server by
+        //default.  There is probably a much cleaner OO way of doing this, but it wasn't worth it at impl time to
+        //find a smoother way.  Helper methods have been marked as private to indicate that this shouldn't be used as
+        //a dependency in case we choose to implement a cleaner way later.
+
+        //this check *IS* supposed to use the input request argument - *not* the result:
+        if (AbstractExtendableInstanceResource.isExtendableInstanceResource(request.getData())) {
+            cacheNestedCustomData(request.getUri().getAbsolutePath(), request.getData());
+        }
 
         return result;
+    }
+
+    private boolean isCacheable(ResourceDataRequest request, ResourceDataResult result) {
+
+        if (Collections.isEmpty(result.getData())) {
+            return false;
+        }
+
+        //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
+        boolean emailVerification = EmailVerificationToken.class.isAssignableFrom(request.getResourceClass()) &&
+                                    Account.class.isAssignableFrom(result.getResourceClass());
+
+        //since 1.0.RC4 : fix for https://github.com/stormpath/stormpath-sdk-java/issues/140 where Account remains disabled after
+        //successful verification due to an outdated `Account` state in the cache.
+        if (emailVerification) {
+            String accountHref = (String) result.getData().get(HREF_PROP_NAME);
+            if (Strings.hasText(accountHref)) {
+                Cache<String, ?> cache = getCache(Account.class);
+                cache.remove(accountHref);
+            }
+        }
+
+        //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
+        boolean passwordResetToken = PasswordResetToken.class.isAssignableFrom(request.getResourceClass()) &&
+                                     PasswordResetToken.class.isAssignableFrom(result.getResourceClass());
+
+        boolean providerAccountResult = ProviderAccountResult.class.isAssignableFrom(result.getResourceClass());
+
+        return !passwordResetToken &&
+
+               //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+               !providerAccountResult &&
+
+               //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
+               AbstractInstanceResource.isInstanceResource(result.getData());
+    }
+
+    /**
+     * Helps fix <a href="https://github.com/stormpath/stormpath-sdk-java/issues/30">Issue #30</a>.
+     * <p/>
+     * This implementation ensures that if custom data is nested inside an AbstractExtendableInstanceResource (an
+     * Account, Group, Directory, Application or Tenant) and that AbstractExtendableInstanceResource is saved, that the
+     * nested custom data submitted and saved to the server is also updated in any local cache.
+     * <p/>
+     * Ordinarily, only the object returned from the server response (The AbstractExtendableInstanceResource) is cached.
+     * When updating objects, any nested objects are not returned from the server, so we have to do this preemptively
+     * ourselves.
+     * <p/>
+     * The preemtive insert on save is more efficient than, say, adding an expand=customData query parameter to the
+     * href when issuing the request: the returned customData might be huge (up to 10 Megabytes), so by pre-emptively
+     * caching upon a successful parent save, we avoid pulling across custom data across the wire for only caching
+     * purposes.
+     *
+     * @param directoryEntityHref the href of the directory entity is being was saved
+     * @param props               the directory entity's properties being saved
+     * @since 0.9.2
+     */
+    @SuppressWarnings("unchecked")
+    private void cacheNestedCustomData(String directoryEntityHref, Map<String, Object> props) {
+
+        Map<String, Object> customData =
+            (Map<String, Object>) props.get(AbstractExtendableInstanceResource.CUSTOM_DATA.getName());
+
+        if (customData != null) {
+            customData.remove(AbstractResource.HREF_PROP_NAME); //we remove it here for ordering reasons (see below)
+        }
+
+        if (Collections.isEmpty(customData)) {
+            return;
+        }
+
+        Map<String, Object> customDataToCache = new LinkedHashMap<String, Object>();
+        String customDataHref = directoryEntityHref + "/customData";
+        customDataToCache.put(AbstractResource.HREF_PROP_NAME, customDataHref); //ensure first in order
+
+        Map<String, ?> existingCustomData = getCachedValue(customDataHref, CustomData.class);
+        if (!Collections.isEmpty(existingCustomData)) {
+            existingCustomData.remove(AbstractResource.HREF_PROP_NAME);
+            customDataToCache.putAll(existingCustomData); //put what already exists first
+        }
+        customDataToCache.putAll(customData); //overwrite or add what was specified during the save operation
+
+        cache(CustomData.class, customDataToCache, null);
     }
 
     /**
@@ -201,10 +309,6 @@ public class WriteCacheFilter implements Filter {
         }
     }
 
-    private <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz) {
-        return this.cacheResolver.getCache(clazz);
-    }
-
     /**
      * Quick fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/17">Issue #17</a>.
      *
@@ -221,5 +325,16 @@ public class WriteCacheFilter implements Filter {
 
                //we don't cache collection resources at the moment (only the instances inside them):
                !CollectionResource.class.isAssignableFrom(clazz);
+    }
+
+    /**
+     * @since 0.8
+     */
+    @SuppressWarnings("unchecked")
+    private void uncache(String href, Class<? extends Resource> resourceType) {
+        Assert.hasText(href, "href cannot be null or empty.");
+        Assert.notNull(resourceType, "resourceType cannot be null.");
+        Cache<String, Map<String, ?>> cache = getCache(resourceType);
+        cache.remove(href);
     }
 }
