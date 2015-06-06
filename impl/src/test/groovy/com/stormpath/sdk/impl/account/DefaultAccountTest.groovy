@@ -22,11 +22,7 @@ import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupCriteria
-import com.stormpath.sdk.group.GroupList
-import com.stormpath.sdk.group.GroupMembership
-import com.stormpath.sdk.group.GroupMembershipList
+import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -179,7 +175,7 @@ class DefaultAccountTest {
         verify internalDataStore, groupCriteria, group
     }
 
-    @Test(enabled=false) //temporary to see ITs
+    @Test
     void testIsMemberOfGroup() {
 
         def groupName = "fooName"
