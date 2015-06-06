@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,60 @@ class ApplicationIT extends ClientIT {
 
         def list = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(email)))
         assertFalse list.iterator().hasNext() //no results
+    }
+
+    @Test
+    void testApplicationPagination() {
+
+        def applicationBaseName = UUID.randomUUID().toString()
+
+        def app1 = client.instantiate(Application)
+        app1.setName(applicationBaseName + "-JavaSDK1")
+        app1 = client.createApplication(Applications.newCreateRequestFor(app1).build())
+
+        deleteOnTeardown(app1)
+
+        def app2 = client.instantiate(Application)
+        app2.setName(applicationBaseName + "-JavaSDK2")
+        app2 = client.createApplication(Applications.newCreateRequestFor(app2).build())
+
+        deleteOnTeardown(app2)
+
+        def expected = [app1.href, app2.href] as Set
+
+        def apps = client.getApplications(Applications.where(Applications.name().startsWithIgnoreCase(applicationBaseName)).limitTo(1))
+
+        assertEquals 1, apps.limit
+        assertEquals 0, apps.offset
+        assertEquals 2, apps.size
+
+        def iterator = apps.iterator()
+        while (iterator.hasNext()) {
+            def app = iterator.next();
+            assertTrue expected.remove(app.href)
+        }
+
+        assertEquals 0, expected.size()
+
+        try {
+            iterator.next()
+            fail("should have thrown")
+        } catch (NoSuchElementException e) {
+            //ignore, exception was expected.
+        }
+
+        def newIterator = apps.iterator()
+
+        assertTrue iterator != newIterator
+
+        expected = [app1.href, app2.href] as Set
+
+        while (newIterator.hasNext()) {
+            def app = newIterator.next();
+            assertTrue expected.remove(app.href)
+        }
+
+        assertEquals 0, expected.size()
     }
 
     @Test
