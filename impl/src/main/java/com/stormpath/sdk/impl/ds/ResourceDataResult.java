@@ -17,4 +17,5 @@ package com.stormpath.sdk.impl.ds;
 
 public interface ResourceDataResult extends ResourceMessage {
 
+    ResourceAction getAction();
 }

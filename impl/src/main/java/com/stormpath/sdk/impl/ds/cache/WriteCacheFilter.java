@@ -85,9 +85,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         //default.  There is probably a much cleaner OO way of doing this, but it wasn't worth it at impl time to
         //find a smoother way.  Helper methods have been marked as private to indicate that this shouldn't be used as
         //a dependency in case we choose to implement a cleaner way later.
-
-        //this check *IS* supposed to use the input request argument - *not* the result:
-        if (AbstractExtendableInstanceResource.isExtendableInstanceResource(request.getData())) {
+        if (AbstractExtendableInstanceResource.isExtendableInstanceResource(result.getData())) {
             cacheNestedCustomData(request.getUri().getAbsolutePath(), request.getData());
         }
 

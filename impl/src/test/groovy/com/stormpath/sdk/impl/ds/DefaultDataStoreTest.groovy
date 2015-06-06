@@ -292,6 +292,7 @@ class DefaultDataStoreTest {
         expect(response.isError()).andReturn(false)
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(providerAccountResponseIS)
+        expect(response.getHttpStatus()).andReturn(201)
 
         replay(requestExecutor, response)
 

@@ -176,9 +176,9 @@ class ApplicationIT extends ClientIT {
         //When no authenticationScheme is explicitly defined, SAuthc1RequestAuthenticator is used by default
         assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
-        app.name = uniquify("DELETEME")
+        app.name = uniquify("Java SDK IT App")
 
-        def dirName = uniquify("DELETEME")
+        def dirName = uniquify("Java SDK IT Dir")
 
         app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
         def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
@@ -187,7 +187,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(app)
 
         Group group = client.instantiate(Group)
-        group.name = uniquify('DELETEME')
+        group.name = uniquify('Java SDK IT Group')
 
         def created = app.createGroup(group)
 
@@ -218,9 +218,9 @@ class ApplicationIT extends ClientIT {
 
         assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
-        app.name = uniquify("DELETEME")
+        app.name = uniquify("Java SDK IT App")
 
-        def dirName = uniquify("DELETEME")
+        def dirName = uniquify("Java SDK IT Dir")
 
         app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
         def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
@@ -229,7 +229,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(app)
 
         Group group = client.instantiate(Group)
-        group.name = uniquify('DELETEME')
+        group.name = uniquify('Java SDK Group')
 
         def created = app.createGroup(group)
 

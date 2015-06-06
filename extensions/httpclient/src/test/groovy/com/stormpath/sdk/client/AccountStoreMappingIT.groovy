@@ -434,7 +434,7 @@ class AccountStoreMappingIT extends ClientIT {
 
         //// Let's create a new group to see if it gets created in the DefaultGroupStore we just set
         def newGroup = client.instantiate(Group)
-        newGroup.name = uniquify('Testor Group')
+        newGroup.name = uniquify('Java SDK IT Group')
         newGroup = app.createGroup(newGroup)
         deleteOnTeardown(newGroup)
         assertEquals(newGroup.getDirectory().getHref(), newDir.getHref())

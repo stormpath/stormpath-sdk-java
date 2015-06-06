@@ -43,10 +43,11 @@ public class EnlistmentFilter implements Filter {
 
         Map<String,Object> data = result.getData();
 
-        if (request.getAction() != ResourceAction.DELETE) {
-            //all non-delete actions return data:
+        if (request.getAction() == ResourceAction.DELETE) {
+            hrefMapStore.remove(result.getUri().getAbsolutePath());
+        } else if (AbstractInstanceResource.isInstanceResource(data)) {
             data = toEnlistment(data);
-            result = new DefaultResourceDataResult(result.getUri(), data, result.getResourceClass());
+            result = new DefaultResourceDataResult(result.getAction(), result.getUri(), result.getResourceClass(), data);
         }
 
         return result;

@@ -22,6 +22,8 @@ import java.util.Map;
 
 public interface ResourceMessage {
 
+    ResourceAction getAction();
+
     CanonicalUri getUri();
 
     Map<String,Object> getData();
