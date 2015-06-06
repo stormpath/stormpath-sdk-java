@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,11 @@ import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.group.GroupMembershipList
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -199,66 +203,55 @@ class DefaultAccountTest {
         def mockGroup = createStrictMock(Group)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
-        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
-        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
-
-        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
         expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
         expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+        expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
+        expect(mockGroup.getName()).andReturn(properties.groups.items.get(0).name)
+        expect(mockGroup.getHref()).andReturn(properties.groups.items.get(0).href)
+
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
-        expect(internalDataStore.getResource(properties.groups.href, DefaultGroupList, Collections.emptyMap())).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
 
         replay internalDataStore, mockGroup
