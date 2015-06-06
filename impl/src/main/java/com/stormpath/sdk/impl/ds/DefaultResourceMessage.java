@@ -23,14 +23,17 @@ import java.util.Map;
 
 public class DefaultResourceMessage implements ResourceMessage {
 
+    private final ResourceAction action;
     private final CanonicalUri uri;
     private final Class<? extends Resource> resourceClass;
     private final Map<String,Object> data;
 
-    public DefaultResourceMessage(CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
+    public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
+        Assert.notNull(action, "resource action cannot be null.");
         Assert.notNull(uri, "uri cannot be null.");
         Assert.notNull(resourceClass, "resourceClass cannot be null.");
         Assert.notNull(data, "data map cannot be null - specify an empty map instead of null.");
+        this.action = action;
         this.uri = uri;
         this.resourceClass = resourceClass;
         this.data = data;
@@ -49,5 +52,10 @@ public class DefaultResourceMessage implements ResourceMessage {
     @Override
     public Map<String, Object> getData() {
         return this.data;
+    }
+
+    @Override
+    public ResourceAction getAction() {
+        return action;
     }
 }

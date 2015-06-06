@@ -16,23 +16,14 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
 
+//todo - remove this - DefaultResourceMessage currently contains everything necessary
 public class DefaultResourceDataRequest extends DefaultResourceMessage implements ResourceDataRequest {
 
-    private final ResourceAction action;
-
     public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
-        super(uri, resourceClass, data);
-        Assert.notNull(action, "resource action cannot be null.");
-        this.action = action;
-    }
-
-    @Override
-    public ResourceAction getAction() {
-        return action;
+        super(action, uri, resourceClass, data);
     }
 }

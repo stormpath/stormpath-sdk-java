@@ -31,7 +31,7 @@ public class ProviderAccountResultFilter implements Filter {
         ResourceDataResult result = chain.filter(request);
 
         if (ProviderAccountResult.class.isAssignableFrom(result.getResourceClass())) {
-            result.getData().put("isNewAccount", request.getAction() == ResourceAction.CREATE);
+            result.getData().put("isNewAccount", result.getAction() == ResourceAction.CREATE);
         }
 
         return result;

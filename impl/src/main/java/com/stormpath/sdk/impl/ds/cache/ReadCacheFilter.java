@@ -91,7 +91,7 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             return null;
         }
 
-        return new DefaultResourceDataResult(uri, coerce(data), clazz);
+        return new DefaultResourceDataResult(request.getAction(), uri, clazz, coerce(data));
     }
 
     private int getValue(QueryString query, String propName, int defaultValue) {

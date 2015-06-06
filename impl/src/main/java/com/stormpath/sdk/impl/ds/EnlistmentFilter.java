@@ -47,7 +47,7 @@ public class EnlistmentFilter implements Filter {
             hrefMapStore.remove(result.getUri().getAbsolutePath());
         } else if (AbstractInstanceResource.isInstanceResource(data)) {
             data = toEnlistment(data);
-            result = new DefaultResourceDataResult(result.getUri(), data, result.getResourceClass());
+            result = new DefaultResourceDataResult(result.getAction(), result.getUri(), result.getResourceClass(), data);
         }
 
         return result;

@@ -894,7 +894,7 @@ class DefaultApplicationTest {
         expect(response.isError()).andReturn(false)
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(is)
-        //expect(response.getHttpStatus()).andReturn(200)
+        expect(response.getHttpStatus()).andReturn(200)
 
         replay requestExecutor, response
 

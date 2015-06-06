@@ -268,13 +268,21 @@ public class DefaultDataStore implements InternalDataStore {
                     throw new IllegalStateException("Unable to obtain resource data from the API server or from cache.");
                 }
 
-                return new DefaultResourceDataResult(uri, (Map<String,Object>)body, req.getResourceClass());
+                return new DefaultResourceDataResult(req.getAction(), uri, req.getResourceClass(), (Map<String,Object>)body);
             }
         });
 
         CanonicalUri uri = canonicalize(href, queryParameters);
         ResourceDataRequest req = new DefaultResourceDataRequest(ResourceAction.READ, uri, clazz, new HashMap<String,Object>());
         return chain.filter(req);
+    }
+
+    private ResourceAction getPostAction(ResourceDataRequest request, Response response) {
+        int httpStatus = response.getHttpStatus();
+        if (httpStatus == 201) {
+            return ResourceAction.CREATE;
+        }
+        return request.getAction();
     }
 
     /* =====================================================================
@@ -364,7 +372,9 @@ public class DefaultDataStore implements InternalDataStore {
                     throw new IllegalStateException("Unable to obtain resource data from the API server.");
                 }
 
-                return new DefaultResourceDataResult(uri, responseBody, returnType);
+                ResourceAction responseAction = getPostAction(req, response);
+
+                return new DefaultResourceDataResult(responseAction, uri, returnType, responseBody);
             }
         });
 
@@ -372,7 +382,6 @@ public class DefaultDataStore implements InternalDataStore {
         ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props);
 
         ResourceDataResult result = chain.filter(request);
-
 
         Map<String,Object> data = result.getData();
         Assert.notEmpty(data, "Filter chain returned an empty data result from a persistence request. This is never allowed.");
@@ -421,7 +430,7 @@ public class DefaultDataStore implements InternalDataStore {
                 Request deleteRequest = new DefaultRequest(HttpMethod.DELETE, requestHref);
                 execute(deleteRequest);
                 //delete requests have HTTP 204 (no content), so just create an empty body for the result:
-                return new DefaultResourceDataResult(request.getUri(), new HashMap<String, Object>(), request.getResourceClass());
+                return new DefaultResourceDataResult(request.getAction(), request.getUri(), request.getResourceClass(), new HashMap<String, Object>());
             }
         });
 
