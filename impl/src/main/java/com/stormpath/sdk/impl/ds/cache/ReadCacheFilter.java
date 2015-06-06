@@ -17,8 +17,10 @@ package com.stormpath.sdk.impl.ds.cache;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.impl.authc.LoginAttempt;
 import com.stormpath.sdk.impl.ds.DefaultResourceDataResult;
 import com.stormpath.sdk.impl.ds.FilterChain;
+import com.stormpath.sdk.impl.ds.ResourceAction;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.CanonicalUri;
@@ -108,14 +110,22 @@ public class ReadCacheFilter extends AbstractCacheFilter {
 
     private boolean isCacheRetrievalEnabled(ResourceDataRequest request) {
 
-        //we don't cache ProviderAccountResults:
-        if (ProviderAccountAccess.class.isAssignableFrom(request.getResourceClass())) {
-            return false;
-        }
+        Class<? extends Resource> clazz = request.getResourceClass();
 
-        //we currently don't cache CollectionResources themselves (only their internal instance resources).  So we
-        //return false in this case so a new cache region isn't auto created unnecessarily
-        //(cacheManager.getCache(name) will auto-create a region if called and it does not yet exist)
-        return !CollectionResource.class.isAssignableFrom(request.getResourceClass());
+        return
+
+            //create, update and delete all should bypass cache reads:
+            request.getAction() == ResourceAction.READ &&
+
+            //login attempts must always go to the server:
+            !LoginAttempt.class.isAssignableFrom(clazz) &&
+
+            //we don't cache ProviderAccountResults:
+            !ProviderAccountAccess.class.isAssignableFrom(clazz) &&
+
+            //we currently don't cache CollectionResources themselves (only their internal instance resources).  So we
+            //return false in this case so a new cache region isn't auto created unnecessarily
+            //(cacheManager.getCache(name) will auto-create a region if called and it does not yet exist)
+            !CollectionResource.class.isAssignableFrom(clazz);
     }
 }

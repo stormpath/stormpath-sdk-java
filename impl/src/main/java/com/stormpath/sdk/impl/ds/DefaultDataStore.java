@@ -131,13 +131,14 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new EnlistmentFilter());
 
-        //this.filters.add(new ApiKeyQueryPropertiesFilter());
-        //TODO: Add the ApiKeyCachePropertiesFilter and ApiKeyResourcePropertiesFilter here?
+        //TODO: enable: this.filters.add(new ApiKeyQueryPropertiesFilter());
 
         if (isCachingEnabled()) {
+            //TODO: ApiKeyCachePropertiesFilter here?
             this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver));
             this.filters.add(new WriteCacheFilter(this.cacheResolver, referenceFactory));
         }
+        //TODO: ApiKeyResourcePropertiesFilter here?
 
         this.filters.add(new ProviderAccountResultFilter());
     }

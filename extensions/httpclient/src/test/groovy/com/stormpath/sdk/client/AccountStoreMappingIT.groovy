@@ -52,7 +52,7 @@ class AccountStoreMappingIT extends ClientIT {
     @BeforeMethod
     void setUpApp() {
         app = client.instantiate(Application)
-        app.name = uniquify("Testor Application")
+        app.name = uniquify("Java SDK IT")
         app.status = ApplicationStatus.ENABLED
         app.description = uniquify("Test Application Description")
 
@@ -356,7 +356,7 @@ class AccountStoreMappingIT extends ClientIT {
     @Test
     void testDefaultApplicationGaps() {
         Group group = client.instantiate(Group)
-        group.name = uniquify("Testor Group")
+        group.name = uniquify("Java SDK IT Group")
         group.status = GroupStatus.DISABLED
         def dir = (Directory) app.getDefaultAccountStore()
         dir.createGroup(group)
@@ -460,7 +460,7 @@ class AccountStoreMappingIT extends ClientIT {
 
     private Directory createDirectory() {
         def app = client.instantiate(Application)
-        app.name = uniquify("Test Application")
+        app.name = uniquify("Java SDK IT")
         app.status = ApplicationStatus.DISABLED
         app.description = uniquify("Test Application Description")
 

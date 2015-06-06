@@ -59,7 +59,7 @@ class HammerManualIT extends ClientIT {
 
         26.times { i ->
             def app = client.instantiate(Application)
-            app.name = uniquify("Test Application")
+            app.name = uniquify("Java SDK IT")
             app.status = (i % 2 == 0 ? ApplicationStatus.ENABLED : ApplicationStatus.DISABLED)
             app.description = uniquify("Test Application Description")
 

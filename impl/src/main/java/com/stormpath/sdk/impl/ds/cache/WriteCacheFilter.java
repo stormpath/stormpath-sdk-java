@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.ds.cache;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
@@ -322,6 +323,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                // GET requests.  This will be resolved within Stormpath, but this is a fix for the SDK for now (for
                // Issue #17).  They are not directly cacheable, but any materialized references they contain are:
                data.get(AbstractResource.HREF_PROP_NAME) != null &&
+
+               //we don't cache authentication results directly, but we do cache the data they reference
+               //(i.e. the returned account, ApiKey if an Oauth authentication, etc:
+               !AuthenticationResult.class.isAssignableFrom(clazz) &&
 
                //we don't cache collection resources at the moment (only the instances inside them):
                !CollectionResource.class.isAssignableFrom(clazz);
