@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
@@ -29,8 +28,6 @@ public class DefaultResourceDataRequest extends DefaultResourceMessage implement
     public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
         super(uri, resourceClass, data);
         Assert.notNull(action, "resource action cannot be null.");
-        Assert.isTrue(action == ResourceAction.READ || action == ResourceAction.DELETE || !Collections.isEmpty(data),
-                      "CREATE or UPDATE requests cannot have null or empty data.");
         this.action = action;
     }
 
