@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -353,11 +355,15 @@ class ApplicationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def appApiKey = app.getApiKey(apiKey.id)
+        //test invalid key
+        def appApiKey = app.getApiKey("helloIamNotValid!");
+
+        assertNull appApiKey
+
+        appApiKey = app.getApiKey(apiKey.id)
 
         assertNotNull appApiKey
         assertEquals appApiKey, apiKey
-
     }
 
     @Test
