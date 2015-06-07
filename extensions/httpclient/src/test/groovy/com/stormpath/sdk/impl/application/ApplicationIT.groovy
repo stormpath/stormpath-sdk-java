@@ -35,7 +35,6 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.DefaultDataStore
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.provider.GoogleProvider
@@ -563,11 +562,11 @@ class ApplicationIT extends ClientIT {
 
     String decryptSecretFromCacheMap(Map cacheMap) {
 
-        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyParameter.ENCRYPTION_METADATA.getName())) {
             return null
         }
 
-        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+        def apiKeyMetaData = cacheMap[ApiKeyParameter.ENCRYPTION_METADATA.getName()]
 
         def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
         def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]

@@ -18,9 +18,11 @@ package com.stormpath.sdk.impl.ds.cache;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
+import com.stormpath.sdk.impl.api.ApiKeyParameter;
 import com.stormpath.sdk.impl.ds.CacheMapInitializer;
 import com.stormpath.sdk.impl.ds.DefaultCacheMapInitializer;
 import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
@@ -50,7 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.resource.AbstractResource.*;
+import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
 
 public class WriteCacheFilter extends AbstractCacheFilter {
 
@@ -210,13 +212,16 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             boolean isDefaultModelMap =
                 ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
+
+            boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
+
             //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
             //do need to have an href property
             if (isDefaultModelMap) {
                 value = new LinkedHashMap<String, Object>((Map) value);
             }
 
-            if (value instanceof Map && !isDefaultModelMap) {
+            if (value instanceof Map && !isDefaultModelMap && !isApiEncryptionMetadata) {
                 //the value is a resource reference
                 Map<String, ?> nested = (Map<String, ?>) value;
 
