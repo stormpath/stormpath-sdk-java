@@ -398,6 +398,9 @@ class ApplicationIT extends ClientIT {
 
         client.currentTenant.createApplication(newCreateRequestFor(app).createDirectory().build())
 
+        deleteOnTeardown(app.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(app)
+
         def account = createTestAccount(client, app)
 
         def apiKey = account.createApiKey()
