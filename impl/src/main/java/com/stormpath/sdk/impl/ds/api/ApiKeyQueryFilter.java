@@ -39,12 +39,13 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.api.DefaultApiKeyCriteria.*;
+import static com.stormpath.sdk.impl.api.DefaultApiKeyCriteria.DEFAULT_ENCRYPTION_ITERATIONS;
+import static com.stormpath.sdk.impl.api.DefaultApiKeyCriteria.DEFAULT_ENCRYPTION_SIZE;
 
 /**
  * @since 1.0.RC
  */
-public class ApiKeyQueryFilter implements  Filter {
+public class ApiKeyQueryFilter implements Filter {
 
     private static String ENCRYPT_SECRET = ApiKeyParameter.ENCRYPT_SECRET.getName();
     private static String ENCRYPTION_KEY_SALT = ApiKeyParameter.ENCRYPTION_KEY_SALT.getName();
@@ -60,61 +61,6 @@ public class ApiKeyQueryFilter implements  Filter {
         this.queryStringFactory = queryStringFactory;
     }
 
-    /**
-     * <p>
-     * This method verifies the provided {@code queryString} and, if the {@code clazz} argument
-     * is of type {@link ApiKey}.class or {@link ApiKeyList}.class, returns new {@link QueryString} if no encryption
-     * parameters are found.
-     * </p>
-     * <p>
-     * The new {@link QueryString} will contain all the necessary parameters to encrypt the api key secret
-     * plus the parameters that are already present in the {@code queryString} argument.
-     * </p>
-     * <p>
-     * If the filter does not apply to api keys, or the {@code queryString} argument already has the encryption parameters,
-     * the same {@code queryString} argument will be returned.
-     * </p>
-     *
-     * @param clazz       the {@link Class} to verify if this filter should run.
-     * @param queryString the query string to be filtered.
-     * @return a new {@link QueryString} with all the necessary parameters to encrypt the api key secret
-     * plus the parameters that are already present in the {@code queryString} argument, if the filter
-     * applies to api keys and the {@code queryString} argument does not have the encryption parameters;
-     * otherwise, the same {@code queryString} argument will be returned.
-     */
-    public QueryString filter(Class clazz, QueryString queryString) {
-
-        if ((ApiKey.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz))
-                && (queryString == null || !queryString.containsKey(ENCRYPT_SECRET))) {
-
-            DefaultApiKeyCriteria criteria = new DefaultApiKeyCriteria();
-            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPT_SECRET).eq(Boolean.TRUE));
-            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SIZE).eq(128));
-            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_ITERATIONS).eq(1024));
-            criteria.add(new DefaultEqualsExpressionFactory(ENCRYPTION_KEY_SALT).eq(saltGenerator.generate()));
-
-            QueryString qs = queryStringFactory.createQueryString(criteria);
-
-            if (queryString != null && !queryString.isEmpty()) {
-
-                for (Map.Entry<String, String> entry : queryString.entrySet()) {
-
-                    if (!entry.getValue().equals(ENCRYPT_SECRET)
-                            && !entry.getValue().equals(ENCRYPTION_KEY_SIZE)
-                            && !entry.getValue().equals(ENCRYPTION_KEY_ITERATIONS)
-                            && !entry.getValue().equals(ENCRYPTION_KEY_SALT)) {
-
-                        qs.put(entry.getKey(), entry.getValue());
-                    }
-                }
-            }
-
-            return qs;
-        }
-
-        return queryString;
-    }
-
     @Override
     public ResourceDataResult filter(ResourceDataRequest request, FilterChain chain) {
 
@@ -124,9 +70,7 @@ public class ApiKeyQueryFilter implements  Filter {
 
         Class clazz = request.getResourceClass();
 
-        boolean isCollection = false;
-
-        if (!(ApiKey.class.isAssignableFrom(clazz) || (isCollection = ApiKeyList.class.isAssignableFrom(clazz)))) {
+        if (!(ApiKey.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz))) {
             return chain.filter(request);
         }
 
@@ -175,7 +119,6 @@ public class ApiKeyQueryFilter implements  Filter {
             encryptionMetadata.put(ENCRYPTION_KEY_SALT, salt);
             encryptionMetadata.put(ENCRYPTION_KEY_SIZE, size);
             encryptionMetadata.put(ENCRYPTION_KEY_ITERATIONS, iterations);
-
 
             Map<String, Object> data = result.getData();
 

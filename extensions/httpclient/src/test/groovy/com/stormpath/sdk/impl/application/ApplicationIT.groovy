@@ -28,6 +28,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -45,6 +46,7 @@ import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
 
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
@@ -386,6 +388,59 @@ class ApplicationIT extends ClientIT {
     }
 
     @Test
+    void testGetApiKeyByIdCacheEnabled() {
+
+        def client = buildClient()
+
+        def app = client.instantiate(Application)
+
+        app.setName(uniquify("Java SDK IT App"))
+
+        client.currentTenant.createApplication(newCreateRequestFor(app).createDirectory().build())
+
+        deleteOnTeardown(app.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(app)
+
+        def account = createTestAccount(client, app)
+
+        def apiKey = account.createApiKey()
+
+        def apiKeyCache = client.dataStore.cacheManager.getCache(ApiKey.name)
+
+        assertNotNull apiKeyCache
+
+        def apiKeyCacheValue = apiKeyCache.get(apiKey.href)
+
+        assertNotNull apiKeyCacheValue
+
+        assertNotEquals apiKeyCacheValue['secret'], apiKey.secret
+
+        assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), apiKey.secret
+
+        client = buildClient()
+
+        def dataStore = (DefaultDataStore) client.dataStore
+
+        app = dataStore.getResource(app.href, Application)
+
+        def appApiKey = app.getApiKey(apiKey.id)
+
+        assertNotNull appApiKey
+
+        apiKeyCache = dataStore.cacheManager.getCache(ApiKey.name)
+
+        assertNotNull apiKeyCache
+
+        apiKeyCacheValue = apiKeyCache.get(apiKey.href)
+
+        assertNotNull apiKeyCacheValue
+
+        assertNotEquals apiKeyCacheValue['secret'], appApiKey.secret
+
+        assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), appApiKey.secret
+    }
+
+    @Test
     void testGetApiKeyByIdWithOptions() {
 
         def app = createTempApp()
@@ -405,11 +460,7 @@ class ApplicationIT extends ClientIT {
 
     }
 
-
-    //The implementation of https://github.com/stormpath/stormpath-sdk-java/issues/62
-    //causes the bug https://github.com/stormpath/stormpath-sdk-java/issues/74 to materialize itself.
-    //This test must be re-enabled when issue 74 is implemented.
-    @Test(enabled = false)
+    @Test
     void testGetApiKeyByIdWithOptionsInCache() {
 
         def app = createTempApp()
@@ -454,8 +505,6 @@ class ApplicationIT extends ClientIT {
         def tenantCacheValue = tenantCache.get(appApiKey2.tenant.href)
         assertNotNull tenantCacheValue
         assertEquals tenantCacheValue['key'], appApiKey.tenant.key
-
-
     }
 
     @Test
@@ -545,6 +594,10 @@ class ApplicationIT extends ClientIT {
     }
 
     def Account createTestAccount(Application app) {
+        return createTestAccount(client, app)
+    }
+
+    def Account createTestAccount(Client client, Application app) {
 
         def email = 'deleteme@nowhere.com'
 
