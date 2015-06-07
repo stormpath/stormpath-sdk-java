@@ -43,7 +43,7 @@ class CollectionIterationIT extends ClientIT {
     void testCollectionIteration() {
 
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK IT Collection Caching Dir")
+        dir.name = uniquify("Java SDK IT Dir")
         dir = client.currentTenant.createDirectory(dir)
         deleteOnTeardown(dir)
 
