@@ -428,7 +428,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         if (entity != null) {
             Header contentEncodingHeader = entity.getContentEncoding();
             if (contentEncodingHeader != null) {
-
                 for (HeaderElement element : contentEncodingHeader.getElements()) {
                     if (element.getName().equalsIgnoreCase("gzip")) {
                         return new GzipDecompressingEntity(response.getEntity());
