@@ -30,10 +30,16 @@ import java.util.Map;
 abstract class AbstractCacheFilter implements Filter {
 
     private final CacheResolver cacheResolver;
+    private final boolean collectionCachingEnabled; //DEVELOPMENT PURPOSES ONLY! DOES NOT WORK FOR PRODUCTION!
 
-    protected AbstractCacheFilter(CacheResolver resolver) {
+    protected AbstractCacheFilter(CacheResolver resolver, boolean collectionCachingEnabled) {
         Assert.notNull(resolver, "cacheResolver cannot be null.");
         this.cacheResolver = resolver;
+        this.collectionCachingEnabled = collectionCachingEnabled;
+    }
+
+    protected boolean isCollectionCachingEnabled() {
+        return collectionCachingEnabled;
     }
 
     protected Map<String, ?> getCachedValue(String href, Class<? extends Resource> clazz) {
@@ -57,7 +63,7 @@ abstract class AbstractCacheFilter implements Filter {
 
         String key = href;
 
-        if (CollectionResource.class.isAssignableFrom(clazz) && !Collections.isEmpty(query)) {
+        if (collectionCachingEnabled && CollectionResource.class.isAssignableFrom(clazz) && !Collections.isEmpty(query)) {
             key = href + "?" + query.toString();
         }
 

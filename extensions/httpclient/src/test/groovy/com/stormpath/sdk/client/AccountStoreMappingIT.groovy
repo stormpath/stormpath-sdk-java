@@ -355,19 +355,24 @@ class AccountStoreMappingIT extends ClientIT {
      */
     @Test
     void testDefaultApplicationGaps() {
+
         Group group = client.instantiate(Group)
         group.name = uniquify("Java SDK IT Group")
         group.status = GroupStatus.DISABLED
+
         def dir = (Directory) app.getDefaultAccountStore()
         dir.createGroup(group)
         deleteOnTeardown(group)
+
         assertNotEquals(app.getDefaultAccountStore().getHref(), group.getHref())
         app.setDefaultAccountStore(group)
 
         //let's check the changes are visible even without saving
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
+
         AccountStoreMappingList accountStoreMappingList = app.getAccountStoreMappings()
-        assertEquals(accountStoreMappingList.iterator().size(), 2)
+        assertEquals(accountStoreMappingList.size, 2)
+
         for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
                 if(!accountStoreMapping.isDefaultAccountStore()) {

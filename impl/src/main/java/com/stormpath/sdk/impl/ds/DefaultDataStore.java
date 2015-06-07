@@ -82,6 +82,8 @@ public class DefaultDataStore implements InternalDataStore {
                                                "persisted and have an existing " + AbstractResource.HREF_PROP_NAME +
                                                " attribute.";
 
+    private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
+
     private final String baseUrl;
     private final ApiKey apiKey;
     private final RequestExecutor requestExecutor;
@@ -135,8 +137,8 @@ public class DefaultDataStore implements InternalDataStore {
 
         if (isCachingEnabled()) {
             //TODO: ApiKeyCachePropertiesFilter here?
-            this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver));
-            this.filters.add(new WriteCacheFilter(this.cacheResolver, referenceFactory));
+            this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
+            this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
         }
         //TODO: ApiKeyResourcePropertiesFilter here?
 

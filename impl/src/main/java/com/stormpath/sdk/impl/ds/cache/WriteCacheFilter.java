@@ -40,6 +40,7 @@ import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Field;
@@ -56,8 +57,8 @@ public class WriteCacheFilter extends AbstractCacheFilter {
     private final ReferenceFactory referenceFactory;
     private final CacheMapInitializer cacheMapInitializer;
 
-    public WriteCacheFilter(CacheResolver cacheResolver, ReferenceFactory referenceFactory) {
-        super(cacheResolver);
+    public WriteCacheFilter(CacheResolver cacheResolver, boolean collectionCachingEnabled, ReferenceFactory referenceFactory) {
+        super(cacheResolver, collectionCachingEnabled);
         Assert.notNull(referenceFactory, "referenceFactory cannot be null.");
         this.referenceFactory = referenceFactory;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
@@ -96,9 +97,11 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             return false;
         }
 
+        Class<? extends Resource> clazz = result.getResourceClass();
+
         //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
         boolean emailVerification = EmailVerificationToken.class.isAssignableFrom(request.getResourceClass()) &&
-                                    Account.class.isAssignableFrom(result.getResourceClass());
+                                    Account.class.isAssignableFrom(clazz);
 
         //since 1.0.RC4 : fix for https://github.com/stormpath/stormpath-sdk-java/issues/140 where Account remains disabled after
         //successful verification due to an outdated `Account` state in the cache.
@@ -110,20 +113,19 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             }
         }
 
-        //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
-        boolean passwordResetToken = PasswordResetToken.class.isAssignableFrom(request.getResourceClass()) &&
-                                     PasswordResetToken.class.isAssignableFrom(result.getResourceClass());
+        return
 
-        boolean providerAccountResult = ProviderAccountResult.class.isAssignableFrom(result.getResourceClass());
+            //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
+            !PasswordResetToken.class.isAssignableFrom(clazz) &&
 
-        return !passwordResetToken &&
+            //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+            !ProviderAccountResult.class.isAssignableFrom(clazz) &&
 
-               //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
-               !providerAccountResult &&
+            //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
+            AbstractResource.isMaterialized(result.getData()) &&
 
-               //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
-               //AbstractInstanceResource.isInstanceResource(result.getData());
-               AbstractResource.isMaterialized(result.getData());
+            (!CollectionResource.class.isAssignableFrom(clazz) ||
+             (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
 
     /**
@@ -192,15 +194,17 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                                            AbstractResource.HREF_PROP_NAME + "' attribute).");
         }
 
-        Map<String, Object> toCache = cacheMapInitializer.initialize(clazz, data, queryString);
+        //create a map to reflect the resource's canonical representation - this is what will be cached:
+        Map<String, Object> cacheValue = cacheMapInitializer.initialize(clazz, data, queryString);
 
         if (CustomData.class.isAssignableFrom(clazz)) {
             Cache cache = getCache(clazz);
-            cache.put(href, toCache);
+            cache.put(href, cacheValue);
             return;
         }
 
         for (Map.Entry<String, ?> entry : data.entrySet()) {
+
             String name = entry.getKey();
             Object value = entry.getValue();
 
@@ -280,15 +284,14 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             }
 
             if (!DefaultAccount.PASSWORD.getName().equals(name)) { //don't cache sensitive data
-                toCache.put(name, value);
+                cacheValue.put(name, value);
             }
         }
 
-        //we don't cache collection resources at the moment (only the instances inside them):
-        if (isDirectlyCacheable(clazz, toCache)) {
+        if (isDirectlyCacheable(clazz, cacheValue)) {
             Cache cache = getCache(clazz);
             String cacheKey = getCacheKey(href, queryString, clazz);
-            cache.put(cacheKey, toCache);
+            cache.put(cacheKey, cacheValue);
         }
     }
 
@@ -323,24 +326,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
      */
     private boolean isDirectlyCacheable(Class<? extends Resource> clazz, Map<String, ?> data) {
 
-        return AbstractResource.isMaterialized(data);
+        return AbstractResource.isMaterialized(data) &&
 
-        /*
-
-            !Collections.isEmpty(data) &&
-
-               //Authentication results (currently) do not have an 'href' attribute, as it was not expected to support
-               // GET requests.  This will be resolved within Stormpath, but this is a fix for the SDK for now (for
-               // Issue #17).  They are not directly cacheable, but any materialized references they contain are:
-               data.get(AbstractResource.HREF_PROP_NAME) != null &&
-
-               //we don't cache authentication results directly, but we do cache the data they reference
-               //(i.e. the returned account, ApiKey if an Oauth authentication, etc:
-               !AuthenticationResult.class.isAssignableFrom(clazz); // &&
-
-               //we don't cache collection resources at the moment (only the instances inside them):
-               !CollectionResource.class.isAssignableFrom(clazz);
-         */
+               (!CollectionResource.class.isAssignableFrom(clazz) ||
+                (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
 
     /**
