@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.impl.api.ApiKeyParameter;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
+import com.stormpath.sdk.impl.api.DefaultApiKeyList;
 import com.stormpath.sdk.impl.ds.DefaultResourceDataRequest;
 import com.stormpath.sdk.impl.ds.Filter;
 import com.stormpath.sdk.impl.ds.FilterChain;
@@ -34,6 +35,7 @@ import com.stormpath.sdk.impl.security.DefaultSaltGenerator;
 import com.stormpath.sdk.impl.security.SaltGenerator;
 import com.stormpath.sdk.lang.Collections;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -123,7 +125,9 @@ public class ApiKeyQueryFilter implements  Filter {
 
         Class clazz = request.getResourceClass();
 
-        if (!ApiKey.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz)) {
+        boolean isCollection = false;
+
+        if (!(ApiKey.class.isAssignableFrom(clazz) || (isCollection = ApiKeyList.class.isAssignableFrom(clazz)))) {
             return chain.filter(request);
         }
 
@@ -173,9 +177,20 @@ public class ApiKeyQueryFilter implements  Filter {
             encryptionMetadata.put(ENCRYPTION_KEY_SIZE, size);
             encryptionMetadata.put(ENCRYPTION_KEY_ITERATIONS, iterations);
 
+
             Map<String, Object> data = result.getData();
 
-            data.put(ENCRYPTION_METADATA, encryptionMetadata);
+            if (DefaultApiKeyList.isCollectionResource(data)) {
+
+                @SuppressWarnings("unchecked")
+                Collection<Map<String, Object>> items = (Collection<Map<String, Object>>) data.get(DefaultApiKeyList.ITEMS_PROPERTY_NAME);
+
+                for (Map<String, Object> item : items) {
+                    item.put(ENCRYPTION_METADATA, encryptionMetadata);
+                }
+            } else {
+                data.put(ENCRYPTION_METADATA, encryptionMetadata);
+            }
         }
         return result;
     }
