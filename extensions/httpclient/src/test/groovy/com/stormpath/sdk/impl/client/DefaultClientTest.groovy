@@ -201,6 +201,7 @@ class DefaultClientTest {
         expect(response.isError()).andReturn(false)
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(is01AfterSave)
+        expect(response.getHttpStatus()).andReturn(200)
 
         replay requestExecutor, response, resourceFactory
 
