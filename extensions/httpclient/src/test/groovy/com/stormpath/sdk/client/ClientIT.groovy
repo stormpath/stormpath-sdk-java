@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.application.Application
@@ -32,7 +34,7 @@ abstract class ClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
-    String baseUrl = 'http://localhost:8080/v1'
+    String baseUrl = 'https://api.stormpath.com/v1'
     Client client
 
     List<Deletable> resourcesToDelete;
