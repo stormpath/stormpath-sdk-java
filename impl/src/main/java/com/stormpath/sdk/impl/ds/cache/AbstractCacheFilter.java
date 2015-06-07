@@ -17,7 +17,12 @@ package com.stormpath.sdk.impl.ds.cache;
 
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.impl.ds.Filter;
+import com.stormpath.sdk.impl.ds.ResourceDataRequest;
+import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
@@ -36,6 +41,27 @@ abstract class AbstractCacheFilter implements Filter {
         Assert.notNull(clazz, "Class argument cannot be null.");
         Cache<String, Map<String, ?>> cache = getCache(clazz);
         return cache.get(href);
+    }
+
+    protected String getCacheKey(ResourceDataRequest request) {
+
+        final CanonicalUri uri = request.getUri();
+        final String href = uri.getAbsolutePath();
+        final QueryString query = uri.getQuery();
+        final Class<? extends Resource> clazz = request.getResourceClass();
+
+        return getCacheKey(href, query, clazz);
+    }
+
+    protected String getCacheKey(String href, QueryString query, Class<? extends Resource> clazz) {
+
+        String key = href;
+
+        if (CollectionResource.class.isAssignableFrom(clazz) && !Collections.isEmpty(query)) {
+            key = href + "?" + query.toString();
+        }
+
+        return key;
     }
 
     protected <T> Cache<String, Map<String, ?>> getCache(Class<T> clazz) {
