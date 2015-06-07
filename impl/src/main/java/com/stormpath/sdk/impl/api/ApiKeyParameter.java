@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@ public enum ApiKeyParameter {
     ENCRYPT_SECRET("encryptSecret"),
     ENCRYPTION_KEY_SIZE("encryptionKeySize"),
     ENCRYPTION_KEY_ITERATIONS("encryptionKeyIterations"),
-    ENCRYPTION_KEY_SALT("encryptionKeySalt");
+    ENCRYPTION_KEY_SALT("encryptionKeySalt"),
+    ENCRYPTION_METADATA("API_KEY_META_DATA");
 
     private final String name;
 
-    private ApiKeyParameter(String name) {
+    ApiKeyParameter(String name) {
         this.name = name;
     }
 

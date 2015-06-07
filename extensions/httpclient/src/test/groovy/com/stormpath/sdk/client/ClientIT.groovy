@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ abstract class ClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
-    String baseUrl = 'https://api.stormpath.com/v1'
+    String baseUrl = 'http://localhost:8080/v1'
     Client client
 
     List<Deletable> resourcesToDelete;

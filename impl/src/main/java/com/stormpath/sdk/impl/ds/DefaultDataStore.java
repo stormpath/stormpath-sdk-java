@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
+import com.stormpath.sdk.impl.ds.api.ApiKeyQueryFilter;
+import com.stormpath.sdk.impl.ds.api.DecryptApiKeySecretFilter;
 import com.stormpath.sdk.impl.ds.cache.CacheResolver;
 import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
 import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
@@ -131,14 +133,15 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new EnlistmentFilter());
 
-        //TODO: enable: this.filters.add(new ApiKeyQueryPropertiesFilter());
+        this.filters.add(new DecryptApiKeySecretFilter(apiKey));
 
         if (isCachingEnabled()) {
-            //TODO: ApiKeyCachePropertiesFilter here?
             this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver));
             this.filters.add(new WriteCacheFilter(this.cacheResolver, referenceFactory));
+            //TODO: ApiKeyCachePropertiesFilter here?
         }
-        //TODO: ApiKeyResourcePropertiesFilter here?
+
+        this.filters.add(new ApiKeyQueryFilter(this.queryStringFactory));
 
         this.filters.add(new ProviderAccountResultFilter());
     }
