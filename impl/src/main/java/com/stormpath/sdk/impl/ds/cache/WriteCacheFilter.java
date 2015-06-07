@@ -124,10 +124,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             !ProviderAccountResult.class.isAssignableFrom(clazz) &&
 
             //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
-            AbstractResource.isMaterialized(result.getData()) &&
-
-            (!CollectionResource.class.isAssignableFrom(clazz) ||
-             (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
+            AbstractResource.isMaterialized(result.getData());
     }
 
     /**
