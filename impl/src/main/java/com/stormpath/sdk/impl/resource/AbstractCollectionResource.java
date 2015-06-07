@@ -41,7 +41,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
 
     private final Map<String, Object> queryParams;
 
-    private AtomicBoolean iterated = new AtomicBoolean();
+    private AtomicBoolean firstPageQueryRequired = new AtomicBoolean();
 
     protected AbstractCollectionResource(InternalDataStore dataStore) {
         super(dataStore);
@@ -133,9 +133,8 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
 
     @Override
     public Iterator<T> iterator() {
-        //added the new iterated atomic boolean to PaginatedIterator constructor to prevent issue when new collection
-        //resources requested the first page twice.
-        return new PaginatedIterator<T>(this, iterated.getAndSet(true));
+        //firstPageQueryRequired ensures that newly obtained collection resources don't need to query unnecessarily
+        return new PaginatedIterator<T>(this, firstPageQueryRequired.getAndSet(true));
     }
 
     private Collection<T> toResourceList(Collection vals, Class<T> itemType) {
@@ -163,9 +162,9 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         private Iterator<T> currentPageIterator;
         private int currentItemIndex;
 
-        private PaginatedIterator(AbstractCollectionResource<T> resource, boolean iterated) {
+        private PaginatedIterator(AbstractCollectionResource<T> resource, boolean firstPageQueryRequired) {
 
-            if (iterated) {
+            if (firstPageQueryRequired) {
                 //We get a new resource in order to have different iterator instances: issue 62 (https://github.com/stormpath/stormpath-sdk-java/issues/62)
                 this.resource = getDataStore().getResource(resource.getHref(), resource.getClass(), resource.queryParams);
                 this.currentPage = this.resource.getCurrentPage();
@@ -191,7 +190,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
             if (!hasNext && exhaustedLimit) {
 
                 //If we have already exhausted the whole collection size there is no need to contact the backend again: https://github.com/stormpath/stormpath-sdk-java/issues/161
-                boolean exhaustedSize = ((currentPage.getOffset() + 1) * pageLimit == getSize());
+                boolean exhaustedSize = (currentPage.getOffset() + pageLimit) >= getSize();
                 if (!exhaustedSize) {
 
                     //if we're done with the current page, and we've exhausted the page limit (i.e. we've read a

@@ -18,7 +18,6 @@ package com.stormpath.sdk.impl.ds.cache;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
@@ -31,7 +30,6 @@ import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
@@ -42,7 +40,6 @@ import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Field;
@@ -70,7 +67,8 @@ public class WriteCacheFilter extends AbstractCacheFilter {
     public ResourceDataResult filter(ResourceDataRequest request, FilterChain chain) {
 
         if (request.getAction() == ResourceAction.DELETE) {
-            uncache(request.getUri().getAbsolutePath(), request.getResourceClass());
+            String key = getCacheKey(request);
+            uncache(key, request.getResourceClass());
         }
 
         ResourceDataResult result = chain.filter(request);
@@ -124,7 +122,8 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                !providerAccountResult &&
 
                //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
-               AbstractInstanceResource.isInstanceResource(result.getData());
+               //AbstractInstanceResource.isInstanceResource(result.getData());
+               AbstractResource.isMaterialized(result.getData());
     }
 
     /**
@@ -172,6 +171,9 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         }
         customDataToCache.putAll(customData); //overwrite or add what was specified during the save operation
 
+        //we pass 'null' in as the querystring param because the querystring is only valid for
+        //the top-most item being cached - we don't want to propagate it for nested resources because the nested
+        //resource wasn't acquired w/ that query string.
         cache(CustomData.class, customDataToCache, null);
     }
 
@@ -231,7 +233,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                                   "It is expected that only ResourceReference properties are complex objects.");
 
                     //cache this materialized reference:
-                    cache(property.getType(), nested, queryString);
+                    //we pass 'null' in as the querystring param because the querystring is only valid for
+                    //the top-most item being cached - we don't want to propagate it for nested resources because the nested
+                    //resource wasn't acquired w/ that query string.
+                    cache(property.getType(), nested, null);
 
                     //Because the materialized reference has now been cached, we don't need to store
                     //all of its properties again in the 'toCache' instance.  Instead, we just want to store
@@ -242,8 +247,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                 }
             } else if (value instanceof Collection) { //array property, i.e. the 'items' collection resource property
                 Collection c = (Collection) value;
-                //We don't currently cache collection attributes; only the instances they contain.  Create a new
-                //collection that has only references, caching any materialized references in the process:
+                //Create a new collection that has only references, recursively caching any materialized references:
                 List list = new ArrayList(c.size());
 
                 //if the values in the collection are materialized, we need to cache that materialized reference.
@@ -262,7 +266,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                     if (o instanceof Map) {
                         Map referenceData = (Map) o;
                         if (AbstractResource.isMaterialized(referenceData)) {
-                            cache(itemType, referenceData, queryString);
+                            //we pass 'null' in as the querystring param because the querystring is only valid for
+                            //the top-most item being cached - we don't want to propagate it for nested resources because the nested
+                            //resource wasn't acquired w/ that query string.
+                            cache(itemType, referenceData, null);
                             element = this.referenceFactory.createReference(referenceData);
                         }
                     }
@@ -280,7 +287,8 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         //we don't cache collection resources at the moment (only the instances inside them):
         if (isDirectlyCacheable(clazz, toCache)) {
             Cache cache = getCache(clazz);
-            cache.put(href, toCache);
+            String cacheKey = getCacheKey(href, queryString, clazz);
+            cache.put(cacheKey, toCache);
         }
     }
 
@@ -315,7 +323,11 @@ public class WriteCacheFilter extends AbstractCacheFilter {
      */
     private boolean isDirectlyCacheable(Class<? extends Resource> clazz, Map<String, ?> data) {
 
-        return !Collections.isEmpty(data) &&
+        return AbstractResource.isMaterialized(data);
+
+        /*
+
+            !Collections.isEmpty(data) &&
 
                //Authentication results (currently) do not have an 'href' attribute, as it was not expected to support
                // GET requests.  This will be resolved within Stormpath, but this is a fix for the SDK for now (for
@@ -324,20 +336,21 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
                //we don't cache authentication results directly, but we do cache the data they reference
                //(i.e. the returned account, ApiKey if an Oauth authentication, etc:
-               !AuthenticationResult.class.isAssignableFrom(clazz) &&
+               !AuthenticationResult.class.isAssignableFrom(clazz); // &&
 
                //we don't cache collection resources at the moment (only the instances inside them):
                !CollectionResource.class.isAssignableFrom(clazz);
+         */
     }
 
     /**
      * @since 0.8
      */
     @SuppressWarnings("unchecked")
-    private void uncache(String href, Class<? extends Resource> resourceType) {
-        Assert.hasText(href, "href cannot be null or empty.");
+    private void uncache(String cacheKey, Class<? extends Resource> resourceType) {
+        Assert.hasText(cacheKey, "cacheKey cannot be null or empty.");
         Assert.notNull(resourceType, "resourceType cannot be null.");
         Cache<String, Map<String, ?>> cache = getCache(resourceType);
-        cache.remove(href);
+        cache.remove(cacheKey);
     }
 }

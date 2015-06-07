@@ -29,7 +29,6 @@ import com.stormpath.sdk.impl.provider.ProviderAccountAccess;
 import com.stormpath.sdk.impl.resource.CollectionProperties;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
@@ -84,7 +83,8 @@ public class ReadCacheFilter extends AbstractCacheFilter {
                                                          .setItemsMap(apiKeyData).build();
             }
         } else {
-            data = getCachedValue(href, clazz);
+            String cacheKey = getCacheKey(request);
+            data = getCachedValue(cacheKey, clazz);
         }
 
         if (Collections.isEmpty(data)) {
@@ -121,11 +121,11 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             !LoginAttempt.class.isAssignableFrom(clazz) &&
 
             //we don't cache ProviderAccountResults:
-            !ProviderAccountAccess.class.isAssignableFrom(clazz) &&
+            !ProviderAccountAccess.class.isAssignableFrom(clazz); // &&
 
             //we currently don't cache CollectionResources themselves (only their internal instance resources).  So we
             //return false in this case so a new cache region isn't auto created unnecessarily
             //(cacheManager.getCache(name) will auto-create a region if called and it does not yet exist)
-            !CollectionResource.class.isAssignableFrom(clazz);
+            //!CollectionResource.class.isAssignableFrom(clazz);
     }
 }
