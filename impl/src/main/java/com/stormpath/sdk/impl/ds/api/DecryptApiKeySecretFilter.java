@@ -56,56 +56,6 @@ public class DecryptApiKeySecretFilter implements Filter {
         this.clientApiKey = clientApiKey;
     }
 
-    public Map<String, ?> filter(Class clazz, Map<String, ?> resourceProperties) {
-
-//        if (clazz != null && (ApiKey.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz)) &&
-//                resourceProperties != null && queryString != null && queryString.containsKey(ENCRYPT_SECRET.getName()) &&
-//                Boolean.valueOf(queryString.get(ENCRYPT_SECRET.getName())) &&
-//                queryString.containsKey(ENCRYPTION_KEY_SALT.getName())) {
-//
-//            ApiKeySecretEncryptionService.Builder builder =
-//                    new ApiKeySecretEncryptionService.Builder().setPassword(password).setIterations(
-//                            Integer.valueOf(queryString.get(ENCRYPTION_KEY_ITERATIONS.getName()))).setKeySize(
-//                            Integer.valueOf(queryString.get(ENCRYPTION_KEY_SIZE.getName()))).setBase64Salt(
-//                            queryString.get(ENCRYPTION_KEY_SALT.getName()).getBytes());
-//
-//            String itemsName = ITEMS_PROPERTY_NAME;
-//            String secretName = "secret";
-//            if (resourceProperties.containsKey(itemsName) && resourceProperties
-//                    .get(itemsName) instanceof Collection) { // if we get here, we're working with a collection of api keys
-//
-//                Collection apiKeys = (Collection) resourceProperties.get(itemsName);
-//
-//                for (Object apiKeyObj : apiKeys) {
-//
-//                    if (apiKeyObj instanceof Map) {
-//
-//                        Map<String, Object> apiKeyMap = (Map<String, Object>) apiKeyObj;
-//
-//                        if (apiKeyMap.containsKey(secretName)) {
-//
-//                            String unEncryptedSecret =
-//                                    builder.build().decryptBase64String((String) apiKeyMap.get(secretName));
-//                            apiKeyMap.put(secretName, unEncryptedSecret);
-//                        }
-//                    }
-//                }
-//
-//                // returning the collection resource with its api keys secrets unencrypted
-//                return resourceProperties;
-//            }
-//            // if we get here, this is a single api key
-//            String unEncryptedSecret = builder.build().decryptBase64String((String) resourceProperties.get(secretName));
-//
-//            Map<String, Object> apiKeyProperties = new LinkedHashMap<String, Object>(resourceProperties);
-//            apiKeyProperties.put(secretName, unEncryptedSecret);
-//
-//            return apiKeyProperties;
-//        }
-//
-        return null;
-    }
-
     @Override
     public ResourceDataResult filter(ResourceDataRequest request, FilterChain chain) {
 
