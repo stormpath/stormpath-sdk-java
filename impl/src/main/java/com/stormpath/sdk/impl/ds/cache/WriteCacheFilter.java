@@ -32,6 +32,7 @@ import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
@@ -83,7 +84,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
         //If the resource saved has nested custom data, and any custom data was specified when saving the resource,
         //we need to ensure that the custom data is cached properly since it won't be returned by the server by
-        //default.  There is probably a much cleaner OO way of doing this, but it wasn't worth it at impl time to
+        //default.  There is probably a much cleaner way of doing this, but it wasn't worth it at impl time to
         //find a smoother way.  Helper methods have been marked as private to indicate that this shouldn't be used as
         //a dependency in case we choose to implement a cleaner way later.
         if (AbstractExtendableInstanceResource.isExtendableInstanceResource(result.getData())) {
@@ -249,7 +250,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                     //an unmaterialized reference (a Map with just the 'href' attribute).
                     //If the a caller attempts to materialize the reference, we will hit the cached version and
                     //use that data instead of issuing a request.
-                    value = this.referenceFactory.createReference(name, nested);
+                    value = toCanonicalReference(name, nested);
                 }
             } else if (value instanceof Collection) { //array property, i.e. the 'items' collection resource property
                 Collection c = (Collection) value;
@@ -276,7 +277,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                             //the top-most item being cached - we don't want to propagate it for nested resources because the nested
                             //resource wasn't acquired w/ that query string.
                             cache(itemType, referenceData, null);
-                            element = this.referenceFactory.createReference(referenceData);
+                            element = toCanonicalReference(null, referenceData);
                         }
                     }
                     list.add(element);
@@ -295,6 +296,23 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             String cacheKey = getCacheKey(href, queryString, clazz);
             cache.put(cacheKey, cacheValue);
         }
+    }
+
+
+    private Map<String,?> toCanonicalReference(String name, Map<String,?> resourceData) {
+
+        //If the resource data reflects a materialized instance resource (not a collection resource), we can convert it
+        //to a link since it will cached in shared cache.  This way any time the link is resolved (across any
+        //collection), the same shared cache instance data will be returned, instead of potentially having different
+        //representations of the same resource in different collections.
+        if (AbstractInstanceResource.isInstanceResource(resourceData)) {
+            return this.referenceFactory.createReference(name, resourceData);
+        }
+
+        //Collections are not yet placed in the shared cache due to the significant challenge of coherency, so we
+        // don't want to 'lose' the fidelity of the collection's properties by converting it to just a link.  So
+        // we return the actual collection:
+        return resourceData;
     }
 
     /**
