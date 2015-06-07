@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public abstract class AbstractInstanceResource extends AbstractResource implemen
      * @since 1.0.RC4.3
      */
     public static boolean isInstanceResource(Map<String, ?> props) {
-        return isMaterialized(props) && !props.containsKey("items"); //collections have 'items'
+        return isMaterialized(props) && !props.containsKey(AbstractCollectionResource.ITEMS_PROPERTY_NAME); //collections have 'items'
     }
 
 }

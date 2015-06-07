@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.impl.api.ApiKeyParameter;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
+import com.stormpath.sdk.impl.api.DefaultApiKeyList;
 import com.stormpath.sdk.impl.ds.DefaultResourceDataResult;
 import com.stormpath.sdk.impl.ds.Filter;
 import com.stormpath.sdk.impl.ds.FilterChain;
@@ -30,7 +31,10 @@ import com.stormpath.sdk.impl.security.EncryptionService;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.Resource;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -119,12 +123,37 @@ public class DecryptApiKeySecretFilter implements Filter {
 
         Map<String, Object> data = result.getData();
 
-        if (!data.containsKey(ENCRYPTION_METADATA)) {
+        if (DefaultApiKeyList.isCollectionResource(data)) {
+
+            @SuppressWarnings("unchecked")
+            Collection<Map<String, Object>> items = (Collection<Map<String, Object>>) data.get(DefaultApiKeyList.ITEMS_PROPERTY_NAME);
+
+            if (items.isEmpty()) {
+                return result;
+            }
+
+            List<Map<String, Object>> clonedItems = new ArrayList<Map<String, Object>>(items.size());
+
+            for (Map<String, Object> item : items) {
+                clonedItems.add(clone(item));
+            }
+
+            data.put(DefaultApiKeyList.ITEMS_PROPERTY_NAME, clonedItems);
+
             return result;
         }
 
+        return new DefaultResourceDataResult(result.getAction(), result.getUri(), clazz, clone(data));
+    }
+
+    private Map<String, Object> clone(Map<String, Object> input) {
+
+        if (!input.containsKey(ENCRYPTION_METADATA)) {
+            return input;
+        }
+
         @SuppressWarnings("unchecked")
-        Map<String, Object> metadata = (Map<String, Object>) data.get(ENCRYPTION_METADATA);
+        Map<String, Object> metadata = (Map<String, Object>) input.get(ENCRYPTION_METADATA);
 
         byte[] base64Salt = ((String) metadata.get(ENCRYPTION_KEY_SALT)).getBytes();
         Integer iterations = (Integer) metadata.get(ENCRYPTION_KEY_ITERATIONS);
@@ -133,11 +162,11 @@ public class DecryptApiKeySecretFilter implements Filter {
         EncryptionService service = new ApiKeySecretEncryptionService.Builder().setPassword(clientApiKey.getSecret().toCharArray()).setKeySize(size)
                 .setIterations(iterations).setBase64Salt(base64Salt).build();
 
-        String encryptedSecret = (String) data.get(SECRET_PROPERTY_NAME);
+        String encryptedSecret = (String) input.get(SECRET_PROPERTY_NAME);
 
         Map<String, Object> clonedData = new LinkedHashMap<String, Object>();
 
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
+        for (Map.Entry<String, Object> entry : input.entrySet()) {
 
             String key = entry.getKey();
 
@@ -153,7 +182,7 @@ public class DecryptApiKeySecretFilter implements Filter {
             clonedData.put(key, entry.getValue());
         }
 
-        return new DefaultResourceDataResult(result.getAction(), result.getUri(), clazz, clonedData);
+        return clonedData;
     }
 
 }

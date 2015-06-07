@@ -72,7 +72,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
      * @since 1.0.RC4.3
      */
     public static boolean isCollectionResource(Map<String,?> props) {
-        return isMaterialized(props) && (props.get("items") instanceof Iterable);
+        return isMaterialized(props) && (props.get(ITEMS_PROPERTY_NAME) instanceof Iterable);
     }
 
     @Override
