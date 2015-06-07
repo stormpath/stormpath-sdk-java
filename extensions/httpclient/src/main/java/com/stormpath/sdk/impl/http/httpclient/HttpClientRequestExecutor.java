@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.stormpath.sdk.impl.http.support.DefaultResponse;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
@@ -43,6 +44,7 @@ import org.apache.http.HttpVersion;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.params.ClientPNames;
@@ -402,7 +404,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         HttpHeaders headers = getHeaders(httpResponse);
         MediaType mediaType = headers.getContentType();
 
-        HttpEntity entity = httpResponse.getEntity();
+        HttpEntity entity = getHttpEntity(httpResponse);
 
         InputStream body = entity != null ? entity.getContent() : null;
         long contentLength = entity != null ? entity.getContentLength() : -1;
@@ -418,6 +420,22 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         }
 
         return new DefaultResponse(httpStatus, mediaType, body, contentLength);
+    }
+
+    private HttpEntity getHttpEntity(HttpResponse response) {
+
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+            Header contentEncodingHeader = entity.getContentEncoding();
+            if (contentEncodingHeader != null) {
+                for (HeaderElement element : contentEncodingHeader.getElements()) {
+                    if (element.getName().equalsIgnoreCase("gzip")) {
+                        return new GzipDecompressingEntity(response.getEntity());
+                    }
+                }
+            }
+        }
+        return entity;
     }
 
     private HttpHeaders getHeaders(HttpResponse response) {
