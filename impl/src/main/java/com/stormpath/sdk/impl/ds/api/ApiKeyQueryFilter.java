@@ -37,8 +37,7 @@ import com.stormpath.sdk.lang.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.api.DefaultApiKeyCriteria.DEFAULT_ENCRYPTION_ITERATIONS;
-import static com.stormpath.sdk.impl.api.DefaultApiKeyCriteria.DEFAULT_ENCRYPTION_SIZE;
+import static com.stormpath.sdk.impl.api.DefaultApiKeyCriteria.*;
 
 /**
  * @since 1.0.RC

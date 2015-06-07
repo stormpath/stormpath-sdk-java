@@ -52,7 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
+import static com.stormpath.sdk.impl.resource.AbstractResource.*;
 
 public class WriteCacheFilter extends AbstractCacheFilter {
 
