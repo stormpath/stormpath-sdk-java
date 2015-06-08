@@ -27,9 +27,11 @@ import java.util.Map;
 /**
  * @since 1.0.0
  */
-public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource implements Saveable, Extendable {
+public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource
+    implements Saveable, Extendable {
 
-    public static final ResourceReference<CustomData> CUSTOM_DATA = new ResourceReference<CustomData>("customData", CustomData.class);
+    public static final ResourceReference<CustomData> CUSTOM_DATA =
+        new ResourceReference<CustomData>("customData", CustomData.class);
 
     protected AbstractExtendableInstanceResource(InternalDataStore dataStore) {
         super(dataStore);
@@ -42,11 +44,24 @@ public abstract class AbstractExtendableInstanceResource extends AbstractInstanc
         if (properties != null && properties.containsKey(CUSTOM_DATA.getName())) {
             Object object = properties.get(CUSTOM_DATA.getName());
             Assert.isInstanceOf(Map.class, object);
-            CustomData customData = getDataStore().instantiate(CustomData.class, (Map<String, Object>) properties.get(CUSTOM_DATA.getName()));
+            CustomData customData = getDataStore()
+                .instantiate(CustomData.class, (Map<String, Object>) properties.get(CUSTOM_DATA.getName()));
             properties.put(CUSTOM_DATA.getName(), customData);
         }
         setProperties(properties);
+    }
 
+    /**
+     * Returns {@code true} if the specified data map represents a materialized extendable instance resource data set,
+     * {@code false} otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized extendable instance resource data set,
+     * {@code false} otherwise.
+     * @since 1.0.RC4.3
+     */
+    public static boolean isExtendableInstanceResource(Map<String, ?> props) {
+        return isInstanceResource(props) && props.get(CUSTOM_DATA.getName()) instanceof Map;
     }
 
     @Override
@@ -58,22 +73,22 @@ public abstract class AbstractExtendableInstanceResource extends AbstractInstanc
     }
 
     @Override
-    public void save(){
+    public void save() {
         applyCustomDataUpdatesIfNecessary();
         super.save();
     }
 
-    protected void applyCustomDataUpdatesIfNecessary(){
+    protected void applyCustomDataUpdatesIfNecessary() {
         CustomData customData = getCustomData();
         Assert.isInstanceOf(DefaultCustomData.class, customData);
 
         DefaultCustomData customDataImpl = (DefaultCustomData) customData;
 
-        if(customDataImpl.isDirty()){
-            if(customDataImpl.hasRemovedProperties()){
+        if (customDataImpl.isDirty()) {
+            if (customDataImpl.hasRemovedProperties()) {
                 customDataImpl.deleteRemovedProperties();
             }
-            if(customDataImpl.hasNewProperties()){
+            if (customDataImpl.hasNewProperties()) {
                 setProperty(CUSTOM_DATA, customData);
             }
         }

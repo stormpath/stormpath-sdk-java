@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,6 +123,7 @@ class HttpClientRequestFactory {
             hostHeader += ":" + endpoint.getPort();
         }
         httpRequest.addHeader("Host", hostHeader);
+        httpRequest.addHeader("Accept-Encoding", "gzip");
 
         // Copy over any other headers already in our request
         for (Map.Entry<String, List<String>> entry : request.getHeaders().entrySet()) {
