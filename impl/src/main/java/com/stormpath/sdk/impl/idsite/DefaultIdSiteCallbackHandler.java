@@ -31,7 +31,6 @@ import com.stormpath.sdk.impl.account.DefaultAuthenticationResult;
 import com.stormpath.sdk.impl.account.DefaultLogoutResult;
 import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
-import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
@@ -83,7 +82,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         this.dataStore = dataStore;
         this.application = application;
         this.jwtResponse = getJwtResponse(httpRequest);
-        this.nonceStore = new DefaultNonceStore((DefaultDataStore) dataStore);
+        this.nonceStore = new DefaultNonceStore(dataStore.getCacheResolver());
     }
 
     @Override

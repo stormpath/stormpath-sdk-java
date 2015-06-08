@@ -219,7 +219,7 @@ private class DefaultDataStoreDelegateTo extends DefaultDataStore {
     private CustomData customData;
 
     DefaultDataStoreDelegateTo(RequestExecutor requestExecutor, CustomData customData) {
-        super(requestExecutor, "https://api.stormpath.com/v1", createNiceMock(ApiKey))
+        super(requestExecutor, "https://api.stormpath.com/v1", (ApiKey)createNiceMock(ApiKey))
         this.customData = customData
     }
 
