@@ -473,7 +473,6 @@ public class DefaultDataStore implements InternalDataStore {
         return response;
     }
 
-    @SuppressWarnings("unchecked")
     private Map<String, Object> getBody(Response response) {
 
         Assert.notNull(response, "response argument cannot be null.");
@@ -481,11 +480,7 @@ public class DefaultDataStore implements InternalDataStore {
         Map<String, Object> out = null;
 
         if (response.hasBody()) {
-            String bodyString = toString(response.getBody());
-            log.trace("Obtained response body: \n{}", bodyString);
-            if (Strings.hasText(bodyString)) {
-                out = mapMarshaller.unmarshal(bodyString);
-            }
+            out = mapMarshaller.unmarshall(response.getBody());
         }
 
         return out;

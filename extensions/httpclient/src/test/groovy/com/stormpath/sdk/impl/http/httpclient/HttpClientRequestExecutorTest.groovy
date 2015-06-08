@@ -41,7 +41,7 @@ class HttpClientRequestExecutorTest {
 
         def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationScheme.SAUTHC1, 20000) {
             @Override
-            protected String toString(HttpEntity he) throws IOException {
+            protected byte[] toBytes(HttpEntity he) throws IOException {
                 return null
             }
         }

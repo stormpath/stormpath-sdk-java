@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,12 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GithubProvider
+import com.stormpath.sdk.provider.GoogleProviderData
+import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.provider.ProviderData
+import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -181,16 +186,13 @@ class DefaultDataStoreTest {
         def response = createStrictMock(Response)
         def facebookProvider = createStrictMock(FacebookProvider)
         def apiKey = createStrictMock(ApiKey)
-        // convert String into InputStream
-        InputStream is = new ByteArrayInputStream("".getBytes());
 
         def childIdProperty = "providerId"
         def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
 
         expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
         expect(response.isError()).andReturn(false)
-        expect(response.hasBody()).andReturn(true)
-        expect(response.getBody()).andReturn(is)
+        expect(response.hasBody()).andReturn(false)
 
         replay(requestExecutor, response, facebookProvider)
 
