@@ -16,12 +16,13 @@
 package com.stormpath.sdk.impl.idsite
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
 import com.stormpath.sdk.idsite.*
 import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.http.RequestExecutor
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.jwt.JwtConstants.JWR_RESPONSE_PARAM_NAME
@@ -64,24 +65,18 @@ class DefaultIdSiteCallbackHandlerTest {
     }
 
     private void testListener(String jwtResponse, IdSiteResultStatus expectedListenerMethod) {
-        def dataStore = createStrictMock(DefaultDataStore)
+        def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKey)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
         def listener = createStrictMock(IdSiteResultListener)
-        def apiKey = createStrictMock(ApiKey)
         def account = createStrictMock(Account)
-        String apiKeyId = "2EV70AHRTYF0JOA7OEFO3SM29"
-        String apiKeySecret = "goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8"
 
         AccountResult accountResultFromListener = null
 
         expect(request.getMethod()).andReturn(HttpMethod.GET)
         expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
-        expect(dataStore.getApiKey()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(dataStore.isCachingEnabled()).andReturn(false).times(2)
-        expect(dataStore.instantiate(Account, [href:"https://api.stormpath.com/v1/accounts/7Ora8KfVDEIQP38KzrYdAs"])).andReturn(account) times 2
 
         if (expectedListenerMethod.equals(IdSiteResultStatus.REGISTERED)) {
             expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
@@ -130,18 +125,19 @@ class DefaultIdSiteCallbackHandlerTest {
             })
         }
 
-        replay dataStore, application, request, listener, apiKey, account
+        replay application, request, listener, account
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
 
         AccountResult accountResult = callbackHandler.getAccountResult()
+        assertEquals accountResult.account.href, 'https://api.stormpath.com/v1/accounts/7Ora8KfVDEIQP38KzrYdAs'
+        assertEquals accountResultFromListener.account.href, 'https://api.stormpath.com/v1/accounts/7Ora8KfVDEIQP38KzrYdAs'
         assertEquals(accountResult.account, accountResultFromListener.account)
         assertEquals(accountResult.newAccount, accountResultFromListener.newAccount)
         assertEquals(accountResult.state, accountResultFromListener.state)
 
-        verify dataStore, application, request, listener, apiKey, account
-
+        verify application, request, listener, account
     }
 
 }

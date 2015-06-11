@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.ds.api;
+package com.stormpath.sdk.impl.ds;
 
-/**
- * @since 1.0.RC
- */
-public enum ApiKeyCacheParameter {
+import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.resource.Resource;
 
-    API_KEY_META_DATA;
+import java.util.Map;
+
+public interface ResourceMessage {
+
+    ResourceAction getAction();
+
+    CanonicalUri getUri();
+
+    Map<String,Object> getData();
+
+    Class<? extends Resource> getResourceClass();
 }

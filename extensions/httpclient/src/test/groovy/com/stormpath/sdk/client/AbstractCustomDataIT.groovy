@@ -22,12 +22,10 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.directory.CustomData
-import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.tenant.Tenant
-import com.stormpath.sdk.tenant.Tenants
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
@@ -44,7 +42,7 @@ abstract class AbstractCustomDataIT extends ClientIT {
 
     protected Application createApplication() {
         Application application = client.instantiate(Application)
-        application.setName(uniquify("My CustomData app"))
+        application.setName(uniquify("Java SDK IT"))
         return client.currentTenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
     }
 
