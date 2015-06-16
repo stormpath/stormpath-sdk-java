@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,13 +32,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.4
  */
 @Component
 public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
-    protected StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
+    AuthenticationResultSaver stormpathAuthenticationResultSaver;
 
     @Autowired
     protected Client stormpathClient;
@@ -51,7 +52,7 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
     protected void saveAccount(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
         Account account = getAccount(authentication);
         AuthenticationResult result = new TransientAuthenticationResult(account);
-        stormpathWebMvcConfiguration.stormpathAuthenticationResultSaver().set(request, response, result);
+        stormpathAuthenticationResultSaver.set(request, response, result);
     }
 
     private Account getAccount(Authentication authentication) {

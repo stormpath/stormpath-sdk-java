@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 
 /**
- * @since 1.0
+ * @since 1.0.RC4.4
  */
 @Configuration
 @EnableAutoConfiguration

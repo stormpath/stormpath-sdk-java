@@ -228,6 +228,12 @@
                 <artifactId>stormpath-spring-boot-starter-spring-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-boot-starter-spring-security-webmvc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <!-- 3rd party dependencies: -->
             <dependency>

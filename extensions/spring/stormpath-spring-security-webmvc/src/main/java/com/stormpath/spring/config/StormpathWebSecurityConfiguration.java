@@ -17,37 +17,53 @@ package com.stormpath.spring.config;
 
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.4
  */
 @EnableWebSecurity
 @EnableWebMvcSecurity
 @ComponentScan
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableStormpathSpringSecurityWebMvc //Stormpath Spring Security web mvc beans plus out-of-the-box views
+@PropertySource("classpath:application.properties")
 public class StormpathWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     protected StormpathAuthenticationProvider stormpathAuthenticationProvider;
 
     @Autowired
-    protected StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
-
-    @Autowired
     protected StormpathLoginSuccessHandler stormpathLoginSuccessHandler;
 
     @Autowired
     protected StormpathLogoutHandler stormpathLogoutHandler;
+
+    @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
+    protected String loginUri;
+
+    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
+    protected String loginNextUri;
+
+    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
+    protected String logoutUri;
+
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
+    protected String logoutNextUri;
+
+    @Value("#{ @environment['stormpath.web.login.form.fields.login.placeholder'] ?: 'Username or Email' }")
+    protected String loginFormUsernameParameter;
+
+    @Value("#{ @environment['stormpath.web.login.form.fields.password.placeholder'] ?: 'password' }")
+    protected String loginFormPasswordParameter;
 
     /**
      * The pre-defined Stormpath access control settings are defined here.
@@ -65,15 +81,15 @@ public class StormpathWebSecurityConfiguration extends WebSecurityConfigurerAdap
     protected final void configure(HttpSecurity http) throws Exception {
         http
                 .formLogin()
-                .loginPage(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginUrl())
-                .defaultSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLoginNextUrl())
+                .loginPage(loginUri)
+                .defaultSuccessUrl(loginNextUri)
                 .successHandler(stormpathLoginSuccessHandler)
                 .usernameParameter("login")
                 .passwordParameter("password")
                 .and()
                 .logout()
-                .logoutUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutUrl())
-                .logoutSuccessUrl(stormpathWebMvcConfiguration.stormpathInternalConfig().getLogoutNextUrl())
+                .logoutUrl(logoutUri)
+                .logoutSuccessUrl(logoutNextUri)
                 .addLogoutHandler(stormpathLogoutHandler)
                 .and()
                 .httpBasic()
@@ -84,7 +100,8 @@ public class StormpathWebSecurityConfiguration extends WebSecurityConfigurerAdap
     }
 
     /**
-     * Override this method to define app-specific security settings like:
+     * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked by {@link #configure(HttpSecurity)} after
+     * auto-configuring all the required properties. You can override this method to define app-specific security settings like:
      *
      * <pre>
      * http
@@ -117,7 +134,17 @@ public class StormpathWebSecurityConfiguration extends WebSecurityConfigurerAdap
         config(auth);
     }
 
+    /**
+     * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked by {@link #configure(AuthenticationManagerBuilder)} after
+     * auto-configuring all the required properties. You can override this method to define app-specific.
+     *
+     * @param auth
+     *            the {@link AuthenticationManagerBuilder} to modify
+     * @throws Exception
+     *             if an error occurs
+     */
     protected void config(AuthenticationManagerBuilder auth) throws Exception {
+
     }
 
     @Bean

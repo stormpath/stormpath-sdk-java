@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.4
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -27,7 +27,7 @@
 
     <artifactId>stormpath-sdk-examples-spring-webmvc</artifactId>
     <name>Stormpath Java SDK :: Examples :: Spring Web MVC</name>
-    <description>A simple Spring Web MVC application with out-of-the-box login and self-service screens!</description>
+    <description>A Spring Boot web application that uses Stormpath and Spring Security</description>
     <packaging>war</packaging>
 
     <dependencies>

@@ -15,149 +15,48 @@
  */
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.lang.UnknownClassException;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.spring.security.configuration.AbstractStormpathSpringSecurityConfiguration;
 import com.stormpath.spring.security.provider.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.4
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-public class StormpathSpringSecurityConfiguration extends AbstractStormpathConfiguration {
+public class StormpathSpringSecurityConfiguration extends AbstractStormpathSpringSecurityConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathSpringSecurityConfiguration.class);
 
-    @Value("#{ @environment['stormpath.spring.security.provider.groupGrantedAuthorityResolver'] }")
-    protected String groupGrantedAuthorityResolverFQN;
-
-    @Value("#{ @environment['stormpath.spring.security.provider.groupPermissionResolver'] }")
-    protected String groupPermissionResolverFQN;
-
-    @Value("#{ @environment['stormpath.spring.security.provider.accountGrantedAuthorityResolver'] }")
-    protected String accountGrantedAuthorityResolverFQN;
-
-    @Value("#{ @environment['stormpath.spring.security.provider.accountPermissionResolver'] }")
-    protected String accountPermissionResolverFQN;
-
-    @Value("#{ @environment['stormpath.spring.security.provider.authenticationTokenFactory'] }")
-    protected String authenticationTokenFactoryFQN;
-
-    protected GroupGrantedAuthorityResolver groupGrantedAuthorityResolver() {
-        Object object = instantiate(groupGrantedAuthorityResolverFQN);
-        if (object != null) {
-            if (object instanceof GroupGrantedAuthorityResolver) {
-                return (GroupGrantedAuthorityResolver) object;
-            } else {
-                String msg = object + " is not an instance of [" + GroupGrantedAuthorityResolver.class + "]";
-                throw new IllegalStateException(msg);
-            }
-        }
-        return null;
+    @Bean
+    public ApiKey stormpathClientApiKey() {
+        return super.stormpathClientApiKey();
     }
 
-    protected GroupPermissionResolver groupPermissionResolver() {
-        Object object = instantiate(groupPermissionResolverFQN);
-        if (object != null) {
-            if (object instanceof GroupPermissionResolver) {
-                return (GroupPermissionResolver) object;
-            } else {
-                String msg = object + " is not an instance of [" + GroupPermissionResolver.class + "]";
-                throw new IllegalStateException(msg);
-            }
-        }
-        return null;
+    @Bean
+    public Application stormpathApplication() {
+        return super.stormpathApplication();
     }
 
-    protected AccountGrantedAuthorityResolver accountGrantedAuthorityResolver() {
-        Object object = instantiate(accountGrantedAuthorityResolverFQN);
-        if (object != null) {
-            if (object instanceof AccountGrantedAuthorityResolver) {
-                return (AccountGrantedAuthorityResolver) object;
-            } else {
-                String msg = object + " is not an instance of [" + AccountGrantedAuthorityResolver.class + "]";
-                throw new IllegalStateException(msg);
-            }
-        }
-        return null;
+    @Bean
+    public com.stormpath.sdk.cache.CacheManager stormpathCacheManager() {
+        return super.stormpathCacheManager();
     }
 
-    protected AccountPermissionResolver accountPermissionResolver() {
-        Object object = instantiate(accountPermissionResolverFQN);
-        if (object != null) {
-            if (object instanceof AccountPermissionResolver) {
-                return (AccountPermissionResolver) object;
-            } else {
-                String msg = object + " is not an instance of [" + AccountPermissionResolver.class + "]";
-                throw new IllegalStateException(msg);
-            }
-        }
-        return null;
-    }
-
-    protected AuthenticationTokenFactory authenticationTokenFactory() {
-        Object object = instantiate(authenticationTokenFactoryFQN);
-        if (object != null) {
-            if (object instanceof AuthenticationTokenFactory) {
-                return (AuthenticationTokenFactory) object;
-            } else {
-                String msg = object + " is not an instance of [" + AuthenticationTokenFactory.class + "]";
-                throw new IllegalStateException(msg);
-            }
-        }
-        return null;
+    @Bean
+    public Client stormpathClient() {
+        return super.stormpathClient();
     }
 
     @Bean
     public StormpathAuthenticationProvider stormpathAuthenticationProvider() {
-        StormpathAuthenticationProvider stormpathAuthenticationProvider = new StormpathAuthenticationProvider();
-        stormpathAuthenticationProvider.setClient(stormpathClient());
-        stormpathAuthenticationProvider.setApplicationRestUrl(stormpathApplication().getHref());
-
-        GroupGrantedAuthorityResolver groupGrantedAuthorityResolver = groupGrantedAuthorityResolver();
-        GroupPermissionResolver groupPermissionResolver = groupPermissionResolver();
-        AccountGrantedAuthorityResolver accountGrantedAuthorityResolver = accountGrantedAuthorityResolver();
-        AccountPermissionResolver accountPermissionResolver = accountPermissionResolver();
-        AuthenticationTokenFactory authenticationTokenFactory = authenticationTokenFactory();
-
-        if (groupGrantedAuthorityResolver != null) {
-            stormpathAuthenticationProvider.setGroupGrantedAuthorityResolver(groupGrantedAuthorityResolver);
-        }
-        if (groupPermissionResolver != null) {
-            stormpathAuthenticationProvider.setGroupPermissionResolver(groupPermissionResolver);
-        }
-        if (accountGrantedAuthorityResolver != null) {
-            stormpathAuthenticationProvider.setAccountGrantedAuthorityResolver(accountGrantedAuthorityResolver);
-        }
-        if (accountPermissionResolver != null) {
-            stormpathAuthenticationProvider.setAccountPermissionResolver(accountPermissionResolver);
-        }
-        if (authenticationTokenFactory != null) {
-            stormpathAuthenticationProvider.setAuthenticationTokenFactory(authenticationTokenFactory);
-        }
-
-        return  stormpathAuthenticationProvider;
+        return super.stormpathAuthenticationProvider();
     }
-
-    private Object instantiate(String fullyQualifiedClassName) {
-        String className = Strings.trimWhitespace(fullyQualifiedClassName);
-        if (className != null) {
-            try {
-                return Classes.newInstance(className);
-            } catch (UnknownClassException ex) {
-                String msg = "Failed to instantiate class [" + className + "]";
-                throw new IllegalStateException(msg, ex);
-            }
-        } else {
-            return null;
-        }
-    }
-
 
 }

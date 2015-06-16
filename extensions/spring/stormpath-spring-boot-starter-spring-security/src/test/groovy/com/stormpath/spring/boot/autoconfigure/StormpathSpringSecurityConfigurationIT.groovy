@@ -27,7 +27,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0
+ * @since 1.0.RC4.4
  */
 @SpringApplicationConfiguration(classes = TestBootSpringSecurityApplication.class)
 @Configuration
@@ -40,7 +40,7 @@ class StormpathSpringSecurityConfigurationIT extends AbstractTestNGSpringContext
     void test() {
 
         assertNotNull stormpathAuthenticationProvider
-        assertEquals stormpathAuthenticationProvider.applicationRestUrl, "https://api.stormpath.com/v1/applications/2RNMCGQeePR0yREsG5foC0"
+        assertEquals stormpathAuthenticationProvider.applicationRestUrl, "https://api.stormpath.com/v1/applications/3TqbyZ1qo74eDM4gTo2H94"
         assertNotNull stormpathAuthenticationProvider.client
 
         assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager

@@ -66,6 +66,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         assertNotNull client
         assertNotNull application
         assertNotNull stormpathFilter
+
         assertNotNull stormpathAuthenticationProvider
         assertNotNull stormpathAuthenticationProvider.applicationRestUrl
         assertNotNull stormpathAuthenticationProvider.client

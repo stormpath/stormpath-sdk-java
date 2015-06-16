@@ -23,10 +23,10 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-
-@EnableWebSecurity
+/**
+ * @since 1.0.RC4.4
+ */
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Configuration
 public class StormpathMethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
