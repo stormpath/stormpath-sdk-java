@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -26,6 +28,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -33,7 +36,6 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.ds.DefaultDataStore
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.provider.GoogleProvider
@@ -44,6 +46,7 @@ import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
 
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
@@ -109,6 +112,60 @@ class ApplicationIT extends ClientIT {
     }
 
     @Test
+    void testApplicationPagination() {
+
+        def applicationBaseName = UUID.randomUUID().toString()
+
+        def app1 = client.instantiate(Application)
+        app1.setName(applicationBaseName + "-JavaSDK1")
+        app1 = client.createApplication(Applications.newCreateRequestFor(app1).build())
+
+        deleteOnTeardown(app1)
+
+        def app2 = client.instantiate(Application)
+        app2.setName(applicationBaseName + "-JavaSDK2")
+        app2 = client.createApplication(Applications.newCreateRequestFor(app2).build())
+
+        deleteOnTeardown(app2)
+
+        def expected = [app1.href, app2.href] as Set
+
+        def apps = client.getApplications(Applications.where(Applications.name().startsWithIgnoreCase(applicationBaseName)).limitTo(1))
+
+        assertEquals 1, apps.limit
+        assertEquals 0, apps.offset
+        assertEquals 2, apps.size
+
+        def iterator = apps.iterator()
+        while (iterator.hasNext()) {
+            def app = iterator.next();
+            assertTrue expected.remove(app.href)
+        }
+
+        assertEquals 0, expected.size()
+
+        try {
+            iterator.next()
+            fail("should have thrown")
+        } catch (NoSuchElementException e) {
+            //ignore, exception was expected.
+        }
+
+        def newIterator = apps.iterator()
+
+        assertTrue iterator != newIterator
+
+        expected = [app1.href, app2.href] as Set
+
+        while (newIterator.hasNext()) {
+            def app = newIterator.next();
+            assertTrue expected.remove(app.href)
+        }
+
+        assertEquals 0, expected.size()
+    }
+
+    @Test
     void testCreateAppGroup() {
 
         def tenant = client.currentTenant
@@ -120,9 +177,9 @@ class ApplicationIT extends ClientIT {
         //When no authenticationScheme is explicitly defined, SAuthc1RequestAuthenticator is used by default
         assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
-        app.name = uniquify("DELETEME")
+        app.name = uniquify("Java SDK IT App")
 
-        def dirName = uniquify("DELETEME")
+        def dirName = uniquify("Java SDK IT Dir")
 
         app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
         def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
@@ -131,7 +188,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(app)
 
         Group group = client.instantiate(Group)
-        group.name = uniquify('DELETEME')
+        group.name = uniquify('Java SDK IT Group')
 
         def created = app.createGroup(group)
 
@@ -162,9 +219,9 @@ class ApplicationIT extends ClientIT {
 
         assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
-        app.name = uniquify("DELETEME")
+        app.name = uniquify("Java SDK IT App")
 
-        def dirName = uniquify("DELETEME")
+        def dirName = uniquify("Java SDK IT Dir")
 
         app = tenant.createApplication(Applications.newCreateRequestFor(app).createDirectoryNamed(dirName).build())
         def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
@@ -173,7 +230,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(app)
 
         Group group = client.instantiate(Group)
-        group.name = uniquify('DELETEME')
+        group.name = uniquify('Java SDK Group')
 
         def created = app.createGroup(group)
 
@@ -299,11 +356,15 @@ class ApplicationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def appApiKey = app.getApiKey(apiKey.id)
+        //test invalid key
+        def appApiKey = app.getApiKey("helloIamNotValid!");
+
+        assertNull appApiKey
+
+        appApiKey = app.getApiKey(apiKey.id)
 
         assertNotNull appApiKey
         assertEquals appApiKey, apiKey
-
     }
 
     @Test
@@ -327,6 +388,59 @@ class ApplicationIT extends ClientIT {
     }
 
     @Test
+    void testGetApiKeyByIdCacheEnabled() {
+
+        def client = buildClient()
+
+        def app = client.instantiate(Application)
+
+        app.setName(uniquify("Java SDK IT App"))
+
+        client.currentTenant.createApplication(newCreateRequestFor(app).createDirectory().build())
+
+        deleteOnTeardown(app.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(app)
+
+        def account = createTestAccount(client, app)
+
+        def apiKey = account.createApiKey()
+
+        def apiKeyCache = client.dataStore.cacheManager.getCache(ApiKey.name)
+
+        assertNotNull apiKeyCache
+
+        def apiKeyCacheValue = apiKeyCache.get(apiKey.href)
+
+        assertNotNull apiKeyCacheValue
+
+        assertNotEquals apiKeyCacheValue['secret'], apiKey.secret
+
+        assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), apiKey.secret
+
+        client = buildClient()
+
+        def dataStore = (DefaultDataStore) client.dataStore
+
+        app = dataStore.getResource(app.href, Application)
+
+        def appApiKey = app.getApiKey(apiKey.id)
+
+        assertNotNull appApiKey
+
+        apiKeyCache = dataStore.cacheManager.getCache(ApiKey.name)
+
+        assertNotNull apiKeyCache
+
+        apiKeyCacheValue = apiKeyCache.get(apiKey.href)
+
+        assertNotNull apiKeyCacheValue
+
+        assertNotEquals apiKeyCacheValue['secret'], appApiKey.secret
+
+        assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), appApiKey.secret
+    }
+
+    @Test
     void testGetApiKeyByIdWithOptions() {
 
         def app = createTempApp()
@@ -346,11 +460,7 @@ class ApplicationIT extends ClientIT {
 
     }
 
-
-    //The implementation of https://github.com/stormpath/stormpath-sdk-java/issues/62
-    //causes the bug https://github.com/stormpath/stormpath-sdk-java/issues/74 to materialize itself.
-    //This test must be re-enabled when issue 74 is implemented.
-    @Test(enabled = false)
+    @Test
     void testGetApiKeyByIdWithOptionsInCache() {
 
         def app = createTempApp()
@@ -395,8 +505,6 @@ class ApplicationIT extends ClientIT {
         def tenantCacheValue = tenantCache.get(appApiKey2.tenant.href)
         assertNotNull tenantCacheValue
         assertEquals tenantCacheValue['key'], appApiKey.tenant.key
-
-
     }
 
     @Test
@@ -486,6 +594,10 @@ class ApplicationIT extends ClientIT {
     }
 
     def Account createTestAccount(Application app) {
+        return createTestAccount(client, app)
+    }
+
+    def Account createTestAccount(Client client, Application app) {
 
         def email = 'deleteme1@nowhere.com'
 
@@ -503,11 +615,11 @@ class ApplicationIT extends ClientIT {
 
     String decryptSecretFromCacheMap(Map cacheMap) {
 
-        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyParameter.ENCRYPTION_METADATA.getName())) {
             return null
         }
 
-        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+        def apiKeyMetaData = cacheMap[ApiKeyParameter.ENCRYPTION_METADATA.getName()]
 
         def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
         def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]

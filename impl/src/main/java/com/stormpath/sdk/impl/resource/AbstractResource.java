@@ -80,6 +80,20 @@ public abstract class AbstractResource implements Resource {
         setProperties(properties);
     }
 
+    /**
+     * Returns {@code true} if the specified data map represents a materialized resource data set, {@code false}
+     * otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized resource data set, {@code false}
+     * otherwise.
+     *
+     * @since 1.0.RC4.3
+     */
+    public static boolean isMaterialized(Map<String, ?> props) {
+        return props != null && props.get(HREF_PROP_NAME) != null && props.size() > 1;
+    }
+
     protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {
         Map<String, Property> m = new LinkedHashMap<String, Property>();
         for (Property prop : props) {

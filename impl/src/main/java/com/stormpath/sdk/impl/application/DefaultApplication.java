@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,11 +72,12 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
 /** @since 0.2 */
 public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
@@ -501,13 +502,10 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         String href = getHref() + "/apiKeys";
         ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, criteria);
 
-        ApiKey apiKey = null;
+        Iterator<ApiKey> iterator = apiKeys.iterator();
 
-        if (apiKeys != null && apiKeys.iterator().hasNext()) {
-            apiKey = apiKeys.iterator().next(); // we expect only one api key to be in the collection
-        }
-
-        return apiKey;
+        // we expect only one api key to be in the collection
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     /** @since 0.9 */

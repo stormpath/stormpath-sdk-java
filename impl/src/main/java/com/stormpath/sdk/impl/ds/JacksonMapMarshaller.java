@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -70,6 +71,16 @@ public class JacksonMapMarshaller implements MapMarshaller {
             return this.objectMapper.readValue(marshalled, typeRef);
         } catch (IOException e) {
             throw new MarshalingException("Unable to convert JSON String to Map.", e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> unmarshall(InputStream marshalled) {
+        try {
+            TypeReference<LinkedHashMap<String,Object>> typeRef = new TypeReference<LinkedHashMap<String,Object>>(){};
+            return this.objectMapper.readValue(marshalled, typeRef);
+        } catch (IOException e) {
+            throw new MarshalingException("Unable to convert InputStream String to Map.", e);
         }
     }
 }
