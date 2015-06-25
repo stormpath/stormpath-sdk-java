@@ -16,15 +16,14 @@
 package com.stormpath.sdk.impl.tenant
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.cache.Cache
-import com.stormpath.sdk.cache.CacheManager
-import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.ApplicationList
+import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -172,13 +171,11 @@ class DefaultTenantTest {
         def returnedProperties = [ href: "https://api.stormpath.com/v1/accounts/2IEuQrTEPg43GRxcqYCZDN" ]
 
         String token = "fooVerificationEmail"
-        def apiKey = createStrictMock(ApiKey)
+        def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
+        def cacheManager = Caches.newCacheManager().build()
         def requestExecutor = createStrictMock(RequestExecutor)
-        def cacheManager = createStrictMock(CacheManager)
         def response = createStrictMock(Response)
         def mapMarshaller = new JacksonMapMarshaller();
-        def accountCache = createStrictMock(Cache)
-        def account = createStrictMock(Account)
         InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(returnedProperties).getBytes());
 
         expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.POST, "https://api.stormpath.com/v1/accounts/emailVerificationTokens/fooVerificationEmail"))))).andReturn(response)
@@ -186,13 +183,13 @@ class DefaultTenantTest {
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(is)
         expect(response.getHttpStatus()).andReturn(200)
-        expect(cacheManager.getCache(Account.class.getName())).andReturn(accountCache)
-        expect(accountCache.remove(returnedProperties.href)).andReturn(account)
 
-        replay apiKey, cacheManager, requestExecutor, response, accountCache
+        replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
-        dataStore.cacheManager = cacheManager
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cacheManager)
+
+        //assert that the account is not already cached
+        assertNull cacheManager.getCache(Account.name).get(returnedProperties.href)
 
         def tenant = new DefaultTenant(dataStore, properties)
         //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise
@@ -200,7 +197,10 @@ class DefaultTenantTest {
         assertTrue(dataStore.isCachingEnabled())
         tenant.verifyAccountEmail(token)
 
-        verify apiKey, cacheManager, requestExecutor, response, accountCache
+        //assert that the account is not cached per https://github.com/stormpath/stormpath-sdk-java/issues/60:
+        assertNull cacheManager.getCache(Account.name).get(returnedProperties.href)
+
+        verify requestExecutor, response
     }
 
     //@since 1.0.beta

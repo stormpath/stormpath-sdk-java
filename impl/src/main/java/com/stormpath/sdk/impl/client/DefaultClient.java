@@ -34,8 +34,8 @@ import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
-import com.stormpath.sdk.impl.tenant.DefaultTenantCriteria;
+import com.stormpath.sdk.impl.ds.DefaultDataStore;
+import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criteria;
@@ -47,7 +47,6 @@ import com.stormpath.sdk.tenant.TenantCriteria;
 import com.stormpath.sdk.tenant.TenantOptions;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -63,7 +62,6 @@ import java.util.Map;
  */
 public class DefaultClient implements Client {
 
-    private final ApiKey apiKey;
     private final DataStore dataStore;
 
     private String currentTenantHref;
@@ -85,28 +83,12 @@ public class DefaultClient implements Client {
     public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
         Assert.notNull(apiKey, "apiKey argument cannot be null.");
         Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
-        Object requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme, connectionTimeout);
-        this.apiKey = apiKey;
-        DataStore ds = createDataStore(requestExecutor, baseUrl, apiKey);
-
-        if (cacheManager != null) {
-            // TODO: remove when we have a proper Builder interfaces. See https://github.com/stormpath/stormpath-sdk-java/issues/8
-            applyCacheManager(ds, cacheManager);
-        }
-
-        this.dataStore = ds;
+        RequestExecutor requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme, connectionTimeout);
+        this.dataStore = createDataStore(requestExecutor, baseUrl, apiKey, cacheManager);
     }
 
-    private void applyCacheManager(DataStore dataStore, CacheManager cacheManager) {
-        Class<?> clazz = dataStore.getClass();
-        try {
-            Method method = clazz.getDeclaredMethod("setCacheManager", CacheManager.class);
-            method.setAccessible(true);
-            method.invoke(dataStore, cacheManager);
-        } catch (Exception e) {
-            String msg = "Unable to apply cacheManager instance on DataStore implementation " + clazz;
-            throw new RuntimeException(msg);
-        }
+    protected DataStore createDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey, CacheManager cacheManager) {
+        return new DefaultDataStore(requestExecutor, baseUrl, apiKey, cacheManager);
     }
 
     @Override
@@ -122,7 +104,7 @@ public class DefaultClient implements Client {
 
     @Override
     public ApiKey getApiKey() {
-        return this.apiKey;
+        return this.dataStore.getApiKey();
     }
 
     @Override
@@ -136,7 +118,7 @@ public class DefaultClient implements Client {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Object createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, int connectionTimeout) {
+    private RequestExecutor createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, int connectionTimeout) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -153,47 +135,9 @@ public class DefaultClient implements Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor ctor = Classes.getConstructor(requestExecutorClass, com.stormpath.sdk.api.ApiKey.class, Proxy.class, AuthenticationScheme.class, Integer.class);
+        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, com.stormpath.sdk.api.ApiKey.class, Proxy.class, AuthenticationScheme.class, Integer.class);
 
         return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme, connectionTimeout);
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private DataStore createDataStore(Object requestExecutor, Object secondCtorArg, Object apiKey) {
-
-        String requestExecutorInterfaceClassName = "com.stormpath.sdk.impl.http.RequestExecutor";
-        Class requestExecutorInterfaceClass;
-
-        try {
-            requestExecutorInterfaceClass = Classes.forName(requestExecutorInterfaceClassName);
-        } catch (Throwable t) {
-            throw new RuntimeException("Unable to load required interface: " + requestExecutorInterfaceClassName +
-                    ".  Please ensure you have added the stormpath-sdk-impl .jar file to your runtime classpath.", t);
-        }
-
-        String className = "com.stormpath.sdk.impl.ds.DefaultDataStore";
-        Class dataStoreClass;
-
-        try {
-            dataStoreClass = Classes.forName(className);
-        } catch (Throwable t) {
-            throw new RuntimeException("Unable to load default DataStore implementation class: " +
-                    className + ".  Please ensure you have added the stormpath-sdk-impl .jar file to your " +
-                    "runtime classpath.", t);
-        }
-
-        Class secondCtorArgClass = secondCtorArg.getClass();
-        if (Integer.class.equals(secondCtorArgClass)) {
-            secondCtorArgClass = int.class;
-        }
-
-        Constructor ctor = Classes.getConstructor(dataStoreClass, requestExecutorInterfaceClass, secondCtorArgClass, com.stormpath.sdk.api.ApiKey.class);
-
-        try {
-            return (DataStore) ctor.newInstance(requestExecutor, secondCtorArg, apiKey);
-        } catch (Throwable t) {
-            throw new RuntimeException("Unable to instantiate DataStore implementation: " + className, t);
-        }
     }
 
     // ========================================================================

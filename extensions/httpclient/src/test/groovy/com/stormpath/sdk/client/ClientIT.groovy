@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
+import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.resource.Deletable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -92,6 +95,13 @@ abstract class ClientIT {
 
     protected static String uniquify(String s) {
         return s + "-" + UUID.randomUUID().toString().replace('-', '');
+    }
+
+    protected RequestCountingClient buildCountingClient() {
+
+        com.stormpath.sdk.api.ApiKey apiKey = com.stormpath.sdk.api.ApiKeys.builder().build();
+
+        return new RequestCountingClient(apiKey, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
     }
 
     //Creates a new Application with an auto-created directory

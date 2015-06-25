@@ -17,13 +17,13 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.*
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
@@ -35,6 +35,7 @@ import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.directory.DefaultCustomData
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.DefaultDataStore
@@ -882,9 +883,9 @@ class DefaultApplicationTest {
                                    account: [ href : "https://api.stormpath.com/v1/accounts/1dEw3gHFhzyw8jmYFqlIld"]
         ]
 
-        def apiKey = createStrictMock(ApiKey)
+        def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
+        def cacheManager = new DefaultCacheManager()
         def requestExecutor = createStrictMock(RequestExecutor)
-        def cacheManager = createStrictMock(CacheManager)
         def response = createStrictMock(Response)
         def mapMarshaller = new JacksonMapMarshaller();
         InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(returnedProperties).getBytes());
@@ -895,10 +896,9 @@ class DefaultApplicationTest {
         expect(response.getBody()).andReturn(is)
         expect(response.getHttpStatus()).andReturn(200)
 
-        replay apiKey, cacheManager, requestExecutor, response
+        replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
-        dataStore.cacheManager = cacheManager
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cacheManager)
 
         def application = new DefaultApplication(dataStore, properties)
         //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise
@@ -906,7 +906,10 @@ class DefaultApplicationTest {
         assertTrue(dataStore.isCachingEnabled())
         application.sendPasswordResetEmail("test@stormpath.com");
 
-        verify apiKey, cacheManager, requestExecutor, response
+        //assert there is no cached representation:
+        assertTrue dataStore.cacheResolver.getCache(PasswordResetToken).map.isEmpty()
+
+        verify requestExecutor, response
     }
 
     //@since 1.0.RC
