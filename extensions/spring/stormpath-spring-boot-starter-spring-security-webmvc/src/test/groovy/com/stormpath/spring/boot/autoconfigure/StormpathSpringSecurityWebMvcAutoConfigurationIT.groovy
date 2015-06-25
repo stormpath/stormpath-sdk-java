@@ -87,7 +87,7 @@ class StormpathSpringSecurityWebMvcAutoConfigurationIT extends AbstractTestNGSpr
 
 
         assertNotNull stormpathAuthenticationProvider
-        assertEquals stormpathAuthenticationProvider.applicationRestUrl, "https://api.stormpath.com/v1/applications/3TqbyZ1qo74eDM4gTo2H94"
+        assertEquals stormpathAuthenticationProvider.applicationRestUrl, "https://api.stormpath.com/v1/applications/2RNMCGQeePR0yREsG5foC0"
         assertNotNull stormpathAuthenticationProvider.client
 
         assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager

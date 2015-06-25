@@ -32,44 +32,10 @@
     <dependencies>
 
         <!-- Compile-time dependencies: -->
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.spring</groupId>-->
-            <!--<artifactId>spring-boot-starter-stormpath</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-spring-boot-starter-spring-security-webmvc</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.spring</groupId>-->
-            <!--<artifactId>spring-boot-starter-stormpath-webmvc</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-spring-security-webmvc</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.spring</groupId>-->
-            <!--<artifactId>stormpath-spring-security</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-web</artifactId>-->
-            <!--<version>4.1.4.RELEASE</version>-->
-            <!--<scope>compile</scope>-->
-            <!--<optional>true</optional>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>javax.servlet</groupId>-->
-            <!--<artifactId>jstl</artifactId>-->
-        <!--</dependency>-->
 
         <!-- Runtime-only dependencies: -->
         <dependency>
@@ -88,41 +54,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Compile-time dependencies: -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-webmvc</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.spring</groupId>-->
-            <!--<artifactId>stormpath-spring-webmvc</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>javax.servlet</groupId>-->
-            <!--<artifactId>javax.servlet-api</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>javax.servlet</groupId>-->
-            <!--<artifactId>jstl</artifactId>-->
-        <!--</dependency>-->
-
-        <!-- Runtime-only dependencies: -->
-        <!--<dependency>-->
-            <!--<groupId>com.stormpath.sdk</groupId>-->
-            <!--<artifactId>stormpath-sdk-httpclient</artifactId>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>jcl-over-slf4j</artifactId>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>ch.qos.logback</groupId>-->
-            <!--<artifactId>logback-classic</artifactId>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
     </dependencies>
 
     <build>
