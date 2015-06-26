@@ -62,7 +62,8 @@ public class CookieSaver implements Saver<String> {
         if (!Strings.hasText(val)) {
             val = Strings.clean(request.getContextPath());
         }
-        if (!Strings.hasText(val) || delete) {
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/207
+        if (!Strings.hasText(val)) {
             val = "/";
         }
         cookie.setPath(val);

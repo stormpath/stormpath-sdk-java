@@ -35,6 +35,7 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
+import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
@@ -469,19 +470,31 @@ class ApplicationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def client = buildClient()
+        RequestCountingClient client = buildCountingClient();
+
         app = client.getResource(app.href, Application)
         def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
         def appApiKey2 = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
 
         assertNotNull appApiKey
-        assertNotNull appApiKey2
-        assertEquals appApiKey2.secret, appApiKey.secret
+
         assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
         assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
 
-        assertEquals appApiKey2.account.propertyNames.size(), appApiKey.account.propertyNames.size() // comparing object retrieved from the server and object obtained from cache
-        assertEquals appApiKey2.tenant.propertyNames.size(), appApiKey.tenant.propertyNames.size() // comparing object retrieved from the server and object obtained from cache
+        assertNotNull appApiKey2
+
+        //Making sure that only two request were made to the server
+        // 1) request to get the application
+        // 2) request to get the apiKey (with options)
+        assertEquals 2, client.requestCount
+
+        // Compare apiKey get from the cache to the apiKey requested from cache
+        assertEquals appApiKey.secret, appApiKey2.secret
+        assertEquals appApiKey.account.email, appApiKey2.account.email
+        assertEquals appApiKey.tenant.name, appApiKey2.tenant.name
+
+        // Making sure that still only 2 requests were made to the server.
+        assertEquals 2, client.requestCount
 
         def dataStore = (DefaultDataStore) client.dataStore
 
@@ -496,13 +509,13 @@ class ApplicationIT extends ClientIT {
         // testing that the expansions made it to the cache
         def accountCache = dataStore.cacheManager.getCache(Account.name)
         assertNotNull accountCache
-        def accountCacheValue = accountCache.get(appApiKey2.account.href)
+        def accountCacheValue = accountCache.get(appApiKey.account.href)
         assertNotNull accountCacheValue
         assertEquals accountCacheValue['username'], appApiKey.account.username
 
         def tenantCache = dataStore.cacheManager.getCache(Tenant.name)
         assertNotNull tenantCache
-        def tenantCacheValue = tenantCache.get(appApiKey2.tenant.href)
+        def tenantCacheValue = tenantCache.get(appApiKey.tenant.href)
         assertNotNull tenantCacheValue
         assertEquals tenantCacheValue['key'], appApiKey.tenant.key
     }
