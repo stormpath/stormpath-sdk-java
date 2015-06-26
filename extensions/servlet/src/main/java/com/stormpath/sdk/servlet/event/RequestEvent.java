@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * An event generated while processing an {@link javax.servlet.http.HttpServletRequest HttpServletRequest}.
+ * An event triggered while handling an {@link javax.servlet.http.HttpServletRequest HttpServletRequest}.
  *
  * @since 1.0.RC3
  */

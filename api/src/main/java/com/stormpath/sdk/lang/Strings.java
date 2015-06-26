@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -162,11 +163,20 @@ public abstract class Strings {
     }
 
     /**
-     * Trim leading and trailing whitespace from the given String.  If the resulting string is the empty string, return
-     * null otherwise return the trimmed string.
+     * Returns a 'cleaned' representation of the specified argument.  'Cleaned' is defined as the following:
+     * <p/>
+     * <ol>
+     * <li>If the specified <code>String</code> is <code>null</code>, return <code>null</code></li>
+     * <li>If not <code>null</code>, {@link String#trim() trim()} it.</li>
+     * <li>If the trimmed string is equal to the empty String (i.e. &quot;&quot;), return <code>null</code></li>
+     * <li>If the trimmed string is not the empty string, return the trimmed version</li>.
+     * </ol>
+     * <p/>
+     * Therefore this method always ensures that any given string has trimmed text, and if it doesn't, <code>null</code>
+     * is returned.
      *
-     * @param s th string to clean
-     * @return the cleaned string
+     * @param in the input String to clean.
+     * @return a populated-but-trimmed String or <code>null</code> otherwise
      */
     public static String clean(String s) {
         if (s == null) {
@@ -1151,11 +1161,22 @@ public abstract class Strings {
      * @return a Set of String entries in the list
      */
     public static Set<String> commaDelimitedListToSet(String str) {
-        Set<String> set = new TreeSet<String>();
-        String[] tokens = commaDelimitedListToStringArray(str);
-        for (String token : tokens) {
-            set.add(token);
+        if (str == null) {
+            return java.util.Collections.emptySet();
         }
+        Set<String> set = new LinkedHashSet<String>();
+        String[] tokens = split(str);
+        java.util.Collections.addAll(set, tokens);
+        return set;
+    }
+
+    public static Set<String> delimitedListToSet(String str, String delimiters) {
+        if (str == null) {
+            return java.util.Collections.emptySet();
+        }
+        Set<String> set = new LinkedHashSet<String>();
+        String[] tokens = tokenizeToStringArray(str, delimiters);
+        java.util.Collections.addAll(set, tokens);
         return set;
     }
 

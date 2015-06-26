@@ -113,7 +113,7 @@ public class DefaultClientBuilder implements ClientBuilder {
         return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme, this.connectionTimeout);
     }
 
-    //For internal Stormpath needs only and not intended for public consumption
+    @Override
     public ClientBuilder setBaseUrl(String baseUrl) {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl argument cannot be null.");

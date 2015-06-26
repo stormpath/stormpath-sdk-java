@@ -53,7 +53,7 @@ Next Query Parameter
 
 The login controller supports a ``next`` query parameter.  If present in the request, the value must be a context-relative path to where the user should be redirected after successful login.
 
-If the login URI is visited with a ``next`` query parameter, the user will be redirected to the ``next`` path instead of the default ``nextUrl``.
+If the login URI is visited with a ``next`` query parameter, the user will be redirected to the ``next`` path instead of the default ``nextUri``.
 
 Next URI
 --------

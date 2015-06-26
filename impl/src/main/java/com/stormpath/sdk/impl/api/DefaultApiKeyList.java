@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DefaultApiKeyList extends AbstractCollectionResource<ApiKey> implements ApiKeyList {
 
-    private static final ArrayProperty<ApiKey> ITEMS = new ArrayProperty<ApiKey>("items", ApiKey.class);
+    public static final ArrayProperty<ApiKey> ITEMS = new ArrayProperty<ApiKey>(ITEMS_PROPERTY_NAME, ApiKey.class);
 
     private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 

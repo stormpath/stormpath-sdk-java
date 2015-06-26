@@ -62,6 +62,9 @@ public abstract class HttpFilter implements Filter {
     private FilterConfig   filterConfig;
     private ServletContext servletContext;
     private String         name;
+    private Client client;
+    private Application application;
+
 
     /**
      * Determines generally if this filter should execute or let requests fall through to the next chain element.
@@ -112,16 +115,28 @@ public abstract class HttpFilter implements Filter {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Config getConfig() {
         return ConfigResolver.INSTANCE.getConfig(this.servletContext);
     }
 
-    protected Client getClient() {
-        return (Client)getServletContext().getAttribute(Client.class.getName());
+    public Client getClient() {
+        return this.client;
     }
 
-    protected Application getApplication() {
-        return (Application)getServletContext().getAttribute(Application.class.getName());
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Application getApplication() {
+        return this.application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
     }
 
     @Override
@@ -129,7 +144,13 @@ public abstract class HttpFilter implements Filter {
         this.filterConfig = filterConfig;
         this.servletContext = filterConfig.getServletContext();
         this.name = filterConfig.getFilterName();
+        applyConfigAttributes();
         onInit();
+    }
+
+    protected void applyConfigAttributes() {
+        this.client = (Client)getServletContext().getAttribute(Client.class.getName());
+        this.application = (Application)getServletContext().getAttribute(Application.class.getName());
     }
 
     protected void onInit() throws ServletException {

@@ -16,10 +16,11 @@
 package com.stormpath.sdk.impl.idsite;
 
 import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.impl.ds.DefaultDataStore;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.idsite.Nonce;
 import com.stormpath.sdk.idsite.NonceStore;
+import com.stormpath.sdk.impl.ds.DefaultDataStore;
+import com.stormpath.sdk.impl.ds.cache.CacheResolver;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.Map;
 
@@ -31,10 +32,11 @@ import java.util.Map;
  */
 public class DefaultNonceStore implements NonceStore {
 
-    private DefaultDataStore defaultDataStore;
+    private final CacheResolver cacheResolver;
 
-    public DefaultNonceStore(DefaultDataStore defaultDataStore) {
-        this.defaultDataStore = defaultDataStore;
+    public DefaultNonceStore(CacheResolver cacheResolver) {
+        Assert.notNull(cacheResolver, "cacheResolver cannot be null.");
+        this.cacheResolver = cacheResolver;
     }
 
     @Override
@@ -42,11 +44,7 @@ public class DefaultNonceStore implements NonceStore {
 
         Assert.hasText(nonce);
 
-        if (!defaultDataStore.isCachingEnabled()) {
-            return false;
-        }
-
-        Cache<String, Map<String, ?>> cache = defaultDataStore.getCache(Nonce.class);
+        Cache<String, Map<String, ?>> cache = cacheResolver.getCache(Nonce.class);
 
         Map<String, ?> values = cache.get(nonce);
 
@@ -58,11 +56,7 @@ public class DefaultNonceStore implements NonceStore {
 
         Assert.hasText(nonce);
 
-        if (!defaultDataStore.isCachingEnabled()) {
-            return;
-        }
-
-        Cache<String, Map<String, ?>> cache = defaultDataStore.getCache(Nonce.class);
+        Cache<String, Map<String, ?>> cache = cacheResolver.getCache(Nonce.class);
 
         DefaultNonce defaultNonce = new DefaultNonce(nonce);
 

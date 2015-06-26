@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.resource.Saveable;
 
@@ -37,6 +36,19 @@ public abstract class AbstractInstanceResource extends AbstractResource implemen
     @Override
     public void save() {
         getDataStore().save(this);
+    }
+
+    /**
+     * Returns {@code true} if the specified data map represents a materialized instance resource data set, {@code
+     * false} otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized instance resource data set, {@code
+     * false} otherwise.
+     * @since 1.0.RC4.3
+     */
+    public static boolean isInstanceResource(Map<String, ?> props) {
+        return isMaterialized(props) && !props.containsKey(AbstractCollectionResource.ITEMS_PROPERTY_NAME); //collections have 'items'
     }
 
 }

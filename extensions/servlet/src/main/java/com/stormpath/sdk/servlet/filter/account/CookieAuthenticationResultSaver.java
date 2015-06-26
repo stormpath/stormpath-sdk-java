@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
@@ -88,11 +89,22 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
     }
 
     @Override
-    protected CookieConfig getAccountCookieConfig(HttpServletRequest request) {
+    protected CookieConfig getAccountCookieConfig(final HttpServletRequest request) {
+
         final CookieConfig config = super.getAccountCookieConfig(request);
 
         //should always be true in prod, but allow for localhost development testing:
         final boolean secure = config.isSecure() && isSecureCookieRequired(request);
+
+        String path = Strings.clean(config.getPath());
+        if (!Strings.hasText(path)) {
+            path = Strings.clean(request.getContextPath());
+        }
+        if (!Strings.hasText(path)) {
+            path = "/";
+        }
+
+        final String PATH = path;
 
         //wrap it to allow for access during development:
         return new CookieConfig() {
@@ -118,7 +130,7 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
 
             @Override
             public String getPath() {
-                return config.getPath();
+                return PATH;
             }
 
             @Override

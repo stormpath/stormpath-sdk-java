@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheMapCreator;
 import com.stormpath.sdk.impl.ds.directory.CustomDataCacheMapCreator;
 
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.Map;
  *     This interface defines the method used to create a cache map.
  * </p>
  * @since 1.0.RC
- * @see ApiKeyCacheMapCreator
  * @see CustomDataCacheMapCreator
  * @see DefaultCacheMapCreator
  */
@@ -36,7 +34,6 @@ public interface CacheMapCreator {
      *
      * @return the created cache map.
      *
-     * @see ApiKeyCacheMapCreator#create()
      * @see CustomDataCacheMapCreator#create()
      * @see DefaultCacheMapCreator#create()
      */

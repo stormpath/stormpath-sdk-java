@@ -33,7 +33,6 @@ import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEv
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
@@ -46,6 +45,7 @@ import com.stormpath.sdk.servlet.http.UsernamePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -54,7 +54,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -130,7 +132,10 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             return o;
         }
         if (name.startsWith("stormpath.")) {
-            return getConfig().get(name);
+            Config config = getConfig();
+            if (config != null) { //null in Spring environments
+                return config.get(name);
+            }
         }
         return null;
     }
@@ -139,7 +144,13 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     public Enumeration<String> getAttributeNames() {
 
         final Enumeration<String> enumeration = super.getAttributeNames();
-        final Set<String> keys = getConfig().keySet();
+
+        Map<String,?> config = getConfig();
+        if (config == null) { //spring environments
+            config = new HashMap<String,Object>();
+        }
+
+        final Set<String> keys = config.keySet();
         final Iterator<String> configIterator = keys.iterator();
 
         return new Enumeration<String>() {
@@ -159,7 +170,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     protected Config getConfig() {
-        return ConfigResolver.INSTANCE.getConfig(getServletContext());
+        ServletContext servletContext = getServletContext();
+        return (Config)servletContext.getAttribute(Config.class.getName());
     }
 
     protected boolean hasAccount() {

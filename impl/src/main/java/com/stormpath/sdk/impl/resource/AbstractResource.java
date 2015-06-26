@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,20 @@ public abstract class AbstractResource implements Resource {
             this.properties = new LinkedHashMap<String, Object>();
         }
         setProperties(properties);
+    }
+
+    /**
+     * Returns {@code true} if the specified data map represents a materialized resource data set, {@code false}
+     * otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized resource data set, {@code false}
+     * otherwise.
+     *
+     * @since 1.0.RC4.3
+     */
+    public static boolean isMaterialized(Map<String, ?> props) {
+        return props != null && props.get(HREF_PROP_NAME) != null && props.size() > 1;
     }
 
     protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {
@@ -373,7 +388,10 @@ public abstract class AbstractResource implements Resource {
 
             //replace the existing link object (map with an href) with the newly constructed Resource instance.
             //Don't dirty the instance - we're just swapping out a property that already exists for the materialized version.
-            setProperty(key, resource, false);
+            //let's not materialize internal collection resources, so they are always retrieved from the backend: https://github.com/stormpath/stormpath-sdk-java/issues/160
+            if (!CollectionResource.class.isAssignableFrom(clazz)) {
+                setProperty(key, resource, false);
+            }
             return resource;
         }
 

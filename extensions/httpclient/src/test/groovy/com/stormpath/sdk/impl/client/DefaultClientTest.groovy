@@ -22,8 +22,14 @@ import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.application.CreateApplicationRequest
 import com.stormpath.sdk.cache.CacheManager
+import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.directory.CreateDirectoryRequest
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryCriteria
+import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
@@ -32,13 +38,8 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
-import org.apache.http.client.params.AllClientPNames
-import com.stormpath.sdk.directory.CreateDirectoryRequest
-import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryCriteria
-import com.stormpath.sdk.directory.DirectoryList
-import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.tenant.Tenant
+import org.apache.http.client.params.AllClientPNames
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
@@ -135,8 +136,9 @@ class DefaultClientTest {
         def apiKey = createNiceMock(ApiKey)
         String baseUrl = "http://localhost:8080/v1"
         def authcScheme = AuthenticationScheme.SAUTHC1
+        def cacheManager = Caches.newDisabledCacheManager();
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, null, authcScheme, 20000)
+        Client client = new DefaultClient(apiKey, baseUrl, null, cacheManager , authcScheme, 20000)
 
         assertNotNull(client.getDataStore())
         assertEquals(client.getDataStore().baseUrl, baseUrl)
@@ -204,7 +206,7 @@ class DefaultClientTest {
         replay requestExecutor, response, resourceFactory
 
         //Let's start
-        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, null, null, 20000)
+        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, Caches.newDisabledCacheManager(), null, 20000)
         setNewValue(client, "dataStore", dataStore)
         def account01 = client.getResource(properties.href, Account)
         def account02 = client.getResource(properties.href, Account)
@@ -260,7 +262,7 @@ class DefaultClientTest {
      * @since 1.0.RC
      */
     @Test
-    void testTenatActions() {
+    void testTenantActions() {
 
         def apiKey = createStrictMock(ApiKey)
         def dataStore = createStrictMock(DataStore)
@@ -342,7 +344,7 @@ class DefaultClientTest {
         replay(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
                 map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, null, null, 20000)
+        Client client = new DefaultClient(apiKey, baseUrl, null, Caches.newDisabledCacheManager(), null, 20000)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)

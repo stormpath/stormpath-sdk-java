@@ -112,6 +112,9 @@ import java.util.Properties;
  */
 public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ // temporarily extending the client package's ApiKeyBuilder before deleting it
 
+    public static final String DEFAULT_ID_PROPERTY_NAME = "apiKey.id";
+    public static final String DEFAULT_SECRET_PROPERTY_NAME = "apiKey.secret";
+
     /**
      * Allows specifying the client's API Key {@code id} value directly instead of relying on the
      * default location + override/fallback behavior defined in the {@link ApiKeyBuilder documentation above}.
@@ -295,8 +298,8 @@ public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ /
      *         recommended/documented in the <a href="https://docs.stormpath.com/java/quickstart/">Stormpath Java
      *         Quickstart</a>.</li>
      *     <li>A properties file that exists at the file path or URL specified by the {@code STORMPATH_API_KEY_FILE}
-     *         variable.  If this file exists and contains either the apiKey id or secret properties, these values
-     *         override any values found in the default apiKey.properties file.  The {@code STORMPATH_API_KEY_FILE}
+     *         environment variable.  If this file exists and contains either the apiKey id or secret properties, these
+     *         values override any values found in the default apiKey.properties file.  The {@code STORMPATH_API_KEY_FILE}
      *         String can be an absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
      *         {@code classpath:} prefixes respectively.</li>
      *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
