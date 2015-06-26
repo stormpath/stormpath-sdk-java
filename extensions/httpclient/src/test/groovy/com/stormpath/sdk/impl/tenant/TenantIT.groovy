@@ -105,7 +105,7 @@ class TenantIT extends ClientIT {
     /**
      * @since 1.0.RC4.3-SNAPSHOT
      */
-    @Test(enabled = false
+    @Test
     void testCurrentTenantWithOptions(){
 
         TenantOptions options = Tenants.options().withDirectories().withApplications()
