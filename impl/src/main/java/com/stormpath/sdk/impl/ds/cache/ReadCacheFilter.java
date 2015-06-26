@@ -125,7 +125,7 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             !ProviderAccountAccess.class.isAssignableFrom(clazz) &&
 
             //Collection caching is EXPERIMENTAL so it is off by default
-            (!CollectionResource.class.isAssignableFrom(clazz) ||
-             (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
+            (!CollectionResource.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz) ||
+                    (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
 }
