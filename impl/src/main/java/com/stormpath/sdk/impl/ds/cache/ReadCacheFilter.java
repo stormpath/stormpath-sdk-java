@@ -125,6 +125,7 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             !ProviderAccountAccess.class.isAssignableFrom(clazz) &&
 
             //Collection caching is EXPERIMENTAL so it is off by default
+            //we do cache ApiKeyList. This is a fix for #216
             (!CollectionResource.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz) ||
                     (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
