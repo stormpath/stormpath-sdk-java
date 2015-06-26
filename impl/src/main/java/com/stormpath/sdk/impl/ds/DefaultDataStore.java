@@ -192,28 +192,20 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
-        Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(clazz, "Resource class argument cannot be null.");
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
-        return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
+        return getResource(href, clazz, (Map<String, Object>) null);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, queryParameters);
-        return getResource(sanitized.getHrefWithoutQuery(), clazz, sanitized.getQuery());
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
+        Assert.isInstanceOf(DefaultCriteria.class, criteria, DEFAULT_CRITERIA_MSG);
+        QueryString qs = queryStringFactory.createQueryString(href, (DefaultCriteria)criteria);
+        return (T) getResource(href, clazz, (Map) qs);
     }
 
-    @Override
-    public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
-        Assert.isInstanceOf(DefaultCriteria.class, criteria,
-                "The " + getClass().getName() + " implementation only functions with " +
-                        DefaultCriteria.class.getName() + " instances.");
-
-        DefaultCriteria dc = (DefaultCriteria) criteria;
-        QueryString qs = queryStringFactory.createQueryString(href, dc);
-        return getResource(href, clazz, qs);
+    public <T extends Resource> T getResource(String href, Class<T> clazz, Map<String, Object> queryParameters) {
+        ResourceDataResult result = getResourceData(href, clazz, queryParameters);
+        return instantiate(clazz, result.getData(), result.getUri().getQuery());
     }
 
     @Override
@@ -224,28 +216,7 @@ public class DefaultDataStore implements InternalDataStore {
                 DefaultOptions.class.getName() + " instances.");
         DefaultOptions defaultOptions = (DefaultOptions) options;
         QueryString qs = queryStringFactory.createQueryString(defaultOptions);
-        return getResource(href, clazz, qs);
-    }
-
-    private <T extends Resource> T getResource(String href, Class<T> clazz, QueryString qs) {
-
-        //need to qualify the href it to ensure our cache lookups work as expected
-        //(cache key = fully qualified href):
-        href = ensureFullyQualified(href);
-
-        Map<String, ?> data = retrieveResponseValue(href, clazz, qs);
-
-        //@since 1.0.RC3
-        if (!Collections.isEmpty(data) && !CollectionResource.class.isAssignableFrom(clazz) && data.get("href") != null) {
-            data = toEnlistment(data);
-        }
-
-        if (CollectionResource.class.isAssignableFrom(clazz)) {
-            //only collections can support a query string constructor argument:
-            return this.resourceFactory.instantiate(clazz, data, qs);
-        }
-        //otherwise it must be an instance resource, so use the two-arg constructor:
-        return this.resourceFactory.instantiate(clazz, data);
+        return getResource(href, clazz, (Map) qs);
     }
 
     /**
