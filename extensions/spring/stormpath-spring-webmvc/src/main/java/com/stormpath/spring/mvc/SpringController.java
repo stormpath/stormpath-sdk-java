@@ -16,6 +16,7 @@
 package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.util.RedirectUrlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -111,7 +112,9 @@ public class SpringController extends AbstractController {
         modelAndView.addAllObjects(model);
 
         if (redirect) {
-            modelAndView.setView(new RedirectView(viewName));
+            //Fix to redirect to correct context path: https://github.com/stormpath/stormpath-sdk-java/issues/210
+            String targetUrl = new RedirectUrlBuilder(request).setUrl(viewName).setContextRelative(true).build();
+            modelAndView.setView(new RedirectView(targetUrl));
         } else {
             modelAndView.setViewName(viewName);
         }
