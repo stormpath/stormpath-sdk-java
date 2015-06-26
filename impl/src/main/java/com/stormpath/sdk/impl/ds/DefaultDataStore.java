@@ -215,8 +215,8 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.isInstanceOf(DefaultOptions.class, options, "The " + getClass().getName() + " implementation only functions with " +
                 DefaultOptions.class.getName() + " instances.");
         DefaultOptions defaultOptions = (DefaultOptions) options;
-        QueryString qs = queryStringFactory.createQueryString(defaultOptions);
-        return getResource(href, clazz, (Map) qs);
+        QueryString qs = queryStringFactory.createQueryString(href, (DefaultOptions) defaultOptions);
+        return (T) getResource(href, clazz, (Map) qs);
     }
 
     /**
