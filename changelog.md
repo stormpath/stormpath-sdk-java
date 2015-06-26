@@ -1,5 +1,12 @@
 ## Change Log ##
 
+### 1.0.RC4.4 ##
+
+Notes:
+
+- [Issue 205](https://github.com/stormpath/stormpath-sdk-java/issues/216): Fixed regression issue that degraded performance when retrieving `ApiKeys` from an `Application`.
+- [Issue 74](https://github.com/stormpath/stormpath-sdk-java/issues/74): Fixed issue that prevented expanded `ApiKeys` to be properly materialize
+
 ### 1.0.RC4.3 ##
 
 Notes:
