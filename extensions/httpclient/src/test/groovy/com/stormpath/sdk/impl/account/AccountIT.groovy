@@ -394,9 +394,10 @@ class AccountIT extends ClientIT {
         Map properties02 = getValue(AbstractResource, account02, "properties")
         Map dirtyProperties02 = getValue(AbstractResource, account02, "dirtyProperties")
 
-        final int EXPECTED_PROPERTIES_SIZE = 21;
+        //Changing to a dynamic size based on the first resource that is received from the server, because having
+        //hardcoded makes it failed when a new property/resource is added in the server API.
+        final int EXPECTED_PROPERTIES_SIZE = properties01.size();
 
-        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
         assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
