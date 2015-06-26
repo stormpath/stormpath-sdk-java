@@ -105,7 +105,7 @@ class TenantIT extends ClientIT {
     /**
      * @since 1.0.RC4.3-SNAPSHOT
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false
     void testCurrentTenantWithOptions(){
 
         TenantOptions options = Tenants.options().withDirectories().withApplications()
