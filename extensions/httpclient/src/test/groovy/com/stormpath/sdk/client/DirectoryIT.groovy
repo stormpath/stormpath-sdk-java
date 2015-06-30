@@ -22,6 +22,7 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
@@ -304,11 +305,10 @@ class DirectoryIT extends ClientIT {
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testDirectoryExpansion")
+
         dir = client.createDirectory(dir);
 
         deleteOnTeardown(dir)
-
-        String href = dir.href
 
         DirectoryOptions options = Directories.options().withAccounts()
 
@@ -316,11 +316,13 @@ class DirectoryIT extends ClientIT {
         assertNotNull options
         assertEquals options.expansions.size(), 1
 
-        Directory retrieved = client.getResourceExpanded(href, Directory.class, options)
+        Directory retrieved = client.getResourceExpanded(dir.href, Directory.class, options)
 
         Map properties01 = getValue(AbstractResource, retrieved, "properties")
 
-        assertFalse retrieved.accounts.iterator().hasNext()
+        def algo = properties01.get("accounts")
+
+        assertEquals 0, properties01.get("accounts").items.size
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -329,9 +331,16 @@ class DirectoryIT extends ClientIT {
                 .setPassword('Changeme1!')
         dir.createAccount(account)
 
-        retrieved = client.getResourceExpanded(href, Directory.class, options).iterator().next()
-        def retrievedAccount = retrieved.accounts.iterator().next()
-        assertNotNull retrievedAccount.username
+        String href = account.href
+
+        retrieved = client.getResourceExpanded(dir.href, Directory.class, options)
+        properties01 = getValue(AbstractResource.class, retrieved, "properties")
+
+        def algo2 = properties01.get("accounts")
+
+        assertEquals 1, properties01.accounts.items.size
+        assertEquals href, properties01.accounts.items.get(0).href
+
     }
 
 }
