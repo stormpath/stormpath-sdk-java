@@ -56,7 +56,7 @@ class DefaultAccountListTest {
 
     }
 
-    /* @since 1.0 */
+    /* @since 1.0.RC4.4 */
     @Test
     void testSingle() {
 
@@ -77,7 +77,7 @@ class DefaultAccountListTest {
         verify partiallyMockedDefaultAccountList, iterator, account
     }
 
-    /* @since 1.0 */
+    /* @since 1.0.RC4.4 */
     @Test
     void testSingleEmpty() {
 
@@ -100,7 +100,7 @@ class DefaultAccountListTest {
         verify partiallyMockedDefaultAccountList, iterator
     }
 
-    /* @since 1.0 */
+    /* @since 1.0.RC4.4 */
     @Test
     void testNotSingle() {
 

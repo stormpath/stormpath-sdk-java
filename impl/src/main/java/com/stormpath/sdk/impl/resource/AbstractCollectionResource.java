@@ -90,7 +90,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         return getInt(SIZE);
     }
 
-    /** @since 1.0 */
+    /** @since 1.0.RC4.4 */
     @Override
     public T single() {
         Iterator<T> iterator = iterator();

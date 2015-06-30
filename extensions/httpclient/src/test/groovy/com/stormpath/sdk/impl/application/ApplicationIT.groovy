@@ -950,7 +950,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0
+     * @since 1.0.RC4.4
      */
     @Test
     void testGetSingleAccountFromCollection() {
