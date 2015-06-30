@@ -17,13 +17,13 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.*
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
-import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
@@ -35,9 +35,10 @@ import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
+import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.directory.DefaultCustomData
-import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.directory.DefaultDirectory
+import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -48,7 +49,10 @@ import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
-import com.stormpath.sdk.impl.resource.*
+import com.stormpath.sdk.impl.resource.CollectionReference
+import com.stormpath.sdk.impl.resource.ResourceReference
+import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.provider.*
@@ -57,6 +61,7 @@ import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
+
 import java.lang.reflect.Field
 
 import static org.easymock.EasyMock.*
@@ -615,6 +620,22 @@ class DefaultApplicationTest {
     }
 
     /**
+     * Testing fix for https://github.com/stormpath/stormpath-sdk-java/issues/184
+     * @since 1.0.RC4.2
+     */
+    @Test
+    void testCreateSsoRedirectUrlNotHardcoded() {
+        def properties = [href: "https://enterprise.stormpath.com/v1/applications/jefoifj93riu23ioj"]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+        def ssoRedirectUrlBuilder = defaultApplication.newIdSiteUrlBuilder()
+
+        assertEquals(ssoRedirectUrlBuilder.ssoEndpoint, properties.href.substring(0, properties.href.indexOf("/", 8)) + "/sso")
+    }
+
+    /**
      * @since 1.0.RC
      */
     @Test
@@ -862,9 +883,9 @@ class DefaultApplicationTest {
                                    account: [ href : "https://api.stormpath.com/v1/accounts/1dEw3gHFhzyw8jmYFqlIld"]
         ]
 
-        def apiKey = createStrictMock(ApiKey)
+        def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
+        def cacheManager = new DefaultCacheManager()
         def requestExecutor = createStrictMock(RequestExecutor)
-        def cacheManager = createStrictMock(CacheManager)
         def response = createStrictMock(Response)
         def mapMarshaller = new JacksonMapMarshaller();
         InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(returnedProperties).getBytes());
@@ -875,10 +896,9 @@ class DefaultApplicationTest {
         expect(response.getBody()).andReturn(is)
         expect(response.getHttpStatus()).andReturn(200)
 
-        replay apiKey, cacheManager, requestExecutor, response
+        replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
-        dataStore.cacheManager = cacheManager
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cacheManager)
 
         def application = new DefaultApplication(dataStore, properties)
         //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise
@@ -886,7 +906,10 @@ class DefaultApplicationTest {
         assertTrue(dataStore.isCachingEnabled())
         application.sendPasswordResetEmail("test@stormpath.com");
 
-        verify apiKey, cacheManager, requestExecutor, response
+        //assert there is no cached representation:
+        assertTrue dataStore.cacheResolver.getCache(PasswordResetToken).map.isEmpty()
+
+        verify requestExecutor, response
     }
 
     //@since 1.0.RC

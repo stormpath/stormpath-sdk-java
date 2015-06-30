@@ -1,8 +1,26 @@
 ## Change Log ##
 
-### 1.0 ###
+### 1.0.RC4.4 ##
 
-- [Issue 127](https://github.com/stormpath/stormpath-sdk-java/issues/127): Added the `single()` method to collection resources (e.g. `ApplicationList`, `AccountList`, etc.) to be used when a single item is expected in the list.
+Notes:
+
+- Please see the [1.0.RC4.4](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.4+is%3Aclosed) issues list for more information
+
+### 1.0.RC4.3 ##
+
+Notes:
+
+- Performance enhancements, bug fixes and collection iteration optimization.
+
+- The previous [Spring Security support project](https://github.com/stormpath/stormpath-spring-security) now resides in this project codebase and will have the same versions of the Java SDK moving forward.
+
+- Please see the [1.0.RC4.3](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.3+is%3Aclosed) issues list for more information.
+
+### 1.0.RC4.2 ##
+
+This release adds the capability for the ID Site URL to be constructed following the base url obtained from the application href.
+
+Please see the [1.0.RC4.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.2+is%3Aclosed) issues list for more information.
 
 ### 1.0.RC4.1 ##
 

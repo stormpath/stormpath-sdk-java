@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource(href, null, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "parent class argument cannot be null.")
+            assertEquals(e.getMessage(), "Resource class argument cannot be null.")
         }
 
         try {
@@ -186,16 +186,13 @@ class DefaultDataStoreTest {
         def response = createStrictMock(Response)
         def facebookProvider = createStrictMock(FacebookProvider)
         def apiKey = createStrictMock(ApiKey)
-        // convert String into InputStream
-        InputStream is = new ByteArrayInputStream("".getBytes());
 
         def childIdProperty = "providerId"
         def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
 
         expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
         expect(response.isError()).andReturn(false)
-        expect(response.hasBody()).andReturn(true)
-        expect(response.getBody()).andReturn(is)
+        expect(response.hasBody()).andReturn(false)
 
         replay(requestExecutor, response, facebookProvider)
 
@@ -204,7 +201,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider", Provider, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "providerId could not be found in: null.")
+            assertEquals(e.getMessage(), "Unable to obtain resource data from the API server or from cache.")
         }
 
         verify(requestExecutor, response, facebookProvider)
@@ -305,8 +302,7 @@ class DefaultDataStoreTest {
                 .withDefaultTimeToIdle(1, TimeUnit.HOURS)
                 .withDefaultTimeToLive(1, TimeUnit.HOURS)
                 .build();
-        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
-        defaultDataStore.setCacheManager(cache)
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cache)
         def app = new DefaultApplication(defaultDataStore, appProperties)
 
         defaultDataStore.getResource(providerResponseMap.href, Provider, childIdProperty, map)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014 Stormpath, Inc.
+  ~ Copyright 2015 Stormpath, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.RC4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Stormpath Java SDK</name>
@@ -96,7 +96,7 @@
         <slf4j.version>1.7.8</slf4j.version>
         <hazelcast.version>3.2.4</hazelcast.version>
         <httpClient.version>4.2.2</httpClient.version>
-        <jackson.version>2.4.3</jackson.version>
+        <jackson.version>2.4.4</jackson.version>
         <jjwt.version>0.4</jjwt.version>
         <oltu.version>1.0.0</oltu.version>
 
@@ -105,6 +105,7 @@
         <servlet.version>3.0.1</servlet.version>
         <spring.version>4.1.4.RELEASE</spring.version>
         <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
+        <spring.security.version>4.0.0.RELEASE</spring.security.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
@@ -315,6 +316,17 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
@@ -449,18 +461,6 @@
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
