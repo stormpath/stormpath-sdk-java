@@ -612,7 +612,7 @@ class ApplicationIT extends ClientIT {
 
     def Account createTestAccount(Client client, Application app) {
 
-        def email = 'deleteme@nowhere.com'
+        def email = uniquify('deleteme') + '@stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -947,6 +947,38 @@ class ApplicationIT extends ClientIT {
         def app = createTempApp()
 
         app.addAccountStore(Groups.criteria().add(Groups.name().containsIgnoreCase("testAddAccountStore_MultipleGroupCriteria")))
+    }
+
+    /**
+     * @since 1.0.RC4.4
+     */
+    @Test
+    void testGetSingleAccountFromCollection() {
+
+        def app = createTempApp()
+        def account01 = createTestAccount(app)
+
+        assertEquals(app.getAccounts().single().toString(), account01.toString())
+
+        def account02 = createTestAccount(app)
+
+        try {
+            app.getAccounts().single()
+            fail("should have thrown")
+        } catch ( IllegalStateException e) {
+            assertEquals(e.getMessage(), "Only a single resource was expected, but this list contains more than one item.")
+        }
+
+        assertEquals(app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(account02.getEmail()))).single().toString(), account02.toString())
+
+        try {
+            app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("thisEmailDoesNotBelong@ToAnAccount.com"))).single()
+            fail("should have thrown")
+        } catch ( IllegalStateException e) {
+            assertEquals(e.getMessage(), "This list is empty while it was expected to contain one (and only one) element.")
+        }
+
+
     }
 
     private assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
