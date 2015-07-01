@@ -692,7 +692,6 @@ class ApplicationIT extends ClientIT {
         def map = new HashMap<String, Object>()
         def appList = client.getApplications(map)
         assertNotNull appList.href
-
     }
 
     /**
