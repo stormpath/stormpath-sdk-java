@@ -23,11 +23,14 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static org.testng.Assert.*
 
@@ -387,6 +390,15 @@ class TenantIT extends ClientIT {
     }
 
     /**
+     *@since 1.0.RC4
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
+    }
+
+    /**
      * @since 1.0.RC4
      */
     @Test
@@ -401,12 +413,17 @@ class TenantIT extends ClientIT {
         assertNotNull options
         assertEquals options.expansions.size(), 2
 
-        def retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options).iterator().next()
-        def initialGroups = 0
-        def iterator = retrieved.groups.iterator()
-        while(iterator.hasNext()){
-            iterator.next()
-            initialGroups ++
+        def retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options)
+
+        Map properties02 = getValue(AbstractResource, tenant, "properties")
+
+        def applications = 0
+        if (properties02.get("applications").items != null){
+            applications = properties02.get("applications").items.size
+        }
+        def groups = 0
+        if (properties02.get("groups").items != null){
+            groups = properties02.get("groups").items.size
         }
 
         def app = createTempApp()
@@ -420,17 +437,13 @@ class TenantIT extends ClientIT {
         group2 = app.createGroup(group2)
         deleteOnTeardown(group2)
 
-        retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options).iterator().next()
+        retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options)
         assertEquals(tenant.href, retrieved.href)
 
-        def finalGroups = 0
-        iterator = retrieved.groups.iterator()
-        while(iterator.hasNext()){
-            iterator.next()
-            finalGroups ++
-        }
+        Map properties03 = getValue(AbstractResource, tenant, "properties")
 
-        assertEquals(finalGroups, initialGroups + 2)
+        assertEquals applications + 1, properties03.get("applications").items.size
+        assertEquals groups + 2, properties03.get("groups").items.size
     }
 
 }

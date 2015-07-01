@@ -137,14 +137,14 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new DecryptApiKeySecretFilter(apiKey));
 
-        if (isCachingEnabled()) {
-            this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
-            this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
-        }
-
         this.filters.add(new ApiKeyQueryFilter(this.queryStringFactory));
 
         this.filters.add(new ProviderAccountResultFilter());
+
+        if (isCachingEnabled()) {
+            this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
+            this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
+        }
     }
 
     @Override
@@ -216,7 +216,13 @@ public class DefaultDataStore implements InternalDataStore {
                 DefaultOptions.class.getName() + " instances.");
         DefaultOptions defaultOptions = (DefaultOptions) options;
         QueryString qs = queryStringFactory.createQueryString(href, (DefaultOptions) defaultOptions);
-        return (T) getResource(href, clazz, (Map) qs);
+        //Temporarily remove the read cache when loading expanded resources as a workaround for
+        //https://github.com/stormpath/stormpath-sdk-java/issues/164
+        //TODO: remove the lines that remove and re-add the ReadCacheFilter when collections caching is enable
+        this.filters.remove(5);
+        T object =  (T) getResource(href, clazz, (Map) qs);
+        this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
+        return object;
     }
 
     /**

@@ -36,7 +36,7 @@ import static org.testng.Assert.*
  *
  * @since 0.8.1
  */
-class DirectoryIT extends ClientIT {
+class DirectoryIT extends ClientIT{
 
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/pull/22">Pull Request 22</a>.
@@ -320,9 +320,9 @@ class DirectoryIT extends ClientIT {
 
         Map properties01 = getValue(AbstractResource, retrieved, "properties")
 
-        def algo = properties01.get("accounts")
-
-        assertEquals 0, properties01.get("accounts").items.size
+        if (properties01.get("accounts").items != null){
+            assertEquals 0, properties01.get("accounts").items.size
+        }
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -336,11 +336,7 @@ class DirectoryIT extends ClientIT {
         retrieved = client.getResourceExpanded(dir.href, Directory.class, options)
         properties01 = getValue(AbstractResource.class, retrieved, "properties")
 
-        def algo2 = properties01.get("accounts")
-
         assertEquals 1, properties01.accounts.items.size
         assertEquals href, properties01.accounts.items.get(0).href
-
     }
-
 }
