@@ -17,6 +17,7 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.PasswordPolicy
@@ -282,6 +283,36 @@ class DirectoryIT extends ClientIT {
         account02.delete()
 
         assertEquals(dir.getAccounts().getSize(), 0)
+    }
+
+    /**
+     * @since 1.0-SNAPSHOT
+     */
+    @Test
+    void testAccountCreationPolicy(){
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testAccountCreationPolicy")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+        def accountPolicy = dir.getAccountCreationPolicy()
+        assertNotNull accountPolicy.href
+
+        // Validate default values
+        assertEquals accountPolicy.getVerificationEmailStatus(), EmailStatus.DISABLED
+        assertEquals accountPolicy.getVerificationSuccessEmailStatus(), EmailStatus.DISABLED
+        assertEquals accountPolicy.getWelcomeEmailStatus(), EmailStatus.DISABLED
+
+        //Set new values
+        accountPolicy.setVerificationEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.setVerificationSuccessEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.setWelcomeEmailStatus(EmailStatus.ENABLED)
+        accountPolicy.save()
+
+        //Validate new values
+        def retrievedAccountCreationPolicy = client.getResource(accountPolicy.href, AccountCreationPolicy.class)
+        assertEquals(retrievedAccountCreationPolicy.getVerificationEmailStatus(), EmailStatus.ENABLED)
+        assertEquals(retrievedAccountCreationPolicy.getVerificationSuccessEmailStatus(), EmailStatus.ENABLED)
+        assertEquals(retrievedAccountCreationPolicy.getWelcomeEmailStatus(), EmailStatus.ENABLED)
     }
 
 
