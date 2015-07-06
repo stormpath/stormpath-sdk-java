@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.ds.cache.CacheResolver;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
@@ -60,5 +61,7 @@ public interface InternalDataStore extends DataStore {
      * @since 1.0.beta
      */
     <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> stringClassMap);
+
+    CacheResolver getCacheResolver();
 
 }

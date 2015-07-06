@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,8 @@ import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
-import org.testng.Assert
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -396,9 +394,10 @@ class AccountIT extends ClientIT {
         Map properties02 = getValue(AbstractResource, account02, "properties")
         Map dirtyProperties02 = getValue(AbstractResource, account02, "dirtyProperties")
 
-        final int EXPECTED_PROPERTIES_SIZE = 19;
+        //Changing to a dynamic size based on the first resource that is received from the server, because having
+        //hardcoded makes it failed when a new property/resource is added in the server API.
+        final int EXPECTED_PROPERTIES_SIZE = properties01.size();
 
-        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
         assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
@@ -858,11 +857,11 @@ class AccountIT extends ClientIT {
 
     String decryptSecretFromCacheMap(Map cacheMap) {
 
-        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyParameter.ENCRYPTION_METADATA.getName())) {
             return null
         }
 
-        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+        def apiKeyMetaData = cacheMap[ApiKeyParameter.ENCRYPTION_METADATA.getName()]
 
         def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
         def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]

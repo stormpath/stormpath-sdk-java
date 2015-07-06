@@ -176,7 +176,7 @@ Process finished with exit code 0
 
     private Application createAppAndDirectory(Tenant tenant) {
         def app = client.instantiate(Application.class);
-        app.setName(uniquify("Test Application"));
+        app.setName(uniquify("Java SDK IT"));
         app.setStatus(ApplicationStatus.DISABLED);
         app.setDescription(uniquify("Test Application Description"));
         return tenant.createApplication(Applications.newCreateRequestFor(app).createDirectory().build());
