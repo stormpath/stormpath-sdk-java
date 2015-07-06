@@ -26,14 +26,14 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
-class DefaultWelcomeUnmodeledEmailTemplateTest {
+class DefaultAccountVerificationSuccessEmailTemplateTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        EmailTemplate emailTemplate = new DefaultUnModeledEmailTemplate(createStrictMock(InternalDataStore))
+        EmailTemplate emailTemplate = new DefaultUnmodeledEmailTemplate(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = emailTemplate.getPropertyDescriptors()
 
@@ -59,38 +59,38 @@ class DefaultWelcomeUnmodeledEmailTemplateTest {
                 description: "Test Description",
                 fromName: "John Doe",
                 fromEmailAddress: "john@email.com",
-                subject: "Your registration was successful",
-                textBody: "Thanks for signing up. This is a welcome email.",
-                htmlBody: "Thanks for signing up. This is a <p>welcome email</p>.",
+                subject: "Your account has been confirmed",
+                textBody: "Your account has been successfully verified",
+                htmlBody: "Your account has been <b>successfully</b> verified",
                 mimeType: "text/plain"
         ]
 
-        EmailTemplate emailTemplate = new DefaultUnModeledEmailTemplate(internalDataStore, properties)
+        EmailTemplate emailTemplate = new DefaultUnmodeledEmailTemplate(internalDataStore, properties)
         assertEquals(emailTemplate.getName(), "Test Email")
         assertEquals(emailTemplate.getDescription(), "Test Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
         assertEquals(emailTemplate.getFromEmailAddress(), "john@email.com")
-        assertEquals(emailTemplate.getSubject(), "Your registration was successful")
-        assertEquals(emailTemplate.getTextBody(), "Thanks for signing up. This is a welcome email.")
-        assertEquals(emailTemplate.getHtmlBody(), "Thanks for signing up. This is a <p>welcome email</p>.")
+        assertEquals(emailTemplate.getSubject(), "Your account has been confirmed")
+        assertEquals(emailTemplate.getTextBody(), "Your account has been successfully verified")
+        assertEquals(emailTemplate.getHtmlBody(), "Your account has been <b>successfully</b> verified")
         assertEquals(emailTemplate.getMimeType(), MimeType.PLAIN_TEXT)
 
         emailTemplate = emailTemplate.setName("New Email Name")
                 .setDescription("My New Description")
                 .setFromName("New John Doe")
                 .setFromEmailAddress("john@newemail.com")
-                .setSubject("New Your registration was successful subject")
-                .setTextBody("New Thanks for signing up. This is a welcome email.")
-                .setHtmlBody("New Thanks for signing up. This is a <p>welcome email</p>.")
+                .setSubject("New Your account has been confirmed")
+                .setTextBody("New Your account has been successfully verified")
+                .setHtmlBody("New Your account has been <b>successfully</b> verified")
                 .setMimeType(MimeType.HTML)
 
         assertEquals(emailTemplate.getName(), "New Email Name")
         assertEquals(emailTemplate.getDescription(), "My New Description")
         assertEquals(emailTemplate.getFromName(), "New John Doe")
         assertEquals(emailTemplate.getFromEmailAddress(), "john@newemail.com")
-        assertEquals(emailTemplate.getSubject(), "New Your registration was successful subject")
-        assertEquals(emailTemplate.getTextBody(), "New Thanks for signing up. This is a welcome email.")
-        assertEquals(emailTemplate.getHtmlBody(), "New Thanks for signing up. This is a <p>welcome email</p>.")
+        assertEquals(emailTemplate.getSubject(), "New Your account has been confirmed")
+        assertEquals(emailTemplate.getTextBody(), "New Your account has been successfully verified")
+        assertEquals(emailTemplate.getHtmlBody(), "New Your account has been <b>successfully</b> verified")
         assertEquals(emailTemplate.getMimeType(), MimeType.HTML)
     }
 }

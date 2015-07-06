@@ -17,10 +17,10 @@ package com.stormpath.sdk.mail;
 import com.stormpath.sdk.resource.CollectionResource;
 /**
  *
- * A {@link CollectionResource} containing {@link UnModeledEmailTemplate} instances.
+ * A {@link CollectionResource} containing {@link UnmodeledEmailTemplate} instances.
  *
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
-public interface UnModeledEmailTemplateList extends CollectionResource<UnModeledEmailTemplate> {
+public interface UnmodeledEmailTemplateList extends CollectionResource<UnmodeledEmailTemplate> {
 
 }

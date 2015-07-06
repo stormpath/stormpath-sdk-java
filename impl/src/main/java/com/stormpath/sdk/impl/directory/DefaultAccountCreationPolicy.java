@@ -27,7 +27,7 @@ import com.stormpath.sdk.mail.*;
 import java.util.Map;
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
 public class DefaultAccountCreationPolicy extends AbstractInstanceResource implements AccountCreationPolicy {
 
@@ -38,11 +38,11 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> ACCOUNT_VERIFICATION_EMAIL_TEMPLATES =
             new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("verificationEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);
 
-    static final CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES =
-            new CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate>("verificationSuccessEmailTemplates", UnModeledEmailTemplateList.class, UnModeledEmailTemplate.class);
+    static final CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES =
+            new CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate>("verificationSuccessEmailTemplates", UnmodeledEmailTemplateList.class, UnmodeledEmailTemplate.class);
 
-    static final CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate> WELCOME_EMAIL_TEMPLATES =
-            new CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate>("welcomeEmailTemplates", UnModeledEmailTemplateList.class, UnModeledEmailTemplate.class);
+    static final CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate> WELCOME_EMAIL_TEMPLATES =
+            new CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate>("welcomeEmailTemplates", UnmodeledEmailTemplateList.class, UnmodeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             ACCOUNT_VERIFICATION_EMAIL_STATUS, ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS, WELCOME_EMAIL_STATUS, ACCOUNT_VERIFICATION_EMAIL_TEMPLATES,
@@ -67,12 +67,12 @@ public class DefaultAccountCreationPolicy extends AbstractInstanceResource imple
     }
 
     @Override
-    public UnModeledEmailTemplateList getAccountVerificationSuccessEmailTemplates() {
+    public UnmodeledEmailTemplateList getAccountVerificationSuccessEmailTemplates() {
         return getResourceProperty(ACCOUNT_VERIFICATION_SUCCESS_EMAIL_TEMPLATES);
     }
 
     @Override
-    public UnModeledEmailTemplateList getWelcomeEmailTemplates() {
+    public UnmodeledEmailTemplateList getWelcomeEmailTemplates() {
         return getResourceProperty(WELCOME_EMAIL_TEMPLATES);
     }
 
