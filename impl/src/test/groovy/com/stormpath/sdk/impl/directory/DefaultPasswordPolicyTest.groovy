@@ -19,14 +19,14 @@ import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.directory.PasswordStrength
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
-import com.stormpath.sdk.impl.mail.DefaultUnModeledEmailTemplateList
+import com.stormpath.sdk.impl.mail.DefaultUnmodeledEmailTemplateList
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.IntegerProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.mail.ModeledEmailTemplateList
-import com.stormpath.sdk.mail.UnModeledEmailTemplateList
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -75,8 +75,8 @@ class DefaultPasswordPolicyTest {
         expect(internalDataStore.instantiate(ModeledEmailTemplateList, properties.resetEmailTemplates)).
                 andReturn(new DefaultModeledEmailTemplateList(internalDataStore, properties.resetEmailTemplates))
 
-        expect(internalDataStore.instantiate(UnModeledEmailTemplateList, properties.resetSuccessEmailTemplates)).
-                andReturn(new DefaultUnModeledEmailTemplateList(internalDataStore, properties.resetSuccessEmailTemplates))
+        expect(internalDataStore.instantiate(UnmodeledEmailTemplateList, properties.resetSuccessEmailTemplates)).
+                andReturn(new DefaultUnmodeledEmailTemplateList(internalDataStore, properties.resetSuccessEmailTemplates))
 
         replay internalDataStore
 
@@ -99,7 +99,7 @@ class DefaultPasswordPolicyTest {
         assertTrue(resource instanceof DefaultModeledEmailTemplateList && resource.getHref().equals(properties.resetEmailTemplates.href))
 
         resource = passwordPolicy.getResetSuccessEmailTemplates()
-        assertTrue(resource instanceof DefaultUnModeledEmailTemplateList && resource.getHref().equals(properties.resetSuccessEmailTemplates.href))
+        assertTrue(resource instanceof DefaultUnmodeledEmailTemplateList && resource.getHref().equals(properties.resetSuccessEmailTemplates.href))
 
         verify internalDataStore
 

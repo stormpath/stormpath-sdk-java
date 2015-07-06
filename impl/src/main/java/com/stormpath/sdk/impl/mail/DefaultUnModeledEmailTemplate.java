@@ -17,23 +17,23 @@ package com.stormpath.sdk.impl.mail;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.mail.UnModeledEmailTemplate;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplate;
 
 import java.util.Map;
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
-public class DefaultUnModeledEmailTemplate extends AbstractEmailTemplate<UnModeledEmailTemplate> implements UnModeledEmailTemplate {
+public class DefaultUnmodeledEmailTemplate extends AbstractEmailTemplate<UnmodeledEmailTemplate> implements UnmodeledEmailTemplate {
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             NAME, DESCRIPTION, FROM_NAME, FROM_EMAIL_ADDRESS, SUBJECT, TEXT_BODY, HTML_BODY, MIME_TYPE);
 
-    public DefaultUnModeledEmailTemplate(InternalDataStore dataStore) {
+    public DefaultUnmodeledEmailTemplate(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultUnModeledEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultUnmodeledEmailTemplate(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

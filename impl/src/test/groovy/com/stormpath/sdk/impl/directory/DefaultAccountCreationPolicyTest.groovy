@@ -18,13 +18,13 @@ package com.stormpath.sdk.impl.directory
 import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
-import com.stormpath.sdk.impl.mail.DefaultUnModeledEmailTemplateList
+import com.stormpath.sdk.impl.mail.DefaultUnmodeledEmailTemplateList
 
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.mail.ModeledEmailTemplateList
-import com.stormpath.sdk.mail.UnModeledEmailTemplateList
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
 
 import org.testng.annotations.Test
 
@@ -32,7 +32,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
 class DefaultAccountCreationPolicyTest {
 
@@ -68,11 +68,11 @@ class DefaultAccountCreationPolicyTest {
         expect(internalDataStore.instantiate(ModeledEmailTemplateList, properties.verificationEmailTemplates)).
                 andReturn(new DefaultModeledEmailTemplateList(internalDataStore, properties.verificationEmailTemplates))
 
-        expect(internalDataStore.instantiate(UnModeledEmailTemplateList, properties.verificationSuccessEmailTemplates)).
-                andReturn(new DefaultUnModeledEmailTemplateList(internalDataStore, properties.verificationSuccessEmailTemplates))
+        expect(internalDataStore.instantiate(UnmodeledEmailTemplateList, properties.verificationSuccessEmailTemplates)).
+                andReturn(new DefaultUnmodeledEmailTemplateList(internalDataStore, properties.verificationSuccessEmailTemplates))
 
-        expect(internalDataStore.instantiate(UnModeledEmailTemplateList, properties.welcomeEmailTemplates)).
-                andReturn(new DefaultUnModeledEmailTemplateList(internalDataStore, properties.welcomeEmailTemplates))
+        expect(internalDataStore.instantiate(UnmodeledEmailTemplateList, properties.welcomeEmailTemplates)).
+                andReturn(new DefaultUnmodeledEmailTemplateList(internalDataStore, properties.welcomeEmailTemplates))
 
         replay internalDataStore
 
@@ -91,10 +91,10 @@ class DefaultAccountCreationPolicyTest {
         assertTrue(verificationTemplates instanceof DefaultModeledEmailTemplateList && verificationTemplates.getHref().equals(properties.verificationEmailTemplates.href))
 
         def verificationSucessTemplates = accountCreationPolicy.getAccountVerificationSuccessEmailTemplates()
-        assertTrue(verificationSucessTemplates instanceof UnModeledEmailTemplateList && verificationSucessTemplates.getHref().equals(properties.verificationSuccessEmailTemplates.href))
+        assertTrue(verificationSucessTemplates instanceof UnmodeledEmailTemplateList && verificationSucessTemplates.getHref().equals(properties.verificationSuccessEmailTemplates.href))
 
         def welcomeTemplates = accountCreationPolicy.getWelcomeEmailTemplates()
-        assertTrue(welcomeTemplates instanceof UnModeledEmailTemplateList && welcomeTemplates.getHref().equals(properties.welcomeEmailTemplates.href))
+        assertTrue(welcomeTemplates instanceof UnmodeledEmailTemplateList && welcomeTemplates.getHref().equals(properties.welcomeEmailTemplates.href))
 
         verify internalDataStore
 

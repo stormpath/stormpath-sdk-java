@@ -40,8 +40,8 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
     //COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> RESET_EMAIL_TEMPLATES =
             new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("resetEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);
-    static final CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate> RESET_SUCCESS_EMAIL_TEMPLATES =
-            new CollectionReference<UnModeledEmailTemplateList, UnModeledEmailTemplate>("resetSuccessEmailTemplates", UnModeledEmailTemplateList.class, UnModeledEmailTemplate.class);
+    static final CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate> RESET_SUCCESS_EMAIL_TEMPLATES =
+            new CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate>("resetSuccessEmailTemplates", UnmodeledEmailTemplateList.class, UnmodeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             RESET_TOKEN_TTL, RESET_EMAIL_STATUS, RESET_SUCCESS_EMAIL_STATUS, STRENGTH, RESET_EMAIL_TEMPLATES, RESET_SUCCESS_EMAIL_TEMPLATES);
@@ -114,7 +114,7 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
     }
 
     @Override
-    public UnModeledEmailTemplateList getResetSuccessEmailTemplates() {
+    public UnmodeledEmailTemplateList getResetSuccessEmailTemplates() {
         return getResourceProperty(RESET_SUCCESS_EMAIL_TEMPLATES);
     }
 

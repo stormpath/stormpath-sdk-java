@@ -17,20 +17,17 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.mail.ModeledEmailTemplate
-import com.stormpath.sdk.mail.UnModeledEmailTemplate
-
+import com.stormpath.sdk.mail.UnmodeledEmailTemplate
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 
 /**
  *
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
 class AccountCreationPolicyIT extends ClientIT {
-    
 
-    
     @Test
     void testAccountVerificationEmailTemplateList() {
 
@@ -104,7 +101,7 @@ class AccountCreationPolicyIT extends ClientIT {
 
         dir = client.getResource(dir.href, Directory.class)
         def emailTemplateFromDir = dir.getAccountCreationPolicy().getAccountVerificationSuccessEmailTemplates().iterator().next()
-        emailTemplate = client.getResource(emailTemplate.href, UnModeledEmailTemplate.class)
+        emailTemplate = client.getResource(emailTemplate.href, UnmodeledEmailTemplate.class)
         assertEquals(emailTemplate.href, emailTemplateFromDir.href)
         assertEquals(emailTemplate.getSubject(), "New Your account has been confirmed Subject")
         assertEquals(emailTemplate.getName(), "New Default Verification Success Email Template Name")
@@ -136,7 +133,7 @@ class AccountCreationPolicyIT extends ClientIT {
 
         dir = client.getResource(dir.href, Directory.class)
         def emailTemplateFromDir = dir.getAccountCreationPolicy().getWelcomeEmailTemplates().iterator().next()
-        emailTemplate = client.getResource(emailTemplate.href, UnModeledEmailTemplate.class)
+        emailTemplate = client.getResource(emailTemplate.href, UnmodeledEmailTemplate.class)
         assertEquals(emailTemplate.href, emailTemplateFromDir.href)
         assertEquals(emailTemplate.getSubject(), "New Your registration was successful Subject")
         assertEquals(emailTemplate.getName(), "New Default Welcome Email Template Name")

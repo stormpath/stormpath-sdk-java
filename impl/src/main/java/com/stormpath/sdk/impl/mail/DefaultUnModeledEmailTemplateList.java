@@ -19,35 +19,35 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.mail.UnModeledEmailTemplate;
-import com.stormpath.sdk.mail.UnModeledEmailTemplateList;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplate;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 
 import java.util.Map;
 
 /**
- * @since 1.0-SNAPSHOT
+ * @since 1.0.RC4.5
  */
-public class DefaultUnModeledEmailTemplateList extends AbstractCollectionResource<UnModeledEmailTemplate> implements UnModeledEmailTemplateList {
+public class DefaultUnmodeledEmailTemplateList extends AbstractCollectionResource<UnmodeledEmailTemplate> implements UnmodeledEmailTemplateList {
 
-    private static final ArrayProperty<UnModeledEmailTemplate> ITEMS = new ArrayProperty<UnModeledEmailTemplate>("items", UnModeledEmailTemplate.class);
+    private static final ArrayProperty<UnmodeledEmailTemplate> ITEMS = new ArrayProperty<UnmodeledEmailTemplate>("items", UnmodeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
-    public DefaultUnModeledEmailTemplateList(InternalDataStore dataStore) {
+    public DefaultUnmodeledEmailTemplateList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultUnModeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultUnmodeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
-    public DefaultUnModeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
+    public DefaultUnmodeledEmailTemplateList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
     @Override
-    protected Class<UnModeledEmailTemplate> getItemType() {
-        return UnModeledEmailTemplate.class;
+    protected Class<UnmodeledEmailTemplate> getItemType() {
+        return UnmodeledEmailTemplate.class;
     }
 
     @Override
