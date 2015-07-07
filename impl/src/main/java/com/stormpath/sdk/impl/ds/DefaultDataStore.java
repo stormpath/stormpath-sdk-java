@@ -394,11 +394,6 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String,Object> data = result.getData();
 
-        //Commenting out as this exact same validation is already being done in lines 378-385 where an IllegalStateException is thrown if the body is empty
-        //if (!result.getAction().equals(ResourceAction.PROCESS)) {
-        //    Assert.notEmpty(data, "Filter chain returned an empty data result from a persistence request. This is never allowed.");
-        //}
-
         //ensure the caller's argument is updated with what is returned from the server if the types are the same:
         if (returnType.equals(abstractResource.getClass())) {
             abstractResource.setProperties(data);
