@@ -286,9 +286,6 @@ public class DefaultDataStore implements InternalDataStore {
         if (httpStatus == 201) {
             return ResourceAction.CREATE;
         }
-        if (httpStatus == 202) {
-            return ResourceAction.PROCESS;
-        }
         return request.getAction();
     }
 
@@ -397,10 +394,10 @@ public class DefaultDataStore implements InternalDataStore {
 
         Map<String,Object> data = result.getData();
 
-        // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
-        if (!result.getAction().equals(ResourceAction.PROCESS)) {
-            Assert.notEmpty(data, "Filter chain returned an empty data result from a persistence request. This is never allowed.");
-        }
+        //Commenting out as this exact same validation is already being done in lines 378-385 where an IllegalStateException is thrown if the body is empty
+        //if (!result.getAction().equals(ResourceAction.PROCESS)) {
+        //    Assert.notEmpty(data, "Filter chain returned an empty data result from a persistence request. This is never allowed.");
+        //}
 
         //ensure the caller's argument is updated with what is returned from the server if the types are the same:
         if (returnType.equals(abstractResource.getClass())) {

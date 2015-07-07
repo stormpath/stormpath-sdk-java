@@ -17,5 +17,5 @@ package com.stormpath.sdk.impl.ds;
 
 public enum ResourceAction {
 
-    CREATE, READ, UPDATE, DELETE, PROCESS
+    CREATE, READ, UPDATE, DELETE
 }
