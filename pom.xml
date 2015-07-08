@@ -25,7 +25,7 @@
 
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
-    <version>1.0.RC4.5-SNAPSHOT</version>
+    <version>1.0.RC4.5</version>
     <packaging>pom</packaging>
 
     <name>Stormpath Java SDK</name>
@@ -47,7 +47,7 @@
         <connection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</developerConnection>
         <url>git@github.com:stormpath/stormpath-sdk-java.git</url>
-        <tag>HEAD</tag>
+        <tag>stormpath-sdk-root-1.0.RC4.5</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
