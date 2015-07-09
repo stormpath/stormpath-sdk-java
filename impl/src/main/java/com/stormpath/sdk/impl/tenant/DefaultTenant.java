@@ -67,7 +67,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);

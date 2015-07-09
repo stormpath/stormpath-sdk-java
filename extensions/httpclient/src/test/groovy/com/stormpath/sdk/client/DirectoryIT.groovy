@@ -37,7 +37,7 @@ import static org.testng.Assert.*
  *
  * @since 0.8.1
  */
-class DirectoryIT extends ClientIT {
+class DirectoryIT extends ClientIT{
 
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/pull/22">Pull Request 22</a>.
@@ -361,7 +361,6 @@ class DirectoryIT extends ClientIT {
         assertTrue dirProperties.get("accounts").size() > 1
         assertTrue dirProperties.get("accounts").get("size") == 1
         assertEquals dirProperties.get("accounts").get("items")[0].get("givenName"), "John"
-
     }
 
     /**
@@ -372,6 +371,5 @@ class DirectoryIT extends ClientIT {
         field.setAccessible(true)
         return field.get(object)
     }
-
 
 }
