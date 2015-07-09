@@ -23,10 +23,13 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static org.testng.Assert.*
 
@@ -321,6 +324,11 @@ class DirectoryIT extends ClientIT {
      */
     @Test
     void testDirectoryExpansion(){
+
+        //In order to check that expansion works we need to disable the cache due to this issue: https://github.com/stormpath/stormpath-sdk-java/issues/164
+        //Once that issue has been fixed, we need to duplicate this test but having cache enabled this time
+        Client client = buildClient(false);
+
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testDirectoryExpansion")
         dir = client.currentTenant.createDirectory(dir)
@@ -334,9 +342,11 @@ class DirectoryIT extends ClientIT {
         assertNotNull options
         assertEquals options.expansions.size(), 1
 
-        Directory retrieved = client.getResourceExpanded(href, Directory.class, options).iterator().next()
-
-        assertFalse retrieved.accounts.iterator().hasNext()
+        //Test the expansion worked by reading the internal properties of the directory
+        Directory retrieved = client.getResource(href, Directory.class, options)
+        Map dirProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue dirProperties.get("accounts").size() > 1
+        assertTrue dirProperties.get("accounts").get("size") == 0
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -345,9 +355,22 @@ class DirectoryIT extends ClientIT {
                 .setPassword('Changeme1!')
         dir.createAccount(account)
 
-        retrieved = client.getResourceExpanded(href, Directory.class, options).iterator().next()
-        def retrievedAccount = retrieved.accounts.iterator().next()
-        assertNotNull retrievedAccount.username
+        //Test the expansion worked by reading the internal properties of the directory, it must contain the recently created account now
+        retrieved = client.getResource(href, Directory.class, options)
+        dirProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue dirProperties.get("accounts").size() > 1
+        assertTrue dirProperties.get("accounts").get("size") == 1
+        assertEquals dirProperties.get("accounts").get("items")[0].get("givenName"), "John"
+
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
     }
 
 

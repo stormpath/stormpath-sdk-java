@@ -35,7 +35,7 @@ abstract class ClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
-    String baseUrl = 'https://api.stormpath.com/v1'
+    String baseUrl = "http://localhost:9191/v1";
     Client client
 
     List<Deletable> resourcesToDelete;
@@ -76,6 +76,9 @@ abstract class ClientIT {
         def builder = Clients.builder()
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
+        String path = System.getProperty("user.home") + "/.stormpath/apiKey.properties.local.alert-ice";
+        builder.setApiKey(ApiKeys.builder().setFileLocation(path).build());
+
         if (!enableCaching) {
             builder.setCacheManager(Caches.newDisabledCacheManager())
         }
@@ -89,6 +92,9 @@ abstract class ClientIT {
         ((DefaultClientBuilder)builder).setBaseUrl(baseUrl)
 
         builder.setAuthenticationScheme(authenticationScheme)
+
+        String path = System.getProperty("user.home") + "/.stormpath/apiKey.properties.local.alert-ice";
+        builder.setApiKey(ApiKeys.builder().setFileLocation(path).build());
 
         return builder.build()
     }

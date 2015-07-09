@@ -25,6 +25,7 @@ import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.query.DefaultOptions
 import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.Resource
 import org.testng.annotations.Test
 
@@ -356,10 +357,10 @@ class DefaultDataStoreTest {
     }
 
     /**
-     * @since 1.0.RC4
+     * @since 1.0.RC4.6
      */
     @Test
-    void testGetResourceExpandedInvalidArguments() {
+    void testGetResource_Expanded_InvalidArguments() {
         def requestExecutor = createStrictMock(RequestExecutor)
         def apiKey = createStrictMock(ApiKey)
         def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
@@ -368,21 +369,21 @@ class DefaultDataStoreTest {
         def href = "http://api.stormpath.com/v1/directories/2B6PLkZ8AGvWlziq18JJ62"
 
         try {
-            defaultDataStore.getResourceExpanded(null, resourceData, emptyOptions)
+            defaultDataStore.getResource(null, resourceData, emptyOptions)
             fail("should have thrown due to empty href")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "href argument cannot be null or empty.")
         }
 
         try {
-            defaultDataStore.getResourceExpanded(href, null, emptyOptions)
+            defaultDataStore.getResource(href, null, emptyOptions)
             fail("should have thrown due to empty class")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Resource class argument cannot be null.")
         }
 
         try {
-            defaultDataStore.getResourceExpanded(href, resourceData, null)
+            defaultDataStore.getResource(href, resourceData, (Options) null)
             fail("should have thrown due to empty options")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "The com.stormpath.sdk.impl.ds.DefaultDataStore implementation only functions with com.stormpath.sdk.impl.query.DefaultOptions instances.Object of class [null] must be an instance of class com.stormpath.sdk.impl.query.DefaultOptions")

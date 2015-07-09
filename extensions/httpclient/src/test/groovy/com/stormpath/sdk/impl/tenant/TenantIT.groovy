@@ -18,16 +18,20 @@ package com.stormpath.sdk.impl.tenant
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static org.testng.Assert.*
 
@@ -387,10 +391,15 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4
+     * @since 1.0.RC4.6
      */
     @Test
     void testTenantExpansion(){
+
+        //In order to check that expansion works we need to disable the cache due to this issue: https://github.com/stormpath/stormpath-sdk-java/issues/164
+        //Once that issue has been fixed, we need to duplicate this test but having cache enabled this time
+        Client client = buildClient(false);
+
         def tenant = client.currentTenant
 
         TenantOptions options = Tenants.options()
@@ -401,13 +410,14 @@ class TenantIT extends ClientIT {
         assertNotNull options
         assertEquals options.expansions.size(), 2
 
-        def retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options).iterator().next()
-        def initialGroups = 0
-        def iterator = retrieved.groups.iterator()
-        while(iterator.hasNext()){
-            iterator.next()
-            initialGroups ++
-        }
+        //Test the expansion worked by reading the internal properties of the tenant
+        def retrieved = client.getResource(tenant.href, Tenant.class, options)
+        Map tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue tenantProperties.get("groups").size() > 1
+        assertTrue tenantProperties.get("applications").size() > 1
+        assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
+        def groupsQty = tenantProperties.get("groups").get("size")
+        def applicationsQty = tenantProperties.get("applications").get("size")
 
         def app = createTempApp()
         Group group1 = client.instantiate(Group)
@@ -420,17 +430,23 @@ class TenantIT extends ClientIT {
         group2 = app.createGroup(group2)
         deleteOnTeardown(group2)
 
-        retrieved = client.getResourceExpanded(tenant.href, Tenant.class, options).iterator().next()
+        //Test the expansion worked by reading the internal properties of the tenant, it must contain the recently created groups now
+        retrieved = client.getResource(tenant.href, Tenant.class, options)
+        tenantProperties = getValue(AbstractResource, retrieved, "properties")
         assertEquals(tenant.href, retrieved.href)
 
-        def finalGroups = 0
-        iterator = retrieved.groups.iterator()
-        while(iterator.hasNext()){
-            iterator.next()
-            finalGroups ++
-        }
+        assertTrue tenantProperties.get("groups").get("size") == groupsQty + 2
+        assertTrue tenantProperties.get("applications").get("size") == applicationsQty + 1
 
-        assertEquals(finalGroups, initialGroups + 2)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
     }
 
 }

@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -46,6 +43,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -201,7 +199,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(list.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     @Override
@@ -306,7 +304,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public ApiKeyList getApiKeys(ApiKeyCriteria criteria) {
         ApiKeyList list = getApiKeys(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), ApiKeyList.class, criteria);
+        return getDataStore().getResource(list.getHref(), ApiKeyList.class, (Criteria<ApiKeyCriteria>) criteria);
     }
 
     /**
@@ -344,6 +342,6 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
     }
 }

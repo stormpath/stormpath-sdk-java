@@ -260,9 +260,7 @@ public class DefaultDataStore implements InternalDataStore {
                 DefaultOptions.class.getName() + " instances.");
         DefaultOptions defaultOptions = (DefaultOptions) options;
         QueryString qs = queryStringFactory.createQueryString(defaultOptions);
-        //return getResourceData(href, clazz, (Map<String, String>) qs);
-        ResourceDataResult result = getResourceData(href, clazz, (Map<String, String>) qs);
-        return instantiate(clazz, result.getData(), result.getUri().getQuery());
+        return (T) getResource(href, clazz, (Map) qs);
     }
 
 
