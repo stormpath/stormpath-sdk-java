@@ -55,11 +55,8 @@ public interface DataStore {
     <T extends Resource> T getResource(String href, Class<T> clazz);
 
     /**
-     * Looks up (retrieves) the resource at the specified {@code href} URL with the properties specified in {@code options} expanded
-     * and returns the resource as an instance of the specified {@code clazz}.
-     * <p/>
-     * The {@code Class} argument must represent an interface that is a sub-interface
-     * of {@link Resource}, for example {@link com.stormpath.sdk.account.Account Account}, {@link com.stormpath.sdk.directory.Directory Directory}, etc.
+     * Retrieves the resource at the specified {@code href} according to the specified {@code Options} and returns the
+     * resource as an instance of the specified {@code clazz}.
      *
      * @param href  the URL of the resource to retrieve
      * @param clazz the {@link Resource} sub-interface to instantiate

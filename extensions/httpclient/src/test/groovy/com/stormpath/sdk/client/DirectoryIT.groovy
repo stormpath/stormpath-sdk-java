@@ -37,7 +37,7 @@ import static org.testng.Assert.*
  *
  * @since 0.8.1
  */
-class DirectoryIT extends ClientIT{
+class DirectoryIT extends ClientIT {
 
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/pull/22">Pull Request 22</a>.
@@ -334,8 +334,6 @@ class DirectoryIT extends ClientIT{
         dir = client.currentTenant.createDirectory(dir)
         deleteOnTeardown(dir)
 
-        String href = dir.href
-
         DirectoryOptions options = Directories.options().withAccounts()
 
         // test options created successfully
@@ -343,7 +341,7 @@ class DirectoryIT extends ClientIT{
         assertEquals options.expansions.size(), 1
 
         //Test the expansion worked by reading the internal properties of the directory
-        Directory retrieved = client.getResource(href, Directory.class, options)
+        Directory retrieved = client.getResource(dir.href, Directory.class, options)
         Map dirProperties = getValue(AbstractResource, retrieved, "properties")
         assertTrue dirProperties.get("accounts").size() > 1
         assertTrue dirProperties.get("accounts").get("size") == 0
@@ -356,7 +354,7 @@ class DirectoryIT extends ClientIT{
         dir.createAccount(account)
 
         //Test the expansion worked by reading the internal properties of the directory, it must contain the recently created account now
-        retrieved = client.getResource(href, Directory.class, options)
+        retrieved = client.getResource(dir.href, Directory.class, options)
         dirProperties = getValue(AbstractResource, retrieved, "properties")
         assertTrue dirProperties.get("accounts").size() > 1
         assertTrue dirProperties.get("accounts").get("size") == 1
