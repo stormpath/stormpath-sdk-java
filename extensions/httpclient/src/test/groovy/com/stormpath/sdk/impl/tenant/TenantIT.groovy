@@ -23,6 +23,7 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.io.AbstractResource
 import com.stormpath.sdk.provider.FacebookProvider
 import com.stormpath.sdk.provider.GithubProvider
 import com.stormpath.sdk.provider.GoogleProvider
@@ -32,6 +33,8 @@ import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
@@ -103,6 +106,13 @@ class TenantIT extends ClientIT {
         Thread.sleep(20)
     }
 
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
+    }
+
+
     /**
      * @since 1.0.RC4.6
      */
@@ -111,8 +121,10 @@ class TenantIT extends ClientIT {
 
         TenantOptions options = Tenants.options().withDirectories().withApplications()
         def tenant = client.getCurrentTenant(options)
-        def apps = tenant.applications.size
-        def dirs = tenant.directories.size
+
+        Map properties = getValue(AbstractResource, tenant, "properties")
+        def apps = properties.get("applications").size()
+        def dirs = properties.get("directories").size()
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -129,6 +141,10 @@ class TenantIT extends ClientIT {
         assertNotNull app.href
 
         tenant = client.getCurrentTenant(options)
+
+        properties = getValue(AbstractResource, tenant, "properties")
+        assertTrue properties.get("applications").size() == apps + 1
+        assertTrue properties.get("directories").size() == dirs + 1
 
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164

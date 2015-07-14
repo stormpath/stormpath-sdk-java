@@ -18,6 +18,9 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.tenant.TenantCriteria;
 import com.stormpath.sdk.tenant.TenantOptions;
 
+/**
+ * @since 1.0.RC4.6
+ */
 public class DefaultTenantCriteria extends DefaultCriteria<TenantCriteria, TenantOptions> implements TenantCriteria {
 
     public DefaultTenantCriteria() {
