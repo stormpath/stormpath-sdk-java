@@ -394,11 +394,55 @@ class TenantIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testTenantExpansion(){
+    void testTenantExpansionWithoutCache(){
 
-        //In order to check that expansion works we need to disable the cache due to this issue: https://github.com/stormpath/stormpath-sdk-java/issues/164
-        //Once that issue has been fixed, we need to duplicate this test but having cache enabled this time
         Client client = buildClient(false);
+
+        def tenant = client.currentTenant
+
+        TenantOptions options = Tenants.options()
+                .withApplications()
+                .withGroups()
+
+        // test options created successfully
+        assertNotNull options
+        assertEquals options.expansions.size(), 2
+
+        //Test the expansion worked by reading the internal properties of the tenant
+        def retrieved = client.getResource(tenant.href, Tenant.class, options)
+        Map tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue tenantProperties.get("groups").size() > 1
+        assertTrue tenantProperties.get("applications").size() > 1
+        assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
+        def groupsQty = tenantProperties.get("groups").get("size")
+        def applicationsQty = tenantProperties.get("applications").get("size")
+
+        def app = createTempApp()
+        Group group1 = client.instantiate(Group)
+        group1.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group1")
+        group1 = app.createGroup(group1)
+        deleteOnTeardown(group1)
+
+        Group group2 = client.instantiate(Group)
+        group2.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group2")
+        group2 = app.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        //Test the expansion worked by reading the internal properties of the tenant, it must contain the recently created groups now
+        retrieved = client.getResource(tenant.href, Tenant.class, options)
+        tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertEquals(tenant.href, retrieved.href)
+
+        assertTrue tenantProperties.get("groups").get("size") == groupsQty + 2
+        assertTrue tenantProperties.get("applications").get("size") == applicationsQty + 1
+
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testTenantExpansionWithCache(){
 
         def tenant = client.currentTenant
 

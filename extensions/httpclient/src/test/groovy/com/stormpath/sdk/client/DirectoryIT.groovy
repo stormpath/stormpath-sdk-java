@@ -323,10 +323,8 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testDirectoryExpansion(){
+    void testDirectoryExpansionWithoutCache(){
 
-        //In order to check that expansion works we need to disable the cache due to this issue: https://github.com/stormpath/stormpath-sdk-java/issues/164
-        //Once that issue has been fixed, we need to duplicate this test but having cache enabled this time
         Client client = buildClient(false);
 
         Directory dir = client.instantiate(Directory)
@@ -359,6 +357,48 @@ class DirectoryIT extends ClientIT {
         assertTrue dirProperties.get("accounts").size() > 1
         assertTrue dirProperties.get("accounts").get("size") == 1
         assertEquals dirProperties.get("accounts").get("items")[0].get("givenName"), "John"
+    }
+
+    /**
+     * Test for https://github.com/stormpath/stormpath-sdk-java/issues/164
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testDirectoryExpansionWithCache(){
+
+        Client client = buildCountingClient()
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDirectoryExpansion")
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        DirectoryOptions options = Directories.options().withAccounts() //collection resource
+
+        // test options created successfully
+        assertNotNull options
+        assertEquals options.expansions.size(), 1
+
+        //Test the expansion worked by reading the internal properties of the directory
+        Directory retrieved = client.getResource(dir.href, Directory.class, options)
+        Map dirProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue dirProperties.get("accounts").size() > 1
+        assertTrue dirProperties.get("accounts").get("size") == 0
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('Doe')
+                .setEmail('johndoe@email.com')
+                .setPassword('Changeme1!')
+        dir.createAccount(account)
+
+        //Test the expansion worked by reading the internal properties of the directory, it must contain the recently created account now
+        retrieved = client.getResource(dir.href, Directory.class, options)
+        dirProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue dirProperties.get("accounts").size() > 1
+        assertTrue dirProperties.get("accounts").get("size") == 1
+        assertEquals dirProperties.get("accounts").get("items")[0].get("givenName"), "John"
+
     }
 
     /**
