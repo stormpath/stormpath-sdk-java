@@ -350,7 +350,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     @Override
     public Tenant getCurrentTenant(TenantOptions tenantOptions) {

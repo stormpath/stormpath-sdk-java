@@ -55,19 +55,16 @@ public interface DataStore {
     <T extends Resource> T getResource(String href, Class<T> clazz);
 
     /**
-     * Looks up (retrieves) the resource at the specified {@code href} URL, customized by the specified {@code criteria} and returns the resource as an instance of
-     * the specified {@code clazz}. <p/> The {@code Class} argument must represent an interface that is a sub-interface
-     * of {@link Resource}, for example {@link com.stormpath.sdk.account.Account Account}, {@link
-     * com.stormpath.sdk.directory.Directory Directory}, etc. <p/> The {@code criteria} argument must represent an interface that is a sub-interface
-     * of {@link Criteria}, for example (@link AccountCriteria AccountCriteria}, {@link com.stormpath.sdk.tenant.TenantCriteria TenantCriteria}, etc.
+     * Retrieves the resource at the specified {@code href} according to the specified {@code Criteria} and returns the
+     * resource as an instance of the specified {@code clazz}.
      *
-     * @param href the resource URL of the resource to retrieve.
-     * @param clazz the {@link Resource} sub-interface to instantiate.
-     * @param criteria the (@link Criteria} criteria to use when retrieving the resource.
+     * @param href  the URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
      * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
-     * @return an instance of the specified class based on the data returned from the specified {@code href} URL and the specified {@code criteria}.
+     * @param criteria the {@link Criteria} sub-interface with the properties to expand
+     * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria);
 

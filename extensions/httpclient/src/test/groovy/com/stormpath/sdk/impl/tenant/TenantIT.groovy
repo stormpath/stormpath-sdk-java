@@ -104,7 +104,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     @Test
     void testCurrentTenantWithOptions(){

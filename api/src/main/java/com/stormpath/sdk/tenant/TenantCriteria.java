@@ -27,7 +27,7 @@ import com.stormpath.sdk.query.Criteria;
  *  .withDirectories()
  * </pre>
  *
- * @since 1.0.RC4.3-SNAPSHOT
+ * @since 1.0.RC4.6
  */
 public interface TenantCriteria extends Criteria<TenantCriteria>, TenantOptions<TenantCriteria> {
 

@@ -94,7 +94,7 @@ public interface Client extends DataStore, TenantActions {
      * @param tenantOptions The {@link TenantOptions} to use to customize the retrieved Tenant resource.
      * @return the {@link Tenant} resource customized by the specified {@link TenantOptions}
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     Tenant getCurrentTenant(TenantOptions tenantOptions);
 }
