@@ -112,7 +112,6 @@ class TenantIT extends ClientIT {
         return field.get(object)
     }
 
-
     /**
      * @since 1.0.RC4.6
      */

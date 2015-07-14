@@ -64,7 +64,6 @@ class DefaultTenantCriteriaTest {
                 .withDirectories()
                 .withDirectories(5)
 
-
         assertNotNull c
         assertTrue c instanceof DefaultTenantOptions
 
@@ -81,6 +80,4 @@ class DefaultTenantCriteriaTest {
 
         assertEquals queryString.toString(), expectedQueryString
     }
-
-
 }
