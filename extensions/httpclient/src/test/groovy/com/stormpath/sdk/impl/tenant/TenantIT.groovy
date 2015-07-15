@@ -481,7 +481,6 @@ class TenantIT extends ClientIT {
 
         assertTrue tenantProperties.get("groups").get("size") == groupsQty + 2
         assertTrue tenantProperties.get("applications").get("size") == applicationsQty + 1
-
     }
 
     /**
