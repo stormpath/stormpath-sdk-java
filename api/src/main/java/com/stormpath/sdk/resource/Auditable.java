@@ -22,7 +22,7 @@ import java.util.Date;
  * For example: {@link com.stormpath.sdk.account.Account Account}, {@link com.stormpath.sdk.application.Application Application},
  * {@link com.stormpath.sdk.directory.Directory Directory} and {@link com.stormpath.sdk.group.Group Group}.
  *
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 public interface Auditable {
 

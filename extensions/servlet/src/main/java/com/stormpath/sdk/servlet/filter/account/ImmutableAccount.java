@@ -259,13 +259,16 @@ public class ImmutableAccount implements Account {
     }
 
     /**
-     * @since 1.0.RC4.3
+     * @since 1.0.RC4.6
      */
     @Override
     public Date getCreatedAt() {
         return account.getCreatedAt();
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
     @Override
     public Date getModifiedAt() {
         return account.getModifiedAt();

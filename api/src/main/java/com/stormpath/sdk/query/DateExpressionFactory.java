@@ -22,7 +22,7 @@ import java.util.Date;
 /**
  * An {@code DateExpressionFactory} creates a single condition (matches) for resource properties of Date type.
  *
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 public interface DateExpressionFactory {
 

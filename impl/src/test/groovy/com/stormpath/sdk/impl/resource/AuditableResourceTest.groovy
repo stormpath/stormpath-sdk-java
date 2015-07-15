@@ -26,7 +26,7 @@ import static org.easymock.EasyMock.replay
 import static org.testng.Assert.assertEquals
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 class AuditableResourceTest {
 

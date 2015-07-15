@@ -142,7 +142,7 @@ public final class Directories {
      *
      * @return a new {@link Directory#getCreatedAt() createdAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link DirectoryCriteria} query.
-     * @since 1.0.RC4.3
+     * @since 1.0.RC4.6
      */
     public static DateExpressionFactory createdAt(){
         return newDateExpressionFactory("createdAt");
@@ -168,7 +168,7 @@ public final class Directories {
      *
      * @return a new {@link Directory#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link DirectoryCriteria} query.
-     * @since 1.0.RC4.3
+     * @since 1.0.RC4.6
      */
     public static DateExpressionFactory modifiedAt(){
         return newDateExpressionFactory("modifiedAt");

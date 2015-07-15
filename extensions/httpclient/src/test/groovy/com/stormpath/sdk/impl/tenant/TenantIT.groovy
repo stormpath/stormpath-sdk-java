@@ -15,11 +15,9 @@
  */
 package com.stormpath.sdk.impl.tenant
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
@@ -31,8 +29,6 @@ import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
@@ -395,7 +391,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0
+     * @since 1.0.RC4.6
      */
     @Test
     void testGetDirectoriesWithWrongTimestampFilter() {
@@ -416,7 +412,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0
+     * @since 1.0.RC4.6
      */
     @Test
     void testGetApplicationsWithTimestampFilter(){

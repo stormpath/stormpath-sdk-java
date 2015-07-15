@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * This is a resource created for testing purposes only.
  *
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 public class AuditableTestResource extends AbstractExtendableInstanceResource {
 

@@ -640,7 +640,7 @@ class AccountIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.3
+     * @since 1.0.RC4.6
      */
     @Test
     void testGetGroupsWithTimestampFilter() {

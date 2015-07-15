@@ -53,13 +53,16 @@ public abstract class AbstractProvider extends AbstractResource implements Provi
     }
 
     /**
-     * @since 1.0.RC4.3
+     * @since 1.0.RC4.6
      */
     @Override
     public Date getCreatedAt() {
         return getDateProperty(CREATED_AT);
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
     @Override
     public Date getModifiedAt() {
         return getDateProperty(MODIFIED_AT);
