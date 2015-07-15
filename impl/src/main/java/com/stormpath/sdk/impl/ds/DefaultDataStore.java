@@ -252,6 +252,17 @@ public class DefaultDataStore implements InternalDataStore {
         return instantiate(childClass, data, result.getUri().getQuery());
     }
 
+    @Override
+    public <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.isInstanceOf(DefaultOptions.class, options, "The " + getClass().getName() + " implementation only functions with " +
+                DefaultOptions.class.getName() + " instances.");
+        DefaultOptions defaultOptions = (DefaultOptions) options;
+        QueryString qs = queryStringFactory.createQueryString(defaultOptions);
+        return (T) getResource(href, clazz, (Map) qs);
+    }
+
     @SuppressWarnings("unchecked")
     private ResourceDataResult getResourceData(String href, Class<? extends Resource> clazz, Map<String,?> queryParameters) {
 

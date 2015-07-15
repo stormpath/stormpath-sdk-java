@@ -84,8 +84,11 @@ public class ReadCacheFilter extends AbstractCacheFilter {
                                                          .setItemsMap(apiKeyData).build();
             }
         } else {
+            //Prevent an expanded request to obtain a non-expanded resource from the cache
             String cacheKey = getCacheKey(request);
-            data = getCachedValue(cacheKey, clazz);
+            if (! (request.getUri().hasQuery() && request.getUri().getQuery().containsKey("expand") ^ (cacheKey != null && cacheKey.contains("expand=")))) {
+                data = getCachedValue(cacheKey, clazz);
+            }
         }
 
         if (Collections.isEmpty(data)) {

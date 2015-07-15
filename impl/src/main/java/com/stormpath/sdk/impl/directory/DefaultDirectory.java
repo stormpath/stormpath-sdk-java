@@ -23,6 +23,7 @@ import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -145,7 +146,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     @Override
@@ -162,7 +163,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(list.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     @Override
