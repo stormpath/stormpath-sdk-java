@@ -189,11 +189,6 @@ public class DefaultClient implements Client {
         return this.dataStore.getResource(href, clazz, options);
     }
 
-    @Override
-    public <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria) {
-        return this.dataStore.getResource(href, clazz, criteria);
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -376,8 +371,7 @@ public class DefaultClient implements Client {
             href = "/tenants/current";
         }
 
-        TenantCriteria tenantCriteria = new DefaultTenantCriteria(tenantOptions);
-        Tenant current = this.dataStore.getResource(href, Tenant.class, tenantCriteria);
+        Tenant current = this.dataStore.getResource(href, Tenant.class, tenantOptions);
         this.currentTenantHref = current.getHref();
         return current;
     }

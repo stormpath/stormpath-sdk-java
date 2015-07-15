@@ -39,20 +39,26 @@ class DefaultTenantCriteriaTest {
 
         def factory = new QueryStringFactory()
 
-        def c = Tenants.options().withApplications().withDirectories().withCustomData()
+        def c = Tenants.options()
+                .withApplications()
+                .withDirectories()
+                .withAccounts()
+                .withGroups()
+                .withCustomData()
 
         assertNotNull c
         assertTrue c instanceof DefaultTenantOptions
 
         def queryString = factory.createQueryString((DefaultTenantOptions)c);
 
-        def expectedQueryString = 'expand=applications' + COMMA + 'directories' + COMMA + "customData"
+        def expectedQueryString = 'expand=' +
+                'applications' + COMMA + 'directories' + COMMA + 'accounts' + COMMA + 'groups' + COMMA + 'customData'
 
         assertEquals queryString.toString(), expectedQueryString
     }
 
     @Test
-    void testWithApplicationsAndDirectoriesWithLimitAndOffset() {
+    void testLimitAndOffset() {
 
         def factory = new QueryStringFactory()
 
@@ -63,6 +69,12 @@ class DefaultTenantCriteriaTest {
                 .withDirectories(2, 14)
                 .withDirectories()
                 .withDirectories(5)
+                .withGroups(2, 14)
+                .withGroups()
+                .withGroups(5)
+                .withAccounts(2, 14)
+                .withAccounts()
+                .withAccounts(5)
 
         assertNotNull c
         assertTrue c instanceof DefaultTenantOptions
@@ -76,7 +88,13 @@ class DefaultTenantCriteriaTest {
             'applications' + OPEN_PAREN + 'limit' + COLON + 20 + CLOSE_PAREN + COMMA +
             'directories' + OPEN_PAREN + 'offset' + COLON + 14 + COMMA + 'limit' + COLON + 2 + CLOSE_PAREN + COMMA +
             'directories' + COMMA +
-            'directories' + OPEN_PAREN + 'limit' + COLON + 5 + CLOSE_PAREN
+            'directories' + OPEN_PAREN + 'limit' + COLON + 5 + CLOSE_PAREN + COMMA +
+            'groups' + OPEN_PAREN + 'offset' + COLON + 14 + COMMA + 'limit' + COLON + 2 + CLOSE_PAREN + COMMA +
+            'groups' + COMMA +
+            'groups' + OPEN_PAREN + 'limit' + COLON + 5 + CLOSE_PAREN + COMMA +
+            'accounts' + OPEN_PAREN + 'offset' + COLON + 14 + COMMA + 'limit' + COLON + 2 + CLOSE_PAREN + COMMA +
+            'accounts' + COMMA +
+            'accounts' + OPEN_PAREN + 'limit' + COLON + 5 + CLOSE_PAREN
 
         assertEquals queryString.toString(), expectedQueryString
     }

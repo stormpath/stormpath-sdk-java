@@ -113,12 +113,6 @@ class TenantIT extends ClientIT {
         Thread.sleep(20)
     }
 
-    private Object getValue(Class clazz, Object object, String fieldName) {
-        Field field = clazz.getDeclaredField(fieldName)
-        field.setAccessible(true)
-        return field.get(object)
-    }
-
     /**
      * @since 1.0.RC4.6
      */
@@ -129,8 +123,8 @@ class TenantIT extends ClientIT {
         def tenant = client.getCurrentTenant(options)
 
         Map properties = getValue(AbstractResource, tenant, "properties")
-        def apps = properties.get("applications").size()
-        def dirs = properties.get("directories").size()
+        def apps = properties.get("applications").get("items").size()
+        def dirs = properties.get("directories").get("items").size()
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -149,8 +143,8 @@ class TenantIT extends ClientIT {
         tenant = client.getCurrentTenant(options)
 
         properties = getValue(AbstractResource, tenant, "properties")
-        assertTrue properties.get("applications").size() == apps + 1
-        assertTrue properties.get("directories").size() == dirs + 1
+        assertTrue properties.get("applications").get("items").size() == apps + 1
+        assertTrue properties.get("directories").get("items").size() == dirs + 1
 
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164

@@ -69,20 +69,6 @@ public interface DataStore {
     <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options);
 
     /**
-     * Retrieves the resource at the specified {@code href} according to the specified {@code Criteria} and returns the
-     * resource as an instance of the specified {@code clazz}.
-     *
-     * @param href  the URL of the resource to retrieve
-     * @param clazz the {@link Resource} sub-interface to instantiate
-     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
-     * @param criteria the {@link Criteria} sub-interface with the properties to expand
-     * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
-     *
-     * @since 1.0.RC4.6
-     */
-    <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria);
-
-    /**
      * Returns the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.
      *
      * @return the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.
