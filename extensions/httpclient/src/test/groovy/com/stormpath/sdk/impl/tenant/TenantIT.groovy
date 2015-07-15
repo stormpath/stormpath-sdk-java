@@ -497,5 +497,6 @@ class TenantIT extends ClientIT {
         assertEquals retrieved.href, application.href
         assertEquals retrieved.name, application.name
         assertEquals retrieved.createdAt, application.createdAt
+
     }
 }
