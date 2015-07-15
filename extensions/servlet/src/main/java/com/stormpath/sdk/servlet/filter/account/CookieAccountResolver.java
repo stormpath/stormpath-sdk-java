@@ -94,7 +94,8 @@ public class CookieAccountResolver extends AccountCookieHandler implements Resol
     protected void deleteCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {
         if (!response.isCommitted()) {
             cookie.setValue("");
-            cookie.setPath("/");
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/207
+            //cookie.setPath("/");
             cookie.setMaxAge(0);
             response.addCookie(cookie);
         }

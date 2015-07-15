@@ -52,7 +52,7 @@ class AccountStoreMappingIT extends ClientIT {
     @BeforeMethod
     void setUpApp() {
         app = client.instantiate(Application)
-        app.name = uniquify("Testor Application")
+        app.name = uniquify("Java SDK IT")
         app.status = ApplicationStatus.ENABLED
         app.description = uniquify("Test Application Description")
 
@@ -355,19 +355,24 @@ class AccountStoreMappingIT extends ClientIT {
      */
     @Test
     void testDefaultApplicationGaps() {
+
         Group group = client.instantiate(Group)
-        group.name = uniquify("Testor Group")
+        group.name = uniquify("Java SDK IT Group")
         group.status = GroupStatus.DISABLED
+
         def dir = (Directory) app.getDefaultAccountStore()
         dir.createGroup(group)
         deleteOnTeardown(group)
+
         assertNotEquals(app.getDefaultAccountStore().getHref(), group.getHref())
         app.setDefaultAccountStore(group)
 
         //let's check the changes are visible even without saving
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
+
         AccountStoreMappingList accountStoreMappingList = app.getAccountStoreMappings()
-        assertEquals(accountStoreMappingList.iterator().size(), 2)
+        assertEquals(accountStoreMappingList.size, 2)
+
         for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
                 if(!accountStoreMapping.isDefaultAccountStore()) {
@@ -434,7 +439,7 @@ class AccountStoreMappingIT extends ClientIT {
 
         //// Let's create a new group to see if it gets created in the DefaultGroupStore we just set
         def newGroup = client.instantiate(Group)
-        newGroup.name = uniquify('Testor Group')
+        newGroup.name = uniquify('Java SDK IT Group')
         newGroup = app.createGroup(newGroup)
         deleteOnTeardown(newGroup)
         assertEquals(newGroup.getDirectory().getHref(), newDir.getHref())
@@ -460,7 +465,7 @@ class AccountStoreMappingIT extends ClientIT {
 
     private Directory createDirectory() {
         def app = client.instantiate(Application)
-        app.name = uniquify("Test Application")
+        app.name = uniquify("Java SDK IT")
         app.status = ApplicationStatus.DISABLED
         app.description = uniquify("Test Application Description")
 

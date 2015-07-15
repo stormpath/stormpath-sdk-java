@@ -355,5 +355,15 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @see <href>http://docs.stormpath.com/java/product-guide/#account-password-policy</href>
      * @since 1.0.RC4
      */
-    PasswordPolicy getPasswordPolicy();
+    PasswordPolicy getPasswordPolicy();    
+
+    /**
+     * Returns the {@link AccountCreationPolicy} resource for this {@link Directory}.
+     * It allows to configure the emails that will be delivered for accounts created under the parent {@link Directory}
+     *
+     * @return the {@link AccountCreationPolicy} for this Directory.
+     * @since 1.0-SNAPSHOT
+     */
+    AccountCreationPolicy getAccountCreationPolicy();
+
 }

@@ -33,5 +33,5 @@ public interface CacheManager {
      * @param name the name of the cache to acquire.
      * @return the Cache with the given name
      */
-    public <K, V> Cache<K, V> getCache(String name);
+    <K, V> Cache<K, V> getCache(String name);
 }

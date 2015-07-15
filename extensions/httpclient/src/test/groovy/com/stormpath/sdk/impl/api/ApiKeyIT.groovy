@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.api
 
 import com.stormpath.sdk.account.Account
@@ -21,7 +23,6 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import org.testng.annotations.Test
 
@@ -60,9 +61,8 @@ class ApiKeyIT extends ClientIT {
         assertEquals apiKey.status, ApiKeyStatus.DISABLED
 
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
-        assertEquals apiKey, retrievedApiKey
-
-        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
+        assertEquals apiKey.href, retrievedApiKey.href
+        assertEquals apiKey.id, retrievedApiKey.id
     }
 
     @Test
@@ -79,8 +79,6 @@ class ApiKeyIT extends ClientIT {
         def retrievedApiKey = client.getResource(apiKey.href, ApiKey)
         assertEquals apiKey.href, retrievedApiKey.href
         assertEquals apiKey.id, retrievedApiKey.id
-
-        //TODO test expansion for this scenario when it gets fixed in the DefaultDataStore
     }
 
     @Test
@@ -224,7 +222,7 @@ class ApiKeyIT extends ClientIT {
         assertNotNull apiKeyCache
         def apiKeyCacheValue = apiKeyCache.get(retrievedApiKey.href)
         assertNotNull apiKeyCacheValue
-        assertNotEquals apiKeyCacheValue['secret'], retrievedApiKey.secret
+        assertNotEquals apiKeyCacheValue['secret'], retrievedApiKey.secret, "secret must not be equal to each other."
         assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), retrievedApiKey.secret
     }
 
@@ -254,11 +252,11 @@ class ApiKeyIT extends ClientIT {
 
     String decryptSecretFromCacheMap(Map cacheMap) {
 
-        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyParameter.ENCRYPTION_METADATA.getName())) {
             return null
         }
 
-        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+        def apiKeyMetaData = cacheMap[ApiKeyParameter.ENCRYPTION_METADATA.getName()]
 
         def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
         def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]

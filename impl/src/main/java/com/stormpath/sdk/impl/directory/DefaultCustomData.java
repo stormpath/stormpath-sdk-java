@@ -174,7 +174,7 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
 
     @Override
     public Set<String> keySet() {
-        if(! isMaterialized()) {
+        if(!isMaterialized()) {
             writeLock.lock();
             try {
                 materialize();

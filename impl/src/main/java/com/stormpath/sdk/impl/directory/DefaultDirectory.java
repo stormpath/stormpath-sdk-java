@@ -15,29 +15,13 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.directory.AccountStoreVisitor;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryStatus;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.directory.PasswordPolicy;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -57,6 +41,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
     static final ResourceReference<Provider> PROVIDER = new ResourceReference<Provider>("provider", Provider.class);
     static final ResourceReference<PasswordPolicy> PASSWORD_POLICY = new ResourceReference<PasswordPolicy>("passwordPolicy", PasswordPolicy.class);
+    static final ResourceReference<AccountCreationPolicy> ACCOUNT_CREATION_POLICY = new ResourceReference<AccountCreationPolicy>("accountCreationPolicy", AccountCreationPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =
@@ -65,7 +50,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY, ACCOUNT_CREATION_POLICY);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -263,6 +248,14 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     @Override
     public PasswordPolicy getPasswordPolicy() {
         return getResourceProperty(PASSWORD_POLICY);
+    }
+
+    /**
+     * @since 1.0-SNAPSHOT
+     */
+    @Override
+    public AccountCreationPolicy getAccountCreationPolicy() {
+        return getResourceProperty(ACCOUNT_CREATION_POLICY);
     }
 
 }

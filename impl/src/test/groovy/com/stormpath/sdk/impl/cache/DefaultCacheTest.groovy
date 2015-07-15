@@ -232,7 +232,7 @@ class DefaultCacheTest {
         assertNull prev
 
         def found = cache.get(key)
-        assertEquals value, found
+        assertEquals found, value
         assertEquals 1, cache.size()
 
         //each time we access after sleeping 15 seconds, we should always acquire the value since the last
@@ -240,17 +240,17 @@ class DefaultCacheTest {
 
         Thread.sleep(10)
         found = cache.get(key)
-        assertEquals(value, found)
+        assertEquals(found, value)
         assertEquals 1, cache.size()
 
         Thread.sleep(10)
         found = cache.get(key)
-        assertEquals(value, found)
+        assertEquals(found, value)
         assertEquals 1, cache.size()
 
         Thread.sleep(10)
         found = cache.get(key)
-        assertEquals(value, found)
+        assertEquals(found, value)
         assertEquals 1, cache.size()
 
         //Now we need to ensure that no matter how frequently the value is used (not idle), we still need to remove

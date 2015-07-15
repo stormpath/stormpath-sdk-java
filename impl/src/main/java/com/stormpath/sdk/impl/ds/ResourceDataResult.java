@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.ds.api;
+package com.stormpath.sdk.impl.ds;
 
-/**
- * @since 1.0.RC
- */
-public enum ApiKeyCacheParameter {
+public interface ResourceDataResult extends ResourceMessage {
 
-    API_KEY_META_DATA;
+    ResourceAction getAction();
 }
