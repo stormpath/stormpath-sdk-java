@@ -433,8 +433,8 @@ class TenantIT extends ClientIT {
         tenantProperties = getValue(AbstractResource, retrieved, "properties")
         assertEquals(tenant.href, retrieved.href)
 
-        assertTrue tenantProperties.get("groups").get("size") == groupsQty + 2
-        assertTrue tenantProperties.get("applications").get("size") == applicationsQty + 1
+        assertTrue tenantProperties.get("groups").get("size") > groupsQty
+        assertTrue tenantProperties.get("applications").get("size") > applicationsQty
 
     }
 
@@ -479,8 +479,8 @@ class TenantIT extends ClientIT {
         tenantProperties = getValue(AbstractResource, retrieved, "properties")
         assertEquals(tenant.href, retrieved.href)
 
-        assertTrue tenantProperties.get("groups").get("size") == groupsQty + 2
-        assertTrue tenantProperties.get("applications").get("size") == applicationsQty + 1
+        assertTrue tenantProperties.get("groups").get("size") > groupsQty
+        assertTrue tenantProperties.get("applications").get("size") > applicationsQty
 
     }
 
