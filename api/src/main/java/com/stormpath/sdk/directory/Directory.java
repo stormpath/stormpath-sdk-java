@@ -362,7 +362,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * It allows to configure the emails that will be delivered for accounts created under the parent {@link Directory}
      *
      * @return the {@link AccountCreationPolicy} for this Directory.
-     * @since 1.0-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     AccountCreationPolicy getAccountCreationPolicy();
 

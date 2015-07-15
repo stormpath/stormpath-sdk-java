@@ -203,6 +203,12 @@ class AccountIT extends ClientIT {
         assertEquals apiKeys.limit, limit
         assertEquals apiKeys.offset, offset
 
+        limit = 10
+        offset = 1
+        apiKeys = acct.getApiKeys(criteria().offsetBy(offset).limitTo(limit).withTenant())
+        assertEquals apiKeys.limit, limit
+        assertEquals apiKeys.offset, offset
+
         int apiKeysCount = 0
         for (ApiKey apiKey : apiKeys) {
             assertTrue(apiKey.tenant.getPropertyNames().size() > 1) // testing expansion
