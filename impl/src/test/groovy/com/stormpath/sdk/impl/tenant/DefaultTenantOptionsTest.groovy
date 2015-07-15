@@ -36,7 +36,7 @@ class DefaultTenantOptionsTest {
     }
 
     /**
-     * @since 1.0.RC4
+     * @since 1.0.RC4.6
      */
     @Test
     void testTenantOptions() {
