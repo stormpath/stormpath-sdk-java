@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.provider;
 
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Date;
@@ -25,7 +26,7 @@ import java.util.Date;
  *
  * @since 1.0.beta
  */
-public interface ProviderData extends Resource {
+public interface ProviderData extends Resource, Auditable {
 
     /**
      * Returns the ProviderData's created date.

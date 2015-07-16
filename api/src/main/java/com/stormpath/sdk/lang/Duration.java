@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.util;
-
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Objects;
+package com.stormpath.sdk.lang;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
