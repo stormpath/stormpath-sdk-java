@@ -45,6 +45,7 @@ public final class HttpRequests {
     private static final Class<HttpRequestBuilder> HTTP_REQUEST_BUILDER =
         Classes.forName("com.stormpath.sdk.impl.http.DefaultHttpRequestBuilder");
 
+
     /**
      * Creates and returns a new {@link HttpRequestBuilder} that builds request instances that will be used for request
      * authentication via {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
