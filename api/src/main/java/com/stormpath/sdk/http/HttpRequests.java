@@ -66,6 +66,7 @@ public final class HttpRequests {
         return Classes.instantiate(ctor, method);
     }
 
+
     /**
      * Creates and returns a new {@link HttpRequestBuilder} that builds request instances that will be used for request
      * authentication via {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
