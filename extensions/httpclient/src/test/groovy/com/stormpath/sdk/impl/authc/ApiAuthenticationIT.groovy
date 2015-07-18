@@ -63,9 +63,13 @@ class ApiAuthenticationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+        def contentTypeHeader = convertToArray("application/x-www-form-urlencoded")
 
-        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
+        def authzHeader = convertToArray(createBasicAuthzHeader(apiKey.id, apiKey.secret))
+
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET)
+                .header("content-type", contentTypeHeader)
+                .header("authorization", authzHeader)
 
         attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
@@ -98,11 +102,11 @@ class ApiAuthenticationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def parameters = convertToParametersMap(["grant_type": "client_credentials"])
-
         def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
 
-        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST)
+                .headers(headers)
+                .parameter("grant_type", convertToArray("client_credentials"))
 
         def result = (AccessTokenResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), AccessTokenResult)
 
@@ -171,6 +175,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         parameters = convertToParametersMap(["access_token": accessToken])
 
+        //see for testing
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/x-www-form-urlencoded")]).parameters(parameters)
 
         authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).execute()

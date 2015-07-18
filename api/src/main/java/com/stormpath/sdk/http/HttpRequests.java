@@ -15,9 +15,11 @@
  */
 package com.stormpath.sdk.http;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 /**
  * Utility factory class for creating {@link HttpRequest} instances for SDK users that do not already depend on the
@@ -35,6 +37,10 @@ import java.lang.reflect.Constructor;
  * @since 1.0.RC
  */
 public final class HttpRequests {
+
+    private static final String PARAMETERS = "parameters";
+
+    private static final String HEADERS = "headers";
 
     private static final Class<HttpRequestBuilder> HTTP_REQUEST_BUILDER =
         Classes.forName("com.stormpath.sdk.impl.http.DefaultHttpRequestBuilder");
@@ -54,7 +60,53 @@ public final class HttpRequests {
      * @throws IllegalArgumentException if the method argument is {@code null}.
      */
     public static HttpRequestBuilder method(HttpMethod method) throws IllegalArgumentException {
+        Assert.notNull(method, "method argument is required.");
+
         Constructor<HttpRequestBuilder> ctor = Classes.getConstructor(HTTP_REQUEST_BUILDER, HttpMethod.class);
         return Classes.instantiate(ctor, method);
+    }
+
+    /**
+     * Creates and returns a new {@link HttpRequestBuilder} that builds request instances that will be used for request
+     * authentication via {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(httpRequest)} or
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(httpRequest)}.
+     *
+     * @param name the name of the HTTP header that will be present in the resulting HTTP request instance.
+     * @param value the value of the header represented as a {@code String} array
+     * @return a new HttpRequestBuilder that can be used to construct a new {@link HttpRequest} instance.
+     * @throws IllegalArgumentException if the name or value arguments are {@code null}.
+     *
+     * @since 1.0.RC4.6
+     */
+    public static HttpRequestBuilder header(String name, String[] value) throws IllegalArgumentException{
+       Assert.notNull(name, "name argument is required.");
+       Assert.notNull(value, "value argument is required.");
+
+       Constructor<HttpRequestBuilder> ctor = Classes.getConstructor(HTTP_REQUEST_BUILDER, String.class, String[].class, String.class);
+       return Classes.instantiate(ctor, name, value, HEADERS);
+    }
+
+    /**
+     * Creates and returns a new {@link HttpRequestBuilder} that builds request instances that will be used for request
+     * authentication via {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+     * application.authenticateApiRequest(httpRequest)} or
+     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * application.authenticateOauthRequest(httpRequest)}.
+     *
+     * @param name the name of the HTTP parameter that will be present in the resulting HTTP request instance.
+     * @param value the value of the parameter represented as a {@code String} array
+     * @return a new HttpRequestBuilder that can be used to construct a new {@link HttpRequest} instance.
+     * @throws IllegalArgumentException if the name or value arguments are {@code null}.
+     *
+     * @since 1.0.RC4.6
+     */
+    public static HttpRequestBuilder parameter(String name, String[] value) throws IllegalArgumentException{
+        Assert.notNull(name, "name argument is required.");
+        Assert.notNull(value, "value argument is required.");
+
+        Constructor<HttpRequestBuilder> ctor = Classes.getConstructor(HTTP_REQUEST_BUILDER, String.class, String[].class, String.class);
+        return Classes.instantiate(ctor, name, value, PARAMETERS);
     }
 }
