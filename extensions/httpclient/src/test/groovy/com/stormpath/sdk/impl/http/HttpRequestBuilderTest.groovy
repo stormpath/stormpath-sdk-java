@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.http.httpclient
+package com.stormpath.sdk.impl.http
 
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequestBuilder
@@ -21,29 +21,15 @@ import com.stormpath.sdk.http.HttpRequests
 import org.testng.annotations.Test
 
 import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertNotNull
-import static junit.framework.Assert.assertNotNull
 import static junit.framework.Assert.assertNotNull
 import static junit.framework.Assert.assertTrue
-import static junit.framework.Assert.assertTrue
-import static junit.framework.Assert.assertTrue
-import static junit.framework.Assert.assertTrue
-import static junit.framework.Assert.assertTrue
-import static junit.framework.Assert.assertTrue
-import static junit.framework.Assert.assertTrue
-import static org.testng.Assert.fail
-import static org.testng.Assert.fail
-import static org.testng.Assert.fail
-import static org.testng.Assert.fail
 import static org.testng.Assert.fail
 
+/**
+ * Test for the {@link HttpRequestBuilder} class that uses utility methods in {@link HttpRequests} class
+ *
+ * @since 1.0.RC4.6
+ */
 class HttpRequestBuilderTest {
 
     @Test
