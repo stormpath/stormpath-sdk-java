@@ -43,6 +43,7 @@ class DefaultApplicationCriteriaTest {
                 .where(Applications.name().eqIgnoreCase('a'))
                 .and(Applications.description().startsWithIgnoreCase('b'))
                 .and(Applications.status().eq(ApplicationStatus.DISABLED))
+                .and(Applications.createdAt().matches("[2015-01-01T00:00:00.000Z]"))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()
@@ -65,7 +66,8 @@ class DefaultApplicationCriteriaTest {
 
         def expectedToString = 'name=a and ' +
                 'description ilike b* and ' +
-                'status=DISABLED ' +
+                'status=DISABLED and ' +
+                'createdAt=[2015-01-01T00:00:00.000Z] ' +
                 'order by ' +
                 'name asc, description desc, status asc ' +
                 'offset 120 ' +
@@ -73,7 +75,8 @@ class DefaultApplicationCriteriaTest {
                 'expand tenant, customData, accounts(offset:50,limit:30), accounts(limit:50), accounts, ' +
                 'groups(offset:100,limit:25), groups, groups(limit:90)'
 
-        def expectedQueryString = 'description=b*' + AND +
+        def expectedQueryString = 'createdAt=%5B2015-01-01T00%3A00%3A00.000Z%5D' + AND +
+                'description=b*' + AND +
                 'expand=' +
                 'tenant' + COMMA +
                 'customData' + COMMA +

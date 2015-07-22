@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
@@ -25,7 +26,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 
 /**
@@ -65,7 +65,7 @@ public class DefaultJwtSigningKeyResolver implements JwtSigningKeyResolver {
         String apiKeySecret = client.getApiKey().getSecret();
 
         //Stormpath API Keys are base-64-encoded secure random byte arrays:
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(apiKeySecret);
+        byte[] apiKeySecretBytes = Base64.decodeBase64(apiKeySecret);
 
         return new SecretKeySpec(apiKeySecretBytes, alg.getJcaName());
 

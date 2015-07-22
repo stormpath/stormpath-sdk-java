@@ -18,8 +18,7 @@ package com.stormpath.sdk.impl.tenant
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertNotNull
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 /**
  *
@@ -34,5 +33,22 @@ class DefaultTenantOptionsTest {
 
         assertNotNull options
         assertTrue options instanceof DefaultTenantOptions
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testTenantOptions() {
+
+        def options = Tenants.options();
+
+        options.withApplications()
+                .withGroups()
+                .withAccounts()
+                .withDirectories()
+
+        assertTrue options instanceof DefaultTenantOptions
+        assertEquals(options.expansions.size(), 4)
     }
 }

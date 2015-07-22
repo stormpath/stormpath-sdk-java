@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.account
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
@@ -29,13 +30,13 @@ import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupMembership
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheParameter
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
-import org.testng.Assert
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
@@ -199,6 +200,12 @@ class AccountIT extends ClientIT {
         int offset = 2
         def apiKeys = acct.getApiKeys(criteria().offsetBy(offset).limitTo(limit).withTenant())
 
+        assertEquals apiKeys.limit, limit
+        assertEquals apiKeys.offset, offset
+
+        limit = 10
+        offset = 1
+        apiKeys = acct.getApiKeys(criteria().offsetBy(offset).limitTo(limit).withTenant())
         assertEquals apiKeys.limit, limit
         assertEquals apiKeys.offset, offset
 
@@ -396,9 +403,10 @@ class AccountIT extends ClientIT {
         Map properties02 = getValue(AbstractResource, account02, "properties")
         Map dirtyProperties02 = getValue(AbstractResource, account02, "dirtyProperties")
 
-        final int EXPECTED_PROPERTIES_SIZE = 19;
+        //Changing to a dynamic size based on the first resource that is received from the server, because having
+        //hardcoded makes it failed when a new property/resource is added in the server API.
+        final int EXPECTED_PROPERTIES_SIZE = properties01.size();
 
-        assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 0)
         assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties02.size(), 0)
@@ -638,6 +646,46 @@ class AccountIT extends ClientIT {
     }
 
     /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetGroupsWithTimestampFilter() {
+        def app = createTempApp()
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('StormpathTimestampTest'))
+                .setPassword("Changeme123")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@mail.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        deleteOnTeardown(account)
+
+        DateFormat df = new ISO8601DateFormat();
+
+        def group01 = client.instantiate(Group)
+        group01.name = uniquify("StormpathTimestampTest Group01")
+        group01 = app.createGroup(group01)
+        account.addGroup(group01)
+        deleteOnTeardown(group01)
+
+        def groupList = account.getGroups(Groups.where(Groups.name().eqIgnoreCase(group01.name)).and(Groups.createdAt().equals(group01.getCreatedAt())))
+        assertNotNull groupList
+        def retrieved = groupList.iterator().next()
+        assertEquals retrieved.href, group01.href
+
+        def group02 = client.instantiate(Group)
+        group02.name = uniquify("StormpathTimestampTest Group02")
+        group02 = app.createGroup(group02)
+        account.addGroup(group02)
+        deleteOnTeardown(group02)
+
+        groupList = account.getGroups(Groups.where(Groups.name().eqIgnoreCase(group02.name)).and(Groups.createdAt().equals(group02.getCreatedAt())))
+        assertNotNull groupList
+        retrieved = groupList.iterator().next()
+        assertEquals retrieved.href, group02.href
+    }
+
+    /**
      * Test for https://github.com/stormpath/stormpath-sdk-java/issues/112
      * @since 1.0.RC3
      */
@@ -858,11 +906,11 @@ class AccountIT extends ClientIT {
 
     String decryptSecretFromCacheMap(Map cacheMap) {
 
-        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyCacheParameter.API_KEY_META_DATA.toString())) {
+        if (cacheMap == null || cacheMap.isEmpty() || !cacheMap.containsKey(ApiKeyParameter.ENCRYPTION_METADATA.getName())) {
             return null
         }
 
-        def apiKeyMetaData = cacheMap[ApiKeyCacheParameter.API_KEY_META_DATA.toString()]
+        def apiKeyMetaData = cacheMap[ApiKeyParameter.ENCRYPTION_METADATA.getName()]
 
         def salt = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SALT.getName()]
         def keySize = apiKeyMetaData[ApiKeyParameter.ENCRYPTION_KEY_SIZE.getName()]

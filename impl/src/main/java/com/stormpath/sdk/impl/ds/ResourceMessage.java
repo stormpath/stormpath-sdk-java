@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.mail;
+package com.stormpath.sdk.impl.ds;
 
-/**
- *
- * A special kind of {@link EmailTemplate} to customize properties for Password Reset Success Emails.
- *
- * @since 1.0.RC4
- */
-public interface PasswordResetSuccessEmailTemplate extends EmailTemplate<PasswordResetSuccessEmailTemplate> {
+import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.resource.Resource;
 
+import java.util.Map;
+
+public interface ResourceMessage {
+
+    ResourceAction getAction();
+
+    CanonicalUri getUri();
+
+    Map<String,Object> getData();
+
+    Class<? extends Resource> getResourceClass();
 }

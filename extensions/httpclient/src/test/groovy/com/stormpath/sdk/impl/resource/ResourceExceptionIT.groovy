@@ -24,7 +24,7 @@ import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
 
 /**
  * @since 1.0.RC4.3-SNAPSHOT
@@ -38,8 +38,8 @@ class ResourceExceptionIT extends ClientIT {
     void testMethods() {
 
         Application application = client.instantiate(Application)
-        application.setName(uniquify("App for ResourceExceptionIT"))
-        def dirName = uniquify("Dir for ResourceException IT")
+        application.setName(uniquify("Java SDK IT App for ResourceExceptionIT"))
+        def dirName = uniquify("Java SDK IT Dir for ResourceException IT")
         application = client.currentTenant.createApplication(Applications.newCreateRequestFor(application).
                 createDirectoryNamed(dirName).build())
         deleteOnTeardown(application)
