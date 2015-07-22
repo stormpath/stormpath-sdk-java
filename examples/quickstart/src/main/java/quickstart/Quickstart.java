@@ -34,23 +34,25 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class demonstrates the code found in the Stormpath Java SDK QuickStart Guide
  *
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 public class Quickstart {
 
     private static final Logger log = LoggerFactory.getLogger(Quickstart.class);
+
+    private static String APPLICATION_NAME = "My Application";
 
     public static void main(String[] args) {
 
         // Instantiate a builder for your Client. If needed, settings like Proxy and Caching can be defined here.
         ClientBuilder builder = Clients.builder();
 
-        //No need to define anything else; build the Client instance. The ApiKey information will be automatically sought.
+        // No need to define anything else; build the Client instance. The ApiKey information will be automatically sought
+        // in pre-defined locations.
         Client client = builder.build();
 
         // Obtain your current tenant
@@ -59,7 +61,7 @@ public class Quickstart {
 
         // Retrieve your application
         ApplicationList applications = tenant.getApplications(
-            Applications.where(Applications.name().eqIgnoreCase("My Application"))
+            Applications.where(Applications.name().eqIgnoreCase(APPLICATION_NAME))
         );
 
         Application application = applications.iterator().next();
@@ -73,14 +75,14 @@ public class Quickstart {
         //Set the account properties
         account.setGivenName("Joe")
                 .setSurname("Quickstart_Stormtrooper")
-                .setUsername("tk421" + UUID.randomUUID().toString().replace("-", ""))  // optional, defaults to email if unset
-                .setEmail(UUID.randomUUID().toString().replace("-", "").concat("@stormpath.com"))
+                .setUsername("tk421")  // optional, defaults to email if unset
+                .setEmail("tk421@stormpath.com")
                 .setPassword("Changeme1");
         CustomData customData = account.getCustomData();
         customData.put("favoriteColor", "white");
 
         // Create the account using the existing Application object
-        application.createAccount(account);
+        account = application.createAccount(account);
 
         // Print account details
 
@@ -90,7 +92,7 @@ public class Quickstart {
         // Search for a User Account
 
         Map<String, Object> queryParams = new HashMap<String, Object>();
-        queryParams.put("email", account.getEmail());
+        queryParams.put("email", "tk421@stormpath.com");
         AccountList accounts = application.getAccounts(queryParams);
         account = accounts.iterator().next();
 
@@ -98,7 +100,7 @@ public class Quickstart {
 
         // Authenticate a User Account
 
-        String usernameOrEmail = account.getEmail();
+        String usernameOrEmail = "tk421@stormpath.com";
         String rawPassword = "Changeme1";
 
         // Create an authentication request using the credentials

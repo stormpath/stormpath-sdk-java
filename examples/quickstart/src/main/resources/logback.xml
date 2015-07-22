@@ -27,6 +27,6 @@
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="com.stormpath.sdk" level="DEBUG"/>
+    <logger name="com.stormpath.sdk" level="INFO"/>
 
 </configuration>
