@@ -15,15 +15,10 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.*;
 import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -305,8 +300,13 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
+        return this.authenticateAccount(request, null);
+    }
+
+    @Override
+    public AuthenticationResult authenticateAccount(AuthenticationRequest request, AuthenticationOptions options) throws ResourceException {
         AuthenticationRequestDispatcher dispatcher = Classes.newInstance(AUTHENTICATION_REQUEST_DISPATCHER_CLASS);
-        return dispatcher.authenticate(getDataStore(), this, request);
+        return dispatcher.authenticate(getDataStore(), this, request, options);
     }
 
     /** @since 1.0.beta */

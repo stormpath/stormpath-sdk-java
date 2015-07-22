@@ -28,6 +28,7 @@ import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.authc.Authentications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -40,6 +41,7 @@ import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
@@ -49,6 +51,8 @@ import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
@@ -1009,12 +1013,62 @@ class ApplicationIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testLoginWithExpansion() {
+
+        def username = 'lonestarr'
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = uniquify(username) + '@stormpath.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+
+        def request = new UsernamePasswordRequest(username, password)
+
+        def options = Authentications.BASIC.options().withAccount()
+        def result = app.authenticateAccount(request, options)
+
+        //Let's check expansion worked by looking at the internal properties
+        def properties = getValue(AbstractResource, result, "properties")
+        assertTrue properties.get("account").size() > 15
+        assertEquals properties.get("account").get("email"), acct.email
+
+        result = app.authenticateAccount(request)
+
+        //Let's check that there is no expansion
+        properties = getValue(AbstractResource, result, "properties")
+        assertTrue properties.get("account").size() == 1
+    }
+
+
     private assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
         for(AccountStoreMapping accountStoreMapping : accountStoreMappings) {
             qty++;
         }
         assertEquals(qty, expectedSize)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
     }
 
 }

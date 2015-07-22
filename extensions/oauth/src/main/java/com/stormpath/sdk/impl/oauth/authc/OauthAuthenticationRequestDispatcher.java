@@ -16,9 +16,7 @@
 package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.authc.BasicAuthenticator;
@@ -33,23 +31,27 @@ import com.stormpath.sdk.lang.Assert;
 public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestDispatcher {
 
     @Override
-    public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request) {
+    public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request, AuthenticationOptions options) {
         Assert.notNull(application, "application cannot be null.");
-        Assert.notNull(request, "application cannot be null.");
+        Assert.notNull(request, "request cannot be null.");
 
         if (request instanceof UsernamePasswordRequest) {
-            return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
+            Assert.isTrue(options == null || options instanceof BasicAuthenticationOptions, "options must be an instance of BasicAuthenticationOptions.");
+            return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request, (BasicAuthenticationOptions) options);
         }
 
         if (request instanceof AccessTokenAuthenticationRequest) {
+            Assert.isTrue(options == null, "expansion is not supported for AccessTokenAuthenticationRequest.");
             return new AccessTokenRequestAuthenticator(dataStore).authenticate(application, (AccessTokenAuthenticationRequest) request);
         }
 
         if (request instanceof ResourceAuthenticationRequest) {
+            Assert.isTrue(options == null, "expansion is not supported for ResourceAuthenticationRequest.");
             return new ResourceRequestAuthenticator(dataStore).authenticate(application, (ResourceAuthenticationRequest) request);
         }
 
         if (request instanceof DefaultBasicApiAuthenticationRequest) {
+            Assert.isTrue(options == null, "expansion is not supported for BasicApiAuthenticationRequest.");
             return new BasicApiAuthenticator(dataStore).authenticate(application, (DefaultBasicApiAuthenticationRequest) request);
         }
 

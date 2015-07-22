@@ -16,9 +16,7 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 
@@ -29,16 +27,18 @@ public class AuthenticationRequestDispatcher {
 
     protected static final String UNSUPPORTED_AUTH_REQUEST_MSG = "The AuthenticationRequest [%s] is not supported by this implementation.";
 
-    public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request) {
+    public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request, AuthenticationOptions options) {
         Assert.notNull(dataStore, "datastore cannot be null.");
         Assert.notNull(application, "application cannot be null.");
-        Assert.notNull(request, "application cannot be null.");
+        Assert.notNull(request, "request cannot be null.");
 
         if (request instanceof UsernamePasswordRequest) {
-            return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
+            Assert.isTrue(options == null || options instanceof BasicAuthenticationOptions, "options must be an instance of BasicAuthenticationOptions.");
+            return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request, (BasicAuthenticationOptions) options);
         }
 
         if (request instanceof DefaultBasicApiAuthenticationRequest) {
+            Assert.isTrue(options == null, "expansion is not supported for ApiAuthenticationRequests.");
             return new BasicApiAuthenticator(dataStore).authenticate(application, (DefaultBasicApiAuthenticationRequest) request);
         }
 

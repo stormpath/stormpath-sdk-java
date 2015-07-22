@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.BasicAuthenticationOptions;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.Base64;
@@ -36,7 +37,7 @@ public class BasicAuthenticator {
         this.dataStore = dataStore;
     }
 
-    public AuthenticationResult authenticate(String parentHref, AuthenticationRequest request) {
+    public AuthenticationResult authenticate(String parentHref, AuthenticationRequest request, BasicAuthenticationOptions options) {
         Assert.notNull(parentHref, "href argument must be specified");
         Assert.isInstanceOf(UsernamePasswordRequest.class, request, "Only UsernamePasswordRequest instances are supported.");
         UsernamePasswordRequest upRequest = (UsernamePasswordRequest)request;
@@ -67,7 +68,12 @@ public class BasicAuthenticator {
 
         String href = parentHref + "/loginAttempts";
 
+        if (options != null) {
+            return this.dataStore.create(href, attempt, AuthenticationResult.class, options);
+        }
+
         return this.dataStore.create(href, attempt, AuthenticationResult.class);
+
     }
 
 }

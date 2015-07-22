@@ -23,7 +23,10 @@ import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationStatus
+import com.stormpath.sdk.authc.AuthenticationOptions
 import com.stormpath.sdk.authc.AuthenticationResult
+import com.stormpath.sdk.authc.BasicAuthenticationOptions
+import com.stormpath.sdk.authc.Authentications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
@@ -161,12 +164,20 @@ class DefaultApplicationTest {
         expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"])) andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
         expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
 
-        def authenticationResult = createStrictMock(AuthenticationResult)
+        def authenticationResult01 = createStrictMock(AuthenticationResult)
         def defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
         expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
         defaultBasicLoginAttempt.setType("basic")
         defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
-        expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
+        expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult01)
+
+        def authenticationResult02 = createStrictMock(AuthenticationResult)
+        defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
+        expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
+        defaultBasicLoginAttempt.setType("basic")
+        defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+        def options = Authentications.BASIC.options();
+        expect(internalDataStore.create(EasyMock.eq(properties.href + "/loginAttempts"), (BasicLoginAttempt) EasyMock.eq(defaultBasicLoginAttempt), (Class) EasyMock.eq(AuthenticationResult), (BasicAuthenticationOptions) EasyMock.reportMatcher(new BasicAuthenticationOptionsMatcher(options)))).andReturn(authenticationResult02)
 
         replay internalDataStore, groupCriteria, accountCriteria, account
 
@@ -195,7 +206,8 @@ class DefaultApplicationTest {
 
         assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
-        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult01)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password"), options), authenticationResult02)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
     }
@@ -679,13 +691,14 @@ class DefaultApplicationTest {
         expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
         defaultBasicLoginAttempt.setType("basic")
         defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+
         expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
 
         replay internalDataStore, account
 
         assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
-        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult, null)
 
         verify internalDataStore, account
     }
@@ -942,6 +955,31 @@ class DefaultApplicationTest {
         }
     }
 
+    //@since 1.0.RC4.6
+    @Test
+    void testWrongAuthenticationOptions() {
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          tenant: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE"],
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
+                          passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
+                          createdAt: "2015-01-01T00:00:00Z",
+                          modifiedAt: "2015-02-01T00:00:00Z"]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def options = createStrictMock(AuthenticationOptions)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        try {
+            defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password"), options)
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "options must be an instance of BasicAuthenticationOptions.")
+        }
+    }
+
+
     //@since 1.0.RC
     private void setNewValue(Class clazz, Object object, String fieldName, Object value){
         Field field = clazz.getDeclaredField(fieldName)
@@ -964,6 +1002,28 @@ class DefaultApplicationTest {
             }
             Request actual = (Request) o
             return expected.getMethod().equals(actual.getMethod()) && expected.getResourceUrl().equals(actual.getResourceUrl()) && expected.getQueryString().equals(actual.getQueryString())
+        }
+
+        void appendTo(StringBuffer stringBuffer) {
+            stringBuffer.append(expected.toString())
+        }
+    }
+
+    //@since 1.0.RC4.6
+    private static class BasicAuthenticationOptionsMatcher implements IArgumentMatcher {
+
+        private BasicAuthenticationOptions expected
+
+        BasicAuthenticationOptionsMatcher(BasicAuthenticationOptions request) {
+            expected = request;
+        }
+
+        boolean matches(Object o) {
+            if (o == null || ! BasicAuthenticationOptions.isInstance(o)) {
+                return false;
+            }
+            BasicAuthenticationOptions actual = (BasicAuthenticationOptions) o
+            return expected.getExpansions().toString().equals(actual.getExpansions().toString())
         }
 
         void appendTo(StringBuffer stringBuffer) {

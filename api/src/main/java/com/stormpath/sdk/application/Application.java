@@ -15,14 +15,11 @@
  */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -470,6 +467,28 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @throws ResourceException if the authentication attempt fails.
      */
     AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException;
+
+    /**
+     * Authenticates an account's submitted principals and credentials (e.g. username and password).  The account must
+     * be in one of the Application's assigned {@link #getAccountStoreMappings() account stores}.  If not
+     * in an assigned account store, the authentication attempt will fail.
+     * <h2>Example</h2>
+     * Consider the following username/password-based example:
+     * <p/>
+     * <pre>
+     * AuthenticationRequest request = new UsernamePasswordRequest(email, submittedRawPlaintextPassword);
+     * Account authenticated = appToTest.authenticateAccount(request).getAccount();
+     * </pre>
+     *
+     * @param request the authentication request representing an account's principals and credentials (e.g.
+     *                username/password) used to verify their identity.
+     * @param options the {@link AuthenticationOptions} to use to customize the AuthenticationResult resource upon retrieval.
+     * @return the result of the authentication.  The authenticated account can be obtained from
+     *         {@code result.}{@link com.stormpath.sdk.authc.AuthenticationResult#getAccount() getAccount()}.
+     * @throws ResourceException if the authentication attempt fails.
+     * @since 1.0.RC4.6
+     */
+    AuthenticationResult authenticateAccount(AuthenticationRequest request, AuthenticationOptions options) throws ResourceException;
 
     /**
      * Retrieves a Provider-based {@link Account}. The account must exist in one of the Provider-based {@link

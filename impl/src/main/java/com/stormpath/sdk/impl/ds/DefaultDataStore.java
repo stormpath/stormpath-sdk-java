@@ -323,6 +323,12 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @Override
+    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, Options options) {
+        QueryString qs = toQueryString(parentHref, options);
+        return save(parentHref, resource, returnType, qs, true);
+    }
+
+    @Override
     public <T extends Resource & Saveable> void save(T resource) {
         String href = resource.getHref();
         Assert.hasText(href, HREF_REQD_MSG);
