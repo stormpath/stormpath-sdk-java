@@ -346,9 +346,19 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         Assert.notNull(request, "Request cannot be null.");
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
+        boolean first_param = true;
 
         if (request.isRegistrationWorkflowOptionSpecified()) {
             href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            first_param = false;
+        }
+
+        if (request.isPasswordFormatSpecified()) {
+            if (first_param){
+                href += "?passwordFormat=" + request.getPasswordFormat();
+            } else {
+                href += "&passwordFormat=" + request.getPasswordFormat();
+            }
         }
 
         if (request.isAccountOptionsSpecified()) {

@@ -43,6 +43,16 @@ class DefaultCreateAccountRequestBuilderTest {
         assertSame account, request.account
         assertTrue request.isRegistrationWorkflowOptionSpecified()
         assertFalse request.isRegistrationWorkflowEnabled()
+
+        request = new DefaultCreateAccountRequestBuilder(account).setPasswordFormat("test").build()
+        assertSame account, request.account
+        assertTrue request.isPasswordFormatSpecified()
+        assertEquals "test", request.getPasswordFormat()
+
+        request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(false).setPasswordFormat("test").build()
+        assertSame account, request.account
+        assertEquals false, request.isRegistrationWorkflowEnabled()
+        assertEquals "test", request.getPasswordFormat()
     }
 
     @Test(expectedExceptions = IllegalStateException)
@@ -54,4 +64,15 @@ class DefaultCreateAccountRequestBuilderTest {
         request.isRegistrationWorkflowEnabled()
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test(expectedExceptions = IllegalStateException)
+    void testPasswordFormatNotSpecified() {
+        def account = new DefaultAccount(createStrictMock(InternalDataStore))
+
+        def request = new DefaultCreateAccountRequestBuilder(account).build()
+        assertSame account, request.account
+        request.getPasswordFormat()
+    }
 }

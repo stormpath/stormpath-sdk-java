@@ -31,11 +31,14 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final AccountOptions options;
 
-    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options) {
+    private final String passwordFormat;
+
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options, String passwordFormat) {
         Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
         this.options = options;
+        this.passwordFormat = passwordFormat;
     }
 
     public Account getAccount() {
@@ -45,6 +48,19 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
     @Override
     public boolean isRegistrationWorkflowOptionSpecified() {
         return this.registrationWorkflowEnabled != null;
+    }
+
+    @Override
+    public boolean isPasswordFormatSpecified() {
+        return this.passwordFormat != null;
+    }
+
+    @Override
+    public String getPasswordFormat() {
+        if (this.passwordFormat == null) {
+            throw new IllegalStateException("passwordFormat has not been specified.");
+        }
+        return this.passwordFormat;
     }
 
     @Override

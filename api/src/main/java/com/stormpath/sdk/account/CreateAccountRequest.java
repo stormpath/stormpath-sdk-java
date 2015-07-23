@@ -74,6 +74,29 @@ public interface CreateAccountRequest {
     boolean isAccountOptionsSpecified();
 
     /**
+     * Returns {@code true} if the request reflects that the CreateAccount (POST) message will be sent with a
+     * URL query parameter to specify the account has a password in a specific format to be imported.
+     *
+     * @return {@code true} if the request reflects that the CreateAccount (POST) message will be sent with a
+     * URL query parameter to specify the account has a password in a specific format to be imported.
+     *
+     * @since 1.0.RC4.6
+     */
+    boolean isPasswordFormatSpecified();
+
+    /**
+     * Returns the {@code passwordFormat} to be used in the CreateAccountRequest to specify the account
+     * has a password in a specific format to be imported.
+     * <p/>
+     *
+     * @return The String {@code passwordFormat} to be used in the CreateAccountRequest to specify the account
+     * has a password in a specific format to be imported.
+     *
+     * @since 1.0.RC4.6
+     */
+    String getPasswordFormat();
+
+    /**
      * Returns the {@code AccountOptions} to be used in the CreateAccountRequest s to retrieve the account's
      * references as part of Stormpath's response upon successful account creation.
      * <p/>

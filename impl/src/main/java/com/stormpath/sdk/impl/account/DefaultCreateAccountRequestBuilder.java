@@ -28,6 +28,7 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
 
     private Account account;
     private Boolean registrationWorkflowEnabled;
+    private String passwordFormat;
     private AccountOptions options;
 
     public DefaultCreateAccountRequestBuilder(Account account) {
@@ -35,9 +36,19 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
         this.account = account;
     }
 
+    public String getPasswordFormat() {
+        return passwordFormat;
+    }
+
     @Override
     public CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled) {
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
+        return this;
+    }
+
+    @Override
+    public CreateAccountRequestBuilder setPasswordFormat(String passwordFormat) {
+        this.passwordFormat = passwordFormat;
         return this;
     }
 
@@ -50,6 +61,6 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
 
     @Override
     public CreateAccountRequest build() {
-        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options);
+        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options, this.passwordFormat);
     }
 }

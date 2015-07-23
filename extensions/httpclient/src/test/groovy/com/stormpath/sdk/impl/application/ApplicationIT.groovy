@@ -1017,4 +1017,57 @@ class ApplicationIT extends ClientIT {
         assertEquals(qty, expectedSize)
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testPasswordImport() {
+
+        def app = createTempApp()
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DeleteMe'
+        account.email =  "deletejohn@test.com"
+        account.password = '$2a$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
+
+        def created = app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat("mcf").build())
+
+        //verify it was created:
+        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).iterator().next()
+        assertEquals(created.href, found.href)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testPasswordImportErrors() {
+
+        def app = createTempApp()
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DeleteMe'
+        account.email =  "deletejohn@test.com"
+        account.password = '$2a$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
+
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat("mfddcf").build())
+            fail("Should have thrown")
+        } catch (ResourceException e){
+            assertEquals 2003, e.getCode()
+            assertTrue e.getDeveloperMessage().contains("is an unsupported value")
+        }
+
+        account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
+
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat("mcf").build())
+            fail("Should have thrown")
+        } catch (ResourceException e){
+            assertEquals 2006, e.getCode()
+            assertTrue e.getDeveloperMessage().contains("is in an invalid format")
+        }
+    }
 }
