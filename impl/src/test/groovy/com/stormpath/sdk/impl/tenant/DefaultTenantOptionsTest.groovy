@@ -47,8 +47,10 @@ class DefaultTenantOptionsTest {
                 .withGroups()
                 .withAccounts()
                 .withDirectories()
+                .withCustomData()
+
 
         assertTrue options instanceof DefaultTenantOptions
-        assertEquals(options.expansions.size(), 4)
+        assertEquals(options.expansions.size(), 5)
     }
 }
