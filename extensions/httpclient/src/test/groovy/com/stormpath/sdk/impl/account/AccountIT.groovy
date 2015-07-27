@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.account
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
@@ -34,6 +35,8 @@ import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
@@ -640,6 +643,46 @@ class AccountIT extends ClientIT {
         assertEquals(customData02.getDeletedPropertyNames().size(), 0)
         assertNull(customData02.get("aKey"))
 
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetGroupsWithTimestampFilter() {
+        def app = createTempApp()
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('StormpathTimestampTest'))
+                .setPassword("Changeme123")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@mail.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        deleteOnTeardown(account)
+
+        DateFormat df = new ISO8601DateFormat();
+
+        def group01 = client.instantiate(Group)
+        group01.name = uniquify("StormpathTimestampTest Group01")
+        group01 = app.createGroup(group01)
+        account.addGroup(group01)
+        deleteOnTeardown(group01)
+
+        def groupList = account.getGroups(Groups.where(Groups.name().eqIgnoreCase(group01.name)).and(Groups.createdAt().equals(group01.getCreatedAt())))
+        assertNotNull groupList
+        def retrieved = groupList.iterator().next()
+        assertEquals retrieved.href, group01.href
+
+        def group02 = client.instantiate(Group)
+        group02.name = uniquify("StormpathTimestampTest Group02")
+        group02 = app.createGroup(group02)
+        account.addGroup(group02)
+        deleteOnTeardown(group02)
+
+        groupList = account.getGroups(Groups.where(Groups.name().eqIgnoreCase(group02.name)).and(Groups.createdAt().equals(group02.getCreatedAt())))
+        assertNotNull groupList
+        retrieved = groupList.iterator().next()
+        assertEquals retrieved.href, group02.href
     }
 
     /**

@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
-import com.stormpath.sdk.impl.util.Duration
+import com.stormpath.sdk.lang.Duration
 import org.apache.http.client.params.AllClientPNames
 import org.testng.annotations.Test
 

@@ -24,10 +24,12 @@ import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
+import java.util.concurrent.TimeUnit
 
 import java.lang.reflect.Field
 
@@ -410,4 +412,186 @@ class DirectoryIT extends ClientIT {
         return field.get(object)
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetDirectoriesWithDateCriteria() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: DirectoryIT.testGetDirectoriesWithDateCriteria")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+
+        Date dirCreationTimestamp = directory.createdAt
+
+        //equals
+        def dirList = client.getDirectories(Directories.where(Directories.createdAt().equals(directory.createdAt)))
+        assertNotNull dirList.href
+
+        def retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.createdAt, directory.createdAt
+
+        //gt
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().gt(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertFalse dirList.iterator().hasNext()
+
+        //gte
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().gte(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals retrieved.createdAt, directory.createdAt
+
+        //lt
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().lt(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertFalse dirList.iterator().hasNext()
+
+        //lte
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().lte(dirCreationTimestamp)))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals retrieved.createdAt, directory.createdAt
+
+        //in
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(dirCreationTimestamp)
+        cal.add(Calendar.SECOND, 2)
+        Date afterCreationDate = cal.getTime()
+
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().in(dirCreationTimestamp, afterCreationDate)))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals retrieved.createdAt, directory.createdAt
+
+        //in
+        cal.setTime(dirCreationTimestamp)
+        cal.add(Calendar.SECOND, -10)
+        Date newDate = cal.getTime()
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().in(newDate, new Duration(1, TimeUnit.SECONDS))))
+        assertNotNull dirList.href
+        assertFalse dirList.iterator().hasNext()
+
+        //in
+        dirList = client.getDirectories(Directories.where(Directories.name().eqIgnoreCase(directory.name))
+                .and(Directories.createdAt().in(dirCreationTimestamp, new Duration(1, TimeUnit.MINUTES))))
+        assertNotNull dirList.href
+        assertTrue dirList.iterator().hasNext()
+        retrieved = dirList.iterator().next()
+        assertEquals retrieved.href, directory.href
+        assertEquals retrieved.name, directory.name
+        assertEquals retrieved.createdAt, directory.createdAt
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetAccountsWithDateCriteria() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testGetAccountsWithDateCriteria")
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname(uniquify("testGetAccountsWithDateCriteria"))
+                .setEmail('johntestme@nowhere.com')
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account)
+
+        Date accountCreationTimestamp = account.createdAt
+
+        //equals
+        def accList = dir.getAccounts(Accounts.where(Accounts.createdAt().equals(accountCreationTimestamp)))
+        assertNotNull accList.href
+
+        def retrieved = accList.iterator().next()
+        assertEquals retrieved.href, account.href
+        assertEquals retrieved.createdAt, account.createdAt
+
+        //gt
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().gt(accountCreationTimestamp)))
+        assertNotNull accList.href
+        assertFalse accList.iterator().hasNext()
+
+        //gte
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().gte(accountCreationTimestamp)))
+        assertNotNull accList.href
+        assertTrue accList.iterator().hasNext()
+        retrieved = accList.iterator().next()
+        assertEquals retrieved.href, account.href
+        assertEquals retrieved.surname, account.surname
+        assertEquals retrieved.createdAt, account.createdAt
+
+        //lt
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().lt(accountCreationTimestamp)))
+        assertNotNull accList.href
+        assertFalse accList.iterator().hasNext()
+
+        //lte
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().lte(accountCreationTimestamp)))
+        assertNotNull accList.href
+        assertTrue accList.iterator().hasNext()
+        retrieved = accList.iterator().next()
+        assertEquals retrieved.href, account.href
+        assertEquals retrieved.surname, account.surname
+        assertEquals retrieved.createdAt, account.createdAt
+
+        //in
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(accountCreationTimestamp)
+        cal.add(Calendar.SECOND, 2)
+        Date afterCreationDate = cal.getTime()
+
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().in(accountCreationTimestamp, afterCreationDate)))
+        assertNotNull accList.href
+        assertTrue accList.iterator().hasNext()
+        retrieved = accList.iterator().next()
+        assertEquals retrieved.href, account.href
+        assertEquals retrieved.surname, account.surname
+        assertEquals retrieved.createdAt, account.createdAt
+
+        //in
+        cal.setTime(accountCreationTimestamp)
+        cal.add(Calendar.SECOND, -10)
+        Date newDate = cal.getTime()
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().in(newDate, new Duration(1, TimeUnit.SECONDS))))
+        assertNotNull accList.href
+        assertFalse accList.iterator().hasNext()
+
+        //in
+        accList = dir.getAccounts(Accounts.where(Accounts.surname().eqIgnoreCase(account.surname))
+                .and(Accounts.createdAt().in(accountCreationTimestamp, new Duration(1, TimeUnit.MINUTES))))
+        assertNotNull accList.href
+        assertTrue accList.iterator().hasNext()
+        retrieved = accList.iterator().next()
+        assertEquals retrieved.href, account.href
+        assertEquals retrieved.surname, account.surname
+        assertEquals retrieved.createdAt, account.createdAt
+    }
 }

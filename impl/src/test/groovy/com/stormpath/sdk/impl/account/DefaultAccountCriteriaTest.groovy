@@ -47,6 +47,7 @@ class DefaultAccountCriteriaTest {
                 .and(Accounts.middleName().containsIgnoreCase('d'))
                 .and(Accounts.surname().eqIgnoreCase('e'))
                 .and(Accounts.status().eq(AccountStatus.ENABLED))
+                .and(Accounts.createdAt().matches("[2015-01-01T00:00:00.000Z,2015-02-01T00:00:00.000Z)"))
                 .orderByEmail()
                 .orderByUsername().descending()
                 .orderByGivenName()
@@ -76,7 +77,8 @@ class DefaultAccountCriteriaTest {
                 'givenName ilike *c and ' +
                 'middleName ilike *d* and ' +
                 'surname=e and ' +
-                'status=ENABLED ' +
+                'status=ENABLED and ' +
+                'createdAt=[2015-01-01T00:00:00.000Z,2015-02-01T00:00:00.000Z) ' +
                 'order by ' +
                 'email asc, username desc, givenName asc, middleName desc, surname asc, status desc ' +
                 'offset 25 ' +
@@ -84,7 +86,8 @@ class DefaultAccountCriteriaTest {
                 'expand directory, groupMemberships(offset:30,limit:20), groupMemberships, groupMemberships(limit:20), ' +
                 'groups(offset:50,limit:40), groups(limit:45), groups, tenant, customData'
 
-        def expectedQueryString = 'email=a' + AND +
+        def expectedQueryString = 'createdAt=%5B2015-01-01T00%3A00%3A00.000Z%2C2015-02-01T00%3A00%3A00.000Z%29' + AND +
+                'email=a' + AND +
                 'expand=' +
                     'directory' + COMMA +
                     'groupMemberships' + OPEN_PAREN + 'offset' + COLON + 30 + COMMA + 'limit' + COLON + 20 + CLOSE_PAREN + COMMA +

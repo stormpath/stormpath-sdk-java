@@ -44,6 +44,7 @@ class DefaultDirectoryCriteriaTest {
                 .where(Directories.name().eqIgnoreCase('a'))
                 .and(Directories.description().startsWithIgnoreCase('b'))
                 .and(Directories.status().eq(DirectoryStatus.DISABLED))
+                .and(Directories.modifiedAt().matches("[2015-01-01T00:00:00.000Z]"))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()
@@ -61,20 +62,23 @@ class DefaultDirectoryCriteriaTest {
 
         def expectedToString = 'name=a and ' +
                 'description ilike b* and ' +
-                'status=DISABLED ' +
+                'status=DISABLED and ' +
+                'modifiedAt=[2015-01-01T00:00:00.000Z] ' +
                 'order by ' +
                 'name asc, description desc, status asc ' +
                 'offset 120 ' +
                 'limit 20 ' +
                 'expand tenant, customData, accounts(offset:50,limit:30), groups(offset:100,limit:25)'
 
-        def expectedQueryString = 'description=b*' + AND +
+        def expectedQueryString =
+                'description=b*' + AND +
                 'expand=' +
                 'tenant' + COMMA +
                 'customData' + COMMA +
                 'accounts' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 30 + CLOSE_PAREN + COMMA +
                 'groups' + OPEN_PAREN + 'offset' + COLON + 100 + COMMA + 'limit' + COLON + 25 + CLOSE_PAREN + AND +
                 'limit=20' + AND +
+                'modifiedAt=%5B2015-01-01T00%3A00%3A00.000Z%5D' + AND +
                 'name=a' + AND +
                 'offset=120' + AND +
                 'orderBy=' +
