@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.cache
 
 import com.stormpath.sdk.cache.CacheManager
-import com.stormpath.sdk.impl.util.Duration
+import com.stormpath.sdk.lang.Duration
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit

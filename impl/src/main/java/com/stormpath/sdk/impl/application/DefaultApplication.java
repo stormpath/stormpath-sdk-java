@@ -26,6 +26,7 @@ import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.api.*;
 import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -65,6 +66,7 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
@@ -227,7 +229,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList list = getAccounts();  //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     @Override
@@ -245,7 +247,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList groups = getGroups(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(groups.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(groups.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     @Override
@@ -384,7 +386,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     public AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria) {
         AccountStoreMappingList accountStoreMappings =
             getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, criteria);
+        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, (Criteria<AccountStoreMappingCriteria>) criteria);
     }
 
     /** @since 0.9 */
@@ -500,7 +502,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         }
 
         String href = getHref() + "/apiKeys";
-        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, criteria);
+        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, (Criteria<ApiKeyCriteria>) criteria);
 
         Iterator<ApiKey> iterator = apiKeys.iterator();
 

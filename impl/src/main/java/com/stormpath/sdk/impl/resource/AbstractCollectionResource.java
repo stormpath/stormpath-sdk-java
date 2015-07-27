@@ -90,6 +90,20 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         return getInt(SIZE);
     }
 
+    /** @since 1.0.RC4.4 */
+    @Override
+    public T single() {
+        Iterator<T> iterator = iterator();
+        if (!iterator.hasNext()) {
+            throw new IllegalStateException("This list is empty while it was expected to contain one (and only one) element.");
+        }
+        T itemToReturn = iterator.next();
+        if (iterator.hasNext()) {
+            throw new IllegalStateException("Only a single resource was expected, but this list contains more than one item.");
+        }
+        return itemToReturn;
+    }
+
     protected abstract Class<T> getItemType();
 
     @SuppressWarnings("unchecked")

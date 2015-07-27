@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.cache
 
-import com.stormpath.sdk.impl.util.Duration
+import com.stormpath.sdk.lang.Duration
 import groovy.json.JsonSlurper
 import org.testng.annotations.Test
 

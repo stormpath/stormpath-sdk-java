@@ -33,6 +33,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -134,7 +135,7 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList list = getAccounts(); //safe to get the href; does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     @Override

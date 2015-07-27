@@ -252,6 +252,17 @@ public class DefaultDataStore implements InternalDataStore {
         return instantiate(childClass, data, result.getUri().getQuery());
     }
 
+    @Override
+    public <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options) {
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(clazz, "Resource class argument cannot be null.");
+        Assert.isInstanceOf(DefaultOptions.class, options, "The " + getClass().getName() + " implementation only functions with " +
+                DefaultOptions.class.getName() + " instances.");
+        DefaultOptions defaultOptions = (DefaultOptions) options;
+        QueryString qs = queryStringFactory.createQueryString(defaultOptions);
+        return (T) getResource(href, clazz, (Map) qs);
+    }
+
     @SuppressWarnings("unchecked")
     private ResourceDataResult getResourceData(String href, Class<? extends Resource> clazz, Map<String,?> queryParameters) {
 
@@ -373,7 +384,12 @@ public class DefaultDataStore implements InternalDataStore {
                 Map<String, Object> responseBody = getBody(response);
 
                 if (Collections.isEmpty(responseBody)) {
-                    throw new IllegalStateException("Unable to obtain resource data from the API server.");
+                    // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
+                    if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
+                        responseBody = java.util.Collections.emptyMap();
+                    } else {
+                        throw new IllegalStateException("Unable to obtain resource data from the API server.");
+                    }
                 }
 
                 ResourceAction responseAction = getPostAction(req, response);
@@ -388,7 +404,6 @@ public class DefaultDataStore implements InternalDataStore {
         ResourceDataResult result = chain.filter(request);
 
         Map<String,Object> data = result.getData();
-        Assert.notEmpty(data, "Filter chain returned an empty data result from a persistence request. This is never allowed.");
 
         //ensure the caller's argument is updated with what is returned from the server if the types are the same:
         if (returnType.equals(abstractResource.getClass())) {

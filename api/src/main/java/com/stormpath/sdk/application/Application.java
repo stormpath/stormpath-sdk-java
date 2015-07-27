@@ -37,11 +37,7 @@ import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -52,7 +48,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Application extends Resource, Saveable, Deletable, Extendable {
+public interface Application extends Resource, Saveable, Deletable, Extendable, Auditable {
 
     /**
      * Returns the Application's name.  An application's name must be unique across all other applications in the

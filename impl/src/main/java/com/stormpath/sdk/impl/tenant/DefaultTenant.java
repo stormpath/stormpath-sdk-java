@@ -41,6 +41,7 @@ import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
@@ -67,7 +68,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
@@ -138,7 +139,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
     }
 
     @Override
@@ -179,7 +180,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public DirectoryList getDirectories(DirectoryCriteria criteria) {
         DirectoryList proxy = getDirectories(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), DirectoryList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), DirectoryList.class, (Criteria<DirectoryCriteria>) criteria);
     }
 
     @Override
@@ -211,7 +212,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList proxy = getAccounts(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     /**
@@ -237,7 +238,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList proxy = getGroups(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     /**
