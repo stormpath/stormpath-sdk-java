@@ -27,7 +27,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 
 /**
- * @since 1.0.RC4.3-SNAPSHOT
+ * @since 1.0.RC4.6
  */
 class ResourceExceptionIT extends ClientIT {
 

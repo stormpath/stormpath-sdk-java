@@ -25,16 +25,27 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.io.AbstractResource
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GithubProvider
+import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.LinkedInProvider
+import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
+import com.stormpath.sdk.tenant.TenantOptions
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
+import java.lang.reflect.Field
+
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import java.lang.reflect.Field
 
 import static org.testng.Assert.*
@@ -104,6 +115,53 @@ class TenantIT extends ClientIT {
         println '"cacheManager": ' + s;
 
         Thread.sleep(20)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testCurrentTenantWithOptions(){
+
+        TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
+        def tenant = client.getCurrentTenant(options)
+
+        Map properties = getValue(AbstractResource, tenant, "properties")
+        def apps = properties.get("applications").get("size")
+        def dirs = properties.get("directories").get("size")
+        def groups = properties.get("groups").get("size")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
+        dir = tenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        assertNotNull dir.href
+
+        Application app = client.instantiate(Application)
+        app.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions App"))
+        app = tenant.createApplication(newCreateRequestFor(app).build())
+        deleteOnTeardown(app)
+
+        def group = client.instantiate(Group)
+        group.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Group"))
+        group = dir.createGroup(group)
+        deleteOnTeardown(group)
+
+        assertNotNull app.href
+
+        tenant = client.getCurrentTenant(options)
+
+        properties = getValue(AbstractResource, tenant, "properties")
+        assertTrue properties.get("applications").get("size") == apps + 1
+        assertTrue properties.get("directories").get("size") == dirs + 1
+        assertTrue properties.get("groups").get("size") == groups + 1
+
+        // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
+        // https://github.com/stormpath/stormpath-sdk-java/issues/164
+        assertEquals dirs + 1, tenant.directories.size
+        assertEquals apps + 1, tenant.applications.size
+        assertEquals groups + 1, tenant.groups.size
     }
 
     //@since 1.0.beta
