@@ -81,7 +81,7 @@ public interface Tenant extends Resource, Saveable, TenantActions, Extendable {
      *
      * @param responseOptions The {@code TenantOptions} to use to customize the Tenant resource returned in the save response.
      * @return this instance for method chaining.
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     Tenant saveWithResponseOptions(TenantOptions responseOptions);
 

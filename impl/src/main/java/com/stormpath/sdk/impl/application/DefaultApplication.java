@@ -697,7 +697,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     @Override
     public Application saveWithResponseOptions(ApplicationOptions responseOptions) {

@@ -1434,7 +1434,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      *
      * @param responseOptions The {@code ApplicationOptions} to use to customize the Application resource returned in the save response.
      * @return this instance for method chaining.
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     Application saveWithResponseOptions(ApplicationOptions responseOptions);
 

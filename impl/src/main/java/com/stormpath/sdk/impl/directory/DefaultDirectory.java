@@ -260,7 +260,15 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0-SNAPSHOT
+     */
+    @Override
+    public AccountCreationPolicy getAccountCreationPolicy() {
+        return getResourceProperty(ACCOUNT_CREATION_POLICY);
+    }
+
+    /**
+     * @since 1.0.RC4.6
      */
     @Override
     public Directory saveWithResponseOptions(DirectoryOptions responseOptions) {
@@ -268,14 +276,6 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, responseOptions);
         return this;
-    }
-
-    /**
-     * @since 1.0-SNAPSHOT
-     */
-    @Override
-    public AccountCreationPolicy getAccountCreationPolicy() {
-        return getResourceProperty(ACCOUNT_CREATION_POLICY);
     }
 
 

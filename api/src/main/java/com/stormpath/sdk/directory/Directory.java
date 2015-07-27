@@ -373,7 +373,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      *
      * @param responseOptions The {@code DirectoryOptions} to use to customize the Directory resource returned in the save response.
      * @return this instance for method chaining.
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     Directory saveWithResponseOptions(DirectoryOptions responseOptions);
 

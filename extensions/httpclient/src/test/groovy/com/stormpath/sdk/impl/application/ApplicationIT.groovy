@@ -40,6 +40,7 @@ import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
@@ -49,6 +50,8 @@ import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
+
+import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
@@ -93,7 +96,7 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = 'deleteme0@nowhere.com'
+        def email = uniquify('deleteme') + '@nowhere.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -1018,7 +1021,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     @Test
     void testSaveWithResponseOptions(){
@@ -1029,7 +1032,7 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'Jonathan'
         account.surname = 'Doe'
-        account.email = 'deleteme23@nowhere.com'
+        account.email = uniquify('deleteme') + '@nowhere.com'
         account.password = 'Changeme1!'
         app.createAccount(account)
         deleteOnTeardown(account)
@@ -1039,8 +1042,21 @@ class ApplicationIT extends ClientIT {
         def retrieved = app.saveWithResponseOptions(Applications.options().withAccounts().withCustomData())
 
         assertEquals href, retrieved.getHref()
-        assertEquals "testValue", retrieved.getCustomData().get("testKey")
-        assertTrue retrieved.getAccounts().iterator().hasNext()
-        assertEquals retrieved.getAccounts().iterator().next().email, account.email
+
+        Map properties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue properties.get("customData").size() > 1
+        assertEquals properties.get("customData").get("testKey"), "testValue"
+        assertTrue properties.get("accounts").size() > 1
+        assertEquals properties.get("accounts").get("items")[0].get("email"), account.email
     }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
+    }
+
 }
