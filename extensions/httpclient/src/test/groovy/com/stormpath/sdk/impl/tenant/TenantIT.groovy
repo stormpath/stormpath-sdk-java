@@ -575,8 +575,11 @@ class TenantIT extends ClientIT {
         def tenant = client.currentTenant
 
         Application application = client.instantiate(Application)
-        application.setName(uniquify("testGetApplicationsWithTimestampFilter app"))
-        application = tenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
+        String appName = uniquify("testGetApplicationsWithTimestampFilter app")
+        application.setName(appName)
+        application = tenant.createApplication(Applications.newCreateRequestFor(application).build())
+        deleteOnTeardown(application)
+
 
         Date appCreationTimestamp = application.createdAt
 
