@@ -15,22 +15,13 @@
  */
 package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.provider.Provider;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.tenant.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * A Directory is a top-level container of {@link Account}s and {@link Group}s.  Accounts and Groups are guaranteed to
@@ -43,7 +34,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Directory extends Resource, Saveable, Deletable, AccountStore, Extendable {
+public interface Directory extends Resource, Saveable, Deletable, AccountStore, Extendable, Auditable {
 
     /**
      * Returns this Directory's name.  The name is guaranteed to be non-null and unique among all other Directories in
@@ -358,5 +349,15 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @see <href>http://docs.stormpath.com/java/product-guide/#account-password-policy</href>
      * @since 1.0.RC4
      */
-    PasswordPolicy getPasswordPolicy();
+    PasswordPolicy getPasswordPolicy();    
+
+    /**
+     * Returns the {@link AccountCreationPolicy} resource for this {@link Directory}.
+     * It allows to configure the emails that will be delivered for accounts created under the parent {@link Directory}
+     *
+     * @return the {@link AccountCreationPolicy} for this Directory.
+     * @since 1.0.RC4.6
+     */
+    AccountCreationPolicy getAccountCreationPolicy();
+
 }

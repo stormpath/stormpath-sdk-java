@@ -15,14 +15,13 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.directory.PasswordPolicy;
-import com.stormpath.sdk.directory.PasswordStrength;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.impl.ds.*;
 import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.*;
 import com.stormpath.sdk.mail.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC4
@@ -40,8 +39,8 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
     //COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> RESET_EMAIL_TEMPLATES =
             new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("resetEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);
-    static final CollectionReference<PasswordResetSuccessEmailTemplateList, PasswordResetSuccessEmailTemplate> RESET_SUCCESS_EMAIL_TEMPLATES =
-            new CollectionReference<PasswordResetSuccessEmailTemplateList, PasswordResetSuccessEmailTemplate>("resetSuccessEmailTemplates", PasswordResetSuccessEmailTemplateList.class, PasswordResetSuccessEmailTemplate.class);
+    static final CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate> RESET_SUCCESS_EMAIL_TEMPLATES =
+            new CollectionReference<UnmodeledEmailTemplateList, UnmodeledEmailTemplate>("resetSuccessEmailTemplates", UnmodeledEmailTemplateList.class, UnmodeledEmailTemplate.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             RESET_TOKEN_TTL, RESET_EMAIL_STATUS, RESET_SUCCESS_EMAIL_STATUS, STRENGTH, RESET_EMAIL_TEMPLATES, RESET_SUCCESS_EMAIL_TEMPLATES);
@@ -114,7 +113,7 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
     }
 
     @Override
-    public PasswordResetSuccessEmailTemplateList getResetSuccessEmailTemplates() {
+    public UnmodeledEmailTemplateList getResetSuccessEmailTemplates() {
         return getResourceProperty(RESET_SUCCESS_EMAIL_TEMPLATES);
     }
 

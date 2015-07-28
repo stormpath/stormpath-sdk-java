@@ -15,13 +15,10 @@
  */
 package com.stormpath.sdk.servlet.http;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.servlet.config.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 /**
  * @since 1.0.RC3
@@ -62,7 +59,8 @@ public class CookieSaver implements Saver<String> {
         if (!Strings.hasText(val)) {
             val = Strings.clean(request.getContextPath());
         }
-        if (!Strings.hasText(val) || delete) {
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/207
+        if (!Strings.hasText(val)) {
             val = "/";
         }
         cookie.setPath(val);

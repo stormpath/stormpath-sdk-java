@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.mail;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * The {@link ModeledEmailTemplate} is a {@link EmailTemplate} resource which also provides the ability to configure the url where
- * the user will be redirected once he clicks the link received in the Reset Password Email.
+ * the user will be redirected once he clicks on the link received in the Email.
  *
  * @since 1.0.RC4
  */
@@ -27,8 +27,9 @@ public interface ModeledEmailTemplate extends EmailTemplate<ModeledEmailTemplate
 
     /**
      * An {@link Map} where JSON data can be stored. This allows both Stormpath and developers to define variables that can later be
-     * replaced when the template is being processed. For example, we currently store the <code>linkBaseUrl</code> key to hold the
-     * clickable url that the user will receive inside the reset password email.
+     * replaced when the template is being processed.
+     * For example, we currently store the <code>linkBaseUrl</code> key to hold the clickable url that the user will receive
+     * inside the reset password or verify account emails.
      *
      * @return the map where custom JSON data (like <code>linkBaseUrl</code>) can be stored.
      * @see #setLinkBaseUrl(String)
@@ -36,25 +37,25 @@ public interface ModeledEmailTemplate extends EmailTemplate<ModeledEmailTemplate
     Map<String, String> getDefaultModel();
 
     /**
-     * Convenience method to specify the clickable url that the user will receive inside the reset password email. This url should point to the form
-     * where the user can insert his new password.
+     * Convenience method to specify the clickable url that the user will receive inside the email.
+     * For example, in the reset password workflow, this url should point to the form where the user can insert his new password.
      * <p/>
      * This is just a convenience method and doing this:
      * <pre>
-     *      modeledEmailTemplate.setLinkBaseUrl("http://mycompany.com/resetEmail.html");
+     *      modeledEmailTemplate.setLinkBaseUrl("http://mycompany.com/templateName.html");
      * </pre>
      * is equivalent to doing:
      * <pre>
-     *     modeledEmailTemplate.getDefaultModel().put("linkBaseUrl", "http://mycompany.com/resetEmail.html");
+     *     modeledEmailTemplate.getDefaultModel().put("linkBaseUrl", "http://mycompany.com/templateName.html");
      * </pre>
      *
-     * @param linkBaseUrl clickable url where the user will be prompted for the new password.
+     * @param linkBaseUrl clickable url where the user will be taken once he clicks on the URL received in the email.
      * @return this instance for method chaining.
      */
     ModeledEmailTemplate setLinkBaseUrl(String linkBaseUrl);
 
     /**
-     * Return the clickable url that the user will receive inside the reset password email.
+     * Return the clickable url that the user will receive inside the email.
      * This is just a convenience method and doing this:
      * <pre>
      *      String linkBaseUrl = modeledEmailTemplate.getLinkBaseUrl();
@@ -64,7 +65,7 @@ public interface ModeledEmailTemplate extends EmailTemplate<ModeledEmailTemplate
      *      String linkBaseUrl = modeledEmailTemplate.getDefaultModel().get("linkBaseUrl");
      * </pre>
      *
-     * @return clickable url where the user will be prompted for the new password.
+     * @return clickable url where the user will be taken once he clicks on the URL received in the email.
      */
     String getLinkBaseUrl();
 

@@ -15,9 +15,10 @@
  */
 package com.stormpath.sdk.ds;
 
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.resource.*;
 
 /**
  * A {@code DataStore} is the liaison between client SDK components and the raw Stormpath REST API.  It is responsible
@@ -52,6 +53,19 @@ public interface DataStore {
      * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
      */
     <T extends Resource> T getResource(String href, Class<T> clazz);
+
+    /**
+     * Retrieves the resource at the specified {@code href} according to the specified {@code Options} and returns the
+     * resource as an instance of the specified {@code clazz}.
+     *
+     * @param href  the URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @param options the {@link Options} sub-interface with the properties to expand
+     * @return an instance of the specified class based on the data returned from the specified {@code href} URL.
+     * @since 1.0.RC4.6
+     */
+    <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options);
 
     /**
      * Returns the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.

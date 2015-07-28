@@ -15,14 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.resource.*;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 0.1
@@ -65,7 +63,7 @@ public class DefaultResourceFactory implements ResourceFactory {
         return Classes.instantiate(ctor, ctorArgs);
     }
 
-    static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
+    public static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
         if (clazz.isInterface()) {
             return convertToImplClass(clazz);
         }

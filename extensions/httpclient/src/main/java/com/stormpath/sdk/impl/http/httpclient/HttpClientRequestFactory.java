@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,18 @@
  */
 package com.stormpath.sdk.impl.http.httpclient;
 
-import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.RestException;
-import com.stormpath.sdk.impl.util.RequestUtils;
-import com.stormpath.sdk.lang.Strings;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.params.CoreProtocolPNames;
+import com.stormpath.sdk.http.*;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.util.*;
+import com.stormpath.sdk.lang.*;
+import org.apache.http.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.*;
+import org.apache.http.params.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * Responsible for creating Apache HttpClient 4 request objects.
@@ -123,6 +113,7 @@ class HttpClientRequestFactory {
             hostHeader += ":" + endpoint.getPort();
         }
         httpRequest.addHeader("Host", hostHeader);
+        httpRequest.addHeader("Accept-Encoding", "gzip");
 
         // Copy over any other headers already in our request
         for (Map.Entry<String, List<String>> entry : request.getHeaders().entrySet()) {

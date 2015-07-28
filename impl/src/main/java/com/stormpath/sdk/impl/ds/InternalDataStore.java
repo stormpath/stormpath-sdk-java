@@ -15,13 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.query.Criteria;
-import com.stormpath.sdk.query.Options;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.ds.*;
+import com.stormpath.sdk.impl.ds.cache.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * Internal DataStore used for implementation purposes only.  Not intended to be called by SDK end users!
@@ -54,11 +53,11 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource> T getResource(String href, Class<T> clazz, Criteria criteria);
 
-    //<T extends Resource> T getResource(String href, Class<T> clazz, Options options);
-
     /**
      * @since 1.0.beta
      */
     <T extends Resource, R extends T> R getResource(String href, Class<T> parent, String childIdProperty, Map<String, Class<? extends R>> stringClassMap);
+
+    CacheResolver getCacheResolver();
 
 }

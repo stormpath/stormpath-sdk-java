@@ -15,19 +15,14 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.CookieConfig;
-import com.stormpath.sdk.servlet.http.CookieResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.servlet.config.*;
+import com.stormpath.sdk.servlet.http.*;
+import com.stormpath.sdk.servlet.http.impl.*;
+import org.slf4j.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 /**
  * @since 1.0.RC3
@@ -94,7 +89,8 @@ public class CookieAccountResolver extends AccountCookieHandler implements Resol
     protected void deleteCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {
         if (!response.isCommitted()) {
             cookie.setValue("");
-            cookie.setPath("/");
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/207
+            //cookie.setPath("/");
             cookie.setMaxAge(0);
             response.addCookie(cookie);
         }

@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.impl.util.Duration;
+import com.stormpath.sdk.lang.*;
 
 /**
  * Represents configuration settings for a particular {@link com.stormpath.sdk.cache.Cache Cache} region.

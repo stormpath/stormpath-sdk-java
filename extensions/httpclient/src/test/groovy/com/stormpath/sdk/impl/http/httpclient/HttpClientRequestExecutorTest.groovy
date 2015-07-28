@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.api.ApiKey
@@ -24,7 +26,6 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertNull
-
 
 class HttpClientRequestExecutorTest {
 
@@ -40,7 +41,7 @@ class HttpClientRequestExecutorTest {
 
         def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationScheme.SAUTHC1, 20000) {
             @Override
-            protected String toString(HttpEntity he) throws IOException {
+            protected byte[] toBytes(HttpEntity he) throws IOException {
                 return null
             }
         }
@@ -49,6 +50,7 @@ class HttpClientRequestExecutorTest {
         expect(statusLine.getStatusCode()).andStubReturn(200)
         expect(httpResponse.getAllHeaders()).andStubReturn(null)
         expect(httpResponse.getEntity()).andStubReturn(entity)
+        expect(entity.getContentEncoding())andStubReturn(null)
         expect(entity.getContent()).andStubReturn(entityContent)
         expect(entity.getContentLength()).andStubReturn(-1)
 

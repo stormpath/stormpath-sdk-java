@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.impl.ds.api.ApiKeyCacheMapCreator;
-import com.stormpath.sdk.impl.ds.directory.CustomDataCacheMapCreator;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.impl.ds.directory.*;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Map;
-
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import java.util.*;
 
 /**
  * @since 1.0.RC
@@ -45,11 +40,6 @@ public class DefaultCacheMapCreatorFactory implements CacheMapCreatorFactory {
      */
     @Override
     public CacheMapCreator create(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString) {
-        
-        if (ApiKey.class.isAssignableFrom(clazz) || (ApiKeyList.class.isAssignableFrom(clazz) && queryString != null && queryString.containsKey(ID.getName()))) {
-
-            return new ApiKeyCacheMapCreator(data, queryString);
-        }
 
         if (CustomData.class.isAssignableFrom(clazz)) {
             return new CustomDataCacheMapCreator(data);

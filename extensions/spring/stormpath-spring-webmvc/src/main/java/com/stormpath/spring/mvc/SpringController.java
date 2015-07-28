@@ -15,19 +15,18 @@
  */
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.servlet.mvc.ViewModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
-import org.springframework.web.servlet.ModelAndView;
+import com.stormpath.sdk.servlet.mvc.*;
+import com.stormpath.sdk.servlet.util.*;
+import org.slf4j.*;
+import org.springframework.util.*;
+import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.support.RequestContextUtils;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UrlPathHelper;
+import org.springframework.web.servlet.support.*;
+import org.springframework.web.servlet.view.*;
+import org.springframework.web.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import javax.servlet.http.*;
+import java.util.*;
 
 /**
  * This is an adapter or bridge component: it is a Spring {@link org.springframework.web.servlet.mvc.Controller
@@ -111,7 +110,9 @@ public class SpringController extends AbstractController {
         modelAndView.addAllObjects(model);
 
         if (redirect) {
-            modelAndView.setView(new RedirectView(viewName));
+            //Fix to redirect to correct context path: https://github.com/stormpath/stormpath-sdk-java/issues/210
+            String targetUrl = new RedirectUrlBuilder(request).setUrl(viewName).setContextRelative(true).build();
+            modelAndView.setView(new RedirectView(targetUrl));
         } else {
             modelAndView.setViewName(viewName);
         }

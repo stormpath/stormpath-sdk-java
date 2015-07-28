@@ -15,36 +15,19 @@
  */
 package com.stormpath.sdk.impl.tenant;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.EmailVerificationToken;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationCriteria;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.application.Applications;
-import com.stormpath.sdk.application.CreateApplicationRequest;
-import com.stormpath.sdk.directory.CreateDirectoryRequest;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryCriteria;
-import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.impl.application.CreateApplicationAndDirectoryRequest;
-import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
-import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
-import com.stormpath.sdk.impl.directory.DefaultDirectory;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.impl.application.*;
+import com.stormpath.sdk.impl.directory.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.tenant.*;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 0.1
@@ -66,7 +49,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
@@ -137,7 +120,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
     }
 
     @Override
@@ -178,7 +161,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public DirectoryList getDirectories(DirectoryCriteria criteria) {
         DirectoryList proxy = getDirectories(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), DirectoryList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), DirectoryList.class, (Criteria<DirectoryCriteria>) criteria);
     }
 
     @Override
@@ -210,7 +193,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList proxy = getAccounts(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     /**
@@ -236,7 +219,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList proxy = getGroups(); //just a proxy - does not execute a query until iteration occurs
-        return getDataStore().getResource(proxy.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(proxy.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     /**

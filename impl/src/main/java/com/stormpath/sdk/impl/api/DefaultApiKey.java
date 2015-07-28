@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,14 @@
  */
 package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.api.ApiKeyStatus;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.tenant.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * This implementation represents the api key resource that belongs to a Stormpath {@link Account}.
@@ -38,7 +32,7 @@ public class DefaultApiKey extends AbstractInstanceResource implements ApiKey {
 
     // SIMPLE PROPERTIES
     static final StringProperty ID = new StringProperty("id");
-    static final StringProperty SECRET = new StringProperty("secret");
+    public static final StringProperty SECRET = new StringProperty("secret");
     static final StatusProperty<ApiKeyStatus> STATUS = new StatusProperty<ApiKeyStatus>(ApiKeyStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:

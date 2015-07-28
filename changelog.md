@@ -1,12 +1,32 @@
 ## Change Log ##
 
-### 1.0 ##
+### 1.0.RC4.6 ##
 
 Notes:
 
+- Please see the [1.0.RC4.6](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.6+is%3Aclosed) issues list for more information
+
+### 1.0.RC4.5 ##
+
+Notes:
+
+- Please see the [1.0.RC4.5](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.5+is%3Aclosed) issues list for more information
+
+### 1.0.RC4.4 ##
+
+Notes:
+
+- Please see the [1.0.RC4.4](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.4+is%3Aclosed) issues list for more information
+
+### 1.0.RC4.3 ##
+
+Notes:
+
+- Performance enhancements, bug fixes and collection iteration optimization.
+
 - The previous [Spring Security support project](https://github.com/stormpath/stormpath-spring-security) now resides in this project codebase and will have the same versions of the Java SDK moving forward.
 
-- Please see the [1.0](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0+is%3Aclosed) issues list for more information.
+- Please see the [1.0.RC4.3](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC4.3+is%3Aclosed) issues list for more information.
 
 ### 1.0.RC4.2 ##
 

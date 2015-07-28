@@ -19,7 +19,7 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC4.3-SNAPSHOT</version>
+        <version>1.0.RC4.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -35,6 +35,7 @@
         <module>spring-boot</module>
         <module>spring-boot-webmvc</module>
         <module>spring-security-webmvc</module>
+        <module>quickstart</module>
     </modules>
 
 </project>

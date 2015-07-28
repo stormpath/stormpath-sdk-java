@@ -15,9 +15,8 @@
  */
 package com.stormpath.sdk.client;
 
-import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.tenant.Tenant;
-import com.stormpath.sdk.tenant.TenantActions;
+import com.stormpath.sdk.ds.*;
+import com.stormpath.sdk.tenant.*;
 
 /**
  * The {@code Client} is the main entry point to the Stormpath Java SDK.  A JVM project wishing to
@@ -87,6 +86,15 @@ public interface Client extends DataStore, TenantActions {
      */
     DataStore getDataStore();
 
+    /**
+     * Returns the {@link Tenant} resource associated to this client, customized by the specified {@link TenantOptions}
+     *
+     * @param tenantOptions The {@link TenantOptions} to use to customize the retrieved Tenant resource.
+     * @return the {@link Tenant} resource customized by the specified {@link TenantOptions}
+     *
+     * @since 1.0.RC4.6
+     */
+    Tenant getCurrentTenant(TenantOptions tenantOptions);
 }
 
 

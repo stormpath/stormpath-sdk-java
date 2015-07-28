@@ -15,20 +15,13 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.impl.ds.QuerySanitizer;
-import com.stormpath.sdk.impl.ds.SanitizedQuery;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
-import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.query.LikeExpression;
-import com.stormpath.sdk.impl.query.Order;
-import com.stormpath.sdk.impl.query.SimpleExpression;
+import com.stormpath.sdk.impl.http.support.*;
+import com.stormpath.sdk.impl.query.*;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.query.Criterion;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.query.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 0.8
@@ -36,13 +29,14 @@ import java.util.Map;
 public class QueryStringFactory {
 
     public QueryString createQueryString(String href, DefaultCriteria criteria) {
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
-        QueryString sanitizedQuery = sanitized.getQuery();
 
         QueryString query = createQueryString(criteria);
 
-        //Query params embedded directly in the href, if any, take precedence. Overwrite any values from the criteria:
-        query.putAll(sanitizedQuery);
+        CanonicalUri uri = DefaultCanonicalUri.create(href, null);
+        if (uri.hasQuery()) {
+            //Query params embedded directly in the href, if any, take precedence. Overwrite any from the criteria:
+            query.putAll(uri.getQuery());
+        }
 
         return query;
     }
@@ -86,13 +80,14 @@ public class QueryStringFactory {
     }
 
     public QueryString createQueryString(String href, DefaultOptions defaultOptions) {
-        SanitizedQuery sanitized = QuerySanitizer.sanitize(href, null);
-        QueryString sanitizedQuery = sanitized.getQuery();
 
         QueryString query = createQueryString(defaultOptions);
 
-        //Query params embedded directly in the href, if any, take precedence. Overwrite any values from the criteria:
-        query.putAll(sanitizedQuery);
+        CanonicalUri uri = DefaultCanonicalUri.create(href, null);
+        if (uri.hasQuery()) {
+            //Query params embedded directly in the href, if any, take precedence. Overwrite any from the criteria:
+            query.putAll(uri.getQuery());
+        }
 
         return query;
     }

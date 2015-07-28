@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.tenant;
 
-import com.stormpath.sdk.query.Options;
+import com.stormpath.sdk.query.*;
 
 /**
  * @since 0.8
@@ -43,4 +43,67 @@ public interface TenantOptions<T> extends Options {
      * @since 1.0.0
      */
     T withCustomData();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the returned accounts, see the
+     * {@link #withAccounts(int) withAccounts(limit)} or
+     * {@link #withAccounts(int, int) withAccounts(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    T withAccounts();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    T withAccounts(int limit);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getAccounts() accounts} are also retrieved in the same request.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    T withAccounts(int limit, int offset);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the returned groups, see the
+     * {@link #withGroups(int) withGroups(limit)} or
+     * {@link #withGroups(int, int) withGroups(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    T withGroups();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    T withGroups(int limit);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getGroups() groups} are also retrieved in the same request.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    T withGroups(int limit, int offset);
+
 }

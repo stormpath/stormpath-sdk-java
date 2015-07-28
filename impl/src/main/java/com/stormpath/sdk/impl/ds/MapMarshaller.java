@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * @since 0.1
@@ -25,5 +26,7 @@ public interface MapMarshaller {
     String marshal(Map map);
 
     Map unmarshal(String marshalled);
+
+    Map<String, Object> unmarshall(InputStream inputStream);
 
 }

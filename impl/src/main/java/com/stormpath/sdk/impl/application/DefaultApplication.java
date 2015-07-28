@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,72 +15,35 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.account.VerificationEmailRequest;
-import com.stormpath.sdk.api.ApiAuthenticationResult;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationStatus;
-import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.Directories;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryCriteria;
-import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
-import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
-import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest;
-import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
-import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
-import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
-import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
-import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
-import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
-import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
-import com.stormpath.sdk.impl.query.Expandable;
-import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.tenant.Tenant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.http.*;
+import com.stormpath.sdk.idsite.*;
+import com.stormpath.sdk.impl.account.*;
+import com.stormpath.sdk.impl.api.*;
+import com.stormpath.sdk.impl.authc.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.idsite.*;
+import com.stormpath.sdk.impl.provider.*;
+import com.stormpath.sdk.impl.query.*;
+import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.tenant.*;
+import org.slf4j.*;
 
-import java.lang.reflect.Constructor;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
 /** @since 0.2 */
 public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
@@ -230,7 +193,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList list = getAccounts();  //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     @Override
@@ -248,7 +211,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList groups = getGroups(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(groups.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(groups.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     @Override
@@ -387,7 +350,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     public AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria) {
         AccountStoreMappingList accountStoreMappings =
             getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, criteria);
+        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, (Criteria<AccountStoreMappingCriteria>) criteria);
     }
 
     /** @since 0.9 */
@@ -503,15 +466,12 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         }
 
         String href = getHref() + "/apiKeys";
-        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, criteria);
+        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, (Criteria<ApiKeyCriteria>) criteria);
 
-        ApiKey apiKey = null;
+        Iterator<ApiKey> iterator = apiKeys.iterator();
 
-        if (apiKeys != null && apiKeys.iterator().hasNext()) {
-            apiKey = apiKeys.iterator().next(); // we expect only one api key to be in the collection
-        }
-
-        return apiKey;
+        // we expect only one api key to be in the collection
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     /** @since 0.9 */

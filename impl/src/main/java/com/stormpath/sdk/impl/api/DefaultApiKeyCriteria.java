@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,17 @@
  */
 package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.api.ApiKeyCriteria;
-import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.impl.query.*;
 
 /**
  * @since 1.0.RC
  */
-public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKeyOptions> implements ApiKeyCriteria  {
+public class DefaultApiKeyCriteria extends DefaultCriteria<ApiKeyCriteria, ApiKeyOptions> implements ApiKeyCriteria {
+
+    public static final int DEFAULT_ENCRYPTION_SIZE = 128;
+
+    public static final int DEFAULT_ENCRYPTION_ITERATIONS = 1024;
 
     public DefaultApiKeyCriteria() {
         super(new DefaultApiKeyOptions());

@@ -15,27 +15,15 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.stormpath.sdk.impl.ds.Enlistment;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.util.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.resource.*;
+import org.slf4j.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.locks.*;
 
 /**
  * @since 0.1
@@ -78,6 +66,20 @@ public abstract class AbstractResource implements Resource {
             this.properties = new LinkedHashMap<String, Object>();
         }
         setProperties(properties);
+    }
+
+    /**
+     * Returns {@code true} if the specified data map represents a materialized resource data set, {@code false}
+     * otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized resource data set, {@code false}
+     * otherwise.
+     *
+     * @since 1.0.RC4.3
+     */
+    public static boolean isMaterialized(Map<String, ?> props) {
+        return props != null && props.get(HREF_PROP_NAME) != null && props.size() > 1;
     }
 
     protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {

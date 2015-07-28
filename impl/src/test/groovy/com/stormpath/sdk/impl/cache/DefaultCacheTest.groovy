@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.cache
 
-import com.stormpath.sdk.impl.util.Duration
+import com.stormpath.sdk.lang.Duration
 import groovy.json.JsonSlurper
 import org.testng.annotations.Test
 
@@ -232,7 +232,7 @@ class DefaultCacheTest {
         assertNull prev
 
         def found = cache.get(key)
-        assertEquals value, found
+        assertEquals found, value
         assertEquals 1, cache.size()
 
         //each time we access after sleeping 15 seconds, we should always acquire the value since the last
@@ -240,17 +240,17 @@ class DefaultCacheTest {
 
         Thread.sleep(10)
         found = cache.get(key)
-        assertEquals(value, found)
+        assertEquals(found, value)
         assertEquals 1, cache.size()
 
         Thread.sleep(10)
         found = cache.get(key)
-        assertEquals(value, found)
+        assertEquals(found, value)
         assertEquals 1, cache.size()
 
         Thread.sleep(10)
         found = cache.get(key)
-        assertEquals(value, found)
+        assertEquals(found, value)
         assertEquals 1, cache.size()
 
         //Now we need to ensure that no matter how frequently the value is used (not idle), we still need to remove

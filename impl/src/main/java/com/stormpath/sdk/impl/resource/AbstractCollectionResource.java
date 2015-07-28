@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,11 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
 /**
  * @since 0.2
@@ -39,6 +32,8 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
     public static final String ITEMS_PROPERTY_NAME = "items";
 
     private final Map<String, Object> queryParams;
+
+    private AtomicBoolean firstPageQueryRequired = new AtomicBoolean();
 
     protected AbstractCollectionResource(InternalDataStore dataStore) {
         super(dataStore);
@@ -59,6 +54,19 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         }
     }
 
+    /**
+     * Returns {@code true} if the specified data map represents a materialized collection resource data set, {@code
+     * false} otherwise.
+     *
+     * @param props the data properties to test
+     * @return {@code true} if the specified data map represents a materialized collection resource data set, {@code
+     * false} otherwise.
+     * @since 1.0.RC4.3
+     */
+    public static boolean isCollectionResource(Map<String,?> props) {
+        return isMaterialized(props) && (props.get(ITEMS_PROPERTY_NAME) instanceof Iterable);
+    }
+
     @Override
     public int getOffset() {
         return getInt(OFFSET);
@@ -72,6 +80,20 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
     @Override
     public int getSize() {
         return getInt(SIZE);
+    }
+
+    /** @since 1.0.RC4.4 */
+    @Override
+    public T single() {
+        Iterator<T> iterator = iterator();
+        if (!iterator.hasNext()) {
+            throw new IllegalStateException("This list is empty while it was expected to contain one (and only one) element.");
+        }
+        T itemToReturn = iterator.next();
+        if (iterator.hasNext()) {
+            throw new IllegalStateException("Only a single resource was expected, but this list contains more than one item.");
+        }
+        return itemToReturn;
     }
 
     protected abstract Class<T> getItemType();
@@ -117,7 +139,8 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
 
     @Override
     public Iterator<T> iterator() {
-        return new PaginatedIterator<T>(this);
+        //firstPageQueryRequired ensures that newly obtained collection resources don't need to query unnecessarily
+        return new PaginatedIterator<T>(this, firstPageQueryRequired.getAndSet(true));
     }
 
     private Collection<T> toResourceList(Collection vals, Class<T> itemType) {
@@ -139,16 +162,23 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
 
     private class PaginatedIterator<T extends Resource> implements Iterator<T> {
 
-        private AbstractCollectionResource resource;
+        private AbstractCollectionResource<T> resource;
 
         private Page<T> currentPage;
         private Iterator<T> currentPageIterator;
         private int currentItemIndex;
 
-        private PaginatedIterator(AbstractCollectionResource<T> resource) {
-            //We get a new resource in order to have different iterator instances: issue 62 (https://github.com/stormpath/stormpath-sdk-java/issues/62)
-            this.resource = getDataStore().getResource(resource.getHref(), resource.getClass(), resource.queryParams);
-            this.currentPage = this.resource.getCurrentPage();
+        private PaginatedIterator(AbstractCollectionResource<T> resource, boolean firstPageQueryRequired) {
+
+            if (firstPageQueryRequired) {
+                //We get a new resource in order to have different iterator instances: issue 62 (https://github.com/stormpath/stormpath-sdk-java/issues/62)
+                this.resource = getDataStore().getResource(resource.getHref(), resource.getClass(), resource.queryParams);
+                this.currentPage = this.resource.getCurrentPage();
+            } else {
+                this.resource = resource;
+                this.currentPage = resource.getCurrentPage();
+            }
+
             this.currentPageIterator = this.currentPage.getItems().iterator();
             this.currentItemIndex = 0;
         }
@@ -166,7 +196,7 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
             if (!hasNext && exhaustedLimit) {
 
                 //If we have already exhausted the whole collection size there is no need to contact the backend again: https://github.com/stormpath/stormpath-sdk-java/issues/161
-                boolean exhaustedSize = ((currentPage.getOffset() + 1) * pageLimit == getSize());
+                boolean exhaustedSize = (currentPage.getOffset() + pageLimit) >= getSize();
                 if (!exhaustedSize) {
 
                     //if we're done with the current page, and we've exhausted the page limit (i.e. we've read a

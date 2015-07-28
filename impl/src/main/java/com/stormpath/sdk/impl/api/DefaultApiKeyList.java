@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,18 @@
  */
 package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
-import com.stormpath.sdk.impl.resource.ArrayProperty;
-import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.resource.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC
  */
 public class DefaultApiKeyList extends AbstractCollectionResource<ApiKey> implements ApiKeyList {
 
-    private static final ArrayProperty<ApiKey> ITEMS = new ArrayProperty<ApiKey>("items", ApiKey.class);
+    public static final ArrayProperty<ApiKey> ITEMS = new ArrayProperty<ApiKey>(ITEMS_PROPERTY_NAME, ApiKey.class);
 
     private static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 

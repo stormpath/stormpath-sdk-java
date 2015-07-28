@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,50 +16,28 @@
 package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.impl.http.HttpHeaders;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.http.Response;
-import com.stormpath.sdk.impl.http.RestException;
-import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
-import com.stormpath.sdk.impl.http.support.BackoffStrategy;
-import com.stormpath.sdk.impl.http.support.DefaultRequest;
-import com.stormpath.sdk.impl.http.support.DefaultResponse;
-import com.stormpath.sdk.impl.util.StringInputStream;
-import com.stormpath.sdk.lang.Assert;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.http.authc.*;
+import com.stormpath.sdk.impl.http.support.*;
+import com.stormpath.sdk.lang.*;
+import org.apache.http.*;
+import org.apache.http.auth.*;
+import org.apache.http.client.entity.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.params.*;
+import org.apache.http.conn.*;
+import org.apache.http.conn.params.*;
+import org.apache.http.impl.client.*;
+import org.apache.http.impl.conn.*;
+import org.apache.http.util.*;
+import org.slf4j.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.util.Random;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * {@code RequestExecutor} implementation that uses the
@@ -377,22 +355,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         return msg != null && msg.contains("HTTP 429");
     }
 
-    protected String toString(HttpEntity entity) throws IOException {
-
-        if (entity == null || entity.getContent() == null) {
-            return null;
-        }
-
-        try {
-            return toString(entity, "UTF-8");
-        } catch (IOException e) {
-            log.warn("Unable to obtain expected content body: " + e.getMessage(), e);
-            return null;
-        }
-    }
-
-    protected String toString(HttpEntity entity, String defaultCharset) throws IOException {
-        return EntityUtils.toString(entity, defaultCharset);
+    protected byte[] toBytes(HttpEntity entity) throws IOException {
+        return EntityUtils.toByteArray(entity);
     }
 
     protected Response toSdkResponse(HttpResponse httpResponse) throws IOException {
@@ -402,22 +366,39 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         HttpHeaders headers = getHeaders(httpResponse);
         MediaType mediaType = headers.getContentType();
 
-        HttpEntity entity = httpResponse.getEntity();
+        HttpEntity entity = getHttpEntity(httpResponse);
 
         InputStream body = entity != null ? entity.getContent() : null;
         long contentLength = entity != null ? entity.getContentLength() : -1;
 
         //ensure that the content has been fully acquired before closing the http stream
         if (body != null) {
-            String stringBody = toString(entity);
-            if (stringBody != null) {
-                body = new StringInputStream(stringBody);
-            } else {
+            byte[] bytes = toBytes(entity);
+
+            if(bytes != null) {
+                body = new ByteArrayInputStream(bytes);
+            }  else {
                 body = null;
             }
         }
 
         return new DefaultResponse(httpStatus, mediaType, body, contentLength);
+    }
+
+    private HttpEntity getHttpEntity(HttpResponse response) {
+
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+            Header contentEncodingHeader = entity.getContentEncoding();
+            if (contentEncodingHeader != null) {
+                for (HeaderElement element : contentEncodingHeader.getElements()) {
+                    if (element.getName().equalsIgnoreCase("gzip")) {
+                        return new GzipDecompressingEntity(response.getEntity());
+                    }
+                }
+            }
+        }
+        return entity;
     }
 
     private HttpHeaders getHeaders(HttpResponse response) {

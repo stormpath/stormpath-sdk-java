@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.tenant;
 
-import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.tenant.TenantOptions;
+import com.stormpath.sdk.impl.query.*;
+import com.stormpath.sdk.tenant.*;
 
 /**
  * @since 0.8
@@ -59,5 +59,35 @@ public class DefaultTenantOptions extends DefaultOptions<TenantOptions> implemen
     @Override
     public TenantOptions withCustomData() {
         return expand(DefaultTenant.CUSTOM_DATA);
+    }
+
+    @Override
+    public TenantOptions withAccounts() {
+        return expand(DefaultTenant.ACCOUNTS);
+    }
+
+    @Override
+    public TenantOptions withAccounts(int limit) {
+        return expand(DefaultTenant.ACCOUNTS, limit);
+    }
+
+    @Override
+    public TenantOptions withAccounts(int limit, int offset) {
+        return expand(DefaultTenant.ACCOUNTS, limit, offset);
+    }
+
+    @Override
+    public TenantOptions withGroups() {
+        return expand(DefaultTenant.GROUPS);
+    }
+
+    @Override
+    public TenantOptions withGroups(int limit) {
+        return expand(DefaultTenant.GROUPS, limit);
+    }
+
+    @Override
+    public TenantOptions withGroups(int limit, int offset) {
+        return expand(DefaultTenant.GROUPS, limit, offset);
     }
 }

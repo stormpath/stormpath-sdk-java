@@ -15,34 +15,20 @@
  */
 package com.stormpath.sdk.impl.idsite;
 
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.error.jwt.InvalidJwtException;
-import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.http.HttpRequest;
-import com.stormpath.sdk.idsite.AccountResult;
-import com.stormpath.sdk.idsite.AuthenticationResult;
-import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
-import com.stormpath.sdk.idsite.IdSiteResultListener;
-import com.stormpath.sdk.idsite.NonceStore;
-import com.stormpath.sdk.idsite.RegistrationResult;
-import com.stormpath.sdk.impl.account.DefaultAccountResult;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.error.jwt.*;
+import com.stormpath.sdk.http.*;
+import com.stormpath.sdk.idsite.*;
+import com.stormpath.sdk.impl.account.*;
 import com.stormpath.sdk.impl.account.DefaultAuthenticationResult;
-import com.stormpath.sdk.impl.account.DefaultLogoutResult;
-import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
-import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
-import com.stormpath.sdk.impl.ds.DefaultDataStore;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
-import com.stormpath.sdk.impl.jwt.JwtWrapper;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.impl.authc.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.jwt.*;
+import com.stormpath.sdk.lang.*;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
 
@@ -83,7 +69,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         this.dataStore = dataStore;
         this.application = application;
         this.jwtResponse = getJwtResponse(httpRequest);
-        this.nonceStore = new DefaultNonceStore((DefaultDataStore) dataStore);
+        this.nonceStore = new DefaultNonceStore(dataStore.getCacheResolver());
     }
 
     @Override

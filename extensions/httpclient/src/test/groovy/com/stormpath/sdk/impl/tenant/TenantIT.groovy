@@ -18,15 +18,25 @@ package com.stormpath.sdk.impl.tenant
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.TenantOptions
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
+import java.lang.reflect.Field
+import java.util.concurrent.TimeUnit
+
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
 
 /**
@@ -94,6 +104,53 @@ class TenantIT extends ClientIT {
         println '"cacheManager": ' + s;
 
         Thread.sleep(20)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testCurrentTenantWithOptions(){
+
+        TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
+        def tenant = client.getCurrentTenant(options)
+
+        Map properties = getValue(AbstractResource, tenant, "properties")
+        def apps = properties.get("applications").get("size")
+        def dirs = properties.get("directories").get("size")
+        def groups = properties.get("groups").get("size")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
+        dir = tenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        assertNotNull dir.href
+
+        Application app = client.instantiate(Application)
+        app.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions App"))
+        app = tenant.createApplication(newCreateRequestFor(app).build())
+        deleteOnTeardown(app)
+
+        def group = client.instantiate(Group)
+        group.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Group"))
+        group = dir.createGroup(group)
+        deleteOnTeardown(group)
+
+        assertNotNull app.href
+
+        tenant = client.getCurrentTenant(options)
+
+        properties = getValue(AbstractResource, tenant, "properties")
+        assertTrue properties.get("applications").get("size") == apps + 1
+        assertTrue properties.get("directories").get("size") == dirs + 1
+        assertTrue properties.get("groups").get("size") == groups + 1
+
+        // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
+        // https://github.com/stormpath/stormpath-sdk-java/issues/164
+        assertEquals dirs + 1, tenant.directories.size
+        assertEquals apps + 1, tenant.applications.size
+        assertEquals groups + 1, tenant.groups.size
     }
 
     //@since 1.0.beta
@@ -214,7 +271,9 @@ class TenantIT extends ClientIT {
         }
     }
 
-    //@since 1.0.RC3
+    /**
+     * @since 1.0.RC4.3
+     */
     @Test
     void testGetAccountsWithCriteria() {
         def uniqueEmail = uniquify("myUnique") + "@email.com"
@@ -384,4 +443,215 @@ class TenantIT extends ClientIT {
         assertEquals(((GithubProvider)provider).getClientSecret(), clientSecret)
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testTenantExpansionWithoutCache(){
+
+        Client client = buildClient(false);
+
+        def tenant = client.currentTenant
+
+        TenantOptions options = Tenants.options()
+                .withApplications()
+                .withGroups()
+
+        // test options created successfully
+        assertNotNull options
+        assertEquals options.expansions.size(), 2
+
+        //Test the expansion worked by reading the internal properties of the tenant
+        def retrieved = client.getResource(tenant.href, Tenant.class, options)
+        Map tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue tenantProperties.get("groups").size() > 1
+        assertTrue tenantProperties.get("applications").size() > 1
+        assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
+        def groupsQty = tenantProperties.get("groups").get("size")
+        def applicationsQty = tenantProperties.get("applications").get("size")
+
+        def app = createTempApp()
+        Group group1 = client.instantiate(Group)
+        group1.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group1")
+        group1 = app.createGroup(group1)
+        deleteOnTeardown(group1)
+
+        Group group2 = client.instantiate(Group)
+        group2.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group2")
+        group2 = app.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        //Test the expansion worked by reading the internal properties of the tenant, it must contain the recently created groups now
+        retrieved = client.getResource(tenant.href, Tenant.class, options)
+        tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertEquals(tenant.href, retrieved.href)
+
+        assertTrue tenantProperties.get("groups").get("size") > groupsQty
+        assertTrue tenantProperties.get("applications").get("size") > applicationsQty
+
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testTenantExpansionWithCache(){
+
+        def tenant = client.currentTenant
+
+        TenantOptions options = Tenants.options()
+                .withApplications()
+                .withGroups()
+
+        // test options created successfully
+        assertNotNull options
+        assertEquals options.expansions.size(), 2
+
+        //Test the expansion worked by reading the internal properties of the tenant
+        def retrieved = client.getResource(tenant.href, Tenant.class, options)
+        Map tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue tenantProperties.get("groups").size() > 1
+        assertTrue tenantProperties.get("applications").size() > 1
+        assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
+        def groupsQty = tenantProperties.get("groups").get("size")
+        def applicationsQty = tenantProperties.get("applications").get("size")
+
+        def app = createTempApp()
+        Group group1 = client.instantiate(Group)
+        group1.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group1")
+        group1 = app.createGroup(group1)
+        deleteOnTeardown(group1)
+
+        Group group2 = client.instantiate(Group)
+        group2.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group2")
+        group2 = app.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        //Test the expansion worked by reading the internal properties of the tenant, it must contain the recently created groups now
+        retrieved = client.getResource(tenant.href, Tenant.class, options)
+        tenantProperties = getValue(AbstractResource, retrieved, "properties")
+        assertEquals(tenant.href, retrieved.href)
+
+        assertTrue tenantProperties.get("groups").get("size") > groupsQty
+        assertTrue tenantProperties.get("applications").get("size") > applicationsQty
+
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetDirectoriesWithWrongTimestampFilter() {
+        def tenant = client.currentTenant
+        Directory directory = client.instantiate(Directory)
+        directory.name = uniquify("Java SDK: TenantIT.testGetDirectoriesWithWrongTimestampFilters")
+        directory = client.createDirectory(directory);
+        deleteOnTeardown(directory)
+        assertNotNull directory.href
+
+        try {
+            def dirList = tenant.getDirectories(
+                    Directories.where(Directories.modifiedAt().matches("wrong match expression")))
+            fail("should have thrown")
+        } catch (Exception e){
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 2103 (http://docs.stormpath.com/errors/2103): modifiedAt query criteria parameter value is invalid or an unexpected type.")
+        }
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetApplicationsWithTimestampFilter(){
+        def tenant = client.currentTenant
+
+        Application application = client.instantiate(Application)
+        application.setName(uniquify("testGetApplicationsWithTimestampFilter app"))
+        application = tenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
+
+        Date appCreationTimestamp = application.createdAt
+
+        //equals
+        def appList = client.getApplications(Applications.where(Applications.createdAt().equals(appCreationTimestamp)))
+        assertNotNull appList.href
+
+        def retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.createdAt, application.createdAt
+
+        //gt
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().gt(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        //gte
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().gte(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals retrieved.createdAt, application.createdAt
+
+        //lt
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().lt(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        //lte
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().lte(appCreationTimestamp)))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals retrieved.createdAt, application.createdAt
+
+        //in
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(appCreationTimestamp)
+        cal.add(Calendar.SECOND, 2)
+        Date afterCreationDate = cal.getTime()
+
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().in(appCreationTimestamp, afterCreationDate)))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals retrieved.createdAt, application.createdAt
+
+        //in
+        cal.setTime(appCreationTimestamp)
+        cal.add(Calendar.SECOND, -10)
+        Date newDate = cal.getTime()
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().in(newDate, new Duration(1, TimeUnit.SECONDS))))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        //in
+        appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(application.name))
+                .and(Applications.createdAt().in(appCreationTimestamp, new Duration(1, TimeUnit.MINUTES))))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+        retrieved = appList.iterator().next()
+        assertEquals retrieved.href, application.href
+        assertEquals retrieved.name, application.name
+        assertEquals retrieved.createdAt, application.createdAt
+    }
 }
