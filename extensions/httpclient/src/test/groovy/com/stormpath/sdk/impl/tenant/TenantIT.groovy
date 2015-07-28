@@ -126,6 +126,8 @@ class TenantIT extends ClientIT {
         TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
         def tenant = client.getCurrentTenant(options)
 
+        assertNotNull tenant
+
         Map properties = getValue(AbstractResource, tenant, "properties")
         def apps = properties.get("applications").get("size")
         def dirs = properties.get("directories").get("size")
@@ -151,6 +153,8 @@ class TenantIT extends ClientIT {
         assertNotNull app.href
 
         tenant = client.getCurrentTenant(options)
+
+        assertNotNull tenant
 
         properties = getValue(AbstractResource, tenant, "properties")
         assertTrue properties.get("applications").get("size") == apps + 1
