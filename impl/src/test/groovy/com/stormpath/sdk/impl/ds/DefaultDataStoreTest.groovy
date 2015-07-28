@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,10 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GithubProvider
-import com.stormpath.sdk.provider.GoogleProviderData
-import com.stormpath.sdk.provider.Provider
-import com.stormpath.sdk.provider.ProviderData
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.impl.query.DefaultOptions
+import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.query.Options
+import com.stormpath.sdk.resource.Resource
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
@@ -71,7 +69,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource(href, null, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "parent class argument cannot be null.")
+            assertEquals(e.getMessage(), "Resource class argument cannot be null.")
         }
 
         try {
@@ -186,16 +184,13 @@ class DefaultDataStoreTest {
         def response = createStrictMock(Response)
         def facebookProvider = createStrictMock(FacebookProvider)
         def apiKey = createStrictMock(ApiKey)
-        // convert String into InputStream
-        InputStream is = new ByteArrayInputStream("".getBytes());
 
         def childIdProperty = "providerId"
         def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
 
         expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
         expect(response.isError()).andReturn(false)
-        expect(response.hasBody()).andReturn(true)
-        expect(response.getBody()).andReturn(is)
+        expect(response.hasBody()).andReturn(false)
 
         replay(requestExecutor, response, facebookProvider)
 
@@ -204,7 +199,7 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider", Provider, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "providerId could not be found in: null.")
+            assertEquals(e.getMessage(), "Unable to obtain resource data from the API server or from cache.")
         }
 
         verify(requestExecutor, response, facebookProvider)
@@ -305,8 +300,7 @@ class DefaultDataStoreTest {
                 .withDefaultTimeToIdle(1, TimeUnit.HOURS)
                 .withDefaultTimeToLive(1, TimeUnit.HOURS)
                 .build();
-        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
-        defaultDataStore.setCacheManager(cache)
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cache)
         def app = new DefaultApplication(defaultDataStore, appProperties)
 
         defaultDataStore.getResource(providerResponseMap.href, Provider, childIdProperty, map)
@@ -362,6 +356,38 @@ class DefaultDataStoreTest {
         verify(requestExecutor, response)
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetResource_Expanded_InvalidArguments() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKey = createStrictMock(ApiKey)
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        def emptyOptions = createStrictMock(DefaultOptions)
+        def resourceData = Resource
+        def href = "http://api.stormpath.com/v1/directories/2B6PLkZ8AGvWlziq18JJ62"
 
+        try {
+            defaultDataStore.getResource(null, resourceData, emptyOptions)
+            fail("should have thrown due to empty href")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "href argument cannot be null or empty.")
+        }
+
+        try {
+            defaultDataStore.getResource(href, null, emptyOptions)
+            fail("should have thrown due to empty class")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "Resource class argument cannot be null.")
+        }
+
+        try {
+            defaultDataStore.getResource(href, resourceData, (Options) null)
+            fail("should have thrown due to empty options")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "The com.stormpath.sdk.impl.ds.DefaultDataStore implementation only functions with com.stormpath.sdk.impl.query.DefaultOptions instances.Object of class [null] must be an instance of class com.stormpath.sdk.impl.query.DefaultOptions")
+        }
+    }
 
 }

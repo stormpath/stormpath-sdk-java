@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.cache;
 
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.impl.util.Duration;
+import com.stormpath.sdk.lang.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.lang.Assert;
 
@@ -46,29 +46,29 @@ import java.util.concurrent.TimeUnit;
  * no longer be available.  If a cache entry is not accessed at all after this amount of time, it will be
  * removed from the cache as soon as possible.
  * <p/>
- * This implementation's {@link #setDefaultTimeToIdle(com.stormpath.sdk.impl.util.Duration) defaultTimeToIdle}
+ * This implementation's {@link #setDefaultTimeToIdle(com.stormpath.sdk.lang.Duration) defaultTimeToIdle}
  * is {@code null}, which means that cache entries can potentially remain idle indefinitely.  Note however that a
  * cache entry can still be expunged due to other conditions (e.g. memory constraints, Time to Live setting, etc).
  * <p/>
- * The {@link #setDefaultTimeToIdle(com.stormpath.sdk.impl.util.Duration) defaultTimeToIdle} setting is only
+ * The {@link #setDefaultTimeToIdle(com.stormpath.sdk.lang.Duration) defaultTimeToIdle} setting is only
  * applied to newly created {@code Cache} instances.  It does not affect already existing {@code Cache}s.
  * <h2>Time to Live</h2>
  * Time to Live is the amount of time a cache entry may exist after first being created before it will expire and no
  * longer be available.  If a cache entry ever becomes older than this amount of time (regardless of how often
  * it is accessed), it will be removed from the cache as soon as possible.
  * <p/>
- * This implementation's {@link #setDefaultTimeToLive(com.stormpath.sdk.impl.util.Duration) defaultTimeToLive}
+ * This implementation's {@link #setDefaultTimeToLive(com.stormpath.sdk.lang.Duration) defaultTimeToLive}
  * is {@code null}, which means that cache entries could potentially live indefinitely.  Note however that a
  * cache entry can still be expunged due to other conditions (e.g. memory constraints, Time to Idle setting, etc).
  * <p/>
- * The {@link #setDefaultTimeToLive(com.stormpath.sdk.impl.util.Duration) defaultTimeToLive} setting is only
+ * The {@link #setDefaultTimeToLive(com.stormpath.sdk.lang.Duration) defaultTimeToLive} setting is only
  * applied to newly created {@code Cache} instances.  It does not affect already existing {@code Cache}s.
  * <h2>Thread Safety</h2>
  * This implementation and the cache instances it creates are thread-safe and usable in concurrent environments.
  *
- * @see #setDefaultTimeToIdle(com.stormpath.sdk.impl.util.Duration)
+ * @see #setDefaultTimeToIdle(com.stormpath.sdk.lang.Duration)
  * @see #setDefaultTimeToIdleSeconds(long)
- * @see #setDefaultTimeToLive(com.stormpath.sdk.impl.util.Duration)
+ * @see #setDefaultTimeToLive(com.stormpath.sdk.lang.Duration)
  * @see #setDefaultTimeToLiveSeconds(long)
  * @since 0.8
  */
@@ -123,10 +123,10 @@ public class DefaultCacheManager implements CacheManager {
     }
 
     /**
-     * Convenience method that sets the {@link #setDefaultTimeToLive(com.stormpath.sdk.impl.util.Duration) defaultTimeToLive}
+     * Convenience method that sets the {@link #setDefaultTimeToLive(com.stormpath.sdk.lang.Duration) defaultTimeToLive}
      * value using a {@code TimeUnit} of {@link TimeUnit#SECONDS}.
      *
-     * @param seconds the {@link #setDefaultTimeToLive(com.stormpath.sdk.impl.util.Duration) defaultTimeToLive} value in seconds.
+     * @param seconds the {@link #setDefaultTimeToLive(com.stormpath.sdk.lang.Duration) defaultTimeToLive} value in seconds.
      */
     public void setDefaultTimeToLiveSeconds(long seconds) {
         setDefaultTimeToLive(new Duration(seconds, TimeUnit.SECONDS));
@@ -158,10 +158,10 @@ public class DefaultCacheManager implements CacheManager {
     }
 
     /**
-     * Convenience method that sets the {@link #setDefaultTimeToIdle(com.stormpath.sdk.impl.util.Duration) defaultTimeToIdle}
+     * Convenience method that sets the {@link #setDefaultTimeToIdle(com.stormpath.sdk.lang.Duration) defaultTimeToIdle}
      * value using a {@code TimeUnit} of {@link TimeUnit#SECONDS}.
      *
-     * @param seconds the {@link #setDefaultTimeToIdle(com.stormpath.sdk.impl.util.Duration) defaultTimeToIdle} value in seconds.
+     * @param seconds the {@link #setDefaultTimeToIdle(com.stormpath.sdk.lang.Duration) defaultTimeToIdle} value in seconds.
      */
     public void setDefaultTimeToIdleSeconds(long seconds) {
         setDefaultTimeToIdle(new Duration(seconds, TimeUnit.SECONDS));

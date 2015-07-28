@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.resource.Auditable;
 
 import java.util.Date;
 import java.util.Map;
@@ -51,11 +52,17 @@ public abstract class AbstractProvider extends AbstractResource implements Provi
         return getString(PROVIDER_ID);
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
     @Override
     public Date getCreatedAt() {
         return getDateProperty(CREATED_AT);
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
     @Override
     public Date getModifiedAt() {
         return getDateProperty(MODIFIED_AT);

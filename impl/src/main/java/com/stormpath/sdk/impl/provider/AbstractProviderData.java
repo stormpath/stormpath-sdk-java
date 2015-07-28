@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.resource.Auditable;
 
 import java.util.Date;
 import java.util.Map;

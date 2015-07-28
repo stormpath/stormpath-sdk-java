@@ -38,7 +38,7 @@ public class CollectionProperties extends LinkedHashMap<String, Object> {
     public static class Builder {
 
         private String href;
-        private final List<Map<String, Object>> itemsMapList = new LinkedList<Map<String, Object>>();
+        private final List<Map<String, ?>> itemsMapList = new LinkedList<Map<String, ?>>();
         private int offset;
         private int limit;
 
@@ -48,7 +48,7 @@ public class CollectionProperties extends LinkedHashMap<String, Object> {
             return this;
         }
 
-        public Builder setItemsMap(Map<String, Object> itemsMap) {
+        public Builder setItemsMap(Map<String, ?> itemsMap) {
             itemsMapList.add(itemsMap);
             return this;
         }

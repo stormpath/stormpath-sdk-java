@@ -60,4 +60,34 @@ public class DefaultTenantOptions extends DefaultOptions<TenantOptions> implemen
     public TenantOptions withCustomData() {
         return expand(DefaultTenant.CUSTOM_DATA);
     }
+
+    @Override
+    public TenantOptions withAccounts() {
+        return expand(DefaultTenant.ACCOUNTS);
+    }
+
+    @Override
+    public TenantOptions withAccounts(int limit) {
+        return expand(DefaultTenant.ACCOUNTS, limit);
+    }
+
+    @Override
+    public TenantOptions withAccounts(int limit, int offset) {
+        return expand(DefaultTenant.ACCOUNTS, limit, offset);
+    }
+
+    @Override
+    public TenantOptions withGroups() {
+        return expand(DefaultTenant.GROUPS);
+    }
+
+    @Override
+    public TenantOptions withGroups(int limit) {
+        return expand(DefaultTenant.GROUPS, limit);
+    }
+
+    @Override
+    public TenantOptions withGroups(int limit, int offset) {
+        return expand(DefaultTenant.GROUPS, limit, offset);
+    }
 }
