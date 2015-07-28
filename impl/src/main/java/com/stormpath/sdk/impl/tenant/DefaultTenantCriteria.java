@@ -14,9 +14,8 @@ package com.stormpath.sdk.impl.tenant;/*
 * limitations under the License.
 */
 
-import com.stormpath.sdk.impl.query.DefaultCriteria;
-import com.stormpath.sdk.tenant.TenantCriteria;
-import com.stormpath.sdk.tenant.TenantOptions;
+import com.stormpath.sdk.impl.query.*;
+import com.stormpath.sdk.tenant.*;
 
 /**
  * @since 1.0.RC4.6

@@ -15,9 +15,8 @@
  */
 package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.api.ApiKeyCriteria;
-import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.impl.query.*;
 
 /**
  * @since 1.0.RC

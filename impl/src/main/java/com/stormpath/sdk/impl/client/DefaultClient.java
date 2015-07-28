@@ -15,41 +15,24 @@
  */
 package com.stormpath.sdk.impl.client;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationCriteria;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.application.CreateApplicationRequest;
-import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.directory.CreateDirectoryRequest;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryCriteria;
-import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.impl.ds.DefaultDataStore;
-import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.tenant.DefaultTenantCriteria;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.query.Options;
-import com.stormpath.sdk.query.Criteria;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.tenant.Tenant;
-import com.stormpath.sdk.tenant.TenantActions;
-import com.stormpath.sdk.tenant.TenantCriteria;
-import com.stormpath.sdk.tenant.TenantOptions;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.ds.*;
+import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.tenant.*;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * The default {@link Client} implementation.

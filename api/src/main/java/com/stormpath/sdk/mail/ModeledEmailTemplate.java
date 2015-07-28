@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.mail;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * The {@link ModeledEmailTemplate} is a {@link EmailTemplate} resource which also provides the ability to configure the url where

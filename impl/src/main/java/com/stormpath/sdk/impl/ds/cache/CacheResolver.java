@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.ds.cache;
 
-import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.cache.*;
 
-import java.util.Map;
+import java.util.*;
 
 public interface CacheResolver {
 

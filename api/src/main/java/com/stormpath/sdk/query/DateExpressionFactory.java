@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.query;
 
-import com.stormpath.sdk.lang.Duration;
+import com.stormpath.sdk.lang.*;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * An {@code DateExpressionFactory} creates a single condition (matches) for resource properties of Date type.

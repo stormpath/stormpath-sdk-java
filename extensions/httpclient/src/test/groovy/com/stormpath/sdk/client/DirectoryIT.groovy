@@ -17,11 +17,7 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.directory.AccountCreationPolicy
-import com.stormpath.sdk.directory.Directories
-import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.directory.DirectoryOptions
-import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.directory.*
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.lang.Duration
@@ -29,9 +25,9 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
-import java.util.concurrent.TimeUnit
 
 import java.lang.reflect.Field
+import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
 

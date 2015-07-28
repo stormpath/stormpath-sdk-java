@@ -16,7 +16,6 @@
 package com.stormpath.sdk.lang;
 
 import java.util.*;
-import java.util.Date;
 
 /**
  * Utility class to create UTC-based dates and perform time conversions from UTC to other {@link TimeZone timezones} and vice versa

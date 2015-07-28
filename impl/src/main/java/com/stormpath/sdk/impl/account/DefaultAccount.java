@@ -16,37 +16,21 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyCriteria;
-import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationCriteria;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.impl.api.DefaultApiKey;
-import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.group.DefaultGroupMembership;
-import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.query.Criteria;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.impl.api.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.group.*;
+import com.stormpath.sdk.impl.provider.*;
+import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.tenant.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 0.1

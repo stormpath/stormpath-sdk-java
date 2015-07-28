@@ -15,32 +15,19 @@
  */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.VerificationEmailRequest;
-import com.stormpath.sdk.api.ApiAuthenticationResult;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryCriteria;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
-import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.idsite.*;
+import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.provider.*;
 import com.stormpath.sdk.resource.*;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * An {@code Application} instance represents a Stormpath

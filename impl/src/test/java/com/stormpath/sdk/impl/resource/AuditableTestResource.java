@@ -1,9 +1,8 @@
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.ds.*;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is a resource created for testing purposes only.

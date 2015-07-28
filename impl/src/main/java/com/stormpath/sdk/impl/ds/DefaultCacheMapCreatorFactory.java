@@ -15,12 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.impl.ds.directory.CustomDataCacheMapCreator;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.impl.ds.directory.*;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC

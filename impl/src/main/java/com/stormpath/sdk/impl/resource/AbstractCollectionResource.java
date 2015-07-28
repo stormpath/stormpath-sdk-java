@@ -15,19 +15,11 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
 /**
  * @since 0.2

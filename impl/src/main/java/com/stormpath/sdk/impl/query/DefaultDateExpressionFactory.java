@@ -15,14 +15,13 @@
 */
 package com.stormpath.sdk.impl.query;
 
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.*;
 import com.stormpath.sdk.lang.Duration;
-import com.stormpath.sdk.query.Criterion;
-import com.stormpath.sdk.query.DateExpressionFactory;
-import org.joda.time.DateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import com.stormpath.sdk.query.*;
+import org.joda.time.*;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @since 1.0.RC4.6

@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.ds.directory.CustomDataCacheMapCreator;
+import com.stormpath.sdk.impl.ds.directory.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>

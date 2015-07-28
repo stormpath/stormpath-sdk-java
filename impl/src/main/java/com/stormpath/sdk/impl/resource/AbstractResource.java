@@ -15,27 +15,15 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.stormpath.sdk.impl.ds.Enlistment;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.util.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.resource.*;
+import org.slf4j.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.locks.*;
 
 /**
  * @since 0.1

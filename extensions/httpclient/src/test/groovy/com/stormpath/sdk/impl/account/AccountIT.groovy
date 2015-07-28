@@ -36,7 +36,6 @@ import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options

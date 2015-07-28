@@ -15,25 +15,16 @@
  */
 package quickstart;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.application.Applications;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Clients;
-import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.tenant.Tenant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.authc.*;
+import com.stormpath.sdk.client.*;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.tenant.*;
+import org.slf4j.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class demonstrates the code found in the Stormpath Java SDK QuickStart Guide

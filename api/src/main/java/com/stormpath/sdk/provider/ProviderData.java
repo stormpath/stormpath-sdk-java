@@ -15,10 +15,9 @@
  */
 package com.stormpath.sdk.provider;
 
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Resource containing Provider-specific data for the {@link com.stormpath.sdk.account.Account}. For example, for Google, it

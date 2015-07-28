@@ -18,15 +18,15 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.directory.*;
 import com.stormpath.sdk.group.*;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.provider.IdentityProviderType;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.provider.*;
 import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.provider.Provider;
-import com.stormpath.sdk.query.Criteria;
-import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.tenant.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 0.2

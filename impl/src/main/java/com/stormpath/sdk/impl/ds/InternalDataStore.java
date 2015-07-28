@@ -15,14 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.impl.ds.cache.CacheResolver;
-import com.stormpath.sdk.query.Criteria;
-import com.stormpath.sdk.query.Options;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.ds.*;
+import com.stormpath.sdk.impl.ds.cache.*;
+import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * Internal DataStore used for implementation purposes only.  Not intended to be called by SDK end users!

@@ -15,19 +15,13 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
-import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.query.LikeExpression;
-import com.stormpath.sdk.impl.query.Order;
-import com.stormpath.sdk.impl.query.SimpleExpression;
+import com.stormpath.sdk.impl.http.support.*;
+import com.stormpath.sdk.impl.query.*;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.query.Criterion;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.query.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 0.8

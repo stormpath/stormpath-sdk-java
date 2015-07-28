@@ -15,41 +15,26 @@
  */
 package com.stormpath.sdk.impl.ds.cache;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.EmailVerificationToken;
-import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.impl.account.DefaultAccount;
-import com.stormpath.sdk.impl.api.ApiKeyParameter;
-import com.stormpath.sdk.impl.ds.CacheMapInitializer;
-import com.stormpath.sdk.impl.ds.DefaultCacheMapInitializer;
-import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
-import com.stormpath.sdk.impl.ds.FilterChain;
-import com.stormpath.sdk.impl.ds.ResourceAction;
-import com.stormpath.sdk.impl.ds.ResourceDataRequest;
-import com.stormpath.sdk.impl.ds.ResourceDataResult;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.impl.account.*;
+import com.stormpath.sdk.impl.api.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.http.*;
 import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.*;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.mail.ModeledEmailTemplate;
-import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.mail.*;
+import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.resource.*;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
-import static com.stormpath.sdk.impl.resource.AbstractResource.*;
+import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
 
 public class WriteCacheFilter extends AbstractCacheFilter {
 

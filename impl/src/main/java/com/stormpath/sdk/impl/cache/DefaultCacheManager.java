@@ -15,16 +15,12 @@
  */
 package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.lang.Duration;
-import com.stormpath.sdk.impl.util.SoftHashMap;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.impl.util.*;
+import com.stormpath.sdk.lang.*;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Very simple default {@code CacheManager} implementation that retains all created {@link Cache Cache} instances in

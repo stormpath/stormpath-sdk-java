@@ -15,17 +15,14 @@
  */
 package com.stormpath.sdk.impl.ds.cache;
 
-import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.impl.ds.Filter;
-import com.stormpath.sdk.impl.ds.ResourceDataRequest;
-import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.lang.*;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Map;
+import java.util.*;
 
 abstract class AbstractCacheFilter implements Filter {
 

@@ -15,14 +15,13 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.directory.PasswordPolicy;
-import com.stormpath.sdk.directory.PasswordStrength;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.impl.ds.*;
 import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.*;
 import com.stormpath.sdk.mail.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC4

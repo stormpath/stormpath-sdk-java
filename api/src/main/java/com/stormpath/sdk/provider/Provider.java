@@ -15,10 +15,9 @@
  */
 package com.stormpath.sdk.provider;
 
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * A provider resource holds specific information needed to work with Provider-based Directories (e.g, Google and Facebook).

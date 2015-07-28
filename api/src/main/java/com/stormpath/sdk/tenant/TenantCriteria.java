@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.tenant;
 
-import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.query.*;
 
 /**
  * A {@link Tenant}-specific {@link Criteria} class, enabling a Tenant-specific

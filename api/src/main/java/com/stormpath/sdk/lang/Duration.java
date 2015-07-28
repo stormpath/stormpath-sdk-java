@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.lang;
 
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * A duration is a scalar value paired with a unit of time. For example, 10 milliseconds and 50 minutes are both

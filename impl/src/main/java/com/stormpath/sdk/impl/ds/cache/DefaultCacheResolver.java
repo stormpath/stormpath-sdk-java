@@ -15,12 +15,11 @@
  */
 package com.stormpath.sdk.impl.ds.cache;
 
-import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.impl.ds.CacheRegionNameResolver;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.lang.*;
 
-import java.util.Map;
+import java.util.*;
 
 public class DefaultCacheResolver implements CacheResolver {
 

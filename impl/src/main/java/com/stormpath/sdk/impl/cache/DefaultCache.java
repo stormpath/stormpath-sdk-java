@@ -15,15 +15,14 @@
  */
 package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.lang.Duration;
-import com.stormpath.sdk.impl.util.SoftHashMap;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.cache.*;
+import com.stormpath.sdk.impl.util.*;
+import com.stormpath.sdk.lang.*;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 /**
  * A <code>DefaultCache</code> is a {@link Cache Cache} implementation that uses a backing {@link Map} instance to store

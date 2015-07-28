@@ -15,13 +15,11 @@
  */
 package com.stormpath.sdk.impl.http.support;
 
-import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.lang.*;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.lang.Strings;
 
-import java.util.Map;
+import java.util.*;
 
 public class DefaultCanonicalUri implements CanonicalUri {
 

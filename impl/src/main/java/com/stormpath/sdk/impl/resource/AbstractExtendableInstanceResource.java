@@ -15,15 +15,13 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.impl.directory.DefaultCustomData;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.directory.*;
+import com.stormpath.sdk.impl.directory.*;
+import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.0

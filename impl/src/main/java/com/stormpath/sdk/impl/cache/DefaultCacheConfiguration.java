@@ -15,10 +15,9 @@
  */
 package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.lang.Duration;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @since 0.8

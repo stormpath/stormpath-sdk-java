@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.resource.*;
 
-import java.util.Map;
+import java.util.*;
 
 public class DefaultResourceMessage implements ResourceMessage {
 

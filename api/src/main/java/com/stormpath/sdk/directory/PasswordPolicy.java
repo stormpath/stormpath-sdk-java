@@ -16,8 +16,7 @@
 package com.stormpath.sdk.directory;
 
 import com.stormpath.sdk.mail.*;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 
 /**
  * A PasswordPolicy resource is used to configure different aspects of the restrictions on passwords for accounts associated

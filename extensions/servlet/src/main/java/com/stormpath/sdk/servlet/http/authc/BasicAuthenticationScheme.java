@@ -15,22 +15,17 @@
  */
 package com.stormpath.sdk.servlet.http.authc;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.api.ApiAuthenticationResult;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
-import com.stormpath.sdk.impl.util.Base64;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
+import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.authc.*;
+import com.stormpath.sdk.impl.util.*;
+import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.servlet.filter.*;
+import com.stormpath.sdk.servlet.http.impl.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
+import javax.servlet.http.*;
+import java.nio.charset.*;
 
 /**
  * @since 1.0.RC3
