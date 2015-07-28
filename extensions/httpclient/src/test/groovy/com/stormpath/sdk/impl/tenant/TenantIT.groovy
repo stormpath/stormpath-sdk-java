@@ -527,13 +527,20 @@ class TenantIT extends ClientIT {
         //Test the expansion worked by reading the internal properties of the tenant
         def retrieved = client.getResource(tenant.href, Tenant.class, options)
         Map tenantProperties = getValue(AbstractResource, retrieved, "properties")
-        assertTrue tenantProperties.get("groups").size() > 1
-        assertTrue tenantProperties.get("applications").size() > 1
-        assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
+
+        def groups = tenantProperties.get("groups").size()
+        def apps =  tenantProperties.get("applications").size()
+        def accounts = tenantProperties.get("accounts").size()
+
+        assertTrue groups > 1
+        assertTrue apps > 1
+        assertTrue accounts == 1 //this is not expanded, must be 1
+
         def groupsQty = tenantProperties.get("groups").get("size")
         def applicationsQty = tenantProperties.get("applications").get("size")
 
         def app = createTempApp()
+
         Group group1 = client.instantiate(Group)
         group1.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group1")
         group1 = app.createGroup(group1)
@@ -545,13 +552,13 @@ class TenantIT extends ClientIT {
         deleteOnTeardown(group2)
 
         //Test the expansion worked by reading the internal properties of the tenant, it must contain the recently created groups now
-        retrieved = client.getResource(tenant.href, Tenant.class, options)
-        tenantProperties = getValue(AbstractResource, retrieved, "properties")
-        assertEquals(tenant.href, retrieved.href)
+        def retrieved2 = client.getResource(tenant.href, Tenant.class, options)
+        assertEquals(tenant.href, retrieved2.href)
+
+        tenantProperties = getValue(AbstractResource, retrieved2, "properties")
 
         assertTrue tenantProperties.get("groups").get("size") > groupsQty
         assertTrue tenantProperties.get("applications").get("size") > applicationsQty
-
     }
 
     /**
