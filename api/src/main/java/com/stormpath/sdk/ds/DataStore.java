@@ -15,10 +15,10 @@
  */
 package com.stormpath.sdk.ds;
 
-import com.stormpath.sdk.api.*;
-import com.stormpath.sdk.cache.*;
-import com.stormpath.sdk.query.*;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.query.Options;
+import com.stormpath.sdk.resource.Resource;
 
 /**
  * A {@code DataStore} is the liaison between client SDK components and the raw Stormpath REST API.  It is responsible

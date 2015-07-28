@@ -15,15 +15,18 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.authc.*;
-import com.stormpath.sdk.client.*;
-import com.stormpath.sdk.impl.util.*;
-import com.stormpath.sdk.lang.*;
-import io.jsonwebtoken.*;
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.lang.Assert;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.crypto.spec.*;
-import javax.servlet.http.*;
-import java.security.*;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.Key;
 
 /**
  * @since 1.0.RC3

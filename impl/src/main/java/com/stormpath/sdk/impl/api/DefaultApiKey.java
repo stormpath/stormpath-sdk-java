@@ -15,14 +15,20 @@
  */
 package com.stormpath.sdk.impl.api;
 
-import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.api.*;
-import com.stormpath.sdk.impl.ds.*;
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.*;
-import com.stormpath.sdk.tenant.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.api.ApiKeyStatus;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.tenant.Tenant;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * This implementation represents the api key resource that belongs to a Stormpath {@link Account}.

@@ -15,10 +15,13 @@
  */
 package com.stormpath.sdk.servlet.http;
 
-import com.stormpath.sdk.lang.*;
-import com.stormpath.sdk.servlet.config.*;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.CookieConfig;
 
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @since 1.0.RC3

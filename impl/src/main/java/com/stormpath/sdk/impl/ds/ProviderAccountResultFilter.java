@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 
 /**
  * Provider's account creation status (whether it is new or not) is represented as a convenience property

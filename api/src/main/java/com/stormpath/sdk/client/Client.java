@@ -15,8 +15,10 @@
  */
 package com.stormpath.sdk.client;
 
-import com.stormpath.sdk.ds.*;
-import com.stormpath.sdk.tenant.*;
+import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantActions;
+import com.stormpath.sdk.tenant.TenantOptions;
 
 /**
  * The {@code Client} is the main entry point to the Stormpath Java SDK.  A JVM project wishing to

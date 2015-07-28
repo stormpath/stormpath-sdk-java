@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.tenant;
 
-import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.query.Options;
 
 /**
  * @since 0.8

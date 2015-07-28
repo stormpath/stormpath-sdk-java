@@ -15,11 +15,12 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.impl.util.*;
-import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.util.SoftHashMap;
+import com.stormpath.sdk.lang.Assert;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/47. Data map is now shared among all Resource

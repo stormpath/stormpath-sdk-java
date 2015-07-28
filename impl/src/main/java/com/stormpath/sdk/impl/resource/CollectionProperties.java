@@ -15,7 +15,10 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
 

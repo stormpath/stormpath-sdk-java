@@ -15,13 +15,23 @@
  */
 package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.group.*;
-import com.stormpath.sdk.provider.*;
-import com.stormpath.sdk.resource.*;
-import com.stormpath.sdk.tenant.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.group.CreateGroupRequest;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.resource.Auditable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.tenant.Tenant;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * A Directory is a top-level container of {@link Account}s and {@link Group}s.  Accounts and Groups are guaranteed to

@@ -15,12 +15,19 @@
  */
 package com.stormpath.sdk.group;
 
-import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.directory.*;
-import com.stormpath.sdk.resource.*;
-import com.stormpath.sdk.tenant.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.resource.Auditable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.tenant.Tenant;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * A group is a uniquely-named collection of {@link Account}s within a {@link Directory}.

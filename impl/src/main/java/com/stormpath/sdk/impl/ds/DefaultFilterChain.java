@@ -15,10 +15,11 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.lang.*;
-import org.slf4j.*;
+import com.stormpath.sdk.lang.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 public class DefaultFilterChain implements FilterChain {
 

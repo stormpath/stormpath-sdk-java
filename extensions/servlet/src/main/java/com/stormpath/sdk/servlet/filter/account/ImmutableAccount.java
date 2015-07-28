@@ -15,16 +15,29 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.api.*;
-import com.stormpath.sdk.application.*;
-import com.stormpath.sdk.directory.*;
-import com.stormpath.sdk.group.*;
-import com.stormpath.sdk.lang.*;
-import com.stormpath.sdk.provider.*;
-import com.stormpath.sdk.tenant.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountOptions;
+import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.tenant.Tenant;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Internal implementation class, not to be used by SDK users.

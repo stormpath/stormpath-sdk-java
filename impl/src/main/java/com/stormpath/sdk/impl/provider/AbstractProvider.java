@@ -15,11 +15,14 @@
  */
 package com.stormpath.sdk.impl.provider;
 
-import com.stormpath.sdk.impl.ds.*;
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.provider.*;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.DateProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.provider.Provider;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * AbstractProvider is an abstract representation for Provider-specific resources like {@link DefaultGoogleProvider} or

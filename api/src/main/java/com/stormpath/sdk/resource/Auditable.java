@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.resource;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Interface to be implemented by {@link Resource Resources} that contain and can be retrieved using the {@code Resource#createdAt} and {@code Resource#modifiedAt} fields as part of the query {@link com.stormpath.sdk.query.Criteria Criteria}.

@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractResource;
 
-import java.util.*;
+import java.util.Map;
 
 public interface ResourceConverter {
 

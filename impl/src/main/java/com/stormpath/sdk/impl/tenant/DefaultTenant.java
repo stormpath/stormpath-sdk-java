@@ -15,19 +15,37 @@
  */
 package com.stormpath.sdk.impl.tenant;
 
-import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.application.*;
-import com.stormpath.sdk.directory.*;
-import com.stormpath.sdk.group.*;
-import com.stormpath.sdk.impl.application.*;
-import com.stormpath.sdk.impl.directory.*;
-import com.stormpath.sdk.impl.ds.*;
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.*;
-import com.stormpath.sdk.query.*;
-import com.stormpath.sdk.tenant.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationCriteria;
+import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.application.Applications;
+import com.stormpath.sdk.application.CreateApplicationRequest;
+import com.stormpath.sdk.directory.CreateDirectoryRequest;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.directory.DirectoryCriteria;
+import com.stormpath.sdk.directory.DirectoryList;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.application.CreateApplicationAndDirectoryRequest;
+import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
+import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
+import com.stormpath.sdk.impl.directory.DefaultDirectory;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.tenant.Tenant;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @since 0.1
