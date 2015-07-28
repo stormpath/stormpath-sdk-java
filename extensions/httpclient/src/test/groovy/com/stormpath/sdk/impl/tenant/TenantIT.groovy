@@ -145,27 +145,29 @@ class TenantIT extends ClientIT {
         app = tenant.createApplication(newCreateRequestFor(app).build())
         deleteOnTeardown(app)
 
+        assertNotNull app.href
+
         def group = client.instantiate(Group)
         group.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Group"))
         group = dir.createGroup(group)
         deleteOnTeardown(group)
 
-        assertNotNull app.href
+        assertNotNull group.href
 
-        tenant = client.getCurrentTenant(options)
+        def tenant2 = client.getCurrentTenant(options)
 
-        assertNotNull tenant
+        assertNotNull tenant2
 
-        properties = getValue(AbstractResource, tenant, "properties")
+        properties = getValue(AbstractResource, tenant2, "properties")
         assertTrue properties.get("applications").get("size") == apps + 1
         assertTrue properties.get("directories").get("size") == dirs + 1
         assertTrue properties.get("groups").get("size") == groups + 1
 
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164
-        assertEquals dirs + 1, tenant.directories.size
-        assertEquals apps + 1, tenant.applications.size
-        assertEquals groups + 1, tenant.groups.size
+        assertEquals dirs + 1, tenant2.directories.size
+        assertEquals apps + 1, tenant2.applications.size
+        assertEquals groups + 1, tenant2.groups.size
     }
 
     //@since 1.0.beta
