@@ -15,7 +15,10 @@
  */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.http.Saver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
@@ -30,15 +33,11 @@ import javax.servlet.http.HttpServletResponse;
 public class StormpathLogoutHandler implements LogoutHandler {
 
     @Autowired
-    protected StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
+    @Qualifier("stormpathAuthenticationResultSaver")
+    private Saver<AuthenticationResult> authenticationResultSaver;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        removeAccount(request, response);
+        authenticationResultSaver.set(request, response, null);
     }
-
-    private void removeAccount(HttpServletRequest request, HttpServletResponse response) {
-        stormpathWebMvcConfiguration.stormpathAuthenticationResultSaver().set(request, response, null);
-    }
-
 }

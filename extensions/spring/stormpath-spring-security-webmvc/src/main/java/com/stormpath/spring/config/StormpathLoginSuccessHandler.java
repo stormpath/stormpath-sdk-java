@@ -19,8 +19,10 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -37,10 +39,11 @@ import java.io.IOException;
 public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
-    protected StormpathWebMvcConfiguration stormpathWebMvcConfiguration;
+    @Qualifier("stormpathAuthenticationResultSaver")
+    private Saver<AuthenticationResult> authenticationResultSaver;
 
     @Autowired
-    protected Client stormpathClient;
+    private Client stormpathClient;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
@@ -51,10 +54,10 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
     protected void saveAccount(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
         Account account = getAccount(authentication);
         AuthenticationResult result = new TransientAuthenticationResult(account);
-        stormpathWebMvcConfiguration.stormpathAuthenticationResultSaver().set(request, response, result);
+        authenticationResultSaver.set(request, response, result);
     }
 
-    private Account getAccount(Authentication authentication) {
+    protected Account getAccount(Authentication authentication) {
         String accountHref = ((StormpathUserDetails) authentication.getPrincipal()).getProperties().get("href");
         return stormpathClient.getResource(accountHref, Account.class);
     }
