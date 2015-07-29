@@ -43,6 +43,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantOptions;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -249,4 +250,14 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
         return getDataStore().getResource(proxy.getHref(), GroupList.class, queryParams);
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Tenant saveWithResponseOptions(TenantOptions responseOptions) {
+        Assert.notNull(responseOptions, "responseOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, responseOptions);
+        return this;
+    }
 }

@@ -25,16 +25,27 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.impl.io.AbstractResource
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GithubProvider
+import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.LinkedInProvider
+import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
+import com.stormpath.sdk.tenant.TenantOptions
+import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
+import java.lang.reflect.Field
+
+import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import java.lang.reflect.Field
 
 import static org.testng.Assert.*
@@ -104,6 +115,59 @@ class TenantIT extends ClientIT {
         println '"cacheManager": ' + s;
 
         Thread.sleep(20)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testCurrentTenantWithOptions(){
+
+        TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
+        def tenant = client.getCurrentTenant(options)
+
+        assertNotNull tenant
+
+        Map properties = getValue(AbstractResource, tenant, "properties")
+        def apps = properties.get("applications").get("size")
+        def dirs = properties.get("directories").get("size")
+        def groups = properties.get("groups").get("size")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
+        dir = tenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        assertNotNull dir.href
+
+        Application app = client.instantiate(Application)
+        app.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions App"))
+        app = tenant.createApplication(newCreateRequestFor(app).build())
+        deleteOnTeardown(app)
+
+        assertNotNull app.href
+
+        def group = client.instantiate(Group)
+        group.setName(uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Group"))
+        group = dir.createGroup(group)
+        deleteOnTeardown(group)
+
+        assertNotNull group.href
+
+        def tenant2 = client.getCurrentTenant(options)
+
+        assertNotNull tenant2
+
+        properties = getValue(AbstractResource, tenant2, "properties")
+        assertTrue properties.get("applications").get("size") == apps + 1
+        assertTrue properties.get("directories").get("size") == dirs + 1
+        assertTrue properties.get("groups").get("size") == groups + 1
+
+        // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
+        // https://github.com/stormpath/stormpath-sdk-java/issues/164
+        assertEquals dirs + 1, tenant2.directories.size
+        assertEquals apps + 1, tenant2.applications.size
+        assertEquals groups + 1, tenant2.groups.size
     }
 
     //@since 1.0.beta
@@ -463,13 +527,20 @@ class TenantIT extends ClientIT {
         //Test the expansion worked by reading the internal properties of the tenant
         def retrieved = client.getResource(tenant.href, Tenant.class, options)
         Map tenantProperties = getValue(AbstractResource, retrieved, "properties")
-        assertTrue tenantProperties.get("groups").size() > 1
-        assertTrue tenantProperties.get("applications").size() > 1
-        assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
+
+        def groups = tenantProperties.get("groups").size()
+        def apps =  tenantProperties.get("applications").size()
+        def accounts = tenantProperties.get("accounts").size()
+
+        assertTrue groups > 1
+        assertTrue apps > 1
+        assertTrue accounts == 1 //this is not expanded, must be 1
+
         def groupsQty = tenantProperties.get("groups").get("size")
         def applicationsQty = tenantProperties.get("applications").get("size")
 
         def app = createTempApp()
+
         Group group1 = client.instantiate(Group)
         group1.name = uniquify("Java SDK: TenantIT.testTenantExpansion_group1")
         group1 = app.createGroup(group1)
@@ -481,13 +552,13 @@ class TenantIT extends ClientIT {
         deleteOnTeardown(group2)
 
         //Test the expansion worked by reading the internal properties of the tenant, it must contain the recently created groups now
-        retrieved = client.getResource(tenant.href, Tenant.class, options)
-        tenantProperties = getValue(AbstractResource, retrieved, "properties")
-        assertEquals(tenant.href, retrieved.href)
+        def retrieved2 = client.getResource(tenant.href, Tenant.class, options)
+        assertEquals(tenant.href, retrieved2.href)
+
+        tenantProperties = getValue(AbstractResource, retrieved2, "properties")
 
         assertTrue tenantProperties.get("groups").get("size") > groupsQty
         assertTrue tenantProperties.get("applications").get("size") > applicationsQty
-
     }
 
     /**
@@ -607,4 +678,26 @@ class TenantIT extends ClientIT {
         assertEquals retrieved.name, application.name
         assertEquals retrieved.createdAt, application.createdAt
     }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test (enabled = false) //ignoring because of sporadic Travis failures
+    void testSaveWithResponseOptions() {
+        def tenant = client.getCurrentTenant()
+        def href = tenant.getHref()
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testSaveWithResponseOptions-dir")
+        dir = tenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        tenant.getCustomData().put("testData", "testDataValue")
+
+        def retrieved = tenant.saveWithResponseOptions(Tenants.options().withDirectories().withCustomData())
+        assertEquals href, retrieved.getHref()
+        assertEquals "testDataValue", retrieved.getCustomData().get("testData")
+        assertTrue retrieved.getDirectories().iterator().hasNext()
+    }
+
 }

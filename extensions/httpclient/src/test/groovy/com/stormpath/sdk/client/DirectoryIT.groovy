@@ -594,4 +594,45 @@ class DirectoryIT extends ClientIT {
         assertEquals retrieved.surname, account.surname
         assertEquals retrieved.createdAt, account.createdAt
     }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testSaveWithResponseOptions() {
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testSaveWithResponseOptions")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        def href = dir.getHref()
+
+        dir.getCustomData().put("testKey", "testValue")
+
+        Account account01 = client.instantiate(Account)
+        account01 = account01.setGivenName(uniquify('John'))
+                .setSurname('Doe')
+                .setEmail(uniquify("johndoe") + "@stormpath.com")
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account01)
+        deleteOnTeardown(account01)
+
+        Account account02 = client.instantiate(Account)
+        account02 = account02.setGivenName(uniquify('John'))
+                .setSurname('Doe 2')
+                .setEmail(uniquify("johndoe2") + "@stormpath.com")
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account02)
+        deleteOnTeardown(account02)
+
+        def retrieved = dir.saveWithResponseOptions(Directories.options().withAccounts().withCustomData())
+
+        assertEquals href, retrieved.getHref()
+        assertEquals "testValue", retrieved.getCustomData().get("testKey")
+        assertTrue retrieved.getAccounts().iterator().hasNext()
+        assertTrue retrieved.getAccounts().iterator().hasNext()
+    }
+
 }
