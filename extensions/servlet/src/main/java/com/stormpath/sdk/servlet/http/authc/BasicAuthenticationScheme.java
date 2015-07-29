@@ -22,6 +22,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
@@ -29,7 +30,6 @@ import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
 
 /**
@@ -66,7 +66,7 @@ public class BasicAuthenticationScheme extends AbstractAuthenticationScheme {
         Assert.hasText(attempt.getCredentials().getSchemeValue(), "Cannot authenticate empty Basic value.");
 
         String schemeValue = attempt.getCredentials().getSchemeValue();
-        byte[] bytes = DatatypeConverter.parseBase64Binary(schemeValue);
+        byte[] bytes = Base64.decodeBase64(schemeValue);
         String decoded = new String(bytes, UTF8);
 
         String submittedPrincipal = null;

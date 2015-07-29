@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.cache;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
-import com.stormpath.sdk.impl.util.Duration;
+import com.stormpath.sdk.lang.Duration;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 

@@ -20,10 +20,7 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -33,7 +30,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
-public interface Group extends Resource, Saveable, Deletable, AccountStore, Extendable {
+public interface Group extends Resource, Saveable, Deletable, AccountStore, Extendable, Auditable {
 
     /**
      * Returns the group's name, guaranteed to be unique for all groups within a Directory.
@@ -173,9 +170,9 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
      * enhances performance by 'piggybacking' the response to return related resources you know you will use after
      * saving the group.
      *
-     * @param responseOptions The {@code GroupOptions} to use to customize the Group resource returned in the save
-     *                        response.
+     * @param responseOptions The {@code GroupOptions} to use to customize the Group resource returned in the save response.
+     * @return this instance for method chaining.
      * @since 0.9
      */
-    void saveWithResponseOptions(GroupOptions responseOptions);
+    Group saveWithResponseOptions(GroupOptions responseOptions);
 }

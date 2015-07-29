@@ -37,7 +37,7 @@ import static org.testng.Assert.assertFalse
 /**
  * @since 0.8
  */
-@Test
+@Test(enabled=false) //on purpose
 class HammerManualIT extends ClientIT {
 
     static Random random = new Random() //doesn't need to be secure - used for generating names
@@ -50,7 +50,7 @@ class HammerManualIT extends ClientIT {
      * should not be run during normal CI IT builds.  Enable it if you want to run the test manually, but DO NOT COMMIT
      * the change to version control!
      */
-    @Test
+    @Test(enabled=false)
     public void dropTheHammer() {
 
         Tenant tenant = client.getCurrentTenant();
@@ -59,7 +59,7 @@ class HammerManualIT extends ClientIT {
 
         26.times { i ->
             def app = client.instantiate(Application)
-            app.name = uniquify("Test Application")
+            app.name = uniquify("Java SDK IT")
             app.status = (i % 2 == 0 ? ApplicationStatus.ENABLED : ApplicationStatus.DISABLED)
             app.description = uniquify("Test Application Description")
 
@@ -139,7 +139,7 @@ class HammerManualIT extends ClientIT {
         }
     }
 
-    @Test
+    @Test(enabled=false)
     void testStuff() {
         Tenant tenant = client.getCurrentTenant()
 
@@ -156,7 +156,7 @@ class HammerManualIT extends ClientIT {
         accts.each { println(it) }
     }
 
-    @Test
+    @Test(enabled=false)
     void deleteEmAll() {
 
         Tenant tenant = client.getCurrentTenant();

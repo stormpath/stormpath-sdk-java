@@ -37,11 +37,7 @@ import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -52,7 +48,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Application extends Resource, Saveable, Deletable, Extendable {
+public interface Application extends Resource, Saveable, Deletable, Extendable, Auditable {
 
     /**
      * Returns the Application's name.  An application's name must be unique across all other applications in the
@@ -1434,5 +1430,16 @@ public interface Application extends Resource, Saveable, Deletable, Extendable {
      * @since 1.0.RC3
      */
     AccountStoreMapping addAccountStore(GroupCriteria criteria);
+
+    /**
+     * Saves this {@link Application} resource and ensures the returned {@link Application} response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the application.
+     *
+     * @param responseOptions The {@code ApplicationOptions} to use to customize the Application resource returned in the save response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    Application saveWithResponseOptions(ApplicationOptions responseOptions);
 
 }

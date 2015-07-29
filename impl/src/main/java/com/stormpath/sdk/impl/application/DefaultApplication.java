@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,8 @@ import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.api.*;
+import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -69,6 +66,7 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
@@ -76,11 +74,12 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
 /** @since 0.2 */
 public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
@@ -230,7 +229,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public AccountList getAccounts(AccountCriteria criteria) {
         AccountList list = getAccounts();  //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, criteria);
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 
     @Override
@@ -248,7 +247,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList groups = getGroups(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(groups.getHref(), GroupList.class, criteria);
+        return getDataStore().getResource(groups.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
     }
 
     @Override
@@ -387,7 +386,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     public AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria) {
         AccountStoreMappingList accountStoreMappings =
             getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, criteria);
+        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, (Criteria<AccountStoreMappingCriteria>) criteria);
     }
 
     /** @since 0.9 */
@@ -503,15 +502,12 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         }
 
         String href = getHref() + "/apiKeys";
-        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, criteria);
+        ApiKeyList apiKeys = getDataStore().getResource(href, ApiKeyList.class, (Criteria<ApiKeyCriteria>) criteria);
 
-        ApiKey apiKey = null;
+        Iterator<ApiKey> iterator = apiKeys.iterator();
 
-        if (apiKeys != null && apiKeys.iterator().hasNext()) {
-            apiKey = apiKeys.iterator().next(); // we expect only one api key to be in the collection
-        }
-
-        return apiKey;
+        // we expect only one api key to be in the collection
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     /** @since 0.9 */
@@ -700,4 +696,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return foundGroup;
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Application saveWithResponseOptions(ApplicationOptions responseOptions) {
+        Assert.notNull(responseOptions, "responseOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, responseOptions);
+        return this;
+    }
 }

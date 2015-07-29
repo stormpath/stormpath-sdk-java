@@ -44,6 +44,7 @@ class DefaultGroupCriteriaTest {
                 .where(Groups.name().eqIgnoreCase('a'))
                 .and(Groups.description().startsWithIgnoreCase('b'))
                 .and(Groups.status().eq(GroupStatus.DISABLED))
+                .and(Groups.modifiedAt().matches("[2015-01-01T00:00:00.000Z]"))
                 .orderByName()
                 .orderByDescription().descending()
                 .orderByStatus()
@@ -61,20 +62,23 @@ class DefaultGroupCriteriaTest {
 
         def expectedToString = 'name=a and ' +
                 'description ilike b* and ' +
-                'status=DISABLED ' +
+                'status=DISABLED and ' +
+                'modifiedAt=[2015-01-01T00:00:00.000Z] ' +
                 'order by ' +
                 'name asc, description desc, status asc ' +
                 'offset 120 ' +
                 'limit 20 ' +
                 'expand directory, tenant, accounts(offset:50,limit:30), accountMemberships(offset:100,limit:25)'
 
-        def expectedQueryString = 'description=b*' + AND +
+        def expectedQueryString =
+                'description=b*' + AND +
                 'expand=' +
                 'directory' + COMMA +
                 'tenant' + COMMA +
                 'accounts' + OPEN_PAREN + 'offset' + COLON + 50 + COMMA + 'limit' + COLON + 30 + CLOSE_PAREN + COMMA +
                 'accountMemberships' + OPEN_PAREN + 'offset' + COLON + 100 + COMMA + 'limit' + COLON + 25 + CLOSE_PAREN + AND +
                 'limit=20' + AND +
+                'modifiedAt=%5B2015-01-01T00%3A00%3A00.000Z%5D' + AND +
                 'name=a' + AND +
                 'offset=120' + AND +
                 'orderBy=' +

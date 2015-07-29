@@ -20,6 +20,7 @@ import com.stormpath.sdk.api.ApiRequestAuthenticator;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.query.Criterion;
+import com.stormpath.sdk.query.DateExpressionFactory;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
@@ -90,6 +91,58 @@ public final class Applications {
      */
     public static ApplicationCriteria criteria() {
         return (ApplicationCriteria) Classes.newInstance("com.stormpath.sdk.impl.application.DefaultApplicationCriteria");
+    }
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.query.DateExpressionFactory} instance reflecting the Application {@link com.stormpath.sdk.application.Application#getCreatedAt() createdAt}
+     * property, to be used to construct a createdAt Criterion when building an {@link com.stormpath.sdk.application.ApplicationCriteria} query.  For example:
+     * <pre>
+     * Applications.where(<b>Applications.createdAt()</b>.matches("[,2014-04-05T12:00:00]");
+     * </pre>
+     * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
+     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(Criterion) where} method).
+     * <pre>
+     * For example, the following code is equivalent:
+     * <pre>
+     * ApplicationCriteria criteria = Applications.criteria();
+     * DateExpressionFactory createdAt = Applications.createdAt();
+     * Criterion createdAtMatches = createdAt.matches("[,2014-04-05T12:00:00]");
+     * criteria.add(createdAtMatches);
+     * </pre>
+     *
+     * @return a new {@link com.stormpath.sdk.application.Application#getCreatedAt() createdAt}-specific {@link com.stormpath.sdk.query.DateExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link com.stormpath.sdk.application.ApplicationCriteria} query.
+     * @since 1.0.RC4.6
+     */
+    public static DateExpressionFactory createdAt(){
+        return newDateExpressionFactory("createdAt");
+    }
+
+    /**
+     * Creates a new {@link DateExpressionFactory} instance reflecting the Application {@link com.stormpath.sdk.application.Application#getModifiedAt() modifiedAt}
+     * property, to be used to construct a modifiedAt Criterion when building an {@link com.stormpath.sdk.application.ApplicationCriteria} query.  For example:
+     * <pre>
+     * Applications.where(<b>Applications.modifiedAt()</b>.matches("[,2014-04-05T12:00:00]");
+     * </pre>
+     * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
+     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(Criterion) where} method).
+     * <pre>
+     * For example, the following code is equivalent:
+     * <pre>
+     * ApplicationCriteria criteria = Applications.criteria();
+     * DateExpressionFactory createdAt = Applications.modifiedAt();
+     * Criterion modifiedAtMatches = modifiedAt.matches("[,2014-04-05T12:00:00]");
+     * criteria.add(modifiedAtMatches);
+     * </pre>
+     *
+     * @return a new {@link com.stormpath.sdk.application.Application#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link com.stormpath.sdk.application.ApplicationCriteria} query.
+     * @since 1.0.RC4.6
+     */
+    public static DateExpressionFactory modifiedAt(){
+        return newDateExpressionFactory("modifiedAt");
     }
 
     /**
@@ -205,6 +258,11 @@ public final class Applications {
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";
         return (StringExpressionFactory) Classes.newInstance(FQCN, propName);
+    }
+
+    private static DateExpressionFactory newDateExpressionFactory(String propName) {
+        final String FQCN = "com.stormpath.sdk.impl.query.DefaultDateExpressionFactory";
+        return (DateExpressionFactory) Classes.newInstance(FQCN, propName);
     }
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {

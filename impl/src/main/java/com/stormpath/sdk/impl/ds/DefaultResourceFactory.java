@@ -65,7 +65,7 @@ public class DefaultResourceFactory implements ResourceFactory {
         return Classes.instantiate(ctor, ctorArgs);
     }
 
-    static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
+    public static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz) {
         if (clazz.isInterface()) {
             return convertToImplClass(clazz);
         }
