@@ -60,7 +60,7 @@ public interface HttpRequestBuilder {
      *
      * @since 1.0.RC4.6
      */
-    public HttpRequestBuilder header(String name, String[] value) throws IllegalArgumentException;
+    public HttpRequestBuilder addHeader(String name, String[] value) throws IllegalArgumentException;
 
     /**
      * Adds a request parameter that will be part of the parameters map in the resulting request instance.
@@ -72,7 +72,7 @@ public interface HttpRequestBuilder {
      *
      * @since 1.0.RC4.6
      */
-    public HttpRequestBuilder parameter(String name, String[] value) throws IllegalArgumentException;
+    public HttpRequestBuilder addParameter(String name, String[] value) throws IllegalArgumentException;
 
     /**
      * Sets the query parameters that will be present in the resulting request instance.

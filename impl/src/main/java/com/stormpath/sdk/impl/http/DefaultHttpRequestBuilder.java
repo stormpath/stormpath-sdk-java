@@ -5,7 +5,6 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.http.HttpRequestBuilder;
 import com.stormpath.sdk.lang.Assert;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,10 +17,8 @@ public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
 
     private HttpMethod method;
     private Map<String, String[]> headers;
-    private InputStream body;
     private Map<String, String[]> parameters;
     private String queryParameters;
-    private String uri;
 
     public DefaultHttpRequestBuilder(HttpMethod method) {
         Assert.notNull(method);
@@ -30,36 +27,22 @@ public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
         this.parameters = new HashMap<String, String[]>();
     }
 
-    public DefaultHttpRequestBuilder(String key, String[] value, String type) {
-        Assert.notNull(type);
-        Assert.notNull(value);
-
-        this.headers = new HashMap<String, String[]>();
-        this.parameters = new HashMap<String, String[]>();
-
-        if (type.equals("headers")){
-            this.headers.put(key, value);
-        }
-
-        if (type.equals("parameters")){
-            this.parameters.put(key, value);
-        }
-    }
-
     @Override
     public HttpRequestBuilder headers(Map<String, String[]> headers) {
+        Assert.notNull(headers, "headers cannot be null");
         this.headers = headers;
         return this;
     }
 
     @Override
     public HttpRequestBuilder parameters(Map<String, String[]> parameters) {
+        Assert.notNull(parameters, "parameters cannot be null");
         this.parameters = parameters;
         return this;
     }
 
     @Override
-    public HttpRequestBuilder header(String key, String[] value) throws IllegalArgumentException {
+    public HttpRequestBuilder addHeader(String key, String[] value) throws IllegalArgumentException {
         Assert.notNull(key, "key argument is required.");
         Assert.notNull(value, "value argument is required.");
 
@@ -68,7 +51,7 @@ public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
     }
 
     @Override
-    public HttpRequestBuilder parameter(String key, String[] value) throws IllegalArgumentException {
+    public HttpRequestBuilder addParameter(String key, String[] value) throws IllegalArgumentException {
         Assert.notNull(key, "key argument is required.");
         Assert.notNull(value, "value argument is required.");
 

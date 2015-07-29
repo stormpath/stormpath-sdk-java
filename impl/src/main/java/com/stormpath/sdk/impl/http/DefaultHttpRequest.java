@@ -78,7 +78,7 @@ public class DefaultHttpRequest implements HttpRequest {
 
     @Override
     public Map<String, String[]> getParameters() {
-        if (parameters == null) {
+        if (parameters == null || parameters.isEmpty()) {
             parseParameters();
         }
         return parameters;

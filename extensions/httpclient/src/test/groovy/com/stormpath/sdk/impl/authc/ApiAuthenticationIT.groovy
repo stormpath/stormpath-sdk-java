@@ -68,8 +68,8 @@ class ApiAuthenticationIT extends ClientIT {
         def authzHeader = convertToArray(createBasicAuthzHeader(apiKey.id, apiKey.secret))
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET)
-                .header("content-type", contentTypeHeader)
-                .header("authorization", authzHeader)
+                .addHeader("content-type", contentTypeHeader)
+                .addHeader("authorization", authzHeader)
 
         attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
@@ -106,7 +106,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST)
                 .headers(headers)
-                .parameter("grant_type", convertToArray("client_credentials"))
+                .addParameter("grant_type", convertToArray("client_credentials"))
 
         def result = (AccessTokenResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), AccessTokenResult)
 

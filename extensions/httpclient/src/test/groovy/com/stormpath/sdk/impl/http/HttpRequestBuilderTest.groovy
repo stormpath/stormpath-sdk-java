@@ -44,7 +44,7 @@ class HttpRequestBuilderTest {
         }
 
         try {
-            HttpRequests.header("name", null);
+            HttpRequests.method(HttpMethod.GET).addHeader("name", null);
             fail("Exception expected.");
         } catch (IllegalArgumentException expected) {
             String msg = expected.getMessage()
@@ -52,15 +52,15 @@ class HttpRequestBuilderTest {
         }
 
         try {
-            HttpRequests.header(null, "value");
+            HttpRequests.method(HttpMethod.GET).addHeader(null, "value");
             fail("Exception expected.");
         } catch (IllegalArgumentException expected) {
             String msg = expected.getMessage()
-            assertTrue msg.startsWith("name argument is required")
+            assertTrue msg.startsWith("key argument is required")
         }
 
         try {
-            HttpRequests.parameter("name", null);
+            HttpRequests.method(HttpMethod.GET).addParameter("name", null);
             fail("Exception expected.");
         } catch (IllegalArgumentException expected) {
             String msg = expected.getMessage()
@@ -68,11 +68,11 @@ class HttpRequestBuilderTest {
         }
 
         try {
-            HttpRequests.parameter(null, "value");
+            HttpRequests.method(HttpMethod.GET).addParameter(null, "value");
             fail("Exception expected.");
         } catch (IllegalArgumentException expected) {
             String msg = expected.getMessage()
-            assertTrue msg.startsWith("name argument is required")
+            assertTrue msg.startsWith("key argument is required")
         }
     }
 
@@ -82,7 +82,7 @@ class HttpRequestBuilderTest {
         assertTrue builder instanceof HttpRequestBuilder
 
         String[] value = ['test']
-        builder = HttpRequests.parameter("name", value)
+        builder = HttpRequests.method(HttpMethod.GET).addParameter("name", value)
         assertTrue builder instanceof HttpRequestBuilder
     }
 
@@ -95,7 +95,7 @@ class HttpRequestBuilderTest {
         String[] headerValue = ['testHeader']
         request = HttpRequests
                 .method(HttpMethod.POST)
-                .header("name", headerValue).build()
+                .addHeader("name", headerValue).build()
         assertNotNull request
         assertEquals 1, request.headers.size()
         assertEquals 'testHeader', request.headers.get("name").getAt(0)
@@ -103,20 +103,20 @@ class HttpRequestBuilderTest {
         String[] paramValue = ['testParam']
         request = HttpRequests
                 .method(HttpMethod.POST)
-                .parameter("paramName", paramValue).build()
+                .addParameter("paramName", paramValue).build()
         assertNotNull request
         assertEquals 1, request.parameters.size()
         assertEquals 'testParam', request.parameters.get("paramName").getAt(0)
 
         request = HttpRequests
                 .method(HttpMethod.POST)
-                .header("header", headerValue)
-                .parameter("param", paramValue)
+                .addHeader("addHeader", headerValue)
+                .addParameter("param", paramValue)
                 .build()
 
         assertEquals 1, request.parameters.size()
         assertEquals 1, request.headers.size()
-        assertEquals 'testHeader', request.headers.get("header").getAt(0)
+        assertEquals 'testHeader', request.headers.get("addHeader").getAt(0)
         assertEquals 'testParam', request.parameters.get("param").getAt(0)
     }
 }
