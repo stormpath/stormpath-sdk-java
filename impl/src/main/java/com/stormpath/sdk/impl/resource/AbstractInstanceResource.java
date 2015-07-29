@@ -15,10 +15,10 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.impl.ds.*;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.resource.Saveable;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * @since 0.2

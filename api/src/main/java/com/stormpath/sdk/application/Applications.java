@@ -15,11 +15,14 @@
  */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.*;
-import com.stormpath.sdk.lang.*;
-import com.stormpath.sdk.query.*;
+import com.stormpath.sdk.account.VerificationEmailRequestBuilder;
+import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.query.Criterion;
+import com.stormpath.sdk.query.DateExpressionFactory;
+import com.stormpath.sdk.query.EqualsExpressionFactory;
+import com.stormpath.sdk.query.StringExpressionFactory;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
 
 /**
  * Static utility/helper methods for working with {@link Application} resources.  Most methods are

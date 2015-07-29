@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import java.io.*;
-import java.util.*;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * @since 0.1

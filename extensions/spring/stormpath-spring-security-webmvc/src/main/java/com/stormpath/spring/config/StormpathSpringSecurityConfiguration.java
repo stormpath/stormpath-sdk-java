@@ -24,10 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 /**
- * @since 1.0
+ * @since 1.0.RC4.3
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration

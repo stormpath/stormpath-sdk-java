@@ -15,15 +15,19 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.directory.*;
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.mail.*;
-import com.stormpath.sdk.provider.*;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
+import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.resource.Resource;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class DefaultResourceConverter implements ResourceConverter {
 

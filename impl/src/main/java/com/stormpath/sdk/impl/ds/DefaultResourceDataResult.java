@@ -15,10 +15,10 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.http.*;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.resource.Resource;
 
-import java.util.*;
+import java.util.Map;
 
 //todo - remove this - DefaultResourceMessage currently contains everything necessary
 public class DefaultResourceDataResult extends DefaultResourceMessage implements ResourceDataResult {

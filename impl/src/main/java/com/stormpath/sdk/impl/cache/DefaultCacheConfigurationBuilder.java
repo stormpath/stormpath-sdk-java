@@ -15,10 +15,11 @@
  */
 package com.stormpath.sdk.impl.cache;
 
-import com.stormpath.sdk.cache.*;
-import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.cache.CacheConfigurationBuilder;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Duration;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @since 0.8

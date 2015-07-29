@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.mail;
 
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.resource.CollectionResource;
 /**
  *
  * A {@link CollectionResource} containing {@link UnmodeledEmailTemplate} instances.

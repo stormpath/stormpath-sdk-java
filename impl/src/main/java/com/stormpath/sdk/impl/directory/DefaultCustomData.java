@@ -15,13 +15,22 @@
  */
 package com.stormpath.sdk.impl.directory;
 
-import com.stormpath.sdk.directory.*;
-import com.stormpath.sdk.impl.ds.*;
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.lang.*;
+import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.DateProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 0.9

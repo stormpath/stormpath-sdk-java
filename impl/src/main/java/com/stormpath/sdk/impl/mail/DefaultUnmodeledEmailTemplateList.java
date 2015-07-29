@@ -15,11 +15,14 @@
 */
 package com.stormpath.sdk.impl.mail;
 
-import com.stormpath.sdk.impl.ds.*;
-import com.stormpath.sdk.impl.resource.*;
-import com.stormpath.sdk.mail.*;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplate;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * @since 1.0.RC4.5
