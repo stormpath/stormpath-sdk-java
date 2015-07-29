@@ -293,7 +293,7 @@ public final class Applications {
      *
      * @since 1.0.RC4.3-SNAPSHOT
      */
-    public static OauthRequestAuthenticator oauthRequestAuthenticator(Application application){
+    public static OauthRequestAuthenticator oauthRequestAuthenticator(Application application) {
         return (OauthRequestAuthenticator) Classes.newInstance("com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator", application);
     }
 
