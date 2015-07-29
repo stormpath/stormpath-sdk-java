@@ -355,7 +355,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @see <href>http://docs.stormpath.com/java/product-guide/#account-password-policy</href>
      * @since 1.0.RC4
      */
-    PasswordPolicy getPasswordPolicy();    
+    PasswordPolicy getPasswordPolicy();
 
     /**
      * Returns the {@link AccountCreationPolicy} resource for this {@link Directory}.
@@ -365,5 +365,16 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @since 1.0.RC4.6
      */
     AccountCreationPolicy getAccountCreationPolicy();
+
+    /**
+     * Saves this {@link Directory} resource and ensures the returned {@link Directory} response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the directory.
+     *
+     * @param responseOptions The {@code DirectoryOptions} to use to customize the Directory resource returned in the save response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    Directory saveWithResponseOptions(DirectoryOptions responseOptions);
 
 }

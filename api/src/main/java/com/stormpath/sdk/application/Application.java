@@ -1427,4 +1427,15 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      */
     AccountStoreMapping addAccountStore(GroupCriteria criteria);
 
+    /**
+     * Saves this {@link Application} resource and ensures the returned {@link Application} response reflects the specified options.  This
+     * enhances performance by 'piggybacking' the response to return related resources you know you will use after
+     * saving the application.
+     *
+     * @param responseOptions The {@code ApplicationOptions} to use to customize the Application resource returned in the save response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    Application saveWithResponseOptions(ApplicationOptions responseOptions);
+
 }
