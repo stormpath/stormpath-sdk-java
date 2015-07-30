@@ -21,11 +21,8 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.security.provider.StormpathUserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,15 +32,16 @@ import java.io.IOException;
 /**
  * @since 1.0.RC4.3
  */
-@Component
 public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    @Autowired
-    @Qualifier("stormpathAuthenticationResultSaver")
+    private Client stormpathClient;
+
     private Saver<AuthenticationResult> authenticationResultSaver;
 
-    @Autowired
-    private Client stormpathClient;
+    public StormpathLoginSuccessHandler(Client client, Saver<AuthenticationResult> saver) {
+        this.stormpathClient = client;
+        this.authenticationResultSaver = saver;
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {

@@ -104,9 +104,9 @@
         <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
              See: http://stackoverflow.com/questions/22314453/unsupported-major-minor-version-51-0-error-when-using-1-6-in-pom-and-openjdk6-fo -->
         <servlet.version>3.0.1</servlet.version>
-        <spring.version>4.1.4.RELEASE</spring.version>
-        <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
-        <spring.security.version>4.0.0.RELEASE</spring.security.version>
+        <spring.version>4.1.7.RELEASE</spring.version>
+        <spring.boot.version>1.2.5.RELEASE</spring.boot.version>
+        <spring.security.version>4.0.2.RELEASE</spring.security.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
@@ -334,6 +334,28 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
                 <version>${spring.security.version}</version>
                 <exclusions>
                     <exclusion>
