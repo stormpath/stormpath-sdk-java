@@ -9,10 +9,10 @@ library gives your Java app access to all of Stormpath's features:
 
 - Robust authentication and authorization.
 - Schemaless user data and profiles.
-- A hosted login subdomain, for easy Single Sign-On across your apps
+- A hosted login subdomain, for easy Single Sign-On across your apps.
 - Social login with Facebook and Google OAuth.
-- Secure API key authenticatio for your service.
-- Servlet support for Java web applications
+- Secure API key authentication for your service.
+- Servlet support for Java web applications.
 
 If you have feedback about this library, please get in touch and share your
 thoughts! support@stormpath.com
