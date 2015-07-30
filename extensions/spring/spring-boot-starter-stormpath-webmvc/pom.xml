@@ -24,8 +24,8 @@
     </parent>
 
     <artifactId>spring-boot-starter-stormpath-webmvc</artifactId>
-    <name>Stormpath :: Spring :: Boot :: Web MVC Starter</name>
-    <description>Spring Boot WebMVC Starter for Stormpath</description>
+    <name>Stormpath :: Spring :: Boot :: Web MVC</name>
+    <description>Stormpath WebMVC Spring Boot Starter</description>
 
     <dependencies>
 

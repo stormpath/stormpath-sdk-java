@@ -23,7 +23,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-spring-boot-starter-spring-security</artifactId>
+    <artifactId>stormpath-spring-security-spring-boot-starter</artifactId>
     <name>Stormpath :: Spring :: Boot :: Spring Security</name>
     <description>Spring Boot Starter for Stormpath with Spring Security Integration</description>
 

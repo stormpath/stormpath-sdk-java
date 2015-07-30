@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * @since 1.0.RC4.3
  */
-public class AbstractStormpathSpringSecurityConfiguration {
+public abstract class AbstractStormpathSpringSecurityConfiguration {
 
     @Autowired
     private Client client;
