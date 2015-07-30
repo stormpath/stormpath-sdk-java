@@ -256,15 +256,15 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
-    public Account sendPasswordResetEmail(String email) {
+    public PasswordResetToken sendPasswordResetEmail(String email) {
         PasswordResetToken token = createPasswordResetToken(email, null);
-        return token.getAccount();
+        return token;
     }
 
     @Override
-    public Account sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
+    public PasswordResetToken sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
         PasswordResetToken token = createPasswordResetToken(email, accountStore);
-        return token.getAccount();
+        return token;
     }
 
     private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {

@@ -15,11 +15,7 @@
  */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -355,12 +351,12 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * {@link #verifyPasswordResetToken(String)} JavaDoc.
      *
      * @param email an email address of an Account that may login to the application.
-     * @return the matching account that will receive a password reset email
+     * @return the {@code PasswordResetToken} created for the password reset email sent to the specified {@code email}
      * @see #verifyPasswordResetToken(String)
      * @see #resetPassword(String, String)
      * @throws ResourceException if there is no account that matches the specified email address
      */
-    Account sendPasswordResetEmail(String email) throws ResourceException;
+    PasswordResetToken sendPasswordResetEmail(String email) throws ResourceException;
 
     /**
      * Sends a password reset email to an account in the specified {@code AccountStore} matching the specified
@@ -383,7 +379,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      *
      * @param email an email address of an Account that may login to the application.
      * @param accountStore the accountStore expected to contain an account with the specified email address
-     * @return the matching account in the specified account store that will receive a password reset email
+     * @return the {@code PasswordResetToken} created for the password reset email sent to the specified {@code email}
      * @see #sendPasswordResetEmail(String)
      * @see #verifyPasswordResetToken(String)
      * @see #resetPassword(String, String)
@@ -391,7 +387,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      *                           is not in the specified Account store
      * @since 1.0.RC3
      */
-    Account sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException;
+    PasswordResetToken sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException;
 
     /**
      * Verifies a password reset token in a user-clicked link within an email.
