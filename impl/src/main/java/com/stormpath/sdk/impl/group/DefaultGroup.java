@@ -166,9 +166,10 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
 
 
     @Override
-    public void saveWithResponseOptions(GroupOptions groupOptions) {
-        Assert.notNull(groupOptions, "accountOptions can't be null.");
+    public Group saveWithResponseOptions(GroupOptions groupOptions) {
+        Assert.notNull(groupOptions, "groupOptions can't be null.");
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, groupOptions);
+        return this;
     }
 }

@@ -174,9 +174,9 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
      * enhances performance by 'piggybacking' the response to return related resources you know you will use after
      * saving the group.
      *
-     * @param responseOptions The {@code GroupOptions} to use to customize the Group resource returned in the save
-     *                        response.
+     * @param responseOptions The {@code GroupOptions} to use to customize the Group resource returned in the save response.
+     * @return this instance for method chaining.
      * @since 0.9
      */
-    void saveWithResponseOptions(GroupOptions responseOptions);
+    Group saveWithResponseOptions(GroupOptions responseOptions);
 }

@@ -20,11 +20,7 @@ import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.directory.AccountCreationPolicy;
-import com.stormpath.sdk.directory.AccountStoreVisitor;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryStatus;
-import com.stormpath.sdk.directory.PasswordPolicy;
+import com.stormpath.sdk.directory.*;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -32,12 +28,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.query.Criteria;
@@ -275,5 +266,17 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     public AccountCreationPolicy getAccountCreationPolicy() {
         return getResourceProperty(ACCOUNT_CREATION_POLICY);
     }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Directory saveWithResponseOptions(DirectoryOptions responseOptions) {
+        Assert.notNull(responseOptions, "responseOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, responseOptions);
+        return this;
+    }
+
 
 }
