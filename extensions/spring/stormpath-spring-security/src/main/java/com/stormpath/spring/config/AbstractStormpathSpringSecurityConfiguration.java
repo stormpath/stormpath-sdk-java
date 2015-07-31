@@ -15,7 +15,6 @@
  */
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver;
@@ -23,6 +22,7 @@ import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.AccountPermissionResolver;
 import com.stormpath.spring.security.provider.AuthenticationTokenFactory;
 import com.stormpath.spring.security.provider.DefaultGroupGrantedAuthorityResolver;
+import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
@@ -30,10 +30,6 @@ import com.stormpath.spring.security.provider.StormpathAuthenticationProvider;
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @since 1.0.RC4.3
@@ -55,12 +51,7 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
     }
 
     public AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver() {
-        return new AccountGrantedAuthorityResolver() {
-            @Override
-            public Set<GrantedAuthority> resolveGrantedAuthorities(Account account) {
-                return Collections.emptySet();
-            }
-        };
+        return new EmptyAccountGrantedAuthorityResolver();
     }
 
     public AccountPermissionResolver stormpathAccountPermissionResolver() {
