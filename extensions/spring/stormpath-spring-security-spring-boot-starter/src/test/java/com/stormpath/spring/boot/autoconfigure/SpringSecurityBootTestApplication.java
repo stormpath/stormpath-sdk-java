@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package autoconfigure;
+package com.stormpath.spring.boot.autoconfigure;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +29,13 @@ import java.util.Arrays;
  */
 @Configuration
 @EnableAutoConfiguration
-public class TestBootSpringSecurityApplication {
+public class SpringSecurityBootTestApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(TestBootSpringSecurityApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(SpringSecurityBootTestApplication.class);
 
     public static void main(String[] args) {
 
-        ApplicationContext ctx = SpringApplication.run(TestBootSpringSecurityApplication.class, args);
+        ApplicationContext ctx = SpringApplication.run(SpringSecurityBootTestApplication.class, args);
 
         log.info("Beans provided by Spring Boot:");
 
