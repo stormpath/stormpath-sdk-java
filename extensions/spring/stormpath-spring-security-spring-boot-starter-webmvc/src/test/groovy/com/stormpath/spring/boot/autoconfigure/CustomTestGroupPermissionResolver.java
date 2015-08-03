@@ -17,16 +17,13 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.group.Group;
 import com.stormpath.spring.security.authz.permission.Permission;
-import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
 public class CustomTestGroupPermissionResolver implements GroupPermissionResolver {
 

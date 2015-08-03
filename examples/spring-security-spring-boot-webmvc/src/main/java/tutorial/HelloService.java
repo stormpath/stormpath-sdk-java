@@ -30,10 +30,10 @@ public class HelloService {
 
     /**
      * Only users who have a Custom Data entry in their Stormpath Account or Group containing something like
-     * <code>"springSecurityPermissions":["say:*"]</code> or <code>"springSecurityGrantedAuthorities":["say:hello"]</code>
+     * <code>"springSecurityPermissions":["play:*"]</code> or <code>"springSecurityGrantedAuthorities":["play:outside"]</code>
      * will be allowed to execute this method.
      */
-    @PreAuthorize("hasRole('" + roleA + "') and hasPermission('say', 'hello')")
+    @PreAuthorize("hasRole('" + roleA + "') and hasPermission('play', 'outside')")
     public String sayHello(Account account) {
         return account.getGivenName() + ". You are allowed to say hello!";
     }

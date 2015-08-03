@@ -32,7 +32,7 @@ import javax.servlet.ServletRegistration;
 import java.util.EnumSet;
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 public class WebAppInitializer implements WebApplicationInitializer {
 
@@ -57,7 +57,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         //Spring Security Filter
         FilterRegistration.Dynamic securityFilter = sc.addFilter(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
         securityFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
-
 
     }
 }

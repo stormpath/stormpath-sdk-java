@@ -23,7 +23,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-spring-boot-starter-spring-security-webmvc</artifactId>
+    <artifactId>stormpath-spring-security-spring-boot-starter-webmvc</artifactId>
     <name>Stormpath :: Spring :: Boot :: Spring Security :: Web MVC Starter</name>
     <description>Spring Boot WebMVC Starter for Stormpath with Spring Security</description>
 
@@ -39,11 +39,11 @@
         </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>spring-boot-starter-stormpath-thymeleaf</artifactId>
+            <artifactId>spring-boot-starter-stormpath-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-spring-boot-starter-spring-security</artifactId>
+            <artifactId>stormpath-spring-security-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.stormpath.sdk</groupId>

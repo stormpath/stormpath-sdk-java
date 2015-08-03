@@ -15,7 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure
 
-import autoconfigure.TestBootSpringSecurityApplication
+import com.stormpath.spring.boot.autoconfigure.TestBootSpringSecurityApplication
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.Client
 import com.stormpath.spring.security.provider.*
@@ -28,9 +28,9 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0
+ * @since 1.0.RC4.6
  */
-@SpringApplicationConfiguration(classes = TestBootSpringSecurityApplication.class)
+@SpringApplicationConfiguration(classes = BeanOverrideApplication.class)
 @Configuration
 class StormpathSpringSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 

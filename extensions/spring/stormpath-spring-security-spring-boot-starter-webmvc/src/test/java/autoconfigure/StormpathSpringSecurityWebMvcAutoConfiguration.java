@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContext;
 import java.util.Arrays;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
 @SpringBootApplication
 public class StormpathSpringSecurityWebMvcAutoConfiguration {

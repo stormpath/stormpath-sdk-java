@@ -31,7 +31,7 @@ import javax.servlet.Filter
 import static org.testng.Assert.assertNotNull
 
 /**
- * @since 1.0.RC4
+ * @since 1.0.RC4.6
  */
 @ContextConfiguration(classes = MinimalStormpathSpringSecurityWebMvcAppConfig.class)
 @WebAppConfiguration
@@ -60,7 +60,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     @Test
     void test() {
-        assertNotNull c
+        //assertNotNull c
         assertNotNull apiKey
         assertNotNull stormpathCacheManager
         assertNotNull client

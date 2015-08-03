@@ -39,7 +39,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
 @SpringApplicationConfiguration(classes = StormpathSpringSecurityWebMvcAutoConfiguration.class)
 @WebAppConfiguration

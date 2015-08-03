@@ -34,8 +34,8 @@
         <module>spring-webmvc</module>
         <module>spring-boot</module>
         <module>spring-boot-webmvc</module>
-        <module>spring-boot-spring-security-webmvc</module>
         <module>spring-security-webmvc</module>
+        <module>spring-security-spring-boot-webmvc</module>
         <module>quickstart</module>
     </modules>
 

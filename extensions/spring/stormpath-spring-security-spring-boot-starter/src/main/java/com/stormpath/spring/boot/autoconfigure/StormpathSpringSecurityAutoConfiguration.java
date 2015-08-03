@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
- * @since 1.0
+ * @since 1.0.RC4.6
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration

@@ -16,12 +16,14 @@
 package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- * @since 1.0.RC4
+ * @since 1.0.RC4.6
  */
 @Configuration
 @EnableStormpathWebSecurity
+@Import({StormpathWebSecurityConfiguration.class})
 @PropertySource("classpath:com/stormpath/spring/config/PropertyOverrideAppConfig.properties")
 public class MinimalStormpathSpringSecurityWebMvcAppConfig {}

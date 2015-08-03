@@ -27,7 +27,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
 @SpringBootApplication
 @ComponentScan(basePackageClasses = BeanOverrideApplicationIT.class )
