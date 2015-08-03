@@ -15,31 +15,27 @@
  */
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.http.Saver;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
-@Component
 public class StormpathLogoutHandler implements LogoutHandler {
 
-    @Autowired
-    AuthenticationResultSaver stormpathAuthenticationResultSaver;
+    private Saver<AuthenticationResult> authenticationResultSaver;
+
+    public StormpathLogoutHandler(Saver<AuthenticationResult> authenticationResultSaver) {
+        this.authenticationResultSaver = authenticationResultSaver;
+    }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        removeAccount(request, response);
+        authenticationResultSaver.set(request, response, null);
     }
-
-    private void removeAccount(HttpServletRequest request, HttpServletResponse response) {
-        stormpathAuthenticationResultSaver.set(request, response, null);
-    }
-
 }

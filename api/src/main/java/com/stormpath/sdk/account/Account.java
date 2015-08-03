@@ -28,6 +28,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
@@ -42,7 +43,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Account extends Resource, Saveable, Deletable, Extendable {
+public interface Account extends Resource, Saveable, Deletable, Extendable, Auditable {
 
     /**
      * Returns the account's username, guaranteed to be unique for all accounts within a Directory.  If you do not have

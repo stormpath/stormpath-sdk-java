@@ -19,19 +19,22 @@ import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.directory.DefaultCustomData;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Saveable;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
  * @since 1.0.0
  */
-public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource
-    implements Saveable, Extendable {
+public abstract class AbstractExtendableInstanceResource extends AbstractInstanceResource implements Auditable, Extendable {
 
     public static final ResourceReference<CustomData> CUSTOM_DATA =
         new ResourceReference<CustomData>("customData", CustomData.class);
+
+    public static final DateProperty CREATED_AT = new DateProperty("createdAt");
+    public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
     protected AbstractExtendableInstanceResource(InternalDataStore dataStore) {
         super(dataStore);
@@ -92,5 +95,21 @@ public abstract class AbstractExtendableInstanceResource extends AbstractInstanc
                 setProperty(CUSTOM_DATA, customData);
             }
         }
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Date getCreatedAt() {
+        return getDateProperty(CREATED_AT);
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Date getModifiedAt() {
+        return getDateProperty(MODIFIED_AT);
     }
 }

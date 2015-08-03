@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.tenant
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.cache.Caches
@@ -23,6 +24,7 @@ import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryList
+import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.DefaultDataStore
@@ -60,13 +62,15 @@ class DefaultTenantTest {
 
         def propertyDescriptors = defaultTenant.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 5)
+        assertEquals(propertyDescriptors.size(), 7)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("applications") instanceof CollectionReference && propertyDescriptors.get("applications").getType().equals(ApplicationList))
         assertTrue(propertyDescriptors.get("directories") instanceof CollectionReference && propertyDescriptors.get("directories").getType().equals(DirectoryList))
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
+        assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
+        assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
     }
 
     @Test

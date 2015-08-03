@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration

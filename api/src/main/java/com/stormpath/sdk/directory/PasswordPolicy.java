@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.mail.*;
+import com.stormpath.sdk.mail.EmailStatus;
+import com.stormpath.sdk.mail.ModeledEmailTemplateList;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
@@ -102,6 +104,6 @@ public interface PasswordPolicy extends Resource, Saveable {
      *
      * @return the {@link com.stormpath.sdk.mail.ModeledEmailTemplateList} collection holding the set of email templates available when notifying about a successful password reset operation.
      */
-    PasswordResetSuccessEmailTemplateList getResetSuccessEmailTemplates();
+    UnmodeledEmailTemplateList getResetSuccessEmailTemplates();
 
 }

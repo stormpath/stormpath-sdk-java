@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
@@ -53,7 +54,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.resource.AbstractResource.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
 
 public class WriteCacheFilter extends AbstractCacheFilter {
 
@@ -125,7 +127,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             !ProviderAccountResult.class.isAssignableFrom(clazz) &&
 
             //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
-            AbstractResource.isMaterialized(result.getData());
+            AbstractResource.isMaterialized(result.getData()) &&
+
+            //@since 1.0.RC4.6: Fix for https://github.com/stormpath/stormpath-sdk-java/issues/164. Let's not cache expanded resources
+            (!request.getUri().hasQuery() || !request.getUri().getQuery().containsKey("expand") || isApiKeyCollectionQuery(request));
     }
 
     /**
@@ -362,4 +367,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         Cache<String, Map<String, ?>> cache = getCache(resourceType);
         cache.remove(cacheKey);
     }
+
+    private boolean isApiKeyCollectionQuery(ResourceDataRequest request) {
+        return ApiKeyList.class.isAssignableFrom(request.getResourceClass()) &&
+                request.getUri().hasQuery() && request.getUri().getQuery().containsKey(ID.getName());
+    }
+
 }

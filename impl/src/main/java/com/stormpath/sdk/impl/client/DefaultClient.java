@@ -38,9 +38,11 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantOptions;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -165,6 +167,22 @@ public class DefaultClient implements Client {
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
         return this.dataStore.getResource(href, clazz);
+    }
+
+    /**
+     * Delegates to the internal {@code dataStore} instance. This is a convenience mechanism to eliminate the constant
+     * need to call {@code client.getDataStore()} every time one needs to look up a Resource.
+     *
+     * @param href  the URL of the resource to retrieve
+     * @param clazz the {@link Resource} sub-interface to instantiate
+     * @param options the {@link Options} sub-interface with the properties to expand
+     * @param <T>   type parameter indicating the returned value is a {@link Resource} instance.
+     * @return an instance of the specified {@code Class} based on the data returned from the specified {@code href} URL.
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options) {
+        return this.dataStore.getResource(href, clazz, options);
     }
 
     /**
@@ -337,4 +355,20 @@ public class DefaultClient implements Client {
         return getCurrentTenant().getGroups(queryParams);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Tenant getCurrentTenant(TenantOptions tenantOptions) {
+        String href = currentTenantHref;
+        if (href == null) {
+            href = "/tenants/current";
+        }
+
+        Tenant current = this.dataStore.getResource(href, Tenant.class, tenantOptions);
+        this.currentTenantHref = current.getHref();
+        return current;
+    }
 }

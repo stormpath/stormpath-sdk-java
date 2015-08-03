@@ -34,8 +34,9 @@ import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.LIMIT;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.OFFSET;
 
 public class ReadCacheFilter extends AbstractCacheFilter {
 
@@ -84,8 +85,11 @@ public class ReadCacheFilter extends AbstractCacheFilter {
                                                          .setItemsMap(apiKeyData).build();
             }
         } else {
+            //Prevent an expanded request to obtain a non-expanded resource from the cache
             String cacheKey = getCacheKey(request);
-            data = getCachedValue(cacheKey, clazz);
+            if (! (request.getUri().hasQuery() && request.getUri().getQuery().containsKey("expand") ^ (cacheKey != null && cacheKey.contains("expand=")))) {
+                data = getCachedValue(cacheKey, clazz);
+            }
         }
 
         if (Collections.isEmpty(data)) {
@@ -125,7 +129,8 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             !ProviderAccountAccess.class.isAssignableFrom(clazz) &&
 
             //Collection caching is EXPERIMENTAL so it is off by default
-            (!CollectionResource.class.isAssignableFrom(clazz) ||
-             (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
+            //we do cache ApiKeyList. This is a fix for #216
+            (!CollectionResource.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz) ||
+                    (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
 }

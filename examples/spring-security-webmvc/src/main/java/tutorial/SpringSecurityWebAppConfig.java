@@ -16,16 +16,20 @@
 package tutorial;
 
 
+import com.stormpath.spring.config.EnableStormpathWebSecurity;
 import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
+@EnableStormpathWebSecurity
 @Configuration
 @ComponentScan
+@PropertySource("classpath:application.properties")
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
 
     @Override

@@ -16,9 +16,9 @@
 package com.stormpath.sdk.impl.cache;
 
 import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.impl.util.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Duration;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -68,16 +68,16 @@ public class DefaultCache<K, V> implements Cache<K, V> {
      * This constructor uses a {@link SoftHashMap} instance as the cache's backing map, which is thread-safe and
      * auto-sizes itself based on the application's memory constraints.
      * <p/>
-     * Finally, the {@link #setTimeToIdle(com.stormpath.sdk.impl.util.Duration) timeToIdle} and
-     * {@link #setTimeToLive(com.stormpath.sdk.impl.util.Duration) timeToLive} settings are both {@code null},
+     * Finally, the {@link #setTimeToIdle(com.stormpath.sdk.lang.Duration) timeToIdle} and
+     * {@link #setTimeToLive(com.stormpath.sdk.lang.Duration) timeToLive} settings are both {@code null},
      * indicating that cache entries will live indefinitely (except due to memory constraints as managed by the
      * {@code SoftHashMap}).
      *
      * @param name the name to assign to this instance, expected to be unique among all other caches in the parent
      *             {@code CacheManager}.
      * @see SoftHashMap
-     * @see #setTimeToIdle(com.stormpath.sdk.impl.util.Duration)
-     * @see #setTimeToLive(com.stormpath.sdk.impl.util.Duration)
+     * @see #setTimeToIdle(com.stormpath.sdk.lang.Duration)
+     * @see #setTimeToLive(com.stormpath.sdk.lang.Duration)
      */
     public DefaultCache(String name) {
         this(name, new SoftHashMap<K, Entry<V>>());
@@ -88,8 +88,8 @@ public class DefaultCache<K, V> implements Cache<K, V> {
      * {@code backingMap}.  It is expected that the {@code backingMap} implementation be thread-safe and preferrably
      * auto-sizing based on memory constraints (see {@link SoftHashMap} for such an implementation).
      * <p/>
-     * The {@link #setTimeToIdle(com.stormpath.sdk.impl.util.Duration) timeToIdle} and
-     * {@link #setTimeToLive(com.stormpath.sdk.impl.util.Duration) timeToLive} settings are both {@code null},
+     * The {@link #setTimeToIdle(com.stormpath.sdk.lang.Duration) timeToIdle} and
+     * {@link #setTimeToLive(com.stormpath.sdk.lang.Duration) timeToLive} settings are both {@code null},
      * indicating that cache entries will live indefinitely (except due to memory constraints as managed by the
      * {@code backingMap} instance).
      *
@@ -97,8 +97,8 @@ public class DefaultCache<K, V> implements Cache<K, V> {
      *                   {@code CacheManager}.
      * @param backingMap the (ideally thread-safe) map instance to store the Cache entries.
      * @see SoftHashMap
-     * @see #setTimeToIdle(com.stormpath.sdk.impl.util.Duration)
-     * @see #setTimeToLive(com.stormpath.sdk.impl.util.Duration)
+     * @see #setTimeToIdle(com.stormpath.sdk.lang.Duration)
+     * @see #setTimeToLive(com.stormpath.sdk.lang.Duration)
      */
     public DefaultCache(String name, Map<K, Entry<V>> backingMap) {
         this(name, backingMap, null, null);
@@ -119,8 +119,8 @@ public class DefaultCache<K, V> implements Cache<K, V> {
      * @throws IllegalArgumentException if either {@code timeToLive} or {@code timeToIdle} are non-null <em>and</em>
      *                                  represent a non-positive (zero or negative) value. This is only enforced for
      *                                  non-null values - {@code null} values are allowed for either argument.
-     * @see #setTimeToIdle(com.stormpath.sdk.impl.util.Duration)
-     * @see #setTimeToLive(com.stormpath.sdk.impl.util.Duration)
+     * @see #setTimeToIdle(com.stormpath.sdk.lang.Duration)
+     * @see #setTimeToLive(com.stormpath.sdk.lang.Duration)
      */
     public DefaultCache(String name, Map<K, Entry<V>> backingMap, Duration timeToLive, Duration timeToIdle) throws IllegalArgumentException {
         Assert.notNull(name, "Cache name cannot be null.");
