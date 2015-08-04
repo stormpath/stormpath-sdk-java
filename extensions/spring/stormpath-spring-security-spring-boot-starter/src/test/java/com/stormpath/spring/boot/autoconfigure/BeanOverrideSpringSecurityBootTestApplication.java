@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class BeanOverrideSpringSecurityBootTestApplication {
 
     @Bean
-    public GroupGrantedAuthorityResolver myGroupGrantedAuthorityResolver() {
+    public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return new CustomTestGroupGrantedAuthorityResolver();
     }
 
