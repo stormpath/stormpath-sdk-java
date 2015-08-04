@@ -63,22 +63,29 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     @Override
     protected final void configure(HttpSecurity http) throws Exception {
 
-        http
-                .formLogin()
-                .loginPage(stormpathWebMvcConfiguration.loginUri)
-                .defaultSuccessUrl(stormpathWebMvcConfiguration.loginNextUri)
-                .successHandler(stormpathAuthenticationSuccessHandler())
-                .usernameParameter("login")
-                .passwordParameter("password")
-                .and()
-                .logout()
-                .logoutUrl(stormpathWebMvcConfiguration.logoutUri)
-                .logoutSuccessUrl(stormpathWebMvcConfiguration.logoutNextUri)
-                .addLogoutHandler(stormpathLogoutHandler())
-                .and()
-                .httpBasic()
-                .and()
-                .csrf().disable();
+        if (stormpathWebMvcConfiguration.loginEnabled) {
+            http
+                    .formLogin()
+                    .loginPage(stormpathWebMvcConfiguration.loginUri)
+                    .defaultSuccessUrl(stormpathWebMvcConfiguration.loginNextUri)
+                    .successHandler(stormpathAuthenticationSuccessHandler())
+                    .usernameParameter("login")
+                    .passwordParameter("password");
+        }
+
+        if (stormpathWebMvcConfiguration.logoutEnabled) {
+            http
+                    .logout()
+                    .logoutUrl(stormpathWebMvcConfiguration.logoutUri)
+                    .logoutSuccessUrl(stormpathWebMvcConfiguration.logoutNextUri)
+                    .addLogoutHandler(stormpathLogoutHandler());
+
+        }
+
+        http.httpBasic().and().
+
+        //TODO: figure out what to do here:
+        csrf().disable();
 
         doConfigure(http);
     }
