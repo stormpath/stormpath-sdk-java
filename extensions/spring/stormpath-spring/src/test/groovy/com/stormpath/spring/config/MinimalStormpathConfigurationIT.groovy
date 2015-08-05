@@ -66,7 +66,6 @@ class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
         assertNull c.apiKeyFile
         assertNull c.apiKeyFileIdPropertyName
         assertNull c.apiKeyFileSecretPropertyName
-        assertNull c.applicationHref
         assertTrue c.cachingEnabled
         assertNull c.proxyHost
         assertEquals c.proxyPort, 80

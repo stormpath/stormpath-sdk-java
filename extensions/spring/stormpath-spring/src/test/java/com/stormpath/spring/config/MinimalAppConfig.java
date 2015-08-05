@@ -16,12 +16,10 @@
 package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 /**
  * @since 1.0.RC4
  */
 @Configuration
 @EnableStormpath
-@PropertySource("classpath:com/stormpath/spring/config/PropertyOverrideAppConfig.properties")
 public class MinimalAppConfig {}
