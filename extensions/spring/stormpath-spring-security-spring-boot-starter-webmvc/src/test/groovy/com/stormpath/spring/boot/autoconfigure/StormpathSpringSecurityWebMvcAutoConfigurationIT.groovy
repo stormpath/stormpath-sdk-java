@@ -25,6 +25,8 @@ import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver
+import com.stormpath.spring.security.provider.DefaultGroupGrantedAuthorityResolver
+import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver
 import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
@@ -87,13 +89,13 @@ class StormpathSpringSecurityWebMvcAutoConfigurationIT extends AbstractTestNGSpr
 
 
         assertNotNull stormpathAuthenticationProvider
-        assertEquals stormpathAuthenticationProvider.applicationRestUrl, "https://api.stormpath.com/v1/applications/2RNMCGQeePR0yREsG5foC0"
+        assertNotNull stormpathAuthenticationProvider.applicationRestUrl
         assertNotNull stormpathAuthenticationProvider.client
 
         assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager
-        assertTrue stormpathAuthenticationProvider.groupGrantedAuthorityResolver instanceof CustomTestGroupGrantedAuthorityResolver
+        assertTrue stormpathAuthenticationProvider.groupGrantedAuthorityResolver instanceof DefaultGroupGrantedAuthorityResolver
         assertTrue stormpathAuthenticationProvider.groupPermissionResolver instanceof GroupCustomDataPermissionResolver
-        assertNull stormpathAuthenticationProvider.accountGrantedAuthorityResolver
+        assertTrue stormpathAuthenticationProvider.accountGrantedAuthorityResolver instanceof EmptyAccountGrantedAuthorityResolver
         assertTrue stormpathAuthenticationProvider.accountPermissionResolver instanceof AccountCustomDataPermissionResolver
         assertTrue stormpathAuthenticationProvider.authenticationTokenFactory instanceof UsernamePasswordAuthenticationTokenFactory
 

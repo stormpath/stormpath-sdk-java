@@ -37,7 +37,7 @@ public class BeanOverrideApplication {
 
     @Bean
     @ConditionalOnProperty(name = "testName", havingValue = "BeanOverrideApplicationIT") //This bean is always being automatically created, let's allow it only to be created when running BeanOverrideApplicationIT
-    public GroupPermissionResolver groupPermissionResolver() {
+    public GroupPermissionResolver stormpathGroupPermissionResolver() {
         //Let's try that the Bean definition order in AbstractStormpathSpringSecurityConfiguration#stormpathAuthenticationProvider actually works
         return new CustomTestGroupPermissionResolver();
     }
