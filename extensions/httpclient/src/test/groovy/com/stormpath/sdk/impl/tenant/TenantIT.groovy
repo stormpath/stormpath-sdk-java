@@ -129,9 +129,9 @@ class TenantIT extends ClientIT {
         assertNotNull tenant
 
         Map properties = getValue(AbstractResource, tenant, "properties")
-        def apps = properties.get("applications").get("size")
-        def dirs = properties.get("directories").get("size")
-        def groups = properties.get("groups").get("size")
+        def apps = properties.get("applications").get("items").size()
+        def dirs = properties.get("directories").get("items").size()
+        def groups = properties.get("groups").get("items").size()
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -159,9 +159,9 @@ class TenantIT extends ClientIT {
         assertNotNull tenant2
 
         properties = getValue(AbstractResource, tenant2, "properties")
-        assertTrue properties.get("applications").get("size") == apps + 1
-        assertTrue properties.get("directories").get("size") == dirs + 1
-        assertTrue properties.get("groups").get("size") == groups + 1
+        assertTrue properties.get("applications").get("items").size() == apps + 1
+        assertTrue properties.get("directories").get("items").size() == dirs + 2
+        assertTrue properties.get("groups").get("items").size() == groups + 1
 
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164
@@ -601,6 +601,7 @@ class TenantIT extends ClientIT {
         Application application = client.instantiate(Application)
         application.setName(uniquify("testGetApplicationsWithTimestampFilter app"))
         application = tenant.createApplication(Applications.newCreateRequestFor(application).createDirectory().build())
+        deleteOnTeardown(application)
 
         Date appCreationTimestamp = application.createdAt
 
