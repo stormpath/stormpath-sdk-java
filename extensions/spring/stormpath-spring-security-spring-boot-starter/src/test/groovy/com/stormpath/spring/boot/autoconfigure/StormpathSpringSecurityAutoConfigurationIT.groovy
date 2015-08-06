@@ -15,13 +15,11 @@
  */
 package com.stormpath.spring.boot.autoconfigure
 
-import com.stormpath.spring.boot.autoconfigure.TestBootSpringSecurityApplication
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.Client
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
-import org.springframework.context.annotation.Configuration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.testng.annotations.Test
 
@@ -30,8 +28,7 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.RC4.6
  */
-@SpringApplicationConfiguration(classes = BeanOverrideApplication.class)
-@Configuration
+@SpringApplicationConfiguration(classes = SpringSecurityBootTestApplication.class)
 class StormpathSpringSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

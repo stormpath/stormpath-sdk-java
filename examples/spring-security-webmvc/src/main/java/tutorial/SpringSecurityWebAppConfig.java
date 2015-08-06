@@ -15,7 +15,6 @@
  */
 package tutorial;
 
-
 import com.stormpath.spring.config.EnableStormpathWebSecurity;
 import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,10 +32,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
 
     @Override
-    protected void config(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/restricted").fullyAuthenticated();
+    protected void doConfigure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/restricted").fullyAuthenticated();
     }
 
 }

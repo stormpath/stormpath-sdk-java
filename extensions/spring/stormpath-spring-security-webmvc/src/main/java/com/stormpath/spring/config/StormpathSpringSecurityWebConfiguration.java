@@ -18,7 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.spring.security.configuration.AbstractStormpathSpringSecurityConfiguration;
+import com.stormpath.spring.security.configuration.AbstractStormpathSpringSecurityWebConfiguration;
 import com.stormpath.spring.security.provider.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +30,9 @@ import org.springframework.context.annotation.Configuration;
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-public class StormpathSpringSecurityConfiguration extends AbstractStormpathSpringSecurityConfiguration {
+public class StormpathSpringSecurityWebConfiguration extends AbstractStormpathSpringSecurityWebConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(StormpathSpringSecurityConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(StormpathSpringSecurityWebConfiguration.class);
 
     @Bean
     public ApiKey stormpathClientApiKey() {
