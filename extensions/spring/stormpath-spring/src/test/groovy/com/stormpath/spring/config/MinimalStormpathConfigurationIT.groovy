@@ -37,7 +37,7 @@ import static org.testng.Assert.*
 class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    StormpathConfiguration c;
+    StormpathTwoAppTenantConfiguration c
 
     @Autowired
     ApiKey apiKey;
@@ -61,8 +61,8 @@ class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
         assertNotNull application
 
         assertNull c.baseUrl
-        assertNull c.apiKeyId
-        assertNull c.apiKeySecret
+//        assertNull c.apiKeyId
+//        assertNull c.apiKeySecret
         assertNull c.apiKeyFile
         assertNull c.apiKeyFileIdPropertyName
         assertNull c.apiKeyFileSecretPropertyName
