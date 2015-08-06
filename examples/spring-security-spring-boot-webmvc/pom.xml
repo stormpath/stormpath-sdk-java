@@ -37,7 +37,7 @@
 
         <!--
             These Tomcat dependencies are required for this example to run in Java 6.
-            Otherwise Tomcat 8.0.15 is used and it throws:
+            Otherwise Tomcat 8.0.15 will used and it will throw:
             javax/servlet/ServletContext : Unsupported major.minor version 51.0
         -->
         <dependency>
