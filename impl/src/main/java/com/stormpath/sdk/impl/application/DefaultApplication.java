@@ -15,7 +15,17 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.api.ApiAuthenticationResult;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.api.*;
 import com.stormpath.sdk.application.*;
 import com.stormpath.sdk.authc.AuthenticationOptions;
@@ -692,4 +702,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return foundGroup;
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Application saveWithResponseOptions(ApplicationOptions responseOptions) {
+        Assert.notNull(responseOptions, "responseOptions can't be null.");
+        applyCustomDataUpdatesIfNecessary();
+        getDataStore().save(this, responseOptions);
+        return this;
+    }
 }

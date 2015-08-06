@@ -97,7 +97,7 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = 'deleteme@nowhere.com'
+        def email = uniquify('deleteme') + '@nowhere.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -1069,6 +1069,36 @@ class ApplicationIT extends ClientIT {
         Field field = clazz.getDeclaredField(fieldName)
         field.setAccessible(true)
         return field.get(object)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testSaveWithResponseOptions(){
+
+        def app = createTempApp()
+        def href = app.getHref()
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'Jonathan'
+        account.surname = 'Doe'
+        account.email = uniquify('deleteme') + '@nowhere.com'
+        account.password = 'Changeme1!'
+        app.createAccount(account)
+        deleteOnTeardown(account)
+
+        app.getCustomData().put("testKey", "testValue")
+
+        def retrieved = app.saveWithResponseOptions(Applications.options().withAccounts().withCustomData())
+
+        assertEquals href, retrieved.getHref()
+
+        Map properties = getValue(AbstractResource, retrieved, "properties")
+        assertTrue properties.get("customData").size() > 1
+        assertEquals properties.get("customData").get("testKey"), "testValue"
+        assertTrue properties.get("accounts").size() > 1
+        assertEquals properties.get("accounts").get("items")[0].get("email"), account.email
     }
 
 }
