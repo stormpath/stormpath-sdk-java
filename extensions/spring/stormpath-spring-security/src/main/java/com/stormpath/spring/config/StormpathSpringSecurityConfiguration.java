@@ -16,31 +16,37 @@ import org.springframework.security.authentication.AuthenticationProvider;
 public class StormpathSpringSecurityConfiguration extends AbstractStormpathSpringSecurityConfiguration {
 
     @Bean
+    @Override
     public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return super.stormpathGroupGrantedAuthorityResolver();
     }
 
     @Bean
+    @Override
     public GroupPermissionResolver stormpathGroupPermissionResolver() {
         return super.stormpathGroupPermissionResolver();
     }
 
     @Bean
+    @Override
     public AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver() {
         return super.stormpathAccountGrantedAuthorityResolver();
     }
 
     @Bean
+    @Override
     public AccountPermissionResolver stormpathAccountPermissionResolver() {
         return super.stormpathAccountPermissionResolver();
     }
 
     @Bean
+    @Override
     public AuthenticationTokenFactory stormpathAuthenticationTokenFactory() {
         return super.stormpathAuthenticationTokenFactory();
     }
 
     @Bean
+    @Override
     public AuthenticationProvider stormpathAuthenticationProvider() {
         return super.stormpathAuthenticationProvider();
     }

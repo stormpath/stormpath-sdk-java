@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC4.6
  */
 public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 

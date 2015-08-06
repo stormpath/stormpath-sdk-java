@@ -21,16 +21,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
 
 /**
  * @since 1.0.RC4.6
  */
-@SpringBootApplication
-@ComponentScan(basePackageClasses = BeanOverrideApplicationIT.class )
+//@SpringBootApplication
+@EnableStormpathWebSecurityAutoConfiguration
+@PropertySource("classpath:application.properties")
 public class BeanOverrideApplication {
 
     private static final Logger log = LoggerFactory.getLogger(BeanOverrideApplication.class);

@@ -30,6 +30,8 @@ import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.PropertySource
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.testng.annotations.Test
@@ -43,7 +45,7 @@ import static org.testng.Assert.*
 @WebAppConfiguration
 class BeanOverrideApplicationIT extends AbstractTestNGSpringContextTests {
 
-    static{
+    static {
         //The groupPermissionResolver bean is always being automatically created (defined in BeanOverrideApplication).
         //Let's create it conditionally on this property to avoid StormpathSpringSecurityWebMvcAutoConfigurationIT to fail
         System.setProperty("testName", "BeanOverrideApplicationIT")
@@ -54,7 +56,7 @@ class BeanOverrideApplicationIT extends AbstractTestNGSpringContextTests {
     StormpathAuthenticationProvider stormpathAuthenticationProvider
 
     @Autowired
-    public GroupPermissionResolver stormpathGroupPermissionResolver;
+    GroupPermissionResolver stormpathGroupPermissionResolver
 
     //Some WebMVC Beans
     @Autowired
@@ -84,7 +86,9 @@ class BeanOverrideApplicationIT extends AbstractTestNGSpringContextTests {
 
         assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager
         assertTrue stormpathGroupPermissionResolver instanceof CustomTestGroupPermissionResolver
+        System.out.println(stormpathAuthenticationProvider.groupPermissionResolver)
         assertTrue stormpathAuthenticationProvider.groupPermissionResolver instanceof CustomTestGroupPermissionResolver
+        System.out.println(stormpathAuthenticationProvider.accountGrantedAuthorityResolver)
         assertTrue stormpathAuthenticationProvider.accountGrantedAuthorityResolver instanceof EmptyAccountGrantedAuthorityResolver
         assertTrue stormpathAuthenticationProvider.accountPermissionResolver instanceof AccountCustomDataPermissionResolver
         assertTrue stormpathAuthenticationProvider.authenticationTokenFactory instanceof UsernamePasswordAuthenticationTokenFactory

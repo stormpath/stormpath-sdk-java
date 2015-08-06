@@ -22,15 +22,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC4.6
  */
+
+@EnableStormpathWebSecurityAutoConfiguration
 @Configuration
 @ComponentScan
-@EnableStormpathWebSecurityAutoConfiguration
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
 
     @Override
-    protected void config(HttpSecurity http) throws Exception {
+    protected void doConfigure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/restricted").fullyAuthenticated();

@@ -15,7 +15,6 @@
  */
 package tutorial;
 
-//import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
 import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;

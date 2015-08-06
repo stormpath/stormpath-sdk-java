@@ -32,6 +32,8 @@ import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.stereotype.Component
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.servlet.HandlerInterceptor

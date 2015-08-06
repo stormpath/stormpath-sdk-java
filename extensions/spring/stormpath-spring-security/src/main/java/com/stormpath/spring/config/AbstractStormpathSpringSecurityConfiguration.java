@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
- * @since 1.0.RC4.3
+ * @since 1.0.RC4.6
  */
 public abstract class AbstractStormpathSpringSecurityConfiguration {
 
