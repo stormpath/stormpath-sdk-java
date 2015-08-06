@@ -20,27 +20,21 @@ import com.stormpath.spring.security.provider.GroupPermissionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Configuration;
 
 
 /**
  * @since 1.0.RC4.6
  */
-//@SpringBootApplication
-@EnableStormpathWebSecurityAutoConfiguration
-@PropertySource("classpath:application.properties")
+@Configuration
+@EnableAutoConfiguration
 public class BeanOverrideApplication {
 
     private static final Logger log = LoggerFactory.getLogger(BeanOverrideApplication.class);
 
     @Bean
-    @ConditionalOnProperty(name = "testName", havingValue = "BeanOverrideApplicationIT") //This bean is always being automatically created, let's allow it only to be created when running BeanOverrideApplicationIT
     public GroupPermissionResolver stormpathGroupPermissionResolver() {
         //Let's try that the Bean definition order in AbstractStormpathSpringSecurityConfiguration#stormpathAuthenticationProvider actually works
         return new CustomTestGroupPermissionResolver();

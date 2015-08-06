@@ -30,8 +30,6 @@ import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.PropertySource
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.testng.annotations.Test
@@ -45,13 +43,7 @@ import static org.testng.Assert.*
 @WebAppConfiguration
 class BeanOverrideApplicationIT extends AbstractTestNGSpringContextTests {
 
-    static {
-        //The groupPermissionResolver bean is always being automatically created (defined in BeanOverrideApplication).
-        //Let's create it conditionally on this property to avoid StormpathSpringSecurityWebMvcAutoConfigurationIT to fail
-        System.setProperty("testName", "BeanOverrideApplicationIT")
-    }
-
-    //Spring Security Beans
+   //Spring Security Beans
     @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider
 

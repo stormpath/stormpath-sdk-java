@@ -49,11 +49,6 @@ import static org.testng.Assert.*
 @WebAppConfiguration
 class StormpathSpringSecurityWebMvcAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
-    static{
-        //Let's set this property to avoid
-        System.setProperty("testName", "StormpathSpringSecurityWebMvcAutoConfigurationIT")
-    }
-
     //Spring Security Bean
     @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider

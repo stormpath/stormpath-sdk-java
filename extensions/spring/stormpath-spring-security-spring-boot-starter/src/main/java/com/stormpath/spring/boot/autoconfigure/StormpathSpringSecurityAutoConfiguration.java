@@ -15,9 +15,13 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
-import com.stormpath.spring.config.StormpathSpringSecurityConfiguration;
+import com.stormpath.spring.config.AbstractStormpathSpringSecurityConfiguration;
+import com.stormpath.spring.security.provider.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
  * @since 1.0.RC4.6
@@ -25,6 +29,48 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.spring.security.enabled" }, matchIfMissing = true)
-public class StormpathSpringSecurityAutoConfiguration extends StormpathSpringSecurityConfiguration {
+public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathSpringSecurityConfiguration {
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean
+    public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
+        return super.stormpathGroupGrantedAuthorityResolver();
+    }
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean
+    public GroupPermissionResolver stormpathGroupPermissionResolver() {
+        return super.stormpathGroupPermissionResolver();
+    }
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean
+    public AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver() {
+        return super.stormpathAccountGrantedAuthorityResolver();
+    }
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean
+    public AccountPermissionResolver stormpathAccountPermissionResolver() {
+        return super.stormpathAccountPermissionResolver();
+    }
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean
+    public AuthenticationTokenFactory stormpathAuthenticationTokenFactory() {
+        return super.stormpathAuthenticationTokenFactory();
+    }
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean
+    public AuthenticationProvider stormpathAuthenticationProvider() {
+        return super.stormpathAuthenticationProvider();
+    }
 
 }
