@@ -15,7 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure
 
-import autoconfigure.StormpathSpringSecurityWebMvcAutoConfiguration
+import autoconfigure.StormpathSpringSecurityWebMvcAutoConfigurationApplication
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.servlet.config.CookieConfig
@@ -24,28 +24,22 @@ import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
-import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver
-import com.stormpath.spring.security.provider.DefaultGroupGrantedAuthorityResolver
-import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver
-import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver
-import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
-import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
+import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.stereotype.Component
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.HandlerMapping
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.RC4.6
  */
-@SpringApplicationConfiguration(classes = StormpathSpringSecurityWebMvcAutoConfiguration.class)
+@SpringApplicationConfiguration(classes = StormpathSpringSecurityWebMvcAutoConfigurationApplication.class)
 @WebAppConfiguration
 class StormpathSpringSecurityWebMvcAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 

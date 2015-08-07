@@ -23,7 +23,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-spring-security-spring-boot-starter-webmvc</artifactId>
+    <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
     <name>Stormpath :: Spring :: Boot :: Spring Security :: Web MVC Starter</name>
     <description>Spring Boot WebMVC Starter for Stormpath with Spring Security</description>
 

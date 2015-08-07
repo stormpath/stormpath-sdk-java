@@ -29,13 +29,13 @@ import java.util.Arrays;
  */
 @Configuration
 @EnableAutoConfiguration
-public class StormpathSpringSecurityWebMvcAutoConfiguration {
+public class StormpathSpringSecurityWebMvcAutoConfigurationApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(StormpathSpringSecurityWebMvcAutoConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(StormpathSpringSecurityWebMvcAutoConfigurationApplication.class);
 
     public static void main(String[] args) {
 
-        ApplicationContext ctx = SpringApplication.run(StormpathSpringSecurityWebMvcAutoConfiguration.class, args);
+        ApplicationContext ctx = SpringApplication.run(StormpathSpringSecurityWebMvcAutoConfigurationApplication.class, args);
 
         log.info("Beans provided by Spring Boot:");
 

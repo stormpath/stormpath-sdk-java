@@ -15,10 +15,8 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
-import com.stormpath.spring.config.*;
-import org.springframework.context.annotation.Import;
+import com.stormpath.spring.config.EnableStormpathSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

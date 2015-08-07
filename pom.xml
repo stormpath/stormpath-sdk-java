@@ -231,7 +231,7 @@
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>stormpath-spring-security-spring-boot-starter-webmvc</artifactId>
+                <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

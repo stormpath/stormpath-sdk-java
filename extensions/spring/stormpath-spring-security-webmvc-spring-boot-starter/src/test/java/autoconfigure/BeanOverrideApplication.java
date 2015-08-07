@@ -15,7 +15,7 @@
  */
 package autoconfigure;
 
-import com.stormpath.spring.boot.autoconfigure.*;
+import com.stormpath.spring.boot.autoconfigure.CustomTestGroupPermissionResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class BeanOverrideApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(StormpathSpringSecurityWebMvcAutoConfiguration.class, args);
+        SpringApplication.run(StormpathSpringSecurityWebMvcAutoConfigurationApplication.class, args);
     }
 
 }

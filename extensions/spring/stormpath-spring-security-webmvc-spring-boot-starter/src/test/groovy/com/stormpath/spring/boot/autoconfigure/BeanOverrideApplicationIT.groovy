@@ -23,18 +23,15 @@ import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator
 import com.stormpath.sdk.servlet.mvc.Controller
-import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver
-import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver
-import com.stormpath.spring.security.provider.GroupPermissionResolver
-import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
-import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
+import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 
 /**
