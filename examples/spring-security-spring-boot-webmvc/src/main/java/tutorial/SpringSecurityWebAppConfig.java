@@ -25,7 +25,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  * @since 1.0.RC4.6
  */
 
-@EnableStormpathWebSecurityAutoConfiguration
+@EnableStormpathWebSecurityAutoConfiguration //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @Configuration
 @ComponentScan
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
@@ -36,6 +36,5 @@ public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguratio
                 .authorizeRequests()
                 .antMatchers("/restricted").fullyAuthenticated();
     }
-
 
 }

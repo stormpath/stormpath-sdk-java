@@ -25,7 +25,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 /**
  * @since 1.0.RC4.6
  */
-@EnableStormpathWebSecurity
+@EnableStormpathWebSecurity //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @Configuration
 @ComponentScan
 @PropertySource("classpath:application.properties")

@@ -60,7 +60,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     @Test
     void test() {
-        //assertNotNull c
         assertNotNull apiKey
         assertNotNull stormpathCacheManager
         assertNotNull client
