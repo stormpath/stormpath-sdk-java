@@ -211,17 +211,17 @@
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>spring-boot-starter-stormpath</artifactId>
+                <artifactId>stormpath-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>spring-boot-starter-stormpath-webmvc</artifactId>
+                <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>spring-boot-starter-stormpath-thymeleaf</artifactId>
+                <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

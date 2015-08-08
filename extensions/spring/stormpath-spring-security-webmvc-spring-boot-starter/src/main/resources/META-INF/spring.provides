@@ -1,1 +1,1 @@
-provides: stormpath-spring-security-web
+provides: stormpath-web-security

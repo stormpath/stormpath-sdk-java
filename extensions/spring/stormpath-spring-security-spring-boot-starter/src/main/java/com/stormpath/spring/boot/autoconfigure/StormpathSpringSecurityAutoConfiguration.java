@@ -16,9 +16,15 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.spring.config.AbstractStormpathSpringSecurityConfiguration;
-import com.stormpath.spring.security.provider.*;
+import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
+import com.stormpath.spring.security.provider.AccountPermissionResolver;
+import com.stormpath.spring.security.provider.AuthenticationTokenFactory;
+import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
+import com.stormpath.spring.security.provider.GroupPermissionResolver;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -29,6 +35,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 @ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.spring.security.enabled" }, matchIfMissing = true)
+@AutoConfigureAfter({ StormpathAutoConfiguration.class, SecurityAutoConfiguration.class })
 public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathSpringSecurityConfiguration {
 
     @Bean

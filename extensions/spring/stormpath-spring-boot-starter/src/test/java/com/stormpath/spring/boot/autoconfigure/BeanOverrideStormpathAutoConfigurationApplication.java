@@ -13,35 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package autoconfigure;
+package com.stormpath.spring.boot.autoconfigure;
 
-import com.stormpath.spring.boot.autoconfigure.CustomTestGroupPermissionResolver;
-import com.stormpath.spring.security.provider.GroupPermissionResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.client.Client;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC4
  */
 @Configuration
 @EnableAutoConfiguration
-public class BeanOverrideApplication {
+public class BeanOverrideStormpathAutoConfigurationApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(BeanOverrideApplication.class);
+    @Autowired
+    private Client client;
 
     @Bean
-    public GroupPermissionResolver stormpathGroupPermissionResolver() {
-        //Let's try that the Bean definition order in AbstractStormpathSpringSecurityConfiguration#stormpathAuthenticationProvider actually works
-        return new CustomTestGroupPermissionResolver();
+    public Application stormpathApplication() {
+
+        //purposefully return the Stormpath admin console app.
+        //Real apps would never do this, but this is an easy way to test that bean overrides work:
+
+        for (Application app : client.getApplications()) {
+            if (app.getName().equalsIgnoreCase("Stormpath")) { //return the admin app
+                return app;
+            }
+        }
+
+        throw new IllegalStateException("Stormpath application is always available in Stormpath.");
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(StormpathWebSecurityAutoConfigurationApplication.class, args);
+        SpringApplication.run(StormpathAutoConfigurationApplication.class, args);
     }
 
 }

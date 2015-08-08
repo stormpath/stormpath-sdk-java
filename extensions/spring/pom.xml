@@ -41,9 +41,9 @@
         <module>stormpath-spring-security</module>
         <module>stormpath-spring-security-webmvc</module>
         <module>stormpath-spring-webmvc</module>
-        <module>spring-boot-starter-stormpath</module>
-        <module>spring-boot-starter-stormpath-webmvc</module>
-        <module>spring-boot-starter-stormpath-thymeleaf</module>
+        <module>stormpath-spring-boot-starter</module>
+        <module>stormpath-webmvc-spring-boot-starter</module>
+        <module>stormpath-thymeleaf-spring-boot-starter</module>
         <module>stormpath-spring-security-spring-boot-starter</module>
         <module>stormpath-spring-security-webmvc-spring-boot-starter</module>
     </modules>

@@ -68,7 +68,7 @@ public class UserAgent {
     private static final String STORMPATH_SDK_SERVLET_CLASS = "com.stormpath.sdk.servlet.filter.StormpathFilter";
 
     //Stormpath Spring Boot
-    private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_ID = "spring-boot-starter-stormpath";
+    private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_ID = "stormpath-spring-boot-starter";
     private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS = "com.stormpath.spring.boot.autoconfigure.StormpathAutoConfiguration";
 
     //Integration Runtimes
@@ -122,7 +122,7 @@ public class UserAgent {
 
     private static String createUserAgentString() {
         String userAgent =  getIntegrationString() +    // stormpath-shiro | stormpath-spring-security
-                getStormpathSDKComponentsString() +     // stormpath-servlet-java | spring-boot-starter-stormpath
+                getStormpathSDKComponentsString() +     // stormpath-servlet-java | stormpath-spring-boot-starter
                 getStormpathSdkString() +               // stormpath-sdk-java
                 getSecurityFrameworkString() +          // shiro | spring-security
                 getIntegrationRuntimeString() +         // spring

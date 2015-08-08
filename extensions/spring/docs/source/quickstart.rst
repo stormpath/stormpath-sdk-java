@@ -51,7 +51,7 @@ Add the Spring Boot Stormpath Web Starter
 
 This step allows you to enable Stormpath in a Spring Boot web app *without a single line of code or configuration*.  How amazing is that? Here's how.
 
-Using your favorite dependency resolution build tool like Maven or Gradle, add the spring-boot-starter-stormpath-thymeleaf-|version|.jar to your project dependencies. For example:
+Using your favorite dependency resolution build tool like Maven or Gradle, add the stormpath-thymeleaf-spring-boot-starter-|version|.jar to your project dependencies. For example:
 
 **Maven**:
 
@@ -59,7 +59,7 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 
     <dependency>
         <groupId>com.stormpath.spring</groupId>
-        <artifactId>spring-boot-starter-stormpath-thymeleaf</artifactId>
+        <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
         <version>\ |version|\ </version>
     </dependency>
 
@@ -68,7 +68,7 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 .. parsed-literal::
 
     dependencies {
-        compile 'com.stormpath.spring:spring-boot-starter-stormpath-thymeleaf:\ |version|\ '
+        compile 'com.stormpath.spring:stormpath-thymeleaf-spring-boot-starter:\ |version|\ '
     }
 
 That's it!  You're ready to start using Stormpath in your Spring Boot web application!  Can you believe how easy that was?

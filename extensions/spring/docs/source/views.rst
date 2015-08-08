@@ -16,7 +16,7 @@ All of the default built-in views are all based on the same principle: they are 
 Thymeleaf Views
 ---------------
 
-The ``spring-boot-starter-stormpath-thymeleaf`` .jar ensures that Spring Boot's `Thymeleaf support <http://blog.codeleak.pl/2014/04/how-to-spring-boot-and-thymeleaf-with-maven.html>`_ is available and also provides the out-of-the-box template files in its ``templates/stormpath`` package.
+The ``stormpath-thymeleaf-spring-boot-starter`` .jar ensures that Spring Boot's `Thymeleaf support <http://blog.codeleak.pl/2014/04/how-to-spring-boot-and-thymeleaf-with-maven.html>`_ is available and also provides the out-of-the-box template files in its ``templates/stormpath`` package.
 
 Because Spring Boot's Thymeleaf ``ViewResolver`` assumes a view name prefix of ``classpath:templates`` and a suffix of ``.htm``, this implies that Stormpath's default view template files can be referenced with a name like ``stormpath/someName``, ``stormpath/anotherName``, etc.
 

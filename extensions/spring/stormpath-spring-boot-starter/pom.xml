@@ -23,19 +23,38 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stormpath-spring-security-spring-boot-starter</artifactId>
-    <name>Stormpath :: Spring :: Boot :: Spring Security</name>
-    <description>Spring Boot Starter for Stormpath with Spring Security Integration</description>
+    <artifactId>stormpath-spring-boot-starter</artifactId>
+    <name>Stormpath :: Spring :: Boot :: Starter</name>
+    <description>Spring Boot Starter for Stormpath</description>
 
     <dependencies>
+
         <dependency>
-            <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-spring-boot-starter</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-spring-security</artifactId>
+            <artifactId>stormpath-spring</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-httpclient</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

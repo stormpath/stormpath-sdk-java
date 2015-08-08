@@ -12,7 +12,7 @@ No Config?
 
 Refreshingly, the |project| doesn't require any configuration at all as long as the following conditions apply:
 
-#. You added the |project| .jar and its transitive dependencies to your web application's ``/WEB-INF/lib`` directory.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the spring-boot-starter-stormpath-thymeleaf dependency <dependency-jar>` in your project build configuration.
+#. You added the |project| .jar and its transitive dependencies to your web application's ``/WEB-INF/lib`` directory.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the stormpath-thymeleaf-spring-boot-starter dependency <dependency-jar>` in your project build configuration.
 
 #. Your web application can read the ``$HOME/.stormpath/apiKey.properties`` file :ref:`mentioned in the Quickstart <get-api-key>`.
 

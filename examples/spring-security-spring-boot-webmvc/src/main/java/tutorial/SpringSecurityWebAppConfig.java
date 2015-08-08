@@ -15,8 +15,8 @@
  */
 package tutorial;
 
-import com.stormpath.spring.boot.autoconfigure.EnableStormpathWebSecurityAutoConfiguration;
-import com.stormpath.spring.config.*;
+import com.stormpath.spring.config.EnableStormpathWebSecurity;
+import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,9 +25,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  * @since 1.0.RC4.6
  */
 
-@EnableStormpathWebSecurityAutoConfiguration //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @Configuration
 @ComponentScan
+@EnableStormpathWebSecurity
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
 
     @Override
