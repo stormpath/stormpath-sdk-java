@@ -15,7 +15,10 @@
  */
 package com.stormpath.sdk.impl.authc;
 
-import com.stormpath.sdk.authc.*;
+import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.BasicAuthenticationOptions;
+import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 
