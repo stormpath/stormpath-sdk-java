@@ -22,12 +22,15 @@ import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
+import com.stormpath.sdk.resource.CollectionResource
 import com.stormpath.sdk.resource.Deletable
+import com.stormpath.sdk.resource.Resource
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeTest
+import org.testng.collections.Lists
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 
@@ -37,12 +40,14 @@ abstract class ClientIT {
 
     String baseUrl = 'https://api.stormpath.com/v1'
     Client client
+    String runId
 
     List<Deletable> resourcesToDelete;
 
     @BeforeClass
     void setupClient() {
-        client = buildClient();
+        client = buildClient()
+        runId = UUID.randomUUID().toString().replace('-', '')
     }
 
     @BeforeTest
@@ -93,8 +98,30 @@ abstract class ClientIT {
         return builder.build()
     }
 
-    protected static String uniquify(String s) {
-        return s + "-" + UUID.randomUUID().toString().replace('-', '');
+    protected  String uniquify(String s) {
+        return s + "-" + UUID.randomUUID().toString().replace('-', '') + "-" + runId
+    }
+
+    protected List<Map<String, String>> filterForRun(List<Map<String, String>> properties) {
+        List<Map<String, String>> ret = Lists.newArrayList()
+        for (Map<String, String> m : properties) {
+            if (m.get("name") != null && m.get("name").endsWith(runId)) {
+                ret.add(m);
+            }
+        }
+        return ret
+    }
+
+    protected List<Resource> filterForRun(CollectionResource resources) {
+        List<Resource> ret = Lists.newArrayList()
+        for (Resource r : resources.iterator()) {
+            // Expected that we are dealing with Directory, Group or Application objects
+            String name = (String)r.class.getMethod("getName").invoke(r)
+            if (name.endsWith(runId)) {
+                ret.add(r)
+            }
+        }
+        return ret
     }
 
     protected RequestCountingClient buildCountingClient() {

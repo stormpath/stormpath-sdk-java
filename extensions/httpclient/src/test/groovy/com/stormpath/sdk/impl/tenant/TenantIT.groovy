@@ -25,7 +25,6 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.io.AbstractResource
 import com.stormpath.sdk.provider.FacebookProvider
 import com.stormpath.sdk.provider.GithubProvider
 import com.stormpath.sdk.provider.GoogleProvider
@@ -33,17 +32,12 @@ import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
-import com.stormpath.sdk.tenant.TenantOptions
-import com.stormpath.sdk.tenant.Tenants
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
-
-import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import java.lang.reflect.Field
@@ -121,7 +115,7 @@ class TenantIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testCurrentTenantWithOptions(){
+    void testCurrentTenantWithOptions() {
 
         TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
         def tenant = client.getCurrentTenant(options)
@@ -129,9 +123,9 @@ class TenantIT extends ClientIT {
         assertNotNull tenant
 
         Map properties = getValue(AbstractResource, tenant, "properties")
-        def apps = properties.get("applications").get("size")
-        def dirs = properties.get("directories").get("size")
-        def groups = properties.get("groups").get("size")
+        def apps = filterForRun(properties.get("applications").get("items"))
+        def dirs = filterForRun(properties.get("directories").get("items"))
+        def groups = filterForRun(properties.get("groups").get("items"))
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -159,15 +153,15 @@ class TenantIT extends ClientIT {
         assertNotNull tenant2
 
         properties = getValue(AbstractResource, tenant2, "properties")
-        assertTrue properties.get("applications").get("size") == apps + 1
-        assertTrue properties.get("directories").get("size") == dirs + 1
-        assertTrue properties.get("groups").get("size") == groups + 1
+        assertTrue filterForRun(properties.get("applications").get("items")).size == apps.size + 1
+        assertTrue filterForRun(properties.get("directories").get("items")).size == dirs.size + 1
+        assertTrue filterForRun(properties.get("groups").get("items")).size == groups.size + 1
 
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164
-        assertEquals dirs + 1, tenant2.directories.size
-        assertEquals apps + 1, tenant2.applications.size
-        assertEquals groups + 1, tenant2.groups.size
+        assertEquals dirs.size + 1, filterForRun(tenant2.directories).size
+        assertEquals apps.size + 1, filterForRun(tenant2.applications).size
+        assertEquals groups.size + 1, filterForRun(tenant2.groups).size
     }
 
     //@since 1.0.beta
@@ -276,6 +270,7 @@ class TenantIT extends ClientIT {
     }
 
     //@since 1.0.0
+    // TODO - Micah - This is not testing anything. Should be updated or removed.
     @Test
     void testGetAccounts() {
         def tenant = client.currentTenant
@@ -291,6 +286,7 @@ class TenantIT extends ClientIT {
     /**
      * @since 1.0.RC4.3
      */
+    // TODO - Micah - This method could be problematic with multiple concurrent runs
     @Test
     void testGetAccountsWithCriteria() {
         def uniqueEmail = uniquify("myUnique") + "@email.com"
@@ -301,6 +297,7 @@ class TenantIT extends ClientIT {
 
         def originalQty = 0
         def accounts = tenant.getAccounts(criteria)
+        // TODO - Micah - erm, why not size?
         for(Account acct : accounts) {
             originalQty++
         }
