@@ -98,4 +98,15 @@ public interface AuthenticationRequest<P, C> {
      */
     AccountStore getAccountStore();
 
+    /**
+     * Returns the {@link AuthenticationOptions} to be used in this AuthenticationRequest used to customize the response.
+     * <p>For example,
+     * it can be used to have the {@link com.stormpath.sdk.account.Account Account} resource automatically expanded in the returned result.
+     * </p>
+     *
+     * @return the {@code AuthenticationOptions} that will be used to customize the response.
+     * @since 1.0.RC4.6
+     */
+    AuthenticationOptions getResponseOptions();
+
 }

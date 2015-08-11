@@ -28,7 +28,6 @@ import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.api.*;
 import com.stormpath.sdk.application.*;
-import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -310,13 +309,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) {
-        return this.authenticateAccount(request, null);
-    }
-
-    @Override
-    public AuthenticationResult authenticateAccount(AuthenticationRequest request, AuthenticationOptions options) throws ResourceException {
         AuthenticationRequestDispatcher dispatcher = Classes.newInstance(AUTHENTICATION_REQUEST_DISPATCHER_CLASS);
-        return dispatcher.authenticate(getDataStore(), this, request, options);
+        return dispatcher.authenticate(getDataStore(), this, request);
     }
 
     /** @since 1.0.beta */

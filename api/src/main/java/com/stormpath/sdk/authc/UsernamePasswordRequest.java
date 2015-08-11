@@ -17,6 +17,7 @@ package com.stormpath.sdk.authc;
 
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Classes;
 
 /**
  * A {@code UsernamePasswordRequest} is an {@code AuthenticationRequest} that represents a username (or email) +
@@ -28,10 +29,34 @@ import com.stormpath.sdk.lang.Assert;
  */
 public class UsernamePasswordRequest implements AuthenticationRequest<String, char[]> {
 
+    /**
+     * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     *
+     * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     * @since 1.0.RC4.6
+     */
+    public static UsernamePasswordRequestBuilder builder() {
+        return (UsernamePasswordRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequestBuilder");
+    }
+
+    /**
+     * Returns a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
+     * AuthenticationResult} resource that will be obtained after a successful authentication.
+     *
+     * @return a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
+     * AuthenticationResult} resource that will be obtained after a successful authentication.
+     * @see com.stormpath.sdk.authc.UsernamePasswordRequestBuilder#withResponseOptions(BasicAuthenticationOptions)
+     * @since 1.0.RC4.6
+     */
+    public static BasicAuthenticationOptions options() {
+        return (BasicAuthenticationOptions) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultBasicAuthenticationOptions");
+    }
+
     private String username;
     private char[] password;
     private String host;
     private AccountStore accountStore;
+    private BasicAuthenticationOptions authenticationOptions;
 
     /**
      * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}.
@@ -259,7 +284,37 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     }
 
     /**
-     * Clears out (nulls) the username, password, and host.  The password bytes are explicitly set to
+     * Ensures that when the response is obtained, it will be retrieved with the specified options. This enhances performance
+     * by leveraging a single request to retrieve multiple related resources you know you will use.
+     * <p>For example,
+     * it can be used to have the {@link com.stormpath.sdk.account.Account Account} resource automatically expanded in the returned result.
+     * </p>
+     *
+     * @param options the specific {@code BasicAuthenticationOptions} that will be used to customize the authentication response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    public UsernamePasswordRequest setResponseOptions(BasicAuthenticationOptions options) {
+        this.authenticationOptions = options;
+        return this;
+    }
+
+    /**
+     * Returns the {@link BasicAuthenticationOptions} to be used in this request used to customize the response.
+     * <p>For example,
+     * it can be used to have the {@link com.stormpath.sdk.account.Account Account} resource automatically expanded in the returned result.
+     * </p>
+     *
+     * @return the {@code AuthenticationOptions} that will be used to customize the response.
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public BasicAuthenticationOptions getResponseOptions() {
+        return this.authenticationOptions;
+    }
+
+    /**
+     * Clears out (nulls) the username, password, host, accountStore and options.  The password bytes are explicitly set to
      * <tt>0x00</tt> to eliminate the possibility of memory access at a later time.
      */
     @Override
@@ -267,6 +322,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
         this.username = null;
         this.host = null;
         this.accountStore = null;
+        this.authenticationOptions = null;
 
         char[] password = this.password;
         this.password = null;

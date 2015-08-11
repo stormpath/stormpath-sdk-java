@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,7 +26,6 @@ import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
-import com.stormpath.sdk.authc.Authentications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -1036,16 +1033,18 @@ class ApplicationIT extends ClientIT {
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
 
-        def request = new UsernamePasswordRequest(username, password)
+        def options = UsernamePasswordRequest.options().withAccount()
+        def request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
 
-        def options = Authentications.BASIC.options().withAccount()
-        def result = app.authenticateAccount(request, options)
+        def result = app.authenticateAccount(request)
 
         //Let's check expansion worked by looking at the internal properties
         def properties = getValue(AbstractResource, result, "properties")
         assertTrue properties.get("account").size() > 15
         assertEquals properties.get("account").get("email"), acct.email
 
+        //Let's re-authenticate without expansion
+        request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build()
         result = app.authenticateAccount(request)
 
         //Let's check that there is no expansion

@@ -15,14 +15,15 @@
  */
 package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.query.Options;
-
 /**
- * Base Authentication-specific options that may be specified during authentication.
- *
- * @see com.stormpath.sdk.authc.BasicAuthenticationOptions
  * @since 1.0.RC4.6
  */
-public interface AuthenticationOptions<T extends AuthenticationOptions> extends Options {
+public interface AuthenticationRequestBuilder<T extends AuthenticationRequestBuilder<T>> {
 
+    /**
+     * Creates a new {@code AuthenticationRequest} instance based on the current builder state.
+     *
+     * @return a new {@code AuthenticationRequest} instance based on the current builder state.
+     */
+    AuthenticationRequest build();
 }

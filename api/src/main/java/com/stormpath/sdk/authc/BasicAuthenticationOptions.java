@@ -20,7 +20,7 @@ package com.stormpath.sdk.authc;
  *
  * @since 1.0.RC4.6
  */
-public interface BasicAuthenticationOptions<T> extends AuthenticationOptions<T> {
+public interface BasicAuthenticationOptions<T extends BasicAuthenticationOptions> extends AuthenticationOptions<T> {
 
     /**
      * Ensures that when retrieving the {@link AuthenticationResult}, the {@link com.stormpath.sdk.account.Account Account} is also
