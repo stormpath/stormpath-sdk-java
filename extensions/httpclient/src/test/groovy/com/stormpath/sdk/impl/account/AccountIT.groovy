@@ -896,6 +896,69 @@ class AccountIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    public void testAddAndRemoveGroup(){
+
+        //create an App
+        def app = createTempApp()
+        Directory directory = app.getDefaultAccountStore() as Directory
+
+        //create a group
+        def group = client.instantiate(Group)
+        group.name = uniquify('JSDK: testAddGroup Group1')
+        group = directory.createGroup(group)
+        deleteOnTeardown(group)
+
+        //create an account
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('JSDK_testAddGroup_Account_1'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@stormpath.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        deleteOnTeardown(account)
+
+        //add account to group
+        account.addGroup(group)
+        def sdf= account.getGroups()
+        assertEquals account.getGroups().size, 1
+
+        //add account to group using the href
+
+        //create a second group
+        def group2 = client.instantiate(Group)
+        group2.name = uniquify('JSDK: testAddGroup Group2')
+        group2 = directory.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        account.addGroup(group2.href)
+        assertEquals account.getGroups().size, 2
+
+        //create a third group
+        def group3 = client.instantiate(Group)
+        group3.name = uniquify('JSDK: testAddGroup Group3')
+        group3 = directory.createGroup(group3)
+        deleteOnTeardown(group3)
+
+        account.addGroup(group3.name)
+        assertEquals account.getGroups().size, 3
+
+        // Test Remove
+
+        account = account.removeGroup(group)
+        assertEquals 2, account.getGroups().size
+
+        account = account.removeGroup(group2.name)
+        assertEquals 1, account.getGroups().size
+
+        account = account.removeGroup(group3.href)
+        assertEquals 0, account.getGroups().size
+    }
+
 
     //@since 1.0.RC3
     private Object getValue(Class clazz, Object object, String fieldName) {

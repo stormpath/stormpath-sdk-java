@@ -23,15 +23,13 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.group.DefaultGroupCriteria;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
@@ -44,6 +42,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -220,6 +219,74 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public GroupMembership addGroup(Group group) {
         return DefaultGroupMembership.create(this, group, getDataStore());
+    }
+
+    @Override
+    public GroupMembership addGroup(String hrefOrName) {
+        Group group =  findGroup(hrefOrName);
+        if (group != null){
+            return DefaultGroupMembership.create(this, group, getDataStore());
+        }
+        return null;
+    }
+
+    private Group findGroup(String hrefOrName) {
+
+        Group group = null;
+
+        //Let's check if hrefOrName looks like an href
+        String[] splitHrefOrName = hrefOrName.split("/");
+        if (splitHrefOrName.length > 4) {
+            try {
+                group = getDataStore().getResource(hrefOrName, Group.class);
+            } catch (ResourceException e) {
+                // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
+                // Maybe this is actually a name rather than an href
+            }
+        }
+
+        // Notice that accounts can only be added to Groups in the same directory
+        Directory directory = this.getDirectory();
+        if (group != null && group.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
+            return group;
+        }
+
+        GroupList groups = directory.getGroups(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
+        if (groups.iterator().hasNext()){
+            group = groups.iterator().next();
+        }
+
+        return group;
+    }
+
+    @Override
+    public Account removeGroup(Group group) {
+        GroupMembership groupMembership = null;
+        for (GroupMembership aGroupMembership : getGroupMemberships()) {
+            if (aGroupMembership.getGroup().getHref().equalsIgnoreCase(group.getHref())) {
+                groupMembership = aGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        }
+        return this;
+    }
+
+    @Override
+    public Account removeGroup(String hrefOrName) {
+        GroupMembership groupMembership = null;
+        for (GroupMembership aGroupMembership : getGroupMemberships()) {
+            if (aGroupMembership.getGroup().getName().equalsIgnoreCase(hrefOrName) || aGroupMembership.getGroup().getHref().equalsIgnoreCase(hrefOrName)) {
+                groupMembership = aGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        }
+        return this;
     }
 
     @Override
