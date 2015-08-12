@@ -51,7 +51,9 @@ public class DefaultVerificationEmailRequestBuilder implements VerificationEmail
 
         DefaultVerificationEmailRequest verificationEmailRequest = new DefaultVerificationEmailRequest(null);
         verificationEmailRequest.setLogin(login);
-        verificationEmailRequest.setAccountStore(accountStore);
+        if (accountStore != null) {
+            verificationEmailRequest.setAccountStore(accountStore);
+        }
         return verificationEmailRequest;
     }
 

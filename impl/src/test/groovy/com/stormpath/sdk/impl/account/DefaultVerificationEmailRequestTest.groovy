@@ -38,4 +38,12 @@ class DefaultVerificationEmailRequestTest {
         assertSame(verificationEmailRequest.getLogin(), email)
         assertSame(verificationEmailRequest.getAccountStore(), accountStore)
     }
+
+    @Test(
+        expectedExceptions = IllegalArgumentException.class,
+        expectedExceptionsMessageRegExp = "accountStore cannot be null"
+    )
+    void testNullAccountStore() {
+        new DefaultVerificationEmailRequest(null).setAccountStore(null)
+    }
 }
