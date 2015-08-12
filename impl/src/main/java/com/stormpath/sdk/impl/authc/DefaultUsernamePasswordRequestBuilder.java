@@ -53,7 +53,7 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
     }
 
     @Override
-    public UsernamePasswordRequestBuilder setAccountStore(AccountStore accountStore) {
+    public UsernamePasswordRequestBuilder inAccountStore(AccountStore accountStore) {
         this.accountStore = accountStore;
         return this;
     }

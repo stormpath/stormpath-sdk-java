@@ -72,7 +72,7 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
      *                     to the application sending the request.
      * @return this instance for method chaining.
      */
-    UsernamePasswordRequestBuilder setAccountStore(AccountStore accountStore);
+    UsernamePasswordRequestBuilder inAccountStore(AccountStore accountStore);
 
     /**
      * Ensures that when the response is obtained, it will be retrieved with the specified options. This enhances performance
