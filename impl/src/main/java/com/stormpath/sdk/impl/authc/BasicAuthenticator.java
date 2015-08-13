@@ -39,13 +39,15 @@ public class BasicAuthenticator {
 
     public AuthenticationResult authenticate(String parentHref, AuthenticationRequest request) {
         Assert.notNull(parentHref, "href argument must be specified");
-        Assert.isInstanceOf(UsernamePasswordRequest.class, request, "Only UsernamePasswordRequest instances are supported.");
-        UsernamePasswordRequest upRequest = (UsernamePasswordRequest)request;
+        if (! (request instanceof UsernamePasswordRequest || request instanceof DefaultUsernamePasswordRequest)) {
+           throw new IllegalArgumentException("Only UsernamePasswordRequest or DefaultUsernamePasswordRequest instances are supported.");
+        }
+        AuthenticationRequest upRequest = request;
 
-        String username = upRequest.getPrincipals();
+        String username = (String) upRequest.getPrincipals();
         username = (username != null) ? username : "";
 
-        char[] password = upRequest.getCredentials();
+        char[] password = (char[]) upRequest.getCredentials();
         String pwString = (password != null && password.length > 0) ? new String(password) : "";
 
         String value = username + ":" + pwString;

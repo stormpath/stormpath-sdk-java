@@ -42,6 +42,14 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
     UsernamePasswordRequestBuilder setPassword(String password);
 
     /**
+     * Specifies the password of the account that will be authenticated.
+     *
+     * @param password the account's raw password.
+     * @return this instance for method chaining.
+     */
+    UsernamePasswordRequestBuilder setPassword(char[] password);
+
+    /**
      * Specifies the host from where the end-user is accessing your application. This property is optional.
      *
      * @param host the host from where the end-user is accessing your application.

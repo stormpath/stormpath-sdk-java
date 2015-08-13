@@ -47,4 +47,35 @@ class UsernamePasswordRequestBuilderTest {
         assertSame(authenticationRequest.getResponseOptions(), options)
     }
 
+    @Test
+    void testNullChecks() {
+        try {
+            UsernamePasswordRequest.builder().build()
+            fail("Should have thrown");
+        } catch (IllegalStateException e){
+            assertEquals(e.getMessage(), "usernameOrEmail has not been set. It is a required attribute.")
+        }
+
+        try {
+            UsernamePasswordRequest.builder().setUsernameOrEmail("someFooUsername").setHost(null)
+            fail("Should have thrown");
+        } catch (IllegalArgumentException e){
+            assertEquals(e.getMessage(), "host cannot be null.")
+        }
+
+        try {
+            UsernamePasswordRequest.builder().setUsernameOrEmail("someFooUsername").inAccountStore(null)
+            fail("Should have thrown");
+        } catch (IllegalArgumentException e){
+            assertEquals(e.getMessage(), "accountStore cannot be null.")
+        }
+
+        try {
+            UsernamePasswordRequest.builder().setUsernameOrEmail("someFooUsername").withResponseOptions(null)
+            fail("Should have thrown");
+        } catch (IllegalArgumentException e){
+            assertEquals(e.getMessage(), "options cannot be null.")
+        }
+    }
+
 }

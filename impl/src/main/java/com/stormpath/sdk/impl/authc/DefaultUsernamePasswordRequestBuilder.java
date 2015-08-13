@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.BasicAuthenticationOptions;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
@@ -47,27 +46,39 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
     }
 
     @Override
+    public UsernamePasswordRequestBuilder setPassword(char[] password) {
+        this.password = password;
+        return this;
+    }
+
+    @Override
     public UsernamePasswordRequestBuilder setHost(String host) {
+        Assert.notNull(host, "host cannot be null.");
         this.host = host;
         return this;
     }
 
     @Override
     public UsernamePasswordRequestBuilder inAccountStore(AccountStore accountStore) {
+        Assert.notNull(accountStore, "accountStore cannot be null.");
         this.accountStore = accountStore;
         return this;
     }
 
     @Override
     public UsernamePasswordRequestBuilder withResponseOptions(BasicAuthenticationOptions options) {
+        Assert.notNull(options, "options cannot be null.");
         this.options = options;
         return this;
     }
 
     @Override
     public AuthenticationRequest build() {
-        UsernamePasswordRequest request = new UsernamePasswordRequest(usernameOrEmail, password, host, accountStore);
-        request.setResponseOptions(this.options);
+        Assert.state(this.usernameOrEmail != null, "usernameOrEmail has not been set. It is a required attribute.");
+        DefaultUsernamePasswordRequest request = new DefaultUsernamePasswordRequest(usernameOrEmail, password);
+        if (this.host != null) { request.setHost(this.host); }
+        if (this.accountStore != null) { request.setAccountStore(this.accountStore); }
+        if (this.options != null) { request.setResponseOptions(this.options); }
         return request;
     }
 

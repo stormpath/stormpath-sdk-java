@@ -55,8 +55,7 @@ class BasicAuthenticatorTest {
             basicAuthenticator.authenticate(appHref, request)
             fail("Should have thrown")
         } catch (IllegalArgumentException ex) {
-            assertTrue(ex.getMessage().contains("Only UsernamePasswordRequest instances are supported"))
-            assertTrue(ex.getMessage().contains("must be an instance of class com.stormpath.sdk.authc.UsernamePasswordRequest"))
+            assertTrue(ex.getMessage().contains("Only UsernamePasswordRequest or DefaultUsernamePasswordRequest instances are supported."))
         }
     }
 

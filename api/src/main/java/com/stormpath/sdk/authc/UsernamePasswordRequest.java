@@ -24,6 +24,18 @@ import com.stormpath.sdk.lang.Classes;
  * password pair.  It optionally supports
  * {@link #setAccountStore(com.stormpath.sdk.directory.AccountStore) targeting an specific account store} as well for
  * customized authentication behavior.
+ * <p>
+ * NOTE: This class has been deprecated and will be removed in version 1.0. You can now use the new fluent interface
+ * to create Username/Password Requests. For example:</p>
+ * <pre>
+ * AuthenticationRequest request = UsernamePasswordRequest.builder()
+ *                         .setUsernameOrEmail(username)
+ *                         .setPassword(submittedRawPlaintextPassword)
+ *                         .build();
+ * Account authenticated = application.authenticateAccount(request).getAccount();
+ * </pre>
+ *
+ * @see UsernamePasswordRequestBuilder
  *
  * @since 0.2
  */
@@ -65,6 +77,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param password        the account's raw password
      * @see #UsernamePasswordRequest(String, String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password) {
         this(usernameOrEmail, password, null, null);
     }
@@ -76,6 +89,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param password        the account's raw password
      * @see #UsernamePasswordRequest(String, String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password) {
         this(usernameOrEmail, password, null, null);
     }
@@ -89,6 +103,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param host            the host from where the end-user is accessing your application
      * @see #UsernamePasswordRequest(String, String, String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password, String host) {
         this(usernameOrEmail, password, host, null);
     }
@@ -102,6 +117,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param host            the host from where the end-user is accessing your application
      * @see #UsernamePasswordRequest(String, char[], String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host) {
         this(usernameOrEmail, password, host, null);
     }
@@ -127,6 +143,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password, AccountStore accountStore) {
         this(usernameOrEmail, password, null, accountStore);
     }
@@ -152,6 +169,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, AccountStore accountStore) {
         this(usernameOrEmail, password, null, accountStore);
     }
@@ -179,6 +197,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password, String host, AccountStore accountStore) {
         this(usernameOrEmail, password != null ? password.toCharArray() : "".toCharArray(), host, accountStore);
     }
@@ -206,6 +225,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host, AccountStore accountStore) {
         this.username = usernameOrEmail;
         this.password = password;
@@ -214,16 +234,19 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     }
 
     @Override
+    @Deprecated
     public String getPrincipals() {
         return username;
     }
 
     @Override
+    @Deprecated
     public char[] getCredentials() {
         return password;
     }
 
     @Override
+    @Deprecated
     public String getHost() {
         return this.host;
     }
@@ -251,6 +274,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @since 1.0.alpha
      */
     @Override
+    @Deprecated
     public AccountStore getAccountStore() {
         return this.accountStore;
     }
@@ -278,6 +302,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                     to the application sending the request.
      * @since 1.0.alpha
      */
+    @Deprecated
     public void setAccountStore(AccountStore accountStore) {
         Assert.notNull(accountStore, "accountStore cannot be null.");
         this.accountStore = accountStore;
@@ -294,6 +319,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @return this instance for method chaining.
      * @since 1.0.RC4.6
      */
+    @Deprecated
     public UsernamePasswordRequest setResponseOptions(BasicAuthenticationOptions options) {
         this.authenticationOptions = options;
         return this;
@@ -309,6 +335,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @since 1.0.RC4.6
      */
     @Override
+    @Deprecated
     public BasicAuthenticationOptions getResponseOptions() {
         return this.authenticationOptions;
     }
@@ -318,6 +345,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * <tt>0x00</tt> to eliminate the possibility of memory access at a later time.
      */
     @Override
+    @Deprecated
     public void clear() {
         this.username = null;
         this.host = null;
