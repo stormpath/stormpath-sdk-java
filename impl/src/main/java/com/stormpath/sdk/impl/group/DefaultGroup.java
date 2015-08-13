@@ -18,13 +18,10 @@ package com.stormpath.sdk.impl.group;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.group.GroupOptions;
-import com.stormpath.sdk.group.GroupStatus;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -34,6 +31,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -146,6 +144,81 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
     @Override
     public GroupMembership addAccount(Account account) {
         return DefaultGroupMembership.create(account, this, getDataStore());
+    }
+
+
+    @Override
+    public GroupMembership addAccount(String hrefOrEmailOrUsername) {
+        Account account =  findAccount(hrefOrEmailOrUsername);
+        if (account != null){
+            return DefaultGroupMembership.create(account, this, getDataStore());
+        }
+        return null;
+    }
+
+
+    private Account findAccount(String hrefOrEmailOrUsername){
+        Account account = null;
+
+        //Let's check if hrefOrName looks like an href
+        String[] splitHrefOrEmailOrName = hrefOrEmailOrUsername.split("/");
+        if (splitHrefOrEmailOrName.length > 4) {
+            try {
+                account = getDataStore().getResource(hrefOrEmailOrUsername, Account.class);
+            } catch (ResourceException e) {
+                // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
+                // Maybe this is actually a name rather than an href
+            }
+        }
+
+        // Notice that groups can only be related to Accounts in the same directory
+        Directory directory = this.getDirectory();
+        if (account != null && account.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
+            return account;
+        }
+
+        AccountList accounts = directory.getAccounts(Accounts.where(Accounts.username().eqIgnoreCase(hrefOrEmailOrUsername)));
+        if (accounts.iterator().hasNext()){
+            account = accounts.iterator().next();
+        } else {
+            accounts = directory.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(hrefOrEmailOrUsername)));
+            if (accounts.iterator().hasNext()){
+                account = accounts.iterator().next();
+            }
+        }
+        return account;
+    }
+
+    @Override
+    public Group removeAccount(Account account) {
+        GroupMembership groupMembership = null;
+        for (GroupMembership accountGroupMembership : getAccountMemberships()) {
+            if (accountGroupMembership.getAccount().getHref().equalsIgnoreCase(account.getHref())) {
+                groupMembership = accountGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        }
+        return this;
+    }
+
+    @Override
+    public Group removeAccount(String hrefOrEmailOrUsername) {
+        GroupMembership groupMembership = null;
+        for (GroupMembership aGroupMembership : getAccountMemberships()) {
+            if (aGroupMembership.getAccount().getHref().equalsIgnoreCase(hrefOrEmailOrUsername)
+                    || aGroupMembership.getAccount().getEmail().equalsIgnoreCase(hrefOrEmailOrUsername)
+                    || aGroupMembership.getAccount().getUsername().equalsIgnoreCase(hrefOrEmailOrUsername)) {
+                groupMembership = aGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        }
+        return this;
     }
 
     /**

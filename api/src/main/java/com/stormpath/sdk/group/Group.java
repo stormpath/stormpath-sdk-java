@@ -166,6 +166,48 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
     GroupMembership addAccount(Account account);
 
     /**
+     * Assigns this Group to the specified Account represented by its (case insensitive) {@code username}, {@code email} or {@code href}
+     *
+     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
+     * <p/>
+     * <b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()} afterwards.
+     * This method will interact with the server immediately.
+     *
+     * @return the new GroupMembership resource created reflecting the group-to-account association.
+     *
+     * @since 1.0.RC4.6
+     */
+    GroupMembership addAccount(String hrefOrEmailOrUsername);
+
+    /**
+     * Removes this Group's association with the specified Account.
+     *
+     * @param account the {@code Account} object to disassociate.
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will interact with the server immediately.</p>
+     *
+     * @return the Group object for method chaining
+     *
+     * @since 1.0.RC4.6
+     */
+    Group removeAccount(Account account);
+
+    /**
+     * Removes this Group's association with the specified Account represented by its (case insensitive) {@code username}, {@code email} or {@code href}
+     *
+     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
+     *                   .
+     * <p><b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will interact with the server immediately.</p>
+     *
+     * @return the Group object for method chaining
+     *
+     * @since 1.0.RC4.6
+     */
+    Group removeAccount(String hrefOrEmailOrUsername);
+
+    /**
      * Saves this Group resource and ensures the returned Group response reflects the specified options.  This
      * enhances performance by 'piggybacking' the response to return related resources you know you will use after
      * saving the group.

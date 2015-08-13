@@ -919,13 +919,15 @@ class AccountIT extends ClientIT {
                 .setGivenName("Joe")
                 .setSurname("Smith")
         account.setEmail(account.getUsername() + "@stormpath.com")
-        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
         //add account to group
-        account.addGroup(group)
-        def sdf= account.getGroups()
+        GroupMembership membership = account.addGroup(group)
+        assertNotNull membership
         assertEquals account.getGroups().size, 1
+        assertEquals membership.account.href, account.href
+        assertEquals membership.group.href, group.href
 
         //add account to group using the href
 
@@ -935,8 +937,11 @@ class AccountIT extends ClientIT {
         group2 = directory.createGroup(group2)
         deleteOnTeardown(group2)
 
-        account.addGroup(group2.href)
+        membership = account.addGroup(group2.href)
+        assertNotNull membership
         assertEquals account.getGroups().size, 2
+        assertEquals membership.account.href, account.href
+        assertEquals membership.group.href, group2.href
 
         //create a third group
         def group3 = client.instantiate(Group)
@@ -944,11 +949,13 @@ class AccountIT extends ClientIT {
         group3 = directory.createGroup(group3)
         deleteOnTeardown(group3)
 
-        account.addGroup(group3.name)
+        membership = account.addGroup(group3.name)
+        assertNotNull membership
         assertEquals account.getGroups().size, 3
+        assertEquals membership.account.href, account.href
+        assertEquals membership.group.href, group3.href
 
         // Test Remove
-
         account = account.removeGroup(group)
         assertEquals 2, account.getGroups().size
 
@@ -958,7 +965,6 @@ class AccountIT extends ClientIT {
         account = account.removeGroup(group3.href)
         assertEquals 0, account.getGroups().size
     }
-
 
     //@since 1.0.RC3
     private Object getValue(Class clazz, Object object, String fieldName) {
