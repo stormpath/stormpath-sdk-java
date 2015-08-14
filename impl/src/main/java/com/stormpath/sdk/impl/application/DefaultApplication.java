@@ -43,6 +43,7 @@ import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
+import com.stormpath.sdk.impl.account.DefaultPasswordResetToken;
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
@@ -268,7 +269,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {
-        PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class);
+        DefaultPasswordResetToken passwordResetToken = (DefaultPasswordResetToken) getDataStore().instantiate(PasswordResetToken.class);
         passwordResetToken.setEmail(email);
         if (accountStore != null) {
             passwordResetToken.setAccountStore(accountStore);
@@ -300,7 +301,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         String href = getPasswordResetTokensHref() + "/" + passwordResetToken;
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
         props.put("href", href);
-        PasswordResetToken instantiatedToken = getDataStore().instantiate(PasswordResetToken.class, props);
+        DefaultPasswordResetToken instantiatedToken = (DefaultPasswordResetToken) getDataStore().instantiate(PasswordResetToken.class, props);
         instantiatedToken.setPassword(newPassword);
         PasswordResetToken createdPasswordResetToken =
             getDataStore().create(href, instantiatedToken, PasswordResetToken.class);
