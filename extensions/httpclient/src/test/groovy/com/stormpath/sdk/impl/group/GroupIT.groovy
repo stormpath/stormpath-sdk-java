@@ -10,8 +10,31 @@ import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
 
+/**
+ * @since 1.0.RC4.6
+ */
 class GroupIT extends ClientIT {
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    public void testAddAccountError() {
+
+        def app = createTempApp()
+
+        //create a group:
+        def group = client.instantiate(Group)
+        group.name = uniquify('JSDK: testAddAccountError')
+        group = app.createGroup(group)
+        deleteOnTeardown(group)
+
+        def result = group.addAccount("SuperInvalid")
+        assertNull result
+        assertEquals 0, group.getAccounts().size
+    }
 
     /**
      * @since 1.0.RC4.6

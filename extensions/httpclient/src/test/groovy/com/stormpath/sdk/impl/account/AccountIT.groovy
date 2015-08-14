@@ -900,7 +900,31 @@ class AccountIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    public void testAddAndRemoveGroup(){
+    public void testAddGroupError() {
+        //create an App
+        def app = createTempApp()
+        Directory directory = app.getDefaultAccountStore() as Directory
+
+        //create an account
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('JSDK_testAddGroupErrors'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@stormpath.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        def result = account.addGroup("SuperInvalid")
+        assertNull result
+        assertEquals 0, account.getGroups().size
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    public void testAddAndRemoveGroup() {
 
         //create an App
         def app = createTempApp()
