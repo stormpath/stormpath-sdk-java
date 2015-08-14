@@ -22,6 +22,7 @@ import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 
 import java.util.Map;
 
@@ -67,6 +68,7 @@ public class DefaultVerificationEmailRequest extends AbstractResource implements
     }
 
     public VerificationEmailRequest setAccountStore(AccountStore accountStore) {
+        Assert.notNull(accountStore, "accountStore cannot be null");
         setProperty(ACCOUNT_STORE, accountStore);
         return this;
     }
