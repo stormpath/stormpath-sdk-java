@@ -71,7 +71,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     public DefaultApiRequestAuthenticator(DefaultApplication application) {
         Assert.notNull(application, "application argument cannot be null.");
@@ -87,7 +87,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     @Override
     public ApiAuthenticationResult authenticate(HttpRequest httpRequest) {

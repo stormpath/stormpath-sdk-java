@@ -27,7 +27,7 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC4.3-SNAPSHOT
+ * @since 1.0.RC4.6
  */
 class ServletsTest {
 

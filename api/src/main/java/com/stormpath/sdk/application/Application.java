@@ -965,7 +965,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @see Application#authenticateOauthRequest(Object)
      * @since 1.0.RC
      *
-     * @deprecated in 1.0.RC4.3-SNAPSHOT and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
+     * @deprecated in 1.0.RC4.6 and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
      */
     ApiAuthenticationResult authenticateApiRequest(Object httpRequest) throws IllegalArgumentException, ResourceException;
 
@@ -1169,7 +1169,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @see Application#authenticateApiRequest(Object)
      * @since 1.0.RC
      *
-     * @deprecated in 1.0.RC4.3-SNAPSHOT and will be removed before 1.0 final. Use {@link OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
+     * @deprecated in 1.0.RC4.6 and will be removed before 1.0 final. Use {@link OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
      */
     OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
 

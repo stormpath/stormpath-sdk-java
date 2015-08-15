@@ -26,7 +26,7 @@ import com.stormpath.sdk.servlet.oauth.impl.DefaultServletOauthRequestAuthentica
 /**
  * Static utility/helper methods for working with API Request Authenticators for Servlet environments.
  *
- * @since 1.0.RC4.3-SNAPSHOT
+ * @since 1.0.RC4.6
  */
 public final class Servlets {
 

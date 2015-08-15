@@ -97,7 +97,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
     }
 
     @Override
-    public AccessTokenResult authenticate(Object httpRequest) {
+    public AccessTokenResult authenticate(HttpRequest httpRequest) {
 
         Assert.notNull(httpRequest, "httpRequest cannot be null or empty.");
 

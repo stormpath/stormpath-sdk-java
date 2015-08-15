@@ -95,7 +95,7 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
     }
 
     /**
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     @Override
     public OauthAuthenticationResult authenticate(HttpRequest httpRequest) {

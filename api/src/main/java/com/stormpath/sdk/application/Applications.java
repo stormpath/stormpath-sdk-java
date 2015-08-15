@@ -277,7 +277,7 @@ public final class Applications {
      * @param application The {@link Application} for which API requests will be authenticated
      * @return a new {@link ApiRequestAuthenticator} to be used for API requests authentication
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     public static ApiRequestAuthenticator apiRequestAuthenticator(Application application) {
         return (ApiRequestAuthenticator) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator", application);
@@ -291,7 +291,7 @@ public final class Applications {
      * @return a new {@link OauthRequestAuthenticator} that acts as a builder to allow you
      *         to customize request processing behavior
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     public static OauthRequestAuthenticator oauthRequestAuthenticator(Application application) {
         return (OauthRequestAuthenticator) Classes.newInstance("com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator", application);

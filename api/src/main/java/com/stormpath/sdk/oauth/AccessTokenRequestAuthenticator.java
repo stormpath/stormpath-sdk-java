@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.http.HttpRequest;
+
 /**
  * Authenticates an API request attempting to obtain a new OAuth Access Token.  This request is usually submitted to the
  * application's OAuth token endpoint (e.g. {@code /oauth/token}).  The request is authenticated using the
@@ -105,6 +107,6 @@ public interface AccessTokenRequestAuthenticator {
      *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
      * @return an {@link AccessTokenResult} that represents the result of the authentication attempt.
      */
-    public AccessTokenResult authenticate(Object httpRequest);
+    public AccessTokenResult authenticate(HttpRequest httpRequest);
 
 }

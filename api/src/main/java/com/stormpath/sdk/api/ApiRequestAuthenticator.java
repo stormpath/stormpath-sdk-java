@@ -94,7 +94,7 @@ public interface ApiRequestAuthenticator {
      * @throws com.stormpath.sdk.resource.ResourceException if unable to authenticate the request
      * @see com.stormpath.sdk.oauth.OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     ApiAuthenticationResult authenticate(HttpRequest httpRequest);
 }

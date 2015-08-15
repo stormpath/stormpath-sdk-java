@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.http.HttpRequest;
+
 /**
  * Authenticates a client request to an API resource (URI) endpoint based on the presence of an OAuth Access Token in
  * the request.  This interface reflects the
@@ -68,7 +70,7 @@ public interface ResourceRequestAuthenticator {
      *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
      * @return the result of the authentication attempt.
      */
-    OauthAuthenticationResult authenticate(Object httpRequest);
+    OauthAuthenticationResult authenticate(HttpRequest httpRequest);
 
 }
 

@@ -81,7 +81,7 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     }
 
     @Override
-    public OauthAuthenticationResult authenticate(Object httpRequest) {
+    public OauthAuthenticationResult authenticate(HttpRequest httpRequest) {
         RequestLocation[] locations = this.locations != null ? this.locations :
                 new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
 

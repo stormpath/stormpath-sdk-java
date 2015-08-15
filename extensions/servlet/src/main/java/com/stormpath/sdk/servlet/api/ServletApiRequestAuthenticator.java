@@ -21,7 +21,7 @@ import com.stormpath.sdk.http.HttpRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0.RC4.3-SNAPSHOT
+ * @since 1.0.RC4.6
  */
 public interface ServletApiRequestAuthenticator {
 
@@ -116,7 +116,7 @@ public interface ServletApiRequestAuthenticator {
      * {@code javax.servlet.http.HttpServletRequest}</a> instance.
      *
      * @see com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
      public ApiAuthenticationResult authenticate(HttpServletRequest httpServletRequest);
 

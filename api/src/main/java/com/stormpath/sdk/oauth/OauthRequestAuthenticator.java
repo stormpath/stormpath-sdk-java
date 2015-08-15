@@ -281,7 +281,7 @@ public interface OauthRequestAuthenticator extends ApiRequestAuthenticator {
      * @throws IllegalArgumentException if the method argument is null or is not either a {@link com.stormpath.sdk.http.HttpRequest} instance.
      * @see ApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)
      *
-     * @since 1.0.RC4.3-SNAPSHOT
+     * @since 1.0.RC4.6
      */
     OauthAuthenticationResult authenticate(HttpRequest httpRequest);
 
