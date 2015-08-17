@@ -20,6 +20,7 @@ package com.stormpath.sdk.impl.application
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
@@ -1048,6 +1049,47 @@ class ApplicationIT extends ClientIT {
         assertEquals properties.get("customData").get("testKey"), "testValue"
         assertTrue properties.get("accounts").size() > 1
         assertEquals properties.get("accounts").get("items")[0].get("email"), account.email
+    }
+
+    /** @since 1.0.RC4.6 */
+    @Test
+    void testResetPassword() {
+
+        def app = createTempApp()
+
+        def username = uniquify('lonestarr')
+        def password = 'Changeme1!'
+        def email = username + '@stormpath.com'
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = email
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        def account = app.authenticateAccount(new UsernamePasswordRequest(username, password)).getAccount()
+        assertEquals account.getEmail(), email
+
+        PasswordResetToken token = app.sendPasswordResetEmail(email)
+        assertEquals email, token.account.email
+        assertEquals email, token.email
+
+        account = app.resetPassword(token.getValue(), "newPassword123!")
+
+        try {
+            account = app.authenticateAccount(new UsernamePasswordRequest(username, password)).getAccount()
+            fail("should have thrown due to wrong password")
+        } catch (ResourceException e) {
+            assertTrue(e.getMessage().contains("Login attempt failed because the specified password is incorrect."))
+        }
+
+        //login with the new password
+        account = app.authenticateAccount(new UsernamePasswordRequest(username, "newPassword123!")).getAccount()
+
+        assertEquals account.getEmail(), email
     }
 
     /**
