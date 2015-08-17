@@ -100,7 +100,7 @@ public interface OauthRequestAuthenticator extends ApiRequestAuthenticator {
      *     locations in the request where you allow the access token to exist.  If you're comfortable with the default
      *     behavior of inspecting the headers and request body (and not request params, as they can be seen as a less
      *     secure way of authentication), you do not need to call this method, and should call the
-     *     {@link ServletApi} method instead.
+     *     ServletApi method instead.
      *     </li>
      *     <li>
      *     <p>The HTTP request is an OAuth Client Credentials Grant Type request whereby the client is explicitly
