@@ -20,6 +20,7 @@ package com.stormpath.sdk.impl.application
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
@@ -1068,15 +1069,22 @@ class ApplicationIT extends ClientIT {
         def app = createTempApp()
 
         Account account = client.instantiate(Account)
-        account.givenName = 'John'
-        account.surname = 'DeleteMe'
-        account.email =  "deletejohn@test.com"
-        account.password = '$2a$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
+            .setGivenName('John')
+            .setSurname('DeleteMe')
+            .setEmail("deletejohn@test.com")
+            .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
 
-        def created = app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat("mcf").build())
+        def created = app.createAccount(Accounts.newCreateRequestFor(account)
+                .setRegistrationWorkflowEnabled(false)
+                .setPasswordFormat(PasswordFormat.MCF)
+                .build())
+        deleteOnTeardown(created)
 
         //verify it was created:
-        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).iterator().next()
+        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).single()
+        assertEquals(created.href, found.href)
+
+        found = app.authenticateAccount(new UsernamePasswordRequest("deletejohn@test.com", "rasmuslerdorf")).getAccount()
         assertEquals(created.href, found.href)
     }
 
@@ -1092,20 +1100,10 @@ class ApplicationIT extends ClientIT {
         account.givenName = 'John'
         account.surname = 'DeleteMe'
         account.email =  "deletejohn@test.com"
-        account.password = '$2a$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
-
-        try {
-            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat("mfddcf").build())
-            fail("Should have thrown")
-        } catch (ResourceException e){
-            assertEquals 2003, e.getCode()
-            assertTrue e.getDeveloperMessage().contains("is an unsupported value")
-        }
-
         account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
 
         try {
-            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat("mcf").build())
+            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
             fail("Should have thrown")
         } catch (ResourceException e){
             assertEquals 2006, e.getCode()

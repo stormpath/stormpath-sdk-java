@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.CreateAccountRequestBuilder;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -28,7 +25,7 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
 
     private Account account;
     private Boolean registrationWorkflowEnabled;
-    private String passwordFormat;
+    private PasswordFormat passwordFormat;
     private AccountOptions options;
 
     public DefaultCreateAccountRequestBuilder(Account account) {
@@ -36,7 +33,7 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
         this.account = account;
     }
 
-    public String getPasswordFormat() {
+    public PasswordFormat getPasswordFormat() {
         return passwordFormat;
     }
 
@@ -47,7 +44,7 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
     }
 
     @Override
-    public CreateAccountRequestBuilder setPasswordFormat(String passwordFormat) {
+    public CreateAccountRequestBuilder setPasswordFormat(PasswordFormat passwordFormat) {
         this.passwordFormat = passwordFormat;
         return this;
     }
@@ -61,6 +58,6 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
 
     @Override
     public CreateAccountRequest build() {
-        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options, this.passwordFormat);
+        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options).setPasswordFormat(this.passwordFormat);
     }
 }

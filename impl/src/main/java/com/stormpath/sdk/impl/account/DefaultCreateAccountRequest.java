@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.account;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.PasswordFormat;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -31,14 +32,13 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final AccountOptions options;
 
-    private final String passwordFormat;
+    private PasswordFormat passwordFormat;
 
-    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options, String passwordFormat) {
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options) {
         Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
         this.options = options;
-        this.passwordFormat = passwordFormat;
     }
 
     public Account getAccount() {
@@ -55,8 +55,13 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
         return this.passwordFormat != null;
     }
 
+    public CreateAccountRequest setPasswordFormat(PasswordFormat passwordFormat){
+        this.passwordFormat = passwordFormat;
+        return this;
+    }
+
     @Override
-    public String getPasswordFormat() {
+    public PasswordFormat getPasswordFormat() {
         if (this.passwordFormat == null) {
             throw new IllegalStateException("passwordFormat has not been specified.");
         }
