@@ -38,9 +38,6 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
     private HttpRequest httpRequest;
 
-    private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
-            "com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator";
-
     private static final Set<Class> HTTP_REQUEST_SUPPORTED_CLASSES;
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG =

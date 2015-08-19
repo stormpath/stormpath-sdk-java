@@ -55,12 +55,13 @@ public interface ResourceRequestAuthenticator {
      * application.authenticateOauthRequest(httpRequest)} for more information.
      *
      * @return the result of the authentication attempt.
-     * @deprecated this method will be removed soon. Use {@link ResourceRequestAuthenticator#authenticate(Object)} instead
+     * @deprecated this method will be removed soon. Use {@link ResourceRequestAuthenticator#authenticate(HttpRequest)} instead
      */
     OauthAuthenticationResult execute();
 
     /**
      * Authenticates an OAuth-based HTTP request using a bearer Access Token and returns the corresponding result.
+     *
      * The result type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult}.
      * Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
      *

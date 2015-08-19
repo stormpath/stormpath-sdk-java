@@ -107,8 +107,8 @@ public interface OauthRequestAuthenticator extends ApiRequestAuthenticator {
      *     asking for a new Access Token <em>and</em> you want to control the returned token's OAuth scope and/or
      *     time-to-live (TTL).</p>
      *     <p>This almost always is the case when the client is interacting with your
-     *     OAuth token endpoint, for example, a URI like {@code /oauth2/tokens}.  If the request is a normal OAuth
-     *     request and this or the above condition does not apply to you, you do not need to call this method, and
+     *     OAuth token endpoint, for example, a URI like {@code /oauth2/tokens}. If either the request is a normal OAuth
+     *     request or the above condition does not apply to you, then you do not need to call this method, and
      *     should call the {@link ApiRequestAuthenticator#authenticate(HttpRequest)} method instead.</p>
      *     </li>
      * </ul>

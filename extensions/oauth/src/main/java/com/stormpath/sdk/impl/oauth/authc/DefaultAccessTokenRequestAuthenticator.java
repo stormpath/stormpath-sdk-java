@@ -78,7 +78,9 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         return this;
     }
 
+
     @Override
+    @Deprecated //This method will be removed for 1.0. Use the authenticate method instead
     public AccessTokenResult execute() {
 
         AuthenticationRequest request;
