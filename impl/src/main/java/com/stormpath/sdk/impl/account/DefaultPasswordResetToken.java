@@ -31,6 +31,8 @@ import java.util.Map;
  */
 public class DefaultPasswordResetToken extends AbstractResource implements PasswordResetToken {
 
+    private static final String TOKEN_DELIMITER = "/passwordResetTokens/";
+
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
     static final StringProperty PASSWORD = new StringProperty("password");
@@ -59,7 +61,6 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
         return getString(EMAIL);
     }
 
-    @Override
     public PasswordResetToken setEmail(String email) {
         setProperty(EMAIL, email);
         return this;
@@ -70,7 +71,6 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
         return getResourceProperty(ACCOUNT);
     }
 
-    @Override
     public PasswordResetToken setAccountStore(AccountStore accountStore) {
         setResourceProperty(ACCOUNT_STORE, accountStore);
         return this;
@@ -83,10 +83,20 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
     /**
      * @since 1.0.RC
      */
-    @Override
     public PasswordResetToken setPassword(String password) {
         setProperty(PASSWORD, password);
         return this;
+    }
+
+    /** @since 1.0.RC4.6 */
+    @Override
+    public String getValue() {
+        String href = getHref();
+        if (href != null) {
+            String token = href.substring(href.indexOf(TOKEN_DELIMITER) + TOKEN_DELIMITER.length());
+            return token;
+        }
+        return null;
     }
 
 }

@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.account;
 
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -25,17 +24,21 @@ public interface PasswordResetToken extends Resource {
 
     String getEmail();
 
-    PasswordResetToken setEmail(String email);
-
     Account getAccount();
 
-    PasswordResetToken setAccountStore(AccountStore accountStore);
-
     /**
-     * Setter for the new password that will be instantly applied if the reset token is correctly validated.
+     * This is a convenience method to obtain the actual token value required to reset the account's password.
+     * For example:
+     * <pre>
+     *     PasswordResetToken token = application.sendPasswordResetEmail(emailAddress);
+     *     Account account = application.resetPassword(token.getValue(), "myNewPassword123!")
+     *     //at this point the account's password been successfully modified.
+     * </code>
+     * </pre>
      *
-     * @param password the new password that will be applied if the reset token is correctly validated.
-     * @since 1.0.RC
+     * @return the actual token value required to modify the account's password.
+     * @since 1.0.RC4.6
      */
-    PasswordResetToken setPassword(String password);
+    String getValue();
+
 }
