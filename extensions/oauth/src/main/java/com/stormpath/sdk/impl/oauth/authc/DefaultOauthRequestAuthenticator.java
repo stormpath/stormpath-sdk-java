@@ -66,12 +66,12 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
     @Override
     public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory) {
-        return new DefaultAccessTokenRequestAuthenticator(application, scopeFactory);
+        return new DefaultAccessTokenRequestAuthenticator(application).using(scopeFactory);
     }
 
     @Override
     public AccessTokenRequestAuthenticator withTtl(long ttl) {
-        return new DefaultAccessTokenRequestAuthenticator(application, httpServletRequest, null).withTtl(ttl);
+        return new DefaultAccessTokenRequestAuthenticator(application).setHttpServletRequest(httpServletRequest).withTtl(ttl);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+            this.httpServletRequest = new OauthHttpServletRequest(httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }
@@ -125,7 +125,7 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
         Class httpRequestClass = httpRequest.getClass();
 
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = (HttpServletRequest) httpRequest;
+            this.httpServletRequest = httpRequest;
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpServletRequest.class.getName()));
         }

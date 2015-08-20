@@ -44,23 +44,6 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
 
     private long ttl = AccessTokenAuthenticationRequest.DEFAULT_TTL;
 
-    DefaultAccessTokenRequestAuthenticator(Application application, HttpServletRequest httpServletRequest,
-                                           ScopeFactory scopeFactory) {
-        Assert.notNull(application, "application cannot be null or empty.");
-
-        this.scopeFactory = scopeFactory;
-        this.application = application;
-        this.httpServletRequest = httpServletRequest;
-    }
-
-    DefaultAccessTokenRequestAuthenticator(Application application,
-                                           ScopeFactory scopeFactory) {
-        Assert.notNull(application, "application cannot be null or empty.");
-
-        this.scopeFactory = scopeFactory;
-        this.application = application;
-    }
-
     DefaultAccessTokenRequestAuthenticator(Application application) {
         Assert.notNull(application, "application cannot be null or empty.");
         this.application = application;
@@ -78,6 +61,10 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         return this;
     }
 
+    public AccessTokenRequestAuthenticator setHttpServletRequest (HttpServletRequest httpServletRequest) {
+        this.httpServletRequest = httpServletRequest;
+        return this;
+    }
 
     @Override
     @Deprecated //This method will be removed for 1.0. Use the authenticate method instead

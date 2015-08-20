@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.api;
 
 import com.stormpath.sdk.api.ApiAuthenticationResult;
-import com.stormpath.sdk.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,7 +33,7 @@ public interface ServletApiRequestAuthenticator {
      * require more specific or customized OAuth request processing, use the
      * {@link com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)} method instead; that method allows you to customize how an OAuth request
      * is processed.
-     * For example, you will likely want to call {@link ServletOauthRequestAuthenticator#authenticate(HttpServletRequest)} for requests
+     * For example, you will likely want to call {@link com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator#authenticate(HttpServletRequest)} for requests
      * directed to your application's specific OAuth 2 token and authorization urls (often referenced as
      * {@code /oauth2/token} and {@code /oauth2/authorize} in OAuth 2 documentation).
      *
@@ -46,7 +45,7 @@ public interface ServletApiRequestAuthenticator {
      * //assume a request to, say, https://api.mycompany.com/foo:
      * public void onApiRequest(HttpServletRequest request, HttpServletResponse response) {
      *
-     *    ApiAuthenticationResult result = Servlets.servletApiRequestAuthenticator(application).authenticate();
+     *&ensp; &ensp; ApiAuthenticationResult result = Servlets.servletApiRequestAuthenticator(application).authenticate();
      *
      *    Account account = result.getAccount();
      *
@@ -63,7 +62,7 @@ public interface ServletApiRequestAuthenticator {
      * distinguish between the two.  This is totally fine if that is suitable for your application.</p>
      *
      * <p>However, OAuth 2 also has the notion of <em>scopes</em>, also known as application-specific permissions.  If
-     * the request is an OAuth 2 request, and you have {@link ServletApiRequestAuthenticator#authenticate(HttpRequest)}  previously assigned
+     * the request is an OAuth 2 request, and you have {@link ServletApiRequestAuthenticator#authenticate(HttpServletRequest)} previously assigned
      * scopes to OAuth tokens} you can check those scopes during an API request to control access.</p>
      * <p>So how do we do that?  How do we know if a request was a regular HTTP Basic request or an OAuth 2 request?
      *

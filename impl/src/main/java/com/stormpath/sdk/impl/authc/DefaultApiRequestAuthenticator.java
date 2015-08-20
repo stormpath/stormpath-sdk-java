@@ -56,14 +56,14 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
         this.application = application;
 
         if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
-            this.httpRequest = (HttpRequest) httpRequest;
+            this.httpRequest = httpRequest;
         } else {
             Assert.isInstanceOf(com.stormpath.sdk.impl.http.ServletHttpRequest.class, httpRequest,
                                 "The specified httpRequest argument must be an instance of " +
             HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
 
 
-            this.httpRequest = (ServletHttpRequest) httpRequest;
+            this.httpRequest = httpRequest;
         }
     }
 
@@ -75,6 +75,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
         this.application = application;
     }
 
+    // TODO Make this method protected or private once it's removed from the interface
     @Override
     public ApiAuthenticationResult execute() {
         AuthenticationRequest request = FACTORY.createFrom(httpRequest);
@@ -92,7 +93,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
 
         if (ServletHttpRequest.class.isAssignableFrom(httpRequest.getClass())){
-            this.httpRequest = (ServletHttpRequest) httpRequest;
+            this.httpRequest = httpRequest;
         } else {
             Assert.isInstanceOf(HttpRequest.class, httpRequest,
                     "The specified httpRequest argument must be an instance of " +
@@ -102,18 +103,4 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
         return this.execute();
     }
-
-    @SuppressWarnings("unchecked")
-    private void validateHttpRequest(Object httpRequest) {
-        Assert.notNull(httpRequest);
-        Class httpRequestClass = httpRequest.getClass();
-        for (Class supportedClass : HTTP_REQUEST_SUPPORTED_CLASSES) {
-            if (supportedClass.isAssignableFrom(httpRequestClass)) {
-                return;
-            }
-        }
-        throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequestClass.getName(),
-                HTTP_REQUEST_SUPPORTED_CLASSES.toString()));
-    }
-
 }

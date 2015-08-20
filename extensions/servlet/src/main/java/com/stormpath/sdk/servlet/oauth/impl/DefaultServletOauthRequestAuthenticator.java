@@ -18,11 +18,18 @@ package com.stormpath.sdk.servlet.oauth.impl;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
+import com.stormpath.sdk.oauth.ScopeFactory;
+import com.stormpath.sdk.oauth.RequestLocation;
 import com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @since 1.0.RC4.6
+ */
 public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequestAuthenticator {
 
     private final Application application;
@@ -40,7 +47,7 @@ public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequ
                 "The specified httpRequest argument must be an instance of " + HTTP_SERVLET_REQUEST_FQCN);
 
         com.stormpath.sdk.impl.http.ServletHttpRequest stmpHttpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpRequest);
-        return (OauthAuthenticationResult) Applications.oauthRequestAuthenticator(application).authenticate(stmpHttpRequest);
+        return Applications.oauthRequestAuthenticator(application).authenticate(stmpHttpRequest);
     }
 
     @Override

@@ -61,8 +61,15 @@ public interface ResourceRequestAuthenticator {
 
     /**
      * Authenticates an OAuth-based HTTP request using a bearer Access Token and returns the corresponding result.
+     * The result type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult} if the client authenticated
+     * with your server-side API specifically for the purpose of obtaining a new OAuth Access Token.
      *
-     * The result type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult}.
+     * For the latter case, you can extract the Oauth response as a JSON expression, like shown in the example below:
+     * <pre>
+     *      AccessTokenResult result = (AccessTokenResult) Applications.oauthRequestAuthenticator(application).authenticate(HTTP_REQUEST_TO_AUNTHENTICATE)
+     *      String oauthAuthenticationResult = result.getTokenResponse().toJson()
+     * </pre>
+     *
      * Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
      *
      * @param httpRequest either a <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">

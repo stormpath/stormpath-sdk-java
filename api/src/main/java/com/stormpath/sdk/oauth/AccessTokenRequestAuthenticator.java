@@ -92,8 +92,9 @@ public interface AccessTokenRequestAuthenticator {
      *
      * @return the result of the authentication request in the form of a {@link AccessTokenResult}.
      *
-     * @deprecated this method will be removed soon. Use {@link com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator#authenticate(Object)} instead
+     * @deprecated this method will be removed soon. Use {@link com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator#authenticate(HttpRequest)} instead
      */
+    @Deprecated
     public AccessTokenResult execute();
 
     /**

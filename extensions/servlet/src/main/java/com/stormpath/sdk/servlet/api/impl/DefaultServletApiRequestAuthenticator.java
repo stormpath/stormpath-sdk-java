@@ -20,10 +20,12 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.api.ServletApiRequestAuthenticator;
-import com.stormpath.sdk.servlet.util.Servlets;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @since 1.0.RC4.6
+ */
 public class DefaultServletApiRequestAuthenticator implements ServletApiRequestAuthenticator {
 
     private final Application application;
@@ -40,6 +42,6 @@ public class DefaultServletApiRequestAuthenticator implements ServletApiRequestA
                 "The specified httpRequest argument must be an instance of " + HTTP_SERVLET_REQUEST_FQCN);
 
         com.stormpath.sdk.impl.http.ServletHttpRequest stmpHttpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpServletRequest);
-        return (ApiAuthenticationResult) Applications.apiRequestAuthenticator(application).authenticate(stmpHttpRequest);
+        return Applications.apiRequestAuthenticator(application).authenticate(stmpHttpRequest);
     }
 }
