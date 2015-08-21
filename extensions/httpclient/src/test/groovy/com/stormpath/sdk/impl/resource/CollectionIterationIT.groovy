@@ -88,6 +88,7 @@ class CollectionIterationIT extends ClientIT {
                     .setEmail(uniquify("john${i}deleteme") + "@stormpath.com")
                     .setPassword('Changeme1!')
             dir.createAccount(account);
+            deleteOnTeardown(account)
         }
 
         //15 new accounts = 15 requests

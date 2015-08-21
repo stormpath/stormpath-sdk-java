@@ -49,6 +49,8 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
 
         deleteOnTeardown(account.directory)
 
+        deleteOnTeardown(account)
+
         deleteOnTeardown(group)
 
         deleteOnTeardown(application)
@@ -199,6 +201,8 @@ class CustomDataEntityIT extends AbstractCustomDataIT {
         //7. Get the account again and assert that the value is there:
         account = client2.getResource(account.getHref(), Account)
         assertEquals account.customData.hobby, 'Kendo'
+
+        deleteOnTeardown(account)
     }
 
     /**

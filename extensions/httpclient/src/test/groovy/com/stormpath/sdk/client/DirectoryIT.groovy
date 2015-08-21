@@ -76,6 +76,7 @@ class DirectoryIT extends ClientIT {
             .setPassword('Changeme1!')
 
         dir.createAccount(account)
+        deleteOnTeardown(account)
 
         String href = account.href
 
@@ -241,6 +242,7 @@ class DirectoryIT extends ClientIT {
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
+        deleteOnTeardown(account01)
 
         assertEquals(dir.getAccounts().getSize(), 1)
 
@@ -251,6 +253,7 @@ class DirectoryIT extends ClientIT {
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
+        deleteOnTeardown(account02)
 
         assertEquals(dir.getAccounts().getSize(), 2)
 
@@ -352,6 +355,7 @@ class DirectoryIT extends ClientIT {
                 .setEmail('johndoe@email.com')
                 .setPassword('Changeme1!')
         dir.createAccount(account)
+        deleteOnTeardown(account)
 
         //Test the expansion worked by reading the internal properties of the directory, it must contain the recently created account now
         retrieved = client.getResource(dir.href, Directory.class, options)
@@ -393,6 +397,7 @@ class DirectoryIT extends ClientIT {
                 .setEmail('johndoe@email.com')
                 .setPassword('Changeme1!')
         dir.createAccount(account)
+        deleteOnTeardown(account)
 
         //Test the expansion worked by reading the internal properties of the directory, it must contain the recently created account now
         retrieved = client.getResource(dir.href, Directory.class, options)
@@ -517,6 +522,7 @@ class DirectoryIT extends ClientIT {
                 .setPassword('Changeme1!')
 
         dir.createAccount(account)
+        deleteOnTeardown(account)
 
         Date accountCreationTimestamp = account.createdAt
 

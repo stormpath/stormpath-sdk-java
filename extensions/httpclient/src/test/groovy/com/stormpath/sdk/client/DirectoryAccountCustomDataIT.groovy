@@ -74,7 +74,7 @@ class DirectoryAccountCustomDataIT extends AbstractCustomDataIT {
 
         account.customData.putAll(postedCustomData)
 
-        def builder = Accounts.newCreateRequestFor(account)
+        def builder = Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false)
 
         builder = expand ? builder.withResponseOptions(Accounts.options().withCustomData()) : builder
 
