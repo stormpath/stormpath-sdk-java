@@ -15,7 +15,6 @@
 */
 package com.stormpath.sdk.organization;
 
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
@@ -32,7 +31,63 @@ import com.stormpath.sdk.resource.Auditable;
  *
  * @since 1.0.RC4.6
  */
-public interface Organization extends Resource, Saveable, Deletable, AccountStore, Extendable, Auditable {
+public interface Organization extends Resource, Saveable, Deletable, Extendable, Auditable {
+
+    /**
+     * Returns this Organization's name.  The name is guaranteed to be non-null and unique in the owning Tenant.
+     *
+     * @return this Organization's name
+     */
+    String getName();
+
+    /**
+     * Sets the Organization's name.  The name is required and must be unique among all other organizations in the owning
+     * Tenant.
+     *
+     * @param name the name to set (must be non-null, non-empty and unique).
+     * @return this instance for method chaining.
+     */
+    Organization setName(String name);
+
+    /**
+     * Returns the description. This is an optional property and may be null or empty.
+     *
+     * @return the description. This is an optional property and may be null or empty.
+     */
+    String getDescription();
+
+    /**
+     * Sets the description. This is an optional property and may be null or empty.
+     *
+     * @param description the description to add.
+     * @return this instance for method chaining.
+     */
+    Organization setDescription(String description);
+
+    /**
+     * Returns the Organization's status.
+     * <p/>
+     * An {@link OrganizationStatus#ENABLED enabled} organization may be used as a 'virtual'
+     * AccountStore that 'wraps' other AccountStores.
+     * Like other AccountStores, an Organization can be mapped to an Application so that users in the Organization can login to that application.
+     * A {@link OrganizationStatus#DISABLED disabled} organization cannot be used to store Directories or Groups.
+     *
+     * @return the organization's status.
+     */
+    OrganizationStatus getStatus();
+
+    /**
+     * Sets the organization's status.
+     * <p/>
+     * An {@link OrganizationStatus#ENABLED enabled} organization may be used as a 'virtual'
+     * AccountStore that 'wraps' other AccountStores.
+     * Like other AccountStores, an Organization can be mapped to an Application so that users in the Organization can login to that application.
+     * A {@link OrganizationStatus#DISABLED disabled} organization cannot be used to store Directories or Groups.
+     *
+     * @param status the status to apply.
+     * @return this instance for method chaining.
+     */
+    Organization setStatus(OrganizationStatus status);
 
 
 }
