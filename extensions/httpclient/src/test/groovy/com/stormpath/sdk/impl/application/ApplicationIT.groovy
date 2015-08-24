@@ -83,7 +83,6 @@ class ApplicationIT extends ClientIT {
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
-        deleteOnTeardown(acct)
 
         def request = new UsernamePasswordRequest(username, password)
         def result = app.authenticateAccount(request)
