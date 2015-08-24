@@ -357,8 +357,15 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 
+        char querySeparator = '?';
+
         if (request.isRegistrationWorkflowOptionSpecified()) {
-            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            href += querySeparator + "registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            querySeparator = '&';
+        }
+
+        if (request.isPasswordFormatSpecified()) {
+            href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
         }
 
         if (request.isAccountOptionsSpecified()) {
