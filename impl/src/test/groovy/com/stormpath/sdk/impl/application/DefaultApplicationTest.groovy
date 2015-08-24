@@ -193,7 +193,7 @@ class DefaultApplicationTest {
 
         defaultApplication.delete()
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
 
@@ -228,9 +228,9 @@ class DefaultApplicationTest {
 
         replay internalDataStore, account, accountStore
 
-        def returnedAccount = defaultApplication.sendPasswordResetEmail(email, accountStore)
+        def returnedToken = defaultApplication.sendPasswordResetEmail(email, accountStore)
 
-        assertEquals(returnedAccount, account)
+        assertEquals(returnedToken.getAccount(), account)
 
         assertEquals(defaultPassResetToken.dirtyProperties.accountStore.href, accountStoreHref)
 
@@ -685,7 +685,7 @@ class DefaultApplicationTest {
 
         replay internalDataStore, account
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult)
 

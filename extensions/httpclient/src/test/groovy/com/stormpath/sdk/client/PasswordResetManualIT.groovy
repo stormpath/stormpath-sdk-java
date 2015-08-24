@@ -54,7 +54,7 @@ class PasswordResetManualIT extends ClientIT {
             }
         }
 
-        Account account = appToTest.sendPasswordResetEmail(email)
+        Account account = appToTest.sendPasswordResetEmail(email).getAccount()
 
         assertEquals email, account.email
     }
