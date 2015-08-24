@@ -288,13 +288,11 @@ class ApplicationIT extends ClientIT {
         accountStoreMapping1.setAccountStore(dir1)
         accountStoreMapping1.setApplication(app)
         accountStoreMapping1 = app.createAccountStoreMapping(accountStoreMapping1)
-        deleteOnTeardown(accountStoreMapping1)
 
         AccountStoreMapping accountStoreMapping2 = client.instantiate(AccountStoreMapping)
         accountStoreMapping2.setAccountStore(dir2)
         accountStoreMapping2.setApplication(app)
         accountStoreMapping2 = app.createAccountStoreMapping(accountStoreMapping2)
-        deleteOnTeardown(accountStoreMapping2)
 
         dir1.createAccount(acct)
         deleteOnTeardown(acct)
