@@ -85,6 +85,7 @@ public interface OauthRequestAuthenticator extends ApiRequestAuthenticator {
      * @return the result of the authentication request in the form of a {@link OauthAuthenticationResult}.
      * @deprecated this method will be removed soon. Use {@link OauthRequestAuthenticator#authenticate(HttpRequest)} instead
      */
+    @Deprecated
     OauthAuthenticationResult execute();
 
     /**
