@@ -107,7 +107,6 @@ class ApplicationIT extends ClientIT {
         account.password = 'Changeme1!'
 
         def created = app.createAccount(account)
-        deleteOnTeardown(account)
 
         //verify it was created:
 
