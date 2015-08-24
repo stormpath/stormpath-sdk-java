@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.application.DefaultApplication;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
@@ -36,9 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 @SuppressWarnings("UnusedDeclaration") //used via reflection from API module
 public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticator {
 
-    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported class: [%s].";
 
-    private final HttpServletRequest httpServletRequest;
+    private HttpServletRequest httpServletRequest;
 
     private final Application application;
 
@@ -58,19 +59,24 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
         this.application = application;
     }
 
+    public DefaultOauthRequestAuthenticator(DefaultApplication application) {
+        Assert.notNull(application, "application cannot  be null.");
+        this.application = application;
+    }
+
     @Override
     public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory) {
-        return new DefaultAccessTokenRequestAuthenticator(application, httpServletRequest, scopeFactory);
+        return new DefaultAccessTokenRequestAuthenticator(application).using(scopeFactory);
     }
 
     @Override
     public AccessTokenRequestAuthenticator withTtl(long ttl) {
-        return new DefaultAccessTokenRequestAuthenticator(application, httpServletRequest, null).withTtl(ttl);
+        return new DefaultAccessTokenRequestAuthenticator(application).setHttpServletRequest(httpServletRequest).withTtl(ttl);
     }
 
     @Override
     public ResourceRequestAuthenticator inLocation(RequestLocation... locations) {
-        return new DefaultResourceRequestAuthenticator(httpServletRequest, application).inLocation(locations);
+        return new DefaultResourceRequestAuthenticator(application).inLocation(locations);
     }
 
     @Override
@@ -84,6 +90,50 @@ public class DefaultOauthRequestAuthenticator implements OauthRequestAuthenticat
 
         Assert.isInstanceOf(OauthAuthenticationResult.class, result);
 
+        return (OauthAuthenticationResult) result;
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OauthAuthenticationResult authenticate(HttpRequest httpRequest) {
+
+        Assert.notNull(httpRequest, "httpRequest cannot be null.");
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = (HttpServletRequest) httpRequest;
+        } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = new OauthHttpServletRequest(httpRequest);
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+        }
+
+        OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();
+        AuthenticationRequest request = factory.createFrom(httpServletRequest);
+        AuthenticationResult result = application.authenticateAccount(request);
+        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
+        return (OauthAuthenticationResult) result;
+    }
+
+    public OauthAuthenticationResult authenticate(HttpServletRequest httpRequest) {
+
+        Assert.notNull(httpRequest, "httpRequest cannot be null.");
+
+        Class httpRequestClass = httpRequest.getClass();
+
+        if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
+            this.httpServletRequest = httpRequest;
+        } else {
+            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpServletRequest.class.getName()));
+        }
+
+        OauthAuthenticationRequestFactory factory = new OauthAuthenticationRequestFactory();
+        AuthenticationRequest request = factory.createFrom(httpServletRequest);
+        AuthenticationResult result = application.authenticateAccount(request);
+        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
         return (OauthAuthenticationResult) result;
     }
 }
