@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.http.HttpRequest;
+
 /**
  * Authenticates an API request attempting to obtain a new OAuth Access Token.  This request is usually submitted to the
  * application's OAuth token endpoint (e.g. {@code /oauth/token}).  The request is authenticated using the
@@ -89,6 +91,22 @@ public interface AccessTokenRequestAuthenticator {
      * Executes this authentication request.
      *
      * @return the result of the authentication request in the form of a {@link AccessTokenResult}.
+     *
+     * @deprecated this method will be removed soon. Use {@link com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator#authenticate(HttpRequest)} instead
      */
+    @Deprecated
     public AccessTokenResult execute();
+
+    /**
+     * Authenticates an OAuth-based HTTP request submitted to your application's API, returning the result of the authentication attempt.
+     * Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
+     *
+     * @param httpRequest either a <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                    {@code javax.servlet.http.HttpServletRequest}</a> instance (if your app runs in a
+     *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
+     * @return an {@link AccessTokenResult} that represents the result of the authentication attempt.
+     */
+    public AccessTokenResult authenticate(HttpRequest httpRequest);
+
 }
