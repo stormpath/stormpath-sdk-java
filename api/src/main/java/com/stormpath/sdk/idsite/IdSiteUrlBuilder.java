@@ -85,6 +85,33 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setPath(String path);
 
     /**
+     * Sets the organizationNameKey to be targeted
+     *
+     * @param organizationNameKey the organization nameKey to used in the initial sso.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    IdSiteUrlBuilder setOrganizationNameKey(String organizationNameKey);
+
+    /**
+     * TBD
+     *
+     * @param useSubdomain flag to be set when the id sit will be used appending the
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    IdSiteUrlBuilder setUseSubdomain(boolean useSubdomain);
+
+    /**
+     * TBD
+     *
+     * @param showOrganizationField flag to be sent when the IdSite will display the organization field.
+     * @return this instance for method chaining.
+     * @since 1.0.RC4.6
+     */
+    IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField);
+
+    /**
      *
      * A user that has an open session and wants to logout from it will invoke this method when constructing the {@code callbackUri}.
      * <p/>

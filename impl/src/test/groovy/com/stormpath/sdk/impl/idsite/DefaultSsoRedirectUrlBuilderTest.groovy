@@ -19,9 +19,10 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.util.Base64
+import com.stormpath.sdk.lang.Strings
+import io.jsonwebtoken.Header
+import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
-
-import java.nio.charset.Charset
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
@@ -30,6 +31,13 @@ import static org.testng.Assert.*
  * @since 1.0.RC
  */
 public class DefaultSsoRedirectUrlBuilderTest {
+
+    private JacksonMapMarshaller mapMarshaller
+
+    @BeforeTest
+    void setup() {
+        mapMarshaller = new JacksonMapMarshaller();
+    }
 
     @Test
     void testMissingRedirectUri() {
@@ -62,7 +70,6 @@ public class DefaultSsoRedirectUrlBuilderTest {
 
     @Test
     void testOnlyCallbackUri() {
-        def UTF_8 = Charset.forName("UTF-8");
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
@@ -84,21 +91,21 @@ public class DefaultSsoRedirectUrlBuilderTest {
         String jwtPayloadSegment = pieces[1];
         byte[] signature = Base64.decodeBase64(pieces[2]);
 
-        def mapMarshaller = new JacksonMapMarshaller();
-
         //Verify Header
-        assertEquals(jwtHeaderSegment, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+        validateHeader(jwtHeaderSegment)
 
         byte[] jsonBytes = Base64.decodeBase64(jwtPayloadSegment);
-        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, Strings.UTF_8));
 
         //Verify Payload
-        assertEquals(jsonMap.size(), 5)
+        assertEquals(jsonMap.size(), 7)
         assertTrue(((String)jsonMap.get("iat")).size() > 0)
         assertTrue(((String)jsonMap.get("jti")).size() > 0)
         assertEquals((String)jsonMap.get("iss"), "3RLOQCNCD1M3T5MAZDNDHGE5")
         assertEquals((String)jsonMap.get("sub"), "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
         assertEquals((String)jsonMap.get("cb_uri"), "http://fooUrl:8081/index.do")
+        assertFalse(jsonMap.usd)
+        assertFalse(jsonMap.sof)
 
         //Verify Signature
         assertTrue(signature.size() > 0 )
@@ -111,7 +118,6 @@ public class DefaultSsoRedirectUrlBuilderTest {
 
     @Test
     void testBuilderWithPathAndState() {
-        def UTF_8 = Charset.forName("UTF-8");
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
@@ -136,16 +142,14 @@ public class DefaultSsoRedirectUrlBuilderTest {
         String jwtPayloadSegment = pieces[1];
         byte[] signature = Base64.decodeBase64(pieces[2]);
 
-        def mapMarshaller = new JacksonMapMarshaller();
-
         //Verify Header
-        assertEquals(jwtHeaderSegment, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+        validateHeader(jwtHeaderSegment)
 
         byte[] jsonBytes = Base64.decodeBase64(jwtPayloadSegment);
-        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, Strings.UTF_8));
 
         //Verify Payload
-        assertEquals(jsonMap.size(), 7)
+        assertEquals(jsonMap.size(), 9)
         assertTrue(((String)jsonMap.get("iat")).size() > 0)
         assertTrue(((String)jsonMap.get("jti")).size() > 0)
         assertEquals((String)jsonMap.get("iss"), "3RLOQCNCD1M3T5MAZDNDHGE5")
@@ -153,7 +157,62 @@ public class DefaultSsoRedirectUrlBuilderTest {
         assertEquals((String)jsonMap.get("cb_uri"), "http://fooUrl:8081/index.do")
         assertEquals((String)jsonMap.get("path"), "/sso-site")
         assertEquals((String)jsonMap.get("state"), "someState")
+        assertFalse(jsonMap.usd)
+        assertFalse(jsonMap.sof)
 
+        //Verify Signature
+        assertTrue(signature.size() > 0 )
+
+        //Verify URL
+        assertTrue ssoRedirectUrl.startsWith(builder.ssoEndpoint + "?jwtRequest=")
+
+        verify internalDataStore, apiKey
+    }
+
+    @Test
+    void testWithOrganization() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getId()).andReturn("3RLOQCNCD1M3T5MAZDNDHGE5")
+        expect(apiKey.getSecret()).andReturn("g6soSmqihFHnpjKDGBDHKwKR8Q2BwL88gHlZ1t4xJf6")
+
+        replay internalDataStore, apiKey
+
+        def builder = new DefaultIdSiteUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do")
+                .setOrganizationNameKey("my-organization").setUseSubdomain(true).setShowOrganizationField(true)
+                .build()
+
+        String[] pieces = ssoRedirectUrl.substring(ssoRedirectUrl.indexOf("?jwtRequest=") + 12).split("\\.");
+        if (pieces.length != 3) {
+            fail("Expected JWT to have 3 segments separated by '.', but it has " + pieces.length + " segments");
+        }
+        String jwtHeaderSegment = pieces[0];
+        String jwtPayloadSegment = pieces[1];
+        byte[] signature = Base64.decodeBase64(pieces[2]);
+
+        //Verify Header
+        validateHeader(jwtHeaderSegment)
+
+        byte[] jsonBytes = Base64.decodeBase64(jwtPayloadSegment);
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, Strings.UTF_8));
+
+        //Verify Payload
+        assertEquals(jsonMap.size(), 8)
+        assertTrue(((String)jsonMap.get("iat")).size() > 0)
+        assertTrue(((String)jsonMap.get("jti")).size() > 0)
+        assertEquals((String)jsonMap.get("iss"), "3RLOQCNCD1M3T5MAZDNDHGE5")
+        assertEquals((String)jsonMap.get("sub"), "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+        assertEquals((String)jsonMap.get("cb_uri"), "http://fooUrl:8081/index.do")
+        assertEquals(jsonMap.onk, "my-organization")
+        assertTrue(jsonMap.usd)
+        assertTrue(jsonMap.sof)
+        assertNull(jsonMap.state)
+        assertNull(jsonMap.path)
+
+        //Verify Signature
         //Verify Signature
         assertTrue(signature.size() > 0 )
 
@@ -166,7 +225,6 @@ public class DefaultSsoRedirectUrlBuilderTest {
     // @since 1.0.RC3
     @Test
     void testBuilderForLogout() {
-        def UTF_8 = Charset.forName("UTF-8");
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
@@ -192,16 +250,14 @@ public class DefaultSsoRedirectUrlBuilderTest {
         String jwtPayloadSegment = pieces[1];
         byte[] signature = Base64.decodeBase64(pieces[2]);
 
-        def mapMarshaller = new JacksonMapMarshaller();
-
         //Verify Header
-        assertEquals(jwtHeaderSegment, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+        validateHeader(jwtHeaderSegment)
 
         byte[] jsonBytes = Base64.decodeBase64(jwtPayloadSegment);
-        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+        Map jsonMap = mapMarshaller.unmarshal(new String(jsonBytes, Strings.UTF_8));
 
         //Verify Payload
-        assertEquals(jsonMap.size(), 7)
+        assertEquals(jsonMap.size(), 9)
         assertTrue(((String)jsonMap.get("iat")).size() > 0)
         assertTrue(((String)jsonMap.get("jti")).size() > 0)
         assertEquals((String)jsonMap.get("iss"), "3RLOQCNCD1M3T5MAZDNDHGE5")
@@ -209,6 +265,8 @@ public class DefaultSsoRedirectUrlBuilderTest {
         assertEquals((String)jsonMap.get("cb_uri"), "http://fooUrl:8081/index.do")
         assertEquals((String)jsonMap.get("path"), "/sso-site")
         assertEquals((String)jsonMap.get("state"), "someState")
+        assertFalse(jsonMap.usd)
+        assertFalse(jsonMap.sof)
 
         //Verify Signature
         assertTrue(signature.size() > 0 )
@@ -217,6 +275,14 @@ public class DefaultSsoRedirectUrlBuilderTest {
         assertTrue ssoRedirectUrl.startsWith(builder.ssoEndpoint + "/logout?jwtRequest=")
 
         verify internalDataStore, apiKey
+    }
+
+    private void validateHeader(String jwtHeaderSegment) {
+        byte[] headerBytes = Base64.decodeBase64(jwtHeaderSegment);
+        Map headerMap = mapMarshaller.unmarshal(new String(headerBytes, Strings.UTF_8));
+        assertEquals(headerMap.size(), 2)
+        assertEquals(headerMap.alg, "HS256")
+        assertEquals(headerMap.typ, Header.JWT_TYPE)
     }
 
 }
