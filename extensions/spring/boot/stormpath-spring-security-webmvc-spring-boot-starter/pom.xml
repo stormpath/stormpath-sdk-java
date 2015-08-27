@@ -17,10 +17,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.stormpath.spring</groupId>
-        <artifactId>stormpath-spring-parent</artifactId>
+        <groupId>com.stormpath.sdk</groupId>
+        <artifactId>stormpath-sdk-root</artifactId>
         <version>1.0.RC4.6-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
@@ -32,24 +32,6 @@
     </properties>
 
     <dependencies>
-
-        <!--
-            We need to force Tomcat 7 for the ITs to run in Java 6.
-            Otherwise Tomcat 8.0.15 is used and it throws:
-            javax/servlet/ServletContext : Unsupported major.minor version 51.0
-        -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-el</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>runtime</scope>
-        </dependency>
 
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
@@ -75,6 +57,24 @@
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-httpclient</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            We need to force Tomcat 7 for the ITs to run in Java 6.
+            Otherwise Tomcat 8.0.15 is used and it throws:
+            javax/servlet/ServletContext : Unsupported major.minor version 51.0
+        -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-el</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
