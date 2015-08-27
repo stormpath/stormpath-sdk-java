@@ -316,6 +316,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
 
+    @Value("#{ @environment['stormpath.web.logout.invalidateHttpSession'] ?: true }")
+    protected boolean logoutInvalidateHttpSession;
+
     // ================  Change Password Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
@@ -969,6 +972,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         controller.setNextUri(logoutNextUri);
+        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
         controller.init();
 
         return controller;

@@ -47,6 +47,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
 
+    //Standard Spring Security config property - we just read it here as well:
+    @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
+    protected boolean csrfProtectionEnabled;
+
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return new StormpathLoginSuccessHandler(client, authenticationResultSaver);
     }
@@ -81,16 +85,16 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
         if (logoutEnabled) {
             http
                     .logout()
+                    .invalidateHttpSession(true)
                     .logoutUrl(logoutUri)
                     .logoutSuccessUrl(logoutNextUri)
                     .addLogoutHandler(logoutHandler);
 
         }
 
-        http.httpBasic().and().
-
-                //TODO: figure out what to do here:
-                        csrf().disable();
+        if (!csrfProtectionEnabled) {
+            http.csrf().disable();
+        }
 
         doConfigure(http);
     }

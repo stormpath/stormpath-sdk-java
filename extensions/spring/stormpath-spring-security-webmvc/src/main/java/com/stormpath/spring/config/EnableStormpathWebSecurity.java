@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import java.lang.annotation.ElementType;
@@ -30,4 +31,5 @@ import java.lang.annotation.Target;
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
 @EnableWebSecurity
+@Import(StormpathWebSecurityConfiguration.class)
 public @interface EnableStormpathWebSecurity {}

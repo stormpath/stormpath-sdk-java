@@ -30,9 +30,9 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableAutoConfiguration
-public class BeanOverrideApplication {
+public class BeanOverrideStormpathWebSecurityAutoConfigurationApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(BeanOverrideApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(BeanOverrideStormpathWebSecurityAutoConfigurationApplication.class);
 
     @Bean
     public GroupPermissionResolver stormpathGroupPermissionResolver() {
@@ -41,7 +41,7 @@ public class BeanOverrideApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(StormpathWebSecurityAutoConfigurationApplication.class, args);
+        SpringApplication.run(BeanOverrideStormpathWebSecurityAutoConfigurationApplication.class, args);
     }
 
 }

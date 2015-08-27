@@ -15,7 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure
 
-import autoconfigure.BeanOverrideApplication
+import autoconfigure.BeanOverrideStormpathWebSecurityAutoConfigurationApplication
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
@@ -37,11 +37,11 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC4.6
  */
-@SpringApplicationConfiguration(classes = BeanOverrideApplication.class)
+@SpringApplicationConfiguration(classes = BeanOverrideStormpathWebSecurityAutoConfigurationApplication.class)
 @WebAppConfiguration
-class BeanOverrideApplicationIT extends AbstractTestNGSpringContextTests {
+class BeanOverrideStormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
-   //Spring Security Beans
+    //Spring Security Beans
     @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider
 
@@ -76,9 +76,7 @@ class BeanOverrideApplicationIT extends AbstractTestNGSpringContextTests {
 
         assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager
         assertTrue stormpathGroupPermissionResolver instanceof CustomTestGroupPermissionResolver
-        System.out.println(stormpathAuthenticationProvider.groupPermissionResolver)
         assertTrue stormpathAuthenticationProvider.groupPermissionResolver instanceof CustomTestGroupPermissionResolver
-        System.out.println(stormpathAuthenticationProvider.accountGrantedAuthorityResolver)
         assertTrue stormpathAuthenticationProvider.accountGrantedAuthorityResolver instanceof EmptyAccountGrantedAuthorityResolver
         assertTrue stormpathAuthenticationProvider.accountPermissionResolver instanceof AccountCustomDataPermissionResolver
         assertTrue stormpathAuthenticationProvider.authenticationTokenFactory instanceof UsernamePasswordAuthenticationTokenFactory

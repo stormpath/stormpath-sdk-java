@@ -17,7 +17,6 @@ package tutorial;
 
 import com.stormpath.spring.config.EnableStormpathWebSecurity;
 import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -26,7 +25,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  */
 
 @Configuration
-@ComponentScan
 @EnableStormpathWebSecurity
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
 

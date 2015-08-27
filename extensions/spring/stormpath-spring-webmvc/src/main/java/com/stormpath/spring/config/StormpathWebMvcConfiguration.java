@@ -67,7 +67,12 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 1.0.RC4
@@ -158,6 +163,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             @Override
             public String getLogoutNextUrl() {
                 return logoutNextUri;
+            }
+
+            @Override
+            public boolean isLogoutInvalidateHttpSession() {
+                return logoutInvalidateHttpSession;
             }
 
             @Override

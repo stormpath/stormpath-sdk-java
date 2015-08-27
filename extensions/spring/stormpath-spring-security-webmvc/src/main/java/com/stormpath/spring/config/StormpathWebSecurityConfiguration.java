@@ -16,6 +16,7 @@
 package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 /**
  * @since 1.0.RC4.6
  */
+@Configuration
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean

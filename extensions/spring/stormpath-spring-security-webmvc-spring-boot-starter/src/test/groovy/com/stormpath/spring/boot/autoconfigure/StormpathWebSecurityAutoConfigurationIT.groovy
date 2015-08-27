@@ -78,7 +78,6 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     @Test
     void test() {
 
-
         assertNotNull stormpathAuthenticationProvider
         assertNotNull stormpathAuthenticationProvider.applicationRestUrl
         assertNotNull stormpathAuthenticationProvider.client
