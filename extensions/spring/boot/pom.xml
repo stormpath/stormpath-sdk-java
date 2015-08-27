@@ -22,21 +22,21 @@
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>1.0.RC4.6-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.stormpath.spring</groupId>
-    <artifactId>stormpath-spring-parent</artifactId>
-    <name>Stormpath :: Spring</name>
-    <description>Support for using Stormpath in Spring applications.</description>
+    <artifactId>stormpath-spring-boot-parent</artifactId>
+    <name>Stormpath :: Spring :: Boot</name>
+    <description>Support for using Stormpath in Spring Boot applications.</description>
     <packaging>pom</packaging>
 
     <modules>
-        <module>stormpath-spring</module>
-        <module>stormpath-spring-security</module>
-        <module>stormpath-spring-security-webmvc</module>
-        <module>stormpath-spring-webmvc</module>
-        <module>boot</module>
+        <module>stormpath-spring-boot-starter</module>
+        <module>stormpath-webmvc-spring-boot-starter</module>
+        <module>stormpath-thymeleaf-spring-boot-starter</module>
+        <module>stormpath-spring-security-spring-boot-starter</module>
+        <module>stormpath-spring-security-webmvc-spring-boot-starter</module>
     </modules>
 
 </project>
