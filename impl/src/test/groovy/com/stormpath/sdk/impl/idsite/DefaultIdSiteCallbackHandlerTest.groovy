@@ -292,7 +292,6 @@ class DefaultIdSiteCallbackHandlerTest {
                 throw new Exception("should have thrown")
             }
         }
-
         verify application, request
     }
 
