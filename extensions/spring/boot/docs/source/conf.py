@@ -62,7 +62,7 @@ copyright = u'2015, Stormpath, Inc.'
 # The short X.Y version.
 
 # Get the version from the Java pom since that is the authoritative source:
-pom_xml_tree = ET.parse('../../../../pom.xml')
+pom_xml_tree = ET.parse('../../../../../pom.xml')
 pom_xml_root = pom_xml_tree.getroot()
 pom_xml_namespaces = {'pom': 'http://maven.apache.org/POM/4.0.0'}
 version_element = pom_xml_root.find('pom:version', pom_xml_namespaces)
