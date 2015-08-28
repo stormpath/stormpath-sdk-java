@@ -28,10 +28,13 @@ public abstract class JwtConstants {
     public static final String SUBJECT_PARAM_NAME = "sub";
     public static final String IS_NEW_SUBJECT_PARAM_NAME = "isNewSub";
     public static final String AUDIENCE_PARAM_NAME = "aud";
+    public static final String APIKEYID_PARAM_NAME = "kid";
 
     public static final String EXPIRE_PARAM_NAME = "exp";
 
     public static final String STATUS_PARAM_NAME = "status";
+
+    public static final String ERROR_PARAM_NAME = "err";
 
     private JwtConstants() {
     }

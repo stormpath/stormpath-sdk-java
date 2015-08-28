@@ -22,6 +22,7 @@ import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.AccountResult;
 import com.stormpath.sdk.idsite.AuthenticationResult;
+import com.stormpath.sdk.idsite.IDSiteRuntimeException;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.NonceStore;
@@ -32,11 +33,13 @@ import com.stormpath.sdk.impl.account.DefaultLogoutResult;
 import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.error.Error;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -97,15 +100,27 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
         JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
 
+        Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
         Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
 
-        String apiKeyId = getRequiredValue(jsonPayload, AUDIENCE_PARAM_NAME);
+        String apiKeyId = null;
+        if ((apiKeyId = getOptionalValue(jsonHeader, APIKEYID_PARAM_NAME)) == null) {
+            apiKeyId = getRequiredValue(jsonPayload, AUDIENCE_PARAM_NAME);
+        }
 
         getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
 
         Number expire = getRequiredValue(jsonPayload, EXPIRE_PARAM_NAME);
 
         verifyJwtIsNotExpired(expire.longValue());
+
+        String issuer = getRequiredValue(jsonPayload, ISSUER_PARAM_NAME);
+
+        //JSDK-261: Enable Java SDK to handle new ID Site error callbacks
+        //We are processing the error after the token has been properly validated
+        if (isError(jsonPayload)) {
+            throw new IDSiteRuntimeException(constructError(jsonPayload));
+        }
 
         String responseNonce = getRequiredValue(jsonPayload, RESPONSE_NONCE_PARAMETER);
 
@@ -114,8 +129,6 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         }
 
         nonceStore.putNonce(responseNonce);
-
-        String issuer = getRequiredValue(jsonPayload, ISSUER_PARAM_NAME);
 
         //the 'sub' field can be null if calling /sso/logout when the subject is already logged out:
         String accountHref = getOptionalValue(jsonPayload, SUBJECT_PARAM_NAME);
@@ -260,6 +273,27 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
                 throw new IllegalArgumentException("Encountered unknown IdSite result status: " + status);
         }
     }
+
+    /* @since 1.0.RC4.6 */
+    private Error constructError(Map jsonMap) {
+        Assert.isTrue(isError(jsonMap));
+        Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR_PARAM_NAME);
+        Error error = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS_PARAM_NAME))
+                .code((Integer) getRequiredValue(errorMap, "code"))
+                .developerMessage((String) getRequiredValue(errorMap, "developerMessage"))
+                .message((String) getRequiredValue(errorMap, "message"))
+                .moreInfo((String) getRequiredValue(errorMap, "moreInfo"))
+                .build();
+        return error;
+    }
+
+    /* @since 1.0.RC4.6 */
+    private boolean isError(Map jsonMap) {
+        Assert.notNull(jsonMap, "jsonMap cannot be null.");
+        Object error = getOptionalValue(jsonMap, ERROR_PARAM_NAME);
+        return error != null;
+    }
+
 
 }
 
