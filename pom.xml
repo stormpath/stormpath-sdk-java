@@ -103,7 +103,7 @@
 
         <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
              See: http://stackoverflow.com/questions/22314453/unsupported-major-minor-version-51-0-error-when-using-1-6-in-pom-and-openjdk6-fo -->
-        <servlet.version>3.0.1</servlet.version>
+        <servlet.version>3.1.0</servlet.version>
         <spring.version>4.1.7.RELEASE</spring.version>
         <spring.boot.version>1.2.5.RELEASE</spring.boot.version>
         <spring.security.version>4.0.2.RELEASE</spring.security.version>
