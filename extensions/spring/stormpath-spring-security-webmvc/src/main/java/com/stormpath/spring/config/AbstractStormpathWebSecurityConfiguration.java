@@ -6,6 +6,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 /**
  * @since 1.0.RC4.6
  */
+@Order(99)
 public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired

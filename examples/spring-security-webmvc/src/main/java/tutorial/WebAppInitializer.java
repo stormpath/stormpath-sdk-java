@@ -56,6 +56,5 @@ public class WebAppInitializer implements WebApplicationInitializer {
         //Spring Security Filter
         FilterRegistration.Dynamic securityFilter = sc.addFilter(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
         securityFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
-
     }
 }
