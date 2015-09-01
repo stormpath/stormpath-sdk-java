@@ -32,7 +32,7 @@ public class AuthenticationRequestDispatcher {
     public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request) {
         Assert.notNull(dataStore, "datastore cannot be null.");
         Assert.notNull(application, "application cannot be null.");
-        Assert.notNull(request, "application cannot be null.");
+        Assert.notNull(request, "request cannot be null.");
 
         if (request instanceof UsernamePasswordRequest) {
             return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
