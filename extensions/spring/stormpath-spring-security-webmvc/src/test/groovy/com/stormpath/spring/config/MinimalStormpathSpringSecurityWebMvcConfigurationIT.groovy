@@ -33,7 +33,7 @@ import static org.testng.Assert.assertNotNull
 /**
  * @since 1.0.RC5
  */
-@ContextConfiguration(classes = MinimalStormpathSpringSecurityWebMvcAppConfig.class)
+@ContextConfiguration(classes = [MinimalStormpathSpringSecurityWebMvcAppConfig.class, TwoAppTenantStormpathConfiguration.class])
 @WebAppConfiguration
 class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
 

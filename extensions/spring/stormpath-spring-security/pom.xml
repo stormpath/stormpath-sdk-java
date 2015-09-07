@@ -51,6 +51,11 @@
 
         <!-- Test dependencies: -->
         <dependency>
+            <groupId>com.stormpath.spring</groupId>
+            <artifactId>stormpath-spring</artifactId>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <scope>test</scope>
