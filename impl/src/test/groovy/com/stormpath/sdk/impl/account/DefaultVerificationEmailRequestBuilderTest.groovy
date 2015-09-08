@@ -60,6 +60,13 @@ class DefaultVerificationEmailRequestBuilderTest {
         assertSame request.getAccountStore(), dir
     }
 
+    @Test
+    void testAccountStoreNotSpecified() {
+        def requestBuilder = Applications.verificationEmailBuilder()
+        def request = requestBuilder.setLogin("myemail@mydomain.com").build()
+        assertNull request.getAccountStore()
+    }
+
     @Test(expectedExceptions = IllegalStateException)
     void testLoginNotSpecified() {
         def requestBuilder = Applications.verificationEmailBuilder();

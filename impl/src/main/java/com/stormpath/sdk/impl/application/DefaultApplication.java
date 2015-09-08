@@ -48,6 +48,7 @@ import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
+import com.stormpath.sdk.impl.account.DefaultPasswordResetToken;
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
@@ -261,19 +262,19 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
-    public Account sendPasswordResetEmail(String email) {
+    public PasswordResetToken sendPasswordResetEmail(String email) {
         PasswordResetToken token = createPasswordResetToken(email, null);
-        return token.getAccount();
+        return token;
     }
 
     @Override
-    public Account sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
+    public PasswordResetToken sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
         PasswordResetToken token = createPasswordResetToken(email, accountStore);
-        return token.getAccount();
+        return token;
     }
 
     private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {
-        PasswordResetToken passwordResetToken = getDataStore().instantiate(PasswordResetToken.class);
+        DefaultPasswordResetToken passwordResetToken = (DefaultPasswordResetToken) getDataStore().instantiate(PasswordResetToken.class);
         passwordResetToken.setEmail(email);
         if (accountStore != null) {
             passwordResetToken.setAccountStore(accountStore);
@@ -305,7 +306,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         String href = getPasswordResetTokensHref() + "/" + passwordResetToken;
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
         props.put("href", href);
-        PasswordResetToken instantiatedToken = getDataStore().instantiate(PasswordResetToken.class, props);
+        DefaultPasswordResetToken instantiatedToken = (DefaultPasswordResetToken) getDataStore().instantiate(PasswordResetToken.class, props);
         instantiatedToken.setPassword(newPassword);
         PasswordResetToken createdPasswordResetToken =
             getDataStore().create(href, instantiatedToken, PasswordResetToken.class);
@@ -356,8 +357,15 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 
+        char querySeparator = '?';
+
         if (request.isRegistrationWorkflowOptionSpecified()) {
-            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            href += querySeparator + "registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            querySeparator = '&';
+        }
+
+        if (request.isPasswordFormatSpecified()) {
+            href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
         }
 
         if (request.isAccountOptionsSpecified()) {
@@ -526,12 +534,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
+    @Deprecated
     public ApiAuthenticationResult authenticateApiRequest(Object httpRequest) {
         validateHttpRequest(httpRequest);
-        return new DefaultApiRequestAuthenticator(this, httpRequest).execute();
+        return new DefaultApiRequestAuthenticator(this, (HttpRequest) httpRequest).execute();
     }
 
     @Override
+    @Deprecated
     public OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
         if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
             throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);

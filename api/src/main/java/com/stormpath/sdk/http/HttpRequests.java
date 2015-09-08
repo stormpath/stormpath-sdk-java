@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.http;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 
 import java.lang.reflect.Constructor;
@@ -54,6 +55,8 @@ public final class HttpRequests {
      * @throws IllegalArgumentException if the method argument is {@code null}.
      */
     public static HttpRequestBuilder method(HttpMethod method) throws IllegalArgumentException {
+        Assert.notNull(method, "method argument is required.");
+
         Constructor<HttpRequestBuilder> ctor = Classes.getConstructor(HTTP_REQUEST_BUILDER, HttpMethod.class);
         return Classes.instantiate(ctor, method);
     }
