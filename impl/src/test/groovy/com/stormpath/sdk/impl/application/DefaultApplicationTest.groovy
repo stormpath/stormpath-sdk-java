@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.*
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
-import com.stormpath.sdk.application.AccountStoreMapping
-import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.UsernamePasswordRequest
@@ -87,12 +87,12 @@ class DefaultApplicationTest {
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("status") instanceof StatusProperty && propertyDescriptors.get("status").getType().equals(ApplicationStatus))
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
-        assertTrue(propertyDescriptors.get("defaultAccountStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultAccountStoreMapping").getType().equals(AccountStoreMapping))
-        assertTrue(propertyDescriptors.get("defaultGroupStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultGroupStoreMapping").getType().equals(AccountStoreMapping))
+        assertTrue(propertyDescriptors.get("defaultAccountStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultAccountStoreMapping").getType().equals(ApplicationAccountStoreMapping))
+        assertTrue(propertyDescriptors.get("defaultGroupStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultGroupStoreMapping").getType().equals(ApplicationAccountStoreMapping))
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("passwordResetTokens") instanceof CollectionReference && propertyDescriptors.get("passwordResetTokens").getType().equals(PasswordResetTokenList))
-        assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
+        assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(ApplicationAccountStoreMappingList))
         //since 1.0.0
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
     }
@@ -461,17 +461,17 @@ class DefaultApplicationTest {
         def dataStore = createStrictMock(InternalDataStore)
         def accountStore = createStrictMock(AccountStore)
         def group = createStrictMock(Group)
-        def accountStoreMappings = createStrictMock(AccountStoreMappingList)
+        def accountStoreMappings = createStrictMock(ApplicationAccountStoreMappingList)
         def iterator = createStrictMock(Iterator)
-        def accountStoreMapping = createStrictMock(AccountStoreMapping)
-        def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+        def accountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
+        def newAccountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
         def customData = new DefaultCustomData(dataStore)
         def requestExecutor = createStrictMock(RequestExecutor)
         def apiKey = createStrictMock(ApiKey)
         def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
 
         expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
-        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
+        expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
@@ -479,7 +479,7 @@ class DefaultApplicationTest {
         expect(accountStore.getHref()).andReturn(accountStoreHref)
         expect(group.getHref()).andReturn(groupHref)
         expect(iterator.hasNext()).andReturn(false)
-        expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
+        expect(dataStore.instantiate(ApplicationAccountStoreMapping)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setAccountStore(group)).andReturn(newAccountStoreMapping)
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
@@ -497,7 +497,7 @@ class DefaultApplicationTest {
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
-        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
+        expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
@@ -539,17 +539,17 @@ class DefaultApplicationTest {
         def dataStore = createStrictMock(InternalDataStore)
         def accountStore = createStrictMock(AccountStore)
         def group = createStrictMock(Group)
-        def accountStoreMappings = createStrictMock(AccountStoreMappingList)
+        def accountStoreMappings = createStrictMock(ApplicationAccountStoreMappingList)
         def iterator = createStrictMock(Iterator)
-        def accountStoreMapping = createStrictMock(AccountStoreMapping)
-        def newAccountStoreMapping = createStrictMock(AccountStoreMapping)
+        def accountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
+        def newAccountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
         def customData = new DefaultCustomData(dataStore)
         def requestExecutor = createStrictMock(RequestExecutor)
         def apiKey = createStrictMock(ApiKey)
         def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
 
         expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
-        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
+        expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)
@@ -557,7 +557,7 @@ class DefaultApplicationTest {
         expect(accountStore.getHref()).andReturn(accountStoreHref)
         expect(group.getHref()).andReturn(groupHref)
         expect(iterator.hasNext()).andReturn(false)
-        expect(dataStore.instantiate(AccountStoreMapping)).andReturn(newAccountStoreMapping)
+        expect(dataStore.instantiate(ApplicationAccountStoreMapping)).andReturn(newAccountStoreMapping)
         expect(newAccountStoreMapping.setAccountStore(group)).andReturn(newAccountStoreMapping)
 
         def newPropertiesState = new LinkedHashMap<String, Object>()
@@ -575,7 +575,7 @@ class DefaultApplicationTest {
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
         //Second execution
-        expect(dataStore.instantiate(AccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
+        expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
         expect(accountStoreMappings.iterator()).andReturn(iterator)
         expect(iterator.hasNext()).andReturn(true)
         expect(iterator.next()).andReturn(accountStoreMapping)

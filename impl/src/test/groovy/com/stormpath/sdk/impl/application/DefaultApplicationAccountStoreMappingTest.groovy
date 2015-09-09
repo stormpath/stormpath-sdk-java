@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.application
 
-import com.stormpath.sdk.application.AccountStoreMapping
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.Directory
@@ -31,25 +31,25 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 0.9
  */
-class DefaultAccountStoreMappingTest {
+class DefaultApplicationAccountStoreMappingTest {
 
     @Test
     void testAll() {
         def internalDataStore = createStrictMock(InternalDataStore)
 
-        DefaultAccountStoreMappingList resourceWithDS = new DefaultAccountStoreMappingList(internalDataStore)
-        DefaultAccountStoreMappingList resourceWithProps = new DefaultAccountStoreMappingList(internalDataStore, [href: "https://api.stormpath.com/v1/applications/werw84u2834wejofe/accountStoreMappings"])
-        DefaultAccountStoreMappingList resourceWithQueryString = new DefaultAccountStoreMappingList(internalDataStore, [href: "https://api.stormpath.com/v1/applications/werw84u2834wejofe/accountStoreMappings"], [q: "blah"])
+        DefaultApplicationAccountStoreMappingList resourceWithDS = new DefaultApplicationAccountStoreMappingList(internalDataStore)
+        DefaultApplicationAccountStoreMappingList resourceWithProps = new DefaultApplicationAccountStoreMappingList(internalDataStore, [href: "https://api.stormpath.com/v1/applications/werw84u2834wejofe/accountStoreMappings"])
+        DefaultApplicationAccountStoreMappingList resourceWithQueryString = new DefaultApplicationAccountStoreMappingList(internalDataStore, [href: "https://api.stormpath.com/v1/applications/werw84u2834wejofe/accountStoreMappings"], [q: "blah"])
 
-        assertTrue(resourceWithDS instanceof DefaultAccountStoreMappingList && resourceWithProps instanceof DefaultAccountStoreMappingList && resourceWithQueryString instanceof DefaultAccountStoreMappingList)
+        assertTrue(resourceWithDS instanceof DefaultApplicationAccountStoreMappingList && resourceWithProps instanceof DefaultApplicationAccountStoreMappingList && resourceWithQueryString instanceof DefaultApplicationAccountStoreMappingList)
 
-        assertEquals(resourceWithQueryString.getItemType(), AccountStoreMapping)
+        assertEquals(resourceWithQueryString.getItemType(), ApplicationAccountStoreMapping)
 
         def propertyDescriptors = resourceWithProps.getPropertyDescriptors()
 
         assertEquals(propertyDescriptors.size(), 3)
         assertTrue(propertyDescriptors.get("items") instanceof ArrayProperty && propertyDescriptors.get("offset") instanceof IntegerProperty && propertyDescriptors.get("limit") instanceof IntegerProperty)
-        assertEquals(propertyDescriptors.get("items").getType(), AccountStoreMapping)
+        assertEquals(propertyDescriptors.get("items").getType(), ApplicationAccountStoreMapping)
     }
 
     @Test
@@ -63,7 +63,7 @@ class DefaultAccountStoreMappingTest {
         def applicationHref = "https://api.stormpath.com/v1/applications/3TqbyZ2qo73eDM4gTp2H94"
 
 
-        AccountStoreMapping accountStoreMapping = new DefaultAccountStoreMapping(internalDataStore)
+        ApplicationAccountStoreMapping accountStoreMapping = new DefaultApplicationAccountStoreMapping(internalDataStore)
 
         expect(accountStore.getHref()).andReturn(accountStoreHref)
         expect(application.getHref()).andReturn(applicationHref)

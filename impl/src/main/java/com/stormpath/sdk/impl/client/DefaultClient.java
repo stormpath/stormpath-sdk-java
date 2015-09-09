@@ -38,6 +38,10 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -248,6 +252,46 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Organization createOrganization(Organization organization) {
+        return getCurrentTenant().createOrganization(organization);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationList getOrganizations() {
+        return getCurrentTenant().getOrganizations();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationList getOrganizations(Map<String, Object> queryParams) {
+        return getCurrentTenant().getOrganizations(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationList getOrganizations(OrganizationCriteria criteria) {
+        return getCurrentTenant().getOrganizations(criteria);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @since 1.0.RC
      */
     @Override
@@ -370,5 +414,15 @@ public class DefaultClient implements Client {
         Tenant current = this.dataStore.getResource(href, Tenant.class, tenantOptions);
         this.currentTenantHref = current.getHref();
         return current;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
+        return getCurrentTenant().createOrganizationAccountStoreMapping(mapping);
     }
 }

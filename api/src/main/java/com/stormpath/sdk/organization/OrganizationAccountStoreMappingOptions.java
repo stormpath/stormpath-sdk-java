@@ -18,27 +18,26 @@ package com.stormpath.sdk.organization;
 import com.stormpath.sdk.query.Options;
 
 /**
- * Organization-specific options that may be specified when retrieving {@link Organization} resources.
- *
- * @since 1.0.RC4.6
+ * OrganizationAccountStoreMapping-specific options that may be specified when retrieving {@link OrganizationAccountStoreMapping} resources.
+ * @param <T>
  */
-public interface OrganizationOptions<T extends OrganizationOptions> extends Options {
+public interface OrganizationAccountStoreMappingOptions<T> extends Options {
 
     /**
-     * Ensures that when retrieving an Organization, the Organization's {@link Organization#getCustomData() customData} is also
-     * retrieved in the same request. This enhances performance by leveraging a single request to retrieve multiple
-     * related resources you know you will use.
-     *
-     * @return this instance for method chaining.
-     */
-    T withCustomData();
-
-    /**
-     * Ensures that when retrieving the resource, the owning {@link com.stormpath.sdk.tenant.Tenant Tenant} is also
+     * Ensures that when retrieving an OrganizationAccountStoreMapping, the OrganizationAccountStoreMapping's {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#getOrganization() organization} is also
      * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
      * related resources you know you will use.
      *
      * @return this instance for method chaining.
      */
-    T withTenant();
+    T withOrganization();
+
+    /**
+     * Ensures that when retrieving an OrganizationAccountStoreMapping, the OrganizationAccountStoreMapping's {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#getAccountStore() accountStore} is also
+     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
+    T withAccountStore();
 }

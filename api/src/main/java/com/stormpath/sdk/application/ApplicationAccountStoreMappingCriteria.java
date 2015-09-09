@@ -19,10 +19,10 @@ import com.stormpath.sdk.query.Criteria;
 
 /**
  * An {@link AccountStoreMapping}-specific {@link Criteria} class, enabling an AccountStoreMapping-specific
- * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  AccountStoreMappingCriteria instances can be
- * constructed by using the {@link AccountStoreMappings} utility class, for example:
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  ApplicationAccountStoreMappingCriteria instances can be
+ * constructed by using the {@link ApplicationAccountStoreMappings} utility class, for example:
  * <pre>
- * AccountStoreMappings.where(AccountStoreMappings.listIndex().eq(4))
+ * ApplicationAccountStoreMappings.where(ApplicationAccountStoreMappings.listIndex().eq(4))
  *     .orderByListIndex().descending()
  *     .withAccountStore()
  *     .offsetBy(50)
@@ -41,15 +41,15 @@ import com.stormpath.sdk.query.Criteria;
  *
  * @since 0.9
  */
-public interface AccountStoreMappingCriteria extends Criteria<AccountStoreMappingCriteria>, AccountStoreMappingOptions<AccountStoreMappingCriteria> {
+public interface ApplicationAccountStoreMappingCriteria extends Criteria<ApplicationAccountStoreMappingCriteria>, ApplicationAccountStoreMappingOptions<ApplicationAccountStoreMappingCriteria> {
 
     /**
      * Ensures that the query results are ordered by {@link AccountStoreMapping#getListIndex() listIndex}.
      * <p/>
-     * Please see the {@link AccountStoreMappingCriteria class-level documentation} for controlling sort order (ascending or
+     * Please see the {@link ApplicationAccountStoreMappingCriteria class-level documentation} for controlling sort order (ascending or
      * descending) and chaining multiple {@code orderBy} clauses.
      *
      * @return this instance for method chaining
      */
-    AccountStoreMappingCriteria orderByListIndex();
+    ApplicationAccountStoreMappingCriteria orderByListIndex();
 }

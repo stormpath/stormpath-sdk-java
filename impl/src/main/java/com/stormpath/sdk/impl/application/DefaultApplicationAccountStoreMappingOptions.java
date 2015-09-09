@@ -15,21 +15,21 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.application.AccountStoreMappingOptions;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingOptions;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
  * @since 0.9
  */
-public class DefaultAccountStoreMappingOptions extends DefaultOptions<AccountStoreMappingOptions> implements AccountStoreMappingOptions<AccountStoreMappingOptions> {
+public class DefaultApplicationAccountStoreMappingOptions extends DefaultOptions<ApplicationAccountStoreMappingOptions> implements ApplicationAccountStoreMappingOptions<ApplicationAccountStoreMappingOptions> {
     @Override
-    public AccountStoreMappingOptions withApplication() {
-        return expand(DefaultAccountStoreMapping.APPLICATION);
+    public ApplicationAccountStoreMappingOptions withApplication() {
+        return expand(DefaultApplicationAccountStoreMapping.APPLICATION);
     }
 
     @Override
-    public AccountStoreMappingOptions withAccountStore() {
-        return expand(DefaultAccountStoreMapping.ACCOUNT_STORE);
+    public ApplicationAccountStoreMappingOptions withAccountStore() {
+        return expand(DefaultApplicationAccountStoreMapping.ACCOUNT_STORE);
     }
 
 }

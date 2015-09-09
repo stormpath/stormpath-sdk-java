@@ -46,6 +46,8 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.Organization;
 import java.util.Map;
 
 /**
@@ -518,18 +520,18 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
     ProviderAccountResult getAccount(ProviderAccountRequest request);
 
     /**
-     * Returns all AccountStoreMappings accessible to the application.
+     * Returns all ApplicationAccountStoreMappings accessible to the application.
      * <p/>
      * Tip: Instead of iterating over all accountStoreMappings, it might be more convenient (and practical) to execute
      * a search for one or more accountStoreMappings using the {@link #getAccountStoreMappings(java.util.Map)} method
-     * or the {@link #getAccountStoreMappings(AccountStoreMappingCriteria)} instead of this one.
+     * or the {@link #getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria)} instead of this one.
      *
-     * @return all AccountStoreMappings accessible to the application.
+     * @return all ApplicationAccountStoreMappings accessible to the application.
      * @see #getAccountStoreMappings(java.util.Map)
-     * @see #getAccountStoreMappings(AccountStoreMappingCriteria)
+     * @see #getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria)
      * @since 0.9
      */
-    AccountStoreMappingList getAccountStoreMappings();
+    ApplicationAccountStoreMappingList getAccountStoreMappings();
 
     /**
      * Returns a paginated list of the application's mapped Account stores
@@ -542,34 +544,34 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * </pre>
      * <p/>
      * This is a type-unsafe alternative to the
-     * {@link #getAccountStoreMappings(AccountStoreMappingCriteria) getAccountStoreMappings(accountStoreMappingCriteria)}
+     * {@link #getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria) getApplicationAccountStoreMappings(accountStoreMappingCriteria)}
      * method, and might be useful when using dynamic languages like Groovy or JRuby.  Users of compiled languages,
      * or those that like IDE-completion, might favor the type-safe method instead.
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the application's mapped account stores that match the specified query criteria.
-     * @see #getAccountStoreMappings(AccountStoreMappingCriteria)
+     * @see #getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria)
      * @since 0.9
      */
-    AccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
+    ApplicationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
 
     /**
      * Returns a paginated list of the application's mapped Account stores that also match the specified query
      * criteria.
-     * The {@link AccountStoreMappings AccountStoreMappings} utility class is available to help construct
+     * The {@link ApplicationAccountStoreMappings ApplicationAccountStoreMappings} utility class is available to help construct
      * the criteria DSL.  For example:
      * <pre>
-     * application.getAccountStoreMappings(AccountStoreMappings.criteria()
+     * application.getApplicationAccountStoreMappings(ApplicationAccountStoreMappings.criteria()
      *     .withAccountStore()
      *     .orderByListIndex();
      * </pre>
      * or, if using static imports:
      * <pre>
-     * import static com.stormpath.sdk.account.AccountStoreMappings.*;
+     * import static com.stormpath.sdk.account.ApplicationAccountStoreMappings.*;
      *
      * ...
      *
-     * application.getAccountStoreMappings(criteria()
+     * application.getApplicationAccountStoreMappings(criteria()
      *     .withAccountStore()
      *     .orderByListIndex();
      * </pre>
@@ -578,7 +580,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @return a paginated list of the application's mapped account stores that match the specified query criteria.
      * @since 0.9
      */
-    AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria);
+    ApplicationAccountStoreMappingList getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria);
 
     /**
      * Returns the {@link AccountStore} (either a {@link Group} or a
@@ -739,7 +741,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * the new fourth item will be at index 3).
      * <pre>
      * AccountStore directoryOrGroup = getDirectoryOrGroupYouWantToUseForLogin();
-     * AccountStoreMapping mapping = client.instantiate(AccountStoreMapping.class);
+     * ApplicationAccountStoreMapping mapping = client.instantiate(ApplicationAccountStoreMapping.class);
      * mapping.setAccountStore(directoryOrGroup);
      * mapping.setListIndex(3); //this is zero-based, so index 3 == 4th item
      * mapping = application.createAccountStoreMapping(mapping);
@@ -751,30 +753,30 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * If {@link #createAccount }
      *
      * @param mapping the new AccountStoreMapping resource to add to the Application's AccountStoreMapping list.
-     * @return the newly created AccountStoreMapping instance.
+     * @return the newly created ApplicationAccountStoreMapping instance.
      * @throws ResourceException
      * @since 0.9
      */
-    AccountStoreMapping createAccountStoreMapping(AccountStoreMapping mapping) throws ResourceException;
+    ApplicationAccountStoreMapping createAccountStoreMapping(ApplicationAccountStoreMapping mapping) throws ResourceException;
 
     /**
-     * Creates a new {@link AccountStoreMapping} for this Application and appends that
-     * AccountStoreMapping to the end of the Application's AccountStoreMapping list, allowing the associated
-     * {@link AccountStoreMapping#getAccountStore() accountStore} to be used as a source
+     * Creates a new {@link ApplicationAccountStoreMapping} for this Application and appends that
+     * ApplicationAccountStoreMapping to the end of the Application's ApplicationAccountStoreMapping list, allowing the associated
+     * {@link ApplicationAccountStoreMapping#getAccountStore() accountStore} to be used as a source
      * of accounts that may login to the Application.
      * <p/>
      * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
      * persist changes, this is a convenience method will call the server immediately.
-     * <h3>Authentication Process and AccountStoreMapping Order</h3>
+     * <h3>Authentication Process and ApplicationAccountStoreMapping Order</h3>
      * During an authentication attempt, an Application consults its mapped account stores in <em>iteration order</em>,
-     * trying to find the first matching account to use for authentication.  The lower the {@code AccountStoreMapping}
+     * trying to find the first matching account to use for authentication.  The lower the {@code ApplicationAccountStoreMapping}
      * index (closer to zero), the earlier that store is consulted during authentication.  If no matching account is
      * found in an account store, the application will move on to the next {@code AccountStore} (next highest index)
      * in the list.  This continues either a matching account is found, or until all account stores are exhausted.
      * When a matching account is found, the process is short-circuited and the discovered account will be used
      * immediately for authentication.
      * <p/>
-     * When calling this method, you are setting the new {@code AccountStoreMapping} to the end of the Application's
+     * When calling this method, you are setting the new {@code ApplicationAccountStoreMapping} to the end of the Application's
      * overall list.
      * <p/>
      * NOTE: If you already know the account store where the account resides, you can
@@ -786,18 +788,18 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * <h4>Example</h4>
      * <pre>
      * AccountStore directoryOrGroup = getDirectoryOrGroupYouWantToUseForLogin();
-     * AccountStoreMapping mapping = application.addAccountStore(directoryOrGroup);
+     * ApplicationAccountStoreMapping mapping = application.addAccountStore(directoryOrGroup);
      * </pre>
      * Then, when {@link #authenticateAccount(com.stormpath.sdk.authc.AuthenticationRequest) authenticating} an
      * account, this AccountStore (directory or group) will be consulted if no others before it in the list
      * found a matching account.
      *
-     * @param accountStore the new AccountStore resource to add to the Application's AccountStoreMapping list.
-     * @return the newly created AccountStoreMapping instance.
+     * @param accountStore the new AccountStore resource to add to the Application's ApplicationAccountStoreMapping list.
+     * @return the newly created ApplicationAccountStoreMapping instance.
      * @throws ResourceException
      * @since 0.9
      */
-    AccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException;
+    ApplicationAccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException;
 
     /**
      * Gets an {@link ApiKey}, by its id, that belongs to an {@link Account} that has access to this application by a
@@ -1356,18 +1358,18 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * if there are two resources (a Directory and a Group) matching that name, a {@link com.stormpath.sdk.resource.ResourceException ResourceException}
      * will be thrown.
      * <p/>
-     * At the end of this process, if a single matching resource is found, this method will then delegate the actual {@link AccountStoreMapping}
+     * At the end of this process, if a single matching resource is found, this method will then delegate the actual {@link ApplicationAccountStoreMapping}
      * creation to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
      * </p>
      * Example providing an href:
      * <p/>
      * <pre>
-     *      AccountStoreMapping accountStoreMapping = application.addAccountStore("https://api.stormpath.com/v1/groups/2rwq022yMt4u2DwKLfzriP");
+     *      ApplicationAccountStoreMapping accountStoreMapping = application.addAccountStore("https://api.stormpath.com/v1/groups/2rwq022yMt4u2DwKLfzriP");
      * </pre>
      * Example providing a name:
      * <p/>
      * <pre>
-     *      AccountStoreMapping accountStoreMapping = application.addAccountStore("Foo Name");
+     *      ApplicationAccountStoreMapping accountStoreMapping = application.addAccountStore("Foo Name");
      * </pre>
      * <b>USAGE NOTE 1:</b> When using 'names' this method is not efficient as it will search for both Directories and Groups within this Tenant
      * for a matching name. In order to do so, some looping takes place at the client side: groups exist within directories, therefore we need
@@ -1378,7 +1380,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * persist changes, this is a convenience method and will call the server immediately.
      *
      * @param hrefOrName either the 'href' or the 'name' of the desired Directory or Group.
-     * @return the {@link AccountStoreMapping} created after finding the actual resource described by <code>hrefOrName</code>. It returns
+     * @return the {@link ApplicationAccountStoreMapping} created after finding the actual resource described by <code>hrefOrName</code>. It returns
      * <code>null</code> if there is no group or directory matching the href or name given.
      * @throws ResourceException if the resource already exists as an account store in this application.
      * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
@@ -1386,7 +1388,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @see #addAccountStore(com.stormpath.sdk.group.GroupCriteria)
      * @since 1.0.RC3
      */
-    AccountStoreMapping addAccountStore(String hrefOrName);
+    ApplicationAccountStoreMapping addAccountStore(String hrefOrName);
 
     /**
      * Convenience method to add a new {@link Directory} as an {@link AccountStore} to this application.
@@ -1395,27 +1397,56 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * Directory matches the criteria, an {@link IllegalArgumentException} will be thrown. If no Directory matches the criteria,
      * this method will return <code>null</code>.
      * <p/>
-     * When a single Directory is found, this method will then delegate the actual {@link AccountStoreMapping} creation
+     * When a single Directory is found, this method will then delegate the actual {@link ApplicationAccountStoreMapping} creation
      * to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
      * </p>
      * Example:
      * <p/>
      * <pre>
      *      DirectoryCriteria criteria = Directories.criteria().add(Directories.name().eqIgnoreCase("Foo Dir Name"));
-     *      AccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
+     *      ApplicationAccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
      * </pre>
      * <p/>
      * <b>USAGE NOTE 1:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
      * persist changes, this is a convenience method and will call the server immediately.
      *
      * @param criteria to search for the desired {@link Directory} to be added as an {@link AccountStore}.
-     * @return the {@link AccountStoreMapping} created after finding the actual resource matching the criteria. It returns
+     * @return the {@link ApplicationAccountStoreMapping} created after finding the actual resource matching the criteria. It returns
      * <code>null</code> if there is no Directory matching the criteria.
      * @throws ResourceException if the found {@link Directory} already exists as an account store in this application.
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
      * @since 1.0.RC3
      */
-    AccountStoreMapping addAccountStore(DirectoryCriteria criteria);
+    ApplicationAccountStoreMapping addAccountStore(DirectoryCriteria criteria);
+
+    /**
+     * Convenience method to add a new {@link Organization} as an {@link AccountStore} to this application.
+     * <p/>
+     * The provided {@link OrganizationCriteria} must match a single {@link Organization} in the current Tenant. If more than one
+     * Organization matches the criteria, an {@link IllegalArgumentException} will be thrown. If no Organization matches the criteria,
+     * this method will return <code>null</code>.
+     * <p/>
+     * When a single Organization is found, this method will then delegate the actual {@link ApplicationAccountStoreMapping} creation
+     * to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
+     * </p>
+     * Example:
+     * <p/>
+     * <pre>
+     *      OrganizationCriteria criteria = Organizations.criteria().add(Organizations.name().eqIgnoreCase("Org Name"));
+     *      ApplicationAccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
+     * </pre>
+     * <p/>
+     * <b>USAGE NOTE 1:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
+     *
+     * @param criteria to search for the desired {@link Organization} to be added as an {@link AccountStore}.
+     * @return the {@link ApplicationAccountStoreMapping} created after finding the actual resource matching the criteria. It returns
+     * <code>null</code> if there is no Organization matching the criteria.
+     * @throws ResourceException if the found {@link Organization} already exists as an account store in this application.
+     * @throws IllegalArgumentException if the criteria matches more than one Organization in the current Tenant.
+     * @since 1.0.RC4.6
+     */
+    ApplicationAccountStoreMapping addAccountStore(OrganizationCriteria criteria);
 
     /**
      * Convenience method to add a new {@link Group} as an {@link AccountStore} to this application.
@@ -1424,14 +1455,14 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * Group matches the criteria, an {@link IllegalArgumentException} will be thrown. If no Group matches the criteria,
      * this method will return <code>null</code>.
      * <p/>
-     * When a single Group is found, this method will then delegate the actual {@link AccountStoreMapping} creation
+     * When a single Group is found, this method will then delegate the actual {@link ApplicationAccountStoreMapping} creation
      * to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
      * </p>
      * Example:
      * <p/>
      * <pre>
      *      GroupCriteria criteria = Groups.criteria().add(Groups.name().containsIgnoreCase("Foo Group Name"));
-     *      AccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
+     *      ApplicationAccountStoreMapping accountStoreMapping = application.addAccountStore(criteria);
      * </pre>
      * <p/>
      * <b>USAGE NOTE 1:</b> This method is not efficient as it will search for every Group within every Directory of this Tenant.
@@ -1444,14 +1475,14 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * persist changes, this is a convenience method and will call the server immediately.
      *
      * @param criteria to search for the desired {@link Group} to be added as an {@link AccountStore}.
-     * @return the {@link AccountStoreMapping} created after finding the actual resource matching the criteria. It returns
+     * @return the {@link ApplicationAccountStoreMapping} created after finding the actual resource matching the criteria. It returns
      * <code>null</code> if there is no Group matching the criteria.
      * @throws ResourceException if the found {@link Group} already exists as an account store in this application.
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
      * @see #addAccountStore(String)
      * @since 1.0.RC3
      */
-    AccountStoreMapping addAccountStore(GroupCriteria criteria);
+    ApplicationAccountStoreMapping addAccountStore(GroupCriteria criteria);
 
     /**
      * Saves this {@link Application} resource and ensures the returned {@link Application} response reflects the specified options.  This

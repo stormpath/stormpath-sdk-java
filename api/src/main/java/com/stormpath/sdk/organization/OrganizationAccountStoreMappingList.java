@@ -13,22 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.organization;
+package com.stormpath.sdk.organization;
 
-import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.organization.OrganizationOptions;
+import com.stormpath.sdk.resource.CollectionResource;
 
 /**
+ * A {@link CollectionResource} containing {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping} instances.
  * @since 1.0.RC4.6
  */
-public class DefaultOrganizationOptions extends DefaultOptions<OrganizationOptions> implements OrganizationOptions {
-
-    public OrganizationOptions withTenant() {
-        return expand(DefaultOrganization.TENANT);
-    }
-
-    @Override
-    public OrganizationOptions withCustomData() {
-        return expand(DefaultOrganization.CUSTOM_DATA);
-    }
+public interface OrganizationAccountStoreMappingList extends CollectionResource<OrganizationAccountStoreMapping> {
 }

@@ -26,6 +26,7 @@ import com.stormpath.sdk.impl.resource.BooleanProperty;
 import com.stormpath.sdk.impl.resource.IntegerProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.organization.Organization;
 
 import java.util.Map;
 
@@ -40,11 +41,10 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
     static final BooleanProperty DEFAULT_GROUP_STORE = new BooleanProperty("isDefaultGroupStore");
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class);
     static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            LIST_INDEX, DEFAULT_ACCOUNT_STORE, DEFAULT_GROUP_STORE, APPLICATION, ACCOUNT_STORE);
+            LIST_INDEX, DEFAULT_ACCOUNT_STORE, DEFAULT_GROUP_STORE, ACCOUNT_STORE);
 
     public DefaultAccountStoreMapping(InternalDataStore dataStore) {
         super(dataStore);
@@ -60,17 +60,6 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
     }
 
     @Override
-    public Application getApplication() {
-        return getResourceProperty(APPLICATION);
-    }
-
-    @Override
-    public AccountStoreMapping setApplication(Application application) {
-        setResourceProperty(APPLICATION, application);
-        return this;
-    }
-
-    @Override
     public AccountStore getAccountStore() {
     // Unfortunately we cannot just call getResourceProperty(ACCOUNT_STORE) because there is no DefaultAccountStore class.
     // The href will tell us what we need to return and works since directories and groups are subclasses of AccountStore.
@@ -80,6 +69,8 @@ public class DefaultAccountStoreMapping extends AbstractInstanceResource impleme
             accountStore = getDataStore().getResource(href, Directory.class);
         } else if (href.contains("groups")) {
             accountStore = getDataStore().getResource(href, Group.class);
+        } else if (href.contains("organizations")){
+            accountStore = getDataStore().getResource(href, Organization.class);
         }
         return accountStore;
     }
