@@ -39,6 +39,8 @@ import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.organization.Organization
+import com.stormpath.sdk.organization.OrganizationList
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.provider.Providers
 import org.easymock.IArgumentMatcher
@@ -62,7 +64,7 @@ class DefaultTenantTest {
 
         def propertyDescriptors = defaultTenant.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 8)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
@@ -71,6 +73,7 @@ class DefaultTenantTest {
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
+        assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
     }
 
     @Test
@@ -94,6 +97,32 @@ class DefaultTenantTest {
         assertEquals(defaultTenant.createDirectory(directory), returnedDirectory)
 
         verify internalDataStore, directory, returnedDirectory
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testCreateOrganization() {
+
+        def properties = [ href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE",
+                applications: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/applications"],
+                organizations: [href: "https://api.stormpath.com/v1/tenants/jaef0wq38ruojoiadE/organizations"]]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def organization = createStrictMock(Organization)
+        def returnedOrganization = createStrictMock(Organization)
+
+        def defaultTenant = new DefaultTenant(internalDataStore, properties)
+
+        expect(internalDataStore.create("/organizations", organization)).andReturn(returnedOrganization)
+
+        replay internalDataStore, organization, returnedOrganization
+
+        assertEquals(defaultTenant.createOrganization(organization), returnedOrganization)
+
+        verify internalDataStore, organization, returnedOrganization
     }
 
     @Test

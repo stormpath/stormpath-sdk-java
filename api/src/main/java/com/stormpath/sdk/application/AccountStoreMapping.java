@@ -19,24 +19,25 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.organization.Organization;
 
 /**
  * An {@code AccountStoreMapping} represents the assignment of an
  * {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
- * {@link com.stormpath.sdk.directory.Directory Directory}) to an {@link Application}.
+ * {@link com.stormpath.sdk.directory.Directory Directory}) to an {@link Application} or {@link Organization}
  * <p/>
  * When an {@code AccountStoreMapping} is created, the accounts in the account store are granted access to (become users
- * of) the linked {@code Application}.  The {@link #getListIndex() order} in which {@code AccountStore}s are assigned
- * to an application determines <a href="http://docs.stormpath.com/rest/product-guide/#account-store-mappings">how
+ * of) the linked {@code Application} or {@code Organization}.  The {@link #getListIndex() order} in which {@code AccountStore}s are assigned
+ * to an application/organization determines <a href="http://docs.stormpath.com/rest/product-guide/#account-store-mappings">how
  * login attempts work in Stormpath</a>.
  * <h2>Default Account Store</h2>
- * Additionally, an {@code AccountStoreMapping} may be designated as the Application's
- * {@link #isDefaultAccountStore() defaultAccountStore}.  This causes any accounts created directly by the application
- * to be dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
+ * Additionally, an {@code AccountStoreMapping} may be designated as the {@link #isDefaultAccountStore() defaultAccountStore}.
+ * This causes any accounts created directly by the application/organization
+ * to be dispatched to and saved in the associated {@code AccountStore}, since Applications and Organizations cannot store accounts
  * directly.
  * <h2>Default Group Store</h2>
- * Similarly, an {@code AccountStoreMapping} may be designated as the Application's
- * {@link #isDefaultGroupStore() defaultGroupStore}.  This causes any groups created directly by the application
+ * Similarly, an {@code AccountStoreMapping} may be designated as the {@link #isDefaultGroupStore() defaultGroupStore}.
+ * This causes any groups created directly by the application/organization
  * to be dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store groups
  * directly.
  * <b>Note:</b> A Group cannot store other Groups.  Therefore, the default group store must be a
@@ -46,21 +47,6 @@ import com.stormpath.sdk.resource.Saveable;
  * @since 0.9
  */
 public interface AccountStoreMapping extends Resource, Saveable, Deletable {
-
-    /**
-     * Returns the Application represented by this {@code AccountStoreMapping} resource.
-     *
-     * @return the Application represented by this {@code AccountStoreMapping} resource.
-     */
-    Application getApplication();
-
-    /**
-     * Sets the Application represented by this {@code AccountStoreMapping} resource.
-     *
-     * @param application the Application represented by this {@code AccountStoreMapping} resource.
-     * @return this instance for method chaining.
-     */
-    AccountStoreMapping setApplication(Application application);
 
     /**
      * Returns this mapping's {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
@@ -82,7 +68,7 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
 
     /**
      * Returns the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
-     * by the linked {@link #getApplication()} during an account authentication attempt.
+     * by the linked Application or Organization during an account authentication attempt.
      * <p/>
      * The lower the index, the higher precedence - the earlier it will be accessed - during an authentication attempt.
      * The higher the index, the lower the precedence - the later it will be accessed - during an authentication attempt.
@@ -90,17 +76,17 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      * See the {@link #setListIndex(int) setListIndex} JavaDoc for more information.
      *
      * @return the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
-     *         by the linked {@link #getApplication()} during an account authentication attempt.
+     *         by the linked Organization or Application during an account authentication attempt.
      * @see #setListIndex(int)
      */
     int getListIndex();
 
     /**
      * Updates the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
-     * by the linked {@link #getApplication()} during an account authentication attempt.
+     * by the linked Organization or Application during an account authentication attempt.
      * <p/>
      * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
-     * other AccountStoreMappings.</b>
+     * other ApplicationAccountStoreMappings.</b>
      * <p/>
      * <h3>Authentication Process and AccountStoreMapping Order</h3>
      * During an authentication attempt, an Application consults its mapped account stores in <em>iteration order</em>,
@@ -137,57 +123,57 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
 
     /**
      * Returns {@code true} if the associated {@link #getAccountStore() accountStore} is designated as the
-     * {@link #getApplication() application}'s default account store, {@code false} otherwise.
+     * Organization's or Application's default account store, {@code false} otherwise.
      * <p/>
      * A {@code true} value indicates that any accounts created directly by the application will be
      * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
      * directly.
      *
      * @return {@code true} if the associated {@link #getAccountStore() accountStore} is designated as the
-     *         {@link #getApplication() application}'s default account store, {@code false} otherwise.
+     *         Organization's or Application's default account store, {@code false} otherwise.
      */
     boolean isDefaultAccountStore();
 
     /**
      * Sets whether or not the associated {@link #getAccountStore() accountStore} is designated as the
-     * {@link #getApplication() application}'s default account store.
+     * Organization's or Application's default account store.
      * <p/>
      * A {@code true} value indicates that any accounts created directly by the application will be
      * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
      * directly.
      * <p/>
      * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
-     * other AccountStoreMappings.</b>
+     * other ApplicationAccountStoreMappings.</b>
      *
      * @param defaultAccountStore whether or not the associated {@link #getAccountStore() accountStore} is designated
-     *                            as the {@link #getApplication() application}'s default account store.
+     *                            as the Organization's or Application's default account store.
      * @return this instance for method chaining.
      */
     AccountStoreMapping setDefaultAccountStore(boolean defaultAccountStore);
 
     /**
      * Returns {@code true} if the associated {@link #getAccountStore() accountStore} is designated as the
-     * {@link #getApplication() application}'s default <b>group</b> store, {@code false} otherwise.
+     * Organization's or Application's default <b>group</b> store, {@code false} otherwise.
      * <p/>
      * A {@code true} value indicates that any groups created directly by the application will be
      * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
      * directly.
      *
      * @return {@code true} if the associated {@link #getAccountStore() accountStore} is designated as the
-     *         {@link #getApplication() application}'s default group store, {@code false} otherwise.
+     *         Organization's or Application's default group store, {@code false} otherwise.
      */
     boolean isDefaultGroupStore();
 
     /**
      * Sets whether or not the associated {@link #getAccountStore() accountStore} is designated as the
-     * {@link #getApplication() application}'s default <b>group</b> store.
+     * Organization's or Application's default <b>group</b> store.
      * <p/>
      * A {@code true} value indicates that any groups created directly by the application will be
      * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
      * directly.
      * <p/>
      * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
-     * other AccountStoreMappings.</b>
+     * other ApplicationAccountStoreMappings.</b>
      * <h3>Directory Only</h3>
      * Stormpath currently only supports Directories (not Groups) as a group store.  Attempting to set this value to
      * {@code true} if the associated {@link #getAccountStore() accountStore} is a Group and then calling
@@ -195,7 +181,7 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      *
      *
      * @param defaultGroupStore {@code true} if the associated {@link #getAccountStore() accountStore} is designated as
-     *                          the {@link #getApplication() application}'s default group store, {@code false} otherwise.
+     *                          the Organization's or Application's default group store, {@code false} otherwise.
      * @return this instance for method chaining.
      */
     AccountStoreMapping setDefaultGroupStore(boolean defaultGroupStore);

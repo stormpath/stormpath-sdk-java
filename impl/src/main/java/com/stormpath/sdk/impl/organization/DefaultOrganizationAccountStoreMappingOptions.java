@@ -16,19 +16,18 @@
 package com.stormpath.sdk.impl.organization;
 
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.organization.OrganizationOptions;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMappingOptions;
 
-/**
- * @since 1.0.RC4.6
- */
-public class DefaultOrganizationOptions extends DefaultOptions<OrganizationOptions> implements OrganizationOptions {
-
-    public OrganizationOptions withTenant() {
-        return expand(DefaultOrganization.TENANT);
-    }
+public class DefaultOrganizationAccountStoreMappingOptions extends DefaultOptions<OrganizationAccountStoreMappingOptions>
+        implements OrganizationAccountStoreMappingOptions<OrganizationAccountStoreMappingOptions> {
 
     @Override
-    public OrganizationOptions withCustomData() {
-        return expand(DefaultOrganization.CUSTOM_DATA);
+    public OrganizationAccountStoreMappingOptions withOrganization() {
+        return expand(DefaultOrganizationAccountStoreMapping.ORGANIZATION);
     }
+
+//    @Override
+//    public OrganizationAccountStoreMappingOptions withAccountStore() {
+//        return expand(DefaultOrganizationAccountStoreMapping.ACCOUNT_STORE);
+//    }
 }

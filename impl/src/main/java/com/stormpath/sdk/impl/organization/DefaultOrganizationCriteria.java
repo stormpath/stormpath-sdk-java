@@ -50,42 +50,6 @@ public class DefaultOrganizationCriteria extends DefaultCriteria<OrganizationCri
     }
 
     @Override
-    public OrganizationCriteria withAccounts() {
-        getOptions().withAccounts();
-        return this;
-    }
-
-    @Override
-    public OrganizationCriteria withAccounts(int limit) {
-        getOptions().withAccounts(limit);
-        return this;
-    }
-
-    @Override
-    public OrganizationCriteria withAccounts(int limit, int offset) {
-        getOptions().withAccounts(limit, offset);
-        return this;
-    }
-
-    @Override
-    public OrganizationCriteria withGroups() {
-        getOptions().withGroups();
-        return this;
-    }
-
-    @Override
-    public OrganizationCriteria withGroups(int limit) {
-        getOptions().withGroups(limit);
-        return this;
-    }
-
-    @Override
-    public OrganizationCriteria withGroups(int limit, int offset) {
-        getOptions().withGroups(limit, offset);
-        return this;
-    }
-
-    @Override
     public OrganizationCriteria withTenant() {
         getOptions().withTenant();
         return this;

@@ -108,4 +108,22 @@ public class DefaultTenantCriteria extends DefaultCriteria<TenantCriteria, Tenan
         getOptions().withGroups(limit, offset);
         return this;
     }
+
+    @Override
+    public TenantCriteria withOrganizations() {
+        getOptions().withOrganizations();
+        return this;
+    }
+
+    @Override
+    public TenantCriteria withOrganizations(int limit) {
+        getOptions().withOrganizations(limit);
+        return this;
+    }
+
+    @Override
+    public TenantCriteria withOrganizations(int limit, int offset) {
+        getOptions().withOrganizations(limit, offset);
+        return this;
+    }
 }

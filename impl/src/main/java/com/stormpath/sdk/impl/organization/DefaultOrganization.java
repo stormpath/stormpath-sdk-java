@@ -52,18 +52,12 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
             new ResourceReference<OrganizationAccountStoreMapping>("defaultGroupStoreMapping", OrganizationAccountStoreMapping.class);
 
     // COLLECTION RESOURCE REFERENCES:
-    static final CollectionReference<AccountList, Account> ACCOUNTS =
-            new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
-    static final CollectionReference<DirectoryList, Directory> DIRECTORIES =
-            new CollectionReference<DirectoryList, Directory>("directories", DirectoryList.class, Directory.class);
-    static final CollectionReference<GroupList, Group> GROUPS =
-            new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
     static final CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping> ACCOUNT_STORE_MAPPINGS =
-            new CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping>("organizationAccountStoreMappings", OrganizationAccountStoreMappingList.class, OrganizationAccountStoreMapping.class);
+            new CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping>("accountStoreMappings", OrganizationAccountStoreMappingList.class, OrganizationAccountStoreMapping.class);
 
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, NAME_KEY, STATUS, TENANT, CUSTOM_DATA, DIRECTORIES, GROUPS, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNT_STORE_MAPPINGS, ACCOUNTS);
+            NAME, DESCRIPTION, NAME_KEY, STATUS, TENANT, CUSTOM_DATA, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNT_STORE_MAPPINGS);
 
     public DefaultOrganization(InternalDataStore dataStore) {
         super(dataStore);
@@ -129,40 +123,6 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     @Override
     public void delete() {
         getDataStore().delete(this);
-    }
-
-    @Override
-    public GroupList getGroups() {
-        return getResourceProperty(GROUPS);
-    }
-
-    @Override
-    public GroupList getGroups(Map<String, Object> queryParams) {
-        GroupList list = getGroups(); // obtains the href: no query is executed until iteration occurs
-        return getDataStore().getResource(list.getHref(), GroupList.class, queryParams);
-    }
-
-    @Override
-    public GroupList getGroups(GroupCriteria criteria) {
-        GroupList list = getGroups(); // obtains the href: no query is executed until iteration occurs
-        return getDataStore().getResource(list.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
-    }
-
-    @Override
-    public DirectoryList getDirectories() {
-        return getResourceProperty(DIRECTORIES);
-    }
-
-    @Override
-    public DirectoryList getDirectories(Map<String, Object> queryParams) {
-        DirectoryList list = getDirectories(); // obtains the href: no query is executed until iteration occurs
-        return getDataStore().getResource(list.getHref(), DirectoryList.class, queryParams);
-    }
-
-    @Override
-    public DirectoryList getDirectories(DirectoryCriteria criteria) {
-        DirectoryList list = getDirectories(); // obtains the href: no query is executed until iteration occurs
-        return getDataStore().getResource(list.getHref(), DirectoryList.class, (Criteria<DirectoryCriteria>) criteria);
     }
 
     @Override
@@ -240,7 +200,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
 
     @Override
     public OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
-        return getDataStore().create("/" + ACCOUNT_STORE_MAPPINGS.getName(), mapping);
+        return getDataStore().create("/organizationAccountStoreMappings", mapping);
     }
 
     @Override
@@ -254,79 +214,100 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     }
 
     @Override
-    public Group createGroup(Group group) throws ResourceException {
-        Assert.notNull(group, "Group instance cannot be null.");
-        CreateGroupRequest request = Groups.newCreateRequestFor(group).build();
-        return createGroup(request);
-    }
-
-    @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT);
     }
 
     @Override
-    public Group createGroup(CreateGroupRequest request) {
-        Assert.notNull(request, "Request cannot be null.");
-
-        final Group group = request.getGroup();
-        String href = getGroups().getHref();
-
-        if (request.isGroupOptionsSpecified()) {
-            return getDataStore().create(href, group, request.getGroupOptions());
-        }
-        return getDataStore().create(href, group);
-    }
-
-    public Account createAccount(Account account) {
-        Assert.notNull(account, "Account instance cannot be null.");
-        CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
-        return createAccount(request);
-    }
-
-    @Override
-    public AccountList getAccounts() {
-        return getResourceProperty(ACCOUNTS);
-    }
-
-    @Override
-    public AccountList getAccounts(Map<String, Object> queryParams) {
-        AccountList list = getAccounts(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
-    }
-
-    @Override
-    public AccountList getAccounts(AccountCriteria criteria) {
-        AccountList list = getAccounts();  //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
-    }
-
-    @Override
-    public Account createAccount(CreateAccountRequest request) {
-        Assert.notNull(request, "Request cannot be null.");
-        final Account account = request.getAccount();
-        String href = getAccounts().getHref();
-
-        char querySeparator = '?';
-
-        if (request.isRegistrationWorkflowOptionSpecified()) {
-            href += querySeparator + "registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
-            querySeparator = '&';
-        }
-
-        if (request.isPasswordFormatSpecified()) {
-            href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
-        }
-
-        if (request.isAccountOptionsSpecified()) {
-            return getDataStore().create(href, account, request.getAccountOptions());
-        }
-
-        return getDataStore().create(href, account);
-    }
-
-    @Override
     public void accept(AccountStoreVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public OrganizationAccountStoreMapping addAccountStore(String hrefOrName) {
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
+        AccountStore accountStore = null;
+
+        //Let's check if hrefOrName looks like an href. If so, we will also identify whether it refers to directory or a group
+        String[] splitHrefOrName = hrefOrName.split("/");
+        if (splitHrefOrName.length > 4) {
+            Class<? extends AccountStore> accountStoreType = null;
+            String[] splitApplicationHref = getHref().split("/");
+            if (splitHrefOrName.length == splitApplicationHref.length) {
+                if (splitHrefOrName[4].equals("directories")) {
+                    accountStoreType = Directory.class;
+                } else if (splitHrefOrName[4].equals("groups")) {
+                    accountStoreType = Group.class;
+                }
+            }
+            if (accountStoreType != null) {
+                try {
+                    //Let's check if the provided value is an actual href for an existent resource
+                    accountStore = getDataStore().getResource(hrefOrName, accountStoreType);
+                } catch (ResourceException e) {
+                    //Although hrefOrName seemed to be an actual href value no Resource was found in the backend. So maybe
+                    //this is actually a name rather than an href. Let's try to find a resource by name now...
+                }
+            }
+        }
+        if (accountStore == null) {
+            //Let's try to find both a Directory and a Group with the given name
+            Directory directory = getSingleTenantDirectory(Directories.where(Directories.name().eqIgnoreCase(hrefOrName)));
+            Group group = getSingleTenantGroup(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
+            if (directory != null && group != null) {
+                //The provided criteria matched more than one Groups in the tenant, we will throw
+                throw new IllegalArgumentException("There are both a Directory and a Group matching the provided name in the current tenant. " +
+                        "Please provide the href of the intended Resource instead of its name in order to univocally identify it.");
+            }
+            accountStore = (directory != null) ? directory : group;
+        }
+        if(accountStore != null) {
+            return addAccountStore(accountStore);
+        }
+        //We could not find any resource matching the hrefOrName value; we return null
+        return null;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     */
+    private Directory getSingleTenantDirectory(DirectoryCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        DirectoryList directories = tenant.getDirectories(criteria);
+
+        Directory foundDirectory = null;
+        for (Directory dir : directories) {
+            if (foundDirectory != null) {
+                //The provided criteria matched more than one Directory in the tenant, we will throw
+                throw new IllegalArgumentException("The provided criteria matched more than one Directory in the current Tenant.");
+            }
+            foundDirectory = dir;
+        }
+        return foundDirectory;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * */
+    private Group getSingleTenantGroup(GroupCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        DirectoryList directories = tenant.getDirectories();
+        Group foundGroup = null;
+        for (Directory directory : directories) {
+            GroupList groups = directory.getGroups(criteria);
+            //There cannot be more than one group with the same name in a single tenant. Thus, the group list will have either
+            //zero or one items, never more.
+            for (Group grp : groups) {
+                if(foundGroup != null) {
+                    //The provided criteria matched more than one Groups in the tenant, we will throw
+                    throw new IllegalArgumentException("The provided criteria matched more than one Group in the current Tenant.");
+                }
+                foundGroup = grp;
+            }
+        }
+        return foundGroup;
     }
 }

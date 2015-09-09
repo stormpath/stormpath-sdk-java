@@ -28,6 +28,10 @@ import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Map;
@@ -152,6 +156,70 @@ public interface TenantActions {
      * @since 0.9.0
      */
     Directory createDirectory(Directory directory);
+
+    /**
+     * This method creates a new Organization resource in the Tenant.
+     * <p/>
+     * This method creates a natively hosted organization in Stormpath.
+     *
+     * @param organization the Organization resource to create.
+     * @return the organization created.
+     * @throws ResourceException if there was a problem creating the organization.
+     * @since 1.0.RC4.6
+     */
+    Organization createOrganization(Organization organization);
+
+    /**
+     * Returns a paginated list of all of the current tenant's {@link com.stormpath.sdk.organization.Organization Organization}
+     * instances.
+     * <p/>
+     * Tip: Instead of iterating over all organizations, it might be more convenient (and practical) to execute a search
+     * for one or more organizations using the {@link #getOrganizations(OrganizationCriteria)} method instead of this one.
+     *
+     * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.organization.Organization Organization} instances.
+     * @see #getOrganizations(OrganizationCriteria)
+     * @see #getOrganizations(java.util.Map)
+     *
+     * @since 1.0.RC4.6
+     */
+    OrganizationList getOrganizations();
+
+    /**
+     * Returns a paginated list of the current tenant's organizations that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../tenants/tenantId/organizations?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's organizations that match the specified query criteria.
+     *
+     * @since 1.0.RC4.6
+     */
+    OrganizationList getOrganizations(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the current tenant's organizations that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.directory.Directories Directories} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * client.getDirectories(Directories
+     *     .where(Directories.description().containsIgnoreCase("foo"))
+     *     .and(Directories.name().startsWithIgnoreCase("bar"))
+     *     .orderByName().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's directories that match the specified query criteria.
+     *
+     * @since 1.0.RC4.6
+     */
+    OrganizationList getOrganizations(OrganizationCriteria criteria);
 
     /**
      * Creates a new <b>Provider-based</b> Directory resource in the current tenant based on the specified
@@ -343,6 +411,48 @@ public interface TenantActions {
      * @since 1.0.RC3
      */
     GroupList getGroups(Map<String, Object> queryParams);
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping} for this tenant, allowing the associated
+     * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#getAccountStore() accountStore} to be used as a source
+     * of accounts that may login to the applications related to the {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#getOrganization() organization}.
+     * <p/>
+     * When calling this method, you control where the new {@code OrganizationAccountStoreMapping} will reside in the Organization's
+     * overall list by setting its (zero-based)
+     * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#setListIndex(int) listIndex} property before calling this
+     * method.
+     * <h4>{@code listIndex} values</h4>
+     * <ul>
+     * <li>negative: attempting to set a negative {@code listIndex} will cause an Error</li>
+     * <li>zero: the account store mapping will be the first item in the list (and therefore consulted first
+     * during the authentication process).</li>
+     * <li>positive: the account store mapping will be inserted at that index.  Because list indices are zero-based,
+     * the account store will be in the list at position {@code listIndex - 1}.</li>
+     * </ul>
+     * Any {@code listIndex} value equal to or greater than the current list size will automatically append the
+     * {@code OrganizationAccountStoreMapping} at the end of the list.
+     * <h4>Example</h4>
+     * Setting a new {@code OrganizationAccountStoreMapping}'s {@code listIndex} to {@code 500} and then adding the mapping to
+     * an organization with an existing 3-item list will automatically save the {@code OrganizationAccountStoreMapping} at the end
+     * of the list and set its {@code listIndex} value to {@code 3} (items at index 0, 1, 2 were the original items,
+     * the new fourth item will be at index 3).
+     * <pre>
+     * AccountStore directoryOrGroup = getDirectoryOrGroupYouWantToUseForLogin();
+     * Tenant tenant = getYourCurrentTenant();
+     * OrganizationAccountStoreMapping mapping = client.instantiate(OrganizationAccountStoreMapping.class);
+     * mapping.setAccountStore(directoryOrGroup);
+     * mapping.setListIndex(3); //this is zero-based, so index 3 == 4th item
+     * mapping = tenant.createAccountStoreMapping(mapping);
+     * </pre>
+     * Then, when {@link com.stormpath.sdk.application.Application#authenticateAccount(com.stormpath.sdk.authc.AuthenticationRequest) authenticating} an
+     * account, this AccountStore (directory or group) will be consulted if no others before it in the list
+     * found a matching account.
+     *
+     * @param mapping the new OrganizationAccountStoreMapping resource.
+     * @return the newly created OrganizationAccountStoreMapping instance.
+     * @throws com.stormpath.sdk.resource.ResourceException
+     */
+    OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
 
 }
 

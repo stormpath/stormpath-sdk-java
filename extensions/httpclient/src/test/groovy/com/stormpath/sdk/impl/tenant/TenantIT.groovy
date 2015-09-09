@@ -25,7 +25,9 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.io.AbstractResource
+import com.stormpath.sdk.organization.Organization
+import com.stormpath.sdk.organization.OrganizationStatus
+import com.stormpath.sdk.organization.Organizations
 import com.stormpath.sdk.provider.FacebookProvider
 import com.stormpath.sdk.provider.GithubProvider
 import com.stormpath.sdk.provider.GoogleProvider
@@ -33,17 +35,12 @@ import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
-import com.stormpath.sdk.tenant.TenantOptions
-import com.stormpath.sdk.tenant.Tenants
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
-
-import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import java.lang.reflect.Field
@@ -184,6 +181,71 @@ class TenantIT extends ClientIT {
         assertEquals(provider.getProviderId(), "stormpath")
         assertNotNull(provider.getCreatedAt())
         assertNotNull(provider.getModifiedAt())
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testCreateOrganization() {
+        def organizationName = uniquify("JavaSDK: OrganizationIT.testCreateOrganization")
+        def org = client.instantiate(Organization)
+
+        org.name = organizationName
+        org.nameKey = UUID.randomUUID().toString().replace('-', '').substring(1,10)
+        org.description = "test description"
+        org.status = OrganizationStatus.ENABLED
+        def createdOrg = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(createdOrg)
+
+        assertEquals(createdOrg.getHref(), org.href)
+        assertEquals(createdOrg.getName(), organizationName)
+        assertNotNull(createdOrg.getDescription())
+        assertNotNull(createdOrg.getCreatedAt())
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetOrganizations() {
+        def tenant = client.currentTenant
+        def organizationName = uniquify("JavaSDK: OrganizationIT.testGetOrganization")
+        Organization org = client.instantiate(Organization)
+        org.name = organizationName
+        org.nameKey = UUID.randomUUID().toString().replace('-', '').substring(1,10)
+        org.status = OrganizationStatus.ENABLED
+        def createdOrg = tenant.createOrganization(org)
+        deleteOnTeardown(createdOrg)
+
+        def orgList = client.getOrganizations()
+
+        assertNotNull orgList.href
+        assertTrue orgList.iterator().hasNext()
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testGetOrganizationWithCriteria() {
+        def tenant = client.currentTenant
+        def organizationName = uniquify("JavaSDK: OrganizationIT.testGetOrganizationWithCriteria")
+        Organization org = client.instantiate(Organization)
+        org.name = organizationName
+        org.nameKey = UUID.randomUUID().toString().replace('-', '').substring(1,10)
+        org.status = OrganizationStatus.ENABLED
+        def createdOrg = tenant.createOrganization(org)
+        deleteOnTeardown(createdOrg)
+
+        def orgList = tenant.getOrganizations(Organizations.where(Organizations.name().containsIgnoreCase("OrganizationIT.testGetOrganizationWithCriteria")))
+
+        assertNotNull orgList.href
+        assertTrue orgList.iterator().hasNext()
+        def retrieved = orgList.iterator().next()
+        assertEquals retrieved.href, org.href
+        assertEquals retrieved.name, org.name
+        assertEquals retrieved.createdAt, org.createdAt
     }
 
     //@since 1.0.beta
@@ -701,5 +763,4 @@ class TenantIT extends ClientIT {
         assertEquals "testDataValue", retrieved.getCustomData().get("testData")
         assertTrue retrieved.getDirectories().iterator().hasNext()
     }
-
 }

@@ -21,14 +21,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.PasswordResetToken
-import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
-import com.stormpath.sdk.application.AccountStoreMapping
-import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
@@ -45,6 +44,9 @@ import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
+import com.stormpath.sdk.organization.Organization
+import com.stormpath.sdk.organization.OrganizationStatus
+import com.stormpath.sdk.organization.Organizations
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
@@ -285,12 +287,12 @@ class ApplicationIT extends ClientIT {
         dir2 = client.currentTenant.createDirectory(dir2);
         deleteOnTeardown(dir2)
 
-        AccountStoreMapping accountStoreMapping1 = client.instantiate(AccountStoreMapping)
+        ApplicationAccountStoreMapping accountStoreMapping1 = client.instantiate(ApplicationAccountStoreMapping)
         accountStoreMapping1.setAccountStore(dir1)
         accountStoreMapping1.setApplication(app)
         accountStoreMapping1 = app.createAccountStoreMapping(accountStoreMapping1)
 
-        AccountStoreMapping accountStoreMapping2 = client.instantiate(AccountStoreMapping)
+        ApplicationAccountStoreMapping accountStoreMapping2 = client.instantiate(ApplicationAccountStoreMapping)
         accountStoreMapping2.setAccountStore(dir2)
         accountStoreMapping2.setApplication(app)
         accountStoreMapping2 = app.createAccountStoreMapping(accountStoreMapping2)
@@ -316,6 +318,101 @@ class ApplicationIT extends ClientIT {
         request = new UsernamePasswordRequest(username, password)
         result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+//    @Test
+//    void testLoginWithOrganizationAccountStore() {
+//
+//        def username = uniquify('thisisme')
+//        def password = 'Changeme1!'
+//
+//        //we could use the parent class's Client instance, but we re-define it here just in case:
+//        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+//        def client = buildClient(true)
+//
+//        def app = createTempApp()
+//
+//        Organization org = client.instantiate(Organization)
+//        org.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore"))
+//                .setDescription("Organization Description")
+//                .setNameKey(uniquify("test").substring(2, 8))
+//                .setStatus(OrganizationStatus.ENABLED)
+//        org = client.currentTenant.createOrganization(org)
+//        deleteOnTeardown(org)
+//
+//        Directory dir = client.instantiate(Directory)
+//        dir.name = uniquify("Java SDK: ApplicationIT.testLoginWithOrganizationAccountStore")
+//        dir = client.currentTenant.createDirectory(dir);
+//        deleteOnTeardown(dir)
+//
+//        //create account store
+//        org.addAccountStore(dir)
+//
+//        def acct = client.instantiate(Account)
+//        acct.username = username
+//        acct.password = password
+//        acct.email = username + '@nowhere.com'
+//        acct.givenName = 'Joe'
+//        acct.surname = 'Smith'
+//        dir.createAccount(acct)
+//
+//        ApplicationAccountStoreMapping accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
+//        accountStoreMapping.setAccountStore(org)
+//        accountStoreMapping.setApplication(app)
+//        app.createAccountStoreMapping(accountStoreMapping)
+//        deleteOnTeardown(accountStoreMapping)
+//
+//        //Account belongs to org, therefore login must succeed
+//        def request = new UsernamePasswordRequest(username, password, org)
+//        def result = app.authenticateAccount(request)
+//        assertEquals(result.getAccount().getUsername(), acct.username)
+//
+//        //No account store has been defined, therefore login must succeed
+//        request = new UsernamePasswordRequest(username, password)
+//        result = app.authenticateAccount(request)
+//        assertEquals(result.getAccount().getUsername(), acct.username)
+//
+//        Organization org2 = client.instantiate(Organization)
+//        org2.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore_org2"))
+//                .setDescription("Organization Description 2")
+//                .setNameKey(uniquify("test").substring(2, 8))
+//                .setStatus(OrganizationStatus.ENABLED)
+//        org2 = client.currentTenant.createOrganization(org2)
+//        deleteOnTeardown(org2)
+//
+//        //Account does not belong to org2, therefore login must fail
+//        try {
+//            request = new UsernamePasswordRequest(username, password, org2)
+//            result = app.authenticateAccount(request)
+//            fail("Should have thrown due to invalid username/password");
+//        } catch (Exception e) {
+//            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114): The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
+//        }
+//    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testAddOrganizationAccountStoreWithCriteria() {
+        def app2 = createTempApp()
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 1)
+
+        Organization org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_testAddOrganizationAccountStoreMapping"))
+                .setDescription("Organization")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(org)
+
+        def accountStoreMapping = app2.addAccountStore(Organizations.where(Organizations.name().eqIgnoreCase(org.name)))
+        assertNotNull accountStoreMapping
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
+        deleteOnTeardown(accountStoreMapping)
     }
 
     //@since 1.0.beta
@@ -1014,9 +1111,9 @@ class ApplicationIT extends ClientIT {
 
     }
 
-    private assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
+    private assertAccountStoreMappingListSize(ApplicationAccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
-        for(AccountStoreMapping accountStoreMapping : accountStoreMappings) {
+        for(ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappings) {
             qty++;
         }
         assertEquals(qty, expectedSize)
@@ -1102,54 +1199,4 @@ class ApplicationIT extends ClientIT {
         return field.get(object)
     }
 
-    /**
-     * @since 1.0.RC4.6
-     */
-    @Test
-    void testPasswordImport() {
-
-        def app = createTempApp()
-
-        Account account = client.instantiate(Account)
-            .setGivenName('John')
-            .setSurname('DeleteMe')
-            .setEmail("deletejohn@test.com")
-            .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
-
-        def created = app.createAccount(Accounts.newCreateRequestFor(account)
-                .setRegistrationWorkflowEnabled(false)
-                .setPasswordFormat(PasswordFormat.MCF)
-                .build())
-        deleteOnTeardown(created)
-
-        //verify it was created:
-        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).single()
-        assertEquals(created.href, found.href)
-
-        found = app.authenticateAccount(new UsernamePasswordRequest("deletejohn@test.com", "rasmuslerdorf")).getAccount()
-        assertEquals(created.href, found.href)
-    }
-
-    /**
-     * @since 1.0.RC4.6
-     */
-    @Test
-    void testPasswordImportErrors() {
-
-        def app = createTempApp()
-
-        Account account = client.instantiate(Account)
-        account.givenName = 'John'
-        account.surname = 'DeleteMe'
-        account.email =  "deletejohn@test.com"
-        account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
-
-        try {
-            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
-            fail("Should have thrown")
-        } catch (ResourceException e){
-            assertEquals 2006, e.getCode()
-            assertTrue e.getDeveloperMessage().contains("is in an invalid format")
-        }
-    }
 }

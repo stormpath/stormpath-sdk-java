@@ -41,7 +41,12 @@ import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
@@ -66,9 +71,11 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
             new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupList, Group> GROUPS =
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+    static final CollectionReference<OrganizationList, Organization> ORGANIZATIONS =
+            new CollectionReference<OrganizationList, Organization>("organizations", OrganizationList.class, Organization.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS, ORGANIZATIONS);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
@@ -140,6 +147,42 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
         return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public Organization createOrganization(Organization organization) {
+        Assert.notNull(organization, "Organization instance cannot be null.");
+        return getDataStore().create("/" + ORGANIZATIONS.getName(), organization);
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationList getOrganizations() {
+        return getResourceProperty(ORGANIZATIONS);
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationList getOrganizations(Map<String, Object> queryParams) {
+        //This is just a proxy - does not execute a query until iteration occurs
+        DirectoryList proxy = getDirectories();
+        return getDataStore().getResource(proxy.getHref(), OrganizationList.class, queryParams);
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationList getOrganizations(OrganizationCriteria criteria) {
+        OrganizationList proxy = getOrganizations(); // this is just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), OrganizationList.class, (Criteria<OrganizationCriteria>) criteria);
     }
 
     @Override
@@ -259,5 +302,13 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, responseOptions);
         return this;
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
+        return getDataStore().create("/organizationAccountStoreMappings", mapping);
     }
 }

@@ -43,7 +43,7 @@ public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
      * will use.
      *
-     * @param limit the number of results in the AccountStoreMappings collection's first page.  Min: 1, Max: 100.
+     * @param limit the number of results in the ApplicationAccountStoreMappings collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      */
     T withAccountStoreMappings(int limit);

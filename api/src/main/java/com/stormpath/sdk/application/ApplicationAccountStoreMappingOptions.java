@@ -22,7 +22,7 @@ import com.stormpath.sdk.query.Options;
  *
  * @since 0.9
  */
-public interface AccountStoreMappingOptions<T> extends Options {
+public interface ApplicationAccountStoreMappingOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an AccountStoreMapping, the AccountStoreMapping's {@link AccountStoreMapping#getApplication() application} is also

@@ -29,6 +29,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.ResourceException;
@@ -121,127 +122,6 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
     Organization setStatus(OrganizationStatus status);
 
     /**
-     * Returns a paginated list of all groups in the Organization.
-     * <p/>
-     * Tip: Instead of iterating over all groups, it might be more convenient (and practical) to execute a search
-     * for one or more groups using the {@link #getGroups(java.util.Map)} method instead of this one.
-     *
-     * @return a paginated list of all groups in the organization.
-     * @see #getGroups(java.util.Map)
-     */
-    GroupList getGroups();
-
-    /**
-     * Returns a paginated list of the organization's groups that match the specified query criteria.
-     * <p/>
-     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
-     * the resource URL as query parameters, for example:
-     * <pre>
-     * .../organizations/organizationId/groups?param1=value1&param2=value2&...
-     * </pre>
-     *
-     * @param queryParams the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the organization's groups that match the specified query criteria.
-     */
-    GroupList getGroups(Map<String, Object> queryParams);
-
-    /**
-     * Returns a paginated list of the organization's groups that match the specified query criteria.  The
-     * {@link com.stormpath.sdk.group.Groups Groups} utility class is available to help construct
-     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
-     * query-building experience.  For example:
-     * <pre>
-     * organization.getGroups(Groups.where(
-     *     Groups.name().containsIgnoreCase("foo"))
-     *     .and(Groups.description().startsWithIgnoreCase("bar"))
-     *     .orderByName()
-     *     .orderByDescription().descending()
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     * or, if you use static imports:
-     * <pre>
-     * import static com.stormpath.sdk.group.Groups.*;
-     *
-     * ...
-     *
-     * organization.getGroups(where(
-     *     name().containsIgnoreCase("foo"))
-     *     .and(description().startsWithIgnoreCase("bar"))
-     *     .orderByName()
-     *     .orderByDescription().descending()
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     *
-     * @param criteria the criteria to use when performing a request to the collection.
-     * @return a paginated list of the organization's groups that match the specified query criteria.
-     */
-    GroupList getGroups(GroupCriteria criteria);
-
-    /**
-     * Returns a paginated list of all directories in the Organization.
-     * <p/>
-     * Tip: Instead of iterating over all directories, it might be more convenient (and practical) to execute a search
-     * for one or more directories using the {@link #getDirectories()} (java.util.Map)} method instead of this one.
-     *
-     * @return a paginated list of all directories in the organization.
-     * @see #getDirectories() (java.util.Map)
-     * @see #getDirectories(DirectoryCriteria)
-     */
-    DirectoryList getDirectories();
-
-    /**
-     * Returns a paginated list of the organization's directories that match the specified query criteria.
-     * <p/>
-     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
-     * the resource URL as query parameters, for example:
-     * <pre>
-     * .../organizations/organizationId/directories?param1=value1&param2=value2&...
-     * </pre>
-     *
-     * @param queryParams the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the organization's directories that match the specified query criteria.
-     */
-    DirectoryList getDirectories(Map<String, Object> queryParams);
-
-    /**
-     * Returns a paginated list of the organization's directories that match the specified query criteria.  The
-     * {@link com.stormpath.sdk.directory.Directories Directories} utility class is available to help construct
-     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
-     * query-building experience.  For example:
-     * <pre>
-     * organization.getDirectories(Directories.where(
-     *     Directories.name().containsIgnoreCase("foo"))
-     *     .and(Directories.description().startsWithIgnoreCase("bar"))
-     *     .orderByName()
-     *     .orderByDescription().descending()
-     *     .withAccounts(10, 10)
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     * or, if you use static imports:
-     * <pre>
-     * import static com.stormpath.sdk.directory.Directories.*;
-     *
-     * ...
-     *
-     * organization.getDirectories(where(
-     *     name().containsIgnoreCase("foo"))
-     *     .and(description().startsWithIgnoreCase("bar"))
-     *     .orderByName()
-     *     .orderByDescription().descending()
-     *     .withAccounts(10, 10)
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     *
-     * @param criteria the criteria to use when performing a request to the collection.
-     * @return a paginated list of the Organization's directories that match the specified query criteria.
-     */
-    DirectoryList getDirectories(DirectoryCriteria criteria);
-
-    /**
      * Returns all AccountStoreMappings accessible to the Organization.
      * <p/>
      * Tip: Instead of iterating over all organizationAccountStoreMappings, it might be more convenient (and practical) to execute
@@ -304,8 +184,7 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
     /**
      * Returns the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or a
      * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
-     * new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Organization}, or
-     * {@code null} if no accountStore has been designated.
+     * new accounts created in the Organization, or {@code null} if no accountStore has been designated.
      * <p/>
      * Because an Organization is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating accounts; this method returns the AccountStore to which the Organization delegates
@@ -335,15 +214,14 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * calling {@link #setDefaultAccountStore(com.stormpath.sdk.directory.AccountStore)}
      *
      * @return the {@link com.stormpath.sdk.directory.AccountStore} (which will be either a Group or Directory) used to persist
-     *         new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Organization}, or
-     *         {@code null} if no accountStore has been designated.
+     *         new accounts created in the Organization, or {@code null} if no accountStore has been designated.
      */
     AccountStore getDefaultAccountStore();
 
     /**
      * Sets the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or a
      * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
-     * new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the Organization}.
+     * new accounts created in the Organization.
      * <p/>
      * Because an Organization is not an {@code AccountStore} itself, it delegates to a Group or Directory
      * when creating accounts; this method sets the AccountStore to which the Organization delegates
@@ -353,14 +231,12 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * </p>
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
-     *                     new accounts {@link #createAccount(com.stormpath.sdk.account.Account) created by the
-     *                     Organization}
+     *                     new accounts created in the Organization}
      */
     void setDefaultAccountStore(AccountStore accountStore);
 
     /**
-     * Returns the {@link AccountStore} used to persist
-     * new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Organization}, or
+     * Returns the {@link AccountStore} used to persist new groups created in the Organization, or
      * {@code null} if no accountStore has been designated.
      *
      * <p/>
@@ -394,14 +270,13 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * calling {@link #setDefaultGroupStore(com.stormpath.sdk.directory.AccountStore)}.
      *
      * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
-     *         new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Organization}, or
-     *         {@code null} if no accountStore has been designated.
+     *         new groups created in the Organization, or {@code null} if no accountStore has been designated.
      */
     AccountStore getDefaultGroupStore();
 
     /**
      * Sets the {@link AccountStore} (a {@link com.stormpath.sdk.directory.Directory Directory}) that will be used to
-     * persist new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Organization}.
+     * persist new groups created in the Organization.
      * <b>Stormpath's current REST API requires this to be a Directory. However, this could be a Group in the future, so do not assume it is always a
      * Directory if you want your code to function correctly if/when this support is added.</b>
      * <p/>
@@ -413,7 +288,7 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * </p>
      *
      * @param accountStore the {@link AccountStore} (which will be either a Group or Organization) used to persist
-     *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Organization}
+     * new groups created in the Organization
      */
     void setDefaultGroupStore(AccountStore accountStore);
 
@@ -511,43 +386,48 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
     OrganizationAccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException;
 
     /**
-     * Creates a new Group that may be used by this organization in the organization's
-     * {@link #getDefaultGroupStore() defaultGroupStore}
+     * Convenience method to add a a new {@link AccountStore} to this organization.
      * <p/>
-     * This is a convenience method.  It merely delegates to the Organization's designated
-     * {@link #getDefaultGroupStore() defaultGroupStore}.
-     *
-     * @param group the Group to create/persist
-     * @return a new Group that may be used by this Organization.
-     * @throws ResourceException if the Organization does not have a designated {@link #getDefaultGroupStore()
-     *                           defaultGroupStore} or if the designated {@code defaultGroupStore} does not allow new
-     *                           groups to be created.
-     */
-    Group createGroup(Group group) throws ResourceException;
-
-    /**
-     * Creates a new Group that may be used by this organization in the organization's
-     * {@link #getDefaultGroupStore() defaultGroupStore}
+     * The given String can be either an 'href' or a 'name' of a {@link Directory} or a {@link Group} belonging to the current Tenant.
      * <p/>
-     * This is a convenience method. It merely delegates to the Organization's designated
-     * {@link #getDefaultGroupStore() defaultGroupStore}.
-     * <h2>Example</h2>
+     * If the provided value is an 'href', this method will get the proper Resource and add it as a new AccountStore in this
+     * Organization without much effort. However, if the provided value is not an 'href', it will be considered as a 'name'. In this case,
+     * this method will search for both a Directory and a Group whose names equal the provided <code>hrefOrName</code>. If only
+     * one resource exists (either a Directory or a Group), then it will be added as a new AccountStore in this Organization. However,
+     * if there are two resources (a Directory and a Group) matching that name, a {@link com.stormpath.sdk.resource.ResourceException ResourceException}
+     * will be thrown.
+     * <p/>
+     * At the end of this process, if a single matching resource is found, this method will then delegate the actual {@link OrganizationAccountStoreMapping}
+     * creation to the {@link #addAccountStore(AccountStore)} method in order to fulfill its task.
+     * </p>
+     * Example providing an href:
+     * <p/>
      * <pre>
-     * organization.createGroup(Groups.newCreateRequestFor(group).build());
+     *      OrganizationAccountStoreMapping accountStoreMapping = organization.addAccountStore("https://api.stormpath.com/v1/groups/2rwq022yMt4u2DwKLfzriP");
      * </pre>
+     * Example providing a name:
      * <p/>
-     * If you would like to retrieve the group's custom data in the response of the groups creation.
      * <pre>
-     * organization.createGroup(Groups.newCreateRequestFor(group).withResponseOptions(Groups.options().withCustomData()).build());
+     *      OrganizationAccountStoreMapping accountStoreMapping = organization.addAccountStore("Foo Name");
      * </pre>
+     * <b>USAGE NOTE 1:</b> When using 'names' this method is not efficient as it will search for both Directories and Groups within this Tenant
+     * for a matching name. In order to do so, some looping takes place at the client side: groups exist within directories, therefore we need
+     * to loop through every existing directory in order to find the required Group. In contrast, providing the Group's 'href' is much more
+     * efficient as no actual search operation needs to be carried out.
+     * <p/>
+     * <b>USAGE NOTE 2:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
+     * persist changes, this is a convenience method and will call the server immediately.
      *
-     * @param request the group creation request
-     * @return a new Group that may be used by this organization.
-     * @throws ResourceException if the Organization does not have a designated {@link #getDefaultGroupStore()
-     *                           defaultGroupsStore} or if the designated {@code defaultGroupsStore} does not allow new
-     *                           groups to be created.
+     * @param hrefOrName either the 'href' or the 'name' of the desired Directory or Group.
+     * @return the {@link OrganizationAccountStoreMapping} created after finding the actual resource described by <code>hrefOrName</code>. It returns
+     * <code>null</code> if there is no group or directory matching the href or name given.
+     * @throws ResourceException if the resource already exists as an account store in this organization.
+     * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
+     * @see #addAccountStore(AccountStore)
+     *
+     * @since 1.0.RC4.6
      */
-    Group createGroup(CreateGroupRequest request);
+    OrganizationAccountStoreMapping addAccountStore(String hrefOrName);
 
     /**
      * Returns the organization's parent (owning) Tenant.
@@ -555,128 +435,4 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * @return the organization's parent (owning) Tenant.
      */
     Tenant getTenant();
-
-    /**
-     * Returns a paginated list of all accounts in the organization's Directories and Groups that may login to applications associated to it.
-     * <p/>
-     * Tip: Instead of iterating over all accounts, it might be more convenient (and practical) to execute a search
-     * for one or more accounts using the {@link #getAccounts(com.stormpath.sdk.account.AccountCriteria)} or
-     * {@link #getAccounts(java.util.Map)} methods instead of this one.
-     *
-     * @return a paginated list of all accounts in organization's Directories and Groups.
-     * @see #getAccounts(com.stormpath.sdk.account.AccountCriteria)
-     * @see #getAccounts(java.util.Map)
-     */
-    AccountList getAccounts();
-
-    /**
-     * Returns a paginated list of all accounts in the organization's Directories and Groups that may login to applications associated to it and also match the specified query
-     * criteria.
-     * <p/>
-     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
-     * the resource URL as query parameters, for example:
-     * <pre>
-     * .../organizations/applicationId/accounts?param1=value1&param2=value2&...
-     * </pre>
-     *
-     * @param queryParams the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the organization's accounts that match the specified query criteria.
-     */
-    AccountList getAccounts(Map<String, Object> queryParams);
-
-    /**
-     * Returns a paginated list of all accounts in the organization's Directories and Groups that may login to applications associated to it and also match the specified query
-     * criteria.
-     * The {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
-     * the criteria DSL.  For example:
-     * <pre>
-     * organization.getAccounts(Accounts
-     *     .where(Accounts.surname().containsIgnoreCase("Smith"))
-     *     .and(Accounts.givenName().eqIgnoreCase("John"))
-     *     .orderBySurname().descending()
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     * or, if using static imports:
-     * <pre>
-     * import static com.stormpath.sdk.account.Accounts.*;
-     *
-     * ...
-     *
-     * organization.getAccounts(where(
-     *     surname().containsIgnoreCase("Smith"))
-     *     .and(givenName().eqIgnoreCase("John"))
-     *     .orderBySurname().descending()
-     *     .offsetBy(20)
-     *     .limitTo(25));
-     * </pre>
-     *
-     * @param criteria the criteria to use when performing a request to the collection.
-     * @return a paginated list of the organization's accounts that match the specified query criteria.
-     */
-    AccountList getAccounts(AccountCriteria criteria);
-
-    /**
-     * Creates a new Account that may login to applications related to this organization.
-     *
-     * <p>This is mostly a convenience method; it delegates creation to the Organization's designated
-     * {@link #getDefaultAccountStore() defaultAccountStore}, and functions as follows:
-     *
-     * <ul>
-     * <li>If the {@code defaultAccountStore} is a Directory: the account is created in the Directory and
-     * returned.</li>
-     * <li>If the {@code defaultAccountStore} is a Group: the account is created in the Group's Directory, assigned to
-     * the Group, and then returned.</li>
-     * </ul>
-     * </p>
-     *
-     * @param account the account to create/persist
-     * @return a new Account that may login to applications related to this organization.
-     * @throws ResourceException if the Organization does not have a designated {@link #getDefaultAccountStore()
-     *                           defaultAccountStore}
-     *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
-     *                           created.
-     */
-    Account createAccount(Account account) throws ResourceException;
-
-    /**
-     * Creates a new Account that may login to applications related to this organization according to the request criteria.
-     *
-     * <p>This is mostly a convenience method; it delegates creation to the Organization's designated
-     * {@link #getDefaultAccountStore() defaultAccountStore}, and functions as follows:
-     * <ul>
-     * <li>If the {@code defaultAccountStore} is a Directory: the account is created in the Directory and
-     * returned.</li>
-     * <li>If the {@code defaultAccountStore} is a Group: the account is created in the Group's Directory, assigned to
-     * the Group, and then returned.</li>
-     * </ul>
-     * </p>
-     * <h2>Example</h2>
-     * <pre>
-     * organization.createAccount(Accounts.newCreateRequestFor(account).build());
-     * </pre>
-     *
-     * <p>If you would like to force disabling the backing directory's account registration workflow:
-     * <pre>
-     * organization.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
-     * </pre>
-     * If you would like to force the execution of the registration workflow, no matter what the backing directory
-     * configuration is:
-     * <pre>
-     * organization.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
-     * </pre>
-     * If you would like to retrieve the account's custom data in the response of the account creation.
-     * <pre>
-     * organization.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
-     * </pre>
-     * </p>
-     *
-     * @param request the account creation request
-     * @return a new Account that may login to applications related to this organization.
-     * @throws ResourceException if the Organization does not have a designated {@link #getDefaultAccountStore()
-     *                           defaultAccountStore}
-     *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
-     *                           created.
-     */
-    Account createAccount(CreateAccountRequest request) throws ResourceException;
 }
