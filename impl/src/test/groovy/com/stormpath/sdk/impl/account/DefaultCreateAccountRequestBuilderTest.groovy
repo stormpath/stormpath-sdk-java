@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.account
 
+import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
@@ -43,6 +44,19 @@ class DefaultCreateAccountRequestBuilderTest {
         assertSame account, request.account
         assertTrue request.isRegistrationWorkflowOptionSpecified()
         assertFalse request.isRegistrationWorkflowEnabled()
+
+        request = new DefaultCreateAccountRequestBuilder(account)
+                .setPasswordFormat(PasswordFormat.MCF)
+                .setRegistrationWorkflowEnabled(false)
+                .build()
+        assertSame account, request.account
+        assertTrue request.isPasswordFormatSpecified()
+        assertEquals PasswordFormat.MCF, request.getPasswordFormat()
+
+        request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(false).setPasswordFormat(PasswordFormat.MCF).build()
+        assertSame account, request.account
+        assertEquals false, request.isRegistrationWorkflowEnabled()
+        assertEquals PasswordFormat.MCF, request.getPasswordFormat()
     }
 
     @Test(expectedExceptions = IllegalStateException)
@@ -54,4 +68,15 @@ class DefaultCreateAccountRequestBuilderTest {
         request.isRegistrationWorkflowEnabled()
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test(expectedExceptions = IllegalStateException)
+    void testPasswordFormatNotSpecified() {
+        def account = new DefaultAccount(createStrictMock(InternalDataStore))
+
+        def request = new DefaultCreateAccountRequestBuilder(account).build()
+        assertSame account, request.account
+        request.getPasswordFormat()
+    }
 }

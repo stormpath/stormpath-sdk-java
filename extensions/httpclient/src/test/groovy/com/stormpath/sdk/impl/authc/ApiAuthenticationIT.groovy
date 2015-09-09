@@ -22,6 +22,7 @@ import com.stormpath.sdk.api.ApiAuthenticationResult
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter
 import com.stormpath.sdk.client.ClientIT
@@ -30,7 +31,6 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory
-import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest
 import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.oauth.*
 import org.testng.annotations.BeforeMethod
@@ -63,34 +63,21 @@ class ApiAuthenticationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
+        def contentTypeHeader = convertToArray("application/x-www-form-urlencoded")
 
-        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
+        def authzHeader = convertToArray(createBasicAuthzHeader(apiKey.id, apiKey.secret))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.GET)
+                .addHeader("content-type", contentTypeHeader)
+                .addHeader("authorization", authzHeader)
+
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
         def newApiKey = account.createApiKey()
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(newApiKey.id, newApiKey.secret), null))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
-
-        apiKey.setStatus(ApiKeyStatus.DISABLED)
-        apiKey.save()
-
-        Map parameters = convertToParametersMap([:])
-
-        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null)).parameters(parameters)
-
-        OauthHttpServletRequest servletRequest = new OauthHttpServletRequest(httpRequestBuilder.build())
-
-        verifyError(servletRequest, DisabledApiKeyException)
-
-        httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(newApiKey.id, newApiKey.secret), null))
-
-        servletRequest = new OauthHttpServletRequest(httpRequestBuilder.build())
-
-        attemptSuccessfulAuthentication(servletRequest, DefaultApiAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
     }
 
     @Test
@@ -98,33 +85,34 @@ class ApiAuthenticationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        def parameters = convertToParametersMap(["grant_type": "client_credentials"])
-
         def headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
 
-        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
+        HttpRequestBuilder httpRequestBuilder = HttpRequests.method(HttpMethod.POST)
+                .headers(headers)
+                .addParameter("grant_type", convertToArray("client_credentials"))
 
-        def result = (AccessTokenResult) attemptSuccessfulAuthentication(httpRequestBuilder.build(), AccessTokenResult)
+        def result = (AccessTokenResult) attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), AccessTokenResult)
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).queryParameters("grant_type=client_credentials")
 
-        result = (AccessTokenResult) application.authenticateApiRequest(httpRequestBuilder.build())
+        result = (AccessTokenResult) Applications.apiRequestAuthenticator(application).authenticate(httpRequestBuilder.build())
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/xml"))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
 
         headers = ["content-type": convertToArray("application/x-www-form-urlencoded; charset=UTF-8")]
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.DELETE).headers(headers).parameters(convertToParametersMap(["access_token":result.tokenResponse.accessToken]))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
 
         testWithScopeFactory(apiKey)
+
     }
 
     void testWithScopeFactory(ApiKey apiKey) {
@@ -139,7 +127,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         ScopeFactory myScopeFactory = createScopeFactory(applicationScopes, account, false)
 
-        def authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).using(myScopeFactory).withTtl(120).execute()
+        def authResult = Applications.oauthRequestAuthenticator(application).using(myScopeFactory).withTtl(120).authenticate(httpRequestBuilder.build())
 
         verifySuccessfulAuthentication(authResult, application, account, AccessTokenResult)
 
@@ -161,7 +149,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).queryParameters("access_token=" + accessToken).headers(headers)
 
-        authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).inLocation(RequestLocation.QUERY_PARAM).execute()
+        authResult = Applications.oauthRequestAuthenticator(application).inLocation(RequestLocation.QUERY_PARAM).authenticate(httpRequestBuilder.build())
 
         verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
 
@@ -171,9 +159,10 @@ class ApiAuthenticationIT extends ClientIT {
 
         parameters = convertToParametersMap(["access_token": accessToken])
 
+        //see for testing
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/x-www-form-urlencoded")]).parameters(parameters)
 
-        authResult = application.authenticateOauthRequest(httpRequestBuilder.build()).execute()
+        authResult = Applications.oauthRequestAuthenticator(application).authenticate(httpRequestBuilder.build())
 
         assertEquals authResult.scope.size(), 2
         assertTrue authResult.scope.contains("readResource")
@@ -229,7 +218,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null))
 
-        attemptSuccessfulAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), DefaultApiAuthenticationResult)
 
         apiKey.setStatus(ApiKeyStatus.DISABLED)
         apiKey.save()
@@ -323,11 +312,12 @@ class ApiAuthenticationIT extends ClientIT {
         //Create a 3 seconds token
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        def result = application.authenticateOauthRequest(httpRequestBuilder.build()).withTtl(3).execute()
+
+        def result = Applications.oauthRequestAuthenticator(application).withTtl(3).authenticate(httpRequestBuilder.build())
 
         //Try bearer once.
         httpRequestBuilder = HttpRequests.method(HttpMethod.DELETE).headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
-        result = application.authenticateOauthRequest(httpRequestBuilder.build()).inLocation(RequestLocation.HEADER, RequestLocation.QUERY_PARAM).execute()
+        result = Applications.oauthRequestAuthenticator(application).inLocation(RequestLocation.HEADER, RequestLocation.QUERY_PARAM).authenticate(httpRequestBuilder.build())
 
         assertNotNull result
 
@@ -340,23 +330,23 @@ class ApiAuthenticationIT extends ClientIT {
         //Create a 3 seconds token
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        result = application.authenticateOauthRequest(httpRequestBuilder.build()).withTtl(60).execute()
+        result = Applications.oauthRequestAuthenticator(application).withTtl(60).authenticate(httpRequestBuilder.build())
 
         //Access token is in more than one location in more that one location
         parameters = convertToParametersMap(["access_token": result.tokenResponse.accessToken, "anyParam": "ignored"])
         httpRequestBuilder = HttpRequests.method(HttpMethod.PUT).parameters(parameters).queryParameters("access_token=" + result.tokenResponse.accessToken).headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/x-www-form-urlencoded"))
 
         try {
-            application.authenticateOauthRequest(httpRequestBuilder.build()).inLocation(RequestLocation.HEADER, RequestLocation.BODY, RequestLocation.QUERY_PARAM).execute()
+            result = Applications.oauthRequestAuthenticator(application).inLocation(RequestLocation.HEADER, RequestLocation.BODY, RequestLocation.QUERY_PARAM).authenticate(httpRequestBuilder.build())
             fail("OauthAuthenticationException is expected")
         } catch (OauthAuthenticationException e) {
             assertEquals e.getOauthError(), OauthAuthenticationException.INVALID_REQUEST
         }
     }
 
-    def AuthenticationResult attemptSuccessfulAuthentication(Object httpRequest, Class expectedResultClass) {
+    def AuthenticationResult attemptSuccessfulApiAuthentication(Object httpRequest, Class expectedResultClass) {
 
-        def authResult = application.authenticateApiRequest(httpRequest)
+        def authResult = Applications.apiRequestAuthenticator(application).authenticate(httpRequest)
 
         verifySuccessfulAuthentication(authResult, application, account, expectedResultClass)
 
@@ -427,9 +417,9 @@ class ApiAuthenticationIT extends ClientIT {
         try {
 
             if (useOauthRequest) {
-                application.authenticateOauthRequest(httpRequest).execute()
+                Applications.oauthRequestAuthenticator(application).authenticate(httpRequest)
             } else {
-                application.authenticateApiRequest(httpRequest)
+                Applications.apiRequestAuthenticator(application).authenticate(httpRequest)
             }
 
             fail("ResourceException: " + exceptionClass.toString() + "was expected")
@@ -440,7 +430,7 @@ class ApiAuthenticationIT extends ClientIT {
 
     void verifyOauthError(Object httpRequest, String expectedOauthError) {
         try {
-            application.authenticateOauthRequest(httpRequest).execute()
+            Applications.oauthRequestAuthenticator(application).authenticate(httpRequest)
             fail("OathError: " + expectedOauthError + " was expected")
         } catch (OauthAuthenticationException exception) {
             assertEquals exception.getOauthError(), expectedOauthError

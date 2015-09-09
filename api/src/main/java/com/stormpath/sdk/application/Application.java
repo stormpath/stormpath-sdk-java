@@ -15,7 +15,13 @@
  */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.*;
+
+import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -33,9 +39,13 @@ import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.tenant.Tenant;
-
 import java.util.Map;
 
 /**
@@ -960,7 +970,10 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @throws ResourceException if unable to authenticate the request
      * @see Application#authenticateOauthRequest(Object)
      * @since 1.0.RC
+     *
+     * @deprecated in 1.0.RC4.6 and will be removed before 1.0 final. Use {@link com.stormpath.sdk.api.ApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
      */
+    @Deprecated
     ApiAuthenticationResult authenticateApiRequest(Object httpRequest) throws IllegalArgumentException, ResourceException;
 
     /**
@@ -1162,7 +1175,10 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
      * @see Application#authenticateApiRequest(Object)
      * @since 1.0.RC
+     *
+     * @deprecated in 1.0.RC4.6 and will be removed before 1.0 final. Use {@link OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
      */
+    @Deprecated
     OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
 
     /**
