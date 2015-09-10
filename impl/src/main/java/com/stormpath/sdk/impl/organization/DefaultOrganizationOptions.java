@@ -33,17 +33,17 @@ public class DefaultOrganizationOptions extends DefaultOptions<OrganizationOptio
     }
 
     @Override
-    public OrganizationOptions withAccountStoreMappings() {
+    public OrganizationOptions withOrganizationAccountStoreMappings() {
         return expand(DefaultOrganization.ACCOUNT_STORE_MAPPINGS);
     }
 
     @Override
-    public OrganizationOptions withAccountStoreMappings(int limit) {
+    public OrganizationOptions withOrganizationAccountStoreMappings(int limit) {
         return expand(DefaultOrganization.ACCOUNT_STORE_MAPPINGS, limit);
     }
 
     @Override
-    public OrganizationOptions withAccountStoreMappings(int limit, int offset) {
+    public OrganizationOptions withOrganizationAccountStoreMappings(int limit, int offset) {
         return expand(DefaultOrganization.ACCOUNT_STORE_MAPPINGS, limit, offset);
     }
 }

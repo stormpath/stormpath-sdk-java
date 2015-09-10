@@ -612,7 +612,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * <h3>Setting the 'New Account Store'</h3>
      * You may set the defaultAccountStore by acquiring one of the Application's
      * {@link #getAccountStoreMappings() accountStoreMappings} and calling
-     * {@link AccountStoreMapping#setDefaultAccountStore(boolean) setDefaultAccountStore}<code>(true)</code> or by
+     * {@link ApplicationAccountStoreMapping#setDefaultAccountStore(boolean) setDefaultAccountStore}<code>(true)</code> or by
      * calling {@link #setDefaultAccountStore(com.stormpath.sdk.directory.AccountStore)}
      *
      * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
@@ -675,7 +675,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * <h3>Setting the 'New Group Store'</h3>
      * You set the newGroupStore by acquiring one of the Application's
      * {@link #getAccountStoreMappings() accountStoreMappings} and calling
-     * {@link AccountStoreMapping#setDefaultGroupStore(boolean) setDefaultGroupStore}<code>(true)</code> or by
+     * {@link ApplicationAccountStoreMapping#setDefaultGroupStore(boolean) setDefaultGroupStore}<code>(true)</code> or by
      * calling {@link #setDefaultGroupStore(com.stormpath.sdk.directory.AccountStore)}.
      *
      * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
@@ -705,24 +705,24 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
     void setDefaultGroupStore(AccountStore accountStore);
 
     /**
-     * Creates a new {@link AccountStoreMapping} for this Application, allowing the associated
-     * {@link AccountStoreMapping#getAccountStore() accountStore} to be used as a source
+     * Creates a new {@link com.stormpath.sdk.application.ApplicationAccountStoreMapping} for this Application, allowing the associated
+     * {@link ApplicationAccountStoreMapping#getAccountStore() accountStore} to be used as a source
      * of accounts that may login to the Application.
      * <p/>
      * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method to be called to
      * persist changes, this is a convenience method will call the server immediately.
-     * <h3>Authentication Process and AccountStoreMapping Order</h3>
+     * <h3>Authentication Process and ApplicationAccountStoreMapping Order</h3>
      * During an authentication attempt, an Application consults its mapped account stores in <em>iteration order</em>,
-     * trying to find the first matching account to use for authentication.  The lower the {@code AccountStoreMapping}
+     * trying to find the first matching account to use for authentication.  The lower the {@code ApplicationAccountStoreMapping}
      * index (closer to zero), the earlier that store is consulted during authentication.  If no matching account is
      * found in an account store, the application will move on to the next {@code AccountStore} (next highest index)
      * in the list.  This continues either a matching account is found, or until all account stores are exhausted.
      * When a matching account is found, the process is short-circuited and the discovered account will be used
      * immediately for authentication.
      * <p/>
-     * When calling this method, you control where the new {@code AccountStoreMapping} will reside in the Application's
+     * When calling this method, you control where the new {@code ApplicationAccountStoreMapping} will reside in the Application's
      * overall list by setting its (zero-based)
-     * {@link AccountStoreMapping#setListIndex(int) listIndex} property before calling this
+     * {@link ApplicationAccountStoreMapping#setListIndex(int) listIndex} property before calling this
      * method.
      * <h4>{@code listIndex} values</h4>
      * <ul>
@@ -733,10 +733,10 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * the account store will be in the list at position {@code listIndex - 1}.</li>
      * </ul>
      * Any {@code listIndex} value equal to or greater than the current list size will automatically append the
-     * {@code AccountStoreMapping} at the end of the list.
+     * {@code ApplicationAccountStoreMapping} at the end of the list.
      * <h4>Example</h4>
-     * Setting a new {@code AccountStoreMapping}'s {@code listIndex} to {@code 500} and then adding the mapping to
-     * an application with an existing 3-item list will automatically save the {@code AccountStoreMapping} at the end
+     * Setting a new {@code ApplicationAccountStoreMapping}'s {@code listIndex} to {@code 500} and then adding the mapping to
+     * an application with an existing 3-item list will automatically save the {@code ApplicationAccountStoreMapping} at the end
      * of the list and set its {@code listIndex} value to {@code 3} (items at index 0, 1, 2 were the original items,
      * the new fourth item will be at index 3).
      * <pre>
@@ -752,7 +752,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * <h3>New Account Storage</h3>
      * If {@link #createAccount }
      *
-     * @param mapping the new AccountStoreMapping resource to add to the Application's AccountStoreMapping list.
+     * @param mapping the new ApplicationAccountStoreMapping resource to add to the Application's ApplicationAccountStoreMapping list.
      * @return the newly created ApplicationAccountStoreMapping instance.
      * @throws ResourceException
      * @since 0.9

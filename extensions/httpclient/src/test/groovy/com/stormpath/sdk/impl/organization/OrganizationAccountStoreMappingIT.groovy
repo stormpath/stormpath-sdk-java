@@ -15,12 +15,14 @@
 */
 package com.stormpath.sdk.impl.organization
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.AccountStoreVisitor
-import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupStatus
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationAccountStoreMapping
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList
@@ -52,6 +54,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
     List<Organization> organizations
     List<Directory> directories
+    List<Group> groups
     Tenant tenant
     Organization org
 
@@ -59,18 +62,19 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
     void setUpClass() {
         organizations = new ArrayList<Organization>()
         directories = new ArrayList<Directory>()
+        groups = new ArrayList<Group>()
         tenant = client.getCurrentTenant();
     }
 
     @BeforeMethod
     void setUpOrg() {
         org = client.instantiate(Organization)
-            .name = uniquify("JSDK_OrgIT")
-            .setNameKey(uniquify("test").substring(2, 8))
-            .status = OrganizationStatus.ENABLED
-            .description = uniquify("Test Organization Description")
+        org.name = uniquify("JSDK_OrgIT")
+        org.nameKey = (uniquify("test").substring(2, 8))
+        org.status = OrganizationStatus.ENABLED
+        org.description = uniquify("Test Organization Description")
 
-        org = tenant.createOrganization(Organizations.newCreateRequestFor(org).build())
+        org = tenant.createOrganization(org)
         organizations.add(org)
     }
 
@@ -86,6 +90,9 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
                 dir.delete()
             }
         }
+        groups.each { group ->
+            group.delete()
+        }
     }
 
     @Test
@@ -94,7 +101,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         OrganizationAccountStoreMappingList accountStoreMappings = org.getOrganizationAccountStoreMappings()
 
         6.times{
-            org.addAccountStore(createDirectory())  //testing AccountStoreMapping Create
+            org.addAccountStore(createDirectory())  // testing create
         }
         OrganizationAccountStoreMappingList mappings = org.getOrganizationAccountStoreMappings()
 
@@ -252,8 +259,8 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         org.setDefaultAccountStore(newDefaultAccountStore)
         org.setDefaultGroupStore(newDefaultAccountStore)
 
-        assertEquals(newDefaultAccountStore, org.getDefaultAccountStore())
-        assertEquals(newDefaultAccountStore, org.getDefaultGroupStore())
+        assertEquals(newDefaultAccountStore.href, org.getDefaultAccountStore().getHref())
+        assertEquals(newDefaultAccountStore.href, org.getDefaultGroupStore().getHref())
     }
 
     @Test(expectedExceptions = com.stormpath.sdk.resource.ResourceException)
@@ -288,81 +295,78 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             orgAccountStoreMapping.setDefaultGroupStore(true)     //Should make last one in loop the defaultGroupStore
             org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
         }
-        OrganizationAccountStoreMappingList mappings = org.getOrganizationAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore().withApplication())
+        OrganizationAccountStoreMappingList mappings = org.getOrganizationAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore())
         String mappingsString = mappings.toString()
         assertTrue(mappingsString.contains("Directory"))
         assertTrue(mappingsString.contains("name"))
         assertTrue(mappingsString.contains("description"))
-        assertTrue(mappingsString.contains("loginAttempts"))
-        assertTrue(mappingsString.contains("passwordResetTokens"))
     }
 
     @Test
-    void testApplicationCriteria() {
-        def organization = tenant.getApplications(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).with())
-        String applicationString = organization.toString()
-        assertTrue(applicationString.contains("listIndex=0"))
-        assertTrue(applicationString.contains("isDefaultAccountStore=true"))
-        assertTrue(applicationString.contains("isDefaultGroupStore=true"))
-        assertTrue(applicationString.contains("name"))
-        assertTrue(applicationString.contains("description"))
-        assertTrue(applicationString.contains("loginAttempts"))
-        assertTrue(applicationString.contains("passwordResetTokens"))
+    void testOrganizationCriteria() {
+        Directory dir = createDirectory()
+        org.addAccountStore(dir)
+
+        def organization = tenant.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withOrganizationAccountStoreMappings())
+        String orgString = organization.toString()
+        assertTrue(orgString.contains("listIndex=0"))
+        assertTrue(orgString.contains("isDefaultAccountStore=true"))
+        assertTrue(orgString.contains("isDefaultGroupStore=false"))
+        assertTrue(orgString.contains("name"))
+        assertTrue(orgString.contains("description"))
     }
 
     @Test
-    void testApplicationCriteriaLimit() {
+    void testOrganizationCriteriaLimit() {
         6.times{
             org.addAccountStore(createDirectory())
         }
 
-        def organization = tenant.getApplications(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withAccountStoreMappings(2))
-        String applicationString = organization.toString()
-        assertTrue(applicationString.contains("listIndex=0"))
-        assertTrue(applicationString.contains("listIndex=1"))
-        assertTrue(applicationString.contains("isDefaultAccountStore=true"))
-        assertTrue(applicationString.contains("isDefaultGroupStore=true"))
-        assertTrue(applicationString.contains("isDefaultAccountStore=false"))
-        assertTrue(applicationString.contains("isDefaultGroupStore=false"))
-        assertTrue(applicationString.contains("name"))
-        assertTrue(applicationString.contains("description"))
-        assertTrue(applicationString.contains("loginAttempts"))
-        assertTrue(applicationString.contains("passwordResetTokens"))
+        def organization = tenant.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withOrganizationAccountStoreMappings(2))
+        String orgString = organization.toString()
+        assertTrue(orgString.contains("listIndex=0"))
+        assertTrue(orgString.contains("listIndex=1"))
+        assertTrue(orgString.contains("isDefaultAccountStore=true"))
+        assertTrue(orgString.contains("isDefaultGroupStore=false"))
+        assertTrue(orgString.contains("isDefaultAccountStore=false"))
+        assertTrue(orgString.contains("isDefaultGroupStore=false"))
+        assertTrue(orgString.contains("name"))
+        assertTrue(orgString.contains("description"))
     }
 
     @Test
-    void testApplicationCriteriaLimitOffset() {
+    void testOrganizationCriteriaLimitOffset() {
         6.times{
             org.addAccountStore(createDirectory())
         }
 
-        def organization = tenant.getApplications(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withAccountStoreMappings(2,3))
-        String applicationString = organization.toString()
-        assertFalse(applicationString.contains("listIndex=0"))
-        assertFalse(applicationString.contains("listIndex=1"))
-        assertTrue(applicationString.contains("listIndex=3"))
-        assertTrue(applicationString.contains("listIndex=4"))
-        assertFalse(applicationString.contains("isDefaultAccountStore=true"))
-        assertFalse(applicationString.contains("isDefaultGroupStore=true"))
-        assertTrue(applicationString.contains("isDefaultAccountStore=false"))
-        assertTrue(applicationString.contains("isDefaultGroupStore=false"))
-        assertTrue(applicationString.contains("name"))
-        assertTrue(applicationString.contains("description"))
-        assertTrue(applicationString.contains("loginAttempts"))
-        assertTrue(applicationString.contains("passwordResetTokens"))
+        def organization = tenant.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withOrganizationAccountStoreMappings(2,3))
+        String orgString = organization.toString()
+        assertFalse(orgString.contains("listIndex=0"))
+        assertFalse(orgString.contains("listIndex=1"))
+        assertTrue(orgString.contains("listIndex=3"))
+        assertTrue(orgString.contains("listIndex=4"))
+        assertFalse(orgString.contains("isDefaultAccountStore=true"))
+        assertFalse(orgString.contains("isDefaultGroupStore=true"))
+        assertTrue(orgString.contains("isDefaultAccountStore=false"))
+        assertTrue(orgString.contains("isDefaultGroupStore=false"))
+        assertTrue(orgString.contains("name"))
+        assertTrue(orgString.contains("description"))
     }
 
     /**
      * @since 1.0.RC
      */
     @Test
-    void testDefaultApplicationGaps() {
+    void testDefaultOrganizationGaps() {
 
         Group group = client.instantiate(Group)
         group.name = uniquify("Java SDK IT Group")
         group.status = GroupStatus.DISABLED
 
-        def dir = (Directory) org.getDefaultAccountStore()
+        Directory dir = createDirectory()
+        org.setDefaultAccountStore(dir)
+
         dir.createGroup(group)
         deleteOnTeardown(group)
 
@@ -372,7 +376,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         //let's check the changes are visible even without saving
         assertEquals(org.getDefaultAccountStore().getHref(), group.getHref())
 
-        OrganizationAccountStoreMappingList accountStoreMappingList = org.getAccountStoreMappings()
+        OrganizationAccountStoreMappingList accountStoreMappingList = org.getOrganizationAccountStoreMappings()
         assertEquals(accountStoreMappingList.size, 2)
 
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
@@ -400,10 +404,10 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         deleteOnTeardown(acct)
         assertEquals(acct.getDirectory().getHref(), group.getDirectory().getHref())
 
-        //Now let's set the DefaultAccountStore to be an already existing account store mapping (this runs different code in DefaultApplication)
+        //Now let's set the DefaultAccountStore to be an already existing account store mapping (this runs different code in DefaultOrganization)
         org.setDefaultAccountStore(dir)
         assertEquals(org.getDefaultAccountStore().getHref(), dir.getHref())
-        accountStoreMappingList = org.getAccountStoreMappings()
+        accountStoreMappingList = org.getOrganizationAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 2)
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             if (orgAccountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
@@ -424,7 +428,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
         //let's check the changes are visible even without saving
         assertEquals(org.getDefaultGroupStore().getHref(), newDir.getHref())
-        accountStoreMappingList = org.getAccountStoreMappings()
+        accountStoreMappingList = org.getOrganizationAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             if (orgAccountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
@@ -446,10 +450,10 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         deleteOnTeardown(newGroup)
         assertEquals(newGroup.getDirectory().getHref(), newDir.getHref())
 
-        //Now let's set the DefaultGroupStore to be an already existing account store mapping (this runs different code in DefaultApplication)
+        //Now let's set the DefaultGroupStore to be an already existing account store mapping (this runs different code in DefaultOrganization)
         org.setDefaultGroupStore(dir)
         assertEquals(org.getDefaultGroupStore().getHref(), dir.getHref())
-        accountStoreMappingList = org.getAccountStoreMappings()
+        accountStoreMappingList = org.getOrganizationAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             if (orgAccountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {

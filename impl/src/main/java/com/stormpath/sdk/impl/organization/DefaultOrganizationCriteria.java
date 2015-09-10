@@ -56,20 +56,20 @@ public class DefaultOrganizationCriteria extends DefaultCriteria<OrganizationCri
     }
 
     @Override
-    public OrganizationCriteria withAccountStoreMappings() {
-        getOptions().withAccountStoreMappings();
+    public OrganizationCriteria withOrganizationAccountStoreMappings() {
+        getOptions().withOrganizationAccountStoreMappings();
         return this;
     }
 
     @Override
-    public OrganizationCriteria withAccountStoreMappings(int limit) {
-        getOptions().withAccountStoreMappings(limit);
+    public OrganizationCriteria withOrganizationAccountStoreMappings(int limit) {
+        getOptions().withOrganizationAccountStoreMappings(limit);
         return this;
     }
 
     @Override
-    public OrganizationCriteria withAccountStoreMappings(int limit, int offset) {
-        getOptions().withAccountStoreMappings(limit, offset);
+    public OrganizationCriteria withOrganizationAccountStoreMappings(int limit, int offset) {
+        getOptions().withOrganizationAccountStoreMappings(limit, offset);
         return this;
     }
 }

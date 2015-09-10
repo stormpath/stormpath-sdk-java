@@ -235,6 +235,72 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      */
     void setDefaultAccountStore(AccountStore accountStore);
 
+
+    /**
+     * Creates a new Account that may login to this application.
+     *
+     * <p>This is mostly a convenience method; it delegates creation to the Application's designated
+     * {@link #getDefaultAccountStore() defaultAccountStore}, and functions as follows:
+     *
+     * <ul>
+     * <li>If the {@code defaultAccountStore} is a Directory: the account is created in the Directory and
+     * returned.</li>
+     * <li>If the {@code defaultAccountStore} is a Group: the account is created in the Group's Directory, assigned to
+     * the Group, and then returned.</li>
+     * </ul>
+     * </p>
+     *
+     * @param account the account to create/persist
+     * @return a new Account that may login to this application.
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultAccountStore()
+     *                           defaultAccountStore}
+     *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
+     *                           created.
+     * @since 0.9
+     */
+    Account createAccount(Account account) throws ResourceException;
+
+    /**
+     * Creates a new Account that may login to this application according to the request criteria.
+     *
+     * <p>This is mostly a convenience method; it delegates creation to the Application's designated
+     * {@link #getDefaultAccountStore() defaultAccountStore}, and functions as follows:
+     * <ul>
+     * <li>If the {@code defaultAccountStore} is a Directory: the account is created in the Directory and
+     * returned.</li>
+     * <li>If the {@code defaultAccountStore} is a Group: the account is created in the Group's Directory, assigned to
+     * the Group, and then returned.</li>
+     * </ul>
+     * </p>
+     * <h2>Example</h2>
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).build());
+     * </pre>
+     *
+     * <p>If you would like to force disabling the backing directory's account registration workflow:
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
+     * </pre>
+     * If you would like to force the execution of the registration workflow, no matter what the backing directory
+     * configuration is:
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     * </pre>
+     * If you would like to retrieve the account's custom data in the response of the account creation.
+     * <pre>
+     * application.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
+     * </pre>
+     * </p>
+     *
+     * @param request the account creation request
+     * @return a new Account that may login to this application.
+     * @throws ResourceException if the Application does not have a designated {@link #getDefaultAccountStore()
+     *                           defaultAccountStore}
+     *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
+     *                           created.
+     * @since 0.9
+     */
+    Account createAccount(CreateAccountRequest request) throws ResourceException;
     /**
      * Returns the {@link AccountStore} used to persist new groups created in the Organization, or
      * {@code null} if no accountStore has been designated.
