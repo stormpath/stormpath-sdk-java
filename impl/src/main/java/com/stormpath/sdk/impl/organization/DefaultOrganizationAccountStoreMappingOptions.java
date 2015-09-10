@@ -26,8 +26,8 @@ public class DefaultOrganizationAccountStoreMappingOptions extends DefaultOption
         return expand(DefaultOrganizationAccountStoreMapping.ORGANIZATION);
     }
 
-//    @Override
-//    public OrganizationAccountStoreMappingOptions withAccountStore() {
-//        return expand(DefaultOrganizationAccountStoreMapping.ACCOUNT_STORE);
-//    }
+    @Override
+    public OrganizationAccountStoreMappingOptions withAccountStore() {
+        return expand(DefaultOrganizationAccountStoreMapping.ACCOUNT_STORE);
+    }
 }
