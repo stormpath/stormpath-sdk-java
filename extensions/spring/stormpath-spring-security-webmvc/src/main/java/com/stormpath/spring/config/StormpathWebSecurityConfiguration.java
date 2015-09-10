@@ -65,5 +65,4 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         configure(auth, super.stormpathAuthenticationProvider);
     }
-
 }

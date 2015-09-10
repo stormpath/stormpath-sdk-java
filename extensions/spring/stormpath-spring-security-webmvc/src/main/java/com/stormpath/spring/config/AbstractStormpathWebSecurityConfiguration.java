@@ -82,7 +82,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
      * @param http the {@link HttpSecurity} to be modified
      * @throws Exception if an error occurs
      */
-    protected final void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
+    protected void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
             throws Exception {
 
         if (loginEnabled) {
@@ -120,7 +120,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
      * @param authenticationProvider the {@link AuthenticationProvider} to whom Spring Security will delegate authentication attempts
      * @throws Exception if an error occurs
      */
-    protected final void configure(AuthenticationManagerBuilder auth, AuthenticationProvider authenticationProvider) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth, AuthenticationProvider authenticationProvider) throws Exception {
         auth.authenticationProvider(authenticationProvider);
     }
 
