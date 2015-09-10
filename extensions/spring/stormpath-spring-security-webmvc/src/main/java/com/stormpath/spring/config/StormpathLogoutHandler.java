@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class StormpathLogoutHandler implements LogoutHandler {
 

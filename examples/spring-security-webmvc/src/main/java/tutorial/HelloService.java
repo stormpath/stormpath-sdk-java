@@ -20,7 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @Service
 public class HelloService {

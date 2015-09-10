@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @Configuration
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {

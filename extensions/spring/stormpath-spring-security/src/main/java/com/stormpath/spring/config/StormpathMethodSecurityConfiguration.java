@@ -25,7 +25,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Configuration

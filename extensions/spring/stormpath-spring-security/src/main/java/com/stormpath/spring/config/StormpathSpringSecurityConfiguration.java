@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @Configuration
 public class StormpathSpringSecurityConfiguration extends AbstractStormpathSpringSecurityConfiguration {

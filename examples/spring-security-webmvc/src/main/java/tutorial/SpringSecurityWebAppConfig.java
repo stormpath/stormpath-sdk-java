@@ -23,7 +23,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @EnableStormpathWebSecurity //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @Configuration

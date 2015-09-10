@@ -19,7 +19,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @Order(99)
 public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecurityConfigurerAdapter {

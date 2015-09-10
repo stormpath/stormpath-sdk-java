@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>Spring Security provides its onw protection against Cross Site Request Forgery (CSRF)
  * attacks. This {@link SpringSecurityCsrfTokenManager} can delegate the creation and processing of csrf tokens to Spring Security.</p>
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
 

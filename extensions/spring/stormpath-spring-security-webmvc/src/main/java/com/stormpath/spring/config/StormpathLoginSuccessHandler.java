@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 

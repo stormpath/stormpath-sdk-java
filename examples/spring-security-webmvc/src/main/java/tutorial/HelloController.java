@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @RestController
 public class HelloController {

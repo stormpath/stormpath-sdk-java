@@ -24,7 +24,7 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
