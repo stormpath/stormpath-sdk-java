@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.api
 
+import com.stormpath.sdk.api.ApiKeyOptions
+import com.stormpath.sdk.api.ApiKeyStatus
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -76,4 +78,54 @@ class ClientApiKeyTest {
         assertFalse(apiKey.equals(apiKey4))
         assertFalse(apiKey.equals("anything"))
     }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testApiKeyStatus() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.getStatus()
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testSetStatus() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.setStatus(ApiKeyStatus.ENABLED)
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testGetAccount() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.getAccount()
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testGetTenant() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.getTenant()
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testSaveWithOptions() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        ApiKeyOptions mock = [] as ApiKeyOptions
+        apiKey.save(mock)
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testDelete() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.delete()
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    void testGetHref() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.getHref()
+    }
+
+    @Test(expectedExceptions = IllegalAccessError)
+    public void testSave() {
+        def apiKey = new ClientApiKey("fooId", "barSecret")
+        apiKey.save()
+    }
+
 }

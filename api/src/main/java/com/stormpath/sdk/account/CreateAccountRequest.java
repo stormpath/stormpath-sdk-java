@@ -74,6 +74,29 @@ public interface CreateAccountRequest {
     boolean isAccountOptionsSpecified();
 
     /**
+     * Returns {@code true} if the {@code password} of this request is not a raw password but a formatted password hash instead.
+     * Please read more info about the supported formats <a href="http://docs.stormpath.com/rest/product-guide/#create-an-account-with-an-existing-password-hash">here</a>.
+     *
+     * @return {@code true} if the request reflects that the CreateAccount (POST) message will be sent with a
+     * URL query parameter to specify the account has a password in a specific format to be imported.
+     *
+     * @since 1.0.RC4.6
+     */
+    boolean isPasswordFormatSpecified();
+
+    /**
+     * Returns the {@code passwordFormat} denoting the format of the {@code password}.
+     * Please read more info about the supported formats <a href="http://docs.stormpath.com/rest/product-guide/#create-an-account-with-an-existing-password-hash">here</a>
+     * <p/>
+     *
+     * @return The String {@code passwordFormat} to be used in the CreateAccountRequest to specify the account
+     * has a password in a specific format to be imported.
+     *
+     * @since 1.0.RC4.6
+     */
+    PasswordFormat getPasswordFormat();
+
+    /**
      * Returns the {@code AccountOptions} to be used in the CreateAccountRequest s to retrieve the account's
      * references as part of Stormpath's response upon successful account creation.
      * <p/>
