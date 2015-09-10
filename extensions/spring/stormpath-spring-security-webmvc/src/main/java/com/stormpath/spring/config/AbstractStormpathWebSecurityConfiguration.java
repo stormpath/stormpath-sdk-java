@@ -2,7 +2,9 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 /**
  * @since 1.0.RC4.6
@@ -61,15 +65,22 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
         return new StormpathLogoutHandler(authenticationResultSaver);
     }
 
+    public CsrfTokenRepository csrfTokenRepository() {
+        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
+        csrfTokenRepository.setSessionAttributeName("csrfToken");
+        csrfTokenRepository.setParameterName("csrfToken");
+        return csrfTokenRepository;
+    }
+
+    public CsrfTokenManager stormpathCsrfTokenManager() {
+        return new SpringSecurityCsrfTokenManager(csrfTokenRepository());
+    }
+
     /**
      * The pre-defined Stormpath access control settings are defined here.
-     * <p>This method has been marked as final in order to avoid users to override this method by mistake and thus removing all this required configuration.
-     * Instead, users can extend this class and configure their applications by overriding the {@link #doConfigure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
-     * config(HttpSecurity)} method. This way the configuration can be explicitly modified but not overwritten by mistake.</p>
      *
      * @param http the {@link HttpSecurity} to be modified
      * @throws Exception if an error occurs
-     * @see #doConfigure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
      */
     protected final void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
             throws Exception {
@@ -96,41 +107,21 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
 
         if (!csrfProtectionEnabled) {
             http.csrf().disable();
+        } else {
+            //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Servlet's forms
+            http.csrf().csrfTokenRepository(csrfTokenRepository());
         }
-
-        doConfigure(http);
     }
 
     /**
-     * Override this method to define app-specific security settings like:
-     * <p>
-     * <pre>
-     * http
-     *   .authorizeRequests()
-     *   .antMatchers("/account").fullyAuthenticated()
-     *   .antMatchers("/admin").hasRole("ADMIN");
-     * </pre>
-     *
-     * @param http the {@link HttpSecurity} to modify
-     * @throws Exception if an error occurs
-     */
-    protected void doConfigure(HttpSecurity http) throws Exception {
-    }
-
-    /**
-     * This method has been marked as final in order to avoid users to skip the <code>stormpathAuthenticationProvider</code> thus removing all this required configuration.
-     * Instead, users can configure the <code>AuthenticationManagerBuilder</code> by overriding the {@link #doConfigure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder) config(AuthenticationManagerBuilder)} method.
-     * This way the configuration can be explicitly modified but not overwritten by mistake.
+     * Method to specify the {@link AuthenticationProvider} that Spring Security will use when processing authentications.
      *
      * @param auth the {@link AuthenticationManagerBuilder} to use
+     * @param authenticationProvider the {@link AuthenticationProvider} to whom Spring Security will delegate authentication attempts
      * @throws Exception if an error occurs
      */
-    @Override
-    protected final void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(stormpathAuthenticationProvider);
-        doConfigure(auth);
+    protected final void configure(AuthenticationManagerBuilder auth, AuthenticationProvider authenticationProvider) throws Exception {
+        auth.authenticationProvider(authenticationProvider);
     }
 
-    protected void doConfigure(AuthenticationManagerBuilder auth) throws Exception {
-    }
 }

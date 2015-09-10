@@ -31,6 +31,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @PropertySource("classpath:application.properties")
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/restricted").fullyAuthenticated();

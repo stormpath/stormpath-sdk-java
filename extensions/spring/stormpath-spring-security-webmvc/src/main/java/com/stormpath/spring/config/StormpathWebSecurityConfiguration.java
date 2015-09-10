@@ -15,12 +15,15 @@
  */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 /**
  * @since 1.0.RC4.6
@@ -43,8 +46,24 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public CsrfTokenRepository csrfTokenRepository() {
+        return super.csrfTokenRepository();
+    }
+
+    @Bean
+    public CsrfTokenManager stormpathCsrfTokenManager() {
+        return super.stormpathCsrfTokenManager();
+    }
+
     @Override
     protected final void configure(HttpSecurity http) throws Exception {
         configure(http, stormpathAuthenticationSuccessHandler(), stormpathLogoutHandler());
     }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        configure(auth, super.stormpathAuthenticationProvider);
+    }
+
 }
