@@ -33,10 +33,10 @@ import java.util.Map;
 public class DefaultOrganizationAccountStoreMapping extends DefaultAccountStoreMapping implements OrganizationAccountStoreMapping {
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Organization> ORGANIZATION = new ResourceReference<Organization>("organization", Organization.class);
+    protected static final ResourceReference<Organization> ORGANIZATION = new ResourceReference<Organization>("organization", Organization.class);
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            LIST_INDEX, DEFAULT_ACCOUNT_STORE, DEFAULT_GROUP_STORE, ACCOUNT_STORE, APPLICATION);
+    protected static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+            LIST_INDEX, DEFAULT_ACCOUNT_STORE, DEFAULT_GROUP_STORE, ACCOUNT_STORE, ORGANIZATION);
 
     public DefaultOrganizationAccountStoreMapping(InternalDataStore dataStore) {
         super(dataStore);

@@ -16,7 +16,6 @@
 package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
@@ -36,12 +35,12 @@ import java.util.Map;
 public class DefaultAccountStoreMapping extends AbstractInstanceResource implements AccountStoreMapping {
 
     // SIMPLE PROPERTIES:
-    static final IntegerProperty LIST_INDEX = new IntegerProperty("listIndex");
-    static final BooleanProperty DEFAULT_ACCOUNT_STORE = new BooleanProperty("isDefaultAccountStore");
-    static final BooleanProperty DEFAULT_GROUP_STORE = new BooleanProperty("isDefaultGroupStore");
+    protected static final IntegerProperty LIST_INDEX = new IntegerProperty("listIndex");
+    protected static final BooleanProperty DEFAULT_ACCOUNT_STORE = new BooleanProperty("isDefaultAccountStore");
+    protected static final BooleanProperty DEFAULT_GROUP_STORE = new BooleanProperty("isDefaultGroupStore");
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
+    protected static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             LIST_INDEX, DEFAULT_ACCOUNT_STORE, DEFAULT_GROUP_STORE, ACCOUNT_STORE);

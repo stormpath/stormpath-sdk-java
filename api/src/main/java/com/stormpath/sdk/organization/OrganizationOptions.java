@@ -15,6 +15,7 @@
 */
 package com.stormpath.sdk.organization;
 
+import com.stormpath.sdk.directory.AccountStoreOptions;
 import com.stormpath.sdk.query.Options;
 
 /**
@@ -22,7 +23,7 @@ import com.stormpath.sdk.query.Options;
  *
  * @since 1.0.RC4.6
  */
-public interface OrganizationOptions<T extends OrganizationOptions> extends Options {
+public interface OrganizationOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an Organization, the Organization's {@link Organization#getCustomData() customData} is also
@@ -41,4 +42,40 @@ public interface OrganizationOptions<T extends OrganizationOptions> extends Opti
      * @return this instance for method chaining.
      */
     T withTenant();
+
+    /**
+     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping accountStoreMappings}
+     * are also retrieved in the same request (paginated).  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the
+     * returned accountStoreMappings, see the {@link #withAccountStoreMappings(int) withAccountStoreMappings(limit)} or
+     * {@link #withAccountStoreMappings(int, int) withAccountStoreMappings(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     */
+    T withAccountStoreMappings();
+
+    /**
+     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping accountStoreMappings} are also
+     * retrieved in the same request (paginated), limiting the first page of AccountStoreMapping results to {@code limit} items.
+     * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
+     * will use.
+     *
+     * @param limit the number of results in the OrganizationAccountStoreMappings collection's first page.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     */
+    T withAccountStoreMappings(int limit);
+
+    /**
+     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping accountStoreMappings} are also
+     * retrieved in the same request (paginated) , with the first page of AccountStoreMapping results starting at the specified
+     * {@code offset} index and limiting the number of results to {@code limit} items.  This enhances performance by
+     * leveraging a single request to retrieve multiple related resources you know you will use.
+     *
+     * @param limit  the number of results in the OrganizationAccountStoreMappings collection's first page.  Min: 1, Max: 100.
+     * @param offset the starting index of the first OrganizationAccountStoreMapping to retrieve in the overall OrganizationAccountStoreMappings collection's result set.
+     * @return this instance for method chaining.
+     */
+    T withAccountStoreMappings(int limit, int offset);
 }

@@ -299,7 +299,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
     @Test
     void testApplicationCriteria() {
-        def organization = tenant.getApplications(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withAccountStoreMappings())
+        def organization = tenant.getApplications(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).with())
         String applicationString = organization.toString()
         assertTrue(applicationString.contains("listIndex=0"))
         assertTrue(applicationString.contains("isDefaultAccountStore=true"))

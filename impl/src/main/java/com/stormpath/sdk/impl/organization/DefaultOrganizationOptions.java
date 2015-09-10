@@ -31,4 +31,19 @@ public class DefaultOrganizationOptions extends DefaultOptions<OrganizationOptio
     public OrganizationOptions withCustomData() {
         return expand(DefaultOrganization.CUSTOM_DATA);
     }
+
+    @Override
+    public OrganizationOptions withAccountStoreMappings() {
+        return expand(DefaultOrganization.ACCOUNT_STORE_MAPPINGS);
+    }
+
+    @Override
+    public OrganizationOptions withAccountStoreMappings(int limit) {
+        return expand(DefaultOrganization.ACCOUNT_STORE_MAPPINGS, limit);
+    }
+
+    @Override
+    public OrganizationOptions withAccountStoreMappings(int limit, int offset) {
+        return expand(DefaultOrganization.ACCOUNT_STORE_MAPPINGS, limit, offset);
+    }
 }
