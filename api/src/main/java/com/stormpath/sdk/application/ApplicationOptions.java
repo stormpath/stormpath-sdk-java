@@ -25,7 +25,7 @@ import com.stormpath.sdk.directory.AccountStoreOptions;
 public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
 
     /**
-     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.application.AccountStoreMapping accountStoreMappings}
+     * Ensures that when retrieving the resource, its associated {@link ApplicationAccountStoreMapping accountStoreMappings}
      * are also retrieved in the same request (paginated).  This enhances performance by leveraging a single request
      * to retrieve multiple related resources you know you will use.
      * <p/>
@@ -38,8 +38,8 @@ public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
     T withAccountStoreMappings();
 
     /**
-     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.application.AccountStoreMapping accountStoreMappings} are also
-     * retrieved in the same request (paginated), limiting the first page of AccountStoreMapping results to {@code limit} items.
+     * Ensures that when retrieving the resource, its associated {@link ApplicationAccountStoreMapping accountStoreMappings} are also
+     * retrieved in the same request (paginated), limiting the first page of ApplicationAccountStoreMapping results to {@code limit} items.
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
      * will use.
      *
@@ -49,13 +49,13 @@ public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
     T withAccountStoreMappings(int limit);
 
     /**
-     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.application.AccountStoreMapping accountStoreMappings} are also
-     * retrieved in the same request (paginated) , with the first page of AccountStoreMapping results starting at the specified
+     * Ensures that when retrieving the resource, its associated {@link ApplicationAccountStoreMapping accountStoreMappings} are also
+     * retrieved in the same request (paginated) , with the first page of ApplicationAccountStoreMapping results starting at the specified
      * {@code offset} index and limiting the number of results to {@code limit} items.  This enhances performance by
      * leveraging a single request to retrieve multiple related resources you know you will use.
      *
-     * @param limit  the number of results in the AccountStoreMapping collection's first page.  Min: 1, Max: 100.
-     * @param offset the starting index of the first AccountStoreMapping to retrieve in the overall AccountStoreMapping collection's result set.
+     * @param limit  the number of results in the ApplicationAccountStoreMapping collection's first page.  Min: 1, Max: 100.
+     * @param offset the starting index of the first ApplicationAccountStoreMapping to retrieve in the overall ApplicationAccountStoreMapping collection's result set.
      * @return this instance for method chaining.
      */
     T withAccountStoreMappings(int limit, int offset);

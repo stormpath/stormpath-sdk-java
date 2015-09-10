@@ -451,6 +451,8 @@ public interface TenantActions {
      * @param mapping the new OrganizationAccountStoreMapping resource.
      * @return the newly created OrganizationAccountStoreMapping instance.
      * @throws com.stormpath.sdk.resource.ResourceException
+     *
+     * @since 1.0.RC4.6
      */
     OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
 

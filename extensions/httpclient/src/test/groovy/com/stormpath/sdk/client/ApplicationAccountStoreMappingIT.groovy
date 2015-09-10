@@ -95,7 +95,7 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
         ApplicationAccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings()
 
         6.times{
-            app.addAccountStore(createDirectory())  //testing AccountStoreMapping Create
+            app.addAccountStore(createDirectory())  // testing create
         }
         ApplicationAccountStoreMappingList mappings = app.getAccountStoreMappings()
 
@@ -231,10 +231,9 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException re) {
             assertTrue(re.message.contains("listIndex minimum value"))
         }
-
     }
 
-    @Test(enabled = false) //until we can merge https://github.com/stormpath/stormpath-sdk-java/pull/45
+    @Test
     void testSettingNewDefaultAccountStore() {
         Directory newDefaultAccountStore;
 
@@ -257,8 +256,8 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
         app.setDefaultAccountStore(newDefaultAccountStore)
         app.setDefaultGroupStore(newDefaultAccountStore)
 
-        assertEquals(newDefaultAccountStore, app.getDefaultAccountStore())
-        assertEquals(newDefaultAccountStore, app.getDefaultGroupStore())
+        assertEquals(newDefaultAccountStore.href, app.getDefaultAccountStore().getHref())
+        assertEquals(newDefaultAccountStore.href, app.getDefaultGroupStore().getHref())
     }
 
     @Test(expectedExceptions = com.stormpath.sdk.resource.ResourceException)

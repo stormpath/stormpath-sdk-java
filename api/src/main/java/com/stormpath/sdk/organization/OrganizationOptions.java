@@ -49,27 +49,27 @@ public interface OrganizationOptions<T> extends Options {
      * to retrieve multiple related resources you know you will use.
      * <p/>
      * If you wish to control pagination parameters (offset and limit) for the
-     * returned accountStoreMappings, see the {@link #withAccountStoreMappings(int) withAccountStoreMappings(limit)} or
-     * {@link #withAccountStoreMappings(int, int) withAccountStoreMappings(limit,offset)} methods.
+     * returned accountStoreMappings, see the {@link #withOrganizationAccountStoreMappings(int) withOrganizationAccountStoreMappings(limit)} or
+     * {@link #withOrganizationAccountStoreMappings(int, int) withOrganizationAccountStoreMappings(limit,offset)} methods.
      *
      * @return this instance for method chaining.
      */
-    T withAccountStoreMappings();
+    T withOrganizationAccountStoreMappings();
 
     /**
-     * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping accountStoreMappings} are also
-     * retrieved in the same request (paginated), limiting the first page of AccountStoreMapping results to {@code limit} items.
+     * Ensures that when retrieving the resource, its associated {@link OrganizationAccountStoreMapping accountStoreMappings} are also
+     * retrieved in the same request (paginated), limiting the first page of OrganizationAccountStoreMapping results to {@code limit} items.
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
      * will use.
      *
      * @param limit the number of results in the OrganizationAccountStoreMappings collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      */
-    T withAccountStoreMappings(int limit);
+    T withOrganizationAccountStoreMappings(int limit);
 
     /**
      * Ensures that when retrieving the resource, its associated {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping accountStoreMappings} are also
-     * retrieved in the same request (paginated) , with the first page of AccountStoreMapping results starting at the specified
+     * retrieved in the same request (paginated) , with the first page of OrganizationAccountStoreMapping results starting at the specified
      * {@code offset} index and limiting the number of results to {@code limit} items.  This enhances performance by
      * leveraging a single request to retrieve multiple related resources you know you will use.
      *
@@ -77,5 +77,5 @@ public interface OrganizationOptions<T> extends Options {
      * @param offset the starting index of the first OrganizationAccountStoreMapping to retrieve in the overall OrganizationAccountStoreMappings collection's result set.
      * @return this instance for method chaining.
      */
-    T withAccountStoreMappings(int limit, int offset);
+    T withOrganizationAccountStoreMappings(int limit, int offset);
 }

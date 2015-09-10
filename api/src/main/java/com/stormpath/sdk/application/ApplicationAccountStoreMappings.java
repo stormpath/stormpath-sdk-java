@@ -20,9 +20,9 @@ import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 
 /**
- * Static utility/helper methods for working with {@link AccountStoreMapping} resources.  Most methods are
+ * Static utility/helper methods for working with {@link ApplicationAccountStoreMapping ApplicationAccountStoreMapping} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * AccountStoreMapping-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. for example:
+ * ApplicationAccountStoreMapping-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. for example:
  * <pre>
  * <b>ApplicationAccountStoreMappings.criteria()</b>
  *     .withApplication()
@@ -60,9 +60,9 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
 public final class ApplicationAccountStoreMappings {
 
     /**
-     * Returns a new {@link ApplicationAccountStoreMappingOptions} instance, used to customize how one or more {@link AccountStoreMapping}s are retrieved.
+     * Returns a new {@link ApplicationAccountStoreMappingOptions} instance, used to customize how one or more {@link ApplicationAccountStoreMapping ApplicationAccountStoreMapping}s are retrieved.
      *
-     * @return a new {@link ApplicationAccountStoreMappingOptions} instance, used to customize how one or more {@link AccountStoreMapping}s are retrieved.
+     * @return a new {@link ApplicationAccountStoreMappingOptions} instance, used to customize how one or more {@link ApplicationAccountStoreMapping ApplicationAccountStoreMapping}s are retrieved.
      */
     public static ApplicationAccountStoreMappingOptions options() {
         return (ApplicationAccountStoreMappingOptions) Classes.newInstance("com.stormpath.sdk.impl.application.DefaultAccountStoreMappingOptions");
@@ -86,7 +86,7 @@ public final class ApplicationAccountStoreMappings {
      * </pre>
      * While all three statements are equivalent, the second and third examples are shorter and probably more readable.
      *
-     * @return a new {@link ApplicationAccountStoreMappingCriteria} instance to use to formulate an AccountStoreMapping query.
+     * @return a new {@link ApplicationAccountStoreMappingCriteria} instance to use to formulate an ApplicationAccountStoreMapping query.
      */
     public static ApplicationAccountStoreMappingCriteria criteria() {
         return Classes.newInstance("com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMappingCriteria");
@@ -118,7 +118,7 @@ public final class ApplicationAccountStoreMappings {
      * </pre>
      * The first code example is clearly more succinct and readable.
      *
-     * @return a new {@link AccountStoreMapping#getListIndex() listIndex}-specific {@link EqualsExpressionFactory} instance, to be
+     * @return a new {@link ApplicationAccountStoreMapping#getListIndex() listIndex}-specific {@link EqualsExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link ApplicationAccountStoreMappingCriteria} query.
      */
     public static EqualsExpressionFactory listIndex() {

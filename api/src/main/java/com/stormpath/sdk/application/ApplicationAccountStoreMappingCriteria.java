@@ -18,7 +18,7 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.query.Criteria;
 
 /**
- * An {@link AccountStoreMapping}-specific {@link Criteria} class, enabling an AccountStoreMapping-specific
+ * An {@link ApplicationAccountStoreMapping}-specific {@link Criteria} class, enabling an ApplicationAccountStoreMapping-specific
  * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  ApplicationAccountStoreMappingCriteria instances can be
  * constructed by using the {@link ApplicationAccountStoreMappings} utility class, for example:
  * <pre>
@@ -44,7 +44,7 @@ import com.stormpath.sdk.query.Criteria;
 public interface ApplicationAccountStoreMappingCriteria extends Criteria<ApplicationAccountStoreMappingCriteria>, ApplicationAccountStoreMappingOptions<ApplicationAccountStoreMappingCriteria> {
 
     /**
-     * Ensures that the query results are ordered by {@link AccountStoreMapping#getListIndex() listIndex}.
+     * Ensures that the query results are ordered by {@link ApplicationAccountStoreMapping#getListIndex() listIndex}.
      * <p/>
      * Please see the {@link ApplicationAccountStoreMappingCriteria class-level documentation} for controlling sort order (ascending or
      * descending) and chaining multiple {@code orderBy} clauses.
