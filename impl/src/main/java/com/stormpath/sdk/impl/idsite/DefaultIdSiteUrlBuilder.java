@@ -54,9 +54,9 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
     private String organizationNameKey;
 
-    private boolean useSubdomain = false;
+    private Boolean useSubdomain;
 
-    private boolean showOrganizationField = false;
+    private Boolean showOrganizationField;
 
     public DefaultIdSiteUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
@@ -134,7 +134,13 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
             jwtBuilder.claim(ORGANIZATION_NAME_KEY, organizationNameKey);
         }
 
-        jwtBuilder.claim(USE_SUBDOMAIN, useSubdomain).claim(SHOW_ORGANIZATION_FIELD, showOrganizationField);
+        if (useSubdomain != null) {
+            jwtBuilder.claim(USE_SUBDOMAIN, useSubdomain);
+        }
+
+        if (showOrganizationField != null) {
+            jwtBuilder.claim(SHOW_ORGANIZATION_FIELD, showOrganizationField);
+        }
 
         byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
 

@@ -85,16 +85,19 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setPath(String path);
 
     /**
-     * Sets the organizationNameKey to be targeted
+     * Sets the organizationNameKey identifier of the {@code Organization}  to be targeted during an authentication or
+     * reset password ID Site operations.
      *
-     * @param organizationNameKey the organization nameKey to used in the initial sso.
+     * @param organizationNameKey identifier of the {@code Organization} to be
      * @return this instance for method chaining.
      * @since 1.0.RC4.6
      */
     IdSiteUrlBuilder setOrganizationNameKey(String organizationNameKey);
 
     /**
-     * TBD
+     * Set a flag that indicates whether the {@code organizationNameKey} should be appended as part of the ID site domain.
+     * <p/>
+     * Setting this flag doesn't have any effect unless the {@code organizationNameKey} is set.
      *
      * @param useSubdomain flag to be set when the id sit will be used appending the
      * @return this instance for method chaining.
@@ -103,7 +106,7 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setUseSubdomain(boolean useSubdomain);
 
     /**
-     * TBD
+     * Sets a flag that indicates whether the ID Site show add an Organization nameKey field when presented to the user.
      *
      * @param showOrganizationField flag to be sent when the IdSite will display the organization field.
      * @return this instance for method chaining.
