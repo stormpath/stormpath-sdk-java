@@ -20,7 +20,7 @@ package com.stormpath.sdk.organization;
  * A Builder to construct {@link CreateOrganizationRequest}s.
  *
  * @see com.stormpath.sdk.organization.Organizations#newCreateRequestFor(Organization)
- * @since 1.0.beta
+ * @since 1.0.RC5
  */public interface CreateOrganizationRequestBuilder {
 
     CreateOrganizationRequest build();

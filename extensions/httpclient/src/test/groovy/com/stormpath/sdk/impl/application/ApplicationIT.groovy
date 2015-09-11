@@ -319,7 +319,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     void testLoginWithOrganizationAccountStore() {
@@ -393,7 +393,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     void testAddOrganizationAccountStoreWithCriteria() {

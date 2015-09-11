@@ -48,7 +48,7 @@ import com.stormpath.sdk.query.Criteria;
  *     ...
  * </pre>
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface OrganizationCriteria extends Criteria<OrganizationCriteria>, OrganizationOptions<OrganizationCriteria> {
 

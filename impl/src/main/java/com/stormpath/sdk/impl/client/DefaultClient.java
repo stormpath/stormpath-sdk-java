@@ -252,7 +252,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public Organization createOrganization(Organization organization) {
@@ -262,7 +262,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public OrganizationList getOrganizations() {
@@ -272,7 +272,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public OrganizationList getOrganizations(Map<String, Object> queryParams) {

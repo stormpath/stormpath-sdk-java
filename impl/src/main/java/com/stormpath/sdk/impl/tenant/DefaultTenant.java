@@ -150,7 +150,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public Organization createOrganization(Organization organization) {
@@ -159,7 +159,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public OrganizationList getOrganizations() {
@@ -167,7 +167,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public OrganizationList getOrganizations(Map<String, Object> queryParams) {
@@ -177,7 +177,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public OrganizationList getOrganizations(OrganizationCriteria criteria) {
