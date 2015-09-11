@@ -108,5 +108,4 @@ public interface AuthenticationRequest<P, C> {
      * @since 1.0.RC5
      */
     AuthenticationOptions getResponseOptions();
-
 }
