@@ -52,8 +52,7 @@ public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
     public String createCsrfToken(HttpServletRequest request, HttpServletResponse response) {
 
         CsrfToken csrfToken = this.csrfTokenRepository.loadToken(request);
-        final boolean missingToken = csrfToken == null;
-        if (missingToken) {
+        if (csrfToken == null) {
             csrfToken = this.csrfTokenRepository.generateToken(request);
             this.csrfTokenRepository.saveToken(csrfToken, request, response);
         }
