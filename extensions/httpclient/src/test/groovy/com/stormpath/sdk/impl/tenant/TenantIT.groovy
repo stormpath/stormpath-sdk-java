@@ -25,6 +25,9 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.organization.Organization
+import com.stormpath.sdk.organization.Organizations
+import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.provider.FacebookProvider
 import com.stormpath.sdk.provider.GithubProvider
 import com.stormpath.sdk.provider.GoogleProvider
