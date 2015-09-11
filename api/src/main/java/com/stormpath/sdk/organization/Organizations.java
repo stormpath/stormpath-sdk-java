@@ -47,7 +47,7 @@ import java.lang.reflect.Constructor;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public final class Organizations {
 

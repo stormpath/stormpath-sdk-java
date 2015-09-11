@@ -20,7 +20,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link Organization} instances.
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface OrganizationList extends CollectionResource<Organization> {
 }

@@ -45,7 +45,7 @@ import java.util.Map;
  * You can think of an Organization as a 'virtual' AccountStore that 'wraps' other AccountStores.  Like other
  * AccountStores, an Organization can be mapped to an Application so that users in the Organization can login to that application.
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface Organization extends Resource, Saveable, Deletable, AccountStore, Extendable, Auditable {
 
@@ -490,7 +490,7 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
      * @see #addAccountStore(AccountStore)
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     OrganizationAccountStoreMapping addAccountStore(String hrefOrName);
 

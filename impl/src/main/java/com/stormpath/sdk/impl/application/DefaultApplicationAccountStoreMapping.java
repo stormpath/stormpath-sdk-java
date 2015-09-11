@@ -30,7 +30,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class DefaultApplicationAccountStoreMapping extends AbstractInstanceResource implements ApplicationAccountStoreMapping{
 

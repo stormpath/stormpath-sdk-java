@@ -19,7 +19,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 
 /**
  * A {@link CollectionResource} containing {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping} instances.
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface OrganizationAccountStoreMappingList extends CollectionResource<OrganizationAccountStoreMapping> {
 }

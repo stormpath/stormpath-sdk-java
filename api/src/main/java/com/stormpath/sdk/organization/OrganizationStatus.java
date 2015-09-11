@@ -16,7 +16,7 @@ package com.stormpath.sdk.organization;
 */
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public enum OrganizationStatus {
 

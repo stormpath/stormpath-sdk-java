@@ -47,7 +47,7 @@ import static org.testng.Assert.fail
 /**
  * Tests class for OrganizationAccountStoreMapping
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 class OrganizationAccountStoreMappingIT extends ClientIT {
 
@@ -500,62 +500,61 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         directories.add(dir)
         return dir;
     }
-//    @Test
-//    void testCreate() {
-//
-//        def tenant = client.currentTenant
-//
-//        def org = client.instantiate(Organization)
-//        org.setName(uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate"))
-//                .setDescription("Organization Description")
-//                .setNameKey(uniquify("test").substring(2, 8))
-//                .setStatus(OrganizationStatus.ENABLED)
-//
-//        org = tenant.createOrganization(org)
-//        assertNotNull org.href
-//        deleteOnTeardown(org)
-//
-//        // test create with wrong account store
-//        def orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
-//        orgAccountStoreMapping.setOrganization(org)
-//        orgAccountStoreMapping.setAccountStore(org)
-//        try {
-//            def retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
-//            fail("Should have thrown due to organization cannot be account store error.");
-//        } catch (Exception e) {
-//            assertEquals(e.getMessage(), "HTTP 400, Stormpath 4614 (http://docs.stormpath.com/errors/4614): An organization can not an account store for another organization.")
-//        }
-//
-//        // create a directory
-//        Directory dir = client.instantiate(Directory)
-//        dir.name = uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate_dir")
-//        dir = client.createDirectory(dir);
-//        deleteOnTeardown(dir)
-//
-//        // test using directory as account store
-//        orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
-//        orgAccountStoreMapping.setOrganization(org)
-//        orgAccountStoreMapping.setAccountStore(dir)
-//        def retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
-//        deleteOnTeardown(retrieved)
-//
-//        assertNotNull retrieved
-//        assertEquals orgAccountStoreMapping.href, retrieved.href
-//
-//        // test using group as account store
-//        def org = createTempApp()
-//        Group group = client.instantiate(Group)
-//        group.name = uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate_group")
-//        group = org.createGroup(group)
-//        deleteOnTeardown(group)
-//
-//        orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
-//        orgAccountStoreMapping.setOrganization(org)
-//        orgAccountStoreMapping.setAccountStore(group)
-//        retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
-//        deleteOnTeardown(retrieved)
-//
-//        assertNotNull retrieved
-//        assertEquals orgAccountStoreMapping.href, retrieved.href
-//    }
+    @Test
+    void testCreate() {
+
+        def tenant = client.currentTenant
+
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        org = tenant.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        // test create with wrong account store
+        def orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
+        orgAccountStoreMapping.setOrganization(org)
+        orgAccountStoreMapping.setAccountStore(org)
+        try {
+            def retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            fail("Should have thrown due to organization cannot be account store error.");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 4614 (http://docs.stormpath.com/errors/4614): An organization can not an account store for another organization.")
+        }
+
+        // create a directory
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate_dir")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        // test using directory as account store
+        orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
+        orgAccountStoreMapping.setOrganization(org)
+        orgAccountStoreMapping.setAccountStore(dir)
+        def retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        deleteOnTeardown(retrieved)
+
+        assertNotNull retrieved
+        assertEquals orgAccountStoreMapping.href, retrieved.href
+
+        // test using group as account store
+        Group group = client.instantiate(Group)
+        group.name = uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate_group")
+        group = org.createGroup(group)
+        deleteOnTeardown(group)
+
+        orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
+        orgAccountStoreMapping.setOrganization(org)
+        orgAccountStoreMapping.setAccountStore(group)
+        retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        deleteOnTeardown(retrieved)
+
+        assertNotNull retrieved
+        assertEquals orgAccountStoreMapping.href, retrieved.href
+    }
 }

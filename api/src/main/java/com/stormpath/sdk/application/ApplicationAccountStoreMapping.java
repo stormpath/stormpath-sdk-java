@@ -17,10 +17,12 @@ package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
 
 /**
- * An {@code ApplicationAccountStoreMapping} represents the assignment of an {@link AccountStore AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
- * {@link com.stormpath.sdk.directory.Directory Directory}) to an {@link Application Application}.
+ * An {@code ApplicationAccountStoreMapping} represents the assignment of an {@link AccountStore AccountStore} (either a {@link Group Group} or
+ * {@link Directory Directory}) to an {@link Application Application}.
  * <p/>
  * When an {@code ApplicationAccountStoreMapping} is created, the accounts in the account store are granted access to (become users
  * of) the linked {@code Application}.  The {@link #getListIndex() order} in which {@code AccountStore}s are assigned
@@ -37,7 +39,6 @@ import com.stormpath.sdk.directory.AccountStore;
  * <b>Note:</b> A Group cannot store other Groups.  Therefore, the default group store must be a {@code Directory}.
  *
  * @see com.stormpath.sdk.application.Application#createAccountStoreMapping(ApplicationAccountStoreMapping)
- * @since 1.0.RC4.6
  */
 public interface ApplicationAccountStoreMapping extends AccountStoreMapping {
 
@@ -58,16 +59,16 @@ public interface ApplicationAccountStoreMapping extends AccountStoreMapping {
 
     /**
      * Returns this mapping's {@link com.stormpath.sdk.directory.AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
-     * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application.
+     * {@link Directory Directory}), to be assigned to the application.
      *
      * @return this mapping's {@link com.stormpath.sdk.directory.AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
-     *         {@link com.stormpath.sdk.directory.Directory Directory}) assigned to the application.
+     *         {@link Directory Directory}) assigned to the application.
      */
     AccountStore getAccountStore();
 
     /**
      * Sets this mapping's {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
-     * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application.
+     * {@link Directory Directory}), to be assigned to the application.
      *
      * @param accountStore the AccountStore to be assigned to the application.
      * @return this instance for method chaining.
