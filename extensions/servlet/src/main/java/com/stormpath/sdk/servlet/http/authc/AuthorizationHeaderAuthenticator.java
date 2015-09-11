@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.http.authc;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -188,6 +189,12 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
 
             @Override
             public AccountStore getAccountStore() {
+                return null;
+            }
+
+            /** @since 1.0.RC5 */
+            @Override
+            public AuthenticationOptions getResponseOptions() {
                 return null;
             }
         };

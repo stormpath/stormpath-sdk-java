@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
+import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.error.authc.MissingApiKeyException;
@@ -116,5 +117,11 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
     @Override
     public AccountStore getAccountStore() {
         throw new UnsupportedOperationException("getAccountStore() method hasn't been implemented.");
+    }
+
+    /* @since 1.0.RC5 */
+    @Override
+    public AuthenticationOptions getResponseOptions() {
+        throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() is not supported.");
     }
 }
