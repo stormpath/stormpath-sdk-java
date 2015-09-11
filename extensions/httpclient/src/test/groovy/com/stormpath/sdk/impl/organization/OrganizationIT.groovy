@@ -47,7 +47,7 @@ class OrganizationIT extends ClientIT {
             .setNameKey(uniquify("test").substring(2, 8))
             .setStatus(OrganizationStatus.ENABLED)
 
-        org = tenant.createOrganization(org)
+        org = client.createOrganization(org)
         assertNotNull org.href
         deleteOnTeardown(org)
 
@@ -74,7 +74,7 @@ class OrganizationIT extends ClientIT {
         organization.name = uniquify("Java SDK: OrganizationIT.testGetOrganizationsWithCustomData")
         organization.setNameKey(uniquify("test").substring(2, 8))
         organization.customData.put("someKey", "someValue")
-        organization = tenant.createOrganization(organization);
+        organization = client.createOrganization(organization);
         assertNotNull organization.href
 
         deleteOnTeardown(organization)
@@ -96,15 +96,14 @@ class OrganizationIT extends ClientIT {
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: OrganizationIT.testAddAccountStoreDirs")
-        dir.description = dir.name + "-Description"
-        dir = tenant.createDirectory(dir);
+        dir = client.createDirectory(dir);
         deleteOnTeardown(dir)
 
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountStoreDirs")
         organization.setNameKey(uniquify("test").substring(2, 8))
         organization.customData.put("someKey", "someValue")
-        organization = tenant.createOrganization(organization);
+        organization = client.createOrganization(organization);
         deleteOnTeardown(organization)
 
         assertAccountStoreMappingListSize(organization.getOrganizationAccountStoreMappings(), 0)
@@ -119,10 +118,18 @@ class OrganizationIT extends ClientIT {
         retrievedAccountStoreMapping = organization.addAccountStore(dir)
         assertAccountStoreMappingListSize(organization.getOrganizationAccountStoreMappings(), 1)
         assertEquals(retrievedAccountStoreMapping.accountStore.href, dir.href)
+    }
 
-        // Test Non-existent
-        retrievedAccountStoreMapping = organization.addAccountStore("non-existent Dir")
-        assertNull(retrievedAccountStoreMapping)
+    @Test
+    void testAddAccountDirWithInvalidDir(){
+        Organization organization = client.instantiate(Organization)
+        organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountDirWithInvalidDir")
+        organization.setNameKey(uniquify("test").substring(2, 8))
+        organization = client.createOrganization(organization);
+        deleteOnTeardown(organization)
+
+        def accountStoreMapping = organization.addAccountStore("non-existent Dir")
+        assertNull accountStoreMapping
     }
 
     private assertAccountStoreMappingListSize(OrganizationAccountStoreMappingList accountStoreMappings, int expectedSize) {

@@ -285,6 +285,24 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
     }
 
     @Test
+    void testCreateAccountWithoutDefaultAccountStore() {
+
+        Account acct = client.instantiate(Account)
+        acct.username = uniquify('JSDK_testAccountForOrg')
+        acct.password = 'Changeme1!'
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+
+        try {
+            org.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+            fail("Should have thrown due to missing accountStore")
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "No account store assigned to this organization has been configured as the default storage location for newly created accounts.")
+        }
+    }
+
+    @Test
     void testOrganizationAccountStoreMappingCriteria() {
         2.times { i ->
             Directory dir = createDirectory()
@@ -310,8 +328,21 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         def organization = tenant.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org.name)).withOrganizationAccountStoreMappings())
         String orgString = organization.toString()
         assertTrue(orgString.contains("listIndex=0"))
-        assertTrue(orgString.contains("isDefaultAccountStore=true"))
+        assertTrue(orgString.contains("isDefaultAccountStore=false"))
         assertTrue(orgString.contains("isDefaultGroupStore=false"))
+        assertTrue(orgString.contains("name"))
+        assertTrue(orgString.contains("description"))
+
+        org.setDefaultAccountStore(dir)
+        org.setDefaultGroupStore(dir)
+
+        organization = tenant.getOrganizations(
+                Organizations.where(Organizations.name().eqIgnoreCase(org.name)).and(Organizations.description().eqIgnoreCase(org.description))
+                        .withOrganizationAccountStoreMappings())
+        orgString = organization.toString()
+        assertTrue(orgString.contains("listIndex=0"))
+        assertTrue(orgString.contains("isDefaultAccountStore=true"))
+        assertTrue(orgString.contains("isDefaultGroupStore=true"))
         assertTrue(orgString.contains("name"))
         assertTrue(orgString.contains("description"))
     }
@@ -326,8 +357,6 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         String orgString = organization.toString()
         assertTrue(orgString.contains("listIndex=0"))
         assertTrue(orgString.contains("listIndex=1"))
-        assertTrue(orgString.contains("isDefaultAccountStore=true"))
-        assertTrue(orgString.contains("isDefaultGroupStore=false"))
         assertTrue(orgString.contains("isDefaultAccountStore=false"))
         assertTrue(orgString.contains("isDefaultGroupStore=false"))
         assertTrue(orgString.contains("name"))
@@ -372,8 +401,6 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
         assertNotEquals(org.getDefaultAccountStore().getHref(), group.getHref())
         org.setDefaultAccountStore(group)
-
-        //let's check the changes are visible even without saving
         assertEquals(org.getDefaultAccountStore().getHref(), group.getHref())
 
         OrganizationAccountStoreMappingList accountStoreMappingList = org.getOrganizationAccountStoreMappings()
@@ -391,7 +418,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             }
         }
 
-        //// Let's create a new account to see if it gets created in the DefaultAccountStore we just set
+        // Create a new account to see if it gets created in the new DefaultAccountStore
         group.setStatus(GroupStatus.ENABLED)
         group.save()
         Account acct = client.instantiate(Account)
@@ -404,7 +431,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         deleteOnTeardown(acct)
         assertEquals(acct.getDirectory().getHref(), group.getDirectory().getHref())
 
-        //Now let's set the DefaultAccountStore to be an already existing account store mapping (this runs different code in DefaultOrganization)
+        // Set the DefaultAccountStore to be an already existing account store mapping
         org.setDefaultAccountStore(dir)
         assertEquals(org.getDefaultAccountStore().getHref(), dir.getHref())
         accountStoreMappingList = org.getOrganizationAccountStoreMappings()
@@ -421,12 +448,9 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             }
         }
 
-        ////////// setDefaultGroupStore time //////////
-
         def newDir = createDirectory()
         org.setDefaultGroupStore(newDir)
 
-        //let's check the changes are visible even without saving
         assertEquals(org.getDefaultGroupStore().getHref(), newDir.getHref())
         accountStoreMappingList = org.getOrganizationAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
@@ -443,14 +467,14 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             }
         }
 
-        //// Let's create a new group to see if it gets created in the DefaultGroupStore we just set
+        // Create a new group to see if it gets created in the new DefaultGroupStore
         def newGroup = client.instantiate(Group)
         newGroup.name = uniquify('Java SDK IT Group')
         newGroup = org.createGroup(newGroup)
         deleteOnTeardown(newGroup)
         assertEquals(newGroup.getDirectory().getHref(), newDir.getHref())
 
-        //Now let's set the DefaultGroupStore to be an already existing account store mapping (this runs different code in DefaultOrganization)
+        // Set the DefaultGroupStore to be an already existing account store mapping
         org.setDefaultGroupStore(dir)
         assertEquals(org.getDefaultGroupStore().getHref(), dir.getHref())
         accountStoreMappingList = org.getOrganizationAccountStoreMappings()
@@ -472,8 +496,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
     private Directory createDirectory() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("JSDK: Directory")
-        dir.description = dir.name + "-Description"
-        dir = tenant.createDirectory(dir);
+        dir = client.createDirectory(dir);
         directories.add(dir)
         return dir;
     }
@@ -506,7 +529,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 //        // create a directory
 //        Directory dir = client.instantiate(Directory)
 //        dir.name = uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate_dir")
-//        dir = tenant.createDirectory(dir);
+//        dir = client.createDirectory(dir);
 //        deleteOnTeardown(dir)
 //
 //        // test using directory as account store
