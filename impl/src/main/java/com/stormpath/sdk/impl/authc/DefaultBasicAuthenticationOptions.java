@@ -19,7 +19,7 @@ import com.stormpath.sdk.authc.BasicAuthenticationOptions;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class DefaultBasicAuthenticationOptions extends DefaultOptions<BasicAuthenticationOptions> implements BasicAuthenticationOptions<BasicAuthenticationOptions> {
 

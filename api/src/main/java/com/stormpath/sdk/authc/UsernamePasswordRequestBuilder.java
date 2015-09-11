@@ -21,7 +21,7 @@ import com.stormpath.sdk.directory.AccountStore;
  * A Builder to construct {@link com.stormpath.sdk.authc.UsernamePasswordRequest UsernamePasswordRequest}s.
  *
  * @see com.stormpath.sdk.authc.UsernamePasswordRequest#builder()
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBuilder<UsernamePasswordRequestBuilder> {
 

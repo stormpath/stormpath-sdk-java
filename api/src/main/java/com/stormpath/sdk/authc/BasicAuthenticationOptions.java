@@ -18,7 +18,7 @@ package com.stormpath.sdk.authc;
 /**
  * BasicAuthentication-specific options that may be specified during authentication.
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface BasicAuthenticationOptions<T extends BasicAuthenticationOptions> extends AuthenticationOptions<T> {
 

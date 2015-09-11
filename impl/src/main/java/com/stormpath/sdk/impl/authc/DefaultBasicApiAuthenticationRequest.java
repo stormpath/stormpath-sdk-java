@@ -149,7 +149,7 @@ public class DefaultBasicApiAuthenticationRequest implements AuthenticationReque
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public AuthenticationOptions getResponseOptions() {

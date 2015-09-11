@@ -192,7 +192,7 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
                 return null;
             }
 
-            /** @since 1.0.RC4.6 */
+            /** @since 1.0.RC5 */
             @Override
             public AuthenticationOptions getResponseOptions() {
                 return null;

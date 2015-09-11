@@ -45,7 +45,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
      *
      * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     public static UsernamePasswordRequestBuilder builder() {
         return (UsernamePasswordRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequestBuilder");
@@ -58,7 +58,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @return a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
      * AuthenticationResult} resource that will be obtained after a successful authentication.
      * @see com.stormpath.sdk.authc.UsernamePasswordRequestBuilder#withResponseOptions(BasicAuthenticationOptions)
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     public static BasicAuthenticationOptions options() {
         return (BasicAuthenticationOptions) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultBasicAuthenticationOptions");
@@ -317,7 +317,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *
      * @param options the specific {@code BasicAuthenticationOptions} that will be used to customize the authentication response.
      * @return this instance for method chaining.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Deprecated
     public UsernamePasswordRequest setResponseOptions(BasicAuthenticationOptions options) {
@@ -332,7 +332,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * </p>
      *
      * @return the {@code AuthenticationOptions} that will be used to customize the response.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     @Deprecated

@@ -142,7 +142,7 @@ class BasicAuthenticatorTest {
 
     }
 
-    //@since 1.0.RC4.6
+    //@since 1.0.RC5
     @Test
     void testAuthenticateOptionsWithAccount() {
 

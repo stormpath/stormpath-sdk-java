@@ -21,7 +21,7 @@ import com.stormpath.sdk.query.Options;
  * Base Authentication-specific options that may be specified during authentication.
  *
  * @see com.stormpath.sdk.authc.BasicAuthenticationOptions
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public interface AuthenticationOptions<T extends AuthenticationOptions> extends Options {
 

@@ -105,7 +105,7 @@ public interface AuthenticationRequest<P, C> {
      * </p>
      *
      * @return the {@code AuthenticationOptions} that will be used to customize the response.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     AuthenticationOptions getResponseOptions();
 

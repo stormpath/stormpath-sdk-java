@@ -113,7 +113,7 @@ public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest im
         throw new UnsupportedOperationException(getClass().getName() + " .getAccountStore() is not supported.");
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     @Override
     public AuthenticationOptions getResponseOptions() {
         throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() is not supported.");
