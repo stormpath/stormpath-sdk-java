@@ -321,75 +321,76 @@ class ApplicationIT extends ClientIT {
     /**
      * @since 1.0.RC4.6
      */
-//    @Test
-//    void testLoginWithOrganizationAccountStore() {
-//
-//        def username = uniquify('thisisme')
-//        def password = 'Changeme1!'
-//
-//        //we could use the parent class's Client instance, but we re-define it here just in case:
-//        //if we ever turn off caching in the parent class config, we can't let that affect this test:
-//        def client = buildClient(true)
-//
-//        def app = createTempApp()
-//
-//        Organization org = client.instantiate(Organization)
-//        org.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore"))
-//                .setDescription("Organization Description")
-//                .setNameKey(uniquify("test").substring(2, 8))
-//                .setStatus(OrganizationStatus.ENABLED)
-//        org = client.currentTenant.createOrganization(org)
-//        deleteOnTeardown(org)
-//
-//        Directory dir = client.instantiate(Directory)
-//        dir.name = uniquify("Java SDK: ApplicationIT.testLoginWithOrganizationAccountStore")
-//        dir = client.currentTenant.createDirectory(dir);
-//        deleteOnTeardown(dir)
-//
-//        //create account store
-//        org.addAccountStore(dir)
-//
-//        def acct = client.instantiate(Account)
-//        acct.username = username
-//        acct.password = password
-//        acct.email = username + '@nowhere.com'
-//        acct.givenName = 'Joe'
-//        acct.surname = 'Smith'
-//        dir.createAccount(acct)
-//
-//        ApplicationAccountStoreMapping accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
-//        accountStoreMapping.setAccountStore(org)
-//        accountStoreMapping.setApplication(app)
-//        app.createAccountStoreMapping(accountStoreMapping)
-//        deleteOnTeardown(accountStoreMapping)
-//
-//        //Account belongs to org, therefore login must succeed
-//        def request = new UsernamePasswordRequest(username, password, org)
-//        def result = app.authenticateAccount(request)
-//        assertEquals(result.getAccount().getUsername(), acct.username)
-//
-//        //No account store has been defined, therefore login must succeed
-//        request = new UsernamePasswordRequest(username, password)
-//        result = app.authenticateAccount(request)
-//        assertEquals(result.getAccount().getUsername(), acct.username)
-//
-//        Organization org2 = client.instantiate(Organization)
-//        org2.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore_org2"))
-//                .setDescription("Organization Description 2")
-//                .setNameKey(uniquify("test").substring(2, 8))
-//                .setStatus(OrganizationStatus.ENABLED)
-//        org2 = client.currentTenant.createOrganization(org2)
-//        deleteOnTeardown(org2)
-//
-//        //Account does not belong to org2, therefore login must fail
-//        try {
-//            request = new UsernamePasswordRequest(username, password, org2)
-//            result = app.authenticateAccount(request)
-//            fail("Should have thrown due to invalid username/password");
-//        } catch (Exception e) {
-//            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114): The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
-//        }
-//    }
+    @Test
+    void testLoginWithOrganizationAccountStore() {
+
+        def username = uniquify('thisisme')
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        Organization org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.createOrganization(org)
+        deleteOnTeardown(org)
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testLoginWithOrganizationAccountStore")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        //create account store
+        def orgAccountStoreMapping = org.addAccountStore(dir)
+        deleteOnTeardown(orgAccountStoreMapping)
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        dir.createAccount(acct)
+
+        ApplicationAccountStoreMapping accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
+        accountStoreMapping.setAccountStore(org)
+        accountStoreMapping.setApplication(app)
+        accountStoreMapping = app.createAccountStoreMapping(accountStoreMapping)
+        deleteOnTeardown(accountStoreMapping)
+
+        //Account belongs to org, therefore login must succeed
+        def request = new UsernamePasswordRequest(username, password, org)
+        def result = app.authenticateAccount(request)
+        assertEquals(result.getAccount().getUsername(), acct.username)
+
+        //No account store has been defined, therefore login must succeed
+        request = new UsernamePasswordRequest(username, password)
+        result = app.authenticateAccount(request)
+        assertEquals(result.getAccount().getUsername(), acct.username)
+
+        Organization org2 = client.instantiate(Organization)
+        org2.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore_org2"))
+                .setDescription("Organization Description 2")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org2 = client.createOrganization(org2)
+        deleteOnTeardown(org2)
+
+        //Account does not belong to org2, therefore login must fail
+        try {
+            request = new UsernamePasswordRequest(username, password, org2)
+            result = app.authenticateAccount(request)
+            fail("Should have thrown due to invalid username/password");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114): The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
+        }
+    }
 
     /**
      * @since 1.0.RC4.6

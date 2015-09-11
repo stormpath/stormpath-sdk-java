@@ -235,7 +235,6 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      */
     void setDefaultAccountStore(AccountStore accountStore);
 
-
     /**
      * Creates a new Account that may login to this application.
      *
@@ -274,21 +273,21 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * </p>
      * <h2>Example</h2>
      * <pre>
-     * application.createAccount(Accounts.newCreateRequestFor(account).build());
+     *      organization.createAccount(Accounts.newCreateRequestFor(account).build());
      * </pre>
      *
      * <p>If you would like to force disabling the backing directory's account registration workflow:
      * <pre>
-     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
+     *      organization.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build());
      * </pre>
      * If you would like to force the execution of the registration workflow, no matter what the backing directory
      * configuration is:
      * <pre>
-     * application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
+     *      organization.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(true).build());
      * </pre>
      * If you would like to retrieve the account's custom data in the response of the account creation.
      * <pre>
-     * application.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
+     *      organization.createAccount(Accounts.newCreateRequestFor(account).withResponseOptions(Accounts.options().withCustomData()).build());
      * </pre>
      * </p>
      *
@@ -501,4 +500,43 @@ public interface Organization extends Resource, Saveable, Deletable, AccountStor
      * @return the organization's parent (owning) Tenant.
      */
     Tenant getTenant();
+
+    /**
+     * Creates a new {@link Group group} that may be used by this organization in the organization's
+     * {@link #getDefaultGroupStore() defaultGroupStore}
+     * <p/>
+     * This is a convenience method.  It merely delegates to the Organization's designated
+     * {@link #getDefaultGroupStore() defaultGroupStore}.
+     *
+     * @param group the Group to create/persist
+     * @return a new Group that may be used by this organization.
+     * @throws ResourceException if the Organization does not have a designated {@link #getDefaultGroupStore()
+     *                           defaultGroupStore} or if the designated {@code defaultGroupStore} does not allow new
+     *                           groups to be created.
+     */
+    Group createGroup(Group group) throws ResourceException;
+
+    /**
+     * Creates a new {@link Group group} that may be used by this organization in the organization's
+     * {@link #getDefaultGroupStore() defaultGroupStore}
+     * <p/>
+     * This is a convenience method. It merely delegates to the Organization's designated
+     * {@link #getDefaultGroupStore() defaultGroupStore}.
+     * <h2>Example</h2>
+     * <pre>
+     *      organization.createGroup(Groups.newCreateRequestFor(group).build());
+     * </pre>
+     * <p/>
+     * If you would like to retrieve the group's custom data in the response of the groups creation.
+     * <pre>
+     *      organization.createGroup(Groups.newCreateRequestFor(group).withResponseOptions(Groups.options().withCustomData()).build());
+     * </pre>
+     *
+     * @param request the group creation request
+     * @return a new Group that may be used by this organization.
+     * @throws ResourceException if the Organization does not have a designated {@link #getDefaultGroupStore()
+     *                           defaultGroupsStore} or if the designated {@code defaultGroupsStore} does not allow new
+     *                           groups to be created.
+     */
+    Group createGroup(CreateGroupRequest request);
 }
