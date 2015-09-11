@@ -165,7 +165,7 @@ public interface TenantActions {
      * @param organization the Organization resource to create.
      * @return the organization created.
      * @throws ResourceException if there was a problem creating the organization.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     Organization createOrganization(Organization organization);
 
@@ -180,7 +180,7 @@ public interface TenantActions {
      * @see #getOrganizations(OrganizationCriteria)
      * @see #getOrganizations(java.util.Map)
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     OrganizationList getOrganizations();
 
@@ -196,7 +196,7 @@ public interface TenantActions {
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's organizations that match the specified query criteria.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     OrganizationList getOrganizations(Map<String, Object> queryParams);
 
@@ -217,7 +217,7 @@ public interface TenantActions {
      * @param criteria the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's directories that match the specified query criteria.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     OrganizationList getOrganizations(OrganizationCriteria criteria);
 
@@ -452,9 +452,8 @@ public interface TenantActions {
      * @return the newly created OrganizationAccountStoreMapping instance.
      * @throws com.stormpath.sdk.resource.ResourceException
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
-
 }
 

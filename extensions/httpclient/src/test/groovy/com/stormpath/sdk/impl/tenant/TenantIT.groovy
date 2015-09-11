@@ -184,7 +184,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     void testCreateOrganization() {
@@ -205,7 +205,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     void testGetOrganizations() {
@@ -225,7 +225,7 @@ class TenantIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     void testGetOrganizationWithCriteria() {

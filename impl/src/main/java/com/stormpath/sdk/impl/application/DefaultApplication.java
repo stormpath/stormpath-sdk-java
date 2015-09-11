@@ -653,7 +653,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Override
     public ApplicationAccountStoreMapping addAccountStore(OrganizationCriteria criteria) {
@@ -725,7 +725,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /**
      * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      * */
     private Organization getSingleOrganization(OrganizationCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");

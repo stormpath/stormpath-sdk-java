@@ -30,7 +30,7 @@ import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
 import java.util.Map;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class DefaultOrganizationAccountStoreMapping extends AbstractInstanceResource implements OrganizationAccountStoreMapping {
 

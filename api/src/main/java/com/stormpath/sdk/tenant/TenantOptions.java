@@ -114,7 +114,7 @@ public interface TenantOptions<T> extends Options {
      * {@link #withOrganizations(int, int) withOrganizations(limit,offset)} methods.
      *
      * @return this instance for method chaining.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     T withOrganizations();
 
@@ -123,7 +123,7 @@ public interface TenantOptions<T> extends Options {
      *
      * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
      * @return this instance for method chaining.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     T withOrganizations(int limit);
 
@@ -133,7 +133,7 @@ public interface TenantOptions<T> extends Options {
      * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
      * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
      * @return this instance for method chaining.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     T withOrganizations(int limit, int offset);
 }
