@@ -39,6 +39,7 @@ import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList;
 import com.stormpath.sdk.organization.OrganizationStatus;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -158,7 +159,8 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
 
     @Override
     public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
-        return getResourceProperty(ACCOUNT_STORE_MAPPINGS);
+        OrganizationAccountStoreMappingList mappings = getOrganizationAccountStoreMappings();  //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(mappings.getHref(), OrganizationAccountStoreMappingList.class, (Criteria<OrganizationAccountStoreMappingCriteria>) criteria);
     }
 
     @Override

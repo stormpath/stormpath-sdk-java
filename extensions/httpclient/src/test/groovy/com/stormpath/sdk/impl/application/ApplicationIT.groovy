@@ -1152,7 +1152,6 @@ class ApplicationIT extends ClientIT {
         assertTrue properties.get("account").size() == 1
     }
 
-    private static assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
     private assertAccountStoreMappingListSize(ApplicationAccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
         for(ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappings) {
