@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.oauth.authc;
 
+import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
@@ -110,6 +111,12 @@ public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest im
     @Override
     public AccountStore getAccountStore() {
         throw new UnsupportedOperationException(getClass().getName() + " .getAccountStore() is not supported.");
+    }
+
+    /* @since 1.0.RC5 */
+    @Override
+    public AuthenticationOptions getResponseOptions() {
+        throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() is not supported.");
     }
 
 }

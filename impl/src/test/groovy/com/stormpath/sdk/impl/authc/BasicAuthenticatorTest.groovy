@@ -55,8 +55,7 @@ class BasicAuthenticatorTest {
             basicAuthenticator.authenticate(appHref, request)
             fail("Should have thrown")
         } catch (IllegalArgumentException ex) {
-            assertTrue(ex.getMessage().contains("Only UsernamePasswordRequest instances are supported"))
-            assertTrue(ex.getMessage().contains("must be an instance of class com.stormpath.sdk.authc.UsernamePasswordRequest"))
+            assertTrue(ex.getMessage().contains("Only UsernamePasswordRequest or DefaultUsernamePasswordRequest instances are supported."))
         }
     }
 
@@ -76,7 +75,7 @@ class BasicAuthenticatorTest {
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
         expect(basicLoginAttempt.setValue("Zm9vVXNlcm5hbWU6YmFyUGFzc3dk"))
-        expect(internalDataStore.create(appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class)).andReturn(authenticationResult)
+        expect(internalDataStore.create((String) appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class)).andReturn(authenticationResult)
 
         replay(internalDataStore, basicLoginAttempt, authenticationResult)
 
@@ -103,7 +102,7 @@ class BasicAuthenticatorTest {
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
         expect(basicLoginAttempt.setValue("Zm9vVXNlcm5hbWU6YmFyUGFzc3dk"))
-        expect(internalDataStore.create(appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class)).andReturn(authenticationResult)
+        expect(internalDataStore.create((String) appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class)).andReturn(authenticationResult)
 
         replay(internalDataStore, basicLoginAttempt, authenticationResult)
 
@@ -132,7 +131,7 @@ class BasicAuthenticatorTest {
         expect(basicLoginAttempt.setType("basic"))
         expect(basicLoginAttempt.setValue("Zm9vVXNlcm5hbWU6YmFyUGFzc3dk"))
         expect(basicLoginAttempt.setAccountStore(accountStore))
-        expect(internalDataStore.create(appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class)).andReturn(authenticationResult)
+        expect(internalDataStore.create((String) appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class)).andReturn(authenticationResult)
 
         replay(accountStore, internalDataStore, basicLoginAttempt, authenticationResult)
 
@@ -143,5 +142,34 @@ class BasicAuthenticatorTest {
 
     }
 
+    //@since 1.0.RC5
+    @Test
+    void testAuthenticateOptionsWithAccount() {
+
+        def appHref = "https://api.stormpath.com/v1/applications/3TdbyY1qo74eDM4gTo2H95"
+        def username = "fooUsername"
+        def password = "barPasswd"
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
+        def authenticationResult = createStrictMock(AuthenticationResult)
+
+        def options = UsernamePasswordRequest.options().withAccount()
+        def request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
+
+        expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
+        expect(basicLoginAttempt.setType("basic"))
+        expect(basicLoginAttempt.setValue("Zm9vVXNlcm5hbWU6YmFyUGFzc3dk"))
+
+        expect(internalDataStore.create((String) appHref + "/loginAttempts", basicLoginAttempt, AuthenticationResult.class, options)).andReturn(authenticationResult)
+
+        replay(internalDataStore, basicLoginAttempt, authenticationResult)
+
+        BasicAuthenticator basicAuthenticator = new BasicAuthenticator(internalDataStore)
+        basicAuthenticator.authenticate(appHref, request)
+
+        verify(internalDataStore, basicLoginAttempt, authenticationResult)
+
+    }
 
 }

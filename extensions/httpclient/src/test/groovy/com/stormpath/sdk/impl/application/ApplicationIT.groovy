@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -1112,6 +1110,49 @@ class ApplicationIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.0.RC5
+     */
+    @Test
+    void testLoginWithExpansion() {
+
+        def username = 'lonestarr'
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = uniquify(username) + '@stormpath.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+
+        def options = UsernamePasswordRequest.options().withAccount()
+        def request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
+
+        def result = app.authenticateAccount(request)
+
+        //Let's check expansion worked by looking at the internal properties
+        def properties = getValue(AbstractResource, result, "properties")
+        assertTrue properties.get("account").size() > 15
+        assertEquals properties.get("account").get("email"), acct.email
+
+        //Let's re-authenticate without expansion
+        request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build()
+        result = app.authenticateAccount(request)
+
+        //Let's check that there is no expansion
+        properties = getValue(AbstractResource, result, "properties")
+        assertTrue properties.get("account").size() == 1
+    }
+
+    private static assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
     private assertAccountStoreMappingListSize(ApplicationAccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
         for(ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappings) {
@@ -1192,7 +1233,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     private Object getValue(Class clazz, Object object, String fieldName) {
         Field field = clazz.getDeclaredField(fieldName)
