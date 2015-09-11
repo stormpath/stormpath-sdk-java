@@ -49,5 +49,4 @@ public class HelloController {
     String restricted(HttpServletRequest request) {
         return helloService.sayHello(AccountResolver.INSTANCE.getAccount(request));
     }
-
 }
