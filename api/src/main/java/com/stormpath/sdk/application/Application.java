@@ -1444,7 +1444,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * <code>null</code> if there is no Organization matching the criteria.
      * @throws ResourceException if the found {@link Organization} already exists as an account store in this application.
      * @throws IllegalArgumentException if the criteria matches more than one Organization in the current Tenant.
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     ApplicationAccountStoreMapping addAccountStore(OrganizationCriteria criteria);
 

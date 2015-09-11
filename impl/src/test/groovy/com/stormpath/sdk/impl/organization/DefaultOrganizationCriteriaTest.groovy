@@ -24,7 +24,7 @@ import static org.testng.Assert.*
 
 /**
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 class DefaultOrganizationCriteriaTest {
 
