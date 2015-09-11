@@ -16,7 +16,9 @@
 package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder;
+import com.stormpath.sdk.api.ApiRequestAuthenticator;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
@@ -268,5 +270,31 @@ public final class Applications {
         return (EqualsExpressionFactory) Classes.newInstance(FQCN, propName);
     }
 
+    /**
+     * Creates a new {@link ApiRequestAuthenticator ApiRequestAuthenticator} instance for authenticating API requests
+     * for the given {@link Application application}
+     *
+     * @param application The {@link Application} for which API requests will be authenticated
+     * @return a new {@link ApiRequestAuthenticator} to be used for API requests authentication
+     *
+     * @since 1.0.RC4.6
+     */
+    public static ApiRequestAuthenticator apiRequestAuthenticator(Application application) {
+        return (ApiRequestAuthenticator) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator", application);
+    }
+
+    /**
+     * Creates a new {@link OauthRequestAuthenticator OauthRequestAuthenticator} instance for authenticating Oauth-based API requests
+     * for the given {@link Application application}
+     *
+     * @param application The {@link Application} for which Oauth-based API requests will be authenticated
+     * @return a new {@link OauthRequestAuthenticator} that acts as a builder to allow you
+     *         to customize request processing behavior
+     *
+     * @since 1.0.RC4.6
+     */
+    public static OauthRequestAuthenticator oauthRequestAuthenticator(Application application) {
+        return (OauthRequestAuthenticator) Classes.newInstance("com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator", application);
+    }
 
 }

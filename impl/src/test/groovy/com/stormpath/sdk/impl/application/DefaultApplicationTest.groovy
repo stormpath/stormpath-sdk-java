@@ -202,7 +202,7 @@ class DefaultApplicationTest {
 
         defaultApplication.delete()
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult01)
 
@@ -240,9 +240,9 @@ class DefaultApplicationTest {
 
         replay internalDataStore, account, accountStore
 
-        def returnedAccount = defaultApplication.sendPasswordResetEmail(email, accountStore)
+        def returnedToken = defaultApplication.sendPasswordResetEmail(email, accountStore)
 
-        assertEquals(returnedAccount, account)
+        assertEquals(returnedToken.getAccount(), account)
 
         assertEquals(defaultPassResetToken.dirtyProperties.accountStore.href, accountStoreHref)
 
@@ -269,6 +269,7 @@ class DefaultApplicationTest {
 
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(false)
+        expect(request.isPasswordFormatSpecified()).andReturn(false)
         expect(request.isAccountOptionsSpecified()).andReturn(false)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
@@ -303,6 +304,7 @@ class DefaultApplicationTest {
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(true)
         expect(request.isRegistrationWorkflowEnabled()).andReturn(false)
+        expect(request.isPasswordFormatSpecified()).andReturn(false)
         expect(request.isAccountOptionsSpecified()).andReturn(true)
         expect(request.getAccountOptions()).andReturn(accountCriteria)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
@@ -696,7 +698,7 @@ class DefaultApplicationTest {
 
         replay internalDataStore, account
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com"), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
         assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult, null)
 

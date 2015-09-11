@@ -18,6 +18,8 @@ package com.stormpath.sdk.impl.application
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.PasswordResetToken
+import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
@@ -1052,22 +1054,12 @@ class ApplicationIT extends ClientIT {
         assertTrue properties.get("account").size() == 1
     }
 
-
-    private assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
+    private static assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
         for(AccountStoreMapping accountStoreMapping : accountStoreMappings) {
             qty++;
         }
         assertEquals(qty, expectedSize)
-    }
-
-    /**
-     * @since 1.0.RC4.6
-     */
-    private Object getValue(Class clazz, Object object, String fieldName) {
-        Field field = clazz.getDeclaredField(fieldName)
-        field.setAccessible(true)
-        return field.get(object)
     }
 
     /**
@@ -1100,4 +1092,104 @@ class ApplicationIT extends ClientIT {
         assertEquals properties.get("accounts").get("items")[0].get("email"), account.email
     }
 
+    /** @since 1.0.RC4.6 */
+    @Test
+    void testResetPassword() {
+
+        def app = createTempApp()
+
+        def username = uniquify('lonestarr')
+        def password = 'Changeme1!'
+        def email = username + '@stormpath.com'
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = email
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        def account = app.authenticateAccount(new UsernamePasswordRequest(username, password)).getAccount()
+        assertEquals account.getEmail(), email
+
+        PasswordResetToken token = app.sendPasswordResetEmail(email)
+        assertEquals email, token.account.email
+        assertEquals email, token.email
+
+        account = app.resetPassword(token.getValue(), "newPassword123!")
+
+        try {
+            account = app.authenticateAccount(new UsernamePasswordRequest(username, password)).getAccount()
+            fail("should have thrown due to wrong password")
+        } catch (ResourceException e) {
+            assertTrue(e.getMessage().contains("Login attempt failed because the specified password is incorrect."))
+        }
+
+        //login with the new password
+        account = app.authenticateAccount(new UsernamePasswordRequest(username, "newPassword123!")).getAccount()
+
+        assertEquals account.getEmail(), email
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    private Object getValue(Class clazz, Object object, String fieldName) {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true)
+        return field.get(object)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testPasswordImport() {
+
+        def app = createTempApp()
+
+        Account account = client.instantiate(Account)
+            .setGivenName('John')
+            .setSurname('DeleteMe')
+            .setEmail("deletejohn@test.com")
+            .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
+
+        def created = app.createAccount(Accounts.newCreateRequestFor(account)
+                .setRegistrationWorkflowEnabled(false)
+                .setPasswordFormat(PasswordFormat.MCF)
+                .build())
+        deleteOnTeardown(created)
+
+        //verify it was created:
+        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).single()
+        assertEquals(created.href, found.href)
+
+        found = app.authenticateAccount(new UsernamePasswordRequest("deletejohn@test.com", "rasmuslerdorf")).getAccount()
+        assertEquals(created.href, found.href)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testPasswordImportErrors() {
+
+        def app = createTempApp()
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DeleteMe'
+        account.email =  "deletejohn@test.com"
+        account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
+
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
+            fail("Should have thrown")
+        } catch (ResourceException e){
+            assertEquals 2006, e.getCode()
+            assertTrue e.getDeveloperMessage().contains("is in an invalid format")
+        }
+    }
 }

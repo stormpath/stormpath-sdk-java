@@ -43,6 +43,16 @@ public interface CreateAccountRequestBuilder {
     CreateAccountRequestBuilder setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled);
 
     /**
+     * Directive used to specify the submitted account has a password in a specific MCF format to be imported.
+     *
+     * @param passwordFormat the {@link PasswordFormat} used to encrypt the account's password
+     * @return the builder instance for method chaining.
+     *
+     * @since 1.0.RC4.6
+     */
+    CreateAccountRequestBuilder setPasswordFormat(PasswordFormat passwordFormat);
+
+    /**
      * Ensures that after a Account is created, the creation response is retrieved with the specified account's
      * options. This enhances performance by leveraging a single request to retrieve multiple related
      * resources you know you will use.
