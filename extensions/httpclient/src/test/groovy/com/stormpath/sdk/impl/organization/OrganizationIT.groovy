@@ -67,6 +67,41 @@ class OrganizationIT extends ClientIT {
     }
 
     @Test
+    void testCreateOrganizationWithDefaultDirectory(){
+
+        def tenant = client.currentTenant
+
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganizationWithDefaultDirectory"))
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        def retrievedOrg = client.createOrganization(Organizations.newCreateRequestFor(org).createDirectory().build())
+        assertNotNull(retrievedOrg)
+
+        deleteOnTeardown(retrievedOrg)
+        deleteOnTeardown(retrievedOrg.getDefaultAccountStore() as Directory)
+        assertEquals retrievedOrg.defaultAccountStore.href, retrievedOrg.defaultGroupStore.href
+
+        // test using directory name
+        org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganizationWithDefaultDirectory2"))
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        def dirName = uniquify("JSDK_test_dir")
+
+        retrievedOrg = tenant.createOrganization(Organizations.newCreateRequestFor(org).createDirectoryNamed(dirName).build())
+        def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
+        assertNotNull(retrievedOrg)
+
+        assertEquals dir.name, dirName
+
+        deleteOnTeardown(retrievedOrg)
+        deleteOnTeardown(retrievedOrg.getDefaultAccountStore() as Directory)
+    }
+
+    @Test
     void testGetOrganizationsWithCustomData() {
 
         def tenant = client.currentTenant

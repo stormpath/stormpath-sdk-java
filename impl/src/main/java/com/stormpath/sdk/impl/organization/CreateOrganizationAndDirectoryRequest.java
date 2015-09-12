@@ -15,26 +15,25 @@
 */
 package com.stormpath.sdk.impl.organization;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.organization.CreateOrganizationRequest;
 import com.stormpath.sdk.organization.Organization;
 
 /**
  * @since 1.0.RC5
  */
-public class DefaultCreateOrganizationRequest implements CreateOrganizationRequest {
+public class CreateOrganizationAndDirectoryRequest extends DefaultCreateOrganizationRequest {
 
-    private final Organization organization;
+    private final String directoryName;
 
-    public DefaultCreateOrganizationRequest(Organization organization) {
-        Assert.notNull(organization, "organization cannot be null.");
-        this.organization = organization;
+    public CreateOrganizationAndDirectoryRequest(Organization organization, String directoryName) {
+        super(organization);
+        this.directoryName = directoryName; //can be null if the directory should be auto-named
     }
 
-    public Organization getOrganization(){
-        return this.organization;
+    public String getDirectoryName() {
+        return this.directoryName;
     }
 
+    @Override
     public void accept(CreateOrganizationRequestVisitor visitor) {
         visitor.visit(this);
     }

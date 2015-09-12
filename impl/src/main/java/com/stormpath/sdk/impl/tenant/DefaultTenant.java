@@ -36,15 +36,15 @@ import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.organization.CreateOrganizationAndDirectoryRequest;
+import com.stormpath.sdk.impl.organization.CreateOrganizationRequestVisitor;
+import com.stormpath.sdk.impl.organization.DefaultCreateOrganizationRequest;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.organization.Organization;
-import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
-import com.stormpath.sdk.organization.OrganizationCriteria;
-import com.stormpath.sdk.organization.OrganizationList;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
@@ -154,8 +154,37 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
      */
     @Override
     public Organization createOrganization(Organization organization) {
-        Assert.notNull(organization, "Organization instance cannot be null.");
-        return getDataStore().create("/" + ORGANIZATIONS.getName(), organization);
+        CreateOrganizationRequest request = Organizations.newCreateRequestFor(organization).build();
+        return createOrganization(request);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Organization createOrganization(CreateOrganizationRequest orgRequest) throws ResourceException {
+        Assert.isInstanceOf(DefaultCreateOrganizationRequest.class, orgRequest);
+        DefaultCreateOrganizationRequest request = (DefaultCreateOrganizationRequest) orgRequest;
+
+        final Organization organization = request.getOrganization();
+        final String[] href = new String[]{"/" + ORGANIZATIONS.getName()};
+
+        request.accept(new CreateOrganizationRequestVisitor() {
+            @Override
+            public void visit(DefaultCreateOrganizationRequest ignored) {
+            }
+
+            @Override
+            public void visit(CreateOrganizationAndDirectoryRequest request) {
+                String name = request.getDirectoryName();
+                if (name == null) {
+                    name = "true"; //boolean true means 'auto name the directory'
+                }
+                href[0] += "?createDirectory=" + name;
+            }
+        });
+
+        return getDataStore().create(href[0], organization);
     }
 
     /**

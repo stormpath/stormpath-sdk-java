@@ -26,6 +26,8 @@ import com.stormpath.sdk.organization.Organization;
 public class DefaultCreateOrganizationRequestBuilder implements CreateOrganizationRequestBuilder {
 
     private Organization organization;
+    private boolean createDirectory;
+    private String directoryName;
 
     public DefaultCreateOrganizationRequestBuilder(Organization organization) {
         Assert.notNull(organization, "organization cannot be null.");
@@ -34,6 +36,24 @@ public class DefaultCreateOrganizationRequestBuilder implements CreateOrganizati
 
     @Override
     public CreateOrganizationRequest build() {
+        if (createDirectory) {
+            return new CreateOrganizationAndDirectoryRequest(organization, directoryName);
+        }
         return new DefaultCreateOrganizationRequest(this.organization);
+    }
+
+    @Override
+    public CreateOrganizationRequestBuilder createDirectory() {
+        this.createDirectory = true;
+        return this;
+    }
+
+    @Override
+    public CreateOrganizationRequestBuilder createDirectoryNamed(String directoryName) {
+        if (directoryName != null) {
+            this.createDirectory = true;
+        }
+        this.directoryName = directoryName;
+        return this;
     }
 }

@@ -36,6 +36,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import static junit.framework.TestCase.assertEquals
 import static junit.framework.TestCase.assertTrue
 import static org.junit.Assert.assertNotEquals
 import static org.testng.Assert.assertEquals
@@ -532,7 +533,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         dir = client.createDirectory(dir);
         deleteOnTeardown(dir)
 
-        // test using directory as account store
+        // test using directory as store
         orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(dir)
@@ -541,8 +542,10 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
         assertNotNull retrieved
         assertEquals orgAccountStoreMapping.href, retrieved.href
+        assertEquals orgAccountStoreMapping.accountStore.href, dir.href
 
         // test using group as account store
+        org.setDefaultGroupStore(dir)
         Group group = client.instantiate(Group)
         group.name = uniquify("JSDK_OrganizationAccountStoreMappingIT_testCreate_group")
         group = org.createGroup(group)
@@ -556,5 +559,6 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
         assertNotNull retrieved
         assertEquals orgAccountStoreMapping.href, retrieved.href
+        assertEquals orgAccountStoreMapping.accountStore.href, group.href
     }
 }

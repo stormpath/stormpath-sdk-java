@@ -38,10 +38,7 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.organization.Organization;
-import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
-import com.stormpath.sdk.organization.OrganizationCriteria;
-import com.stormpath.sdk.organization.OrganizationList;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -257,6 +254,16 @@ public class DefaultClient implements Client {
     @Override
     public Organization createOrganization(Organization organization) {
         return getCurrentTenant().createOrganization(organization);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC5
+     */
+    @Override
+    public Organization createOrganization(CreateOrganizationRequest request) throws ResourceException {
+        return getCurrentTenant().createOrganization(request);
     }
 
     /**
