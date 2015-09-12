@@ -15,11 +15,8 @@
  */
 package com.stormpath.sdk.impl.organization
 
-
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.impl.organization.DefaultOrganizationAccountStoreMapping
-import com.stormpath.sdk.impl.organization.DefaultOrganizationAccountStoreMappingList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ArrayProperty
 import com.stormpath.sdk.impl.resource.IntegerProperty

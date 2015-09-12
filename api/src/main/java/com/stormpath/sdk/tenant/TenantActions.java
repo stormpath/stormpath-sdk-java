@@ -28,10 +28,7 @@ import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.organization.Organization;
-import com.stormpath.sdk.organization.OrganizationAccountStoreMapping;
-import com.stormpath.sdk.organization.OrganizationCriteria;
-import com.stormpath.sdk.organization.OrganizationList;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Map;
@@ -168,6 +165,34 @@ public interface TenantActions {
      * @since 1.0.RC5
      */
     Organization createOrganization(Organization organization);
+
+    /**
+     * Creates a new Organization resource in the current tenant based on the specified {@code CreateOrganizationRequest}.
+     * <h3>Usage</h3>
+     * <pre>
+     * client.createOrganization(Organizations.newCreateRequestFor(organization).build());
+     * </pre>
+     * <p/>
+     * If you would like to automatically create a Directory for this organization's own needs:
+     * <pre>
+     * client.createOrganization(Organizations.newCreateRequestFor(organization).createDirectory().build());
+     * </pre>
+     * The directory's name will be auto-generated to reflect your Organization as closely as possible and not conflict
+     * with any existing Directories in your tenant.
+     * <p/>
+     * Or if you prefer to specify the directory name yourself:
+     * <pre>
+     * client.createOrganization(Organizations.newCreateRequestFor(organization).createDirectoryNamed("My Directory").build());
+     * </pre>
+     * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
+     * know you must choose another Directory name.
+     *
+     * @param request the request reflecting how to create the Organization
+     * @return the organization created.
+     * @throws ResourceException if there was a problem creating the organization.
+     * @since 1.0.RC5
+     */
+    Organization createOrganization(CreateOrganizationRequest request) throws ResourceException;
 
     /**
      * Returns a paginated list of all of the current tenant's {@link com.stormpath.sdk.organization.Organization Organization}

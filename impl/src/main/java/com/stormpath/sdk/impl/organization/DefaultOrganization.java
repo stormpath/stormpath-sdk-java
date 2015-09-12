@@ -24,9 +24,12 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.CreateGroupRequest;
+import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.group.DefaultGroup;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
@@ -188,7 +191,6 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
             mapping.save();
             setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
         }
-//        save();
     }
 
     @Override
@@ -273,9 +275,9 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
         Group createdGroup = null;
         AccountStore groupStore = null;
 
-        String href = getDefaultGroupStore().getHref();
-        if (href.contains("directories")) {
-            groupStore = getDataStore().getResource(href, Directory.class);
+        AccountStore store = getDefaultGroupStore();
+        if (store != null && store.getHref().contains("directories")) {
+            groupStore = getDataStore().getResource(store.getHref(), Directory.class);
         }
         if (groupStore == null){
             throw new IllegalStateException("No groupStore assigned to this organization has been configured as the default storage location for newly created accounts.");
