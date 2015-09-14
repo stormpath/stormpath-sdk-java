@@ -16,6 +16,7 @@
 package com.stormpath.spring.boot.autoconfigure
 
 import com.stormpath.sdk.application.Application
+import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
@@ -25,9 +26,9 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 
 /**
- * @since 1.0.RC4
+ * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = BeanOverrideStormpathAutoConfigurationApplication.class)
+@SpringApplicationConfiguration(classes = [BeanOverrideStormpathAutoConfigurationApplication.class, TwoAppTenantStormpathConfiguration.class])
 class BeanOverrideStormpathAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

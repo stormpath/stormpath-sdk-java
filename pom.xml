@@ -194,6 +194,17 @@
                 <artifactId>stormpath-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!--
+                Need the dup here in order to make tests in one module available to the other modules.
+                Known issue since 2005. http://jira.codehaus.org/browse/MNG-1378
+            -->
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-security</artifactId>
@@ -442,6 +453,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <archive>
                         <manifest>

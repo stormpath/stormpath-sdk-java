@@ -38,6 +38,12 @@
             <artifactId>stormpath-spring-security</artifactId>
         </dependency>
 
+        <!-- Testing-only dependencies: -->
+        <dependency>
+            <groupId>com.stormpath.spring</groupId>
+            <artifactId>stormpath-spring</artifactId>
+            <type>test-jar</type>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

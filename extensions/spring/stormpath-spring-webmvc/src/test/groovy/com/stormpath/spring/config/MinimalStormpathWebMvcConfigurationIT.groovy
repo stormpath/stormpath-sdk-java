@@ -30,9 +30,9 @@ import javax.servlet.Filter
 import static org.testng.Assert.assertNotNull
 
 /**
- * @since 1.0.RC4
+ * @since 1.0.RC5
  */
-@ContextConfiguration(classes = MinimalWebMvcAppConfig.class)
+@ContextConfiguration(classes = [MinimalWebMvcAppConfig.class, TwoAppTenantStormpathConfiguration.class])
 @WebAppConfiguration
 class MinimalStormpathWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
 

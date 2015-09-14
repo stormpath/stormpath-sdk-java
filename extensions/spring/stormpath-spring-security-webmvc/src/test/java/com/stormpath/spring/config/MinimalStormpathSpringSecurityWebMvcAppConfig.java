@@ -23,5 +23,4 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableStormpathWebSecurity
-@PropertySource("classpath:com/stormpath/spring/config/PropertyOverrideAppConfig.properties")
 public class MinimalStormpathSpringSecurityWebMvcAppConfig {}

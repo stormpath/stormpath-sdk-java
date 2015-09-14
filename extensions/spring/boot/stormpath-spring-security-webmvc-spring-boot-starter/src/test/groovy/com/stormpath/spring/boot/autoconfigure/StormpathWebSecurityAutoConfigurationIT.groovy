@@ -24,6 +24,7 @@ import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
+import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
@@ -39,7 +40,7 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = StormpathWebSecurityAutoConfigurationApplication.class)
+@SpringApplicationConfiguration(classes = [StormpathWebSecurityAutoConfigurationApplication.class, TwoAppTenantStormpathConfiguration.class])
 @WebAppConfiguration
 class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
