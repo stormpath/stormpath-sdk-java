@@ -274,7 +274,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         }
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     private Error constructError(Map jsonMap) {
         Assert.isTrue(isError(jsonMap));
         Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR_PARAM_NAME);
@@ -287,7 +287,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         return error;
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     private boolean isError(Map jsonMap) {
         Assert.notNull(jsonMap, "jsonMap cannot be null.");
         Object error = getOptionalValue(jsonMap, ERROR_PARAM_NAME);

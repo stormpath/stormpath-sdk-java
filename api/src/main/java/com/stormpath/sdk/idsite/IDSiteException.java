@@ -28,7 +28,7 @@ import com.stormpath.sdk.lang.Assert;
  * @see InvalidIDSiteTokenException
  * @see IDSiteSessionTimeoutException
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public abstract class IDSiteException extends Exception implements com.stormpath.sdk.error.Error {
 
@@ -44,7 +44,6 @@ public abstract class IDSiteException extends Exception implements com.stormpath
      *
      * @param error the response Error. Cannot be null.
      * @return {@code error.getDeveloperMessage()}
-     * @since 0.9.2
      */
     private static String buildExceptionMessage(Error error) {
         Assert.notNull(error, "Error argument cannot be null.");

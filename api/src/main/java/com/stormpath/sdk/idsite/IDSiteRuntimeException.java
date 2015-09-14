@@ -35,7 +35,7 @@ import java.util.List;
  * </ul>
  * </p>
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class IDSiteRuntimeException extends ResourceException {
 

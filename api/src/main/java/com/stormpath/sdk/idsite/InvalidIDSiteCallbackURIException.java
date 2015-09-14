@@ -26,7 +26,7 @@ import com.stormpath.sdk.error.Error;
  * The following information received from IDSite's Error will be available: <code>code</code>, <code>developerMessage</code>, <code>message</code>, <code>moreInfo</code>, <code>status</code>.
  * </p>
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class InvalidIDSiteCallbackURIException extends IDSiteException {
 

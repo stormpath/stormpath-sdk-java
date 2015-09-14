@@ -65,7 +65,7 @@ class DefaultIdSiteCallbackHandlerTest {
         testListener(jwtResponse, IdSiteResultStatus.LOGOUT)
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     @Test
     void testIDSiteException() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
@@ -77,7 +77,7 @@ class DefaultIdSiteCallbackHandlerTest {
         testError(jwtResponse, 11001, 400, "Token is invalid", "Token is invalid because the specified organization name key does not exist in your Stormpath Tenant")
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     @Test
     void testExpiredIDSiteError() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
@@ -89,7 +89,7 @@ class DefaultIdSiteCallbackHandlerTest {
         testExpired(jwtResponse)
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     @Test
     void testIDSiteExceptionRethrow() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
@@ -195,7 +195,7 @@ class DefaultIdSiteCallbackHandlerTest {
         verify application, request, listener, account
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     private static void testError(String jwtResponse, int expectedCode, int expectedStatus, String expectedMessage, String expectedDeveloperMessage) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def requestExecutor = createStrictMock(RequestExecutor)
@@ -223,7 +223,7 @@ class DefaultIdSiteCallbackHandlerTest {
         verify application, request
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     private static void testExpired(String jwtResponse) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def requestExecutor = createStrictMock(RequestExecutor)
@@ -248,7 +248,7 @@ class DefaultIdSiteCallbackHandlerTest {
         verify application, request
     }
 
-    /* @since 1.0.RC4.6 */
+    /* @since 1.0.RC5 */
     private static void testRethrow(String jwtResponse, Class<IDSiteException> expectedExceptionClass, int expectedCode, int expectedStatus, String expectedMessage, String expectedDeveloperMessage) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def requestExecutor = createStrictMock(RequestExecutor)
