@@ -465,7 +465,21 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * Consider the following username/password-based example:
      * <p/>
      * <pre>
-     * AuthenticationRequest request = new UsernamePasswordRequest(email, submittedRawPlaintextPassword);
+     * AuthenticationRequest request = UsernamePasswordRequest.builder()
+     *                         .setUsernameOrEmail(username)
+     *                         .setPassword(submittedRawPlaintextPassword)
+     *                         .build();
+     * Account authenticated = appToTest.authenticateAccount(request).getAccount();
+     * </pre>
+     * Additionally, the Account can be requested to be expanded to avoid a new network transfer when obtaining it:
+     * <p/>
+     * <pre>
+     * BasicAuthenticationOptions options = UsernamePasswordRequest.options().withAccount();
+     * AuthenticationRequest request = UsernamePasswordRequest.builder()
+     *                         .setUsernameOrEmail(username)
+     *                         .setPassword(submittedRawPlaintextPassword)
+     *                         .withResponseOptions(options)
+     *                         .build();
      * Account authenticated = appToTest.authenticateAccount(request).getAccount();
      * </pre>
      *

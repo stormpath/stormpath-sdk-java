@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.error.authc.InvalidApiKeyException;
@@ -145,6 +146,14 @@ public class DefaultBasicApiAuthenticationRequest implements AuthenticationReque
     @Override
     public AccountStore getAccountStore() {
         throw new UnsupportedOperationException("getAccountStore() this operation is not supported ApiAuthenticationRequest.");
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public AuthenticationOptions getResponseOptions() {
+        throw new UnsupportedOperationException("getResponseOptions() this operation is not supported in ApiAuthenticationRequest.");
     }
 }
 
