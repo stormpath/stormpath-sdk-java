@@ -322,6 +322,13 @@ public class DefaultDataStore implements InternalDataStore {
         return save(parentHref, resource, returnType, null, true);
     }
 
+    /** @since 1.0.RC5 */
+    @Override
+    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, Options options) {
+        QueryString qs = toQueryString(parentHref, options);
+        return save(parentHref, resource, returnType, qs, true);
+    }
+
     @Override
     public <T extends Resource & Saveable> void save(T resource) {
         String href = resource.getHref();
