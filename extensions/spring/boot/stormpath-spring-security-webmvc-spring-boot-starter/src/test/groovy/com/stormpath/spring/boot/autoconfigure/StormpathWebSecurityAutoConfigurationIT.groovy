@@ -37,7 +37,7 @@ import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @SpringApplicationConfiguration(classes = StormpathWebSecurityAutoConfigurationApplication.class)
 @WebAppConfiguration

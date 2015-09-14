@@ -23,7 +23,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 @EnableStormpathWebSecurity //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @Configuration
@@ -31,6 +31,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @PropertySource("classpath:application.properties")
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/restricted").fullyAuthenticated();

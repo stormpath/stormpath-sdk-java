@@ -31,7 +31,7 @@ import javax.servlet.ServletRegistration;
 import java.util.EnumSet;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class WebAppInitializer implements WebApplicationInitializer {
 

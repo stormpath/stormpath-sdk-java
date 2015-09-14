@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 public class CustomTestGroupGrantedAuthorityResolver implements GroupGrantedAuthorityResolver {
 
