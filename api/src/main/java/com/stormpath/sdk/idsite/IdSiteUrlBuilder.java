@@ -85,6 +85,36 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setPath(String path);
 
     /**
+     * Sets the organizationNameKey identifier of the {@code Organization}  to be targeted during an authentication or
+     * reset password ID Site operations.
+     *
+     * @param organizationNameKey identifier of the {@code Organization} to be
+     * @return this instance for method chaining.
+     * @since 1.0.RC5
+     */
+    IdSiteUrlBuilder setOrganizationNameKey(String organizationNameKey);
+
+    /**
+     * Sets a flag that indicates whether the {@code organizationNameKey} should be appended as part of the ID site domain.
+     * <p/>
+     * Setting this flag doesn't have any effect unless the {@code organizationNameKey} is set.
+     *
+     * @param useSubdomain flag to be set when the id sit will be used appending the
+     * @return this instance for method chaining.
+     * @since 1.0.RC5
+     */
+    IdSiteUrlBuilder setUseSubdomain(boolean useSubdomain);
+
+    /**
+     * Sets a flag that indicates whether the ID Site should add an Organization nameKey field when presented to the user.
+     *
+     * @param showOrganizationField flag to be sent when the IdSite will display the organization field.
+     * @return this instance for method chaining.
+     * @since 1.0.RC5
+     */
+    IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField);
+
+    /**
      *
      * A user that has an open session and wants to logout from it will invoke this method when constructing the {@code callbackUri}.
      * <p/>

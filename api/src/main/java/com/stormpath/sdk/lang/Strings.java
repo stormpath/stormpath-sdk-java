@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.lang;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,6 +57,10 @@ public abstract class Strings {
      */
     public static final char DEFAULT_QUOTE_CHAR = '"';
 
+    /**
+     * Constant representing the UTF-8 Charset.
+     */
+    public static final Charset UTF_8 = Charset.forName("UTF-8");
 
     //---------------------------------------------------------------------
     // General convenience methods for working with Strings
