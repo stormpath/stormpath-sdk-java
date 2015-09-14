@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.jwt;
 /**
  * IdSiteClaims exposes the Claims parameters used for IdSite.
  *
- * @since 1.0.RC
+ * @since 1.0.RC5
  */
 public abstract class IdSiteClaims {
 
