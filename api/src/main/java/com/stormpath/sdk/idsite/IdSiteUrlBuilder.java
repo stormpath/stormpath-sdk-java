@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,31 +85,46 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setPath(String path);
 
     /**
-     * Sets the organizationNameKey identifier of the {@code Organization}  to be targeted during an authentication or
-     * reset password ID Site operations.
+     * Ensures the ID Site is customized for the {@code Organization} with the specified {@code organizationNameKey}.
+     * This is useful for multi-tenant or white label scenarios where you know the user belongs to a specific
+     * {@code Organization}.
      *
-     * @param organizationNameKey identifier of the {@code Organization} to be
+     * @param organizationNameKey unique identifier of the {@code Organization} to use when customizing ID Site.
      * @return this instance for method chaining.
      * @since 1.0.RC5
      */
     IdSiteUrlBuilder setOrganizationNameKey(String organizationNameKey);
 
     /**
-     * Sets a flag that indicates whether the {@code organizationNameKey} should be appended as part of the ID site domain.
-     * <p/>
-     * Setting this flag doesn't have any effect unless the {@code organizationNameKey} is set.
+     * Ensures that the user will visit ID Site using a subdomain equal to the
+     * {@link #setOrganizationNameKey(String) organizationNameKey} instead of the standard base domain.
+     * <p>
+     * <h5>Example</h5>
+     * <p>
+     * <p>Assume your ID Site is located at the domain {@code id.myapp.com}.  If you specify an
+     * {@link #setOrganizationNameKey(String) organizationNameKey} of {@code greatcustomer} and set
+     * {@link #setUseSubdomain(boolean) useSubdomain} to {@code true}, the user will be sent to
+     * {@code https://greatcustomer.id.myapp.com} instead, providing for a more customized white-labeled URL experience.
      *
-     * @param useSubdomain flag to be set when the id sit will be used appending the
+     * @param useSubdomain {@code true} to ensure that the user will visit ID Site using a subdomain equal to the
+     *                     {@link #setOrganizationNameKey(String) organizationNameKey}, {@code false} to ensure that
+     *                     the standard ID Site domain.
      * @return this instance for method chaining.
      * @since 1.0.RC5
      */
     IdSiteUrlBuilder setUseSubdomain(boolean useSubdomain);
 
     /**
-     * Sets a flag that indicates whether the ID Site should add an Organization nameKey field when presented to the user.
+     * Ensures that the ID Site will show the {@link #setOrganizationNameKey(String) organizationNameKey} field to
+     * the end-user in the ID Site user interface.
+     * <p>
+     * <p>Setting this to {@code true} allows the user to see the field and potentially change the value.  This might be
+     * userful if users can have accounts in different organizations - it would allow the user to specify which
+     * organization they want to login to as desired.</p>
      *
-     * @param showOrganizationField flag to be sent when the IdSite will display the organization field.
-     * @return this instance for method chaining.
+     * @param showOrganizationField {@code true} the ID Site will show the
+     *                              {@link #setOrganizationNameKey(String) organizationNameKey} field to end-user in
+     *                              the ID Site user interface, {@code false} otherwise.z
      * @since 1.0.RC5
      */
     IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField);
