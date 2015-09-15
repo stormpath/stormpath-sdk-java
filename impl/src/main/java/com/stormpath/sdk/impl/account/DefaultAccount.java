@@ -225,14 +225,14 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public GroupMembership addGroup(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
-        Group group =  findGroupInAccountDirectory(hrefOrName);
+        Group group =  findGroup(hrefOrName);
         if (group != null){
             return DefaultGroupMembership.create(this, group, getDataStore());
         }
         return null;
     }
 
-    private Group findGroupInAccountDirectory(String hrefOrName) {
+    private Group findGroup(String hrefOrName) {
 
         Group group = null;
 
