@@ -142,7 +142,7 @@ class GroupIT extends ClientIT {
         def acct5 = client.instantiate(Account)
         acct5.username = uniquify('JSDK-testAddAndRemoveAccount-5')
         acct5.password = 'Changeme1!'
-        acct5.email = 'usr4@nowhere.com'
+        acct5.email = 'usr5test@nowhere.com'
         acct5.givenName = 'John'
         acct5.surname = 'Smith'
         acct5 = app.createAccount(Accounts.newCreateRequestFor(acct5).setRegistrationWorkflowEnabled(false).build())
