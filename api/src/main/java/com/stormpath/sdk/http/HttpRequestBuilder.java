@@ -51,6 +51,30 @@ public interface HttpRequestBuilder {
     public HttpRequestBuilder parameters(Map<String, String[]> parameters);
 
     /**
+     * Adds a request header that will be part of the headers map in the resulting request instance.
+     *
+     * @param name the name of the HTTP header that will be present in the resulting HTTP request instance.
+     * @param value the value of the HTTP header that will be present in the resulting HTTP request instance.
+     * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if the name or value arguments are {@code null}.
+     *
+     * @since 1.0.RC4.6
+     */
+    public HttpRequestBuilder addHeader(String name, String[] value) throws IllegalArgumentException;
+
+    /**
+     * Adds a request parameter that will be part of the parameters map in the resulting request instance.
+     *
+     * @param name the name of the HTTP parameter that will be present in the resulting HTTP request instance.
+     * @param value the value of the HTTP parameter that will be present in the resulting HTTP request instance.
+     * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if the name or value arguments are {@code null}.
+     *
+     * @since 1.0.RC4.6
+     */
+    public HttpRequestBuilder addParameter(String name, String[] value) throws IllegalArgumentException;
+
+    /**
      * Sets the query parameters that will be present in the resulting request instance.
      *
      * @param queryParameters the query parameters that will be present in the resulting request instance.

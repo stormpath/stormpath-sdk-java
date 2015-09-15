@@ -21,50 +21,86 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
+import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @since 1.0.RC
  */
 public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
-    private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
-
     private static final ApiAuthenticationRequestFactory FACTORY = new ApiAuthenticationRequestFactory();
 
     private final Application application;
 
-    private final HttpRequest httpRequest;
+    private HttpRequest httpRequest;
 
-    public DefaultApiRequestAuthenticator(Application application, Object httpRequest) {
+    private static final Set<Class> HTTP_REQUEST_SUPPORTED_CLASSES;
+
+    private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG =
+            "Class [%s] is not one of the supported http requests classes [%s].";
+
+    static {
+        Set<Class> supportedClasses = new HashSet<Class>();
+        supportedClasses.add(HttpRequest.class);
+        HTTP_REQUEST_SUPPORTED_CLASSES = supportedClasses;
+    }
+
+    public DefaultApiRequestAuthenticator(Application application, HttpRequest httpRequest) {
 
         Assert.notNull(application, "application argument cannot be null.");
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
         this.application = application;
 
         if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
-            this.httpRequest = (HttpRequest) httpRequest;
+            this.httpRequest = httpRequest;
         } else {
-            Assert.isTrue(Classes.isAvailable(HTTP_SERVLET_REQUEST_FQCN),
-                          "The " + HTTP_SERVLET_REQUEST_FQCN + " class must be in the runtime classpath.");
-
-            Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
+            Assert.isInstanceOf(com.stormpath.sdk.impl.http.ServletHttpRequest.class, httpRequest,
                                 "The specified httpRequest argument must be an instance of " +
-            HttpRequest.class.getName() + " or " + HTTP_SERVLET_REQUEST_FQCN);
+            HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
 
-            javax.servlet.http.HttpServletRequest httpServletRequest =
-                (javax.servlet.http.HttpServletRequest)httpRequest;
 
-            this.httpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpServletRequest);
+            this.httpRequest = httpRequest;
         }
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    public DefaultApiRequestAuthenticator(DefaultApplication application) {
+        Assert.notNull(application, "application argument cannot be null.");
+        this.application = application;
+    }
+
+    // TODO Make this method protected or private once it's removed from the interface
     @Override
     public ApiAuthenticationResult execute() {
         AuthenticationRequest request = FACTORY.createFrom(httpRequest);
         AuthenticationResult result = application.authenticateAccount(request);
         Assert.isInstanceOf(ApiAuthenticationResult.class, result);
         return (ApiAuthenticationResult) result;
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Override
+    public ApiAuthenticationResult authenticate(HttpRequest httpRequest) {
+
+        Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
+
+        if (ServletHttpRequest.class.isAssignableFrom(httpRequest.getClass())){
+            this.httpRequest = httpRequest;
+        } else {
+            Assert.isInstanceOf(HttpRequest.class, httpRequest,
+                    "The specified httpRequest argument must be an instance of " +
+                            HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
+            this.httpRequest = httpRequest;
+        }
+
+        return this.execute();
     }
 }

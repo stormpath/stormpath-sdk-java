@@ -5,7 +5,7 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.http.HttpRequestBuilder;
 import com.stormpath.sdk.lang.Assert;
 
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,28 +15,47 @@ import java.util.Map;
  */
 public class DefaultHttpRequestBuilder implements HttpRequestBuilder {
 
-    private final HttpMethod method;
-
+    private HttpMethod method;
     private Map<String, String[]> headers;
-    private InputStream body;
     private Map<String, String[]> parameters;
     private String queryParameters;
-    private String uri;
 
     public DefaultHttpRequestBuilder(HttpMethod method) {
         Assert.notNull(method);
         this.method = method;
+        this.headers = new HashMap<String, String[]>();
+        this.parameters = new HashMap<String, String[]>();
     }
 
     @Override
     public HttpRequestBuilder headers(Map<String, String[]> headers) {
+        Assert.notNull(headers, "headers cannot be null");
         this.headers = headers;
         return this;
     }
 
     @Override
     public HttpRequestBuilder parameters(Map<String, String[]> parameters) {
+        Assert.notNull(parameters, "parameters cannot be null");
         this.parameters = parameters;
+        return this;
+    }
+
+    @Override
+    public HttpRequestBuilder addHeader(String key, String[] value) throws IllegalArgumentException {
+        Assert.notNull(key, "key argument is required.");
+        Assert.notNull(value, "value argument is required.");
+
+        this.headers.put(key, value);
+        return this;
+    }
+
+    @Override
+    public HttpRequestBuilder addParameter(String key, String[] value) throws IllegalArgumentException {
+        Assert.notNull(key, "key argument is required.");
+        Assert.notNull(value, "value argument is required.");
+
+        this.parameters.put(key, value);
         return this;
     }
 

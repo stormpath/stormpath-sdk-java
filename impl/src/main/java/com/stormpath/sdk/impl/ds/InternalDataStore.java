@@ -41,6 +41,9 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType);
 
+    /** @since 1.0.RC5 */
+    <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, Options options);
+
     <T extends Resource & Saveable> void save(T resource);
 
     <T extends Resource & Saveable> void save(T resource, Options options);

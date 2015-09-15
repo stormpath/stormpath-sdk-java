@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.PasswordResetToken
+import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
@@ -1013,7 +1012,49 @@ class ApplicationIT extends ClientIT {
 
     }
 
-    private assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
+    /**
+     * @since 1.0.RC5
+     */
+    @Test
+    void testLoginWithExpansion() {
+
+        def username = 'lonestarr'
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = uniquify(username) + '@stormpath.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+
+        def options = UsernamePasswordRequest.options().withAccount()
+        def request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
+
+        def result = app.authenticateAccount(request)
+
+        //Let's check expansion worked by looking at the internal properties
+        def properties = getValue(AbstractResource, result, "properties")
+        assertTrue properties.get("account").size() > 15
+        assertEquals properties.get("account").get("email"), acct.email
+
+        //Let's re-authenticate without expansion
+        request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build()
+        result = app.authenticateAccount(request)
+
+        //Let's check that there is no expansion
+        properties = getValue(AbstractResource, result, "properties")
+        assertTrue properties.get("account").size() == 1
+    }
+
+    private static assertAccountStoreMappingListSize(AccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
         for(AccountStoreMapping accountStoreMapping : accountStoreMappings) {
             qty++;
@@ -1093,7 +1134,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     private Object getValue(Class clazz, Object object, String fieldName) {
         Field field = clazz.getDeclaredField(fieldName)
@@ -1101,4 +1142,54 @@ class ApplicationIT extends ClientIT {
         return field.get(object)
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testPasswordImport() {
+
+        def app = createTempApp()
+
+        Account account = client.instantiate(Account)
+            .setGivenName('John')
+            .setSurname('DeleteMe')
+            .setEmail("deletejohn@test.com")
+            .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
+
+        def created = app.createAccount(Accounts.newCreateRequestFor(account)
+                .setRegistrationWorkflowEnabled(false)
+                .setPasswordFormat(PasswordFormat.MCF)
+                .build())
+        deleteOnTeardown(created)
+
+        //verify it was created:
+        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).single()
+        assertEquals(created.href, found.href)
+
+        found = app.authenticateAccount(new UsernamePasswordRequest("deletejohn@test.com", "rasmuslerdorf")).getAccount()
+        assertEquals(created.href, found.href)
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    void testPasswordImportErrors() {
+
+        def app = createTempApp()
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DeleteMe'
+        account.email =  "deletejohn@test.com"
+        account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
+
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
+            fail("Should have thrown")
+        } catch (ResourceException e){
+            assertEquals 2006, e.getCode()
+            assertTrue e.getDeveloperMessage().contains("is in an invalid format")
+        }
+    }
 }

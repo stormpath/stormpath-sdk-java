@@ -17,21 +17,58 @@ package com.stormpath.sdk.authc;
 
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Classes;
 
 /**
  * A {@code UsernamePasswordRequest} is an {@code AuthenticationRequest} that represents a username (or email) +
  * password pair.  It optionally supports
  * {@link #setAccountStore(com.stormpath.sdk.directory.AccountStore) targeting an specific account store} as well for
  * customized authentication behavior.
+ * <p>
+ * NOTE: This class has been deprecated and will be removed in version 1.0. You can now use the new fluent interface
+ * to create Username/Password Requests. For example:</p>
+ * <pre>
+ * AuthenticationRequest request = UsernamePasswordRequest.builder()
+ *                         .setUsernameOrEmail(username)
+ *                         .setPassword(submittedRawPlaintextPassword)
+ *                         .build();
+ * Account authenticated = application.authenticateAccount(request).getAccount();
+ * </pre>
+ *
+ * @see UsernamePasswordRequestBuilder
  *
  * @since 0.2
  */
 public class UsernamePasswordRequest implements AuthenticationRequest<String, char[]> {
 
+    /**
+     * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     *
+     * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     * @since 1.0.RC5
+     */
+    public static UsernamePasswordRequestBuilder builder() {
+        return (UsernamePasswordRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequestBuilder");
+    }
+
+    /**
+     * Returns a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
+     * AuthenticationResult} resource that will be obtained after a successful authentication.
+     *
+     * @return a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
+     * AuthenticationResult} resource that will be obtained after a successful authentication.
+     * @see com.stormpath.sdk.authc.UsernamePasswordRequestBuilder#withResponseOptions(BasicAuthenticationOptions)
+     * @since 1.0.RC5
+     */
+    public static BasicAuthenticationOptions options() {
+        return (BasicAuthenticationOptions) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultBasicAuthenticationOptions");
+    }
+
     private String username;
     private char[] password;
     private String host;
     private AccountStore accountStore;
+    private BasicAuthenticationOptions authenticationOptions;
 
     /**
      * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}.
@@ -40,6 +77,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param password        the account's raw password
      * @see #UsernamePasswordRequest(String, String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password) {
         this(usernameOrEmail, password, null, null);
     }
@@ -51,6 +89,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param password        the account's raw password
      * @see #UsernamePasswordRequest(String, String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password) {
         this(usernameOrEmail, password, null, null);
     }
@@ -64,6 +103,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param host            the host from where the end-user is accessing your application
      * @see #UsernamePasswordRequest(String, String, String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password, String host) {
         this(usernameOrEmail, password, host, null);
     }
@@ -77,6 +117,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @param host            the host from where the end-user is accessing your application
      * @see #UsernamePasswordRequest(String, char[], String, AccountStore)
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host) {
         this(usernameOrEmail, password, host, null);
     }
@@ -102,6 +143,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password, AccountStore accountStore) {
         this(usernameOrEmail, password, null, accountStore);
     }
@@ -127,6 +169,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, AccountStore accountStore) {
         this(usernameOrEmail, password, null, accountStore);
     }
@@ -154,6 +197,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, String password, String host, AccountStore accountStore) {
         this(usernameOrEmail, password != null ? password.toCharArray() : "".toCharArray(), host, accountStore);
     }
@@ -181,6 +225,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                        <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">account store authentication flow</a>.
      * @since 1.0.alpha
      */
+    @Deprecated
     public UsernamePasswordRequest(String usernameOrEmail, char[] password, String host, AccountStore accountStore) {
         this.username = usernameOrEmail;
         this.password = password;
@@ -189,16 +234,19 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
     }
 
     @Override
+    @Deprecated
     public String getPrincipals() {
         return username;
     }
 
     @Override
+    @Deprecated
     public char[] getCredentials() {
         return password;
     }
 
     @Override
+    @Deprecated
     public String getHost() {
         return this.host;
     }
@@ -226,6 +274,7 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * @since 1.0.alpha
      */
     @Override
+    @Deprecated
     public AccountStore getAccountStore() {
         return this.accountStore;
     }
@@ -253,20 +302,55 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *                     to the application sending the request.
      * @since 1.0.alpha
      */
+    @Deprecated
     public void setAccountStore(AccountStore accountStore) {
         Assert.notNull(accountStore, "accountStore cannot be null.");
         this.accountStore = accountStore;
     }
 
     /**
-     * Clears out (nulls) the username, password, and host.  The password bytes are explicitly set to
+     * Ensures that when the response is obtained, it will be retrieved with the specified options. This enhances performance
+     * by leveraging a single request to retrieve multiple related resources you know you will use.
+     * <p>For example,
+     * it can be used to have the {@link com.stormpath.sdk.account.Account Account} resource automatically expanded in the returned result.
+     * </p>
+     *
+     * @param options the specific {@code BasicAuthenticationOptions} that will be used to customize the authentication response.
+     * @return this instance for method chaining.
+     * @since 1.0.RC5
+     */
+    @Deprecated
+    public UsernamePasswordRequest setResponseOptions(BasicAuthenticationOptions options) {
+        this.authenticationOptions = options;
+        return this;
+    }
+
+    /**
+     * Returns the {@link BasicAuthenticationOptions} to be used in this request used to customize the response.
+     * <p>For example,
+     * it can be used to have the {@link com.stormpath.sdk.account.Account Account} resource automatically expanded in the returned result.
+     * </p>
+     *
+     * @return the {@code AuthenticationOptions} that will be used to customize the response.
+     * @since 1.0.RC5
+     */
+    @Override
+    @Deprecated
+    public BasicAuthenticationOptions getResponseOptions() {
+        return this.authenticationOptions;
+    }
+
+    /**
+     * Clears out (nulls) the username, password, host, accountStore and options.  The password bytes are explicitly set to
      * <tt>0x00</tt> to eliminate the possibility of memory access at a later time.
      */
     @Override
+    @Deprecated
     public void clear() {
         this.username = null;
         this.host = null;
         this.accountStore = null;
+        this.authenticationOptions = null;
 
         char[] password = this.password;
         this.password = null;

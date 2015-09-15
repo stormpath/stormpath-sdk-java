@@ -657,7 +657,7 @@ class AccountIT extends ClientIT {
                 .setGivenName("Joe")
                 .setSurname("Smith")
         account.setEmail(account.getUsername() + "@mail.com")
-        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
         DateFormat df = new ISO8601DateFormat();

@@ -161,12 +161,21 @@ class DefaultApplicationTest {
         expect(internalDataStore.instantiate(PasswordResetToken, [href: properties.passwordResetTokens.href + "/token"])) andReturn(new DefaultPasswordResetToken(internalDataStore, innerProperties))
         expect(internalDataStore.instantiate(Account, innerProperties.account)).andReturn(account)
 
-        def authenticationResult = createStrictMock(AuthenticationResult)
+        def authenticationResult01 = createStrictMock(AuthenticationResult)
         def defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
         expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
         defaultBasicLoginAttempt.setType("basic")
         defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
-        expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
+        expect(internalDataStore.create((String) properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult01)
+
+        def authenticationResult02 = createStrictMock(AuthenticationResult)
+        defaultBasicLoginAttempt = new DefaultBasicLoginAttempt(internalDataStore)
+        expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
+        defaultBasicLoginAttempt.setType("basic")
+        defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+
+        def options = UsernamePasswordRequest.options().withAccount()
+         expect(internalDataStore.create((String) properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult.class, options)).andReturn(authenticationResult02)
 
         replay internalDataStore, groupCriteria, accountCriteria, account
 
@@ -195,7 +204,10 @@ class DefaultApplicationTest {
 
         assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
-        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult01)
+
+        def request = UsernamePasswordRequest.builder().setUsernameOrEmail("username").setPassword("password").withResponseOptions(options).build()
+        assertEquals(defaultApplication.authenticateAccount(request), authenticationResult02)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
     }
@@ -257,6 +269,7 @@ class DefaultApplicationTest {
 
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(false)
+        expect(request.isPasswordFormatSpecified()).andReturn(false)
         expect(request.isAccountOptionsSpecified()).andReturn(false)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
         expect(accountList.getHref()).andReturn("https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts")
@@ -291,6 +304,7 @@ class DefaultApplicationTest {
         expect(request.getAccount()).andReturn(account)
         expect(request.isRegistrationWorkflowOptionSpecified()).andReturn(true)
         expect(request.isRegistrationWorkflowEnabled()).andReturn(false)
+        expect(request.isPasswordFormatSpecified()).andReturn(false)
         expect(request.isAccountOptionsSpecified()).andReturn(true)
         expect(request.getAccountOptions()).andReturn(accountCriteria)
         expect(internalDataStore.instantiate(AccountList, [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"])).andReturn(accountList)
@@ -679,13 +693,14 @@ class DefaultApplicationTest {
         expect(internalDataStore.instantiate(BasicLoginAttempt)).andReturn(defaultBasicLoginAttempt)
         defaultBasicLoginAttempt.setType("basic")
         defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
+
         expect(internalDataStore.create(properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult)).andReturn(authenticationResult)
 
         replay internalDataStore, account
 
         assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
-        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult)
+        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult, null)
 
         verify internalDataStore, account
     }
@@ -940,13 +955,6 @@ class DefaultApplicationTest {
         void appendTo(StringBuffer stringBuffer) {
             stringBuffer.append(expected.toString())
         }
-    }
-
-    //@since 1.0.RC
-    private void setNewValue(Class clazz, Object object, String fieldName, Object value){
-        Field field = clazz.getDeclaredField(fieldName)
-        field.setAccessible(true)
-        field.set(object, value)
     }
 
     //@since 1.0.RC4

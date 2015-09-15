@@ -24,10 +24,15 @@ import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.api.*;
-import com.stormpath.sdk.application.*;
+import com.stormpath.sdk.application.AccountStoreMappingCriteria;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.AccountStoreMappingList;
+import com.stormpath.sdk.application.ApplicationOptions;
+import com.stormpath.sdk.application.AccountStoreMapping;
+import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -352,8 +357,15 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 
+        char querySeparator = '?';
+
         if (request.isRegistrationWorkflowOptionSpecified()) {
-            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            href += querySeparator + "registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            querySeparator = '&';
+        }
+
+        if (request.isPasswordFormatSpecified()) {
+            href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
         }
 
         if (request.isAccountOptionsSpecified()) {
@@ -522,12 +534,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
+    @Deprecated
     public ApiAuthenticationResult authenticateApiRequest(Object httpRequest) {
         validateHttpRequest(httpRequest);
-        return new DefaultApiRequestAuthenticator(this, httpRequest).execute();
+        return new DefaultApiRequestAuthenticator(this, (HttpRequest) httpRequest).execute();
     }
 
     @Override
+    @Deprecated
     public OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
         if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
             throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
