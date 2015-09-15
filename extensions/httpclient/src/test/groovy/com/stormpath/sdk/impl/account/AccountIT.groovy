@@ -41,6 +41,8 @@ import java.text.SimpleDateFormat
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
 import static org.testng.Assert.*
+import static org.testng.AssertJUnit.fail
+import static org.testng.AssertJUnit.fail
 
 /**
  * @since 0.9.3
@@ -943,7 +945,7 @@ class AccountIT extends ClientIT {
                 .setGivenName("Joe")
                 .setSurname("Smith")
         account.setEmail(account.getUsername() + "@stormpath.com")
-        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        account = directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
         //add account to group
@@ -988,6 +990,29 @@ class AccountIT extends ClientIT {
 
         account = account.removeGroup(group3.href)
         assertEquals 0, account.getGroups().size
+
+        // Test exceptions
+
+        def group5 = client.instantiate(Group)
+        group5.name = uniquify('JSDK: testAddGroup Group5')
+        group5 = directory.createGroup(group5)
+        deleteOnTeardown(group5)
+
+        try {
+            account.removeGroup(group5)
+            fail ("Should have failed due to account not present in group")
+        } catch (Exception e){
+            assertTrue e instanceof IllegalStateException
+            assertEquals "This account does not belong to the specified group.", e.getMessage()
+        }
+
+        try {
+            account.removeGroup("Invalid group info")
+            fail ("Should have failed due to account not present in group")
+        } catch (Exception e){
+            assertTrue e instanceof IllegalStateException
+            assertEquals "This account does not belong to the specified group.", e.getMessage()
+        }
     }
 
     //@since 1.0.RC3

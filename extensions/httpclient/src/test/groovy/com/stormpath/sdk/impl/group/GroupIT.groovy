@@ -11,14 +11,17 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.AssertJUnit.assertEquals
+import static org.testng.AssertJUnit.fail
 
 /**
- * @since 1.0.RC4.6
+ * @since 1.0.RC5
  */
 class GroupIT extends ClientIT {
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     public void testAddAccountError() {
@@ -37,7 +40,7 @@ class GroupIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     @Test
     void testAddAndRemoveAccount() {
@@ -133,5 +136,32 @@ class GroupIT extends ClientIT {
         //Remove account using username
         group = group.removeAccount(acct2.username)
         assertEquals 0, group.getAccounts().size
+
+        // Test remove account error
+
+        def acct5 = client.instantiate(Account)
+        acct5.username = uniquify('JSDK-testAddAndRemoveAccount-5')
+        acct5.password = 'Changeme1!'
+        acct5.email = 'usr4@nowhere.com'
+        acct5.givenName = 'John'
+        acct5.surname = 'Smith'
+        acct5 = app.createAccount(Accounts.newCreateRequestFor(acct5).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct5)
+
+        try {
+            group.removeAccount(acct5)
+            fail ("Should have failed due to account not present in group")
+        } catch (Exception e){
+            assertTrue e instanceof IllegalStateException
+            assertEquals "The specified account does not belong to this Group.", e.getMessage()
+        }
+
+        try {
+            group.removeAccount("invalid href or username")
+            fail ("Should have failed due to account not present in group")
+        } catch (Exception e){
+            assertTrue e instanceof IllegalStateException
+            assertEquals "The specified account does not belong to this Group.", e.getMessage()
+        }
     }
 }

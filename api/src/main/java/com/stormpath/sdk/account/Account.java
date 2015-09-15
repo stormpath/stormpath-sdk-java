@@ -299,40 +299,42 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
 
     /**
      * Assigns this account to the specified Group represented by its (case insensitive) {@code name} or {@code href}
-     * @param hrefOrName the href or name of the group to add.
      *
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
-     * afterwards. This method will interact with the server immediately.</p>
+     * afterwards. This method will persist the changes in the backend immediately.</p>
      *
-     * @return the new GroupMembership resource created reflecting the account-to-group association.
+     * @param hrefOrName the href or name of the group to add.
+     * @return the new GroupMembership resource created reflecting the account-to-group association. Returns null if not group matching {@code hrefOrName} could be found.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     GroupMembership addGroup(String hrefOrName);
 
     /**
      * Removes this account from the specified Group.
-     * @param group the {@code Group} object from where the account must be removed.
      *
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
-     * afterwards. This method will interact with the server immediately.</p>
+     * afterwards. This method will persist the changes in the backend immediately.</p>
      *
+     * @param group the {@code Group} object from where the account must be removed.
      * @return the Account object for method chaining
+     * @throws IllegalStateException if the Account does not belong to the specified group.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     Account removeGroup(Group group);
 
     /**
      * Removes this account from the specified Group represented by its (case insensitive) {@code name} or {@code href}
-     * @param hrefOrName the href or name of the group to add.
      *                   .
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
-     * afterwards. This method will interact with the server immediately.</p>
+     * afterwards. This method will persist the changes in the backend immediately.</p>
      *
+     * @param hrefOrName the href or name of the group to add.
      * @return the Account object for method chaining
+     * @throws IllegalStateException if the Account does not belong to the specified group.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     Account removeGroup(String hrefOrName);
 

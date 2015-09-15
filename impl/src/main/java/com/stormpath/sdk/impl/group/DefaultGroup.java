@@ -146,9 +146,12 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         return DefaultGroupMembership.create(account, this, getDataStore());
     }
 
-
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public GroupMembership addAccount(String hrefOrEmailOrUsername) {
+        Assert.hasText(hrefOrEmailOrUsername, "hrefOrEmailOrUsername cannot be null or empty");
         Account account =  findAccount(hrefOrEmailOrUsername);
         if (account != null){
             return DefaultGroupMembership.create(account, this, getDataStore());
@@ -156,27 +159,27 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         return null;
     }
 
-
+    /**
+     * @since 1.0.RC5
+     */
     private Account findAccount(String hrefOrEmailOrUsername){
         Account account = null;
 
-        //Let's check if hrefOrName looks like an href
+        // Let's check if hrefOrName looks like an href
         String[] splitHrefOrEmailOrName = hrefOrEmailOrUsername.split("/");
+        Directory directory = this.getDirectory();
         if (splitHrefOrEmailOrName.length > 4) {
             try {
                 account = getDataStore().getResource(hrefOrEmailOrUsername, Account.class);
+                // Notice that groups can only be related to Accounts in the same directory
+                if (account != null && account.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
+                    return account;
+                }
             } catch (ResourceException e) {
                 // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
                 // Maybe this is actually a name rather than an href
             }
         }
-
-        // Notice that groups can only be related to Accounts in the same directory
-        Directory directory = this.getDirectory();
-        if (account != null && account.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
-            return account;
-        }
-
         AccountList accounts = directory.getAccounts(Accounts.where(Accounts.username().eqIgnoreCase(hrefOrEmailOrUsername)));
         if (accounts.iterator().hasNext()){
             account = accounts.iterator().next();
@@ -189,8 +192,13 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         return account;
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public Group removeAccount(Account account) {
+        Assert.notNull(account, "account cannot be null");
+
         GroupMembership groupMembership = null;
         for (GroupMembership accountGroupMembership : getAccountMemberships()) {
             if (accountGroupMembership.getAccount().getHref().equalsIgnoreCase(account.getHref())) {
@@ -200,12 +208,18 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         }
         if (groupMembership != null){
             groupMembership.delete();
+        } else {
+            throw new IllegalStateException("The specified account does not belong to this Group.");
         }
         return this;
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public Group removeAccount(String hrefOrEmailOrUsername) {
+        Assert.hasText(hrefOrEmailOrUsername, "hrefOrEmailOrUsername cannot be null or empty");
         GroupMembership groupMembership = null;
         for (GroupMembership aGroupMembership : getAccountMemberships()) {
             if (aGroupMembership.getAccount().getHref().equalsIgnoreCase(hrefOrEmailOrUsername)
@@ -217,6 +231,8 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         }
         if (groupMembership != null){
             groupMembership.delete();
+        } else {
+            throw new IllegalStateException("The specified account does not belong to this Group.");
         }
         return this;
     }

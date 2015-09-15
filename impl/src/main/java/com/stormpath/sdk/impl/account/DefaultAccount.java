@@ -23,13 +23,11 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.group.DefaultGroupCriteria;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
@@ -221,36 +219,39 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return DefaultGroupMembership.create(this, group, getDataStore());
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public GroupMembership addGroup(String hrefOrName) {
-        Group group =  findGroup(hrefOrName);
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
+        Group group =  findGroupInAccountDirectory(hrefOrName);
         if (group != null){
             return DefaultGroupMembership.create(this, group, getDataStore());
         }
         return null;
     }
 
-    private Group findGroup(String hrefOrName) {
+    private Group findGroupInAccountDirectory(String hrefOrName) {
 
         Group group = null;
 
         //Let's check if hrefOrName looks like an href
         String[] splitHrefOrName = hrefOrName.split("/");
+        Directory directory = this.getDirectory();
         if (splitHrefOrName.length > 4) {
             try {
                 group = getDataStore().getResource(hrefOrName, Group.class);
+
+                // Notice that accounts can only be added to Groups in the same directory
+                if (group != null && group.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
+                    return group;
+                }
             } catch (ResourceException e) {
                 // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
                 // Maybe this is actually a name rather than an href
             }
         }
-
-        // Notice that accounts can only be added to Groups in the same directory
-        Directory directory = this.getDirectory();
-        if (group != null && group.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
-            return group;
-        }
-
         GroupList groups = directory.getGroups(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
         if (groups.iterator().hasNext()){
             group = groups.iterator().next();
@@ -259,17 +260,23 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return group;
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public Account removeGroup(Group group) {
+        Assert.notNull(group, "group cannot be null");
         GroupMembership groupMembership = null;
         for (GroupMembership aGroupMembership : getGroupMemberships()) {
-            if (aGroupMembership.getGroup().getHref().equalsIgnoreCase(group.getHref())) {
+            if (aGroupMembership.getGroup().getHref().equals(group.getHref())) {
                 groupMembership = aGroupMembership;
                 break;
             }
         }
         if (groupMembership != null){
             groupMembership.delete();
+        } else {
+            throw new IllegalStateException("This account does not belong to the specified group.");
         }
         return this;
     }
@@ -285,6 +292,8 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         }
         if (groupMembership != null){
             groupMembership.delete();
+        } else {
+            throw new IllegalStateException("This account does not belong to the specified group.");
         }
         return this;
     }

@@ -167,43 +167,42 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
 
     /**
      * Assigns this Group to the specified Account represented by its (case insensitive) {@code username}, {@code email} or {@code href}
-     *
-     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
      * <p/>
      * <b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()} afterwards.
-     * This method will interact with the server immediately.
+     * This method will persist the changes in the backend immediately.
      *
+     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
      * @return the new GroupMembership resource created reflecting the group-to-account association.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     GroupMembership addAccount(String hrefOrEmailOrUsername);
 
     /**
      * Removes this Group's association with the specified Account.
      *
-     * @param account the {@code Account} object to disassociate.
-     *
      * <p><b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()}
-     * afterwards. This method will interact with the server immediately.</p>
+     * afterwards. This method will persist the changes in the backend immediately.</p>
      *
+     * @param account the {@code Account} object to disassociate.
      * @return the Group object for method chaining
+     * @throws IllegalStateException if the specified Account does not belong to this Group.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     Group removeAccount(Account account);
 
     /**
      * Removes this Group's association with the specified Account represented by its (case insensitive) {@code username}, {@code email} or {@code href}
-     *
-     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
      *                   .
      * <p><b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()}
-     * afterwards. This method will interact with the server immediately.</p>
+     * afterwards. This method will persist the changes in the backend immediately.</p>
      *
+     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
      * @return the Group object for method chaining
+     * @throws IllegalStateException if the specified Account does not belong to this Group.
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC5
      */
     Group removeAccount(String hrefOrEmailOrUsername);
 
