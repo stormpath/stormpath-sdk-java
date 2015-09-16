@@ -35,7 +35,8 @@ public class HelloService {
      */
     @PreAuthorize("hasRole('" + MY_GROUP + "') and hasPermission('say', 'hello')")
     public String sayHello(Account account) {
-        return "Hello " + account.getGivenName() + ". You have the required persmissions to access this restricted resource.";
+        return "Hello, " + account.getGivenName() +
+            ". You have the required persmissions to access this restricted resource.";
     }
 
 
