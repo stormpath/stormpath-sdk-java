@@ -27,18 +27,18 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 /**
  * @since 1.0.RC5
  */
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Configuration
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class StormpathMethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
 
     @Bean
-    protected PermissionEvaluator wildcardPermissionEvaluator() {
+    public PermissionEvaluator wildcardPermissionEvaluator() {
         return new WildcardPermissionEvaluator();
     }
 
     //Prevents the addition of the "ROLE_" prefix in authorities
     @Override
-    public MethodSecurityExpressionHandler createExpressionHandler() {
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
         DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler = new DefaultMethodSecurityExpressionHandler();
         methodSecurityExpressionHandler.setPermissionEvaluator(wildcardPermissionEvaluator());
         methodSecurityExpressionHandler.setDefaultRolePrefix("");

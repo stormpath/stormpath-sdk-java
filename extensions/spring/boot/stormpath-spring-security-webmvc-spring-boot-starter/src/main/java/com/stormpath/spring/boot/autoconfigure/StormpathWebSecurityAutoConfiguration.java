@@ -1,16 +1,30 @@
+/*
+ * Copyright 2015 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
-import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,7 +46,7 @@ import javax.servlet.Servlet;
 @ConditionalOnClass({Servlet.class, Filter.class, DispatcherServlet.class})
 @ConditionalOnWebApplication
 @EnableWebSecurity
-@Import(StormpathMethodSecurityConfiguration.class)
+@ComponentScan
 @AutoConfigureAfter({StormpathWebMvcAutoConfiguration.class, StormpathSpringSecurityAutoConfiguration.class})
 public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
@@ -61,7 +75,6 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }
