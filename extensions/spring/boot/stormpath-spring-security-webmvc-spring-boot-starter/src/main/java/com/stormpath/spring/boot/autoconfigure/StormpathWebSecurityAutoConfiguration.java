@@ -18,12 +18,12 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -46,8 +46,8 @@ import javax.servlet.Servlet;
 @ConditionalOnClass({Servlet.class, Filter.class, DispatcherServlet.class})
 @ConditionalOnWebApplication
 @EnableWebSecurity
-@ComponentScan
-@AutoConfigureAfter({StormpathWebMvcAutoConfiguration.class, StormpathSpringSecurityAutoConfiguration.class})
+@AutoConfigureBefore(StormpathWebMvcAutoConfiguration.class)
+@AutoConfigureAfter(StormpathSpringSecurityAutoConfiguration.class)
 public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
@@ -70,11 +70,12 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean
-    public CsrfTokenRepository csrfTokenRepository() {
-        return super.csrfTokenRepository();
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
+        return super.stormpathCsrfTokenRepository();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }

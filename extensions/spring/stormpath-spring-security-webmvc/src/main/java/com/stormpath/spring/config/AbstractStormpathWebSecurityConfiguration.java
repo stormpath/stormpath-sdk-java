@@ -80,7 +80,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
         return new StormpathLogoutHandler(authenticationResultSaver);
     }
 
-    public CsrfTokenRepository csrfTokenRepository() {
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
         HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
         csrfTokenRepository.setSessionAttributeName("csrfToken");
         csrfTokenRepository.setParameterName("csrfToken");
@@ -88,7 +88,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        return new SpringSecurityCsrfTokenManager(csrfTokenRepository());
+        return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository());
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
             http.csrf().disable();
         } else {
             //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
-            http.csrf().csrfTokenRepository(csrfTokenRepository());
+            http.csrf().csrfTokenRepository(stormpathCsrfTokenRepository());
         }
     }
 

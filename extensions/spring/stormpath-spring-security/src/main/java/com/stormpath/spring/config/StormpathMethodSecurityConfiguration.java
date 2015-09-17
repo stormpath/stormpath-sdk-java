@@ -15,34 +15,29 @@
  */
 package com.stormpath.spring.config;
 
-import com.stormpath.spring.security.authz.permission.evaluator.WildcardPermissionEvaluator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 /**
  * @since 1.0.RC5
  */
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-public class StormpathMethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+public class StormpathMethodSecurityConfiguration extends AbstractStormpathMethodSecurityConfiguration {
 
     @Bean
-    public PermissionEvaluator wildcardPermissionEvaluator() {
-        return new WildcardPermissionEvaluator();
+    @Override
+    public PermissionEvaluator stormpathWildcardPermissionEvaluator() {
+        return super.stormpathWildcardPermissionEvaluator();
     }
 
-    //Prevents the addition of the "ROLE_" prefix in authorities
+    @Bean
     @Override
-    protected MethodSecurityExpressionHandler createExpressionHandler() {
-        DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler = new DefaultMethodSecurityExpressionHandler();
-        methodSecurityExpressionHandler.setPermissionEvaluator(wildcardPermissionEvaluator());
-        methodSecurityExpressionHandler.setDefaultRolePrefix("");
-        return methodSecurityExpressionHandler;
+    public MethodSecurityExpressionHandler stormpathMethodSecurityExpressionHandler() {
+        return super.stormpathMethodSecurityExpressionHandler();
     }
 
 }

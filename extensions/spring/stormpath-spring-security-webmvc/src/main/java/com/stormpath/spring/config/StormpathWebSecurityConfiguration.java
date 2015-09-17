@@ -47,8 +47,8 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
-    public CsrfTokenRepository csrfTokenRepository() {
-        return super.csrfTokenRepository();
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
+        return super.stormpathCsrfTokenRepository();
     }
 
     @Bean
