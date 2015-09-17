@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -65,7 +80,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
         return new StormpathLogoutHandler(authenticationResultSaver);
     }
 
-    public CsrfTokenRepository csrfTokenRepository() {
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
         HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
         csrfTokenRepository.setSessionAttributeName("csrfToken");
         csrfTokenRepository.setParameterName("csrfToken");
@@ -73,7 +88,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        return new SpringSecurityCsrfTokenManager(csrfTokenRepository());
+        return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository());
     }
 
     /**
@@ -108,8 +123,8 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
         if (!csrfProtectionEnabled) {
             http.csrf().disable();
         } else {
-            //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Servlet's forms
-            http.csrf().csrfTokenRepository(csrfTokenRepository());
+            //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
+            http.csrf().csrfTokenRepository(stormpathCsrfTokenRepository());
         }
     }
 
