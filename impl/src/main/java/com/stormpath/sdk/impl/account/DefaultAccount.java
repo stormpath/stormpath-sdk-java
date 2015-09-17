@@ -15,7 +15,10 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -24,7 +27,12 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -214,6 +222,9 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return getResourceProperty(GROUP_MEMBERSHIPS);
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public GroupMembership addGroup(Group group) {
         return DefaultGroupMembership.create(this, group, getDataStore());
@@ -225,14 +236,15 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public GroupMembership addGroup(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
-        Group group =  findGroup(hrefOrName);
+        Group group =  findGroupInAccountDirectory(hrefOrName);
         if (group != null){
             return DefaultGroupMembership.create(this, group, getDataStore());
+        } else {
+            throw new IllegalStateException("The specified group was not found in this Account's directory.");
         }
-        return null;
     }
 
-    private Group findGroup(String hrefOrName) {
+    private Group findGroupInAccountDirectory(String hrefOrName) {
 
         Group group = null;
 
@@ -244,7 +256,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
                 group = getDataStore().getResource(hrefOrName, Group.class);
 
                 // Notice that accounts can only be added to Groups in the same directory
-                if (group != null && group.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
+                if (group != null && group.getDirectory().getHref().equals(directory.getHref())){
                     return group;
                 }
             } catch (ResourceException e) {
@@ -285,7 +297,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public Account removeGroup(String hrefOrName) {
         GroupMembership groupMembership = null;
         for (GroupMembership aGroupMembership : getGroupMemberships()) {
-            if (aGroupMembership.getGroup().getName().equalsIgnoreCase(hrefOrName) || aGroupMembership.getGroup().getHref().equalsIgnoreCase(hrefOrName)) {
+            if (aGroupMembership.getGroup().getName().equals(hrefOrName) || aGroupMembership.getGroup().getHref().equals(hrefOrName)) {
                 groupMembership = aGroupMembership;
                 break;
             }

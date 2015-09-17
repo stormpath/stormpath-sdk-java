@@ -917,9 +917,12 @@ class AccountIT extends ClientIT {
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
-        def result = account.addGroup("SuperInvalid")
-        assertNull result
-        assertEquals 0, account.getGroups().size
+        try{
+            account.addGroup("SuperInvalid")
+            fail("Should have failed due to group not found in this Account's directory.")
+        } catch (Exception e){
+            assertEquals "The specified group was not found in this Account's directory.", e.getMessage()
+        }
     }
 
     /**

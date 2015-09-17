@@ -156,7 +156,9 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         if (account != null){
             return DefaultGroupMembership.create(account, this, getDataStore());
         }
-        return null;
+        else {
+            throw new IllegalStateException("No matching account for hrefOrEmailOrUsername was found.");
+        }
     }
 
     /**
@@ -172,7 +174,7 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
             try {
                 account = getDataStore().getResource(hrefOrEmailOrUsername, Account.class);
                 // Notice that groups can only be related to Accounts in the same directory
-                if (account != null && account.getDirectory().getHref().equalsIgnoreCase(directory.getHref())){
+                if (account != null && account.getDirectory().getHref().equals(directory.getHref())){
                     return account;
                 }
             } catch (ResourceException e) {
@@ -201,7 +203,7 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
 
         GroupMembership groupMembership = null;
         for (GroupMembership accountGroupMembership : getAccountMemberships()) {
-            if (accountGroupMembership.getAccount().getHref().equalsIgnoreCase(account.getHref())) {
+            if (accountGroupMembership.getAccount().getHref().equals(account.getHref())) {
                 groupMembership = accountGroupMembership;
                 break;
             }
@@ -222,9 +224,9 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
         Assert.hasText(hrefOrEmailOrUsername, "hrefOrEmailOrUsername cannot be null or empty");
         GroupMembership groupMembership = null;
         for (GroupMembership aGroupMembership : getAccountMemberships()) {
-            if (aGroupMembership.getAccount().getHref().equalsIgnoreCase(hrefOrEmailOrUsername)
-                    || aGroupMembership.getAccount().getEmail().equalsIgnoreCase(hrefOrEmailOrUsername)
-                    || aGroupMembership.getAccount().getUsername().equalsIgnoreCase(hrefOrEmailOrUsername)) {
+            if (aGroupMembership.getAccount().getHref().equals(hrefOrEmailOrUsername)
+                    || aGroupMembership.getAccount().getEmail().equals(hrefOrEmailOrUsername)
+                    || aGroupMembership.getAccount().getUsername().equals(hrefOrEmailOrUsername)) {
                 groupMembership = aGroupMembership;
                 break;
             }

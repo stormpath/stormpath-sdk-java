@@ -3,7 +3,6 @@ package com.stormpath.sdk.impl.group
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
 import org.testng.annotations.Test
@@ -12,8 +11,7 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.fail
+import static org.testng.Assert.fail
 
 /**
  * @since 1.0.RC5
@@ -34,9 +32,12 @@ class GroupIT extends ClientIT {
         group = app.createGroup(group)
         deleteOnTeardown(group)
 
-        def result = group.addAccount("SuperInvalid")
-        assertNull result
-        assertEquals 0, group.getAccounts().size
+        try{
+            group.addAccount("SuperInvalid")
+            fail("Should have failed due to Account not found.")
+        } catch (Exception e){
+            assertEquals "No matching account for hrefOrEmailOrUsername was found.", e.getMessage()
+        }
     }
 
     /**

@@ -173,6 +173,7 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
      *
      * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
      * @return the new GroupMembership resource created reflecting the group-to-account association.
+     * @throws IllegalStateException if no Account matching {@code hrefOrEmailOrUsername} could be found.
      *
      * @since 1.0.RC5
      */

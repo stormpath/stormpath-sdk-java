@@ -28,8 +28,13 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.tenant.Tenant;
+
 
 import java.util.Map;
 
@@ -292,6 +297,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
      * afterwards. This method will interact with the server immediately.</p>
      *
+     * @param group the Group this account will be added to
      * @return the new GroupMembership resource created reflecting the account-to-group association.
      * @since 0.4
      */
@@ -304,7 +310,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
      * @param hrefOrName the href or name of the group to add.
-     * @return the new GroupMembership resource created reflecting the account-to-group association. Returns null if not group matching {@code hrefOrName} could be found.
+     * @return the new GroupMembership resource created reflecting the account-to-group association.
+     * @throws IllegalStateException if no Group matching {@code hrefOrName} could be found in the Account's directory.
      *
      * @since 1.0.RC5
      */
