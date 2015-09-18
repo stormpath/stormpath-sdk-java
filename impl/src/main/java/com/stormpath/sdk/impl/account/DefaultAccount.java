@@ -236,40 +236,12 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public GroupMembership addGroup(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
-        Group group =  findGroupInAccountDirectory(hrefOrName);
+        Group group =  findGroupInDirectory(hrefOrName, this.getDirectory());
         if (group != null){
             return DefaultGroupMembership.create(this, group, getDataStore());
         } else {
             throw new IllegalStateException("The specified group was not found in this Account's directory.");
         }
-    }
-
-    private Group findGroupInAccountDirectory(String hrefOrName) {
-
-        Group group = null;
-
-        //Let's check if hrefOrName looks like an href
-        String[] splitHrefOrName = hrefOrName.split("/");
-        Directory directory = this.getDirectory();
-        if (splitHrefOrName.length > 4) {
-            try {
-                group = getDataStore().getResource(hrefOrName, Group.class);
-
-                // Notice that accounts can only be added to Groups in the same directory
-                if (group != null && group.getDirectory().getHref().equals(directory.getHref())){
-                    return group;
-                }
-            } catch (ResourceException e) {
-                // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
-                // Maybe this is actually a name rather than an href
-            }
-        }
-        GroupList groups = directory.getGroups(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
-        if (groups.iterator().hasNext()){
-            group = groups.iterator().next();
-        }
-
-        return group;
     }
 
     /**
@@ -293,6 +265,9 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return this;
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public Account removeGroup(String hrefOrName) {
         GroupMembership groupMembership = null;
@@ -431,5 +406,37 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
         return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    private Group findGroupInDirectory(String hrefOrName, Directory directory) {
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
+        Assert.notNull(directory, "directory cannot be null");
+
+        Group group = null;
+
+        //Let's check if hrefOrName looks like an href
+        String[] splitHrefOrName = hrefOrName.split("/");
+        if (splitHrefOrName.length > 4) {
+            try {
+                group = getDataStore().getResource(hrefOrName, Group.class);
+
+                // Notice that accounts can only be added to Groups in the same directory
+                if (group != null && group.getDirectory().getHref().equals(directory.getHref())){
+                    return group;
+                }
+            } catch (ResourceException e) {
+                // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
+                // Maybe this is actually a name rather than an href
+            }
+        }
+        GroupList groups = directory.getGroups(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
+        if (groups.iterator().hasNext()){
+            group = groups.iterator().next();
+        }
+
+        return group;
     }
 }

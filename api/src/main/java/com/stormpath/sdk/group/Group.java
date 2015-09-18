@@ -201,7 +201,7 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
      *
      * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
      * @return the Group object for method chaining
-     * @throws IllegalStateException if the specified Account does not belong to this Group.
+     * @throws IllegalStateException if the obtained Account does not belong to this Group.
      *
      * @since 1.0.RC5
      */

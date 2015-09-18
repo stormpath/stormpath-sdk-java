@@ -311,7 +311,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param hrefOrName the href or name of the group to add.
      * @return the new GroupMembership resource created reflecting the account-to-group association.
-     * @throws IllegalStateException if no Group matching {@code hrefOrName} could be found in the Account's directory.
+     * @throws IllegalStateException if no Group matching {@code hrefOrName} could be found in this Account's directory.
      *
      * @since 1.0.RC5
      */
@@ -325,7 +325,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param group the {@code Group} object from where the account must be removed.
      * @return the Account object for method chaining
-     * @throws IllegalStateException if the Account does not belong to the specified group.
+     * @throws IllegalStateException if this Account does not belong to the specified group.
      *
      * @since 1.0.RC5
      */
@@ -339,7 +339,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param hrefOrName the href or name of the group to add.
      * @return the Account object for method chaining
-     * @throws IllegalStateException if the Account does not belong to the specified group.
+     * @throws IllegalStateException if this Account does not belong to the Group matching the given {@code hrefOrName}.
      *
      * @since 1.0.RC5
      */
