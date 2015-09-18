@@ -28,8 +28,13 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.tenant.Tenant;
+
 
 import java.util.Map;
 
@@ -292,10 +297,53 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
      * afterwards. This method will interact with the server immediately.</p>
      *
+     * @param group the Group this account will be added to
      * @return the new GroupMembership resource created reflecting the account-to-group association.
      * @since 0.4
      */
     GroupMembership addGroup(Group group);
+
+    /**
+     * Assigns this account to the specified Group represented by its (case insensitive) {@code name} or {@code href}
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param hrefOrName the href or name of the group to add.
+     * @return the new GroupMembership resource created reflecting the account-to-group association.
+     * @throws IllegalStateException if no Group matching {@code hrefOrName} could be found in this Account's directory.
+     *
+     * @since 1.0.RC5
+     */
+    GroupMembership addGroup(String hrefOrName);
+
+    /**
+     * Removes this account from the specified Group.
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param group the {@code Group} object from where the account must be removed.
+     * @return the Account object for method chaining
+     * @throws IllegalStateException if this Account does not belong to the specified group.
+     *
+     * @since 1.0.RC5
+     */
+    Account removeGroup(Group group);
+
+    /**
+     * Removes this account from the specified Group represented by its (case insensitive) {@code name} or {@code href}
+     *                   .
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param hrefOrName the href or name of the group to add.
+     * @return the Account object for method chaining
+     * @throws IllegalStateException if this Account does not belong to the Group matching the given {@code hrefOrName}.
+     *
+     * @since 1.0.RC5
+     */
+    Account removeGroup(String hrefOrName);
 
     /**
      * Returns the account's email verification token.  This will only be non-null if the Account holder has been asked
