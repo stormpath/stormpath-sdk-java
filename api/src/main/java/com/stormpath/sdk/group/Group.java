@@ -170,6 +170,48 @@ public interface Group extends Resource, Saveable, Deletable, AccountStore, Exte
     GroupMembership addAccount(Account account);
 
     /**
+     * Assigns this Group to the specified Account represented by its (case insensitive) {@code username}, {@code email} or {@code href}
+     * <p/>
+     * <b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()} afterwards.
+     * This method will persist the changes in the backend immediately.
+     *
+     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
+     * @return the new GroupMembership resource created reflecting the group-to-account association.
+     * @throws IllegalStateException if no Account matching {@code hrefOrEmailOrUsername} could be found.
+     *
+     * @since 1.0.RC5
+     */
+    GroupMembership addAccount(String hrefOrEmailOrUsername);
+
+    /**
+     * Removes this Group's association with the specified Account.
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param account the {@code Account} object to disassociate.
+     * @return the Group object for method chaining
+     * @throws IllegalStateException if the specified Account does not belong to this Group.
+     *
+     * @since 1.0.RC5
+     */
+    Group removeAccount(Account account);
+
+    /**
+     * Removes this Group's association with the specified Account represented by its (case insensitive) {@code username}, {@code email} or {@code href}
+     *                   .
+     * <p><b>Immediate Execution:</b> Unlike other Group methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param hrefOrEmailOrUsername the href, email or username of the Account to associate.
+     * @return the Group object for method chaining
+     * @throws IllegalStateException if the obtained Account does not belong to this Group.
+     *
+     * @since 1.0.RC5
+     */
+    Group removeAccount(String hrefOrEmailOrUsername);
+
+    /**
      * Saves this Group resource and ensures the returned Group response reflects the specified options.  This
      * enhances performance by 'piggybacking' the response to return related resources you know you will use after
      * saving the group.

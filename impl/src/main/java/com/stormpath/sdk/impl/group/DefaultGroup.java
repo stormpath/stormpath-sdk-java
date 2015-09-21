@@ -18,13 +18,10 @@ package com.stormpath.sdk.impl.group;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.group.GroupOptions;
-import com.stormpath.sdk.group.GroupStatus;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -34,6 +31,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -146,6 +144,99 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
     @Override
     public GroupMembership addAccount(Account account) {
         return DefaultGroupMembership.create(account, this, getDataStore());
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public GroupMembership addAccount(String hrefOrEmailOrUsername) {
+        Assert.hasText(hrefOrEmailOrUsername, "hrefOrEmailOrUsername cannot be null or empty");
+        Account account =  findAccount(hrefOrEmailOrUsername);
+        if (account != null){
+            return DefaultGroupMembership.create(account, this, getDataStore());
+        }
+        else {
+            throw new IllegalStateException("No matching account for hrefOrEmailOrUsername was found.");
+        }
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    private Account findAccount(String hrefOrEmailOrUsername){
+        Account account = null;
+
+        // Let's check if hrefOrName looks like an href
+        String[] splitHrefOrEmailOrName = hrefOrEmailOrUsername.split("/");
+        Directory directory = this.getDirectory();
+        if (splitHrefOrEmailOrName.length > 4) {
+            try {
+                account = getDataStore().getResource(hrefOrEmailOrUsername, Account.class);
+                // Notice that groups can only be related to Accounts in the same directory
+                if (account != null && account.getDirectory().getHref().equals(directory.getHref())){
+                    return account;
+                }
+            } catch (ResourceException e) {
+                // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
+                // Maybe this is actually a name rather than an href
+            }
+        }
+        AccountList accounts = directory.getAccounts(Accounts.where(Accounts.username().eqIgnoreCase(hrefOrEmailOrUsername)));
+        if (accounts.iterator().hasNext()){
+            account = accounts.iterator().next();
+        } else {
+            accounts = directory.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(hrefOrEmailOrUsername)));
+            if (accounts.iterator().hasNext()){
+                account = accounts.iterator().next();
+            }
+        }
+        return account;
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Group removeAccount(Account account) {
+        Assert.notNull(account, "account cannot be null");
+
+        GroupMembership groupMembership = null;
+        for (GroupMembership accountGroupMembership : getAccountMemberships()) {
+            if (accountGroupMembership.getAccount().getHref().equals(account.getHref())) {
+                groupMembership = accountGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        } else {
+            throw new IllegalStateException("The specified account does not belong to this Group.");
+        }
+        return this;
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Group removeAccount(String hrefOrEmailOrUsername) {
+        Assert.hasText(hrefOrEmailOrUsername, "hrefOrEmailOrUsername cannot be null or empty");
+        GroupMembership groupMembership = null;
+        for (GroupMembership aGroupMembership : getAccountMemberships()) {
+            if (aGroupMembership.getAccount().getHref().equals(hrefOrEmailOrUsername)
+                    || aGroupMembership.getAccount().getEmail().equals(hrefOrEmailOrUsername)
+                    || aGroupMembership.getAccount().getUsername().equals(hrefOrEmailOrUsername)) {
+                groupMembership = aGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        } else {
+            throw new IllegalStateException("The specified account does not belong to this Group.");
+        }
+        return this;
     }
 
     /**
