@@ -15,34 +15,32 @@
  */
 package com.stormpath.sdk.impl.idsite;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
-import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Date;
 import java.util.UUID;
 
-import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
+import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*;
 
 /**
  * @since 1.0.RC
  */
 public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
-
-    public final String ssoEndpoint;
-
     public static String SSO_LOGOUT_SUFFIX = "/logout";
 
     private final InternalDataStore internalDataStore;
+
+    public final String ssoEndpoint;
 
     private final String applicationHref;
 
@@ -53,6 +51,12 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
     private String path;
 
     private boolean logout = false;
+
+    private String organizationNameKey;
+
+    private Boolean useSubdomain;
+
+    private Boolean showOrganizationField;
 
     public DefaultIdSiteUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
@@ -82,6 +86,24 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
     }
 
     @Override
+    public IdSiteUrlBuilder setOrganizationNameKey(String organizationNameKey) {
+        this.organizationNameKey = organizationNameKey;
+        return this;
+    }
+
+    @Override
+    public IdSiteUrlBuilder setUseSubdomain(boolean useSubdomain) {
+        this.useSubdomain = useSubdomain;
+        return this;
+    }
+
+    @Override
+    public IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField) {
+        this.showOrganizationField = showOrganizationField;
+        return this;
+    }
+
+    @Override
     public IdSiteUrlBuilder forLogout() {
         this.logout = true;
         return this;
@@ -91,53 +113,49 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
     public String build() {
         Assert.state(Strings.hasText(this.callbackUri), "callbackUri cannot be null or empty.");
 
-        String nonce = UUID.randomUUID().toString();
+        String jti = UUID.randomUUID().toString();
 
-        long now = System.currentTimeMillis() / 1000; //Seconds
+        Date now = new Date();
 
         final ApiKey apiKey = this.internalDataStore.getApiKey();
 
-        Map<String, Object> body = new LinkedHashMap<String, Object>();
-        body.put(ISSUED_AT_PARAM_NAME, now);
-        body.put(NONCE_PARAM_NAME, nonce);
-        body.put(ISSUER_PARAM_NAME, apiKey.getId());
-        body.put(SUBJECT_PARAM_NAME, applicationHref);
+        JwtBuilder jwtBuilder = Jwts.builder().setId(jti).setIssuedAt(now).setIssuer(apiKey.getId())
+                .setSubject(this.applicationHref).claim(REDIRECT_URI, this.callbackUri);
+
         if (Strings.hasText(this.path)) {
-            body.put(PATH_PARAM_NAME, this.path);
+            jwtBuilder.claim(PATH, this.path);
         }
-        body.put(REDIRECT_URI_PARAM_NAME, this.callbackUri);
+
         if (Strings.hasText(this.state)) {
-            body.put(STATE_PARAM_NAME, this.state);
+            jwtBuilder.claim(STATE, this.state);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-
-            String message = mapper.writeValueAsString(body);
-            JwtSigner jwtSigner = new DefaultJwtSigner(apiKey.getSecret());
-            String jwt = jwtSigner.sign(message);
-
-            QueryString queryString = new QueryString();
-            queryString.put(JWR_REQUEST_PARAM_NAME, jwt);
-
-            String endpoint;
-
-            if (logout) {
-                endpoint = ssoEndpoint + SSO_LOGOUT_SUFFIX;
-            } else {
-                endpoint = ssoEndpoint;
-            }
-
-            @SuppressWarnings("StringBufferReplaceableByString")
-            StringBuilder urlBuilder = new StringBuilder(endpoint).append('?').append(queryString.toString());
-
-            return urlBuilder.toString();
-
-        } catch (IOException e) {
-            throw new IllegalStateException("Something went wrong when constructing the SsoRedirectUri: " + e);
+        if (Strings.hasText(this.organizationNameKey)) {
+            jwtBuilder.claim(ORGANIZATION_NAME_KEY, organizationNameKey);
         }
 
+        if (useSubdomain != null) {
+            jwtBuilder.claim(USE_SUBDOMAIN, useSubdomain);
+        }
+
+        if (showOrganizationField != null) {
+            jwtBuilder.claim(SHOW_ORGANIZATION_FIELD, showOrganizationField);
+        }
+
+        byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
+
+        String jwt = jwtBuilder.setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE).signWith(SignatureAlgorithm.HS256, secret).compact();
+
+        QueryString queryString = new QueryString();
+        queryString.put(JWT_REQUEST, jwt);
+
+        StringBuilder urlBuilder = new StringBuilder(ssoEndpoint);
+
+        if (logout) {
+            urlBuilder.append(SSO_LOGOUT_SUFFIX);
+        }
+
+        return urlBuilder.append('?').append(queryString.toString()).toString();
     }
 
     /**

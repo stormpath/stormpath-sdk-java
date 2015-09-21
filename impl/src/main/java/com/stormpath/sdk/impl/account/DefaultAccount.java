@@ -15,7 +15,10 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.AccountOptions;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -25,10 +28,11 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -44,6 +48,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -217,9 +222,67 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return getResourceProperty(GROUP_MEMBERSHIPS);
     }
 
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     public GroupMembership addGroup(Group group) {
         return DefaultGroupMembership.create(this, group, getDataStore());
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public GroupMembership addGroup(String hrefOrName) {
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
+        Group group =  findGroupInDirectory(hrefOrName, this.getDirectory());
+        if (group != null){
+            return DefaultGroupMembership.create(this, group, getDataStore());
+        } else {
+            throw new IllegalStateException("The specified group was not found in this Account's directory.");
+        }
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Account removeGroup(Group group) {
+        Assert.notNull(group, "group cannot be null");
+        GroupMembership groupMembership = null;
+        for (GroupMembership aGroupMembership : getGroupMemberships()) {
+            if (aGroupMembership.getGroup().getHref().equals(group.getHref())) {
+                groupMembership = aGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        } else {
+            throw new IllegalStateException("This account does not belong to the specified group.");
+        }
+        return this;
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Account removeGroup(String hrefOrName) {
+        GroupMembership groupMembership = null;
+        for (GroupMembership aGroupMembership : getGroupMemberships()) {
+            if (aGroupMembership.getGroup().getName().equals(hrefOrName) || aGroupMembership.getGroup().getHref().equals(hrefOrName)) {
+                groupMembership = aGroupMembership;
+                break;
+            }
+        }
+        if (groupMembership != null){
+            groupMembership.delete();
+        } else {
+            throw new IllegalStateException("This account does not belong to the specified group.");
+        }
+        return this;
     }
 
     @Override
@@ -343,5 +406,37 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
         return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    private Group findGroupInDirectory(String hrefOrName, Directory directory) {
+        Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty");
+        Assert.notNull(directory, "directory cannot be null");
+
+        Group group = null;
+
+        //Let's check if hrefOrName looks like an href
+        String[] splitHrefOrName = hrefOrName.split("/");
+        if (splitHrefOrName.length > 4) {
+            try {
+                group = getDataStore().getResource(hrefOrName, Group.class);
+
+                // Notice that accounts can only be added to Groups in the same directory
+                if (group != null && group.getDirectory().getHref().equals(directory.getHref())){
+                    return group;
+                }
+            } catch (ResourceException e) {
+                // Although hrefOrName seemed to be an actual href value no Resource was found in the backend.
+                // Maybe this is actually a name rather than an href
+            }
+        }
+        GroupList groups = directory.getGroups(Groups.where(Groups.name().eqIgnoreCase(hrefOrName)));
+        if (groups.iterator().hasNext()){
+            group = groups.iterator().next();
+        }
+
+        return group;
     }
 }

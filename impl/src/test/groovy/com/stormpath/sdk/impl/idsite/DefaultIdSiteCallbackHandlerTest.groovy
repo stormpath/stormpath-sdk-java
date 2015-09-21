@@ -26,7 +26,7 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor
 import org.testng.annotations.Test
 
-import static com.stormpath.sdk.impl.jwt.JwtConstants.JWR_RESPONSE_PARAM_NAME
+import static com.stormpath.sdk.impl.jwt.IdSiteClaims.JWT_RESPONSE
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
 
@@ -131,7 +131,7 @@ class DefaultIdSiteCallbackHandlerTest {
         AccountResult accountResultFromListener = null
 
         expect(request.getMethod()).andReturn(HttpMethod.GET)
-        expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
+        expect(request.getParameter(JWT_RESPONSE)).andReturn(jwtResponse)
 
         if (expectedListenerMethod.equals(IdSiteResultStatus.REGISTERED)) {
             expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {

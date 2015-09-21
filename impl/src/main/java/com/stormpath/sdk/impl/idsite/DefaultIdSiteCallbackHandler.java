@@ -40,13 +40,14 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.error.Error;
+import io.jsonwebtoken.Claims;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.jwt.JwtConstants.*;
+import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*;
 
 /**
  * @since 1.0.RC2
@@ -103,18 +104,15 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
         Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
 
-        String apiKeyId = null;
-        if ((apiKeyId = getOptionalValue(jsonHeader, APIKEYID_PARAM_NAME)) == null) {
-            apiKeyId = getRequiredValue(jsonPayload, AUDIENCE_PARAM_NAME);
-        }
+        String apiKeyId = getRequiredValue(jsonPayload, Claims.AUDIENCE);
 
         getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
 
-        Number expire = getRequiredValue(jsonPayload, EXPIRE_PARAM_NAME);
+        Number expire = getRequiredValue(jsonPayload, Claims.EXPIRATION);
 
         verifyJwtIsNotExpired(expire.longValue());
 
-        String issuer = getRequiredValue(jsonPayload, ISSUER_PARAM_NAME);
+        String issuer = getRequiredValue(jsonPayload, Claims.ISSUER);
 
         //JSDK-261: Enable Java SDK to handle new ID Site error callbacks
         //We are processing the error after the token has been properly validated
@@ -122,7 +120,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
             throw new IDSiteRuntimeException(constructError(jsonPayload));
         }
 
-        String responseNonce = getRequiredValue(jsonPayload, RESPONSE_NONCE_PARAMETER);
+        String responseNonce = getRequiredValue(jsonPayload, RESPONSE_ID);
 
         if (nonceStore.hasNonce(responseNonce)) {
             throw new InvalidJwtException(InvalidJwtException.ALREADY_USED_JWT_ERROR);
@@ -131,16 +129,16 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         nonceStore.putNonce(responseNonce);
 
         //the 'sub' field can be null if calling /sso/logout when the subject is already logged out:
-        String accountHref = getOptionalValue(jsonPayload, SUBJECT_PARAM_NAME);
+        String accountHref = getOptionalValue(jsonPayload, Claims.SUBJECT);
         boolean accountHrefPresent = Strings.hasText(accountHref);
         //but this is only legal during the logout scenario, so assert this:
-        IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS_PARAM_NAME));
+        IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) getRequiredValue(jsonPayload, STATUS));
         if (!accountHrefPresent && !IdSiteResultStatus.LOGOUT.equals(resultStatus)) {
             throw new InvalidJwtException(InvalidJwtException.JWT_RESPONSE_MISSING_PARAMETER_ERROR);
         }
 
-        Boolean isNewAccount = getRequiredValue(jsonPayload, IS_NEW_SUBJECT_PARAM_NAME);
-        String state = getOptionalValue(jsonPayload, STATE_PARAM_NAME);
+        Boolean isNewAccount = getRequiredValue(jsonPayload, IS_NEW_SUBJECT);
+        String state = getOptionalValue(jsonPayload, STATE);
 
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
         properties.put(DefaultAccountResult.NEW_ACCOUNT.getName(), isNewAccount);
@@ -180,7 +178,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
             Assert.isTrue(httpRequest.getMethod() == HttpMethod.GET, "Only Http GET method is supported.");
 
-            jwtResponse = httpRequest.getParameter(JWR_RESPONSE_PARAM_NAME);
+            jwtResponse = httpRequest.getParameter(JWT_RESPONSE);
 
         } else {
             //This must never happen, if the object request is of HttpServletRequest type the HTTP_SERVLET_REQUEST_WRAPPER_CLASS
@@ -195,7 +193,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
             HttpMethod method = HttpMethod.fromName(httpServletRequestWrapper.getMethod());
             Assert.isTrue(HttpMethod.GET == method, "Only Http GET method is supported.");
 
-            jwtResponse = httpServletRequestWrapper.getParameter(JWR_RESPONSE_PARAM_NAME);
+            jwtResponse = httpServletRequestWrapper.getParameter(JWT_RESPONSE);
         }
 
         if (!Strings.hasText(jwtResponse)) {
@@ -277,8 +275,8 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     /* @since 1.0.RC5 */
     private Error constructError(Map jsonMap) {
         Assert.isTrue(isError(jsonMap));
-        Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR_PARAM_NAME);
-        Error error = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS_PARAM_NAME))
+        Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR);
+        Error error = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS))
                 .code((Integer) getRequiredValue(errorMap, "code"))
                 .developerMessage((String) getRequiredValue(errorMap, "developerMessage"))
                 .message((String) getRequiredValue(errorMap, "message"))
@@ -290,7 +288,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     /* @since 1.0.RC5 */
     private boolean isError(Map jsonMap) {
         Assert.notNull(jsonMap, "jsonMap cannot be null.");
-        Object error = getOptionalValue(jsonMap, ERROR_PARAM_NAME);
+        Object error = getOptionalValue(jsonMap, ERROR);
         return error != null;
     }
 

@@ -19,7 +19,6 @@ import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller;
 import com.stormpath.sdk.impl.ds.MapMarshaller;
 import com.stormpath.sdk.impl.util.Base64;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import java.nio.charset.Charset;
@@ -35,6 +34,8 @@ public class JwtWrapper {
 
     private final static Charset UTF_8 = Charset.forName("UTF-8");
 
+    private static final String SEPARATOR = ".";
+
     private final String base64JwtHeader;
 
     private final String base64JsonPayload;
@@ -48,7 +49,7 @@ public class JwtWrapper {
             throw new InvalidJwtException(InvalidJwtException.JWT_REQUIRED_ERROR);
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(jwt, JwtConstants.JWT_TOKENS_SEPARATOR);
+        StringTokenizer tokenizer = new StringTokenizer(jwt, SEPARATOR);
 
         if (tokenizer.countTokens() != 3) {
             throw new InvalidJwtException(InvalidJwtException.JWT_INVALID_VALUE_ERROR);

@@ -36,7 +36,6 @@ import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 import static com.stormpath.sdk.api.ApiKeys.criteria
 import static com.stormpath.sdk.api.ApiKeys.options
@@ -657,7 +656,7 @@ class AccountIT extends ClientIT {
                 .setGivenName("Joe")
                 .setSurname("Smith")
         account.setEmail(account.getUsername() + "@mail.com")
-        account = app.createAccount(Accounts.newCreateRequestFor(account).build())
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
         DateFormat df = new ISO8601DateFormat();
@@ -896,6 +895,125 @@ class AccountIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    public void testAddGroupError() {
+        //create an App
+        def app = createTempApp()
+        Directory directory = app.getDefaultAccountStore() as Directory
+
+        //create an account
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('JSDK_testAddGroupErrors'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@stormpath.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        try{
+            account.addGroup("SuperInvalid")
+            fail("Should have failed due to group not found in this Account's directory.")
+        } catch (Exception e){
+            assertEquals "The specified group was not found in this Account's directory.", e.getMessage()
+        }
+    }
+
+    /**
+     * @since 1.0.RC4.6
+     */
+    @Test
+    public void testAddAndRemoveGroup() {
+
+        //create an App
+        def app = createTempApp()
+        Directory directory = app.getDefaultAccountStore() as Directory
+
+        //create a group
+        def group = client.instantiate(Group)
+        group.name = uniquify('JSDK: testAddGroup Group1')
+        group = directory.createGroup(group)
+        deleteOnTeardown(group)
+
+        //create an account
+        def account = client.instantiate(Account)
+                .setUsername(uniquify('JSDK_testAddGroup_Account_1'))
+                .setPassword("Changeme1!")
+                .setGivenName("Joe")
+                .setSurname("Smith")
+        account.setEmail(account.getUsername() + "@stormpath.com")
+        account = directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        //add account to group
+        GroupMembership membership = account.addGroup(group)
+        assertNotNull membership
+        assertEquals account.getGroups().size, 1
+        assertEquals membership.account.href, account.href
+        assertEquals membership.group.href, group.href
+
+        //add account to group using the href
+
+        //create a second group
+        def group2 = client.instantiate(Group)
+        group2.name = uniquify('JSDK: testAddGroup Group2')
+        group2 = directory.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        membership = account.addGroup(group2.href)
+        assertNotNull membership
+        assertEquals account.getGroups().size, 2
+        assertEquals membership.account.href, account.href
+        assertEquals membership.group.href, group2.href
+
+        //create a third group
+        def group3 = client.instantiate(Group)
+        group3.name = uniquify('JSDK: testAddGroup Group3')
+        group3 = directory.createGroup(group3)
+        deleteOnTeardown(group3)
+
+        membership = account.addGroup(group3.name)
+        assertNotNull membership
+        assertEquals account.getGroups().size, 3
+        assertEquals membership.account.href, account.href
+        assertEquals membership.group.href, group3.href
+
+        // Test Remove
+        account = account.removeGroup(group)
+        assertEquals 2, account.getGroups().size
+
+        account = account.removeGroup(group2.name)
+        assertEquals 1, account.getGroups().size
+
+        account = account.removeGroup(group3.href)
+        assertEquals 0, account.getGroups().size
+
+        // Test exceptions
+
+        def group5 = client.instantiate(Group)
+        group5.name = uniquify('JSDK: testAddGroup Group5')
+        group5 = directory.createGroup(group5)
+        deleteOnTeardown(group5)
+
+        try {
+            account.removeGroup(group5)
+            fail ("Should have failed due to account not present in group")
+        } catch (Exception e){
+            assertTrue e instanceof IllegalStateException
+            assertEquals "This account does not belong to the specified group.", e.getMessage()
+        }
+
+        try {
+            account.removeGroup("Invalid group info")
+            fail ("Should have failed due to account not present in group")
+        } catch (Exception e){
+            assertTrue e instanceof IllegalStateException
+            assertEquals "This account does not belong to the specified group.", e.getMessage()
+        }
+    }
 
     //@since 1.0.RC3
     private Object getValue(Class clazz, Object object, String fieldName) {
