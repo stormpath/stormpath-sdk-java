@@ -245,6 +245,11 @@
                 <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-default-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
 
             <!-- 3rd party dependencies: -->
