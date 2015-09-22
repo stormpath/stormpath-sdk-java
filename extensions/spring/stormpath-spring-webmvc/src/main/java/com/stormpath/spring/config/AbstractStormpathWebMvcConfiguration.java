@@ -226,7 +226,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
     protected String stormpathFilterUrlPatterns;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.servletNames'] }")
     protected String stormpathFilterServletNames;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.dispatcherTypes'] ?: 'REQUEST, INCLUDE, FORWARD, ERROR' }")
