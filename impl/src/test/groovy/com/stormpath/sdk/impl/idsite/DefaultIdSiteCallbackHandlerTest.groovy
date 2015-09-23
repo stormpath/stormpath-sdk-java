@@ -94,6 +94,7 @@ class DefaultIdSiteCallbackHandlerTest {
     /* @since 1.0.RC5 */
     @Test
     void testIDSiteExceptionRethrow() {
+
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
                 "IiOnsiY29kZSI6MTAwMTIsImRldmVsb3Blck1lc3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIGJlY2F1c2UgdGhlIGlzc3VlZCBhdCB0" +
                 "aW1lIChpYXQpIGlzIGFmdGVyIHRoZSBjdXJyZW50IHRpbWUuIiwibWVzc2FnZSI6IlRva2VuIGlzIGludmFsaWQiLCJtb3JlSW5mby" +
