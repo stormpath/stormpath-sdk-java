@@ -26,7 +26,7 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor
 import org.testng.annotations.Test
 
-import static com.stormpath.sdk.impl.jwt.IdSiteClaims.JWT_RESPONSE
+import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
 
@@ -70,11 +70,12 @@ class DefaultIdSiteCallbackHandlerTest {
     void testIDSiteException() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
                 "IiOnsiY29kZSI6MTEwMDEsImRldmVsb3Blck1lc3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIGJlY2F1c2UgdGhlIHNwZWNpZmllZCBv" +
-                "cmdhbml6YXRpb24gbmFtZSBrZXkgZG9lcyBub3QgZXhpc3QgaW4geW91ciBTdG9ybXBhdGggVGVuYW50IiwibWVzc2FnZSI6IlRva2" +
-                "VuIGlzIGludmFsaWQiLCJtb3JlSW5mbyI6Im1haWx0bzpzdXBwb3J0QHN0b3JtcGF0aC5jb20iLCJzdGF0dXMiOjQwMH0sImlzcyI6" +
-                "Imh0dHBzOi8vc3R1cmR5LXNoaWVsZC5pZC5zdG9ybXBhdGguaW8iLCJleHAiOjMzNTAyNDY2NjUwMDAsImlhdCI6IjE0MDcxOTg1NT" +
-                "AiLCJqdGkiOiI0MzZ2a2tIZ2sxeDMwNTdwQ1BxVGFoIn0.NORlAh8X4UgkHJtAfTw7rv4nJws1TGDsiKs6kuasI_0"
-        testError(jwtResponse, 11001, 400, "Token is invalid", "Token is invalid because the specified organization name key does not exist in your Stormpath Tenant")
+                "cmdhbml6YXRpb24gbmFtZSBrZXkgZG9lcyBub3QgZXhpc3QgaW4geW91ciBTdG9ybXBhdGggVGVuYW50LiIsIm1lc3NhZ2UiOiJUb2" +
+                "tlbiBpcyBpbnZhbGlkIiwibW9yZUluZm8iOiJodHRwOi8vZG9jcy5zdG9ybXBhdGguY29tL2Vycm9ycy8xMDAxMSIsInN0YXR1cyI6" +
+                "NDAwfSwiaXNzIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hcHBsaWNhdGlvbnMvMmVxYnlaOHFvMzRlREU0Z1RvMVI5My" +
+                "IsImV4cCI6MzM1MDI0NjY2NTAwMCwiaWF0IjoxNDA3MTk4NTUwLCJqdGkiOiI0MzZ2a2tIZ2sxeDMwNTdwQ1BxVGFoIn0.SDf6NM5S" +
+                "10fW7OiGwjcAEqWEPU-nd6YDkOZGBmw8G18"
+        testError(jwtResponse, 11001, 400, "Token is invalid", "Token is invalid because the specified organization name key does not exist in your Stormpath Tenant.")
     }
 
     /* @since 1.0.RC5 */
@@ -82,10 +83,11 @@ class DefaultIdSiteCallbackHandlerTest {
     void testExpiredIDSiteError() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
                 "IiOnsiY29kZSI6MTEwMDEsImRldmVsb3Blck1lc3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIGJlY2F1c2UgdGhlIHNwZWNpZmllZCBv" +
-                "cmdhbml6YXRpb24gbmFtZSBrZXkgZG9lcyBub3QgZXhpc3QgaW4geW91ciBTdG9ybXBhdGggVGVuYW50IiwibWVzc2FnZSI6IlRva2" +
-                "VuIGlzIGludmFsaWQiLCJtb3JlSW5mbyI6Im1haWx0bzpzdXBwb3J0QHN0b3JtcGF0aC5jb20iLCJzdGF0dXMiOjQwMH0sImlzcyI6" +
-                "Imh0dHBzOi8vc3R1cmR5LXNoaWVsZC5pZC5zdG9ybXBhdGguaW8iLCJleHAiOjE0NDA3MDUwNjAsImlhdCI6IjE0MDcxOTg1NTAiLC" +
-                "JqdGkiOiI0MzZ2a2tIZ2sxeDMwNTdwQ1BxVGFoIn0.deg4D2JJzmVElaIh8c2NejxQVUtktIJINOfUKNO2FwQ"
+                "cmdhbml6YXRpb24gbmFtZSBrZXkgZG9lcyBub3QgZXhpc3QgaW4geW91ciBTdG9ybXBhdGggVGVuYW50LiIsIm1lc3NhZ2UiOiJUb2" +
+                "tlbiBpcyBpbnZhbGlkIiwibW9yZUluZm8iOiJodHRwOi8vZG9jcy5zdG9ybXBhdGguY29tL2Vycm9ycy8xMDAxMSIsInN0YXR1cyI6" +
+                "NDAwfSwiaXNzIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hcHBsaWNhdGlvbnMvMmVxYnlaOHFvMzRlREU0Z1RvMVI5My" +
+                "IsImV4cCI6MTQ0MDcwNTA2MCwiaWF0IjoxNDA3MTk4NTUwLCJqdGkiOiI0MzZ2a2tIZ2sxeDMwNTdwQ1BxVGFoIn0.OR7ho9XsZ7rC" +
+                "RYGumvw-SO0UzD2kEXg-janTAkxD_bE"
         testExpired(jwtResponse)
     }
 
@@ -93,29 +95,29 @@ class DefaultIdSiteCallbackHandlerTest {
     @Test
     void testIDSiteExceptionRethrow() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +
-                "IiOnsiY29kZSI6NDAwLCJkZXZlbG9wZXJNZXNzYWdlIjoiVGhlIHNwZWNpZmllZCBjYWxsYmFjayBVUkkgKGNiX3VyaSkgaXMgbm90" +
-                "IHZhbGlkLiBNYWtlIHN1cmUgdGhlIGNhbGxiYWNrIFVSSSBzcGVjaWZpZWQgaW4geW91ciBJRCBTaXRlIGNvbmZpZ3VyYXRpb24gbW" +
-                "F0Y2hlcyB0aGUgdmFsdWUgc3BlY2lmaWVkLiIsIm1lc3NhZ2UiOiJUaGUgc3BlY2lmaWVkIGNhbGxiYWNrIFVSSSAoY2JfdXJpKSBp" +
-                "cyBub3QgdmFsaWQiLCJtb3JlSW5mbyI6Im1haWx0bzpzdXBwb3J0QHN0b3JtcGF0aC5jb20iLCJzdGF0dXMiOjQwMH0sImlzcyI6Im" +
-                "h0dHBzOi8vc3R1cmR5LXNoaWVsZC5pZC5zdG9ybXBhdGguaW8iLCJleHAiOjMzNTAyNDY2NjUwMDAsImlhdCI6IjE0MDcxOTg1NTAi" +
-                "LCJqdGkiOiI0MzZ2a2tIZ2sxeDMwNTdwQ1BxVGFoIn0.dfEQs7tNnmfoFh0yiA05IOYyn4khmDV81HOUT8uJ7uA"
-        testRethrow(jwtResponse, InvalidIDSiteCallbackURIException.class, 400, 400, "The specified callback URI (cb_uri) is not valid", "The specified callback URI (cb_uri) is not valid. Make sure the callback URI specified in your ID Site configuration matches the value specified.")
+                "IiOnsiY29kZSI6MTAwMTIsImRldmVsb3Blck1lc3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIGJlY2F1c2UgdGhlIGlzc3VlZCBhdCB0" +
+                "aW1lIChpYXQpIGlzIGFmdGVyIHRoZSBjdXJyZW50IHRpbWUuIiwibWVzc2FnZSI6IlRva2VuIGlzIGludmFsaWQiLCJtb3JlSW5mby" +
+                "I6Imh0dHA6Ly9kb2NzLnN0b3JtcGF0aC5jb20vZXJyb3JzLzEwMDEyIiwic3RhdHVzIjo0MDB9LCJpc3MiOiJodHRwczovL2FwaS5z" +
+                "dG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy8yZXFieVo4cW8zNGVERTRnVG8xUjkzIiwiZXhwIjozMzUwMjQ2NjY1MDAwLCJpYX" +
+                "QiOjE0MDcxOTg1NTAsImp0aSI6IjQzNnZra0hnazF4MzA1N3BDUHFUYWgifQ.JT__dR0jC6fYZv9NYVC4k45mD5fAQfl_l7yElYm5JMk"
+        testRethrow(jwtResponse, InvalidIDSiteTokenException.class, 10012, 400, "Token is invalid", "Token is invalid because the issued at time (iat) is after the current time.")
 
         jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcnIiOnsiY" +
-                "29kZSI6MTAwMTIsImRldmVsb3Blck1lc3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIGJlY2F1c2UgdGhlIGlzc3VlZCBhdCB0aW1lICh" +
-                "pYXQpIGlzIGFmdGVyIHRoZSBjdXJyZW50IHRpbWUiLCJtZXNzYWdlIjoiVG9rZW4gaXMgaW52YWxpZCIsIm1vcmVJbmZvIjoibWFpb" +
-                "HRvOnN1cHBvcnRAc3Rvcm1wYXRoLmNvbSIsInN0YXR1cyI6NDAwfSwiaXNzIjoiaHR0cHM6Ly9zdHVyZHktc2hpZWxkLmlkLnN0b3J" +
-                "tcGF0aC5pbyIsImV4cCI6MzM1MDI0NjY2NTAwMCwiaWF0IjoiMTQwNzE5ODU1MCIsImp0aSI6IjQzNnZra0hnazF4MzA1N3BDUHFUY" +
-                "WgifQ.RYhogfxeUz2mzGhAgYdaNuxC6IzJ6PAPXGi4Ag9nW-M"
-        testRethrow(jwtResponse, InvalidIDSiteTokenException.class, 10012, 400, "Token is invalid", "Token is invalid because the issued at time (iat) is after the current time")
+                "29kZSI6MTEwMDMsImRldmVsb3Blck1lc3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIGJlY2F1c2UgdGhlIHNwZWNpZmllZCBvcmdhbml" +
+                "6YXRpb24gbmFtZUtleSBpcyBub3Qgb25lIG9mIHRoZSBhcHBsaWNhdGlvbidzIGFzc2lnbmVkIGFjY291bnQgc3RvcmVzLiIsIm1lc" +
+                "3NhZ2UiOiJUb2tlbiBpcyBpbnZhbGlkIiwibW9yZUluZm8iOiJodHRwOi8vZG9jcy5zdG9ybXBhdGguY29tL2Vycm9ycy8xMTAwMyI" +
+                "sInN0YXR1cyI6NDAwfSwiaXNzIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hcHBsaWNhdGlvbnMvMmVxYnlaOHFvMzRlR" +
+                "EU0Z1RvMVI5MyIsImV4cCI6MzM1MDI0NjY2NTAwMCwiaWF0IjoxNDA3MTk4NTUwLCJqdGkiOiI0MzZ2a2tIZ2sxeDMwNTdwQ1BxVGF" +
+                "oIn0.rN7yWI1v9IzsOuooe3cC1WKM4vpqB_vsa00mnXvj3nw"
+        testRethrow(jwtResponse, InvalidIDSiteTokenException.class, 11003, 400, "Token is invalid", "Token is invalid because the specified organization nameKey is not one of the application's assigned account stores.")
 
         jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcnIiOnsiY" +
                 "29kZSI6MTIwMDEsImRldmVsb3Blck1lc3NhZ2UiOiJUaGUgc2Vzc2lvbiBvbiBJRCBTaXRlIGhhcyB0aW1lZCBvdXQuIFRoaXMgY2F" +
                 "uIG9jY3VyIGlmIHRoZSB1c2VyIHN0YXlzIG9uIElEIFNpdGUgd2l0aG91dCBsb2dnaW5nIGluLCByZWdpc3RlcmluZywgb3IgcmVzZ" +
                 "XR0aW5nIGEgcGFzc3dvcmQuIiwibWVzc2FnZSI6IlRoZSBzZXNzaW9uIG9uIElEIFNpdGUgaGFzIHRpbWVkIG91dC4iLCJtb3JlSW5" +
-                "mbyI6Im1haWx0bzpzdXBwb3J0QHN0b3JtcGF0aC5jb20iLCJzdGF0dXMiOjQwMX0sImlzcyI6Imh0dHBzOi8vc3R1cmR5LXNoaWVsZ" +
-                "C5pZC5zdG9ybXBhdGguaW8iLCJleHAiOjMzNTAyNDY2NjUwMDAsImlhdCI6IjE0MDcxOTg1NTAiLCJqdGkiOiI0MzZ2a2tIZ2sxeDM" +
-                "wNTdwQ1BxVGFoIn0.Ndt6bi1T6CcYZsydM0Z0zLez7ZN_8JIH__vegZbpfj0"
+                "mbyI6Im1haWx0bzpzdXBwb3J0QHN0b3JtcGF0aC5jb20iLCJzdGF0dXMiOjQwMX0sImlzcyI6Imh0dHBzOi8vYXBpLnN0b3JtcGF0a" +
+                "C5jb20vdjEvYXBwbGljYXRpb25zLzJlcWJ5WjhxbzM0ZURFNGdUbzFSOTMiLCJleHAiOjMzNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE" +
+                "5ODU1MCwianRpIjoiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCJ9.xuW4L7HPe0M__mVK7jndY6g9Mcnuc1kanw_7bolOK3Y"
         testRethrow(jwtResponse, IDSiteSessionTimeoutException.class, 12001, 401, "The session on ID Site has timed out.", "The session on ID Site has timed out. This can occur if the user stays on ID Site without logging in, registering, or resetting a password.")
     }
 
@@ -204,7 +206,7 @@ class DefaultIdSiteCallbackHandlerTest {
         def request = createStrictMock(HttpRequest)
 
         expect(request.getMethod()).andReturn(HttpMethod.GET)
-        expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
+        expect(request.getParameter(JWT_RESPONSE)).andReturn(jwtResponse)
 
         replay application, request
 
@@ -232,7 +234,7 @@ class DefaultIdSiteCallbackHandlerTest {
         def request = createStrictMock(HttpRequest)
 
         expect(request.getMethod()).andReturn(HttpMethod.GET)
-        expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
+        expect(request.getParameter(JWT_RESPONSE)).andReturn(jwtResponse)
 
         replay application, request
 
@@ -257,7 +259,7 @@ class DefaultIdSiteCallbackHandlerTest {
         def request = createStrictMock(HttpRequest)
 
         expect(request.getMethod()).andReturn(HttpMethod.GET)
-        expect(request.getParameter(JWR_RESPONSE_PARAM_NAME)).andReturn(jwtResponse)
+        expect(request.getParameter(JWT_RESPONSE)).andReturn(jwtResponse)
 
         replay application, request
 
@@ -270,13 +272,7 @@ class DefaultIdSiteCallbackHandlerTest {
             try {
                 ex.rethrow();
                 throw new Exception("should have thrown")
-            } catch (InvalidIDSiteCallbackURIException e) {
-                assertEquals(e.getClass(), expectedExceptionClass)
-                assertEquals(e.getStatus(), expectedStatus)
-                assertEquals(e.getCode(), expectedCode)
-                assertEquals(e.getStormpathError().message, expectedMessage)
-                assertEquals(e.getDeveloperMessage(), expectedDeveloperMessage)
-             }catch (InvalidIDSiteTokenException e) {
+            } catch (InvalidIDSiteTokenException e) {
                 assertEquals(e.getClass(), expectedExceptionClass)
                 assertEquals(e.getStatus(), expectedStatus)
                 assertEquals(e.getCode(), expectedCode)

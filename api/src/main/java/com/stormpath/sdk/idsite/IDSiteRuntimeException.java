@@ -28,7 +28,6 @@ import java.util.List;
  * those interested in re-working the specific error, this class offers the {@link #rethrow()} method. When invoked, this method will throw a new <a
  * href="https://en.wikipedia.org/wiki/Exception_handling#Checked_exceptions">checked exception</a> describing the specific IDSite error. It can be one of subclasses of {@link IDSiteException}:
  * <ul>
- *     <li>{@link com.stormpath.sdk.idsite.InvalidIDSiteCallbackURIException InvalidIDSiteCallbackURIException}: Indicating that the specified callback URI (cb_uri) is not valid.</li>
  *     <li>{@link com.stormpath.sdk.idsite.InvalidIDSiteTokenException InvalidIDSiteTokenException}: indicating that the token is invalid. Reasons could be: expired token,
  *     the issued at time (iat) is after the current time, the specified organization name key does not exist in your Stormpath Tenant or because the specified organization is disabled.</li>
  *     <li>{@link com.stormpath.sdk.idsite.IDSiteSessionTimeoutException IDSiteSessionTimeoutException}: indicating that the session on ID Site has timed out.</li>
@@ -39,7 +38,7 @@ import java.util.List;
  */
 public class IDSiteRuntimeException extends ResourceException {
 
-    private final static List<Integer> supportedErrors = java.util.Collections.unmodifiableList(Arrays.asList(400, 10011, 10012, 11001, 11002, 12001));
+    private final static List<Integer> supportedErrors = java.util.Collections.unmodifiableList(Arrays.asList(10011, 10012, 11001, 11002, 11003, 12001));
 
     public IDSiteRuntimeException(Error error) {
         super(error);
@@ -47,19 +46,15 @@ public class IDSiteRuntimeException extends ResourceException {
     }
 
     /**
-     * Converts this generic IDSite exception into one of the following corresponding checked exceptions: InvalidIDSiteCallbackURIException, InvalidIDSiteTokenException, IDSiteSessionTimeoutException.
+     * Converts this generic IDSite exception into one of the following corresponding checked exceptions: InvalidIDSiteTokenException, IDSiteSessionTimeoutException.
      *
-     * @throws InvalidIDSiteCallbackURIException
      * @throws InvalidIDSiteTokenException
      * @throws IDSiteSessionTimeoutException
      */
-    public void rethrow() throws InvalidIDSiteCallbackURIException, InvalidIDSiteTokenException, IDSiteSessionTimeoutException {
+    public void rethrow() throws InvalidIDSiteTokenException, IDSiteSessionTimeoutException {
         Error error = this.getStormpathError();
-        if (error.getCode() == 400) {
-            throw new InvalidIDSiteCallbackURIException(error);
-        }
 
-        if (error.getCode() == 10011 || error.getCode() == 10012 || error.getCode() == 11001 || error.getCode() == 11002) {
+        if (error.getCode() == 10011 || error.getCode() == 10012 || error.getCode() == 11001 || error.getCode() == 11002 || error.getCode() == 11003) {
             throw new InvalidIDSiteTokenException(error);
         }
 

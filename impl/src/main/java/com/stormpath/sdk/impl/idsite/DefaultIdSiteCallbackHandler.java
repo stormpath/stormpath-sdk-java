@@ -48,6 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*;
+import static com.stormpath.sdk.impl.jwt.JwtHeaderParameters.*;
 
 /**
  * @since 1.0.RC2
@@ -101,10 +102,16 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
         JwtWrapper jwtWrapper = new JwtWrapper(jwtResponse);
 
-        Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
         Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
 
-        String apiKeyId = getRequiredValue(jsonPayload, Claims.AUDIENCE);
+        String apiKeyId;
+
+        if (isError(jsonPayload)) {
+            Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
+            apiKeyId = getRequiredValue(jsonHeader, KEY_ID);
+        } else {
+            apiKeyId = getRequiredValue(jsonPayload, Claims.AUDIENCE);
+        }
 
         getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
 

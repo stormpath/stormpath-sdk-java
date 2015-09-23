@@ -24,7 +24,6 @@ import com.stormpath.sdk.lang.Assert;
  * This is a generic {@link Exception} that specific IDSite exception implementations representing an actual ID Site error can extend.
  * </p>
  *
- * @see InvalidIDSiteCallbackURIException
  * @see InvalidIDSiteTokenException
  * @see IDSiteSessionTimeoutException
  *
