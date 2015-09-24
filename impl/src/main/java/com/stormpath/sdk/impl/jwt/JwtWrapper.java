@@ -74,6 +74,17 @@ public class JwtWrapper {
         return base64JwtSignature;
     }
 
+    public Map getJsonHeaderAsMap() {
+
+        byte[] jsonBytes = Base64.decodeBase64(base64JwtHeader);
+
+        if (jsonBytes == null) {
+            throw new InvalidJwtException(InvalidJwtException.INVALID_JWT_HEADER_ENCODING_ERROR);
+        }
+
+        return mapMarshaller.unmarshal(new String(jsonBytes, UTF_8));
+    }
+
     public Map getJsonPayloadAsMap() {
 
         byte[] jsonBytes = Base64.decodeBase64(base64JsonPayload);

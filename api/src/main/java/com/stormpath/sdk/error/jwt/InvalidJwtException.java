@@ -29,6 +29,8 @@ public class InvalidJwtException extends RuntimeException {
 
     public static final String INVALID_JWT_BODY_ENCODING_ERROR = "JWT json body cannot be decoded.";
 
+    public static final String INVALID_JWT_HEADER_ENCODING_ERROR = "JWT json header cannot be decoded.";
+
     public static final String INVALID_JWT_SIGNATURE_ERROR = "JWT Signature is invalid.";
 
     public static final String EXPIRED_JWT_ERROR = "JWT has already expired.";
