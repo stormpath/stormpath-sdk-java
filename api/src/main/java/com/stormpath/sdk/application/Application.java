@@ -27,6 +27,8 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.PasswordGrantAuthenticator;
+import com.stormpath.sdk.authc.PasswordGrantRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
@@ -1463,5 +1465,13 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @since 1.0.RC4.6
      */
     Application saveWithResponseOptions(ApplicationOptions responseOptions);
+
+    /**
+     * Creates a valid Oauth 2 authentication token that can be used to authenticate further requests submitted to your application's API.
+     * @param passwordGrantRequest the {@link PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
+     * @return
+     * @since 1.0.RC5
+     */
+    Object authenticate(PasswordGrantRequest passwordGrantRequest);
 
 }

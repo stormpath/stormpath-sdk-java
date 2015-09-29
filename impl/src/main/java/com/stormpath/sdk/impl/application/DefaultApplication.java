@@ -33,8 +33,7 @@ import com.stormpath.sdk.application.AccountStoreMappingList;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.Directory;
@@ -720,5 +719,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, responseOptions);
         return this;
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Object authenticate(PasswordGrantRequest passwordGrantRequest) {
+        PasswordGrantAuthenticator authenticator = PasswordGrantAuthenticators.forApplication(this, getDataStore());
+        return authenticator.authenticate(passwordGrantRequest);
     }
 }

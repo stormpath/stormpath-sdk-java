@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
@@ -29,4 +30,6 @@ public interface ResourceMessage {
     Map<String,Object> getData();
 
     Class<? extends Resource> getResourceClass();
+
+    MediaType getCustomContentType();
 }

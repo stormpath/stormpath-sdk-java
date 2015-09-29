@@ -27,7 +27,12 @@ import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.authc.PasswordGrantAuthenticator
+import com.stormpath.sdk.authc.PasswordGrantAuthenticators
+import com.stormpath.sdk.authc.PasswordGrantRequest
+import com.stormpath.sdk.authc.PasswordGrantRequests
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -37,6 +42,7 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
+import com.stormpath.sdk.impl.authc.DefaultPasswordGrantRequest
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
@@ -116,6 +122,28 @@ class ApplicationIT extends ClientIT {
 
         def list = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(email)))
         assertFalse list.iterator().hasNext() //no results
+    }
+
+    /* @since 1.0.RC5 */
+    @Test
+    void testCreateTokenForAppAccount() {
+
+        def app = createTempApp()
+
+        def email = uniquify('testCreateToken') + '@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email =  email
+        account.password = 'Changeme1!'
+
+        def created = app.createAccount(account)
+        assertNotNull created.href
+
+        PasswordGrantRequest request = PasswordGrantRequests.builder().setLogin(email).setPassword("Changeme1!").build();
+        def result = app.authenticate(request)
+
     }
 
     @Test

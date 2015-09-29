@@ -26,13 +26,7 @@ import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
 import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.QueryStringFactory;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.impl.http.*;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
@@ -322,6 +316,11 @@ public class DefaultDataStore implements InternalDataStore {
         return save(parentHref, resource, returnType, null, true);
     }
 
+    @Override
+    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, MediaType customContentTypeHeader) {
+        return save(parentHref, resource, customContentTypeHeader, null, null, true);
+    }
+
     /** @since 1.0.RC5 */
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, Options options) {
@@ -407,6 +406,70 @@ public class DefaultDataStore implements InternalDataStore {
 
         ResourceAction action = create ? ResourceAction.CREATE : ResourceAction.UPDATE;
         ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props);
+
+        ResourceDataResult result = chain.filter(request);
+
+        Map<String,Object> data = result.getData();
+
+        //ensure the caller's argument is updated with what is returned from the server if the types are the same:
+        if (returnType.equals(abstractResource.getClass())) {
+            abstractResource.setProperties(data);
+        }
+
+        return resourceFactory.instantiate(returnType, data);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Resource, R extends Resource> R save(String href, final T resource, MediaType customContentType, final Class<? extends R> returnType, final QueryString qs, final boolean create) {
+
+        Assert.hasText(href, "href argument cannot be null or empty.");
+        Assert.notNull(resource, "resource argument cannot be null.");
+        Assert.isInstanceOf(AbstractResource.class, resource);
+        Assert.isTrue(!CollectionResource.class.isAssignableFrom(resource.getClass()), "Collections cannot be persisted.");
+
+        final CanonicalUri uri = canonicalize(href, qs);
+        final AbstractResource abstractResource = (AbstractResource) resource;
+        final Map<String, Object> props = resourceConverter.convert(abstractResource);
+
+        FilterChain chain = new DefaultFilterChain(this.filters, new FilterChain() {
+            @Override
+            public ResourceDataResult filter(final ResourceDataRequest req) {
+
+                String bodyString = mapMarshaller.marshal(req.getData());
+                StringInputStream body = new StringInputStream(bodyString);
+                long length = body.available();
+
+                CanonicalUri uri = req.getUri();
+                String href = uri.getAbsolutePath();
+                QueryString qs = uri.getQuery();
+
+                HttpHeaders httpHeaders = null;
+                if (req.getCustomContentType() != null){
+                    httpHeaders = new HttpHeaders();
+                    httpHeaders.add("Content-Type", req.getCustomContentType().toString());
+                }
+                Request request = new DefaultRequest(HttpMethod.POST, href, qs, httpHeaders, body, length);
+
+                Response response = execute(request);
+                Map<String, Object> responseBody = getBody(response);
+
+                if (Collections.isEmpty(responseBody)) {
+                    // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
+                    if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
+                        responseBody = java.util.Collections.emptyMap();
+                    } else {
+                        throw new IllegalStateException("Unable to obtain resource data from the API server.");
+                    }
+                }
+
+                ResourceAction responseAction = getPostAction(req, response);
+
+                return new DefaultResourceDataResult(responseAction, uri, returnType, responseBody);
+            }
+        });
+
+        ResourceAction action = create ? ResourceAction.CREATE : ResourceAction.UPDATE;
+        ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props, customContentType);
 
         ResourceDataResult result = chain.filter(request);
 
@@ -511,9 +574,10 @@ public class DefaultDataStore implements InternalDataStore {
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_JSON));
         request.getHeaders().set("User-Agent", USER_AGENT_STRING);
-        if (request.getBody() != null) {
-            //this data store currently only deals with JSON messages:
-            request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        if (request.getHeaders().getContentType() == null){
+            if (request.getBody() != null) {
+                request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            }
         }
     }
 

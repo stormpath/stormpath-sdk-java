@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.Resource;
 
@@ -27,6 +28,7 @@ public class DefaultResourceMessage implements ResourceMessage {
     private final CanonicalUri uri;
     private final Class<? extends Resource> resourceClass;
     private final Map<String,Object> data;
+    private MediaType customContentType = null;
 
     public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
         Assert.notNull(action, "resource action cannot be null.");
@@ -37,6 +39,11 @@ public class DefaultResourceMessage implements ResourceMessage {
         this.uri = uri;
         this.resourceClass = resourceClass;
         this.data = data;
+    }
+
+    public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data, MediaType customContentType) {
+        this(action, uri, resourceClass, data);
+        this.customContentType = customContentType;
     }
 
     @Override
@@ -57,5 +64,13 @@ public class DefaultResourceMessage implements ResourceMessage {
     @Override
     public ResourceAction getAction() {
         return action;
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public MediaType getCustomContentType() {
+        return customContentType;
     }
 }
