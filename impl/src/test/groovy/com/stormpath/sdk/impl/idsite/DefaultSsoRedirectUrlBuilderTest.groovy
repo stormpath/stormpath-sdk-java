@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,6 +154,34 @@ public class DefaultSsoRedirectUrlBuilderTest {
         String jwt = ssoRedirectUrl.substring(expectedBaseUrl.length())
 
         assertClaims(jwt, [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                           cb_uri: "http://fooUrl:8081/index.do", onk: "my-organization", usd: true, sof: true], ["path", "state"])
+
+        verify internalDataStore, apiKey
+    }
+
+    @Test
+    void testBuilderWithSpToken() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(apiKey.getSecret()).andReturn(apiKeySecret)
+
+        replay internalDataStore, apiKey
+
+        def builder = new DefaultIdSiteUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+
+        def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do").setOrganizationNameKey("my-organization")
+                .setUseSubdomain(true).setShowOrganizationField(true).setSpToken("anSpToken").addProperty("unknown", "xyx").build()
+
+        String expectedBaseUrl = "https://api.stormpath.com/sso?jwtRequest="
+
+        assertTrue ssoRedirectUrl.startsWith(expectedBaseUrl)
+
+        String jwt = ssoRedirectUrl.substring(expectedBaseUrl.length())
+
+        assertClaims(jwt, [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", sp_token: "anSpToken", unknown: "xyx",
                            cb_uri: "http://fooUrl:8081/index.do", onk: "my-organization", usd: true, sof: true], ["path", "state"])
 
         verify internalDataStore, apiKey

@@ -130,6 +130,27 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField);
 
     /**
+     * Sets the {@code sp_token} property to be used during the initial sso call. The {@code sp_token} must correspond to
+     * an actual password reset token and when successful the {@code IdSite} will be redirected to the reset view.
+     *
+     * @param spToken the
+     * @return this instance for method chaining.
+     * @since 1.0.RC5
+     */
+    IdSiteUrlBuilder setSpToken(String spToken);
+
+    /**
+     * Convenience method to set any key value. This is important to decouple the server releases from the library
+     * releases, when a new property is supported in the initial {@code IdSite} call.
+     *
+     * @param name  of the new property.
+     * @param value of the new property.
+     * @return this instance for method chaining.
+     * @since 1.0.RC5
+     */
+    IdSiteUrlBuilder addProperty(String name, Object value);
+
+    /**
      *
      * A user that has an open session and wants to logout from it will invoke this method when constructing the {@code callbackUri}.
      * <p/>
