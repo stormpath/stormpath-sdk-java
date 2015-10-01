@@ -71,6 +71,9 @@ public interface IdSiteCallbackHandler {
      * During the execution of this method, the {@link IdSiteResultListener result listener} (if any) will be notified
      * about the actual operation of the ID Site invocation: registration, authentication or logout.
      *
+     * @throws com.stormpath.sdk.error.jwt.InvalidJwtException when the returned token is invalid.
+     * @throws IDSiteRuntimeException when IDSite encounters some error. This is a non-checked Exception which can be converted into
+     * an specific checked one invoking the {@link com.stormpath.sdk.idsite.IDSiteRuntimeException#rethrow() IDSiteRuntimeException#rethrow()} method.
      * @return the resolved identity in the form of an {@link AccountResult}
      */
     AccountResult getAccountResult();

@@ -40,6 +40,8 @@ public abstract class IdSiteClaims {
 
     public static final String STATUS = "status";
 
+    public static final String ERROR = "err";
+
     private IdSiteClaims() {
     }
 }
