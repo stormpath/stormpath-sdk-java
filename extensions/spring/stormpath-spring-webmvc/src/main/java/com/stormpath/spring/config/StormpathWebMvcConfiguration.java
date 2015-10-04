@@ -48,6 +48,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -433,6 +434,16 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public List<Resolver<Account>> stormpathAccountResolvers() {
         return super.stormpathAccountResolvers();
+    }
+
+    @Bean
+    public Resolver<List<String>> stormpathSubdomainResolver() {
+        return super.stormpathSubdomainResolver();
+    }
+
+    @Bean
+    public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
+        return super.stormpathIdSiteOrganizationResolver();
     }
 
     @Bean
