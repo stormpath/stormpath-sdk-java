@@ -992,6 +992,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             IdSiteLogoutController c = new IdSiteLogoutController();
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setIdSiteResultUri(idSiteResultUri);
+            c.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
             controller = c;
         }
 
