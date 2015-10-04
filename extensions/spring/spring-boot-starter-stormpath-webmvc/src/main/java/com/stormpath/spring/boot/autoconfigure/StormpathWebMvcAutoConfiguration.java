@@ -280,6 +280,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathOrganizationNameKeyResolver")
+    public Resolver<String> stormpathOrganizationNameKeyResolver() {
+        return super.stormpathOrganizationNameKeyResolver();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathIdSiteOrganizationResolver")
     public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
         return super.stormpathIdSiteOrganizationResolver();

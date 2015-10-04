@@ -442,6 +442,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    public Resolver<String> stormpathOrganizationNameKeyResolver() {
+        return super.stormpathOrganizationNameKeyResolver();
+    }
+
+    @Bean
     public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
         return super.stormpathIdSiteOrganizationResolver();
     }

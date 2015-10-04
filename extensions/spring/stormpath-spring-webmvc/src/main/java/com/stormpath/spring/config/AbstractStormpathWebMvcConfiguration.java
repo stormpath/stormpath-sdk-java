@@ -73,6 +73,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
@@ -675,9 +676,15 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolver;
     }
 
+    public Resolver<String> stormpathOrganizationNameKeyResolver() {
+        DefaultOrganizationNameKeyResolver resolver = new DefaultOrganizationNameKeyResolver();
+        resolver.setSubdomainResolver(stormpathSubdomainResolver());
+        return resolver;
+    }
+
     public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
         DefaultIdSiteOrganizationResolver resolver = new DefaultIdSiteOrganizationResolver();
-        resolver.setSubdomainResolver(stormpathSubdomainResolver());
+        resolver.setOrganizationNameKeyResolver(stormpathOrganizationNameKeyResolver());
         resolver.setUseSubdomain(idSiteUseSubdomain);
         resolver.setShowOrganizationField(idSiteShowOrganizationField);
         return resolver;
