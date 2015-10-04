@@ -13,98 +13,12 @@ import static org.junit.Assert.*
 class SubdomainResolverTest {
 
     @Test
-    void testSetValidModeName() {
-        def resolver = new SubdomainResolver();
-        resolver.setModeName('closest')
-        assertEquals SubdomainResolver.MatchMode.CLOSEST, resolver.mode
-    }
-
-    @Test
-    void testSetInvalidModeName() {
-        def resolver = new SubdomainResolver();
-        try {
-            resolver.setModeName('blah')
-            fail('invalid mode name should not succeed')
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "No MatchMode found with name 'blah'")
-        }
-    }
-
-    @Test
     void testApexDomain() {
         def resolver = new SubdomainResolver();
         def request = createMock(HttpServletRequest)
         expect(request.getHeader(eq('Host'))).andStubReturn('foo.com')
         replay(request)
         assertEquals([], resolver.get(request, null))
-        verify(request)
-    }
-
-    @Test
-    void testFurthestMatchModeWithOneSubdomain() {
-        def resolver = new SubdomainResolver();
-        resolver.setMode(SubdomainResolver.MatchMode.FURTHEST)
-        def request = createMock(HttpServletRequest)
-        expect(request.getHeader(eq('Host'))).andStubReturn('bar.foo.com')
-        replay(request)
-        assertEquals(['bar'], resolver.get(request, null))
-        verify(request)
-    }
-
-    @Test
-    void testFurthestMatchModeWithMultipleSubdomains() {
-        def resolver = new SubdomainResolver();
-        resolver.setMode(SubdomainResolver.MatchMode.FURTHEST)
-        def request = createMock(HttpServletRequest)
-        expect(request.getHeader(eq('Host'))).andStubReturn('baz.bar.foo.com')
-        replay(request)
-        assertEquals(['baz'], resolver.get(request, null))
-        verify(request)
-    }
-
-    @Test
-    void testFurthestMatchModeWithBaseDomainAndMultipleSubdomains() {
-        def resolver = new SubdomainResolver();
-        resolver.setBaseDomainName('w.x.y.z')
-        resolver.setMode(SubdomainResolver.MatchMode.FURTHEST)
-        def request = createMock(HttpServletRequest)
-        expect(request.getHeader(eq('Host'))).andStubReturn('t.u.v.w.x.y.z')
-        replay(request)
-        assertEquals(['t'], resolver.get(request, null))
-        verify(request)
-    }
-
-    @Test
-    void testClosestMatchModeWithOneSubdomain() {
-        def resolver = new SubdomainResolver();
-        resolver.setMode(SubdomainResolver.MatchMode.CLOSEST)
-        def request = createMock(HttpServletRequest)
-        expect(request.getHeader(eq('Host'))).andStubReturn('bar.foo.com')
-        replay(request)
-        assertEquals(['bar'], resolver.get(request, null))
-        verify(request)
-    }
-
-    @Test
-    void testClosestMatchModeWithMultipleSubdomains() {
-        def resolver = new SubdomainResolver();
-        resolver.setMode(SubdomainResolver.MatchMode.CLOSEST)
-        def request = createMock(HttpServletRequest)
-        expect(request.getHeader(eq('Host'))).andStubReturn('baz.bar.foo.com')
-        replay(request)
-        assertEquals(['bar'], resolver.get(request, null))
-        verify(request)
-    }
-
-    @Test
-    void testClosestMatchModeWithBaseDomainAndMultipleSubdomains() {
-        def resolver = new SubdomainResolver();
-        resolver.setBaseDomainName('w.x.y.z')
-        resolver.setMode(SubdomainResolver.MatchMode.CLOSEST)
-        def request = createMock(HttpServletRequest)
-        expect(request.getHeader(eq('Host'))).andStubReturn('t.u.v.w.x.y.z')
-        replay(request)
-        assertEquals(['v'], resolver.get(request, null))
         verify(request)
     }
 

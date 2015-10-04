@@ -16,18 +16,9 @@ import java.util.Locale;
 public class SubdomainResolver implements Resolver<List<String>> {
 
     private String baseDomainName;
-    private MatchMode mode = MatchMode.ALL;
 
     public void setBaseDomainName(String baseDomainName) {
         this.baseDomainName = baseDomainName;
-    }
-
-    public void setMode(MatchMode mode) {
-        this.mode = mode;
-    }
-
-    public void setModeName(String modeName) {
-        setMode(MatchMode.fromName(modeName));
     }
 
     @Override
@@ -81,14 +72,7 @@ public class SubdomainResolver implements Resolver<List<String>> {
             }
         }
 
-        switch (mode) {
-            case FURTHEST:
-                return java.util.Collections.singletonList(domainTokens.get(0));
-            case CLOSEST:
-                return java.util.Collections.singletonList(domainTokens.get(domainTokens.size() - 1));
-            default: //ALL
-                return domainTokens;
-        }
+        return domainTokens;
     }
 
     private String[] tokenize(String s) {
@@ -165,21 +149,5 @@ public class SubdomainResolver implements Resolver<List<String>> {
         }
 
         return host;
-    }
-
-    public enum MatchMode {
-
-        CLOSEST,
-        FURTHEST,
-        ALL;
-
-        public static MatchMode fromName(String name) {
-            for (MatchMode mode : MatchMode.values()) {
-                if (mode.name().equalsIgnoreCase(name)) {
-                    return mode;
-                }
-            }
-            throw new IllegalArgumentException("No MatchMode found with name '" + name + "'");
-        }
     }
 }
