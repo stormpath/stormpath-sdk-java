@@ -25,7 +25,8 @@ class SubdomainResolverTest {
         try {
             resolver.setModeName('blah')
             fail('invalid mode name should not succeed')
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "No MatchMode found with name 'blah'")
         }
     }
 

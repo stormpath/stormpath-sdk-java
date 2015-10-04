@@ -364,7 +364,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.useSubdomain'] }")
     protected Boolean idSiteUseSubdomain;
 
-    @Value("#{ @environment['stormpath.web.idSite.showOrganizationField] }")
+    @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
     protected Boolean idSiteShowOrganizationField;
 
     @Value("#{ @environment['stormpath.web.application.domain'] }")
