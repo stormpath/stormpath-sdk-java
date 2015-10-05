@@ -337,7 +337,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
-     * @param hrefOrName the href or name of the group to add.
+     * @param hrefOrName the href or name of the {@code Group} object from where the account must be removed.
      * @return the Account object for method chaining
      * @throws IllegalStateException if this Account does not belong to the Group matching the given {@code hrefOrName}.
      *
