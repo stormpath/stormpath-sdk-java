@@ -27,6 +27,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -68,7 +69,30 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
 
-    //Standard Spring Security config property - we just read it here as well:
+    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
+    protected boolean forgotEnabled;
+
+    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/forgot' }")
+    protected String forgotUri;
+
+    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+    protected boolean changeEnabled;
+
+    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/change' }")
+    protected String changeUri;
+
+    @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
+    protected boolean registerEnabled;
+
+    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/register' }")
+    protected String registerUri;
+
+    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+    protected boolean verifyEnabled;
+
+    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
+    protected String verifyUri;
+
     @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
     protected boolean csrfProtectionEnabled;
 
@@ -97,7 +121,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
      * @param http the {@link HttpSecurity} to be modified
      * @throws Exception if an error occurs
      */
-    protected void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
+    protected final void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
             throws Exception {
 
         if (loginEnabled) {
@@ -107,7 +131,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
                     .defaultSuccessUrl(loginNextUri)
                     .successHandler(successHandler)
                     .usernameParameter("login")
-                    .passwordParameter("password");
+                    .passwordParameter("password")
+                    .and().authorizeRequests()
+                    .antMatchers(loginUri).permitAll();
         }
 
         if (logoutEnabled) {
@@ -116,7 +142,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
                     .invalidateHttpSession(true)
                     .logoutUrl(logoutUri)
                     .logoutSuccessUrl(logoutNextUri)
-                    .addLogoutHandler(logoutHandler);
+                    .addLogoutHandler(logoutHandler)
+                    .and().authorizeRequests()
+                    .antMatchers(logoutUri).permitAll();
 
         }
 
@@ -126,6 +154,26 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
             //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
             http.csrf().csrfTokenRepository(stormpathCsrfTokenRepository());
         }
+
+        if (forgotEnabled) {
+            http.authorizeRequests().antMatchers(forgotUri).permitAll();
+        }
+        if (changeEnabled) {
+            http.authorizeRequests().antMatchers(changeUri).permitAll();
+        }
+        if (registerEnabled) {
+            http.authorizeRequests().antMatchers(registerUri).permitAll();
+        }
+        if (verifyEnabled) {
+            http.authorizeRequests().antMatchers(verifyUri).permitAll();
+        }
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers("/assets/css/stormpath.css")
+                .antMatchers("/assets/css/custom.stormpath.css");
     }
 
     /**

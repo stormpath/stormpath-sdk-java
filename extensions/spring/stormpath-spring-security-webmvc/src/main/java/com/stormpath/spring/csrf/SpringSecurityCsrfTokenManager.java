@@ -50,7 +50,6 @@ public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
 
     @Override
     public String createCsrfToken(HttpServletRequest request, HttpServletResponse response) {
-
         CsrfToken csrfToken = this.csrfTokenRepository.loadToken(request);
         if (csrfToken == null) {
             csrfToken = this.csrfTokenRepository.generateToken(request);
@@ -61,6 +60,7 @@ public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
 
     @Override
     public boolean isValidCsrfToken(HttpServletRequest request, HttpServletResponse response, String csrfToken) {
-        throw new UnsupportedOperationException("This operation should have not been invoked. The actual token validation must be carried out by Spring Security.");
+        CsrfToken loadedCSRFToken = this.csrfTokenRepository.loadToken(request);
+        return loadedCSRFToken.getToken().equals(csrfToken);
     }
 }
