@@ -68,7 +68,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
@@ -725,8 +725,17 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
      * @since 1.0.RC5
      */
     @Override
-    public Object authenticate(PasswordGrantRequest passwordGrantRequest) {
+    public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
         PasswordGrantAuthenticator authenticator = PasswordGrantAuthenticators.forApplication(this, getDataStore());
         return authenticator.authenticate(passwordGrantRequest);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {
+        RefreshGrantAuthenticator authenticator = RefreshGrantAuthenticators.forApplication(this, getDataStore());
+        return authenticator.authenticate(refreshGrantRequest);
     }
 }

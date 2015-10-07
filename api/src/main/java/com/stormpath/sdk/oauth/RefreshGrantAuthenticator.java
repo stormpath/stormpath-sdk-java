@@ -13,16 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.application.Application;
 
 /**
  * @since 1.0.RC5
  */
-public interface PasswordGrantAuthenticator {
+public interface RefreshGrantAuthenticator {
 
-    OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
+        OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
 
-    PasswordGrantAuthenticator forApplication(Application application);
+        RefreshGrantAuthenticator forApplication(Application application);
 }

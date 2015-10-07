@@ -25,10 +25,7 @@ import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.PasswordGrantAuthenticator;
-import com.stormpath.sdk.authc.PasswordGrantRequest;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
@@ -38,7 +35,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.Auditable;
@@ -1468,10 +1465,18 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
 
     /**
      * Creates a valid Oauth 2 authentication token that can be used to authenticate further requests submitted to your application's API.
-     * @param passwordGrantRequest the {@link PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
+     * @param passwordGrantRequest the {@link com.stormpath.sdk.oauth.PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
      * @return
      * @since 1.0.RC5
      */
-    Object authenticate(PasswordGrantRequest passwordGrantRequest);
+    OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
+
+    /**
+     * Obtains a new Oauth 2 Access Token without requiring the user to authenticate again.
+     * @param refreshGrantRequest the {@link com.stormpath.sdk.oauth.RefreshGrantRequest refreshGrantRequest} object used to obtain a new Access Token without requiring credentials.
+     * @return
+     * @since 1.0.RC5
+     */
+    OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
 
 }

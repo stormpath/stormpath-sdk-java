@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.resource.Resource;
 
@@ -28,7 +29,7 @@ public class DefaultResourceDataRequest extends DefaultResourceMessage implement
         super(action, uri, resourceClass, data);
     }
 
-    public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data, MediaType customContentType) {
-        super(action, uri, resourceClass, data, customContentType);
+    public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data, HttpHeaders customHeaders) {
+        super(action, uri, resourceClass, data, customHeaders);
     }
 }

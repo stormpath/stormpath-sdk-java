@@ -43,6 +43,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
+import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
@@ -122,6 +124,12 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
             !PasswordResetToken.class.isAssignableFrom(clazz) &&
+
+            //since 1.0.RC5: Oauth Grant Authentication tokens must not be cached
+            !AccessToken.class.isAssignableFrom(clazz) &&
+
+            //since 1.0.RC5: Oauth Grant Authentication tokens must not be cached
+            !RefreshToken.class.isAssignableFrom(clazz) &&
 
             //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
             !ProviderAccountResult.class.isAssignableFrom(clazz) &&

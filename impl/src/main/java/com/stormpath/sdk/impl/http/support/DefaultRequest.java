@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.http.support;
 
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.lang.Strings;

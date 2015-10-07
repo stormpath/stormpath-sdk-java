@@ -13,22 +13,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.authc.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.PasswordGrantRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.authc.PasswordGrantRequestBuilder;
 
+/**
+ * @since 1.0.RC5
+ */
 public class DefaultPasswordGrantRequest implements PasswordGrantRequest {
 
     private final String login;
-    private final char[] password;
+    private final String password;
     private AccountStore accountStore;
     private final String grant_type = "password";
 
-    public DefaultPasswordGrantRequest(String login, char[] password) {
+    public DefaultPasswordGrantRequest(String login, String password) {
         Assert.notNull(login, "login argument cannot be null.");
         Assert.notNull(password, "password argument cannot be null.");
 
@@ -44,7 +45,7 @@ public class DefaultPasswordGrantRequest implements PasswordGrantRequest {
 
     @Override
     public String getPassword() {
-        return password.toString();
+        return password;
     }
 
     @Override

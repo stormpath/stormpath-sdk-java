@@ -13,22 +13,25 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * @since 1.0.RC5
  */
-public interface PasswordGrantRequest {
+public interface AccessToken extends Resource, Deletable {
 
-    String getPassword();
+    String getJwt();
 
-    String getLogin();
+    Account getAccount();
 
-    AccountStore getAccountStore();
+    Application getApplication();
 
-    PasswordGrantRequest setAccountStore(AccountStore accountStore);
-
-    String getGrantType();
+    Tenant getTenant();
 }
+

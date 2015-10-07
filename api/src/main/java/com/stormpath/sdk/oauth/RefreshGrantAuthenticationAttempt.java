@@ -13,16 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.resource.Resource;
 
 /**
  * @since 1.0.RC5
  */
-public class PasswordGrantRequests {
+public interface RefreshGrantAuthenticationAttempt extends Resource {
 
-    public static PasswordGrantRequestBuilder builder() {
-        return (PasswordGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultPasswordGrantRequestBuilder");
-    }
+    void setRefreshToken(String refreshToken);
+
+    void setGrantType(String grantType);
 }

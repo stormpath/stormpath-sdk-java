@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.resource.Resource;
 
@@ -32,4 +33,6 @@ public interface ResourceMessage {
     Class<? extends Resource> getResourceClass();
 
     MediaType getCustomContentType();
+
+    HttpHeaders getHttpHeaders();
 }

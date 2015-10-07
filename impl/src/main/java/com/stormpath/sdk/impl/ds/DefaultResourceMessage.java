@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.Resource;
@@ -29,6 +30,7 @@ public class DefaultResourceMessage implements ResourceMessage {
     private final Class<? extends Resource> resourceClass;
     private final Map<String,Object> data;
     private MediaType customContentType = null;
+    private HttpHeaders httpHeaders;
 
     public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
         Assert.notNull(action, "resource action cannot be null.");
@@ -41,9 +43,9 @@ public class DefaultResourceMessage implements ResourceMessage {
         this.data = data;
     }
 
-    public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data, MediaType customContentType) {
+    public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data, HttpHeaders customHeaders) {
         this(action, uri, resourceClass, data);
-        this.customContentType = customContentType;
+        this.httpHeaders = customHeaders;
     }
 
     @Override
@@ -72,5 +74,12 @@ public class DefaultResourceMessage implements ResourceMessage {
     @Override
     public MediaType getCustomContentType() {
         return customContentType;
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders != null ? httpHeaders : new HttpHeaders();
     }
 }

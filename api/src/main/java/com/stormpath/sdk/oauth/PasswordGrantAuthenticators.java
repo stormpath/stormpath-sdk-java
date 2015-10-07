@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
@@ -28,7 +28,7 @@ public class PasswordGrantAuthenticators {
 
     @SuppressWarnings("unchecked")
     private static final Class<PasswordGrantAuthenticator> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.authc.DefaultPasswordGrantAuthenticator");
+            Classes.forName("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator");
 
     public static PasswordGrantAuthenticator forApplication(Application application, DataStore dataStore) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Application.class, DataStore.class);

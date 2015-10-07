@@ -15,7 +15,11 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.impl.http.HttpHeaders;
+
 public interface ResourceDataRequest extends ResourceMessage {
 
     ResourceAction getAction();
+
+    HttpHeaders getHttpHeaders();
 }

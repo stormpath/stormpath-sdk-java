@@ -63,7 +63,6 @@ import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
-import java.lang.reflect.Field
 import java.text.DateFormat
 
 import static org.easymock.EasyMock.*

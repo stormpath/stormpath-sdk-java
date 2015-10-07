@@ -49,11 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @since 0.1
@@ -65,6 +61,8 @@ public class DefaultDataStore implements InternalDataStore {
     public static final String DEFAULT_SERVER_HOST = "api.stormpath.com";
 
     public static final int DEFAULT_API_VERSION = 1;
+
+    private static final String APPEND_PARAM_CHAR = "&";
 
     public static final String DEFAULT_CRITERIA_MSG = "The " + DefaultDataStore.class.getName() +
                                                       " implementation only functions with " +
@@ -316,9 +314,10 @@ public class DefaultDataStore implements InternalDataStore {
         return save(parentHref, resource, returnType, null, true);
     }
 
+    /** @since 1.0.RC5 */
     @Override
-    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, MediaType customContentTypeHeader) {
-        return save(parentHref, resource, customContentTypeHeader, null, null, true);
+    public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, HttpHeaders requestHeaders) {
+        return save(parentHref, resource, requestHeaders, returnType, null, true);
     }
 
     /** @since 1.0.RC5 */
@@ -420,7 +419,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Resource, R extends Resource> R save(String href, final T resource, MediaType customContentType, final Class<? extends R> returnType, final QueryString qs, final boolean create) {
+    private <T extends Resource, R extends Resource> R save(String href, final T resource, HttpHeaders requestHeaders, final Class<? extends R> returnType, final QueryString qs, final boolean create) {
 
         Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(resource, "resource argument cannot be null.");
@@ -435,19 +434,24 @@ public class DefaultDataStore implements InternalDataStore {
             @Override
             public ResourceDataResult filter(final ResourceDataRequest req) {
 
-                String bodyString = mapMarshaller.marshal(req.getData());
+                QueryString qs;
+                String bodyString;
+                if (req.getHttpHeaders().getContentType() != null & req.getHttpHeaders().getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED)){
+                    bodyString = buildCanonicalBodyQueryParams(req.getData());
+                } else {
+
+                    bodyString = mapMarshaller.marshal(req.getData());
+                }
+                qs = uri.getQuery();
+
                 StringInputStream body = new StringInputStream(bodyString);
                 long length = body.available();
 
                 CanonicalUri uri = req.getUri();
                 String href = uri.getAbsolutePath();
-                QueryString qs = uri.getQuery();
 
-                HttpHeaders httpHeaders = null;
-                if (req.getCustomContentType() != null){
-                    httpHeaders = new HttpHeaders();
-                    httpHeaders.add("Content-Type", req.getCustomContentType().toString());
-                }
+                HttpHeaders httpHeaders = req.getHttpHeaders();
+
                 Request request = new DefaultRequest(HttpMethod.POST, href, qs, httpHeaders, body, length);
 
                 Response response = execute(request);
@@ -469,7 +473,7 @@ public class DefaultDataStore implements InternalDataStore {
         });
 
         ResourceAction action = create ? ResourceAction.CREATE : ResourceAction.UPDATE;
-        ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props, customContentType);
+        ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props, requestHeaders);
 
         ResourceDataResult result = chain.filter(request);
 
@@ -496,6 +500,21 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> void deleteResourceProperty(T resource, String propertyName) {
         Assert.hasText(propertyName, "propertyName cannot be null or empty.");
         doDelete(resource, propertyName);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    private String buildCanonicalBodyQueryParams(Map<String, Object> bodyData){
+        StringBuilder builder = new StringBuilder();
+        Map<String, Object> treeMap = new TreeMap<String, Object>(bodyData);
+        for (Map.Entry<String,Object> entry : treeMap.entrySet()) {
+                if (builder.length() > 0) {
+                    builder.append(APPEND_PARAM_CHAR);
+                }
+                builder.append(String.format("%s=%s", entry.getKey(), entry.getValue()));
+        }
+        return builder.toString();
     }
 
     private <T extends Resource> void doDelete(T resource, final String possiblyNullPropertyName) {

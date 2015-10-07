@@ -13,12 +13,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.oauth;
 
 /**
- * OAuthTokenResult is an object that holds the result to be returned after creating an authentication Access Token.
  * @since 1.0.RC5
  */
-public interface OauthTokenResult {
+public interface RefreshGrantRequestBuilder {
 
+    /**
+     * Specifies the refresh token that will be used to obtain a new Access Token without requiring credentials.
+     *
+     * @param refreshToken the refresh token that will be used to create a new authentication token.
+     * @return this instance for method chaining.
+     */
+    RefreshGrantRequestBuilder setRefreshToken(String refreshToken);
+
+    /**
+     * @return the {@link RefreshGrantRequest} object used to create a new authentication token
+     */
+    RefreshGrantRequest build();
 }

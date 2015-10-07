@@ -13,17 +13,24 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.authc.OauthGrantAuthenticationResult;
-import com.stormpath.sdk.authc.PasswordGrantAuthenticator;
-import com.stormpath.sdk.authc.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
+import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
+import com.stormpath.sdk.oauth.CreateGrantAuthenticationAttempt;
+import com.stormpath.sdk.oauth.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.GrantAuthenticationToken;
+import com.stormpath.sdk.oauth.OauthGrantAuthenticationResultBuilder;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 
+/**
+ * @since 1.0.RC5
+ */
 public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthenticator {
 
     private Application application;
@@ -40,17 +47,24 @@ public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthentic
     @Override
     public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
         Assert.notNull(this.application, "application cannot be null or empty");
-        CreateOauthTokenAttempt createOauthTokenAttempt = new DefaultCreateOauthTokenAttempt(dataStore);
-        createOauthTokenAttempt.setLogin(passwordGrantRequest.getLogin());
-        createOauthTokenAttempt.setPassword(passwordGrantRequest.getPassword());
-        createOauthTokenAttempt.setGrantType(passwordGrantRequest.getGrantType());
+
+        CreateGrantAuthenticationAttempt createGrantAuthenticationAttempt = new DefaultCreateGrantAuthenticationAttempt(dataStore);
+        createGrantAuthenticationAttempt.setLogin(passwordGrantRequest.getLogin());
+        createGrantAuthenticationAttempt.setPassword(passwordGrantRequest.getPassword());
+        createGrantAuthenticationAttempt.setGrantType(passwordGrantRequest.getGrantType());
         if (passwordGrantRequest.getAccountStore() != null){
-            createOauthTokenAttempt.setAccountStore(passwordGrantRequest.getAccountStore());
+            createGrantAuthenticationAttempt.setAccountStore(passwordGrantRequest.getAccountStore());
         }
-        dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, createOauthTokenAttempt, MediaType.APPLICATION_FORM_URLENCODED);
-        return null;
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, createGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
+
+        OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder();
+        return builder.setGrantAuthenticationToken(grantResult).build();
     }
 
+    // While authenticate method resides in Application class this is not necessary. Leaving here though because this should be refactored soon.
     @Override
     public PasswordGrantAuthenticator forApplication(Application application) {
         Assert.notNull(application, "application cannot be null or empty.");

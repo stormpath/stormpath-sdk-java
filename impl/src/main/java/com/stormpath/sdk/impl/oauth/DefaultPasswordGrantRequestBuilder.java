@@ -13,10 +13,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.authc.PasswordGrantRequest;
-import com.stormpath.sdk.authc.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.oauth.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 
@@ -26,7 +26,7 @@ import com.stormpath.sdk.lang.Assert;
 public class DefaultPasswordGrantRequestBuilder implements PasswordGrantRequestBuilder {
 
     private String login;
-    private char[] password;
+    private String password;
     private AccountStore accountStore;
 
     @Override
@@ -39,7 +39,7 @@ public class DefaultPasswordGrantRequestBuilder implements PasswordGrantRequestB
     @Override
     public PasswordGrantRequestBuilder setPassword(String password) {
         Assert.notNull(password, "password cannot be null or empty.");
-        this.password = password != null ? password.toCharArray() : "".toCharArray();
+        this.password = password;
         return this;
     }
 

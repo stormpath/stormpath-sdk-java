@@ -27,12 +27,11 @@ import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.application.Applications
-import com.stormpath.sdk.authc.PasswordGrantAuthenticator
-import com.stormpath.sdk.authc.PasswordGrantAuthenticators
-import com.stormpath.sdk.authc.PasswordGrantRequest
-import com.stormpath.sdk.authc.PasswordGrantRequests
+import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.PasswordGrantRequests
+import com.stormpath.sdk.oauth.RefreshGrantRequest
+import com.stormpath.sdk.oauth.RefreshGrantRequests
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -42,7 +41,6 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
-import com.stormpath.sdk.impl.authc.DefaultPasswordGrantRequest
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
@@ -126,7 +124,7 @@ class ApplicationIT extends ClientIT {
 
     /* @since 1.0.RC5 */
     @Test
-    void testCreateTokenForAppAccount() {
+    void testCreateAndRefreshTokenForAppAccount() {
 
         def app = createTempApp()
 
@@ -141,8 +139,13 @@ class ApplicationIT extends ClientIT {
         def created = app.createAccount(account)
         assertNotNull created.href
 
-        PasswordGrantRequest request = PasswordGrantRequests.builder().setLogin(email).setPassword("Changeme1!").build();
-        def result = app.authenticate(request)
+        PasswordGrantRequest createRequest = PasswordGrantRequests.builder().setLogin(email).setPassword("Changeme1!").build();
+        def result = app.authenticate(createRequest)
+
+        def adf = result.getAccessToken()
+
+        RefreshGrantRequest request = RefreshGrantRequests.builder().setRefreshToken(result.getRefreshTokenString()).build();
+        result = app.authenticate(request)
 
     }
 

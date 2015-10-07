@@ -13,21 +13,14 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.authc;
-
-import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.resource.Resource;
+package com.stormpath.sdk.oauth;
 
 /**
  * @since 1.0.RC5
  */
-public interface CreateOauthTokenAttempt extends Resource {
+public interface RefreshOauthGrantAttempt {
 
-    void setPassword(String value);
-
-    void setLogin(String value);
-
-    void setAccountStore(AccountStore value);
+    void setRefreshToken(String value);
 
     void setGrantType(String grantType);
 }

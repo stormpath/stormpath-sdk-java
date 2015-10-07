@@ -13,20 +13,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.authc;
+package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.oauth.CreateGrantAuthenticationAttempt;
 
 import java.util.Map;
 
 /**
  * @since 1.0.RC5
  */
-public class DefaultCreateOauthTokenAttempt extends AbstractResource implements CreateOauthTokenAttempt {
+public class DefaultCreateGrantAuthenticationAttempt extends AbstractResource implements CreateGrantAuthenticationAttempt {
 
     static final StringProperty LOGIN = new StringProperty("username");
     static final StringProperty PASSWORD = new StringProperty("password");
@@ -35,11 +36,11 @@ public class DefaultCreateOauthTokenAttempt extends AbstractResource implements 
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(LOGIN, PASSWORD, ACCOUNT_STORE_HREF, GRANT_TYPE);
 
-    public DefaultCreateOauthTokenAttempt(InternalDataStore dataStore) {
+    public DefaultCreateGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultCreateOauthTokenAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultCreateGrantAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

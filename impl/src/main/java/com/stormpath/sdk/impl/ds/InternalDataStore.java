@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.ds.cache.CacheResolver;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
@@ -43,7 +44,7 @@ public interface InternalDataStore extends DataStore {
     <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType);
 
     /* @since 1.0.RC5 */
-    <T extends Resource, R extends Resource> R create(String parentHref, T resource, MediaType customContentTypeHeader);
+    <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, HttpHeaders customHeaders);
 
     /** @since 1.0.RC5 */
     <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, Options options);
