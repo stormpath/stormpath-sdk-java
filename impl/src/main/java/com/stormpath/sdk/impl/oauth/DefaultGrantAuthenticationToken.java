@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class DefaultGrantAuthenticationToken extends AbstractInstanceResource implements GrantAuthenticationToken {
 

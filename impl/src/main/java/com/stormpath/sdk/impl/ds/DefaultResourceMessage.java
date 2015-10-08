@@ -29,7 +29,6 @@ public class DefaultResourceMessage implements ResourceMessage {
     private final CanonicalUri uri;
     private final Class<? extends Resource> resourceClass;
     private final Map<String,Object> data;
-    private MediaType customContentType = null;
     private HttpHeaders httpHeaders;
 
     public DefaultResourceMessage(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
@@ -69,15 +68,7 @@ public class DefaultResourceMessage implements ResourceMessage {
     }
 
     /**
-     * @since 1.0.RC5
-     */
-    @Override
-    public MediaType getCustomContentType() {
-        return customContentType;
-    }
-
-    /**
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     public HttpHeaders getHttpHeaders() {
         return httpHeaders != null ? httpHeaders : new HttpHeaders();

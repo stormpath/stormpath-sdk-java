@@ -27,6 +27,8 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.oauth.AccessTokenList;
+import com.stormpath.sdk.oauth.RefreshTokenList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
@@ -550,4 +552,20 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC4
      */
     ApplicationList getApplications(ApplicationCriteria criteria);
+
+    /**
+     * Returns a paginated list of the access tokens that belong to the account.
+     *
+     * @return a paginated list of the Account's access tokens.
+     * @since 1.0.RC5.1
+     */
+    AccessTokenList getAccessTokens();
+
+    /**
+     * Returns a paginated list of the refresh tokens that belong to the account.
+     *
+     * @return a paginated list of the Account's refresh tokens.
+     * @since 1.0.RC5.1
+     */
+    RefreshTokenList getRefreshTokens();
 }

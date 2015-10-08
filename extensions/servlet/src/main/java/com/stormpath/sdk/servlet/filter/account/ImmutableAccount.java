@@ -33,6 +33,8 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.AccessTokenList;
+import com.stormpath.sdk.oauth.RefreshTokenList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -290,5 +292,21 @@ public class ImmutableAccount implements Account {
     @Override
     public Date getModifiedAt() {
         return account.getModifiedAt();
+    }
+
+    /**
+     * @since 1.0.RC5.1
+     */
+    @Override
+    public AccessTokenList getAccessTokens() {
+        return account.getAccessTokens();
+    }
+
+    /**
+     * @since 1.0.RC5.1
+     */
+    @Override
+    public RefreshTokenList getRefreshTokens() {
+        return account.getRefreshTokens();
     }
 }

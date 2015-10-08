@@ -19,7 +19,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public interface CreateGrantAuthenticationAttempt extends Resource {
 

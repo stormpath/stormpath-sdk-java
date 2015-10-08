@@ -722,7 +722,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /**
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     @Override
     public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
@@ -731,7 +731,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /**
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     @Override
     public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {

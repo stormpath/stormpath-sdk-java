@@ -22,7 +22,7 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public interface AccessToken extends Resource, Deletable {
 

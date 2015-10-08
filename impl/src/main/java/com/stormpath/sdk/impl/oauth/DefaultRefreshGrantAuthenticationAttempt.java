@@ -24,7 +24,7 @@ import com.stormpath.sdk.oauth.RefreshGrantAuthenticationAttempt;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class DefaultRefreshGrantAuthenticationAttempt extends AbstractResource implements RefreshGrantAuthenticationAttempt {
 

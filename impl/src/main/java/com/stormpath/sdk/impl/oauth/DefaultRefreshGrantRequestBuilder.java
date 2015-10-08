@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.RefreshGrantRequestBuilder;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class DefaultRefreshGrantRequestBuilder implements RefreshGrantRequestBuilder {
 

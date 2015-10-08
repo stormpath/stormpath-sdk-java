@@ -23,7 +23,7 @@ import com.stormpath.sdk.provider.FacebookRequestFactory;
 import java.lang.reflect.Constructor;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class RefreshGrantAuthenticators {
 

@@ -20,7 +20,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class DefaultPasswordGrantRequest implements PasswordGrantRequest {
 

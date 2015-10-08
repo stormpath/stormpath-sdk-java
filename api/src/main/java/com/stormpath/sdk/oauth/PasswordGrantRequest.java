@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public interface PasswordGrantRequest {
 

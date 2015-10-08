@@ -22,7 +22,7 @@ import com.stormpath.sdk.lang.Classes;
 import java.lang.reflect.Constructor;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class PasswordGrantAuthenticators {
 

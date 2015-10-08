@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class DefaultAccessToken extends AbstractInstanceResource implements AccessToken {
 

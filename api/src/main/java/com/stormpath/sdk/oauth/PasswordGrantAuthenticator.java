@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.application.Application;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public interface PasswordGrantAuthenticator {
 

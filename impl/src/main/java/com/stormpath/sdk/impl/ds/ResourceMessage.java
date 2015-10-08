@@ -32,7 +32,5 @@ public interface ResourceMessage {
 
     Class<? extends Resource> getResourceClass();
 
-    MediaType getCustomContentType();
-
     HttpHeaders getHttpHeaders();
 }

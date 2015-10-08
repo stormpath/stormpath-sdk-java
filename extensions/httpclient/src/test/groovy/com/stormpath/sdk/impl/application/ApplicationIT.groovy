@@ -122,7 +122,7 @@ class ApplicationIT extends ClientIT {
         assertFalse list.iterator().hasNext() //no results
     }
 
-    /* @since 1.0.RC5 */
+    /* @since 1.0.RC5.1 */
     @Test
     void testCreateAndRefreshTokenForAppAccount() {
 
