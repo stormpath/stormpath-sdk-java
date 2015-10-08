@@ -80,7 +80,7 @@ public class DefaultOauthGrantAuthenticationResultBuilder implements OauthGrantA
     }
 
     @Override
-    public OauthGrantAuthenticationResultBuilder isRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest) {
+    public OauthGrantAuthenticationResultBuilder setIsRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest) {
         this.isRefreshGrantAuthRequest = isRefreshAuthGrantRequest;
         return this;
     }

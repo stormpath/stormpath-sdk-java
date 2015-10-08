@@ -76,6 +76,10 @@ public class DefaultCreateGrantAuthenticationAttempt extends AbstractResource im
         return getString(ACCOUNT_STORE_HREF);
     }
 
+    public String getGrantType(){
+        return getString(GRANT_TYPE);
+    }
+
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;

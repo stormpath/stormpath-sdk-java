@@ -22,7 +22,7 @@ public interface OauthGrantAuthenticationResultBuilder {
 
     OauthGrantAuthenticationResultBuilder setGrantAuthenticationToken(GrantAuthenticationToken grantAuthenticationToken);
 
-    OauthGrantAuthenticationResultBuilder isRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest);
+    OauthGrantAuthenticationResultBuilder setIsRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest);
 
     OauthGrantAuthenticationResult build();
 
