@@ -242,7 +242,7 @@ class TenantIT extends ClientIT {
 
     //@since 1.0.RC3
     @Test
-    void testCreateDirWithLinkedInProvider() {
+    void testCreateDirWithLinkedInProviderNoRedirectUri() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCreateDirWithLinkedInProvider")
         def clientId = uniquify("999999911111111")
@@ -267,6 +267,38 @@ class TenantIT extends ClientIT {
         assertTrue(LinkedInProvider.isAssignableFrom(provider.getClass()))
         assertEquals(((LinkedInProvider)provider).getClientId(), clientId)
         assertEquals(((LinkedInProvider)provider).getClientSecret(), clientSecret)
+    }
+
+    //@since 1.0.RC3
+    @Test
+    void testCreateDirWithLinkedInProviderWithRedirectUri() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: TenantIT.testCreateDirWithLinkedInProvider")
+        def clientId = uniquify("999999911111111")
+        def clientSecret = uniquify("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0")
+        def redirectUri = "https://www.myAppURL:8090/index.jsp"
+
+        def request = Directories.newCreateRequestFor(dir).
+                forProvider(Providers.LINKEDIN.builder()
+                        .setClientId(clientId)
+                        .setClientSecret(clientSecret)
+                        .setRedirectUri(redirectUri)
+                        .build()
+                ).build()
+
+        dir = client.currentTenant.createDirectory(request)
+        deleteOnTeardown(dir)
+
+        def provider = dir.getProvider()
+
+        assertEquals(provider.getHref(), dir.getHref() + "/provider")
+        assertEquals(provider.getProviderId(), "linkedin")
+        assertNotNull(provider.getCreatedAt())
+        assertNotNull(provider.getModifiedAt())
+        assertTrue(LinkedInProvider.isAssignableFrom(provider.getClass()))
+        assertEquals(((LinkedInProvider)provider).getClientId(), clientId)
+        assertEquals(((LinkedInProvider)provider).getClientSecret(), clientSecret)
+        assertEquals(((LinkedInProvider)provider).getRedirectUri(), redirectUri)
     }
 
     //@since 1.0.0

@@ -22,4 +22,13 @@ package com.stormpath.sdk.provider;
  */
 public interface LinkedInAccountRequestBuilder extends ProviderAccountRequestBuilder<LinkedInAccountRequestBuilder> {
 
+    /**
+     * Setter for the LinkedIn authorization code (it looks similar to "4/2Dz0r7r9oNBE9dFD-_JUb.suCu7uj8TEnp6UAPm0").
+     *
+     * @param code the LinkedIn authorization code.
+     * @return the LinkedIn authorization code.
+     * @since 1.0.RC5
+     */
+    LinkedInAccountRequestBuilder setCode(String code);
+
 }

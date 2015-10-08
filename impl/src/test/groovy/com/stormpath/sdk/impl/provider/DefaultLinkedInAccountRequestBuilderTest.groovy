@@ -44,14 +44,27 @@ class DefaultLinkedInAccountRequestBuilderTest {
     }
 
     @Test
-    void testMissingAccessToken() {
+    void testMissingAccessTokenAndCode() {
         def requestBuilder = Providers.LINKEDIN.account();
 
         try {
             requestBuilder.build();
             fail("Should have failed")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "accessToken is a required property. It must be provided before building.")
+            assertEquals(e.getMessage(), "Either 'code' or 'accessToken' properties must exist in a LinkedIn account request.")
         }
     }
+
+    @Test
+    void testAddingAccessTokenAndCode() {
+        def requestBuilder = Providers.LINKEDIN.account();
+
+        try {
+            requestBuilder.setAccessToken("abc").setCode("sdc").build();
+            fail("Should have failed")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "Either 'code' or 'accessToken' properties must exist in a LinkedIn account request.")
+        }
+    }
+
 }
