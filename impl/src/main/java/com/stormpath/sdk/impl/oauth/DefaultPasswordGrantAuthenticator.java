@@ -16,12 +16,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
-import com.stormpath.sdk.oauth.CreateGrantAuthenticationAttempt;
-import com.stormpath.sdk.oauth.PasswordGrantRequest;
-import com.stormpath.sdk.oauth.GrantAuthenticationToken;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResultBuilder;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.HttpHeaders;
@@ -60,8 +55,11 @@ public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthentic
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, createGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
-        OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder();
-        return builder.setGrantAuthenticationToken(grantResult).build();
+        OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder(grantResult);
+
+        AccessToken test = dataStore.getResource(grantResult.getAccessTokenHref(), AccessToken.class);
+
+        return builder.build();
     }
 
     // While authenticate method resides in Application class this is not necessary. Leaving here though because this should be refactored soon.

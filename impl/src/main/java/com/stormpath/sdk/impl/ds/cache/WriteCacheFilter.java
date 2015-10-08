@@ -44,6 +44,7 @@ import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.CollectionResource;
@@ -124,12 +125,6 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
             !PasswordResetToken.class.isAssignableFrom(clazz) &&
-
-            //since 1.0.RC5: Oauth Grant Authentication tokens must not be cached
-            !AccessToken.class.isAssignableFrom(clazz) &&
-
-            //since 1.0.RC5: Oauth Grant Authentication tokens must not be cached
-            !RefreshToken.class.isAssignableFrom(clazz) &&
 
             //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
             !ProviderAccountResult.class.isAssignableFrom(clazz) &&
@@ -224,15 +219,17 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             boolean isDefaultModelMap =
                 ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
 
+            boolean isTokenDataMap = (AccessToken.class.isAssignableFrom(clazz) || RefreshToken.class.isAssignableFrom(clazz)) && name.equals("expandedJwt");
+
             boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
 
-            //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
+            //Since defaultModel and Grant Authentication tokens are maps, the DataStore thinks they are Resources. This causes the code to crash later one as Resources
             //do need to have an href property
-            if (isDefaultModelMap) {
+            if (isDefaultModelMap || isTokenDataMap) {
                 value = new LinkedHashMap<String, Object>((Map) value);
             }
 
-            if (value instanceof Map && !isDefaultModelMap && !isApiEncryptionMetadata) {
+            if (value instanceof Map && !isDefaultModelMap && !isTokenDataMap && !isApiEncryptionMetadata) {
                 //the value is a resource reference
                 Map<String, ?> nested = (Map<String, ?>) value;
 

@@ -52,8 +52,8 @@ public class DefaultRefreshGrantAuthenticator implements RefreshGrantAuthenticat
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, attempt, GrantAuthenticationToken.class, httpHeaders);
 
-        OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder();
-        return builder.setGrantAuthenticationToken(grantResult).setIsRefreshAuthGrantRequest(true).build();
+        OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder(grantResult);
+        return builder.setIsRefreshAuthGrantRequest(true).build();
     }
 
     // While authenticate method resides in Application class this is not necessary. Leaving here though because this should be refactored soon.

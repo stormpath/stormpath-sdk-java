@@ -41,14 +41,9 @@ public class DefaultOauthGrantAuthenticationResultBuilder implements OauthGrantA
 
     private GrantAuthenticationToken grantAuthenticationToken;
 
-    public DefaultOauthGrantAuthenticationResultBuilder() {
-    }
-
-    @Override
-    public OauthGrantAuthenticationResultBuilder setGrantAuthenticationToken(GrantAuthenticationToken grantAuthenticationToken) {
+    public DefaultOauthGrantAuthenticationResultBuilder(GrantAuthenticationToken grantAuthenticationToken) {
         Assert.notNull(grantAuthenticationToken, "grantAuthenticationToken cannot be null.");
         this.grantAuthenticationToken = grantAuthenticationToken;
-        return this;
     }
 
     public AccessToken getAccessToken() {
@@ -87,7 +82,7 @@ public class DefaultOauthGrantAuthenticationResultBuilder implements OauthGrantA
 
     @Override
     public DefaultOauthGrantAuthenticationResult build() {
-        Assert.notNull(this.accessTokenString, "grantAuthenticationToken has not been set. It is a required attribute.");
+        Assert.notNull(this.grantAuthenticationToken, "grantAuthenticationToken has not been set. It is a required attribute.");
 
         this.accessToken = grantAuthenticationToken.getAsAccessToken();
         this.accessTokenString = grantAuthenticationToken.getAccessToken();

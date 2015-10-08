@@ -30,13 +30,11 @@ public class DefaultOauthGrantAuthenticationResultBuilderTest {
     @Test
     void testBuildError() {
 
-        def builder = new DefaultOauthGrantAuthenticationResultBuilder()
-
         try{
-            builder.build()
+            def builder = new DefaultOauthGrantAuthenticationResultBuilder(null)
             fail("Should have failed");
         } catch (IllegalArgumentException e){
-            assertEquals(e.getMessage(), "grantAuthenticationToken has not been set. It is a required attribute.")
+            assertEquals(e.getMessage(), "grantAuthenticationToken cannot be null.")
         }
     }
 }

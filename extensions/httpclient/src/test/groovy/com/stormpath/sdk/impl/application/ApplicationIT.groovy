@@ -142,8 +142,6 @@ class ApplicationIT extends ClientIT {
         PasswordGrantRequest createRequest = PasswordGrantRequests.builder().setLogin(email).setPassword("Changeme1!").build();
         def result = app.authenticate(createRequest)
 
-        def adf = result.getAccessToken()
-
         RefreshGrantRequest request = RefreshGrantRequests.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = app.authenticate(request)
 

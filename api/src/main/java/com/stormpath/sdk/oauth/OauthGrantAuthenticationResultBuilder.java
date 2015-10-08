@@ -20,11 +20,7 @@ package com.stormpath.sdk.oauth;
  */
 public interface OauthGrantAuthenticationResultBuilder {
 
-    OauthGrantAuthenticationResultBuilder setGrantAuthenticationToken(GrantAuthenticationToken grantAuthenticationToken);
-
     OauthGrantAuthenticationResultBuilder setIsRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest);
 
     OauthGrantAuthenticationResult build();
-
-
 }
