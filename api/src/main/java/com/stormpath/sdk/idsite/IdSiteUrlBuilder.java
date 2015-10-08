@@ -119,7 +119,7 @@ public interface IdSiteUrlBuilder {
      * the end-user in the ID Site user interface.
      * <p>
      * <p>Setting this to {@code true} allows the user to see the field and potentially change the value.  This might be
-     * userful if users can have accounts in different organizations - it would allow the user to specify which
+     * useful if users can have accounts in different organizations - it would allow the user to specify which
      * organization they want to login to as desired.</p>
      *
      * @param showOrganizationField {@code true} the ID Site will show the
@@ -131,9 +131,16 @@ public interface IdSiteUrlBuilder {
 
     /**
      * Sets the {@code sp_token} property to be used during the initial sso call. The {@code sp_token} must correspond to
-     * an actual password reset token and when successful the {@code IdSite} will be redirected to the reset view.
+     * an actual password reset token and when successful the {@code IdSite} will be redirected to the IdSite.
+     * <p>
+     * <h5>Example</h5>
+     * <p>
+     * <p>Assume your ID Site is located at the domain {@code id.myapp.com}.  If you specify an
+     * {@link #setSpToken(String) spToken} of {@code aSpToken} and set
+     * {@link #setPath(String) path} to {@code #reset}, the user will be sent to
+     * {@code https://id.myapp.com/#reset?jwt=....} to complete the reset password process in your {@code IdSite}.
      *
-     * @param spToken the
+     * @param spToken a unique token used to reset a password.
      * @return this instance for method chaining.
      * @since 1.0.RC5
      */
@@ -141,7 +148,23 @@ public interface IdSiteUrlBuilder {
 
     /**
      * Convenience method to set any key value. This is important to decouple the server releases from the library
-     * releases, when a new property is supported in the initial {@code IdSite} call.
+     * releases, when a new property is supported in the initial {@code IdSite} call, and there is no {@code setter} to
+     * add such property during the initial request, this method can be used to add it.
+     *
+     * <p>
+     * <h5>Example</h5>
+     * <p>
+     * <p>Assume the initial call for IdSite now supports a new property called {@code exp} (expire), since at the moment
+     * there is no such method to set the new property, you can use this new convenience method to the key-value pair to
+     * the request.
+     * <p>
+     * {@link #addProperty(String, Object) addProperty("exp", new Date())}, cal
+     * <p>
+     * Notes:
+     * <p>
+     * 1) Properties like "iat", "iss", and "iat" will be overriden when the {@code IdSiteUrl} is being built, to avoid
+     * unknown conflicts when the {@code url} is being consumed by Stormpath.
+     * 2) Prefer the setter methods over this one (when possible), since there is type safe guarantee via the setters.
      *
      * @param name  of the new property.
      * @param value of the new property.

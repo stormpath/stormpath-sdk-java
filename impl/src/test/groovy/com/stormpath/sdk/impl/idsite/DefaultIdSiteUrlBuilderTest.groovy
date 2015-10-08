@@ -23,12 +23,11 @@ import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
+import org.joda.time.DateTime
 import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
-import static org.junit.Assert.assertFalse
-import static org.junit.Assert.assertTrue
 import static org.testng.Assert.*
 
 /**
@@ -187,6 +186,50 @@ public class DefaultIdSiteUrlBuilderTest {
         verify internalDataStore, apiKey
     }
 
+    @Test
+    void testBuilderWithPropertiesToOverride() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(apiKey.getSecret()).andReturn(apiKeySecret)
+
+        replay internalDataStore, apiKey
+
+        def builder = new DefaultIdSiteUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj")
+
+        def iat = new DateTime().minusHours(1).secondOfMinute().roundFloorCopy().toDate()
+
+        def jti = "aUniqueId"
+
+        def iss = "me"
+
+        def ssoRedirectUrl = builder.setCallbackUri("http://fooUrl:8081/index.do").addProperty("iat", iat).addProperty("jti", jti).addProperty("iss", iss).addProperty("unknown", "xyx").build()
+
+        String expectedBaseUrl = "https://api.stormpath.com/sso?jwtRequest="
+
+        assertTrue ssoRedirectUrl.startsWith(expectedBaseUrl)
+
+        String jwt = ssoRedirectUrl.substring(expectedBaseUrl.length())
+
+        Claims claims = parseClaims(jwt)
+
+        assertClaims(claims, [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", unknown: "xyx",
+                              cb_uri: "http://fooUrl:8081/index.do"], ["path", "state", "usd", "onk", "sp_token", "sof"])
+
+        assertNotNull claims.getId()
+        assertNotEquals jti, claims.getId()
+
+        assertNotNull claims.getIssuedAt()
+        assertNotEquals iat, claims.getIssuedAt()
+
+        assertNotNull claims.getIssuer()
+        assertNotEquals iss, claims.getIssuer()
+
+        verify internalDataStore, apiKey
+    }
+
     // @since 1.0.RC3
     @Test
     void testBuilderForLogout() {
@@ -211,7 +254,7 @@ public class DefaultIdSiteUrlBuilderTest {
 
         String jwt = ssoRedirectUrl.substring(expectedBaseUrl.length())
 
-        assertClaims(jwt, [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+        assertClaims(parseClaims(jwt), [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
                            cb_uri: "http://fooUrl:8081/index.do", path: "/sso-site", state: "someState"], ["onk", "usd", "sof"])
 
         verify internalDataStore, apiKey
@@ -219,11 +262,12 @@ public class DefaultIdSiteUrlBuilderTest {
 
     private void assertClaims(String jwt, Map expected, List notExpected) {
 
-        Jws<Claims> jws = Jwts.parser().setSigningKey(apiKeySecret.bytes).parseClaimsJws(jwt)
+        Claims claims = parseClaims(jwt)
 
-        validateHeader(jws.header)
+        assertClaims(claims, expected, notExpected)
+    }
 
-        def claims = jws.body
+    private static void assertClaims(Claims claims, Map expected, List notExpected) {
 
         assertTrue Strings.hasText(claims.getId())
 
@@ -232,6 +276,14 @@ public class DefaultIdSiteUrlBuilderTest {
         expected.each { k, v -> assertEquals v, claims["${k}"] }
 
         notExpected.each { k -> assertFalse claims.containsKey("${k}") }
+    }
+
+    private Claims parseClaims(String jwt) {
+        Jws<Claims> jws = Jwts.parser().setSigningKey(apiKeySecret.bytes).parseClaimsJws(jwt)
+
+        validateHeader(jws.header)
+
+        jws.body
     }
 
     private static void validateHeader(JwsHeader header) {
