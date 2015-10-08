@@ -34,7 +34,7 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.RC
  */
-public class DefaultSsoRedirectUrlBuilderTest {
+public class DefaultIdSiteUrlBuilderTest {
 
     String apiKeyId
     String apiKeySecret
