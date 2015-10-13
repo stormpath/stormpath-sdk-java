@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package example;
 
 import com.stormpath.sdk.account.Account;
 import org.springframework.security.access.prepost.PreAuthorize;

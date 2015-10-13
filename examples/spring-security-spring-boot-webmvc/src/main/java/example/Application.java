@@ -13,31 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package example;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.client.Client;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 
+/**
+ * @since 1.0.RC5
+ */
 @SpringBootApplication
-public class App {
+public class Application {
 
     public static void main(String[] args) {
-
-        ApplicationContext ctx = SpringApplication.run(App.class, args);
-
-        //You can interact with your application's record in Stormpath:
-        Application myApp = ctx.getBean(Application.class);
-
-        System.out.println("\n");
-        System.out.println("Welcome to the '" + myApp.getName() + "' application!");
-
-        //You can also obtain the Stormpath Client to interact with your tenant too:
-        Client stormpathClient = ctx.getBean(Client.class);
-        System.out.println("My tenant info: " + stormpathClient.getCurrentTenant());
-        System.out.println("\n");
+        SpringApplication.run(Application.class, args);
     }
 
 }

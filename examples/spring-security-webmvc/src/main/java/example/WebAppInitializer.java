@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package example;
 
+import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
+import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -28,22 +30,31 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import java.util.EnumSet;
 
+/**
+ * @since 1.0.RC5
+ */
 public class WebAppInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext sc) throws ServletException {
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(WebAppConfig.class);
+        context.register(SpringSecurityWebAppConfig.class);
+        context.register(StormpathMethodSecurityConfiguration.class);
         sc.addListener(new ContextLoaderListener(context));
 
         ServletRegistration.Dynamic dispatcher = sc.addServlet("dispatcher", new DispatcherServlet(context));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
+        //Stormpath Filter
         FilterRegistration.Dynamic filter = sc.addFilter("stormpathFilter", new DelegatingFilterProxy());
         EnumSet<DispatcherType> types =
-            EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+                EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
         filter.addMappingForUrlPatterns(types, false, "/*");
+
+        //Spring Security Filter
+        FilterRegistration.Dynamic securityFilter = sc.addFilter(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
+        securityFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
     }
 }
