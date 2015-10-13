@@ -46,12 +46,13 @@ On Windows, you can `set file permissions similarly`_.
 
 .. _dependency-jar:
 
-Add the Spring Boot Stormpath Web Starter
+Add the Stormpath Default Spring Boot Starter
 -----------------------------------------
 
-This step allows you to enable Stormpath in a Spring Boot web app *without a single line of code or configuration*.  How amazing is that? Here's how.
+This step allows you to enable Stormpath in a Spring Boot web app *without a single line of code or configuration*.
+It includes Stormpath Spring Security, Stormpath Spring WebMVC and Stormpath Thymeleaf templates. How amazing is that? Here's how.
 
-Using your favorite dependency resolution build tool like Maven or Gradle, add the stormpath-thymeleaf-spring-boot-starter-|version|.jar to your project dependencies. For example:
+Using your favorite dependency resolution build tool like Maven or Gradle, add the stormpath-default-spring-boot-starter-|version|.jar to your project dependencies. For example:
 
 **Maven**:
 
@@ -59,7 +60,7 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 
     <dependency>
         <groupId>com.stormpath.spring</groupId>
-        <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
+        <artifactId>stormpath-default-spring-boot-starter</artifactId>
         <version>\ |version|\ </version>
     </dependency>
 
@@ -68,7 +69,7 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 .. parsed-literal::
 
     dependencies {
-        compile 'com.stormpath.spring:stormpath-thymeleaf-spring-boot-starter:\ |version|\ '
+        compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:\ |version|\ '
     }
 
 That's it!  You're ready to start using Stormpath in your Spring Boot web application!  Can you believe how easy that was?
@@ -97,6 +98,20 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
       stormpath.application.href = https://api.stormpath.com/v1/applications/YOUR_APPLICATION_ID
 
+* you don't want to use Spring Security or you are already using it and there are conflicts. You can easily disable Stormpath Spring Boot Spring Security by excluding the Stormpath security auto-configuration in your ``Application.java`` like so:
+
+  .. code-block:: java
+     :emphasize-lines: 2
+
+      @SpringBootApplication
+      @EnableAutoConfiguration(exclude = { StormpathMethodSecurityAutoConfiguration.class })
+      public class Application  {
+
+          public static void main(String[] args) {
+              SpringApplication.run(Application.class, args);
+          }
+
+      }
 
 * your web app already uses web frameworks that make heavy use of servlet filters, like Spring Security or Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you just need to specify the specific order where you want the Stormpath filter relative to other filters.  You do this by adding the following to your Spring Boot ``application.properties`` file (where ``preferred_value`` is your preferred integer value):
 
@@ -106,6 +121,8 @@ Did you experience any problems with this quickstart?  It might not have worked 
       stormpath.web.stormpathFilter.order = preferred_value
 
   By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
+
+
 
 
 If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
@@ -125,8 +142,11 @@ That was just a little example of how much functionality is ready right out of t
 * HTTP Basic and OAuth2 authentication
 * and more!
 
+Dig in to our `examples`_ to see more Stormpath Spring Boot in action.
+
 Continue on to find out how to leverage this functionality and customize it for your own needs.
 
+.. _examples: https://github.com/stormpath/stormpath-sdk-java/tree/master/examples
 .. _sign up for Stormpath for free: https://api.stormpath.com/register
 .. _Stormpath Admin Console: https://api.stormpath.com
 .. _set file permissions similarly: http://msdn.microsoft.com/en-us/library/bb727008.aspx

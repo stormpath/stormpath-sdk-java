@@ -17,6 +17,7 @@ This part of the documentation will show you how to get started right away.  If 
 
    about
    quickstart
+   tutorial
    config
    registration
    login
