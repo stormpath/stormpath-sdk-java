@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2015 Stormpath, Inc.
+  ~ Copyright 2014 Stormpath, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
@@ -25,43 +23,17 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>stormpath-sdk-tutorials-spring-boot-default</artifactId>
     <name>Stormpath Java SDK :: Tutorials :: Spring Boot Default</name>
-    <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <!-- Compile-time dependencies: -->
-        <dependency>
-            <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-default-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- Runtime-only dependencies: -->
-        <dependency>
-            <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-sdk-httpclient</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>00-the-basics</module>
+        <module>01-some-access-controls</module>
+        <module>02-spring-security-ftw</module>
+        <module>03-spring-security-refined</module>
+        <module>04-a-finer-grain-of-control</module>
+    </modules>
 
 </project>
