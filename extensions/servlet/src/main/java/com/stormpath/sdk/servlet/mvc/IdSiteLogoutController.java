@@ -19,6 +19,8 @@ import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +30,7 @@ public class IdSiteLogoutController extends LogoutController {
     private ServerUriResolver serverUriResolver;
     private String idSiteResultUri;
     private Controller idSiteController; //not injected - created during init()
+    private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -37,12 +40,17 @@ public class IdSiteLogoutController extends LogoutController {
         this.idSiteResultUri = idSiteResultUri;
     }
 
+    public void setIdSiteOrganizationResolver(Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver) {
+        this.idSiteOrganizationResolver = idSiteOrganizationResolver;
+    }
+
     public void init() {
         super.init();
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
         IdSiteController controller = new LogoutIdSiteController();
         controller.setServerUriResolver(serverUriResolver);
         controller.setCallbackUri(idSiteResultUri);
+        controller.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
         controller.init();
         this.idSiteController = controller;
     }
