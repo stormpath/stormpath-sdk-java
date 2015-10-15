@@ -17,6 +17,7 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,26 +37,31 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return super.stormpathAuthenticationSuccessHandler();
     }
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     public LogoutHandler stormpathLogoutHandler() {
         return super.stormpathLogoutHandler();
     }
 
     @Bean
+    @Conditional(StormpathSecurityEnabled.class)
     public AuthenticationManager getAuthenticationManager() throws Exception {
         return super.authenticationManagerBean();
     }
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
         return super.stormpathCsrfTokenRepository();
     }
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }

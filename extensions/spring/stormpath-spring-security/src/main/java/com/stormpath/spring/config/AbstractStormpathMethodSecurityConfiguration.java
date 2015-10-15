@@ -24,7 +24,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 /**
  * @since 1.0.RC5
  */
-public class AbstractStormpathMethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+public abstract class AbstractStormpathMethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
 
     private static final String EMPTY_ROLE_PREFIX = "";
 

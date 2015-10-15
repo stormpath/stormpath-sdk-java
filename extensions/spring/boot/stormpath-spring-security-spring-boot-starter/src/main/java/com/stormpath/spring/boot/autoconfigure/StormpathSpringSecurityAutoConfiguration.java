@@ -16,6 +16,7 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.spring.config.AbstractStormpathSpringSecurityConfiguration;
+import com.stormpath.spring.config.StormpathSecurityEnabled;
 import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.AccountPermissionResolver;
 import com.stormpath.spring.security.provider.AuthenticationTokenFactory;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 
@@ -41,6 +43,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
+    @Conditional(StormpathSecurityEnabled.class)
     public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return super.stormpathGroupGrantedAuthorityResolver();
     }
@@ -48,6 +51,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
+    @Conditional(StormpathSecurityEnabled.class)
     public GroupPermissionResolver stormpathGroupPermissionResolver() {
         return super.stormpathGroupPermissionResolver();
     }
@@ -55,6 +59,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
+    @Conditional(StormpathSecurityEnabled.class)
     public AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver() {
         return super.stormpathAccountGrantedAuthorityResolver();
     }
@@ -62,6 +67,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
+    @Conditional(StormpathSecurityEnabled.class)
     public AccountPermissionResolver stormpathAccountPermissionResolver() {
         return super.stormpathAccountPermissionResolver();
     }
@@ -69,6 +75,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
+    @Conditional(StormpathSecurityEnabled.class)
     public AuthenticationTokenFactory stormpathAuthenticationTokenFactory() {
         return super.stormpathAuthenticationTokenFactory();
     }
@@ -76,6 +83,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
+    @Conditional(StormpathSecurityEnabled.class)
     public AuthenticationProvider stormpathAuthenticationProvider() {
         return super.stormpathAuthenticationProvider();
     }

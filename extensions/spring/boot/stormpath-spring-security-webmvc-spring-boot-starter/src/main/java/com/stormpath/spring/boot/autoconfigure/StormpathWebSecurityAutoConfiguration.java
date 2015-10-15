@@ -17,6 +17,8 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
+import com.stormpath.spring.config.StormpathSecurityEnabled;
+import com.stormpath.spring.config.StormpathWebEnabled;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -24,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -51,30 +54,35 @@ import javax.servlet.Servlet;
 public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     @ConditionalOnMissingBean(name="stormpathAuthenticationSuccessHandler")
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return super.stormpathAuthenticationSuccessHandler();
     }
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     @ConditionalOnMissingBean(name="stormpathLogoutHandler")
     public LogoutHandler stormpathLogoutHandler() {
         return super.stormpathLogoutHandler();
     }
 
     @Bean
+    @Conditional(StormpathSecurityEnabled.class)
     @ConditionalOnMissingBean
     public AuthenticationManager getAuthenticationManager() throws Exception {
         return super.authenticationManagerBean();
     }
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     @ConditionalOnMissingBean
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
         return super.stormpathCsrfTokenRepository();
     }
 
     @Bean
+    @Conditional(StormpathWebEnabled.class)
     @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();

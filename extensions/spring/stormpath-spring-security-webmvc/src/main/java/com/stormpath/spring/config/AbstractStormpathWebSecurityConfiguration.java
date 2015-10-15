@@ -47,9 +47,15 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
     @Qualifier("stormpathAuthenticationProvider")
     protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
 
-    @Autowired
+    @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
+    protected boolean stormpathSecuritybEnabled;
+
+    @Value("#{ @environment['stormpath.web.enabled'] ?: true }")
+    protected boolean stormpathWebEnabled;
 
     @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
     protected boolean loginEnabled;
@@ -124,56 +130,60 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
     protected final void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
             throws Exception {
 
-        if (loginEnabled) {
-            http
-                    .formLogin()
-                    .loginPage(loginUri)
-                    .defaultSuccessUrl(loginNextUri)
-                    .successHandler(successHandler)
-                    .usernameParameter("login")
-                    .passwordParameter("password")
-                    .and().authorizeRequests()
-                    .antMatchers(loginUri).permitAll();
-        }
+        if (stormpathWebEnabled) {
+            if (loginEnabled) {
+                http
+                        .formLogin()
+                        .loginPage(loginUri)
+                        .defaultSuccessUrl(loginNextUri)
+                        .successHandler(successHandler)
+                        .usernameParameter("login")
+                        .passwordParameter("password")
+                        .and().authorizeRequests()
+                        .antMatchers(loginUri).permitAll();
+            }
 
-        if (logoutEnabled) {
-            http
-                    .logout()
-                    .invalidateHttpSession(true)
-                    .logoutUrl(logoutUri)
-                    .logoutSuccessUrl(logoutNextUri)
-                    .addLogoutHandler(logoutHandler)
-                    .and().authorizeRequests()
-                    .antMatchers(logoutUri).permitAll();
+            if (logoutEnabled) {
+                http
+                        .logout()
+                        .invalidateHttpSession(true)
+                        .logoutUrl(logoutUri)
+                        .logoutSuccessUrl(logoutNextUri)
+                        .addLogoutHandler(logoutHandler)
+                        .and().authorizeRequests()
+                        .antMatchers(logoutUri).permitAll();
 
-        }
+            }
 
-        if (!csrfProtectionEnabled) {
-            http.csrf().disable();
-        } else {
-            //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
-            http.csrf().csrfTokenRepository(stormpathCsrfTokenRepository());
-        }
+            if (!csrfProtectionEnabled) {
+                http.csrf().disable();
+            } else {
+                //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
+                http.csrf().csrfTokenRepository(stormpathCsrfTokenRepository());
+            }
 
-        if (forgotEnabled) {
-            http.authorizeRequests().antMatchers(forgotUri).permitAll();
-        }
-        if (changeEnabled) {
-            http.authorizeRequests().antMatchers(changeUri).permitAll();
-        }
-        if (registerEnabled) {
-            http.authorizeRequests().antMatchers(registerUri).permitAll();
-        }
-        if (verifyEnabled) {
-            http.authorizeRequests().antMatchers(verifyUri).permitAll();
+            if (forgotEnabled) {
+                http.authorizeRequests().antMatchers(forgotUri).permitAll();
+            }
+            if (changeEnabled) {
+                http.authorizeRequests().antMatchers(changeUri).permitAll();
+            }
+            if (registerEnabled) {
+                http.authorizeRequests().antMatchers(registerUri).permitAll();
+            }
+            if (verifyEnabled) {
+                http.authorizeRequests().antMatchers(verifyUri).permitAll();
+            }
         }
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers("/assets/css/stormpath.css")
-                .antMatchers("/assets/css/custom.stormpath.css");
+        if (stormpathWebEnabled) {
+            web.ignoring()
+                    .antMatchers("/assets/css/stormpath.css")
+                    .antMatchers("/assets/css/custom.stormpath.css");
+        }
     }
 
     /**
@@ -184,7 +194,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration extends WebSecur
      * @throws Exception if an error occurs
      */
     protected void configure(AuthenticationManagerBuilder auth, AuthenticationProvider authenticationProvider) throws Exception {
-        auth.authenticationProvider(authenticationProvider);
+        if (stormpathWebEnabled && stormpathSecuritybEnabled) {
+            auth.authenticationProvider(authenticationProvider);
+        }
     }
 
 }
