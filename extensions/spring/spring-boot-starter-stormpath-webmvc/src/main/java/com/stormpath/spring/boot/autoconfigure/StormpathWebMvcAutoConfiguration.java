@@ -45,6 +45,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -270,6 +271,24 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathSessionAccountResolver")
     public Resolver<Account> stormpathSessionAccountResolver() {
         return super.stormpathSessionAccountResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathSubdomainResolver")
+    public Resolver<List<String>> stormpathSubdomainResolver() {
+        return super.stormpathSubdomainResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathOrganizationNameKeyResolver")
+    public Resolver<String> stormpathOrganizationNameKeyResolver() {
+        return super.stormpathOrganizationNameKeyResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathIdSiteOrganizationResolver")
+    public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
+        return super.stormpathIdSiteOrganizationResolver();
     }
 
     @Bean

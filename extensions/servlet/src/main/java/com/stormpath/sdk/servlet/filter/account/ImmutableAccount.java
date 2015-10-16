@@ -173,6 +173,24 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
+    public GroupMembership addGroup(String hrefOrName) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Account removeGroup(Group group) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Account removeGroup(String hrefOrName) {
+        immutable();
+        return null;
+    }
+
+    @Override
     public EmailVerificationToken getEmailVerificationToken() {
         return account.getEmailVerificationToken();
     }
