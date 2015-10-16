@@ -16,6 +16,6 @@
   -->
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <!-- <logger name="org.springframework.web" level="DEBUG"/> -->
+    <logger name="org.springframework" level="INFO"/>
     <logger name="com.stormpath" level="INFO"/>
 </configuration>

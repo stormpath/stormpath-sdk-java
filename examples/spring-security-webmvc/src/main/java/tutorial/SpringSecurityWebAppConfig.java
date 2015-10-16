@@ -15,27 +15,25 @@
  */
 package tutorial;
 
-import com.stormpath.spring.config.EnableStormpathWebSecurity;
+import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * @since 1.0.RC5
  */
-@EnableStormpathWebSecurity //Stormpath Spring Security web mvc beans plus out-of-the-box views
 @Configuration
 @ComponentScan
 @PropertySource("classpath:application.properties")
-public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    public void doConfigure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/restricted").fullyAuthenticated();
     }
 

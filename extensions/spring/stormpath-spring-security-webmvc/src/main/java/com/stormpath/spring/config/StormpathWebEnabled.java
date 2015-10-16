@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tutorial;
+package com.stormpath.spring.config;
 
-import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * @since 1.0.RC5
  */
-@Configuration
-public class SpringSecurityWebAppConfig extends StormpathWebSecurityAutoConfiguration {
+public class StormpathWebEnabled implements Condition {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void doConfigure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/restricted").fullyAuthenticated();
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        return context.getEnvironment().getProperty("stormpath.web.enabled", Boolean.class, Boolean.TRUE);
     }
 
 }
+
