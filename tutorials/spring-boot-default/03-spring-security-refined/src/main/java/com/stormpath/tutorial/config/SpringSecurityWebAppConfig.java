@@ -15,19 +15,11 @@
  */
 package com.stormpath.tutorial.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @since 1.0.RC5
  */
-@Component
-public class Roles {
-    public final String USER;
-
-    @Autowired
-    public Roles(Environment env) {
-        USER = env.getProperty("stormpath.authorized.group.user");
-    }
-}
+@Configuration
+public class SpringSecurityWebAppConfig extends StormpathWebSecurityAutoConfiguration {}

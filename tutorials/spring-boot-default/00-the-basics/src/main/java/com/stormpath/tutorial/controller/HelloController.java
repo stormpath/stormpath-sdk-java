@@ -11,11 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 public class HelloController {
     @RequestMapping("/")
     public String hello(HttpServletRequest req) {
-        String greeting = "World!";
-
         Application app = ApplicationResolver.INSTANCE.getApplication(req);
-        if (app != null) { greeting = app.getName(); }
-
-        return "Hello, " + greeting;
+        return "Hello, " + app.getName();
     }
 }
