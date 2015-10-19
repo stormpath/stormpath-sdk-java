@@ -18,7 +18,7 @@ cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web/$REL
 git add --all
 git commit -m "stormpath-sdk-java release $RELEASE_VERSION"
 ls -la source/java/servlet-plugin
-git push origin source
+#git push origin source
 gem install bundler
 bundle install
 rake setup_github_pages[git@github.com:stormpath/stormpath.github.io.git]
@@ -29,5 +29,5 @@ rake generate
 cd _deploy
 git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
 cd ..
-rake deploy
+#rake deploy
 cd ..

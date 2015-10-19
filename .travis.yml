@@ -1,9 +1,9 @@
 language: java
 sudo: false
 jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk7
+  #- openjdk6
+  #- openjdk7
+  #- oraclejdk7
   - oraclejdk8
 env:
   global:
@@ -17,7 +17,9 @@ before_install:
     -d
   - chmod 600 ~/.ssh/id_rsa
   - export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
-  - export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && echo 'true')"
+    #- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && echo 'true')"
+    # temporary reverse of logic to ensure that publish docs run
+  - export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} != $RELEASE_VERSION ] && echo 'true')"
   - export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
 install: 
   - test -z "$BUILD_DOCS" || pip install --user sphinx
