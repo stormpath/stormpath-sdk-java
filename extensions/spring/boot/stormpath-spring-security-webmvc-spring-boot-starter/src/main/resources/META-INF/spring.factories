@@ -1,1 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration = com.stormpath.spring.boot.autoconfigure.StormpathMethodSecurityAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityAutoConfiguration,\
+com.stormpath.spring.boot.autoconfigure.StormpathMethodSecurityAutoConfiguration

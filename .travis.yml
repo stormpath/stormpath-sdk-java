@@ -24,9 +24,7 @@ install:
   - echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
 script: 
   - mvn install
-  - test -z "$BUILD_DOCS" || cd docs
-  - test -z "$BUILD_DOCS" || make html
-  - test -z "$BUILD_DOCS" || cd ..
+  - test -z "$BUILD_DOCS" || ./build_docs.sh
 after_success:
   - test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
 

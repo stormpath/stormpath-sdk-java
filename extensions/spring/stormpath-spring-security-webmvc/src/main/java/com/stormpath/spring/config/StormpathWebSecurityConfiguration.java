@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -34,7 +35,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
 @EnableWebSecurity
-public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
+public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfigurer {
 
     @Bean
     @Conditional(StormpathWebEnabled.class)
@@ -78,7 +79,7 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
      *             if an error occurs
      * @see #doConfigure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
      */
-    @Override
+    //@Override
     protected final void configure(HttpSecurity http) throws Exception {
         configure(http, stormpathAuthenticationSuccessHandler(), stormpathLogoutHandler());
         doConfigure(http);
@@ -113,7 +114,7 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
      * @throws Exception
      *             if an error occurs
      */
-    @Override
+    //@Override
     protected final void configure(AuthenticationManagerBuilder auth) throws Exception {
         configure(auth, super.stormpathAuthenticationProvider);
         doConfigure(auth);
@@ -131,4 +132,8 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     protected void doConfigure(AuthenticationManagerBuilder auth) throws Exception {
     }
 
+    //@Override
+    public void init(WebSecurity builder) throws Exception {
+
+    }
 }
