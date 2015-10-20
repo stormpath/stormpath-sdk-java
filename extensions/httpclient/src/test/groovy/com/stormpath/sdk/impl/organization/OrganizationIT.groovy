@@ -79,8 +79,8 @@ class OrganizationIT extends ClientIT {
         def retrievedOrg = client.createOrganization(Organizations.newCreateRequestFor(org).createDirectory().build())
         assertNotNull(retrievedOrg)
 
-        deleteOnTeardown(retrievedOrg)
         deleteOnTeardown(retrievedOrg.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(retrievedOrg)
         assertEquals retrievedOrg.defaultAccountStore.href, retrievedOrg.defaultGroupStore.href
 
         // test using directory name
@@ -89,7 +89,7 @@ class OrganizationIT extends ClientIT {
                 .setNameKey(uniquify("test").substring(2, 8))
                 .setStatus(OrganizationStatus.ENABLED)
 
-        def dirName = uniquify("JSDK_test_dir")
+        def dirName = uniquify("JSDK_test_org_creation_with_dir")
 
         retrievedOrg = tenant.createOrganization(Organizations.newCreateRequestFor(org).createDirectoryNamed(dirName).build())
         def dir = tenant.getDirectories(Directories.where(Directories.name().eqIgnoreCase(dirName))).iterator().next()
@@ -97,8 +97,8 @@ class OrganizationIT extends ClientIT {
 
         assertEquals dir.name, dirName
 
-        deleteOnTeardown(retrievedOrg)
         deleteOnTeardown(retrievedOrg.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(retrievedOrg)
     }
 
     @Test
