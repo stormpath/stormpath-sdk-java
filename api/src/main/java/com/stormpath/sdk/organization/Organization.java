@@ -183,60 +183,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 
     /**
-     * Returns the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or a
-     * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
-     * new accounts created in the Organization, or {@code null} if no accountStore has been designated.
-     * <p/>
-     * Because an Organization is not an {@code AccountStore} itself, it delegates to a Group or Directory
-     * when creating accounts; this method returns the AccountStore to which the Organization delegates
-     * new account persistence.
-     * <h3>Directory or Group?</h3>
-     * As both Directory and Organization are sub-interfaces of {@link com.stormpath.sdk.directory.AccountStore}, you can determine which of the two
-     * is returned by using the <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a>.  For
-     * example:
-     * <p/>
-     * <pre>
-     * AccountStore accountStore = application.getDefaultAccountStore();
-     * accountStore.accept(new {@link com.stormpath.sdk.directory.AccountStoreVisitor AccountStoreVisitor}() {
-     *
-     *     public void visit(Directory directory) {
-     *         //the accountStore is a Directory
-     *     }
-     *
-     *     public void visit(Group group) {
-     *         //the accountStore is a Group;
-     *     }
-     * };
-     * </pre>
-     * <h3>Setting the 'New Account Store'</h3>
-     * You may set the defaultAccountStore by acquiring one of the Organization's
-     * {@link #getOrganizationAccountStoreMappings() accountStoreMappings} and calling
-     * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#setDefaultAccountStore(boolean) setDefaultAccountStore}<code>(true)</code> or by
-     * calling {@link #setDefaultAccountStore(com.stormpath.sdk.directory.AccountStore)}
-     *
-     * @return the {@link com.stormpath.sdk.directory.AccountStore} (which will be either a Group or Directory) used to persist
-     *         new accounts created in the Organization, or {@code null} if no accountStore has been designated.
-     */
-    AccountStore getDefaultAccountStore();
-
-    /**
-     * Sets the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or a
-     * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
-     * new accounts created in the Organization.
-     * <p/>
-     * Because an Organization is not an {@code AccountStore} itself, it delegates to a Group or Directory
-     * when creating accounts; this method sets the AccountStore to which the Organization delegates
-     * new account persistence.
-     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
-     * to be called to persist changes, this convenience method will call the server immediately.
-     * </p>
-     *
-     * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
-     *                     new accounts created in the Organization}
-     */
-    void setDefaultAccountStore(AccountStore accountStore);
-
-    /**
      * Creates a new Account that may login to this application.
      *
      * <p>This is mostly a convenience method; it delegates creation to the Application's designated
@@ -301,62 +247,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @since 0.9
      */
     Account createAccount(CreateAccountRequest request) throws ResourceException;
-    /**
-     * Returns the {@link AccountStore} used to persist new groups created in the Organization, or
-     * {@code null} if no accountStore has been designated.
-     *
-     * <p/>
-     * Because an Organization is not an {@code AccountStore} itself, it delegates to a Directory when creating groups;
-     * this method returns the AccountStore to which the Organization delegates new group persistence.
-     * <h3>Directory or Group?</h3>
-     * As both Group and Directory are sub-interfaces of {@link AccountStore}, you can determine which of the two
-     * is returned by using the <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a>.  For
-     * example:
-     * <p/>
-     * <pre>
-     * AccountStore groupStore = application.getDefaultGroupStore();
-     * groupStore.accept(new {@link com.stormpath.sdk.directory.AccountStoreVisitor AccountStoreVisitor}() {
-     *
-     *     public void visit(Directory directory) {
-     *         //groupStore is a Directory
-     *     }
-     *
-     *     public void visit(Group group) {
-     *         //groupStore is a Group;
-     *     }
-     * };
-     * </pre>
-     * In practice, Stormpath's current REST API requires this to be a Directory.  However, this could be
-     * a Group in the future, so do not assume it will always be a Directory if you want your code to be
-     * forward compatible; use the Visitor pattern and do not cast directly to a Directory.
-     * <h3>Setting the 'New Group Store'</h3>
-     * You set the newGroupStore by acquiring one of the Organization's
-     * {@link #getOrganizationAccountStoreMappings() accountStoreMappings} and calling
-     * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping#setDefaultGroupStore(boolean) setDefaultGroupStore}<code>(true)</code> or by
-     * calling {@link #setDefaultGroupStore(com.stormpath.sdk.directory.AccountStore)}.
-     *
-     * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
-     *         new groups created in the Organization, or {@code null} if no accountStore has been designated.
-     */
-    AccountStore getDefaultGroupStore();
-
-    /**
-     * Sets the {@link AccountStore} (a {@link com.stormpath.sdk.directory.Directory Directory}) that will be used to
-     * persist new groups created in the Organization.
-     * <b>Stormpath's current REST API requires this to be a Directory. However, this could be a Group in the future, so do not assume it is always a
-     * Directory if you want your code to function correctly if/when this support is added.</b>
-     * <p/>
-     * Because an Organization is not an {@code AccountStore} itself, it delegates to a Group or Directory
-     * when creating groups; this method sets the AccountStore to which the Organization delegates
-     * new group persistence.
-     * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
-     * to be called to persist changes, this convenience method will call the server immediately.
-     * </p>
-     *
-     * @param accountStore the {@link AccountStore} (which will be either a Group or Organization) used to persist
-     * new groups created in the Organization
-     */
-    void setDefaultGroupStore(AccountStore accountStore);
 
     /**
      * Creates a new {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping} for this Organization, allowing the associated
