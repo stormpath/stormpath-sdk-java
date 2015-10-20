@@ -422,14 +422,4 @@ public class DefaultClient implements Client {
         this.currentTenantHref = current.getHref();
         return current;
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0.RC4.6
-     */
-    @Override
-    public OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
-        return getCurrentTenant().createOrganizationAccountStoreMapping(mapping);
-    }
 }

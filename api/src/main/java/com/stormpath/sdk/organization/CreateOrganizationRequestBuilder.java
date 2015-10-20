@@ -23,8 +23,6 @@ package com.stormpath.sdk.organization;
  * @since 1.0.RC5
  */public interface CreateOrganizationRequestBuilder {
 
-    CreateOrganizationRequest build();
-
     /**
      * Directive to also create a new Directory for the new Organization's needs.  The new Directory will automatically
      * be assigned as the Organization's default Groups and Accounts store.
@@ -48,4 +46,11 @@ package com.stormpath.sdk.organization;
      * @see #createDirectory()
      */
     CreateOrganizationRequestBuilder createDirectoryNamed(String name);
+
+    /**
+     * Creates a new {@code CreateOrganizationRequest} instance based on the current builder state.
+     *
+     * @return a new {@code CreateOrganizationRequest} instance based on the current builder state.
+     */
+    CreateOrganizationRequest build();
 }

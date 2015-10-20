@@ -13,24 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.organization
-
-import com.stormpath.sdk.organization.Organizations
-import org.junit.Test
-
-import static org.testng.Assert.*
+package com.stormpath.sdk.accountStoreMapping;
 
 /**
+ * Interface to be implemented by {@link com.stormpath.sdk.resource.Resource Resources} capable of storing {@link com.stormpath.sdk.directory.AccountStore account stores}. For example:
+ * {@link com.stormpath.sdk.application.Application Applications} and {@link com.stormpath.sdk.organization.Organization Organizations}.
+ *
  * @since 1.0.RC5.1
  */
-class DefaultOrganizationOptionsTest {
-
-    @Test
-    void testDefault() {
-
-        def options = Organizations.options();
-
-        assertNotNull options
-        assertTrue options instanceof DefaultOrganizationOptions
-    }
+public interface AccountStoreHolder<T extends AccountStoreHolder> {
 }

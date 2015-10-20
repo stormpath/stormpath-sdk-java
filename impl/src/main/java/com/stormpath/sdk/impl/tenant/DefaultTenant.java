@@ -332,12 +332,4 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
         getDataStore().save(this, responseOptions);
         return this;
     }
-
-    /**
-     * @since 1.0.RC4.6
-     */
-    @Override
-    public OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
-        return getDataStore().create("/organizationAccountStoreMappings", mapping);
-    }
 }

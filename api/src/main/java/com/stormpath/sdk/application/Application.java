@@ -22,6 +22,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.accountStoreMapping.AccountStoreHolder;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -56,7 +57,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Application extends Resource, Saveable, Deletable, Extendable, Auditable {
+public interface Application extends AccountStoreHolder<Application>, Resource, Saveable, Deletable, Extendable, Auditable {
 
     /**
      * Returns the Application's name.  An application's name must be unique across all other applications in the
@@ -787,11 +788,11 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * <p/>
      * <h4>Example</h4>
      * <pre>
-     * AccountStore directoryOrGroup = getDirectoryOrGroupYouWantToUseForLogin();
-     * ApplicationAccountStoreMapping mapping = application.addAccountStore(directoryOrGroup);
+     * AccountStore directoryGroupOrOrganization = getDirectoryGroupOrOrganizationYouWantToUseForLogin();
+     * ApplicationAccountStoreMapping mapping = application.addAccountStore(directoryGroupOrOrganization);
      * </pre>
      * Then, when {@link #authenticateAccount(com.stormpath.sdk.authc.AuthenticationRequest) authenticating} an
-     * account, this AccountStore (directory or group) will be consulted if no others before it in the list
+     * account, this AccountStore (directory, organization or group) will be consulted if no others before it in the list
      * found a matching account.
      *
      * @param accountStore the new AccountStore resource to add to the Application's ApplicationAccountStoreMapping list.
