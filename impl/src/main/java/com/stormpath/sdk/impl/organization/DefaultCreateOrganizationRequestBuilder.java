@@ -21,7 +21,7 @@ import com.stormpath.sdk.organization.CreateOrganizationRequestBuilder;
 import com.stormpath.sdk.organization.Organization;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 public class DefaultCreateOrganizationRequestBuilder implements CreateOrganizationRequestBuilder {
 

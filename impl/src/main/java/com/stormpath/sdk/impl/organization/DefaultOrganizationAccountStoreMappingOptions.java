@@ -18,6 +18,9 @@ package com.stormpath.sdk.impl.organization;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingOptions;
 
+/**
+ * @since 1.0.RC5.1
+ */
 public class DefaultOrganizationAccountStoreMappingOptions extends DefaultOptions<OrganizationAccountStoreMappingOptions>
         implements OrganizationAccountStoreMappingOptions<OrganizationAccountStoreMappingOptions> {
 

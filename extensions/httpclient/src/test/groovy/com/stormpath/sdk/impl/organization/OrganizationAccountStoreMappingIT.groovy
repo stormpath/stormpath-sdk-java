@@ -521,7 +521,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(org)
         try {
-            def retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            def retrieved = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
             fail("Should have thrown due to organization cannot be account store error.");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "HTTP 400, Stormpath 4614 (http://docs.stormpath.com/errors/4614): An organization can not an account store for another organization.")
@@ -537,7 +537,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(dir)
-        def retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        def retrieved = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
         deleteOnTeardown(retrieved)
 
         assertNotNull retrieved
@@ -554,7 +554,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(group)
-        retrieved = tenant.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        retrieved = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
         deleteOnTeardown(retrieved)
 
         assertNotNull retrieved

@@ -31,7 +31,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 class DefaultOrganizationTest {
 
