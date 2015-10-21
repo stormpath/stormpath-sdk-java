@@ -59,7 +59,7 @@ public interface CacheConfigurationBuilder {
      *
      * @param ttl         Time To Live scalar value
      * @param ttlTimeUnit Time to Live unit of time
-     * @return the associated {@code Cache} region's entry Time to Live (TTL).
+     * @return the builder instance for method chaining.
      */
     CacheConfigurationBuilder withTimeToLive(long ttl, TimeUnit ttlTimeUnit);
 
@@ -81,7 +81,7 @@ public interface CacheConfigurationBuilder {
      *
      * @param tti         Time To Idle scalar value
      * @param ttiTimeUnit Time to Idle unit of time
-     * @return the associated {@code Cache} region's entry Time to Idle (TTI).
+     * @return the builder instance for method chaining.
      */
     CacheConfigurationBuilder withTimeToIdle(long tti, TimeUnit ttiTimeUnit);
 
