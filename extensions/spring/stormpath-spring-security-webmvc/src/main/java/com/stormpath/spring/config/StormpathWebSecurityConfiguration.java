@@ -13,67 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.autoconfigure;
+package com.stormpath.spring.config;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
-import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.web.servlet.DispatcherServlet;
-
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
 
 /**
  * @since 1.0.RC5
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-@ConditionalOnProperty(name = {"stormpath.enabled", "stormpath.web.enabled", "stormpath.spring.security.enabled"}, matchIfMissing = true)
-@ConditionalOnClass({Servlet.class, Filter.class, DispatcherServlet.class})
-@ConditionalOnWebApplication
-@AutoConfigureBefore(StormpathWebMvcAutoConfiguration.class)
-@AutoConfigureAfter(StormpathSpringSecurityAutoConfiguration.class)
-public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebSecurityConfiguration {
+public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAuthenticationSuccessHandler")
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return super.stormpathAuthenticationSuccessHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathWebSecurityConfigurer")
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return super.stormpathWebSecurityConfigurer();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathLogoutHandler")
     public LogoutHandler stormpathLogoutHandler() {
         return super.stormpathLogoutHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
         return super.stormpathCsrfTokenRepository();
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }
-
 }

@@ -15,6 +15,22 @@
  */
 package com.stormpath.spring.config;
 
+/*
+ * Copyright 2015 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
@@ -25,20 +41,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
+
 /**
  * @since 1.0.RC5
  */
 @Order(99)
-public abstract class AbstractStormpathWebSecurityConfigurer {
+public abstract class AbstractStormpathWebSecurityConfiguration {
 
     @Autowired
     protected Client client;
@@ -102,6 +115,10 @@ public abstract class AbstractStormpathWebSecurityConfigurer {
     @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
     protected boolean csrfProtectionEnabled;
 
+    public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
+        return new StormpathWebSecurityConfigurer();
+    }
+
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return new StormpathLoginSuccessHandler(client, authenticationResultSaver);
     }
@@ -120,82 +137,4 @@ public abstract class AbstractStormpathWebSecurityConfigurer {
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository());
     }
-
-    /**
-     * The pre-defined Stormpath access control settings are defined here.
-     *
-     * @param http the {@link HttpSecurity} to be modified
-     * @throws Exception if an error occurs
-     */
-    protected final void configure(HttpSecurity http, AuthenticationSuccessHandler successHandler, LogoutHandler logoutHandler)
-            throws Exception {
-
-        if (stormpathWebEnabled) {
-            if (loginEnabled) {
-                http
-                        .formLogin()
-                        .loginPage(loginUri)
-                        .defaultSuccessUrl(loginNextUri)
-                        .successHandler(successHandler)
-                        .usernameParameter("login")
-                        .passwordParameter("password")
-                        .and().authorizeRequests()
-                        .antMatchers(loginUri).permitAll();
-            }
-
-            if (logoutEnabled) {
-                http
-                        .logout()
-                        .invalidateHttpSession(true)
-                        .logoutUrl(logoutUri)
-                        .logoutSuccessUrl(logoutNextUri)
-                        .addLogoutHandler(logoutHandler)
-                        .and().authorizeRequests()
-                        .antMatchers(logoutUri).permitAll();
-
-            }
-
-            if (!csrfProtectionEnabled) {
-                http.csrf().disable();
-            } else {
-                //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
-                http.csrf().csrfTokenRepository(stormpathCsrfTokenRepository());
-            }
-
-            if (forgotEnabled) {
-                http.authorizeRequests().antMatchers(forgotUri).permitAll();
-            }
-            if (changeEnabled) {
-                http.authorizeRequests().antMatchers(changeUri).permitAll();
-            }
-            if (registerEnabled) {
-                http.authorizeRequests().antMatchers(registerUri).permitAll();
-            }
-            if (verifyEnabled) {
-                http.authorizeRequests().antMatchers(verifyUri).permitAll();
-            }
-        }
-    }
-
-    public void configure(WebSecurity web) throws Exception {
-        if (stormpathWebEnabled) {
-            web.ignoring()
-                    .antMatchers("/assets/css/stormpath.css")
-                    .antMatchers("/assets/css/custom.stormpath.css");
-        }
-    }
-
-    /**
-     * Method to specify the {@link AuthenticationProvider} that Spring Security will use when processing authentications.
-     *
-     * @param auth the {@link AuthenticationManagerBuilder} to use
-     * @param authenticationProvider the {@link AuthenticationProvider} to whom Spring Security will delegate authentication attempts
-     * @throws Exception if an error occurs
-     */
-    protected void configure(AuthenticationManagerBuilder auth, AuthenticationProvider authenticationProvider) throws Exception {
-        if (stormpathWebEnabled && stormpathSecuritybEnabled) {
-            auth.authenticationProvider(authenticationProvider);
-        }
-    }
-
 }

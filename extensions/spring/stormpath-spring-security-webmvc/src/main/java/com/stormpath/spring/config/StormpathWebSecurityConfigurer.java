@@ -15,77 +15,178 @@
 */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import com.stormpath.sdk.servlet.http.Saver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.stereotype.Component;
 
 /**
 * @since 1.0.RC5
 */
-@Configuration
-@EnableStormpathWebMvc
-@EnableStormpathSecurity
-@EnableWebSecurity
-public class StormpathWebSecurityConfigurer extends AbstractStormpathWebSecurityConfigurer {
+@Component
+public class StormpathWebSecurityConfigurer  {
 
-    @Bean
-    @Conditional(StormpathWebEnabled.class)
-    public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        return super.stormpathAuthenticationSuccessHandler();
-    }
+    @Autowired
+    protected Client client;
 
-    @Bean
-    @Conditional(StormpathWebEnabled.class)
-    public LogoutHandler stormpathLogoutHandler() {
-        return super.stormpathLogoutHandler();
-    }
+    @Autowired
+    @Qualifier("stormpathLogoutHandler")
+    protected LogoutHandler logoutHandler;
 
-    @Bean
-    @Conditional(StormpathWebEnabled.class)
-    public CsrfTokenRepository stormpathCsrfTokenRepository() {
-        return super.stormpathCsrfTokenRepository();
-    }
+    @Autowired
+    @Qualifier("stormpathAuthenticationSuccessHandler")
+    protected AuthenticationSuccessHandler successHandler;
 
-    @Bean
-    @Conditional(StormpathWebEnabled.class)
-    public CsrfTokenManager stormpathCsrfTokenManager() {
-        return super.stormpathCsrfTokenManager();
-    }
+    @Autowired
+    @Qualifier("stormpathCsrfTokenRepository")
+    protected CsrfTokenRepository csrfTokenRepository;
+
+    @Autowired
+    @Qualifier("stormpathCsrfTokenManager")
+    protected CsrfTokenManager csrfTokenManager;
+
+    @Autowired
+    @Qualifier("stormpathAuthenticationProvider")
+    protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
+
+    @Autowired(required = false) //required = false when stormpath.web.enabled = false
+    @Qualifier("stormpathAuthenticationResultSaver")
+    protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
+    protected boolean stormpathSecuritybEnabled;
+
+    @Value("#{ @environment['stormpath.web.enabled'] ?: true }")
+    protected boolean stormpathWebEnabled;
+
+    @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
+    protected boolean loginEnabled;
+
+    @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
+    protected String loginUri;
+
+    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
+    protected String loginNextUri;
+
+    @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
+    protected boolean logoutEnabled;
+
+    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
+    protected String logoutUri;
+
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
+    protected String logoutNextUri;
+
+    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
+    protected boolean forgotEnabled;
+
+    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/forgot' }")
+    protected String forgotUri;
+
+    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+    protected boolean changeEnabled;
+
+    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/change' }")
+    protected String changeUri;
+
+    @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
+    protected boolean registerEnabled;
+
+    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/register' }")
+    protected String registerUri;
+
+    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+    protected boolean verifyEnabled;
+
+    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
+    protected String verifyUri;
+
+    @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
+    protected boolean csrfProtectionEnabled;
 
     /**
      * The pre-defined Stormpath access control settings are defined here.
-     * <p>This method has been marked as final in order to avoid users to override this method by mistake and thus removing all this required configuration.
-     * config(HttpSecurity)} method. This way the configuration can be explicitly modified but not overwritten by mistake.</p>
      *
-     * @param http
-     *            the {@link HttpSecurity} to be modified
-     * @throws Exception
-     *             if an error occurs
+     * @param http the {@link HttpSecurity} to be modified
+     * @throws Exception if an error occurs
      */
+    public final void configure(HttpSecurity http) throws Exception {
 
-    protected final void configure(HttpSecurity http) throws Exception {
-        configure(http, stormpathAuthenticationSuccessHandler(), stormpathLogoutHandler());
+        if (stormpathWebEnabled) {
+            if (loginEnabled) {
+                http
+                    .formLogin()
+                    .loginPage(loginUri)
+                    .defaultSuccessUrl(loginNextUri)
+                    .successHandler(successHandler)
+                    .usernameParameter("login")
+                    .passwordParameter("password")
+                    .and().authorizeRequests()
+                    .antMatchers(loginUri).permitAll();
+            }
+
+            if (logoutEnabled) {
+                http
+                    .logout()
+                    .invalidateHttpSession(true)
+                    .logoutUrl(logoutUri)
+                    .logoutSuccessUrl(logoutNextUri)
+                    .addLogoutHandler(logoutHandler)
+                    .and().authorizeRequests()
+                    .antMatchers(logoutUri).permitAll();
+
+            }
+
+            if (!csrfProtectionEnabled) {
+                http.csrf().disable();
+            } else {
+                //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
+                http.csrf().csrfTokenRepository(csrfTokenRepository);
+            }
+
+            if (forgotEnabled) {
+                http.authorizeRequests().antMatchers(forgotUri).permitAll();
+            }
+            if (changeEnabled) {
+                http.authorizeRequests().antMatchers(changeUri).permitAll();
+            }
+            if (registerEnabled) {
+                http.authorizeRequests().antMatchers(registerUri).permitAll();
+            }
+            if (verifyEnabled) {
+                http.authorizeRequests().antMatchers(verifyUri).permitAll();
+            }
+        }
+    }
+
+    public void configure(WebSecurity web) throws Exception {
+        if (stormpathWebEnabled) {
+            web.ignoring()
+                .antMatchers("/assets/css/stormpath.css")
+                .antMatchers("/assets/css/custom.stormpath.css");
+        }
     }
 
     /**
-     * This method has been marked as final in order to avoid users to skip the <code>stormpathAuthenticationProvider</code> thus removing its required configuration.
-     * This way the configuration can be explicitly modified but not overwritten by mistake.
+     * Method to specify the {@link AuthenticationProvider} that Spring Security will use when processing authentications.
      *
-     * @param auth
-     *            the {@link AuthenticationManagerBuilder} to use
-     * @throws Exception
-     *             if an error occurs
+     * @param auth the {@link AuthenticationManagerBuilder} to use
+     * @throws Exception if an error occurs
      */
-
-    protected final void configure(AuthenticationManagerBuilder auth) throws Exception {
-        configure(auth, super.stormpathAuthenticationProvider);
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        if (stormpathWebEnabled && stormpathSecuritybEnabled) {
+            auth.authenticationProvider(stormpathAuthenticationProvider);
+        }
     }
-
 }

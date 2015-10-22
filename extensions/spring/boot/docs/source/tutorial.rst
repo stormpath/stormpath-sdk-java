@@ -186,11 +186,11 @@ It has the ``@Configuration`` annotation:
     :linenos:
 
     @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityAutoConfiguration {}
+    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
 
 Why have this empty file? Spring Security expects things to be, well - secured. If there is not a class that extends
 ``WebSecurityConfigurerAdapter`` in the application, Spring Security will protect *every* pathway. In order to properly
-hook into the Stormpath Spring Security integration, you need to extend ``StormpathWebSecurityAutoConfiguration`` which
+hook into the Stormpath Spring Security integration, you need to extend ``StormpathWebSecurityConfigurerAdapter`` which
 itself extends ``WebSecurityConfigurerAdapter``.
 
 In this example, we are going to protect a service by requiring group membership with the ``@PreAuthorize`` annotation
@@ -392,7 +392,7 @@ Let's take a look at the new file in the example, ``SpringSecurityWebAppConfig``
     :emphasize-lines: 2,4
 
     @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityAutoConfiguration {
+    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
         @Override
         protected void doConfigure(HttpSecurity http) throws Exception {
             http
@@ -401,9 +401,9 @@ Let's take a look at the new file in the example, ``SpringSecurityWebAppConfig``
         }
     }
 
-Notice on line 2, we are extending ``StormpathWebSecurityAutoConfiguration`` which itself extends ``WebSecurityConfigurerAdapter``.
+Notice on line 2, we are extending ``StormpathWebSecurityConfigurerAdapter`` which itself extends ``WebSecurityConfigurerAdapter``.
 
-The ``configure`` method of ``StormpathWebSecurityAutoConfiguration`` does some housekeeping to ensure that all of the Stormpath
+The ``configure`` method of ``StormpathWebSecurityConfigurerAdapter`` does some housekeeping to ensure that all of the Stormpath
 views (such as /login) remain available and then it calls your ``doConfigure`` method.
 
 In this case, we are expressing that anyone trying to get to ``/me`` should be fully authenticated.
@@ -466,7 +466,7 @@ This is connected to Stormpath by having the following custom data present:
         "springSecurityPermissions": ["say:hello"]
     }
 
-``springSecurityPermissions`` is the special key I talked about above. Its value is an array of strings each of which
+``springSecurityPermissions`` is the special key we talked about above. Its value is an array of strings each of which
 conforms to the following format: ``target:permission``. In this case, the target is *say* and the permission is *hello*.
 
 Note that you can put this custom data at the group level, in which case it would apply to everyone in the group or you
@@ -498,6 +498,75 @@ Add the custom data to one of the users, but not the other.
 
 You will find that, although both users are in the right group, only the one with the ``springSecurityPermissions`` custom data
 will be able to get to the ``/restricted`` page.
+
+.. _advanced-spring-security-integration:
+
+Advanced Spring Security Integration
+------------------------------------
+
+There are times when you will want to hook into the Stormpath Spring Security Integration at a deeper level. Or, perhaps you
+have a scenario where you are already extending a class from another library and do not have the option of extending ``StormpathWebSecurityConfigurerAdapter``.
+
+In these situations, your ``@Configuration`` class can interact with the ``StormpathWebSecurityConfigurer`` directly. Take a
+look what this looks like:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 5,9,17,22
+
+    @Configuration
+    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            stormpathWebSecurityConfigurer.configure(http);
+            http
+                .authorizeRequests()
+                .antMatchers("/restricted").fullyAuthenticated();
+        }
+
+        @Override
+        public final void configure(AuthenticationManagerBuilder auth) throws Exception {
+            stormpathWebSecurityConfigurer.configure(auth);
+        }
+
+        @Override
+        public final void configure(WebSecurity web) throws Exception {
+            stormpathWebSecurityConfigurer.configure(web);
+        }
+    }
+
+On lines 4 - 5, we use Spring's ``@Autowired`` capability to get access to the ``StormpathWebSecurityConfigurer``.
+
+It's critical that you implement each of the three ``configure`` methods above and that you call Stormpath's ``configure`` method
+within before you call any methods for your own configuration.
+
+Notice above that on line 9 we call ``stormpathWebSecurityConfigurer.configure(http)`` and only then do we call methods
+on the ``HttpSecurity`` object.
+
+Again, in most situations, you will want to simply extend the ``StormpathWebSecurityConfigurerAdapter``. The above code
+would look like this:
+
+.. code-block:: java
+    :linenos:
+
+    @Configuration
+    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
+
+        @Override
+        protected void doConfigure(HttpSecurity http) throws Exception {
+            http
+                .authorizeRequests()
+                .antMatchers("/restricted").fullyAuthenticated();
+        }
+    }
+
+In this case, you are overriding the ``doConfigure`` method. Stormpath's ``StormpathWebSecurityConfigurerAdapter.configure`` method
+does the housekeeping it needs to for the Stormpath configuration and then calls the ``doConfigure`` method that you've
+overridden.
 
 .. _wrapping-up:
 
