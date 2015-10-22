@@ -142,8 +142,16 @@ class ApplicationIT extends ClientIT {
         PasswordGrantRequest createRequest = PasswordGrantRequests.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = app.authenticate(createRequest)
 
+        assertNotNull result
+        assertNotNull result.accessTokenString
+        assertNotNull result.accessTokenHref
+
         RefreshGrantRequest request = RefreshGrantRequests.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = app.authenticate(request)
+
+        assertNotNull result
+        assertNotNull result.accessTokenString
+        assertNotNull result.accessTokenHref
     }
 
     @Test
