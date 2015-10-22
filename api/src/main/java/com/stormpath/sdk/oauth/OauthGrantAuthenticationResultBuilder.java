@@ -16,11 +16,25 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * This builder is used to obtain an {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object from the result obtained after a Grant Authentication operation is performed.
  * @since 1.0.RC5.1
  */
 public interface OauthGrantAuthenticationResultBuilder {
 
+    /**
+     * Modifies this builder to state whether the result to build corresponds to a Refresh Grant Authentication operation
+     *
+     * @param isRefreshAuthGrantRequest {@code true} if the result to build corresponds to a Refresh Grant Authentication operation,
+     * {@code false} if it corresponds to a Create Grant Authentication operation
+     *
+     * @return the {@link OauthGrantAuthenticationResultBuilder OauthGrantAuthenticationResultBuilder} object
+     */
     OauthGrantAuthenticationResultBuilder setIsRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest);
 
+    /**
+     * Creates a new {@code OauthGrantAuthenticationResult} instance based on the current builder state.
+     *
+     * @return a new {@code OauthGrantAuthenticationResult} instance based on the current builder state.
+     */
     OauthGrantAuthenticationResult build();
 }

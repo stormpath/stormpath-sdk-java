@@ -128,23 +128,22 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = uniquify('testCreateToken') + '@nowhere.com'
+        def email = uniquify('testCreateToken+') + '@nowhere.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
         account.surname = 'DELETEME'
         account.email =  email
-        account.password = 'Changeme1!'
+        account.password = 'Change&45+me1!'
 
         def created = app.createAccount(account)
         assertNotNull created.href
 
-        PasswordGrantRequest createRequest = PasswordGrantRequests.builder().setLogin(email).setPassword("Changeme1!").build();
+        PasswordGrantRequest createRequest = PasswordGrantRequests.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = app.authenticate(createRequest)
 
         RefreshGrantRequest request = RefreshGrantRequests.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = app.authenticate(request)
-
     }
 
     @Test

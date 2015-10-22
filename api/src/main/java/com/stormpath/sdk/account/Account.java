@@ -554,9 +554,9 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     ApplicationList getApplications(ApplicationCriteria criteria);
 
     /**
-     * Returns a paginated list of the access tokens that belong to the account.
+     * Returns a paginated list of all the active access tokens that belong to the account.
      *
-     * @return a paginated list of the Account's access tokens.
+     * @return a paginated list of all the Account's active access tokens.
      * @since 1.0.RC5.1
      */
     AccessTokenList getAccessTokens();

@@ -49,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -508,11 +510,16 @@ public class DefaultDataStore implements InternalDataStore {
     private String buildCanonicalBodyQueryParams(Map<String, Object> bodyData){
         StringBuilder builder = new StringBuilder();
         Map<String, Object> treeMap = new TreeMap<String, Object>(bodyData);
-        for (Map.Entry<String,Object> entry : treeMap.entrySet()) {
-                if (builder.length() > 0) {
-                    builder.append(APPEND_PARAM_CHAR);
-                }
-                builder.append(String.format("%s=%s", entry.getKey(), entry.getValue()));
+        try {
+            for (Map.Entry<String,Object> entry : treeMap.entrySet()) {
+                    if (builder.length() > 0) {
+                        builder.append(APPEND_PARAM_CHAR);
+                    }
+                    builder.append(String.format("%s=%s", URLEncoder.encode(entry.getKey(), "UTF-8"), URLEncoder.encode(entry.getValue().toString(), "UTF-8")));
+            }
+        } catch (UnsupportedEncodingException e){
+            log.trace("Body content could not be properly encoded");
+            return null;
         }
         return builder.toString();
     }

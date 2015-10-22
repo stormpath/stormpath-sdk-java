@@ -19,15 +19,33 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
+ * This class is used to wrap the information required to build a Grant Authentication request, required to exchange the user's credentials for an Oauth Token.
+ *
  * @since 1.0.RC5.1
  */
 public interface CreateGrantAuthenticationAttempt extends Resource {
 
-    void setPassword(String value);
+    /**
+     * Method used to set the plain password to be used in the token exchange request.
+     * @param password the plain password to be used in the exchange request.
+     */
+    void setPassword(String password);
 
-    void setLogin(String value);
+    /**
+     * Method used to set the username to be used in the token exchange request.
+     * @param username the username to be used in the token exchange request.
+     */
+    void setLogin(String username);
 
-    void setAccountStore(AccountStore value);
+    /**
+     * Method used to set the {@link AccountStore AccountStore} object that will be used for the token exchange request.
+     * @param accountStore the {@link AccountStore AccountStore} object that will be used for the token exchange request.
+     */
+    void setAccountStore(AccountStore accountStore);
 
+    /**
+     * Method used to set the Authentication Grant Type that will be used for the token exchange request. Currently only "password" grant type is supported for this operation.
+     * @param grantType the Authentication Grant Type that will be used for the token exchange request.
+     */
     void setGrantType(String grantType);
 }

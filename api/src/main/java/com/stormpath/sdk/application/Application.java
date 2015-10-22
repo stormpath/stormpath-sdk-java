@@ -1466,7 +1466,8 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
     /**
      * Creates a valid Oauth 2 authentication token that can be used to authenticate further requests submitted to your application's API.
      * @param passwordGrantRequest the {@link com.stormpath.sdk.oauth.PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
-     * @return
+     * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created created for the given account.
+     *
      * @since 1.0.RC5.1
      */
     OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
@@ -1474,7 +1475,8 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
     /**
      * Obtains a new Oauth 2 Access Token without requiring the user to authenticate again.
      * @param refreshGrantRequest the {@link com.stormpath.sdk.oauth.RefreshGrantRequest refreshGrantRequest} object used to obtain a new Access Token without requiring credentials.
-     * @return
+     * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created for the given account.
+     *
      * @since 1.0.RC5.1
      */
     OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
