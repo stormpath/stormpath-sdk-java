@@ -55,9 +55,9 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @Conditional(StormpathWebEnabled.class)
-    @ConditionalOnMissingBean(name="stormpathWebSecurityConfigurerAdapter")
-    public StormpathWebSecurityConfigurerAdapter stormpathWebSecurityConfigurerAdapter() {
-        return new StormpathWebSecurityConfigurerAdapter();
+    @ConditionalOnMissingBean(name="stormpathWebSecurityConfigurer")
+    public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
+        return new StormpathWebSecurityConfigurer();
     }
 
     @Bean

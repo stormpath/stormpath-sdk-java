@@ -38,7 +38,7 @@ import static org.testng.Assert.assertNotNull
 class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    StormpathWebSecurityConfigurerAdapter c;
+    StormpathWebSecurityConfigurer c;
 
     @Autowired
     ApiKey apiKey;

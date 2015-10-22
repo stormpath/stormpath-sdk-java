@@ -16,18 +16,12 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.spring.config.AbstractStormpathWebSecurityConfigurerAdapter;
-import com.stormpath.spring.config.StormpathSecurityEnabled;
+import com.stormpath.spring.config.AbstractStormpathWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -37,7 +31,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.RC5
  */
 @Component
-public class StormpathWebSecurityConfigurerAdapter extends AbstractStormpathWebSecurityConfigurerAdapter {
+public class StormpathWebSecurityConfigurer extends AbstractStormpathWebSecurityConfigurer {
 
     @Autowired
     protected AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler;

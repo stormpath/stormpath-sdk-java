@@ -38,7 +38,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
  * @since 1.0.RC5
  */
 @Order(99)
-public abstract class AbstractStormpathWebSecurityConfigurerAdapter {
+public abstract class AbstractStormpathWebSecurityConfigurer {
 
     @Autowired
     protected Client client;

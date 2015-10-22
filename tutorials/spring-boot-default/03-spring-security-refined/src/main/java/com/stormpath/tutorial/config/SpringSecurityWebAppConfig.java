@@ -15,8 +15,7 @@
  */
 package com.stormpath.tutorial.config;
 
-import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityAutoConfiguration;
-import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityConfigurerAdapter;
+import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,14 +31,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    StormpathWebSecurityConfigurerAdapter stormpathWebSecurityConfigurerAdapter;
+    StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer;
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        stormpathWebSecurityConfigurerAdapter.configure(http);
+        stormpathWebSecurityConfigurer.configure(http);
         http
             .authorizeRequests()
             .antMatchers("/restricted").fullyAuthenticated();
@@ -47,12 +46,12 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public final void configure(AuthenticationManagerBuilder auth) throws Exception {
-        stormpathWebSecurityConfigurerAdapter.configure(auth);
+        stormpathWebSecurityConfigurer.configure(auth);
     }
 
     @Override
     public final void configure(WebSecurity web) throws Exception {
-        stormpathWebSecurityConfigurerAdapter.configure(web);
+        stormpathWebSecurityConfigurer.configure(web);
     }
 
     @Bean

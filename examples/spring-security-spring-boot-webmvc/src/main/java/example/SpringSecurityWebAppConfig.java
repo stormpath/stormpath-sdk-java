@@ -15,7 +15,7 @@
  */
 package example;
 
-import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityConfigurerAdapter;
+import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired StormpathWebSecurityConfigurerAdapter stormpathWebSecurityConfigurerAdapter;
+    @Autowired
+    StormpathWebSecurityConfigurer stormpathWebSecurityConfigurerAdapter;
 
     /**
      * {@inheritDoc}
