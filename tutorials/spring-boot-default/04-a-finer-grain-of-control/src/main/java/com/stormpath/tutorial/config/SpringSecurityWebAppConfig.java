@@ -15,7 +15,7 @@
  */
 package com.stormpath.tutorial.config;
 
-import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityAutoConfiguration;
+import com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -23,7 +23,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  * @since 1.0.RC5
  */
 @Configuration
-public class SpringSecurityWebAppConfig extends StormpathWebSecurityAutoConfiguration {
+public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
+
+    /**
+     * @since 1.0.RC5
+     */
     @Override
     protected void doConfigure(HttpSecurity http) throws Exception {
         http

@@ -15,7 +15,7 @@
  */
 package example;
 
-import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
+import com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -27,7 +27,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 @Configuration
 @ComponentScan
 @PropertySource("classpath:application.properties")
-public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfiguration {
+public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
 
     /**
      * {@inheritDoc}

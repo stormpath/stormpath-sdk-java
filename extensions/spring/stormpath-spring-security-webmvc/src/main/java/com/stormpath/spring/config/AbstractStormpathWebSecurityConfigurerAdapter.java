@@ -25,39 +25,20 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.SecurityConfigurer;
-import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.util.Assert;
-
-import javax.servlet.Filter;
-import java.util.Map;
 
 /**
  * @since 1.0.RC5
  */
 @Order(99)
-//WIP HERE
-public abstract class AbstractStormpathWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
-//public abstract class AbstractStormpathWebSecurityConfigurer implements WebSecurityConfigurer<WebSecurity> {
-//public abstract class AbstractStormpathWebSecurityConfigurer implements SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity>
-//public abstract class AbstractStormpathWebSecurityConfigurerAdapter implements WebSecurityConfigurer<WebSecurity> {
-//public abstract class AbstractStormpathWebSecurityConfigurer<T extends AbstractStormpathWebSecurityConfigurer<T, B>, B extends HttpSecurityBuilder<B>>
-//        extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, B> {
-//public abstract class AbstractStormpathWebSecurityConfigurer extends AbstractConfiguredSecurityBuilder {
+public abstract class AbstractStormpathWebSecurityConfigurerAdapter {
 
     @Autowired
     protected Client client;
@@ -120,11 +101,6 @@ public abstract class AbstractStormpathWebSecurityConfigurer extends WebSecurity
 
     @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
     protected boolean csrfProtectionEnabled;
-
-
-//    protected AbstractStormpathWebSecurityConfigurer(ObjectPostProcessor objectPostProcessor) {
-//        super(objectPostProcessor);
-//    }
 
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return new StormpathLoginSuccessHandler(client, authenticationResultSaver);
@@ -201,7 +177,6 @@ public abstract class AbstractStormpathWebSecurityConfigurer extends WebSecurity
         }
     }
 
-    //@Override
     public void configure(WebSecurity web) throws Exception {
         if (stormpathWebEnabled) {
             web.ignoring()
