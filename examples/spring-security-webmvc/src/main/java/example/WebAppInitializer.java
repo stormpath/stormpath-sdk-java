@@ -16,6 +16,9 @@
 package example;
 
 import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
+import com.stormpath.spring.config.StormpathWebSecurityConfiguration;
+import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
+import com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;

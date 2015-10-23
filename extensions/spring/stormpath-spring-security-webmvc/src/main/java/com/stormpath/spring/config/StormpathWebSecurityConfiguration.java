@@ -27,6 +27,8 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
+@EnableStormpathWebMvc
+@EnableStormpathSecurity
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean

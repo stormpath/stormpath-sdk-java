@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 * @since 1.0.RC5
 */
 @Component
-public class StormpathWebSecurityConfigurer  {
+public class StormpathWebSecurityConfigurer {
 
     @Autowired
     protected Client client;

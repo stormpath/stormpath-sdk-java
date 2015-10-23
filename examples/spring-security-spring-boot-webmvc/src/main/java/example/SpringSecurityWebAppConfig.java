@@ -15,48 +15,24 @@
  */
 package example;
 
-import com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityConfigurer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * @since 1.0.RC5
  */
 @Configuration
-public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    StormpathWebSecurityConfigurer stormpathWebSecurityConfigurerAdapter;
+public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        stormpathWebSecurityConfigurerAdapter.configure(http);
+    protected void doConfigure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/restricted").fullyAuthenticated();
     }
 
-    @Override
-    public final void configure(AuthenticationManagerBuilder auth) throws Exception {
-        stormpathWebSecurityConfigurerAdapter.configure(auth);
-    }
-
-    @Override
-    public final void configure(WebSecurity web) throws Exception {
-        stormpathWebSecurityConfigurerAdapter.configure(web);
-    }
-
-    @Bean
-    public AuthenticationManager getAuthenticationManager() throws Exception {
-        return super.authenticationManagerBean();
-    }
 }
