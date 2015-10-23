@@ -17,7 +17,6 @@ package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.spring.config.AbstractStormpathMethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.Filter;
@@ -44,7 +42,6 @@ import javax.servlet.Servlet;
 @ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-//@EnableWebSecurity
 public class StormpathMethodSecurityAutoConfiguration extends AbstractStormpathMethodSecurityConfiguration {
 
     @Bean

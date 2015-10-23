@@ -35,6 +35,7 @@ For a maven build and run, do this:
 .. code-block:: bash
 
     mvn clean package
+
     mvn spring-boot:run
 
 For a gradle build and run, do this:
