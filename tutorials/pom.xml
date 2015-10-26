@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>spring-boot-default</module>
+        <module>spring-boot</module>
     </modules>
 
 </project>
