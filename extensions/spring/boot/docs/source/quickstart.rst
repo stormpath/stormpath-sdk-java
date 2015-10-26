@@ -43,7 +43,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
      :emphasize-lines: 2
 
       @SpringBootApplication
-      @EnableAutoConfiguration(exclude = { StormpathMethodSecurityAutoConfiguration.class })
+      @EnableAutoConfiguration(exclude = { StormpathWebSecurityAutoConfiguration.class })
       public class Application  {
 
           public static void main(String[] args) {

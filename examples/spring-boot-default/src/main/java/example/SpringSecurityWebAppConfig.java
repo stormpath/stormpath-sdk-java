@@ -30,8 +30,11 @@ public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAd
      */
     @Override
     protected void doConfigure(HttpSecurity http) throws Exception {
+        // Access to all paths is restricted by default.
+        // We want to restrict access to one path and leave all other paths open.
         http
             .authorizeRequests()
-            .antMatchers("/restricted").fullyAuthenticated();
+            .antMatchers("/restricted").fullyAuthenticated()
+            .antMatchers("/**").permitAll();
     }
 }

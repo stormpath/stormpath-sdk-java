@@ -24,5 +24,6 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.stormpath.spring', name: 'stormpath-default-spring-boot-starter', version:'1.0.RC5-SNAPSHOT'
+    compile group: 'com.stormpath.spring', name: 'stormpath-webmvc-spring-boot-starter', version:'1.0.RC5-SNAPSHOT'
+    runtime group: 'com.stormpath.spring', name: 'stormpath-thymeleaf-spring-boot-starter', version:'1.0.RC5-SNAPSHOT'
 }

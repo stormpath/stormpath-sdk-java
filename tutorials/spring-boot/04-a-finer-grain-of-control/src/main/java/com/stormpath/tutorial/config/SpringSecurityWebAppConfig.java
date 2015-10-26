@@ -25,14 +25,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 @Configuration
 public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doConfigure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .antMatchers("/me").fullyAuthenticated();
+            .antMatchers("/me").fullyAuthenticated()
+            .antMatchers("/**").permitAll();
     }
 
 }
