@@ -167,6 +167,9 @@ public class StormpathWebSecurityConfigurer {
             if (verifyEnabled) {
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
+            http
+                .authorizeRequests()
+                .antMatchers("/**").fullyAuthenticated();
         }
     }
 
