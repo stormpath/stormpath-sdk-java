@@ -49,8 +49,8 @@ For a gradle build and run, do this:
 You should now be able to browse to `<http://localhost:8080>`_ and see a welcome message with your Stormpath application's name.
 
 The Stormpath library used for this example is: ``stormpath-webmvc-spring-boot-starter``. This provides basic integration with
-Stormpath and Spring Boot WebMVC apps. It does NOT (yet) include the Stormpath Thymeleaf views or the Stormpath Spring Security
-integration. Stay tuned for more on those integrations!
+Stormpath and Spring Boot WebMVC apps. It does NOT include the Stormpath Thymeleaf views or the Stormpath Spring Security
+integration. Stay tuned for more on those integrations when we look at the ``stormpath-default-spring-boot-starter``.
 
 This application has just two code files in it. Here's the structure:
 
