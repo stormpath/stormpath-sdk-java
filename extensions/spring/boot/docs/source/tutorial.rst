@@ -8,7 +8,7 @@ This tutorial will take you from zero to a Stormpath enabled application featuri
 It should take about 30 minutes from start to finish. If you are looking for a barebones intro to using Stormpath and
 Spring Boot, check out the :doc:`quickstart`.
 
-if you've already gone through the quickstart, jump over to the :ref:`spring-boot-meet-stormpath` section.
+If you've already gone through the quickstart, jump over to the :ref:`spring-boot-meet-stormpath` section.
 
 If you are already familiar with Spring Boot and Spring Security, jump right to the :ref:`spring-security-refined` section
 to see how nicely Stormpath integrates with Spring Security.
@@ -115,12 +115,12 @@ Feel free to skip right over to the :ref:`spring-security-meet-stormpath` sectio
 The Stormpath libraries used for this example are: ``stormpath-webmvc-spring-boot-starter`` and
 ``stormpath-thymeleaf-spring-boot-starter``. This provides basic integration with Stormpath and Spring Boot WebMVC apps.
 Additionally, it provides a default set of thymeleaf views for common auth workflows, such as ``/login``, ``/register`` and
-``/forgot`` (for dealing with forgotten passwords). It does NOT (yet) Stormpath Spring Security integration. In the next
+``/forgot`` (for dealing with forgotten passwords). It does NOT (yet) include Stormpath Spring Security integration. In the next
 section, we will jump into the Stormpath Spring Security integration.
 
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/01-some-access-controls>`_.
 
-Let's say there's a restricted page that you only want authenticated users to have access to. We can determine than someone
+Let's say there's a restricted page that you only want authenticated users to have access to. We can determine that someone
 is logged in simply by obtaining an ``Account`` object. If it's ``null``, the user is not logged in. If it resolves to an
 object, then the user is logged in.
 
@@ -182,7 +182,7 @@ Now, let's take a look at using Spring Security to restrict access.
 Spring Security: Meet Stormpath
 -------------------------------
 
-With the Stormpath Spring Security integration, you can use the standard syntax to restrict access to endpoints and
+With the Stormpath Spring Security integration, you can use its standard syntax to restrict access to endpoints and
 methods.
 
 The official Spring Security documentation is `here <http://projects.spring.io/spring-security/>`_.
@@ -495,7 +495,7 @@ and then after you login to a valid Stormpath Account, you will automatically be
 The last thing we'll look at here is fine grained controls using Spring Security permissions connected to Stormpath custom data.
 
 Every first class object in Stormpath can have custom data associated with it. For instance, you can have custom data at the Group level as well
-as at the account level.
+as at the Account level.
 
 In general, custom data can be completely arbitrary JSON data of any kind. There's a special key that can be used at the top level of custom data
 that the Spring Security ``hasPermission`` clause will respond to. Note: this does not preclude you in any way from having other custom data.
