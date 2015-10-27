@@ -61,12 +61,4 @@ public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthentic
 
         return builder.build();
     }
-
-    // While authenticate method resides in Application class this is not necessary. Leaving here though because this should be refactored soon.
-    @Override
-    public PasswordGrantAuthenticator forApplication(Application application) {
-        Assert.notNull(application, "application cannot be null or empty.");
-        this.application = application;
-        return this;
-    }
 }

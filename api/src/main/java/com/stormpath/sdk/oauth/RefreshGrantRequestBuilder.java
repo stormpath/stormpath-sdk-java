@@ -16,6 +16,8 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * Utility class to build {@link RefreshGrantRequestBuilder RefreshGrantRequestBuilder} instances.
+ *
  * @since 1.0.RC5.1
  */
 public interface RefreshGrantRequestBuilder {
@@ -29,6 +31,8 @@ public interface RefreshGrantRequestBuilder {
     RefreshGrantRequestBuilder setRefreshToken(String refreshToken);
 
     /**
+     * Builds a new {@link RefreshGrantRequest RefreshGrantRequest} instance based on the current builder state.
+     *
      * @return the {@link RefreshGrantRequest} object used to create a new authentication token
      */
     RefreshGrantRequest build();

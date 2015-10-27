@@ -27,7 +27,7 @@ public class DefaultPasswordGrantRequest implements PasswordGrantRequest {
     private final String login;
     private final String password;
     private AccountStore accountStore;
-    private final String grant_type = "password";
+    private final static String grant_type = "password";
 
     public DefaultPasswordGrantRequest(String login, String password) {
         Assert.notNull(login, "login argument cannot be null.");

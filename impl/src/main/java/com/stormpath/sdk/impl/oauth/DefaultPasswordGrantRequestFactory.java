@@ -1,4 +1,4 @@
-/*
+package com.stormpath.sdk.impl.oauth;/*
 * Copyright 2015 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,17 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.oauth.PasswordGrantRequestFactory;
 
-/**
- * @since 1.0.RC5.1
- */
-public class RefreshGrantRequests {
+public class DefaultPasswordGrantRequestFactory implements PasswordGrantRequestFactory {
 
-    public static RefreshGrantRequestBuilder builder() {
-        return (RefreshGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantRequestBuilder");
+    public DefaultPasswordGrantRequestFactory() {
+    }
+
+    public PasswordGrantRequestBuilder builder() {
+        return (PasswordGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantRequestBuilder");
     }
 }

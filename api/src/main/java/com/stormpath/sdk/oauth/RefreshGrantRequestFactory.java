@@ -16,11 +16,16 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * Factory used to construct {@link RefreshGrantRequestBuilder} instances
+ *
  * @since 1.0.RC5.1
  */
-public interface RefreshOauthGrantAttempt {
+public interface RefreshGrantRequestFactory {
 
-    void setRefreshToken(String value);
-
-    void setGrantType(String grantType);
+    /**
+     * Returns a builder to generate an attempt to refresh a Grant Authentication token.
+     *
+     * @return a builder to generate an attempt to refresh a Grant Authentication token {@link RefreshGrantAuthenticationAttempt}
+     */
+    RefreshGrantRequestBuilder builder();
 }

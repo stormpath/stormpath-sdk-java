@@ -602,6 +602,7 @@ public class DefaultDataStore implements InternalDataStore {
         request.getHeaders().set("User-Agent", USER_AGENT_STRING);
         if (request.getHeaders().getContentType() == null){
             if (request.getBody() != null) {
+                // We only add the default content type (application/json) if a content type is not already in the request
                 request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
             }
         }

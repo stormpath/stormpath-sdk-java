@@ -23,7 +23,7 @@ import com.stormpath.sdk.lang.Assert;
  */
 public class DefaultRefreshGrantRequest implements RefreshGrantRequest {
 
-    private final String grant_type = "refresh_token";
+    private final static String grant_type = "refresh_token";
     private final String refresh_token;
 
 

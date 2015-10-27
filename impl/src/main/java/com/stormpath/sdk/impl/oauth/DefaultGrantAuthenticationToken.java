@@ -33,13 +33,9 @@ import java.util.Map;
 public class DefaultGrantAuthenticationToken extends AbstractInstanceResource implements GrantAuthenticationToken {
 
     static final StringProperty ACCESS_TOKEN = new StringProperty("access_token");
-
     static final StringProperty REFRESH_TOKEN = new StringProperty("refresh_token");
-
     static final StringProperty TOKEN_TYPE = new StringProperty("token_type");
-
     static final StringProperty EXPIRES_IN = new StringProperty("expires_in");
-
     static final StringProperty ACCESS_TOKEN_HREF = new StringProperty("stormpath_access_token_href");
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCESS_TOKEN, REFRESH_TOKEN, EXPIRES_IN, TOKEN_TYPE, ACCESS_TOKEN_HREF);

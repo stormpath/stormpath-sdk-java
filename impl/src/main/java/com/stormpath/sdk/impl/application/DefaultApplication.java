@@ -726,6 +726,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
      */
     @Override
     public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
+        Assert.notNull(passwordGrantRequest, "passwordGrantRequest is required and cannot be null.");
         PasswordGrantAuthenticator authenticator = PasswordGrantAuthenticators.forApplication(this, getDataStore());
         return authenticator.authenticate(passwordGrantRequest);
     }
@@ -735,6 +736,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
      */
     @Override
     public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {
+        Assert.notNull(refreshGrantRequest, "refreshGrantRequest is required and cannot be null.");
         RefreshGrantAuthenticator authenticator = RefreshGrantAuthenticators.forApplication(this, getDataStore());
         return authenticator.authenticate(refreshGrantRequest);
     }

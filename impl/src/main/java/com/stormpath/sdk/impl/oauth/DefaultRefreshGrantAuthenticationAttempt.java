@@ -19,6 +19,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.RefreshGrantAuthenticationAttempt;
 
 import java.util.Map;
@@ -47,11 +48,13 @@ public class DefaultRefreshGrantAuthenticationAttempt extends AbstractResource i
 
     @Override
     public void setRefreshToken(String refreshToken) {
+        Assert.notNull(refreshToken, "refreshToken is required and cannot be null.");
         setProperty(REFRESH_TOKEN, refreshToken);
     }
 
     @Override
     public void setGrantType(String grantType) {
+        Assert.notNull(grantType, "grantType is required and cannot be null.");
         setProperty(GRANT_TYPE, grantType);
     }
 

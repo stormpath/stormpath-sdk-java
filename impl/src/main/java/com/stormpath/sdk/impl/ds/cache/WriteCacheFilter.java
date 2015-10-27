@@ -223,8 +223,8 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
 
-            //Since defaultModel and Grant Authentication tokens are maps, the DataStore thinks they are Resources. This causes the code to crash later one as Resources
-            //do need to have an href property
+            // Since defaultModel and Grant Authentication tokens are maps, the DataStore thinks they are Resources. This causes the code to crash later on as Resources
+            // do need to have an href property
             if (isDefaultModelMap || isTokenDataMap) {
                 value = new LinkedHashMap<String, Object>((Map) value);
             }

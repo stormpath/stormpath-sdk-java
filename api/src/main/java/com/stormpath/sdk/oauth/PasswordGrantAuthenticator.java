@@ -15,14 +15,28 @@
 */
 package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.application.Application;
-
 /**
+ * This class is used to authenticate an account and exchange its credentials for a valid OAuth 2.0 token. For example:
+ * <pre>
+ * Application app = obtainApplication();
+ * PasswordGrantRequest request = <b>Authenticators.PASSWORD_GRANT_AUTHENTICATOR.builder()</b>
+ *      .setLogin(username)
+ *      .setPassword(password)
+ *      .build();
+ * OauthGrantAuthenticationResult result = app.authenticate(request)
+ * </pre>
+ *
+ * @see RefreshGrantAuthenticator
+ *
  * @since 1.0.RC5.1
  */
 public interface PasswordGrantAuthenticator {
 
+    /**
+     * Authenticates an account and exchanges its credentials for a valid OAuth 2.0 token.
+     * @param passwordGrantRequest the {@link PasswordGrantRequest PasswordGrantRequest} instance containing the information required for the request.
+     *
+     * @return an {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
+     */
     OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
-
-    PasswordGrantAuthenticator forApplication(Application application);
 }

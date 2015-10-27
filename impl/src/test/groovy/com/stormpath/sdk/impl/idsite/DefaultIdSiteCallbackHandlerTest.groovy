@@ -65,7 +65,7 @@ class DefaultIdSiteCallbackHandlerTest {
         testListener(jwtResponse, IdSiteResultStatus.LOGOUT)
     }
 
-    /* @since 1.0.RC5.1 */
+    /* @since 1.0.RC5 */
     @Test
     void testIDSiteException() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJraWQiOiIyRVY3MEFIUlRZRjBKT0E3T0VGTzNTTTI5IiwiYWxnIjoiSFMyNTYifQ.eyJlcn" +

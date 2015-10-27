@@ -28,10 +28,10 @@ import com.stormpath.sdk.application.AccountStoreMapping
 import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.PasswordGrantRequest
-import com.stormpath.sdk.oauth.PasswordGrantRequests
 import com.stormpath.sdk.oauth.RefreshGrantRequest
-import com.stormpath.sdk.oauth.RefreshGrantRequests
+
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -139,14 +139,14 @@ class ApplicationIT extends ClientIT {
         def created = app.createAccount(account)
         assertNotNull created.href
 
-        PasswordGrantRequest createRequest = PasswordGrantRequests.builder().setLogin(email).setPassword("Change&45+me1!").build();
+        PasswordGrantRequest createRequest = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = app.authenticate(createRequest)
 
         assertNotNull result
         assertNotNull result.accessTokenString
         assertNotNull result.accessTokenHref
 
-        RefreshGrantRequest request = RefreshGrantRequests.builder().setRefreshToken(result.getRefreshTokenString()).build();
+        RefreshGrantRequest request = Authenticators.REFRESH_GRANT_AUTHENTICATOR.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = app.authenticate(request)
 
         assertNotNull result

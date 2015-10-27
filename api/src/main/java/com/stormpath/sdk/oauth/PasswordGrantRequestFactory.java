@@ -15,14 +15,17 @@
 */
 package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.lang.Classes;
-
 /**
+ * Factory used to construct {@link PasswordGrantRequestBuilder} instances
+ *
  * @since 1.0.RC5.1
  */
-public class PasswordGrantRequests {
+public interface PasswordGrantRequestFactory {
 
-    public static PasswordGrantRequestBuilder builder() {
-        return (PasswordGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantRequestBuilder");
-    }
+    /**
+     * Returns a builder to generate an attempt to create a Grant Authentication token.
+     *
+     * @return a builder to generate an attempt to create a Grant Authentication token {@link CreateGrantAuthenticationAttempt}
+     */
+    PasswordGrantRequestBuilder builder();
 }

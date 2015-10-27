@@ -55,12 +55,4 @@ public class DefaultRefreshGrantAuthenticator implements RefreshGrantAuthenticat
         OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder(grantResult);
         return builder.setIsRefreshAuthGrantRequest(true).build();
     }
-
-    // While authenticate method resides in Application class this is not necessary. Leaving here though because this should be refactored soon.
-    @Override
-    public RefreshGrantAuthenticator forApplication(Application application) {
-        Assert.notNull(application, "application cannot be null or empty.");
-        this.application = application;
-        return this;
-    }
 }

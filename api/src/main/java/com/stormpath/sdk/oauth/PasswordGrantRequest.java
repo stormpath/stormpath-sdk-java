@@ -18,17 +18,44 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
+ * This class represents a request for Stormpath to authenticate an Account and exchange its credentials for a valid Oauth 2.0 access token.
+ *
  * @since 1.0.RC5.1
  */
 public interface PasswordGrantRequest {
 
+    /**
+     * Returns the plain password used for the authentication and token creation.
+     *
+     * @return the String value corresponding to the password used to authenticate the account and create the access token.
+     */
     String getPassword();
 
+    /**
+     * Returns the username specified for the authentication and token creation.
+     *
+     * @return the String value corresponding to the username specified to authenticate the account and create the access token.
+     */
     String getLogin();
 
+    /**
+     * Returns the specific {@link AccountStore accountStore} where the provided credentials will be sought in order to authenticate a request.
+     *
+     * @return the specific {@link AccountStore accountStore} where the provided credentials will be sought in order to authenticate a request.
+     */
     AccountStore getAccountStore();
 
+    /**
+     * Sets the specific {@link AccountStore accountStore} where the provided credentials will be sought in order to authenticate a request.
+     *
+     * @return this instance for method chaining.
+     */
     PasswordGrantRequest setAccountStore(AccountStore accountStore);
 
+    /**
+     * Returns the Oauth 2.0 method used for the token creation.
+     *
+     * @return the Oauth 2.0 method used for the token creation.
+     */
     String getGrantType();
 }

@@ -18,6 +18,8 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
+ * Utility class to build {@link PasswordGrantRequestBuilder PasswordGrantRequestBuilder} instances.
+ *
  * @since 1.0.RC5.1
  */
 public interface PasswordGrantRequestBuilder {
@@ -41,12 +43,14 @@ public interface PasswordGrantRequestBuilder {
     /**
      * Specifies the target Account Store to be used for the authentication token creation.
      *
-     * @param accountStore the {@link com.stormpath.sdk.directory.AccountStore accountStore} that will be used to create the token.
+     * @param accountStore the sole specific {@link com.stormpath.sdk.directory.AccountStore accountStore} where the provided credentials will be sought in order to authenticate this request.
      * @return this instance for method chaining.
      */
     PasswordGrantRequestBuilder setAccountStore(AccountStore accountStore);
 
     /**
+     * Creates a new {@code PasswordGrantRequest} instance based on the current builder state
+     *
      * @return the {@link PasswordGrantRequest} object used to create the authentication token
      */
     PasswordGrantRequest build();

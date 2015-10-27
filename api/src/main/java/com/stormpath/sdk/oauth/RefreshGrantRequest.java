@@ -16,11 +16,23 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * This class represents a request for Stormpath to create new Oauth 2.0 access tokens for a previously authenticated account.
+ *
  * @since 1.0.RC5.1
  */
 public interface RefreshGrantRequest {
 
+    /**
+     * Returns the String denoting the <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">Json Web Token</a> used to generate new Oauth 2.0 access tokens.
+     *
+     * @return a String value denoting the <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">Json Web Token</a> used to generate new Oauth 2.0 access tokens.
+     */
     String getRefreshToken();
 
+    /**
+     * Returns the Oauth 2.0 method used for the token refresh request.
+     *
+     * @return the Oauth 2.0 method used for the token refresh request.
+     */
     String getGrantType();
 }
