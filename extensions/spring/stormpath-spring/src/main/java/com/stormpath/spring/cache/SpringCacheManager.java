@@ -21,8 +21,12 @@ import com.stormpath.sdk.lang.Assert;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * An implementation of the Stormpath {@link com.stormpath.sdk.cache.CacheManager CacheManager} interface that delegates
- * to a Spring {@link org.springframework.cache.CacheManager org.springframework.cache.CacheManager} instance.
+ * A Stormpath SDK {@link com.stormpath.sdk.cache.CacheManager} implementation that wraps a Spring
+ * {@link org.springframework.cache.CacheManager CacheManager} instance.  This allows the Stormpath SDK to use your
+ * existing Spring caching mechanism so you only need to configure one caching implementation.
+ * <p/>
+ * This implementation effectively acts as an adapter or bridge from the Stormpath SDK cacheManager API to the Spring
+ * CacheManager API.
  *
  * @since 1.0.RC4
  */
@@ -32,7 +36,14 @@ public class SpringCacheManager implements CacheManager, InitializingBean {
 
     public SpringCacheManager(){}
 
+    /**
+     * Constructs a new {@code SpringCacheManager} instance that wraps (delegates to) the specified
+     * Spring {@link org.springframework.cache.CacheManager CacheManager} instance.
+     *
+     * @param springCacheManager the target Spring cache manager to wrap.
+     */
     public SpringCacheManager(org.springframework.cache.CacheManager springCacheManager) {
+        Assert.notNull(springCacheManager, "CacheManager argument cannot be null.");
         this.springCacheManager = springCacheManager;
     }
 
@@ -45,6 +56,16 @@ public class SpringCacheManager implements CacheManager, InitializingBean {
         Assert.notNull(springCacheManager, "springCacheManager instance must be specified.");
     }
 
+    /**
+     * Consults the wrapped Spring {@link org.springframework.cache.CacheManager CacheManager} instance to obtain a
+     * named Spring {@link org.springframework.cache.Cache Cache} instance.  The instance is wrapped and returned as a
+     * {@link SpringCache} instance, which acts as a bridge/adapter over Spring's existing Cache API.
+     *
+     * @param name the name of the cache to acquire.
+     * @param <K>  The cache key type
+     * @param <V>  The cache value type
+     * @return the Cache with the given name
+     */
     @Override
     public <K, V> Cache<K, V> getCache(String name) {
         org.springframework.cache.Cache springCache = this.springCacheManager.getCache(name);

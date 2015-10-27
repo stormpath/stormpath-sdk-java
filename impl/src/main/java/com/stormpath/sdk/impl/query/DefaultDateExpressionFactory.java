@@ -20,6 +20,7 @@ import com.stormpath.sdk.lang.Duration;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
 import org.joda.time.DateTime;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;

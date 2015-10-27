@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.directory;
 
-import com.stormpath.sdk.mail.*;
+import com.stormpath.sdk.mail.EmailStatus;
+import com.stormpath.sdk.mail.ModeledEmailTemplateList;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 

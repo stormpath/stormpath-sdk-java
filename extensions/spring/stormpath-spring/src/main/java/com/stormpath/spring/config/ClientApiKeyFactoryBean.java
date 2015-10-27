@@ -26,7 +26,9 @@ import java.io.InputStream;
 /**
  * A Spring {@link org.springframework.beans.factory.FactoryBean FactoryBean} that produces a singleton {@link ApiKey}
  * that will be used to authentication communication requests sent by a {@link com.stormpath.sdk.client.Client Client}
- * to the Stormpath REST API.
+ * to the Stormpath REST API.  <b>This is primarily for
+ * Spring XML configuration.  If using Spring Java Config, consider using {@link ApiKeys#builder() ApiKeys.builder()}
+ * instead.</b>
  *
  * <p>The resulting {@code ApiKey} instance is expected to be used when constructing the Client instance.  For
  * example, in conjunction with the {@link com.stormpath.spring.config.ClientFactoryBean ClientFactoryBean}.</p>

@@ -21,14 +21,8 @@ import com.stormpath.sdk.impl.resource.ArrayProperty
 import com.stormpath.sdk.impl.resource.IntegerProperty
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.createMockBuilder
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.fail
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.8

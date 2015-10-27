@@ -18,8 +18,8 @@ package com.stormpath.sdk.impl.mail
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ArrayProperty
 import com.stormpath.sdk.impl.resource.IntegerProperty
-import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
 import com.stormpath.sdk.mail.UnmodeledEmailTemplate
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock

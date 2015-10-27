@@ -16,6 +16,7 @@
 package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,5 +28,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@EnableStormpath
+@EnableWebMvc
 @Import(StormpathWebMvcConfiguration.class)
 public @interface EnableStormpathWebMvc {}

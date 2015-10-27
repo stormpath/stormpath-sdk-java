@@ -40,6 +40,7 @@ public class DefaultConfig implements Config {
     public static final String LOGIN_NEXT_URL = "stormpath.web.login.nextUri";
     public static final String LOGOUT_URL = "stormpath.web.logout.uri";
     public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUri";
+    public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.uri";
     public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUri";
     public static final String CHANGE_PASSWORD_URL = "stormpath.web.change.uri";
@@ -109,6 +110,11 @@ public class DefaultConfig implements Config {
     @Override
     public String getLogoutNextUrl() {
         return CFG.getString(LOGOUT_NEXT_URL);
+    }
+
+    @Override
+    public boolean isLogoutInvalidateHttpSession() {
+        return CFG.getBoolean(LOGOUT_INVALIDATE_HTTP_SESSION);
     }
 
     @Override

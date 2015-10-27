@@ -31,8 +31,8 @@ import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 import quickstart.Quickstart
 
-import static org.testng.Assert.*
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
+import static org.testng.Assert.fail
 
 /**
  * This integration test validates that the example code in the JSDK Quickstart Guide (http://docs.stormpath.com/java/quickstart) works
