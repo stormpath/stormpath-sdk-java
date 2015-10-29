@@ -67,9 +67,6 @@ public class StormpathWebSecurityConfigurer {
     @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
     protected boolean stormpathSecuritybEnabled;
 
-    @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
-    protected boolean fullyAuthenticatedEnabled;
-
     @Value("#{ @environment['stormpath.web.enabled'] ?: true }")
     protected boolean stormpathWebEnabled;
 
@@ -169,11 +166,6 @@ public class StormpathWebSecurityConfigurer {
             }
             if (verifyEnabled) {
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
-            }
-            if (fullyAuthenticatedEnabled) {
-                http
-                    .authorizeRequests()
-                    .antMatchers("/**").fullyAuthenticated();
             }
         }
     }

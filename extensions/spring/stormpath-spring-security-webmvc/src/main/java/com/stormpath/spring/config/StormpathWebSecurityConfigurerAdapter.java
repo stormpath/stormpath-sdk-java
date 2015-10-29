@@ -16,6 +16,7 @@
 package com.stormpath.spring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +33,9 @@ public class StormpathWebSecurityConfigurerAdapter extends WebSecurityConfigurer
 
     @Autowired
     protected StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer;
+
+    @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
+    protected boolean fullyAuthenticatedEnabled;
 
     /**
      * The pre-defined Stormpath access control settings are defined here.
@@ -50,6 +54,11 @@ public class StormpathWebSecurityConfigurerAdapter extends WebSecurityConfigurer
     protected final void configure(HttpSecurity http) throws Exception {
         stormpathWebSecurityConfigurer.configure(http);
         doConfigure(http);
+        if (fullyAuthenticatedEnabled) {
+            http
+                .authorizeRequests()
+                .antMatchers("/**").fullyAuthenticated();
+        }
     }
 
     /**

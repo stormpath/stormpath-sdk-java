@@ -33,7 +33,7 @@
         <!-- Compile-time dependencies: -->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
+            <artifactId>stormpath-default-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- Runtime-only dependencies: -->
