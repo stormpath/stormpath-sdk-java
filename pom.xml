@@ -707,7 +707,16 @@
     <script src="//cdn.optimizely.com/js/225847041.js"></script>
                                 ]]></top>
                             <excludePackageNames>
-                                *.impl:*.examples:*.tutorial.*:quickstart
+                                *com.stormpath.sdk.servlet.oauth.impl*:
+                                *com.stormpath.sdk.servlet.http.impl*:
+                                *com.stormpath.sdk.servlet.event.impl:
+                                *com.stormpath.sdk.servlet.config.impl:
+                                *com.stormpath.sdk.servlet.authc.impl:
+                                *com.stormpath.sdk.servlet.account.event.impl:
+                                *com.stormpath.sdk.impl.*:
+                                *.examples:
+                                *.tutorial.*:
+                                *quickstart
                             </excludePackageNames>
                         </configuration>
                     </plugin>
