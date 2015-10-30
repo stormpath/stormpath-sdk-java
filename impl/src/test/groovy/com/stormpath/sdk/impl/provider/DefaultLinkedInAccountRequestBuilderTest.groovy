@@ -24,7 +24,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.0
+ * @since 1.RC5.1
  */
 class DefaultLinkedInAccountRequestBuilderTest {
 

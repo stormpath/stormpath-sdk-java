@@ -27,7 +27,7 @@ public interface LinkedInAccountRequestBuilder extends ProviderAccountRequestBui
      *
      * @param code the LinkedIn authorization code.
      * @return the LinkedIn authorization code.
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     LinkedInAccountRequestBuilder setCode(String code);
 

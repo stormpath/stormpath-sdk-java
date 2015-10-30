@@ -27,7 +27,7 @@ public interface LinkedInCreateProviderRequestBuilder extends CreateProviderRequ
      *
      * @param redirectUri the redirection Uri for your Google Application.
      * @return the builder instance for method chaining.
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     LinkedInCreateProviderRequestBuilder setRedirectUri(String redirectUri);
 }
