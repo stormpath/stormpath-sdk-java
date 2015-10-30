@@ -706,6 +706,9 @@
     </script>
     <script src="//cdn.optimizely.com/js/225847041.js"></script>
                                 ]]></top>
+                            <excludePackageNames>
+                                *.impl:*.examples:*.tutorial.*:quickstart
+                            </excludePackageNames>
                         </configuration>
                     </plugin>
                     <plugin>
