@@ -2,7 +2,7 @@
  * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -183,7 +183,7 @@ public interface AccountStoreMapping extends Resource, Saveable, Deletable {
      * {@link #getApplication() application}'s default <b>group</b> store.
      * <p/>
      * A {@code true} value indicates that any groups created directly by the application will be
-     * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
+     * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store groups
      * directly.
      * <p/>
      * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
