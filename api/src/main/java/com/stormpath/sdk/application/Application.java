@@ -690,14 +690,14 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * a Directory. However, this could be a Group in the future, so do not assume it is always a
      * Directory if you want your code to be function correctly if/when this support is added.</b>
      * <p/>
-     * Because an Application is not an {@code AccountStore} itself, it delegates to a Group or Directory
+     * Because an Application is not an {@code AccountStore} itself, it delegates to a Directory
      * when creating groups; this method sets the AccountStore to which the Application delegates
      * new group persistence.
      * <b>Usage Notice:</b> Unlike other methods in this class that require the {@link #save()} method
      * to be called to persist changes, this is a convenience method will call the server immediately.
      * </p>
      *
-     * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
+     * @param accountStore the {@link AccountStore} (a Directory) used to persist
      *                     new groups {@link #createGroup(com.stormpath.sdk.group.Group) created by the Application}
      */
     void setDefaultGroupStore(AccountStore accountStore);
