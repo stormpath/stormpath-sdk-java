@@ -44,6 +44,11 @@ public interface Config extends Map<String, String> {
 
     String getLogoutNextUrl();
 
+    /**
+     * @since 1.0.RC6
+     */
+    boolean isLogoutInvalidateHttpSession();
+
     String getAccessTokenUrl();
 
     String getRegisterUrl();

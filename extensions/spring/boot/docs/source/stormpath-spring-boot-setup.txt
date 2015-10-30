@@ -1,0 +1,86 @@
+.. _get-api-key:
+
+Get an API Key
+--------------
+
+All communication with Stormpath must be authenticated with an API Key.
+
+#. If you haven’t already, `sign up for Stormpath for free`_.  You’ll be sent a verification email.
+
+#. Click the link in the verification email.
+
+#. Log in to the `Stormpath Admin Console`_ using the email address and password you used during registration.
+
+#. Click the **Create API** Key or **Manage Existing Keys** button in the middle of the page.
+
+#. Under **Security Credentials**, click **Create API Key**.
+
+   This will generate your API Key and download it to your computer as an ``apiKey.properties`` file.
+
+#. Save the file in your home directory in the following location:
+
+   * ``~/.stormpath/apiKey.properties`` on Unix, Linux and Mac OS
+   * ``C:\Users\YOUR_USERNAME\.stormpath\apiKey.properties`` on Windows
+
+#. Change the file permissions to ensure only you can read this file and not accidentally write or modify it. For example:
+
+    .. code-block:: bash
+
+     $ chmod go-rwx ~/.stormpath/apiKey.properties
+     $ chmod u-w ~/.stormpath/apiKey.properties
+
+On Windows, you can `set file permissions similarly`_.
+
+.. _dependency-jar:
+
+Add the Stormpath Default Spring Boot Starter
+---------------------------------------------
+
+This step allows you to enable Stormpath in a Spring Boot web app with *very minimal* configuration.
+It includes Stormpath Spring Security, Stormpath Spring WebMVC and Stormpath Thymeleaf templates. How amazing is that? Here's how.
+
+Using your favorite dependency resolution build tool like Maven or Gradle, add the stormpath-default-spring-boot-starter-|version|.jar to your project dependencies. For example:
+
+**Maven**:
+
+.. parsed-literal::
+
+    <dependency>
+        <groupId>com.stormpath.spring</groupId>
+        <artifactId>stormpath-default-spring-boot-starter</artifactId>
+        <version>\ |version|\ </version>
+    </dependency>
+
+**Gradle**:
+
+.. parsed-literal::
+
+    dependencies {
+        compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:\ |version|\ '
+    }
+
+In order to connect Stormpath and Spring Security, we need one small configuration class in your project:
+
+.. code-block:: java
+    :emphasize-lines: 2
+
+    @Configuration
+    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
+
+Without this, you will get a popup in your browser prompting for authentication, which is the default behavior for Spring Security.
+
+Also, by default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic
+behavior. If you instead would like to enable access to all paths in your quickstart application, simply add the following line
+to your ``application.properties`` file:
+
+.. code-block:: properties
+
+   stormpath.spring.security.fullyAuthenticated.enabled = false
+
+That's it!  You're ready to start using Stormpath in your Spring Boot web application!  Can you believe how easy that was?
+
+.. _examples: https://github.com/stormpath/stormpath-sdk-java/tree/master/examples
+.. _sign up for Stormpath for free: https://api.stormpath.com/register
+.. _Stormpath Admin Console: https://api.stormpath.com
+.. _set file permissions similarly: http://msdn.microsoft.com/en-us/library/bb727008.aspx
+.. _Support Team: https://support.stormpath.com

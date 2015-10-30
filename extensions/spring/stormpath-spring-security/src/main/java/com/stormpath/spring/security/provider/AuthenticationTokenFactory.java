@@ -30,7 +30,6 @@ import java.util.Collection;
 public interface AuthenticationTokenFactory {
 
     /**
-     *
      * Creates a token for an authenticated principal once the request has been processed by the
      * {@link com.stormpath.spring.security.provider.StormpathAuthenticationProvider#authenticate(Authentication)} method.
      * </p>
@@ -47,6 +46,6 @@ public interface AuthenticationTokenFactory {
      * @return the <code>Authentication</code> token representing the authenticated principal
      *
      */
-    public Authentication createAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, Account account);
+    Authentication createAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, Account account);
 
 }

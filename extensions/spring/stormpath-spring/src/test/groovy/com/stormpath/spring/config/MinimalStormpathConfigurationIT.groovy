@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC4
+ * @since 1.0.RC5
  */
-@ContextConfiguration(classes = MinimalAppConfig.class)
+@ContextConfiguration(classes = [MinimalAppConfig.class, TwoAppTenantStormpathConfiguration.class])
 class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired
@@ -61,8 +61,6 @@ class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
         assertNotNull application
 
         assertNull c.baseUrl
-        assertNull c.apiKeyId
-        assertNull c.apiKeySecret
         assertNull c.apiKeyFile
         assertNull c.apiKeyFileIdPropertyName
         assertNull c.apiKeyFileSecretPropertyName

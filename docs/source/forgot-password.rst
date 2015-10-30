@@ -66,7 +66,7 @@ Try it!
 
    .. image:: /_static/forgot-password-change.png
 
-#. Click the submit button.  Your new password will be applied to your account and you will be redirected to the login screen by default, with a success message explaining that the password was changed successfully:
+#. Click the submit button.  Your new password will be applied to your account and you will be redirected to the login screen by default, with a success message explaining that the password was been successfully changed and that they can login now:
 
    .. image:: /_static/login-changed.png
 
@@ -126,7 +126,7 @@ After the user successfully specifies their new password, they will be redirecte
 
     stormpath.web.change.nextUri = /login?status=changed
 
-As you can see, this URI has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+As you can see, this URI has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their password has been successfully changed and that they can log in:
 
 .. image:: /_static/login-changed.png
 

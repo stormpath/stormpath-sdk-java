@@ -22,7 +22,11 @@ import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.mail.*;
+import com.stormpath.sdk.mail.EmailStatus;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
+import com.stormpath.sdk.mail.ModeledEmailTemplateList;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplate;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 
 import java.util.Map;
 

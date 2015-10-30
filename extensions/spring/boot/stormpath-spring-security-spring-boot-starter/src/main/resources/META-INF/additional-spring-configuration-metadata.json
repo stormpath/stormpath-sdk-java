@@ -1,0 +1,21 @@
+{
+  "groups": [
+    {
+      "name": "stormpath.spring.security"
+    }
+  ],
+  "properties": [
+    {
+      "name": "stormpath.spring.security.enabled",
+      "type": "java.lang.Boolean",
+      "description": "A boolean flag that can enable or disable Stormpath Spring Security integration.  This is mostly useful during testing or debugging, or if you want to compare behavior when Stormpath Spring Security integration is enabled or disabled.  Default value is true (enabled).",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.spring.security.fullyAuthenticated.enabled",
+      "type": "java.lang.Boolean",
+      "description": "A boolean flag that can enable or disable the default Stormpath Spring Security integration behavior of protecting access to all URIs.  Default value is true (enabled).",
+      "defaultValue": true
+    }
+  ]
+}

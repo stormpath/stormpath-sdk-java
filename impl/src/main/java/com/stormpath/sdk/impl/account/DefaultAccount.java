@@ -15,10 +15,10 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.AccountOptions;
+import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;

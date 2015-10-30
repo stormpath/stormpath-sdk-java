@@ -18,8 +18,11 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +34,8 @@ public class IdSiteController extends AbstractController {
     private String callbackUri;
 
     private String idSiteUri;
+
+    private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -44,9 +49,14 @@ public class IdSiteController extends AbstractController {
         this.idSiteUri = idSiteUri;
     }
 
+    public void setIdSiteOrganizationResolver(Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver) {
+        this.idSiteOrganizationResolver = idSiteOrganizationResolver;
+    }
+
     public void init() {
         Assert.notNull(serverUriResolver, "Application must be configured.");
         Assert.notNull(callbackUri, "callbackUri must be configured.");
+        Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
     }
 
     protected Application getApplication(HttpServletRequest request) {
@@ -94,6 +104,28 @@ public class IdSiteController extends AbstractController {
         String callbackUri = buildCallbackUri(request);
 
         IdSiteUrlBuilder builder = application.newIdSiteUrlBuilder().setCallbackUri(callbackUri);
+
+        IdSiteOrganizationContext orgCtx = idSiteOrganizationResolver.get(request, null);
+
+        if (orgCtx != null) {
+
+            String nameKey = orgCtx.getOrganizationNameKey();
+            if (Strings.hasText(nameKey)) {
+
+                builder.setOrganizationNameKey(nameKey);
+
+                //this next field is only relevant if a namekey is set:
+                Boolean val = orgCtx.isUseSubdomain();
+                if (val != null) {
+                    builder.setUseSubdomain(orgCtx.isUseSubdomain());
+                }
+            }
+
+            Boolean val = orgCtx.isShowOrganizationField();
+            if (val != null) {
+                builder.setShowOrganizationField(val);
+            }
+        }
 
         if (this.idSiteUri != null) {
             builder.setPath(this.idSiteUri);

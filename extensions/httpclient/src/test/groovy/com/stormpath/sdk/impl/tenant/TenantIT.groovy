@@ -32,16 +32,16 @@ import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
+import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import java.lang.reflect.Field
-
 import static org.testng.Assert.*
 
 /**

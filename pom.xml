@@ -25,7 +25,7 @@
 
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
-    <version>1.0.RC4.6-SNAPSHOT</version>
+    <version>1.0.RC5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Stormpath Java SDK</name>
@@ -87,6 +87,7 @@
         <module>impl</module>
         <module>extensions</module>
         <module>examples</module>
+        <module>tutorials</module>
     </modules>
 
     <properties>
@@ -104,9 +105,9 @@
         <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
              See: http://stackoverflow.com/questions/22314453/unsupported-major-minor-version-51-0-error-when-using-1-6-in-pom-and-openjdk6-fo -->
         <servlet.version>3.0.1</servlet.version>
-        <spring.version>4.1.4.RELEASE</spring.version>
-        <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
-        <spring.security.version>4.0.0.RELEASE</spring.security.version>
+        <spring.version>4.1.7.RELEASE</spring.version>
+        <spring.boot.version>1.2.5.RELEASE</spring.boot.version>
+        <spring.security.version>4.0.2.RELEASE</spring.security.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
@@ -194,6 +195,27 @@
                 <artifactId>stormpath-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!--
+                Need the dup here in order to make tests in one module available to the other modules.
+                Known issue since 2005. http://jira.codehaus.org/browse/MNG-1378
+            -->
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security-webmvc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-webmvc</artifactId>
@@ -201,19 +223,35 @@
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>spring-boot-starter-stormpath</artifactId>
+                <artifactId>stormpath-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>spring-boot-starter-stormpath-webmvc</artifactId>
+                <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
-                <artifactId>spring-boot-starter-stormpath-thymeleaf</artifactId>
+                <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-default-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <!-- 3rd party dependencies: -->
             <dependency>
@@ -328,6 +366,28 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring.security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
@@ -399,6 +459,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <archive>
                         <manifest>

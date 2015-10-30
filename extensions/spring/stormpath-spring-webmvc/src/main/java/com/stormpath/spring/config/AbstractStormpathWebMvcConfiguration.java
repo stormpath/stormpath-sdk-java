@@ -71,6 +71,10 @@ import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
+import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
@@ -222,7 +226,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
     protected String stormpathFilterUrlPatterns;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.servletNames'] }")
     protected String stormpathFilterServletNames;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.dispatcherTypes'] ?: 'REQUEST, INCLUDE, FORWARD, ERROR' }")
@@ -316,6 +320,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
 
+    @Value("#{ @environment['stormpath.web.logout.invalidateHttpSession'] ?: true }")
+    protected boolean logoutInvalidateHttpSession;
+
     // ================  Change Password Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
@@ -357,6 +364,15 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.idSite.result.uri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
+
+    @Value("#{ @environment['stormpath.web.idSite.useSubdomain'] }")
+    protected Boolean idSiteUseSubdomain;
+
+    @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
+    protected Boolean idSiteShowOrganizationField;
+
+    @Value("#{ @environment['stormpath.web.application.domain'] }")
+    protected String baseDomainName;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -657,11 +673,32 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolvers;
     }
 
+    public Resolver<List<String>> stormpathSubdomainResolver() {
+        SubdomainResolver resolver = new SubdomainResolver();
+        resolver.setBaseDomainName(baseDomainName);
+        return resolver;
+    }
+
+    public Resolver<String> stormpathOrganizationNameKeyResolver() {
+        DefaultOrganizationNameKeyResolver resolver = new DefaultOrganizationNameKeyResolver();
+        resolver.setSubdomainResolver(stormpathSubdomainResolver());
+        return resolver;
+    }
+
+    public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
+        DefaultIdSiteOrganizationResolver resolver = new DefaultIdSiteOrganizationResolver();
+        resolver.setOrganizationNameKeyResolver(stormpathOrganizationNameKeyResolver());
+        resolver.setUseSubdomain(idSiteUseSubdomain);
+        resolver.setShowOrganizationField(idSiteShowOrganizationField);
+        return resolver;
+    }
+
     protected Controller createIdSiteController(String idSiteUri) {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
         controller.setCallbackUri(idSiteResultUri);
+        controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
         controller.init();
         return createSpringController(controller);
     }
@@ -965,10 +1002,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             IdSiteLogoutController c = new IdSiteLogoutController();
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setIdSiteResultUri(idSiteResultUri);
+            c.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
             controller = c;
         }
 
         controller.setNextUri(logoutNextUri);
+        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
         controller.init();
 
         return controller;

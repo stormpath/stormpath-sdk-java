@@ -32,7 +32,13 @@ import com.stormpath.sdk.impl.ds.ResourceAction;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -49,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
-import static com.stormpath.sdk.impl.resource.AbstractResource.*;
+import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
 
 public class WriteCacheFilter extends AbstractCacheFilter {
 
