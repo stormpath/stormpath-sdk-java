@@ -1412,7 +1412,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @return the {@link AccountStoreMapping} created after finding the actual resource matching the criteria. It returns
      * <code>null</code> if there is no Directory matching the criteria.
      * @throws ResourceException if the found {@link Directory} already exists as an account store in this application.
-     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @throws IllegalArgumentException if the criteria matches more than one Directory in the current Tenant.
      * @since 1.0.RC3
      */
     AccountStoreMapping addAccountStore(DirectoryCriteria criteria);
