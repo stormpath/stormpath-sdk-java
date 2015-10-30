@@ -13,8 +13,9 @@ If you've already gone through the quickstart, jump over to the :ref:`spring-boo
 We will be referring to the tutorial code found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot>`_.
 
 All of the code in the tutorial makes use of the ``stormpath-default-spring-boot-starter``. This starter has it all:
-Spring WebMvc, Spring Security and the Thymeleaf templating engine - all integrated with Stormpath. Component features,
-such as Spring Security, can easily be disabled through the use of properties or via annotations.
+Spring Boot, Spring Web MVC, Spring Security and the Thymeleaf templating engine - all integrated with Stormpath. Component features,
+such as Spring Security, can easily be disabled through the use of properties or via annotations. (You'll see an example of disabling
+Spring Security with properties in the :ref:`spring-boot-meet-stormpath` section).
 
 Topics:
 
@@ -286,7 +287,7 @@ Spring Security Refined
 
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/03-spring-security-refined>`_.
 
-In the previouse section, we hard-coded the Stormpath group href into ``HelloService``.
+In the previous section, we hard-coded the Stormpath group href into ``HelloService``.
 
 This is cumbersome in a real world situation where you may have multiple environments (dev, stage, prod, etc.).
 You don't want to have to change source, recompile and deploy for a new environment or when you change a group in Stormpath.
@@ -399,27 +400,13 @@ So far, we've restricted access to certain methods with the `hasRole` clause of 
 section, we are going to look at examples that give a finer grain of control and demonstrate how Stormpath hooks into
 Spring Security.
 
-We're using the same ``SpringSecurityWebAppConfig`` that we've had in the previous examples:
-
-.. code-block:: java
-    :linenos:
-
-    @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
-        @Override
-        protected void doConfigure(HttpSecurity http) throws Exception {
-            http
-                .authorizeRequests()
-                .antMatchers("/").permitAll();
-        }
-    }
-
-This allows unauthenticated access to the homepage ``/``.
+As before, we allow unauthenticated access to the homepage ``/`` in ``SpringSecurityWebAppConfig.java``.
 
 For more on ``HttpSecurity`` with Spring Security, look `here <http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-httpsecurity>`_.
 
-We've added a new method to our ``HelloController``. It does not call out any other authorizaton requirements. Anyone logged in will be able to
-access ``/me``. Furthermore, anyone NOT logged in trying to access ``/me`` will automatically be redirected to the ``/login`` view.
+We've added a new method to our ``HelloController``. It does not call out any other authorizaton requirements. As such,
+anyone logged in will be able to access ``/me``. Furthermore, anyone NOT logged in trying to access ``/me`` will automatically
+be redirected to the ``/login`` view.
 
 .. code-block:: java
     :linenos:
@@ -440,7 +427,7 @@ access ``/me``. Furthermore, anyone NOT logged in trying to access ``/me`` will 
 Try it out. Launch the application as before, and then browse to: ``http://localhost:8080/me``. You will be redirected to the ``/login``
 and then after you login to a valid Stormpath Account, you will automatically be brought back to ``/me``. That's the StormPath magic at work!
 
-The last thing we'll look at here is fine grained controls using Spring Security permissions connected to Stormpath custom data.
+Now, we'll look at fine grained controls using Spring Security permissions connected to Stormpath custom data.
 
 Every first class object in Stormpath can have custom data associated with it. For instance, you can have custom data at the Group level as well
 as at the Account level.
@@ -515,8 +502,12 @@ Advanced Spring Security Integration
 There are times when you will want to hook into the Stormpath Spring Security Integration at a deeper level. Or, perhaps you
 have a scenario where you are already extending a class from another library and do not have the option of extending ``StormpathWebSecurityConfigurerAdapter``.
 
-In these situations, your ``@Configuration`` class can interact with the ``StormpathWebSecurityConfigurer`` directly. Take a
-look what this looks like:
+In these situations, your ``@Configuration`` class can interact with the ``StormpathWebSecurityConfigurer`` directly.
+
+Let's say that we want to set it up so that only authenticated users can get to ``/restrcited`` and that unauthenticated users can get anywhere
+else in our application.
+
+Take a look what this looks like when not extending ``StormpathWebSecurityConfigurer``:
 
 .. code-block:: java
     :linenos:
