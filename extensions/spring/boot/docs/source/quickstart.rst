@@ -37,20 +37,12 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
       stormpath.application.href = https://api.stormpath.com/v1/applications/YOUR_APPLICATION_ID
 
-* you don't want to use Spring Security or you are already using it and there are conflicts. You can easily disable Stormpath Spring Boot Spring Security by excluding the Stormpath security auto-configuration in your ``Application.java`` like so:
+* you don't want to use Spring Security or you are already using it and there are conflicts. You can easily disable Spring Security by adding two properties to ``application.properties``:
 
-  .. code-block:: java
-     :emphasize-lines: 2
+  .. code-block:: properties
 
-      @SpringBootApplication
-      @EnableAutoConfiguration(exclude = { StormpathWebSecurityAutoConfiguration.class })
-      public class Application  {
-
-          public static void main(String[] args) {
-              SpringApplication.run(Application.class, args);
-          }
-
-      }
+     stormpath.spring.security.enabled = false
+     security.basic.enabled = false
 
 * your web app already uses web frameworks that make heavy use of servlet filters, like Spring Security or Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you just need to specify the specific order where you want the Stormpath filter relative to other filters.  You do this by adding the following to your Spring Boot ``application.properties`` file (where ``preferred_value`` is your preferred integer value):
 

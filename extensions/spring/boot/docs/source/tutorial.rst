@@ -5,15 +5,16 @@ Tutorial
 
 This tutorial will take you from zero to a Stormpath enabled application featuring Spring Boot WebMVC and Spring Security integration.
 
-It should take about 30 minutes from start to finish. If you are looking for a barebones intro to using Stormpath and
+It should take about 30 minutes from start to finish. If you are looking for a bare bones intro to using Stormpath and
 Spring Boot, check out the :doc:`quickstart`.
 
 If you've already gone through the quickstart, jump over to the :ref:`spring-boot-meet-stormpath` section.
 
-If you are already familiar with Spring Boot and Spring Security, jump right to the :ref:`spring-security-refined` section
-to see how nicely Stormpath integrates with Spring Security.
-
 We will be referring to the tutorial code found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot>`_.
+
+All of the code in the tutorial makes use of the ``stormpath-default-spring-boot-starter``. This starter has it all:
+Spring WebMvc, Spring Security and the Thymeleaf templating engine - all integrated with Stormpath. Component features,
+such as Spring Security, can easily be disabled through the use of properties or via annotations.
 
 Topics:
 
@@ -47,10 +48,6 @@ For a gradle build and run, do this:
     java -jar build/libs/00-the-basics-0.1.0.jar
 
 You should now be able to browse to `<http://localhost:8080>`_ and see a welcome message with your Stormpath application's name.
-
-The Stormpath library used for this example is: ``stormpath-webmvc-spring-boot-starter``. This provides basic integration with
-Stormpath and Spring Boot WebMVC apps. It does NOT include the Stormpath Thymeleaf views or the Stormpath Spring Security
-integration. Stay tuned for more on those integrations when we look at the ``stormpath-default-spring-boot-starter``.
 
 This application has just two code files in it. Here's the structure:
 
@@ -100,6 +97,11 @@ line 6 we are obtaining its name for display.
 Pretty simple setup, right? In the next section, we'll layer in some flow logic based on logged-in state. And then we
 will refine that to make use of all the Spring Security has to offer in making our lives easier.
 
+Feeling adventurous? Browse on over to ``http://localhost:8080/login``. You will see the default Stormpath login form.
+You can login in as an existing user, register a new user and even reset your password. Where did this come from? It's
+all part of the built in authentication flows that Stormpath provides. With a 1-line ``main`` method and
+a 2-line controller, you get all this functionality out of the box.
+
 .. _some-access-controls:
 
 Some Access Controls
@@ -111,12 +113,6 @@ In the next section, we will talk about having access controls the "right" way b
 
 The purpose of this section is to demonstrate the manual labor required in "rolling your own" permissions assertion layer.
 Feel free to skip right over to the :ref:`spring-security-meet-stormpath` section.
-
-The Stormpath libraries used for this example are: ``stormpath-webmvc-spring-boot-starter`` and
-``stormpath-thymeleaf-spring-boot-starter``. This provides basic integration with Stormpath and Spring Boot WebMVC apps.
-Additionally, it provides a default set of thymeleaf views for common auth workflows, such as ``/login``, ``/register`` and
-``/forgot`` (for dealing with forgotten passwords). It does NOT (yet) include Stormpath Spring Security integration. In the next
-section, we will jump into the Stormpath Spring Security integration.
 
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/01-some-access-controls>`_.
 
@@ -151,8 +147,6 @@ Let's take a look at the updated ``HelloController.java`` file:
 
 If we are able to get an account via ``AccountResolver.INSTANCE.getAccount(req)``, then we return the ``restricted``
 template. Otherwise, we redirect to ``/login``.
-
-Build and run the application as before and try it out!
 
 The code from this section also incorporates some other cool features of
 `stormpath-default-spring-boot-starter <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/boot/stormpath-default-spring-boot-starter>`_.
@@ -190,10 +184,6 @@ The official Spring Security documentation is `here <http://projects.spring.io/s
 Let's take a look at the additions and changes to the project.
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw>`_.
 
-The only Stormpath library used for this example (and those that follow) is: ``stormpath-default-spring-boot-starter``. This is the
-library that we expect you will most often use. It includes the Stormpath Spring Boot, Spring Boot WebMVC, Spring Boot Spring Security, and
-Spring Boot Thymeleaf template engine integrations.
-
 We've added a configuration file called ``SpringSecurityWebAppConfig.java``. How does Spring know it's a configuration file?
 It has the ``@Configuration`` annotation:
 
@@ -206,19 +196,20 @@ It has the ``@Configuration`` annotation:
         protected void doConfigure(HttpSecurity http) throws Exception {
             http
                 .authorizeRequests()
-                .antMatchers("/**").permitAll();
+                .antMatchers("/").permitAll();
         }
     }
 
 Why have this configuration? Spring Security expects things to be, well - secured. If there is not a class that extends
 ``WebSecurityConfigurerAdapter`` in the application, Spring Security will protect *every* pathway and will provide a default
-basic authentication popup in your browser. In order to properly hook into the Stormpath Spring Security integration, you
-need to extend ``StormpathWebSecurityConfigurerAdapter`` which itself extends ``WebSecurityConfigurerAdapter``. NOTE: Please
+basic authentication popup to your browser. In order to easily hook into the Stormpath Spring Security integration, you
+can extend ``StormpathWebSecurityConfigurerAdapter`` which itself extends ``WebSecurityConfigurerAdapter``. NOTE: Please
 refer to the :ref:`advanced-spring-security-integration` section for how to configure your app *without* extending
 ``StormpathWebSecurityConfigurerAdapter``.
 
-Based on the ``SpringSecurityWebAppConfig`` above, we will permit access to all paths. We are going to protect access to a
-service by requiring group membership with the ``@PreAuthorize`` annotation (as you'll see below).
+Based on the ``SpringSecurityWebAppConfig`` above, we will permit access to the homepage. Any other paths will fall back
+to the default of being secured - you would be redirected to the Stormpath login page. We are going to further protect
+access to a service by requiring group membership with the ``@PreAuthorize`` annotation (as you'll see below).
 
 Next, we've added a service called ``HelloService.java``:
 
@@ -348,7 +339,7 @@ the application.
 
 By default, Spring will name the bean in context using camelcase conventions. Therefore the bean will be named ``roles``.
 
-We use some Spring magic on lines 5 and 6 to pass the ``Environment`` into the constructor.
+We use some Spring magic on lines 5 and 6 to pass the ``Environment`` into the constructor using the `@Autowired` annotation.
 
 In the constructor, we set the ``USER`` variable to the value of the environment property called ``stormpath.authorized.group.user``.
 
@@ -358,7 +349,7 @@ Stormpath group that backs the ``USER`` role.
 With Spring, you can define the ``stormpath.authorized.group.user`` in the ``application.properties`` file and that property will be available
 to your app.
 
-Now for the Stormpath magic. You can also have a system environment variable named ``STORMPATH_AUTHORIZED_GROUP_USER``.
+Now, for the Stormpath magic. You can also have a system environment variable named ``STORMPATH_AUTHORIZED_GROUP_USER``.
 Behind the scenes, Stormpath will convert that system environment variable to a Spring environment variable named
 ``stormpath.authorized.group.user``.
 
@@ -395,37 +386,7 @@ You can try this out for yourself by running this example like so:
 
 In this example, we are also taking advantage of Stormpath's configuration mechanism. This reduces boilerplate code.
 
-If you take a look at our ``SpringSecurityWebAppConfig``, you'll see that it's empty:
-
-.. code-block:: java
-
-    @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
-
-We said earlier, that by default all paths would be protected, as is the Spring Security way. So, what's different here?
-
-If you look at the ``application.properties`` file, you will see:
-
-.. code-block:: properties
-
-   stormpath.spring.security.fullyAuthenticated.enabled = false
-
-This line disables the default behavior of protecting all paths. Without this line, our ``SpringSecurityWebAppConfig`` would
-need to look like it did in previous examples, if we did want to make it so that all paths are permitted:
-
-.. code-block:: java
-
-    @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
-        @Override
-        protected void doConfigure(HttpSecurity http) throws Exception {
-            http
-                .authorizeRequests()
-                .antMatchers("/**").permitAll();
-        }
-    }
-
-The one line of configuration in ``application.properties`` saved us six lines of boilerplate java code.
+Next up: An even finer grain of control using Spring Security permissions.
 
 .. _a-finer-grain-of-control:
 
@@ -434,43 +395,30 @@ A Finer Grain of Control
 
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/04-a-finer-grain-of-control>`_.
 
-So far, everything we've done with Spring Security has been through the `@PreAuthorize` annotation. In this section, we are going to look at examples
-that give a finer grain of control and demonstrate how Stormpath hooks into Spring Security.
+So far, we've restricted access to certain methods with the `hasRole` clause of the `@PreAuthorize` annotation. In this
+section, we are going to look at examples that give a finer grain of control and demonstrate how Stormpath hooks into
+Spring Security.
 
-As documented by the Spring team, it's common to have a ``WebSecurityConfigurerAdapter`` and to use a fluent interface to build security rules.
-
-Stormpath hooks into that architecture to enable you to build security rules while protecting access to the built-in Stormpath authentication flows.
-
-Let's take a look at the new file in the example, ``SpringSecurityWebAppConfig``:
+We're using the same ``SpringSecurityWebAppConfig`` that we've had in the previous examples:
 
 .. code-block:: java
     :linenos:
-    :emphasize-lines: 2,4
 
     @Configuration
     public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
-
         @Override
         protected void doConfigure(HttpSecurity http) throws Exception {
             http
                 .authorizeRequests()
-                .antMatchers("/me").fullyAuthenticated()
-                .antMatchers("/**").permitAll();
+                .antMatchers("/").permitAll();
         }
-
     }
 
-Notice on line 2, we are extending ``StormpathWebSecurityConfigurerAdapter`` which itself extends ``WebSecurityConfigurerAdapter``.
-
-The ``configure`` method of ``StormpathWebSecurityConfigurerAdapter`` does some housekeeping to ensure that all of the Stormpath
-views (such as /login) remain available and then it calls your ``doConfigure`` method.
-
-In this case, we are expressing that anyone trying to get to ``/me`` should be fully authenticated. And, we are saying that
-access to any other path will be permitted.
+This allows unauthenticated access to the homepage ``/``.
 
 For more on ``HttpSecurity`` with Spring Security, look `here <http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-httpsecurity>`_.
 
-The new method to handle ``me`` requests in our ``HelloController`` does not call out any other authorizaton requirements. Anyone logged in will be able to
+We've added a new method to our ``HelloController``. It does not call out any other authorizaton requirements. Anyone logged in will be able to
 access ``/me``. Furthermore, anyone NOT logged in trying to access ``/me`` will automatically be redirected to the ``/login`` view.
 
 .. code-block:: java
@@ -641,5 +589,6 @@ applications.
 You can use the Stormpath Spring Security integration in contexts other than Spring Boot as well. For instance, you could
 write a REST API that makes use of Spring Security that has no web layer.
 
-Take a look at the `javadocs </java/apidocs>`_ for a more in depth look at Spring Security as well as the other
-code examples `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/examples>`_.
+Take a look at the `javadocs </java/apidocs>`_ as well as the other code examples
+`here <https://github.com/stormpath/stormpath-sdk-java/tree/master/examples>`_ for more information on all that the
+Stormpath Java SDK has to offer.

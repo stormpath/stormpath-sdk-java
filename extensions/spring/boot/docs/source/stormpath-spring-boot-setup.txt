@@ -67,15 +67,10 @@ In order to connect Stormpath and Spring Security, we need one small configurati
     @Configuration
     public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
 
-Without this, you will get a popup in your browser prompting for authentication, which is the default behavior for Spring Security.
+Without this, you will get a popup in your browser prompting for authentication, which is the default basic authentication for Spring Security.
 
 Also, by default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic
-behavior. If you instead would like to enable access to all paths in your quickstart application, simply add the following line
-to your ``application.properties`` file:
-
-.. code-block:: properties
-
-   stormpath.spring.security.fullyAuthenticated.enabled = false
+behavior.
 
 That's it!  You're ready to start using Stormpath in your Spring Boot web application!  Can you believe how easy that was?
 
