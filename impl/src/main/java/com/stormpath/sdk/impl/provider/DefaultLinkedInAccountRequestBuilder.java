@@ -27,6 +27,8 @@ import java.util.Map;
  */
 public class DefaultLinkedInAccountRequestBuilder extends AbstractProviderAccountRequestBuilder<LinkedInAccountRequestBuilder> implements LinkedInAccountRequestBuilder {
 
+    private String code;
+
     @Override
     protected String getConcreteProviderId() {
         return IdentityProviderType.LINKEDIN.getNameKey();
@@ -34,12 +36,22 @@ public class DefaultLinkedInAccountRequestBuilder extends AbstractProviderAccoun
 
     @Override
     protected ProviderAccountRequest doBuild(Map<String, Object> map) {
-        Assert.state(Strings.hasText(super.accessToken), "accessToken is a required property. It must be provided before building.");
+        Assert.state(Strings.hasText(this.code) ^ Strings.hasText(super.accessToken), "Either 'code' or 'accessToken' properties must exist in a LinkedIn account request.");
 
         DefaultLinkedInProviderData providerData = new DefaultLinkedInProviderData(null, map);
 
-        providerData.setAccessToken(super.accessToken);
+        if (this.accessToken != null) {
+            providerData.setAccessToken(super.accessToken);
+        } else {
+            providerData.setCode(this.code);
+        }
 
         return new DefaultProviderAccountRequest(providerData);
+    }
+
+    @Override
+    public LinkedInAccountRequestBuilder setCode(String code) {
+        this.code = code;
+        return this;
     }
 }

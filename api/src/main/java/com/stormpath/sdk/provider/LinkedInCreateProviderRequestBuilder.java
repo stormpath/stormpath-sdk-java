@@ -22,4 +22,12 @@ package com.stormpath.sdk.provider;
  */
 public interface LinkedInCreateProviderRequestBuilder extends CreateProviderRequestBuilder<LinkedInCreateProviderRequestBuilder> {
 
+    /**
+     * Setter for the redirection Uri for your LinkedIn Application.
+     *
+     * @param redirectUri the redirection Uri for your Google Application.
+     * @return the builder instance for method chaining.
+     * @since 1.0.RC5.1
+     */
+    LinkedInCreateProviderRequestBuilder setRedirectUri(String redirectUri);
 }

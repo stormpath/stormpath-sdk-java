@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.provider;
 
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.CreateProviderRequest;
 import com.stormpath.sdk.provider.LinkedInCreateProviderRequestBuilder;
 
@@ -24,6 +25,14 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class DefaultLinkedInCreateProviderRequestBuilder extends AbstractCreateProviderRequestBuilder<LinkedInCreateProviderRequestBuilder> implements LinkedInCreateProviderRequestBuilder {
+
+    private String redirectUri;
+
+    @Override
+    public LinkedInCreateProviderRequestBuilder setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
+        return this;
+    }
 
     @Override
     protected String getConcreteProviderId() {
@@ -35,6 +44,10 @@ public class DefaultLinkedInCreateProviderRequestBuilder extends AbstractCreateP
         DefaultLinkedInProvider provider = new DefaultLinkedInProvider(null, map);
         provider.setClientId(super.clientId);
         provider.setClientSecret(super.clientSecret);
+
+        if (Strings.hasText(redirectUri)) {
+            provider.setRedirectUri(redirectUri);
+        }
 
         return new DefaultCreateProviderRequest(provider);
     }
