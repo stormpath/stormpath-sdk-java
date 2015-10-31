@@ -12,4 +12,4 @@ make html
 cd ../../../../
 
 # javadocs
-mvn javadoc:aggregate -P docs
+mvn javadoc:aggregate -P travis-docs

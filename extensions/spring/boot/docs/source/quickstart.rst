@@ -13,6 +13,50 @@ Topics:
 
 .. include:: stormpath-spring-boot-setup.txt
 
+.. _dependency-jar:
+
+Add the Stormpath Default Spring Boot Starter
+---------------------------------------------
+
+This step allows you to enable Stormpath in a Spring Boot web app with *very minimal* configuration.
+It includes Stormpath Spring Security, Stormpath Spring WebMVC and Stormpath Thymeleaf templates. How amazing is that? Here's how.
+
+Using your favorite dependency resolution build tool like Maven or Gradle, add the stormpath-default-spring-boot-starter-|version|.jar to your project dependencies. For example:
+
+**Maven**:
+
+.. parsed-literal::
+
+    <dependency>
+        <groupId>com.stormpath.spring</groupId>
+        <artifactId>stormpath-default-spring-boot-starter</artifactId>
+        <version>\ |version|\ </version>
+    </dependency>
+
+**Gradle**:
+
+.. parsed-literal::
+
+    dependencies {
+        compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:\ |version|\ '
+    }
+
+
+In order to connect Stormpath and Spring Security, we need one small configuration class in your project:
+
+.. code-block:: java
+    :emphasize-lines: 2
+
+        @Configuration
+        public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
+
+Without this, you will get a popup in your browser prompting for authentication, which is the default basic authentication for Spring Security.
+
+Also, by default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic
+behavior.
+
+That's it!  You're ready to start using Stormpath in your Spring Boot web application!  Can you believe how easy that was?
+
 Try it!
 -------
 

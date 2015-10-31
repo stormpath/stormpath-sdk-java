@@ -50,25 +50,30 @@ For a gradle build and run, do this:
 
 You should now be able to browse to `<http://localhost:8080>`_ and see a welcome message with your Stormpath application's name.
 
-This application has just two code files in it. Here's the structure:
+This application has just two code files and a properties file in it. Here's the structure:
 
 .. code-block:: bash
     :emphasize-lines: 9, 10
 
     .
     `-- src
-        `-- main
-            `-- java
-                `-- com
-                    `-- stormpath
-                        `-- tutorial
-                            |-- controller
-                            |   `-- HelloController.java
-                            `-- Application.java
+       `-- main
+           |-- java
+           |   `-- com
+           |       `-- stormpath
+           |           `-- tutorial
+           |               |-- controller
+           |               |   `-- HelloController.java
+           |               `-- Application.java
+           `-- resources
+               `-- application.properties
 
-``Application.java`` is a most basic Spring Boot application file with a ``main`` method:
+``Application.java`` is a most basic Spring Boot application file with a ``main`` method and the ``@SpringBootApplication``
+annotation:
 
 .. code-block:: java
+    :linenos:
+    :emphasize-lines: 1
 
     @SpringBootApplication
     public class Application  {
@@ -95,13 +100,19 @@ This application has just two code files in it. Here's the structure:
 Here we have our first taste of Stormpath in action. On line 5 we are getting hold of the Stormpath application and on
 line 6 we are obtaining its name for display.
 
+For this example, we don't want Spring Security locking everything down, which is its default behavior. So, we will simply
+disable it. That's where the ``application.properties`` files comes in:
+
+.. code-block:: java
+    :linenos:
+
+    stormpath.spring.security.enabled = false
+    security.basic.enabled = false
+
+The first line disables Stormpath's hooks into Spring Security and the second line disables Spring Security itself.
+
 Pretty simple setup, right? In the next section, we'll layer in some flow logic based on logged-in state. And then we
 will refine that to make use of all the Spring Security has to offer in making our lives easier.
-
-Feeling adventurous? Browse on over to ``http://localhost:8080/login``. You will see the default Stormpath login form.
-You can login in as an existing user, register a new user and even reset your password. Where did this come from? It's
-all part of the built in authentication flows that Stormpath provides. With a 1-line ``main`` method and
-a 2-line controller, you get all this functionality out of the box.
 
 .. _some-access-controls:
 
