@@ -33,14 +33,10 @@
         <!-- Compile-time dependencies: -->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
+            <artifactId>stormpath-default-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- Runtime-only dependencies: -->
-        <dependency>
-            <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>

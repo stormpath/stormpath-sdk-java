@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 /**
  * @since 1.0.RC5
  */
-@Component("Roles")
+@Component
 public class Roles {
     public final String USER;
 

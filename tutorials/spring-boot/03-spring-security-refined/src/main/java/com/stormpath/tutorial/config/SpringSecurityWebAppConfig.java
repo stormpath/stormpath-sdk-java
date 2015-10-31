@@ -17,9 +17,17 @@ package com.stormpath.tutorial.config;
 
 import com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
  * @since 1.0.RC5
  */
 @Configuration
-public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
+public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
+    @Override
+    protected void doConfigure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+            .antMatchers("/").permitAll();
+    }
+}
