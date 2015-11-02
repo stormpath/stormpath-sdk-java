@@ -21,7 +21,7 @@ import com.stormpath.sdk.application.Application;
 /**
  * This class stores the information received after a {@link AccessToken AccessToken} authentication request.
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface JwtAuthenticationResult {
 

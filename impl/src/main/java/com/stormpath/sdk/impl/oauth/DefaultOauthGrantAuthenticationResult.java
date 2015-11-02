@@ -20,7 +20,7 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.*;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultOauthGrantAuthenticationResult implements OauthGrantAuthenticationResult {
 

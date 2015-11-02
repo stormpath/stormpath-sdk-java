@@ -31,7 +31,7 @@ import static org.testng.Assert.*
 /**
  * Test for DefaultOauthPolicy class
  *
- * @since 1.0.RC5.2
+ * @since 1.0.RC6
  */
 class DefaultOauthPolicyTest {
 

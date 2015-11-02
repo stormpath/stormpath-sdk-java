@@ -19,7 +19,7 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.oauth.AccessTokenOptions;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultAccessTokenOptions extends DefaultOptions<AccessTokenOptions> implements AccessTokenOptions<AccessTokenOptions> {
 

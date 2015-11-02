@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface RefreshAuthenticationAttempt extends Resource {
 

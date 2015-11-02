@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * This builder is used to obtain an {@link JwtAuthenticationResult JwtAuthenticationResult} object from the result obtained after a JWT Authentication is performed.
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface JwtAuthenticationResultBuilder  {
 

@@ -25,7 +25,7 @@ import com.stormpath.sdk.oauth.RefreshTokenList;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultRefreshTokenList extends AbstractCollectionResource<RefreshToken> implements RefreshTokenList {
 

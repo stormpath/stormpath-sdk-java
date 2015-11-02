@@ -20,7 +20,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link com.stormpath.sdk.resource.CollectionResource} containing {@link AccessToken} instances.
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface RefreshTokenList extends CollectionResource<RefreshToken> {
 }

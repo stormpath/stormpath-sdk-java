@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface RefreshToken extends AccessToken {
 }

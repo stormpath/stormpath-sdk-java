@@ -31,6 +31,7 @@ import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
 import com.stormpath.sdk.oauth.JwtAuthenticationRequests
+import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
 
@@ -125,7 +126,7 @@ class ApplicationIT extends ClientIT {
         assertFalse list.iterator().hasNext() //no results
     }
 
-    /* @since 1.0.RC5.1 */
+    /* @since 1.0.RC6 */
     @Test
     void testCreateAndRefreshTokenForAppAccount() {
 
@@ -163,7 +164,17 @@ class ApplicationIT extends ClientIT {
         assertEquals result.getRefreshToken().getApplication().getHref(), app.href
     }
 
-    /* @since 1.0.RC5.1 */
+    /* @since 1.0.RC6 */
+    @Test
+    void testOauthPolicy(){
+        def app = createTempApp()
+
+        def oauthPolicy = app.getOauthPolicy()
+        assertNotNull oauthPolicy
+
+    }
+
+    /* @since 1.0.RC6 */
     @Test
     void testAuthenticateAndDeleteTokenForAppAccount() {
 
@@ -183,11 +194,21 @@ class ApplicationIT extends ClientIT {
         PasswordGrantRequest createRequest = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = app.authenticate(createRequest)
 
-        // Test token authentication
+        //Test local token authentication
         JwtAuthenticationRequest jwtAuthenticationRequest = Authenticators.JWT_AUTHENTICATOR.builder()
                 .setJwt(result.getAccessTokenString())
+                .forLocalValidation()
                 .build();
         def authResult = app.authenticate(jwtAuthenticationRequest)
+
+        assertEquals authResult.getApplication().getHref(), app.href
+        assertEquals authResult.getAccount().getHref(), created.href
+
+        // Test token authentication against Stormpath
+        jwtAuthenticationRequest = Authenticators.JWT_AUTHENTICATOR.builder()
+                .setJwt(result.getAccessTokenString())
+                .build();
+        authResult = app.authenticate(jwtAuthenticationRequest)
 
         assertEquals authResult.getApplication().getHref(), app.href
         assertEquals authResult.getAccount().getHref(), created.href

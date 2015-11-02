@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * Utility class to build {@link RefreshGrantRequestBuilder RefreshGrantRequestBuilder} instances.
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface RefreshGrantRequestBuilder {
 

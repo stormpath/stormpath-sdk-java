@@ -295,7 +295,7 @@ public class ImmutableAccount implements Account {
     }
 
     /**
-     * @since 1.0.RC5.1
+     * @since 1.0.RC6
      */
     @Override
     public AccessTokenList getAccessTokens() {
@@ -303,7 +303,7 @@ public class ImmutableAccount implements Account {
     }
 
     /**
-     * @since 1.0.RC5.1
+     * @since 1.0.RC6
      */
     @Override
     public RefreshTokenList getRefreshTokens() {

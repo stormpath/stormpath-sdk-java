@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * This class represents a request for Stormpath to create new Oauth 2.0 access tokens for a previously authenticated account.
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface RefreshGrantRequest {
 

@@ -25,7 +25,7 @@ import com.stormpath.sdk.oauth.AccessTokenList;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultAccessTokenList extends AbstractCollectionResource<AccessToken> implements AccessTokenList {
 

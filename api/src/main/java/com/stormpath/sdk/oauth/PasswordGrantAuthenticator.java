@@ -29,7 +29,7 @@ package com.stormpath.sdk.oauth;
  * @see RefreshGrantAuthenticator
  * @see JwtAuthenticator
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface PasswordGrantAuthenticator {
 

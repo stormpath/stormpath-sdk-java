@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.GrantAuthenticationRequestFactory;
 import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultGrantAuthenticationRequestFactory implements GrantAuthenticationRequestFactory {
 

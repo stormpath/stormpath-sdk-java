@@ -21,21 +21,59 @@ import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * @since 1.0.RC5.2
+ * An OauthPolicy resource is used to configure different aspects of the OAuth tokens associated
+ * with an {@link Application Application}
+ *
+ * @since 1.0.RC6
  */
 public interface OauthPolicy extends Resource, Saveable {
 
+    /**
+     * Returns the Time To Live for the tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
+     *
+     * @return the String representation of the Time To Live for the tokens created for the parent {@link Application Application}
+     */
     String getAccessTokenTtl();
 
+    /**
+     * Returns the Time To Live for the refresh tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
+     *
+     * @return the String representation of the Time To Live for the refresh tokens created for the parent {@link Application Application}
+     */
     String getRefreshTokenTtl();
 
+    /**
+     * The href corresponding to the Endpoint for Access Tokens created for the parent {@link Application Application}
+     *
+     * @return the href corresponding to the Token Endpoint for Access Tokens created for the parent {@link Application Application}
+     */
     String getTokenEndpoint();
 
+    /**
+     * Sets the Time To Live for the tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
+     *
+     * @return this instance for method chaining.
+     */
     OauthPolicy setAccessTokenTtl(String accessTokenTtl);
 
+    /**
+     * Sets the Time To Live for the refresh tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
+     *
+     * @return this instance for method chaining.
+     */
     OauthPolicy setRefreshTokenTtl(String refreshTokenTtl);
 
+    /**
+     * Returns the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     *
+     * @return the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     */
     Application getApplication();
 
+    /**
+     * Returns the parent {@link Tenant Tenant} of the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     *
+     * @return the parent {@link Tenant Tenant} of the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     */
     Tenant getTenant();
 }

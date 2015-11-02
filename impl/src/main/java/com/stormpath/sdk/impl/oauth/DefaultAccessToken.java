@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultAccessToken extends AbstractInstanceResource implements AccessToken {
 
@@ -37,6 +37,10 @@ public class DefaultAccessToken extends AbstractInstanceResource implements Acce
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
     static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
+
+    static final String ACCOUNT_PROP_NAME = "account";
+    static final String APPLICATION_PROP_NAME = "application";
+    static final String JWT_PROP_NAME = "jwt";
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(JWT, ACCOUNT, APPLICATION, TENANT, CREATED_AT);
 

@@ -28,7 +28,7 @@ import static org.testng.Assert.assertTrue
 
 /**
  * Test for GrantAuthenticationAttempt class
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 class DefaultCreateGrantAuthenticationAttemptTest {
 

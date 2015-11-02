@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.lang.Classes;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class JwtAuthenticationRequests {
 

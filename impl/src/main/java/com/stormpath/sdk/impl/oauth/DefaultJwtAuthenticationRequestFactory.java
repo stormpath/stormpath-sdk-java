@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.JwtAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.JwtAuthenticationRequestFactory;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultJwtAuthenticationRequestFactory implements JwtAuthenticationRequestFactory {
 

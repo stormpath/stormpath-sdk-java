@@ -21,7 +21,7 @@ import com.stormpath.sdk.resource.Resource;
 /**
  * This class is used to wrap the information required to build a Grant Authentication request, required to exchange the user's credentials for an Oauth Token.
  *
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public interface GrantAuthenticationAttempt extends Resource {
 

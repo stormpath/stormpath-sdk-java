@@ -28,7 +28,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5.2
+ * @since 1.0.RC6
  */
 public class DefaultOauthPolicy extends AbstractInstanceResource implements OauthPolicy {
 

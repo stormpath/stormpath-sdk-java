@@ -1468,7 +1468,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @param passwordGrantRequest the {@link com.stormpath.sdk.oauth.PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
      * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created created for the given account.
      *
-     * @since 1.0.RC5.1
+     * @since 1.0.RC6
      */
     OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
 
@@ -1477,7 +1477,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * @param refreshGrantRequest the {@link com.stormpath.sdk.oauth.RefreshGrantRequest refreshGrantRequest} object used to obtain a new Access Token without requiring credentials.
      * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created for the given account.
      *
-     * @since 1.0.RC5.1
+     * @since 1.0.RC6
      */
     OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
 
@@ -1485,7 +1485,16 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * Authenticates the provided JWT.
      * @param jwtAuthenticationRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} object used to validate the JWT.
      * @return a JwtAuthenticationResult with the token information if the token was successfully validated.
-     * @since 1.0.RC5.1
+     *
+     * @since 1.0.RC6
      */
     JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest);
+
+    /**
+     * Returns the {@link OauthPolicy OauthPolicy} associated with this application.
+     * @return the {@link OauthPolicy OauthPolicy} associated with this application.
+     *
+     * @since 1.0.RC6
+     */
+    OauthPolicy getOauthPolicy();
 }
