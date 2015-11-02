@@ -15,14 +15,22 @@
 */
 package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.resource.Resource;
-
 /**
  * @since 1.0.RC5.1
  */
-public interface RefreshGrantAuthenticationAttempt extends Resource {
+public interface JwtAuthenticationRequest {
 
-    void setRefreshToken(String refreshToken);
+    /**
+     * Returns the value corresponding to the String representation of the Json Web Token
+     *
+     * @return the String representation of the JWT
+     */
+    String getJwt();
 
-    void setGrantType(String grantType);
+    /**
+     * This method indicates that the JWT sign will be validated locally, without performing a request to Stormpath
+     *
+     * @return true if the JWT sign could be successfully verified
+     */
+    Boolean getForLocalValidation();
 }

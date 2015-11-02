@@ -36,7 +36,7 @@ import static org.testng.Assert.*
 /**
  * Test for AccessToken class
  *
- * @since 1.0.RC5
+ * @since 1.0.RC5.1
  */
 class DefaultAccessTokenTest {
 

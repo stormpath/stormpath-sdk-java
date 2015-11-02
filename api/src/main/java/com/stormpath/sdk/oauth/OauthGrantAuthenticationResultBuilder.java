@@ -17,6 +17,7 @@ package com.stormpath.sdk.oauth;
 
 /**
  * This builder is used to obtain an {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object from the result obtained after a Grant Authentication operation is performed.
+ *
  * @since 1.0.RC5.1
  */
 public interface OauthGrantAuthenticationResultBuilder {

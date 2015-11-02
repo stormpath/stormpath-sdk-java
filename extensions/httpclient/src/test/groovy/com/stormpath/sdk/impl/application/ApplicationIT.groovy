@@ -29,6 +29,8 @@ import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest
+import com.stormpath.sdk.oauth.JwtAuthenticationRequests
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
 
@@ -57,6 +59,7 @@ import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 
+import static com.stormpath.sdk.application.Applications.createdAt
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.testng.Assert.*
 
@@ -145,6 +148,10 @@ class ApplicationIT extends ClientIT {
         assertNotNull result
         assertNotNull result.accessTokenString
         assertNotNull result.accessTokenHref
+        assertEquals result.getAccessToken().getAccount().getEmail(), email
+        assertEquals result.getAccessToken().getApplication().getHref(), app.href
+
+        def jwt = result.getAccessTokenString()
 
         RefreshGrantRequest request = Authenticators.REFRESH_GRANT_AUTHENTICATOR.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = app.authenticate(request)
@@ -152,6 +159,50 @@ class ApplicationIT extends ClientIT {
         assertNotNull result
         assertNotNull result.accessTokenString
         assertNotNull result.accessTokenHref
+        assertEquals result.getRefreshToken().getAccount().getEmail(), email
+        assertEquals result.getRefreshToken().getApplication().getHref(), app.href
+    }
+
+    /* @since 1.0.RC5.1 */
+    @Test
+    void testAuthenticateAndDeleteTokenForAppAccount() {
+
+        def app = createTempApp()
+
+        def email = uniquify('testToken') + '@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email =  email
+        account.password = 'Change&45+me1!'
+
+        def created = app.createAccount(account)
+        assertNotNull created.href
+
+        PasswordGrantRequest createRequest = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.builder().setLogin(email).setPassword("Change&45+me1!").build();
+        def result = app.authenticate(createRequest)
+
+        // Test token authentication
+        JwtAuthenticationRequest jwtAuthenticationRequest = Authenticators.JWT_AUTHENTICATOR.builder()
+                .setJwt(result.getAccessTokenString())
+                .build();
+        def authResult = app.authenticate(jwtAuthenticationRequest)
+
+        assertEquals authResult.getApplication().getHref(), app.href
+        assertEquals authResult.getAccount().getHref(), created.href
+
+        //delete token
+        result.getAccessToken().delete()
+
+        try {
+            //try to authenticate deleted token
+            app.authenticate(jwtAuthenticationRequest)
+            fail("Should have thrown due to token does not exist error")
+        } catch (Exception e){
+            def message = e.getMessage()
+            assertTrue message.contains("Token does not exist. This can occur if the token has been manually deleted, or if the token has expired and removed by Stormpath.")
+        }
     }
 
     @Test

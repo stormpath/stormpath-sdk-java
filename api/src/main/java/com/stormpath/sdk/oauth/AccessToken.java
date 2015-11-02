@@ -22,16 +22,34 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
+ * This class represents an Authentication OAuth2 token created in Stormpath.
+ *
  * @since 1.0.RC5.1
  */
 public interface AccessToken extends Resource, Deletable {
 
+    /**
+     * Returns the String representation of the Json Web Token.
+     * @return a String value denoting a JWT.
+     */
     String getJwt();
 
+    /**
+     * Returns the {@link Account Account} associated to this {@link AccessToken AccessToken}
+     * @return the {@link Account Account} associated to this {@link AccessToken AccessToken}
+     */
     Account getAccount();
 
+    /**
+     * Returns the {@link Application Application} associated to this {@link AccessToken AccessToken}
+     * @return the {@link Application Application} associated to this {@link AccessToken AccessToken}
+     */
     Application getApplication();
 
+    /**
+     * Returns the {@link Tenant Tenant} this {@link AccessToken AccessToken} belongs to.
+     * @return the {@link Tenant Tenant} this {@link AccessToken AccessToken} belongs to.
+     */
     Tenant getTenant();
 }
 

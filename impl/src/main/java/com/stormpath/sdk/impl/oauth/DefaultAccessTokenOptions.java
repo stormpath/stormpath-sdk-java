@@ -15,16 +15,21 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.RefreshGrantRequestBuilder;
-import com.stormpath.sdk.oauth.RefreshGrantRequestFactory;
+import com.stormpath.sdk.impl.query.DefaultOptions;
+import com.stormpath.sdk.oauth.AccessTokenOptions;
 
-public class DefaultRefreshGrantRequestFactory implements RefreshGrantRequestFactory {
+/**
+ * @since 1.0.RC5.1
+ */
+public class DefaultAccessTokenOptions extends DefaultOptions<AccessTokenOptions> implements AccessTokenOptions<AccessTokenOptions> {
 
-    public DefaultRefreshGrantRequestFactory() {
+    @Override
+    public AccessTokenOptions withAccount() {
+        return expand(DefaultAccessToken.ACCOUNT);
     }
 
-    public RefreshGrantRequestBuilder builder() {
-        return (RefreshGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantRequestBuilder");
+    @Override
+    public AccessTokenOptions withApplication() {
+        return expand(DefaultAccessToken.APPLICATION);
     }
 }

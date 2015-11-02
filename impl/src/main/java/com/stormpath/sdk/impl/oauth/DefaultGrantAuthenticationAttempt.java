@@ -20,14 +20,14 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.oauth.CreateGrantAuthenticationAttempt;
+import com.stormpath.sdk.oauth.GrantAuthenticationAttempt;
 
 import java.util.Map;
 
 /**
  * @since 1.0.RC5.1
  */
-public class DefaultCreateGrantAuthenticationAttempt extends AbstractResource implements CreateGrantAuthenticationAttempt {
+public class DefaultGrantAuthenticationAttempt extends AbstractResource implements GrantAuthenticationAttempt {
 
     static final StringProperty LOGIN = new StringProperty("username");
     static final StringProperty PASSWORD = new StringProperty("password");
@@ -36,11 +36,11 @@ public class DefaultCreateGrantAuthenticationAttempt extends AbstractResource im
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(LOGIN, PASSWORD, ACCOUNT_STORE_HREF, GRANT_TYPE);
 
-    public DefaultCreateGrantAuthenticationAttempt(InternalDataStore dataStore) {
+    public DefaultGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultCreateGrantAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultGrantAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

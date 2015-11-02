@@ -41,16 +41,23 @@ public final class Authenticators {
     }
 
     /**
-     * Returns a new {@link PasswordGrantRequestFactory} instance, used to construct Create Grant Authentication requests.
+     * Returns a new {@link GrantAuthenticationRequestFactory} instance, used to construct Create Grant Authentication requests.
      *
-     * @return a new {@link PasswordGrantRequestFactory} instance, used to construct Create Grant Authentication requests.
+     * @return a new {@link GrantAuthenticationRequestFactory} instance, used to construct Create Grant Authentication requests.
      */
-    public static final PasswordGrantRequestFactory PASSWORD_GRANT_AUTHENTICATOR = (PasswordGrantRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantRequestFactory");
+    public static final GrantAuthenticationRequestFactory PASSWORD_GRANT_AUTHENTICATOR = (GrantAuthenticationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultGrantAuthenticationRequestFactory");
 
     /**
-     * Returns a new {@link RefreshGrantRequestFactory} instance, used to construct Refresh Grant Authentication requests.
+     * Returns a new {@link RefreshAuthenticationRequestFactory} instance, used to construct Refresh Grant Authentication requests.
      *
-     * @return a new {@link RefreshGrantRequestFactory} instance, used to construct Refresh Grant Authentication requests.
+     * @return a new {@link RefreshAuthenticationRequestFactory} instance, used to construct Refresh Grant Authentication requests.
      */
-    public static final RefreshGrantRequestFactory REFRESH_GRANT_AUTHENTICATOR = (RefreshGrantRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantRequestFactory");
+    public static final RefreshAuthenticationRequestFactory REFRESH_GRANT_AUTHENTICATOR = (RefreshAuthenticationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshAuthenticationRequestFactory");
+
+    /**
+     * Returns a new {@link JwtAuthenticationRequestFactory} instance, used to authenticate JWT Access Tokens.
+     *
+     * @return a new {@link JwtAuthenticationRequestFactory} instance, used to authenticate JWT Access Tokens.
+     */
+    public static final JwtAuthenticationRequestFactory JWT_AUTHENTICATOR = (JwtAuthenticationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticationRequestFactory");
 }

@@ -15,9 +15,9 @@
 */
 package com.stormpath.sdk.oauth;
 
-
 /**
- * Holder for Oauth Grant Authentication-specific data that will be received on the Grant Authentication request execution.
+ * This class stores the {@link AccessToken AccessToken} data received after a Grant Authentication request.
+ *
  * @see com.stormpath.sdk.application.Application#authenticate(PasswordGrantRequest)
  * @see com.stormpath.sdk.application.Application#authenticate(RefreshGrantRequest)
  *

@@ -27,6 +27,7 @@ package com.stormpath.sdk.oauth;
  * </pre>
  *
  * @see RefreshGrantAuthenticator
+ * @see JwtAuthenticator
  *
  * @since 1.0.RC5.1
  */

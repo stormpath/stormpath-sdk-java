@@ -44,7 +44,7 @@ public class DefaultRefreshGrantAuthenticator implements RefreshGrantAuthenticat
 
         Assert.notNull(this.application, "application cannot be null or empty");
 
-        RefreshGrantAuthenticationAttempt attempt = new DefaultRefreshGrantAuthenticationAttempt(dataStore);
+        RefreshAuthenticationAttempt attempt = new DefaultRefreshAuthenticationAttempt(dataStore);
         attempt.setRefreshToken(refreshGrantRequest.getRefreshToken());
         attempt.setGrantType(refreshGrantRequest.getGrantType());
 

@@ -319,7 +319,13 @@ public class DefaultDataStore implements InternalDataStore {
     /** @since 1.0.RC5.1 */
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, HttpHeaders requestHeaders) {
-        return save(parentHref, resource, requestHeaders, returnType, null, true);
+        Map<String, String> test = new LinkedHashMap<String, String>();
+        if (requestHeaders != null){
+        test.put("nomatter", "myvalue");
+        test.put("Ishouldnot", "affectrequests");
+        }
+        QueryString qa = new QueryString(test);
+        return save(parentHref, resource, requestHeaders, returnType, qa, true);
     }
 
     /** @since 1.0.RC5 */

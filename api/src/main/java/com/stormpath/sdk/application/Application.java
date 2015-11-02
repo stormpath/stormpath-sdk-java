@@ -1481,4 +1481,11 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      */
     OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
 
+    /**
+     * Authenticates the provided JWT.
+     * @param jwtAuthenticationRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} object used to validate the JWT.
+     * @return a JwtAuthenticationResult with the token information if the token was successfully validated.
+     * @since 1.0.RC5.1
+     */
+    JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest);
 }

@@ -13,28 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.oauth
+package com.stormpath.sdk.oauth;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals
-import static org.testng.AssertJUnit.fail
+import com.stormpath.sdk.resource.Resource;
 
 /**
- * Test for OauthGrantAuthenticationResultBuilder class
- *
  * @since 1.0.RC5.1
  */
-public class DefaultOauthGrantAuthenticationResultBuilderTest {
+public interface RefreshAuthenticationAttempt extends Resource {
 
-    @Test
-    void testBuildError() {
+    void setRefreshToken(String refreshToken);
 
-        try{
-            def builder = new DefaultOauthGrantAuthenticationResultBuilder(null)
-            fail("Should have failed");
-        } catch (IllegalArgumentException e){
-            assertEquals(e.getMessage(), "grantAuthenticationToken cannot be null.")
-        }
-    }
+    void setGrantType(String grantType);
 }

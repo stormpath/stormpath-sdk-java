@@ -15,12 +15,20 @@
 */
 package com.stormpath.sdk.impl.oauth
 
+import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.oauth.PasswordGrantRequest
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createMock
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertSame
+import static org.testng.AssertJUnit.assertEquals
+import static org.testng.AssertJUnit.fail
 
 /**
  * Test for PasswordGrantRequestBuilder class
+ *
+ * @since 1.0.RC5.1
  */
 class DefaultPasswordGrantRequestBuilderTest {
 
@@ -42,9 +50,25 @@ class DefaultPasswordGrantRequestBuilderTest {
             builder.setPassword("test").build()
             fail("Should have failed");
         } catch (IllegalStateException e){
-            assertEquals(e.getMessage(), "login has not been set. It is a required attribute.")
+            assertEquals e.getMessage(), "login has not been set. It is a required attribute."
         }
     }
 
+    @Test
+    void testMethods(){
+        def builder = new DefaultPasswordGrantRequestBuilder()
 
+        def accountStore = createMock(AccountStore)
+
+        builder.setLogin("test_login")
+        builder.setPassword("test_pwd")
+        builder.setAccountStore(accountStore)
+
+        PasswordGrantRequest request = builder.build()
+
+        assertSame request.getAccountStore(), accountStore
+        assertEquals request.getLogin(), "test_login"
+        assertEquals request.getPassword(), "test_pwd"
+        assertEquals request.getGrantType(), "password"
+    }
 }

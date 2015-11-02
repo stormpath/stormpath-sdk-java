@@ -43,7 +43,7 @@ public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthentic
     public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
         Assert.notNull(this.application, "application cannot be null or empty");
 
-        CreateGrantAuthenticationAttempt createGrantAuthenticationAttempt = new DefaultCreateGrantAuthenticationAttempt(dataStore);
+        GrantAuthenticationAttempt createGrantAuthenticationAttempt = new DefaultGrantAuthenticationAttempt(dataStore);
         createGrantAuthenticationAttempt.setLogin(passwordGrantRequest.getLogin());
         createGrantAuthenticationAttempt.setPassword(passwordGrantRequest.getPassword());
         createGrantAuthenticationAttempt.setGrantType(passwordGrantRequest.getGrantType());
@@ -56,8 +56,6 @@ public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthentic
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, createGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder(grantResult);
-
-        AccessToken test = dataStore.getResource(grantResult.getAccessTokenHref(), AccessToken.class);
 
         return builder.build();
     }

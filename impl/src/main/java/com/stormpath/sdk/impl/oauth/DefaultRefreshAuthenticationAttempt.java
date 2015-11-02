@@ -20,25 +20,25 @@ import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.RefreshGrantAuthenticationAttempt;
+import com.stormpath.sdk.oauth.RefreshAuthenticationAttempt;
 
 import java.util.Map;
 
 /**
  * @since 1.0.RC5.1
  */
-public class DefaultRefreshGrantAuthenticationAttempt extends AbstractResource implements RefreshGrantAuthenticationAttempt {
+public class DefaultRefreshAuthenticationAttempt extends AbstractResource implements RefreshAuthenticationAttempt {
 
     static final StringProperty REFRESH_TOKEN = new StringProperty("refresh_token");
     static final StringProperty GRANT_TYPE = new StringProperty("grant_type");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(REFRESH_TOKEN, GRANT_TYPE);
 
-    public DefaultRefreshGrantAuthenticationAttempt(InternalDataStore dataStore) {
+    public DefaultRefreshAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultRefreshGrantAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultRefreshAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
     @Override

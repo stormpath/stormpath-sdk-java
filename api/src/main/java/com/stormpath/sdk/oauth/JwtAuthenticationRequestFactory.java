@@ -13,28 +13,18 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.oauth
-
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals
-import static org.testng.AssertJUnit.fail
+package com.stormpath.sdk.oauth;
 
 /**
- * Test for OauthGrantAuthenticationResultBuilder class
+ * Factory used to construct {@link JwtAuthenticationRequestBuilder} instances
  *
  * @since 1.0.RC5.1
  */
-public class DefaultOauthGrantAuthenticationResultBuilderTest {
-
-    @Test
-    void testBuildError() {
-
-        try{
-            def builder = new DefaultOauthGrantAuthenticationResultBuilder(null)
-            fail("Should have failed");
-        } catch (IllegalArgumentException e){
-            assertEquals(e.getMessage(), "grantAuthenticationToken cannot be null.")
-        }
-    }
+public interface JwtAuthenticationRequestFactory {
+    /**
+     * Returns a builder to generate JWT authentication requests.
+     *
+     * @return a builder to generate JWT authentication requests.
+     */
+    JwtAuthenticationRequestBuilder builder();
 }

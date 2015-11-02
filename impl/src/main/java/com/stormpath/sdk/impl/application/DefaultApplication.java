@@ -39,11 +39,7 @@ import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
@@ -151,6 +147,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         new ResourceReference<AccountStoreMapping>("defaultAccountStoreMapping", AccountStoreMapping.class);
     static final ResourceReference<AccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
         new ResourceReference<AccountStoreMapping>("defaultGroupStoreMapping", AccountStoreMapping.class);
+    static final ResourceReference<OauthPolicy> OAUTH_POLICY   =
+            new ResourceReference<OauthPolicy>("oAuthPolicy", OauthPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -168,7 +166,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -295,6 +293,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         props.put("href", href);
         PasswordResetToken prToken = getDataStore().instantiate(PasswordResetToken.class, props);
         return prToken.getAccount();
+    }
+
+    /** @since 1.0.RC5.2 */
+    public OauthPolicy getOauthPolicy() {
+        return getResourceProperty(OAUTH_POLICY);
     }
 
     /** @since 1.0.RC */
@@ -739,5 +742,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         Assert.notNull(refreshGrantRequest, "refreshGrantRequest is required and cannot be null.");
         RefreshGrantAuthenticator authenticator = RefreshGrantAuthenticators.forApplication(this, getDataStore());
         return authenticator.authenticate(refreshGrantRequest);
+    }
+
+    /**
+     * @since 1.0.RC5.1
+     */
+    @Override
+    public JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest) {
+        JwtAuthenticator jwtAuthenticator = JwtAuthenticators.forApplication(this, getDataStore());
+        return jwtAuthenticator.authenticate(jwtAuthenticationRequest);
     }
 }

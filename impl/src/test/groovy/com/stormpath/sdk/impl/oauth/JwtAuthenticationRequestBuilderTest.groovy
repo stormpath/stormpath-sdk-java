@@ -15,39 +15,41 @@
 */
 package com.stormpath.sdk.impl.oauth
 
-import com.stormpath.sdk.oauth.RefreshGrantRequest
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
 
 /**
- * Test for RefreshGrantRequestBuilder class
+ * Test for JwtAuthenticationRequestBuilder class
  *
  * @since 1.0.RC5.1
  */
-class DefaultRefreshGrantRequestBuilderTest {
+class JwtAuthenticationRequestBuilderTest {
 
     @Test
     void testError(){
-        def builder = new DefaultRefreshGrantRequestBuilder()
+        def builder = new DefaultJwtAuthenticationRequestBuilder()
 
         try {
             builder.build()
             fail("Should have failed")
-        } catch (IllegalStateException e){
-            assertEquals(e.getMessage(), "refreshToken has not been set. It is a required attribute.")
+        } catch (IllegalArgumentException e){
+            assertEquals(e.getMessage(), "jwt has not been set. It is a required value.")
         }
     }
 
     @Test
     void testMethods(){
-        def builder = new DefaultRefreshGrantRequestBuilder()
-        builder.setRefreshToken("test_refresh_token_in_builder")
+        def builder = new DefaultJwtAuthenticationRequestBuilder()
 
-        RefreshGrantRequest request = builder.build()
+        builder.forLocalValidation()
+        builder.setJwt("test_JwtAuthenticationRequestBuilder")
+        JwtAuthenticationRequest request = builder.build()
 
-        assertEquals request.getRefreshToken(), "test_refresh_token_in_builder"
-        assertEquals request.getGrantType(), "refresh_token"
+        assertEquals request.getJwt(), "test_JwtAuthenticationRequestBuilder"
+        assertTrue request.getForLocalValidation()
     }
 }

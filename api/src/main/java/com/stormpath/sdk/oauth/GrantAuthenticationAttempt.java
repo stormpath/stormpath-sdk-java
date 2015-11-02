@@ -23,7 +23,7 @@ import com.stormpath.sdk.resource.Resource;
  *
  * @since 1.0.RC5.1
  */
-public interface CreateGrantAuthenticationAttempt extends Resource {
+public interface GrantAuthenticationAttempt extends Resource {
 
     /**
      * Method used to set the plain password to be used in the token exchange request.

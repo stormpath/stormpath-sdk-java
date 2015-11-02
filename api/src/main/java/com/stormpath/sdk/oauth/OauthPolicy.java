@@ -15,17 +15,27 @@
 */
 package com.stormpath.sdk.oauth;
 
-/**
- * Factory used to construct {@link PasswordGrantRequestBuilder} instances
- *
- * @since 1.0.RC5.1
- */
-public interface PasswordGrantRequestFactory {
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.tenant.Tenant;
 
-    /**
-     * Returns a builder to generate an attempt to create a Grant Authentication token.
-     *
-     * @return a builder to generate an attempt to create a Grant Authentication token {@link CreateGrantAuthenticationAttempt}
-     */
-    PasswordGrantRequestBuilder builder();
+/**
+ * @since 1.0.RC5.2
+ */
+public interface OauthPolicy extends Resource, Saveable {
+
+    String getAccessTokenTtl();
+
+    String getRefreshTokenTtl();
+
+    String getTokenEndpoint();
+
+    OauthPolicy setAccessTokenTtl(String accessTokenTtl);
+
+    OauthPolicy setRefreshTokenTtl(String refreshTokenTtl);
+
+    Application getApplication();
+
+    Tenant getTenant();
 }
