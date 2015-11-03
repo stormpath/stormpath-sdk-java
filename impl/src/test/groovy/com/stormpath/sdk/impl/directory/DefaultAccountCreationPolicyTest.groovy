@@ -19,13 +19,11 @@ import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
 import com.stormpath.sdk.impl.mail.DefaultUnmodeledEmailTemplateList
-
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.mail.ModeledEmailTemplateList
 import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
-
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*

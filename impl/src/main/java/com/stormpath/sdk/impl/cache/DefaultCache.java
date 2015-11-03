@@ -16,9 +16,9 @@
 package com.stormpath.sdk.impl.cache;
 
 import com.stormpath.sdk.cache.Cache;
-import com.stormpath.sdk.lang.Duration;
 import com.stormpath.sdk.impl.util.SoftHashMap;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Duration;
 
 import java.io.Serializable;
 import java.util.Map;

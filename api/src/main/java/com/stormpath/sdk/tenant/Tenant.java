@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.tenant;
 
-import com.stormpath.sdk.directory.DirectoryOptions;
 import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;

@@ -30,7 +30,9 @@ public class DefaultLinkedInProviderData extends AbstractProviderData implements
     // SIMPLE PROPERTIES
     static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN);
+    static final StringProperty CODE = new StringProperty("code");
+
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN, CODE);
 
     public DefaultLinkedInProviderData(InternalDataStore dataStore) {
         super(dataStore);
@@ -52,6 +54,11 @@ public class DefaultLinkedInProviderData extends AbstractProviderData implements
 
     public LinkedInProviderData setAccessToken(String accessToken) {
         setProperty(ACCESS_TOKEN, accessToken);
+        return this;
+    }
+
+    public LinkedInProviderData setCode(String code) {
+        setProperty(CODE, code);
         return this;
     }
 

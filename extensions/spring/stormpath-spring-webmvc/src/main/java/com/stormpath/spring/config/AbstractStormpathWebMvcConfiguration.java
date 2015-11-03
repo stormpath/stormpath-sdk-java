@@ -226,7 +226,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
     protected String stormpathFilterUrlPatterns;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.servletNames'] }")
     protected String stormpathFilterServletNames;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.dispatcherTypes'] ?: 'REQUEST, INCLUDE, FORWARD, ERROR' }")
@@ -319,6 +319,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
+
+    @Value("#{ @environment['stormpath.web.logout.invalidateHttpSession'] ?: true }")
+    protected boolean logoutInvalidateHttpSession;
 
     // ================  Change Password Controller properties  ===================
 
@@ -1004,6 +1007,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         controller.setNextUri(logoutNextUri);
+        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
         controller.init();
 
         return controller;

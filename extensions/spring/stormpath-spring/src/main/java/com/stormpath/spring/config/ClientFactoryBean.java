@@ -27,12 +27,25 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
  * A Spring {@link org.springframework.beans.factory.FactoryBean FactoryBean} that produces a singleton {@link Client}
- * instance that will be used to communicate with the Stormpath REST API.
+ * instance that will be used to communicate with the Stormpath REST API. <b>This is primarily for
+ * Spring XML configuration.  If using Spring Java Config, consider using {@link Clients#builder() Clients.builder()}
+ * instead.</b>
  *
  * <p>Each client must be configured with an {@link com.stormpath.sdk.api.ApiKey ApiKey} to authenticate with the REST
  * API.  Consider using the {@link com.stormpath.spring.config.ClientApiKeyFactoryBean ClientApiKeyFactoryBean} or
  * {@link com.stormpath.sdk.api.ApiKeys#builder() ApiKeys.builder()} to acquire the ApiKey that will be used with the
- * client.</p>
+ * client.  For example:</p>
+ *
+ * <pre>
+ * &lt;bean id="stormpathClient" class="com.stormpath.spring.security.client.ClientFactory"&gt;
+ *     &lt;property name="apiKey"&gt;
+ *         &lt;bean class="com.stormpath.spring.config.ClientApiKeyFactoryBean">
+ *             &lt;!-- file value is a Spring Resource URL: --&gt;
+ *             &lt;property name="file" value="file://some/location.apiKey.properties"/&gt;
+ *         &lt;/bean&gt;
+ *     &lt;/property&gt;
+ * &lt;/bean&gt;
+ * </pre>
  *
  * @see com.stormpath.spring.config.ClientApiKeyFactoryBean ClientApiKeyFactoryBean
  * @see com.stormpath.sdk.api.ApiKeys#builder() ApiKeys.builder()

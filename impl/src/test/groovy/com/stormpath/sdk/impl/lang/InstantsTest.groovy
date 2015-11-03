@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.lang
 
 import com.stormpath.sdk.lang.Instants
 import org.testng.annotations.Test
+
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 

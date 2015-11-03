@@ -151,8 +151,8 @@ public class DefaultPropertiesParser implements PropertiesParser {
         String key = Strings.clean(keyBuffer.toString());
         String value = Strings.clean(valueBuffer.toString());
 
-        if (key == null || value == null) {
-            String msg = "Line argument must contain a key and a value.  Only one string token was found.";
+        if (key == null) {
+            String msg = "Line argument must contain a key. None was found.";
             throw new IllegalArgumentException(msg);
         }
 

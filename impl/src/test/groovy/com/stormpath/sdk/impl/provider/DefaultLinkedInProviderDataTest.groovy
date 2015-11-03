@@ -38,7 +38,7 @@ class DefaultLinkedInProviderDataTest {
 
         def propertyDescriptors = providerData.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 4)
+        assertEquals(propertyDescriptors.size(), 5)
 
         assertTrue(propertyDescriptors.get("providerId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)

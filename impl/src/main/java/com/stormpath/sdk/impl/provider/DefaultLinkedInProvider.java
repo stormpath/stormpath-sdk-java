@@ -30,8 +30,9 @@ public class DefaultLinkedInProvider extends AbstractProvider implements LinkedI
     // SIMPLE PROPERTIES
     static final StringProperty CLIENT_ID = new StringProperty("clientId");
     static final StringProperty CLIENT_SECRET = new StringProperty("clientSecret");
+    static final StringProperty REDIRECT_URI = new StringProperty("redirectUri");
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
     public DefaultLinkedInProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -69,6 +70,16 @@ public class DefaultLinkedInProvider extends AbstractProvider implements LinkedI
     @Override
     protected String getConcreteProviderId() {
         return IdentityProviderType.LINKEDIN.getNameKey();
+    }
+
+    @Override
+    public String getRedirectUri() {
+        return getString(REDIRECT_URI);
+    }
+
+    public LinkedInProvider setRedirectUri(String redirectUri) {
+        setProperty(REDIRECT_URI, redirectUri);
+        return this;
     }
 
 }

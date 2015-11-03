@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package com.stormpath.sdk.mail;
+
 import com.stormpath.sdk.resource.CollectionResource;
 /**
  *

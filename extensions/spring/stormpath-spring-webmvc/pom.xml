@@ -19,7 +19,7 @@
     <parent>
         <groupId>com.stormpath.spring</groupId>
         <artifactId>stormpath-spring-parent</artifactId>
-        <version>1.0.RC4.6-SNAPSHOT</version>
+        <version>1.0.RC5.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -70,6 +70,11 @@
         </dependency>
 
         <!-- Testing-only dependencies: -->
+        <dependency>
+            <groupId>com.stormpath.spring</groupId>
+            <artifactId>stormpath-spring</artifactId>
+            <type>test-jar</type>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

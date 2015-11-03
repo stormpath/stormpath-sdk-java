@@ -29,7 +29,8 @@ import java.util.Collection;
  * A {@link PermissionEvaluator} that determines if a {@link WildcardPermission} matches a given permission.
  * <h3>Usage</h3>
  * In order to use it you need to configure Spring this way:
- * <pre>
+ * <pre>{@code
+ *
  *      <bean id="permissionEvaluator" class="com.stormpath.spring.security.authz.permission.evaluator.WildcardPermissionEvaluator"/>
  *      <bean id="methodExpressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
  *          <property name="permissionEvaluator" ref="permissionEvaluator"/>
@@ -37,14 +38,18 @@ import java.util.Collection;
  *      <bean id="webExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
  *          <property name="permissionEvaluator" ref="permissionEvaluator"/>
  *      </bean>
+ * }
  * </pre>
  * And then you can simply evaluate permissions this way using <a href="http://docs.spring.io/spring-security/site/docs/3.0.x/reference/el-access.html">Method Security Expressions</a>:
  * <pre>
-        @PreAuthorize("hasPermission(...)")
+ *
+ *      &#64;PreAuthorize("hasPermission(...)")
  * </pre>
  * or using <a href="http://docs.spring.io/spring-security/site/docs/3.0.x/reference/taglibs.html">JSP taglibs</a>
- * <pre>
+ * <pre>{@code
+ *
  *      <sec:authorize access="hasPermission(...)" />
+ *      }
  * </pre>
  *
  * @since 0.2.0

@@ -18,9 +18,18 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.directory.PasswordPolicy;
 import com.stormpath.sdk.directory.PasswordStrength;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.IntegerProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.mail.*;
+import com.stormpath.sdk.mail.EmailStatus;
+import com.stormpath.sdk.mail.ModeledEmailTemplate;
+import com.stormpath.sdk.mail.ModeledEmailTemplateList;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplate;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 
 import java.util.Map;
 

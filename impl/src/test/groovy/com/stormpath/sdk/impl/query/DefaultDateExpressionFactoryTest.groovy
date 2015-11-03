@@ -20,8 +20,10 @@ import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.query.Criterion
 import org.joda.time.DateTime
 import org.testng.annotations.Test
+
 import java.text.DateFormat
 import java.util.concurrent.TimeUnit
+
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 

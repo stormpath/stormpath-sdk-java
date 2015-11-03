@@ -36,4 +36,13 @@ public interface LinkedInProvider extends Provider {
      */
     String getClientSecret();
 
+
+    /**
+     * Getter for the App Redirect Uri of the LinkedIn application.
+     *
+     * @return the App Redirect Uri of the LinkedIn application.
+     * @since 1.0.RC5
+     */
+    String getRedirectUri();
+
 }

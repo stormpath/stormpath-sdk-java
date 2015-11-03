@@ -19,8 +19,11 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * Implementation of the Stormpath {@link Cache} interface that delegates to a {@link org.springframework.cache.Cache
- * org.springframework.cache.Cache} instance.
+ * A Stormpath SDK {@link com.stormpath.sdk.cache.Cache} implementation that wraps a Spring {@link org.springframework.cache.Cache Cache} instance.
+ * This allows the Stormpath SDK to use your existing Spring caching mechanism so you only need to configure one
+ * caching implementation.
+ * <p/>
+ * This implementation effectively acts as an adapter or bridge from the Stormpath SDK cache API to the Spring cache API.
  *
  * @param <K> The cache key type
  * @param <V> The cache value type
