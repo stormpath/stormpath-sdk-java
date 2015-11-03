@@ -21,7 +21,7 @@ import org.junit.Test
 import static org.testng.Assert.*
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 class DefaultOrganizationOptionsTest {
 

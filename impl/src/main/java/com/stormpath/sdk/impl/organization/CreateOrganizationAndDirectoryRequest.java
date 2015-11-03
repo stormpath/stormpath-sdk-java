@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.organization;
 import com.stormpath.sdk.organization.Organization;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class CreateOrganizationAndDirectoryRequest extends DefaultCreateOrganizationRequest {
 

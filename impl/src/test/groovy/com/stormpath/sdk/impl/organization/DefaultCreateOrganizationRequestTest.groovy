@@ -23,7 +23,7 @@ import static org.testng.Assert.assertSame
 import static org.testng.Assert.fail
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 class DefaultCreateOrganizationRequestTest {
 

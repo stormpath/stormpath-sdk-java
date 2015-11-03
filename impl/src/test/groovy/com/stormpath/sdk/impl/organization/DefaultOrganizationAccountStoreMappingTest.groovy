@@ -29,7 +29,7 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 class DefaultOrganizationAccountStoreMappingTest {
 

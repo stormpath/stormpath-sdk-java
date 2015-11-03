@@ -26,7 +26,7 @@ import com.stormpath.sdk.resource.Resource;
 import java.util.Map;
 
 /**
- * @since 1.0.RC5.1
+ * @since 1.0.RC6
  */
 public class DefaultApplicationAccountStoreMapping extends AbstractAccountStoreMapping<ApplicationAccountStoreMapping> implements ApplicationAccountStoreMapping {
 
