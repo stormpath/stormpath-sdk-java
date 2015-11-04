@@ -30,7 +30,6 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
-import com.stormpath.sdk.oauth.JwtAuthenticationRequests
 import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
@@ -142,6 +141,7 @@ class ApplicationIT extends ClientIT {
 
         def created = app.createAccount(account)
         assertNotNull created.href
+        deleteOnTeardown(created)
 
         PasswordGrantRequest createRequest = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = app.authenticate(createRequest)
@@ -151,8 +151,6 @@ class ApplicationIT extends ClientIT {
         assertNotNull result.accessTokenHref
         assertEquals result.getAccessToken().getAccount().getEmail(), email
         assertEquals result.getAccessToken().getApplication().getHref(), app.href
-
-        def jwt = result.getAccessTokenString()
 
         RefreshGrantRequest request = Authenticators.REFRESH_GRANT_AUTHENTICATOR.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = app.authenticate(request)
@@ -166,12 +164,22 @@ class ApplicationIT extends ClientIT {
 
     /* @since 1.0.RC6 */
     @Test
-    void testOauthPolicy(){
+    void testRetrieveAndUpdateOauthPolicy(){
         def app = createTempApp()
 
-        def oauthPolicy = app.getOauthPolicy()
+        OauthPolicy oauthPolicy = app.getOauthPolicy()
         assertNotNull oauthPolicy
+        assertEquals oauthPolicy.getApplication().getHref(), app.href
+        assertNotNull oauthPolicy.getTokenEndpoint()
 
+        oauthPolicy.setAccessTokenTtl("P8D")
+        oauthPolicy.setRefreshTokenTtl("P2D")
+        oauthPolicy.save()
+
+        oauthPolicy = app.getOauthPolicy()
+        assertEquals oauthPolicy.getAccessTokenTtl(), "P8D"
+        assertEquals oauthPolicy.getRefreshTokenTtl(), "P2D"
+        assertEquals oauthPolicy.getApplication().getHref(), app.href
     }
 
     /* @since 1.0.RC6 */
