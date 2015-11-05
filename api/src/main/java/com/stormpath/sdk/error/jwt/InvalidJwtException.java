@@ -39,7 +39,7 @@ public class InvalidJwtException extends RuntimeException {
 
     public static final String JWT_RESPONSE_MISSING_PARAMETER_ERROR = "Required jwtResponse parameter is missing.";
 
-    public static final String JWT_RESPONSE_INVALID_APIKEY_ID_ERROR = "The client used to sign the jwrResponse is different than the one used in this datasore.";
+    public static final String JWT_RESPONSE_INVALID_APIKEY_ID_ERROR = "The client used to sign the jwtResponse is different than the one used in this datastore.";
 
     public InvalidJwtException(String jwtError) {
         super(jwtError);
