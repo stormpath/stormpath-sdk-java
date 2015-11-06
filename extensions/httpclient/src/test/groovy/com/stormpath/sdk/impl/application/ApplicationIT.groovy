@@ -31,6 +31,7 @@ import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.Oauth2Requests
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
+import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
 
@@ -140,9 +141,10 @@ class ApplicationIT extends ClientIT {
 
         def created = app.createAccount(account)
         assertNotNull created.href
+        deleteOnTeardown(created)
 
         PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build();
-        def result = app.authenticate(createRequest)
+        def result = Authenticators.passwordGrantAuthenticator.forApplication(app).authenticate(createRequest)
 
         assertNotNull result
         assertNotNull result.accessTokenString
@@ -153,7 +155,7 @@ class ApplicationIT extends ClientIT {
         def jwt = result.getAccessTokenString()
 
         RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
-        result = app.authenticate(request)
+        result = Authenticators.refreshGrantAuthenticator.forApplication(app).authenticate(request)
 
         assertNotNull result
         assertNotNull result.accessTokenString
@@ -164,12 +166,22 @@ class ApplicationIT extends ClientIT {
 
     /* @since 1.0.RC6 */
     @Test
-    void testOauthPolicy(){
+    void testRetrieveAndUpdateOauthPolicy(){
         def app = createTempApp()
 
-        def oauthPolicy = app.getOauthPolicy()
+        OauthPolicy oauthPolicy = app.getOauthPolicy()
         assertNotNull oauthPolicy
+        assertEquals oauthPolicy.getApplication().getHref(), app.href
+        assertNotNull oauthPolicy.getTokenEndpoint()
 
+        oauthPolicy.setAccessTokenTtl("P8D")
+        oauthPolicy.setRefreshTokenTtl("P2D")
+        oauthPolicy.save()
+
+        oauthPolicy = app.getOauthPolicy()
+        assertEquals oauthPolicy.getAccessTokenTtl(), "P8D"
+        assertEquals oauthPolicy.getRefreshTokenTtl(), "P2D"
+        assertEquals oauthPolicy.getApplication().getHref(), app.href
     }
 
     /* @since 1.0.RC6 */
@@ -191,14 +203,12 @@ class ApplicationIT extends ClientIT {
 
         PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = Authenticators.passwordGrantAuthenticator.forApplication(app).authenticate(createRequest)
-        //def result = app.authenticate(createRequest)
 
         //Test local token authentication
         JwtAuthenticationRequest jwtAuthenticationRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
                 .setJwt(result.getAccessTokenString())
                 .withLocalValidation()
                 .build();
-        //def authResult = app.authenticate(jwtAuthenticationRequest)
         def authResult = Authenticators.jwtAuthenticator.forApplication(app).authenticate(jwtAuthenticationRequest)
 
         assertEquals authResult.getApplication().getHref(), app.href
@@ -208,7 +218,6 @@ class ApplicationIT extends ClientIT {
         jwtAuthenticationRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
                 .setJwt(result.getAccessTokenString())
                 .build();
-        //authResult = app.authenticate(jwtAuthenticationRequest)
         authResult = Authenticators.jwtAuthenticator.forApplication(app).authenticate(jwtAuthenticationRequest)
 
         assertEquals authResult.getApplication().getHref(), app.href
@@ -220,7 +229,6 @@ class ApplicationIT extends ClientIT {
         try {
             //try to authenticate deleted token
             Authenticators.jwtAuthenticator.forApplication(app).authenticate(jwtAuthenticationRequest)
-            //app.authenticate(jwtAuthenticationRequest)
             fail("Should have thrown due to token does not exist error")
         } catch (Exception e){
             def message = e.getMessage()
