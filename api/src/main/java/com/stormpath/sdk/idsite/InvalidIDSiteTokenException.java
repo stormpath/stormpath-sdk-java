@@ -24,7 +24,7 @@ import com.stormpath.sdk.error.Error;
  * <ul>
  *  <li>expired token,</li>
  *  <li>the issued at time (iat) is after the current time</li>
- *  <li>the specified organization name key does not exist in your Stormpath Tenant, or</li>
+ *  <li>the specified organization name key does not exist in your Stormpath Tenant,</li>
  *  <li>or because the specified organization is disabled.</li>
  * </ul>
  * </p>
