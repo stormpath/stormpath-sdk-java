@@ -20,7 +20,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface RefreshGrantRequest {
+public interface RefreshGrantRequest extends GrantRequest {
 
     /**
      * Returns the String denoting the <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">Json Web Token</a> used to generate new Oauth 2.0 access tokens.
@@ -29,10 +29,5 @@ public interface RefreshGrantRequest {
      */
     String getRefreshToken();
 
-    /**
-     * Returns the Oauth 2.0 method used for the token refresh request.
-     *
-     * @return the Oauth 2.0 method used for the token refresh request.
-     */
-    String getGrantType();
+
 }

@@ -20,11 +20,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationRequestFactory {
-    /**
-     * Returns a builder to generate JWT authentication requests.
-     *
-     * @return a builder to generate JWT authentication requests.
-     */
-    JwtAuthenticationRequestBuilder builder();
+public interface JwtAuthenticationRequestFactory extends AuthenticationRequestFactory<JwtAuthenticationRequestBuilder> {
+
+
 }

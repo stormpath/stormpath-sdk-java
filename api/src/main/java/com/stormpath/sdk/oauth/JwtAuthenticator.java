@@ -19,25 +19,25 @@ package com.stormpath.sdk.oauth;
  * This class is used to authenticate a Json Web Token both locally or against Stormpath. For example:
  * <pre>
  * Application app = obtainApplication();
- * JwtAuthenticationRequest jwtAuthenticationRequest = Authenticators.JWT_AUTHENTICATOR.builder()
+ * JwtAuthenticationRequest jwtAuthenticationRequest = Authenticators.JWT_AUTHENTICATION_REQUEST.builder()
  *      .setJwt(result.getAccessTokenString())
- *      .forLocalValidation()
+ *      .withLocalValidation()
  *      .build();
  * JwtAuthenticationResult result = app.authenticate(jwtAuthenticationRequest);
  * </pre>
- * Note that to validate the token locally, the builder provides the {@code JwtAuthenticationRequest#forLocalValidation} method. When not specified, the JWT will be validated against Stormpath.
+ * Note that to validate the token locally, the builder provides the {@code JwtAuthenticationRequest#withLocalValidation} method. When not specified, the JWT will be validated against Stormpath.
  *
  * @see RefreshGrantAuthenticator
  * @see PasswordGrantAuthenticator
  *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticator {
+public interface JwtAuthenticator extends Authenticator<JwtAuthenticationResult> {
 
-    /**
-     * This method can be used to authenticate a JWT.
-     * @param jwtRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} instance containing the information required for the JWT authentication.
-     * @return a {@link JwtAuthenticationResult JwtAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
-     */
-    JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtRequest);
+//    /**
+//     * This method can be used to authenticate a JWT.
+//     * @param jwtRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} instance containing the information required for the JWT authentication.
+//     * @return a {@link JwtAuthenticationResult JwtAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
+//     */
+//    JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtRequest);
 }

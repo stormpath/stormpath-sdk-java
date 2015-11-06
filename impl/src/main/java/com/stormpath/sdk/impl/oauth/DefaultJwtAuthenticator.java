@@ -18,10 +18,6 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.account.DefaultAccount;
-import com.stormpath.sdk.impl.account.DefaultAccountResult;
-import com.stormpath.sdk.impl.api.DefaultApiKey;
-import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
-import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.oauth.JwtAuthenticationResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
@@ -37,24 +33,21 @@ import java.util.Map;
 /**
  * @since 1.0.RC6
  */
-public class DefaultJwtAuthenticator implements JwtAuthenticator {
-
-    private Application application;
-
-    private InternalDataStore dataStore;
+public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator implements JwtAuthenticator {
 
     final static String OAUTH_TOKEN_PATH = "/authTokens/";
 
     public DefaultJwtAuthenticator(Application application, DataStore dataStore) {
-        this.application = application;
-        this.dataStore = (InternalDataStore) dataStore;
+        super(application, dataStore);
     }
-    @Override
-    public JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtRequest) {
-        Assert.notNull(application, "application cannot be null or empty");
-        Assert.notNull(jwtRequest, "jwtRequest cannot be null or empty");
 
-        if (jwtRequest.getForLocalValidation()){
+    @Override
+    public JwtAuthenticationResult authenticate(Oauth2AuthenticationRequest authenticationRequest) {
+        Assert.notNull(application, "application cannot be null or empty");
+        Assert.isInstanceOf(JwtAuthenticationRequest.class, authenticationRequest, "authenticationRequest must be an instance of JwtAuthenticationRequest.");
+        JwtAuthenticationRequest jwtRequest = (JwtAuthenticationRequest) authenticationRequest;
+
+        if (jwtRequest.isLocalValidation()){
             byte[] bytes = null;
             String apiKeySecret = dataStore.getApiKey().getSecret();
             try {

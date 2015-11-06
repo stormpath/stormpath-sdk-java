@@ -26,6 +26,7 @@ import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.*;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
@@ -1463,36 +1464,36 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      */
     Application saveWithResponseOptions(ApplicationOptions responseOptions);
 
-    /**
-     * Creates a valid Oauth 2 authentication token that can be used to authenticate further requests submitted to your application's API.
-     * @param passwordGrantRequest the {@link com.stormpath.sdk.oauth.PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
-     * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created created for the given account.
-     *
-     * @since 1.0.RC6
-     */
-    OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
+//    /**
+//     * Creates a valid Oauth 2 authentication token that can be used to authenticate further requests submitted to your application's API.
+//     * @param passwordGrantRequest the {@link PasswordGrantRequest passwordGrantRequest} object that contains the information required for token creation.
+//     * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created for the given account.
+//     *
+//     * @since 1.0.RC6
+//     */
+//    OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest);
+//
+//    /**
+//     * Obtains a new Oauth 2 Access Token without requiring the user to authenticate again.
+//     * @param refreshGrantRequest the {@link RefreshGrantRequest refreshGrantRequest} object used to obtain a new Access Token without requiring credentials.
+//     * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created for the given account.
+//     *
+//     * @since 1.0.RC6
+//     */
+//    OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
+//
+//    /**
+//     * Authenticates the provided JWT.
+//     * @param jwtAuthenticationRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} object used to validate the JWT.
+//     * @return a JwtAuthenticationResult with the token information if the token was successfully validated.
+//     *
+//     * @since 1.0.RC6
+//     */
+//    JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest);
 
     /**
-     * Obtains a new Oauth 2 Access Token without requiring the user to authenticate again.
-     * @param refreshGrantRequest the {@link com.stormpath.sdk.oauth.RefreshGrantRequest refreshGrantRequest} object used to obtain a new Access Token without requiring credentials.
-     * @return the {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object, with the Oauth Token created for the given account.
-     *
-     * @since 1.0.RC6
-     */
-    OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
-
-    /**
-     * Authenticates the provided JWT.
-     * @param jwtAuthenticationRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} object used to validate the JWT.
-     * @return a JwtAuthenticationResult with the token information if the token was successfully validated.
-     *
-     * @since 1.0.RC6
-     */
-    JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest);
-
-    /**
-     * Returns the {@link OauthPolicy OauthPolicy} associated with this application.
-     * @return the {@link OauthPolicy OauthPolicy} associated with this application.
+     * Returns the {@link OauthPolicy} associated with this application.
+     * @return the {@link OauthPolicy} associated with this application.
      *
      * @since 1.0.RC6
      */

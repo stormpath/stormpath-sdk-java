@@ -20,12 +20,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface RefreshAuthenticationRequestFactory {
+public interface RefreshAuthenticationRequestFactory extends AuthenticationRequestFactory<RefreshGrantRequestBuilder> {
 
-    /**
-     * Returns a builder to generate an attempt to refresh a Grant Authentication token.
-     *
-     * @return a builder to generate an attempt to refresh a Grant Authentication token {@link RefreshAuthenticationAttempt}
-     */
-    RefreshGrantRequestBuilder builder();
+
 }

@@ -45,11 +45,11 @@ class JwtAuthenticationRequestBuilderTest {
     void testMethods(){
         def builder = new DefaultJwtAuthenticationRequestBuilder()
 
-        builder.forLocalValidation()
+        builder.withLocalValidation()
         builder.setJwt("test_JwtAuthenticationRequestBuilder")
         JwtAuthenticationRequest request = builder.build()
 
         assertEquals request.getJwt(), "test_JwtAuthenticationRequestBuilder"
-        assertTrue request.getForLocalValidation()
+        assertTrue request.isLocalValidation()
     }
 }

@@ -13,19 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.oauth;
+package com.stormpath.sdk.impl.oauth;
+
+import com.stormpath.sdk.resource.Resource;
 
 /**
- * This builder is used to obtain an {@link JwtAuthenticationResult JwtAuthenticationResult} object from the result obtained after a JWT Authentication is performed.
- *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationResultBuilder  {
+public interface RefreshAuthenticationAttempt extends Resource {
 
-    /**
-     * Creates a new {@code JwtAuthenticationResult} instance based on the current builder state.
-     *
-     * @return a new {@code JwtAuthenticationResult} instance based on the current builder state.
-     */
-    JwtAuthenticationResult build();
+    void setRefreshToken(String refreshToken);
+
+    void setGrantType(String grantType);
 }

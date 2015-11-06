@@ -18,11 +18,10 @@ package com.stormpath.sdk.oauth;
 /**
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationRequestBuilder {
+public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
 
     JwtAuthenticationRequestBuilder setJwt(String jwt);
 
-    JwtAuthenticationRequestBuilder forLocalValidation(String apiKeySecret);
+    JwtAuthenticationRequestBuilder withLocalValidation(String apiKeySecret);
 
-    JwtAuthenticationRequest build();
 }

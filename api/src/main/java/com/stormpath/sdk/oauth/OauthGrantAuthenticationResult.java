@@ -23,7 +23,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface OauthGrantAuthenticationResult {
+public interface OauthGrantAuthenticationResult extends Oauth2AuthenticationResult {
 
     /**
      * Returns the String that corresponds to the Oauth Access Token created during the Create Grant Authentication operation.

@@ -27,8 +27,8 @@ public class DefaultJwtAuthenticationResult implements JwtAuthenticationResult {
 
     private final AccessToken accessToken;
 
-    public DefaultJwtAuthenticationResult(DefaultJwtAuthenticationResultBuilder builder) {
-        this.accessToken = builder.getAccessToken();
+    public DefaultJwtAuthenticationResult(AccessToken accessToken) {
+        this.accessToken = accessToken;
     }
 
     @Override

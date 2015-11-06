@@ -43,7 +43,7 @@ public class DefaultJwtAuthenticationRequestBuilder implements JwtAuthentication
     }
 
     @Override
-    public JwtAuthenticationRequestBuilder forLocalValidation(String apiKeySecret) {
+    public JwtAuthenticationRequestBuilder withLocalValidation(String apiKeySecret) {
         this.forLocalValidation = true;
         this.apikey = apiKeySecret;
         return this;

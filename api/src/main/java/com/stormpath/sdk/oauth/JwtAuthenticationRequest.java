@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationRequest {
+public interface JwtAuthenticationRequest extends Oauth2AuthenticationRequest {
 
     /**
      * Returns the value corresponding to the String representation of the Json Web Token
@@ -32,5 +32,5 @@ public interface JwtAuthenticationRequest {
      *
      * @return true if the JWT sign could be successfully verified
      */
-    Boolean getForLocalValidation();
+    Boolean isLocalValidation();
 }

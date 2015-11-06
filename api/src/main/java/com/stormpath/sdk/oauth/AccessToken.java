@@ -36,23 +36,23 @@ public interface AccessToken extends Resource, Deletable {
     String getJwt();
 
     /**
-     * Returns the {@link Account Account} associated to this {@link AccessToken AccessToken}
+     * Returns the {@link Account} associated to this {@link AccessToken}.
      *
-     * @return the {@link Account Account} associated to this {@link AccessToken AccessToken}
+     * @return the {@link Account} associated to this {@link AccessToken}.
      */
     Account getAccount();
 
     /**
-     * Returns the {@link Application Application} associated to this {@link AccessToken AccessToken}
+     * Returns the {@link Application} associated to this {@link AccessToken}.
      *
-     * @return the {@link Application Application} associated to this {@link AccessToken AccessToken}
+     * @return the {@link Application} associated to this {@link AccessToken}.
      */
     Application getApplication();
 
     /**
-     * Returns the {@link Tenant Tenant} this {@link AccessToken AccessToken} belongs to.
+     * Returns the {@link Tenant} this {@link AccessToken} belongs to.
      *
-     * @return the {@link Tenant Tenant} this {@link AccessToken AccessToken} belongs to.
+     * @return the {@link Tenant} this {@link AccessToken} belongs to.
      */
     Tenant getTenant();
 }

@@ -20,7 +20,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface RefreshGrantRequestBuilder {
+public interface RefreshGrantRequestBuilder extends Oauth2AuthenticationRequestBuilder<RefreshGrantRequest> {
 
     /**
      * Specifies the refresh token that will be used to obtain a new Access Token without requiring credentials.

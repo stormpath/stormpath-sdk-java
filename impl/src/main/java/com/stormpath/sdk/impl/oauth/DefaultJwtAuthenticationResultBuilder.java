@@ -17,9 +17,7 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessToken;
-import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 import com.stormpath.sdk.oauth.JwtAuthenticationResult;
-import com.stormpath.sdk.oauth.JwtAuthenticationResultBuilder;
 
 /**
  * @since 1.0.RC6
@@ -33,13 +31,13 @@ public class DefaultJwtAuthenticationResultBuilder implements JwtAuthenticationR
     }
 
     public DefaultJwtAuthenticationResultBuilder(AccessToken accessToken) {
-        Assert.notNull(accessToken, "grantAuthenticationToken cannot be null.");
+        Assert.notNull(accessToken, "accessToken cannot be null.");
         this.accessToken = accessToken;
     }
 
     @Override
     public JwtAuthenticationResult build() {
         Assert.notNull(this.accessToken, "accessToken has not been set. It is a required attribute.");
-        return new DefaultJwtAuthenticationResult(this);
+        return new DefaultJwtAuthenticationResult(accessToken);
     }
 }

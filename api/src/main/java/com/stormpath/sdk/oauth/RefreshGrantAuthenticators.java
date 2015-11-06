@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 /**
  * @since 1.0.RC6
  */
+@Deprecated
 public class RefreshGrantAuthenticators {
 
     @SuppressWarnings("unchecked")

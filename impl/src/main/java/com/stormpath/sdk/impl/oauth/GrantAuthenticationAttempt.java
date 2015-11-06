@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.oauth;
+package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;

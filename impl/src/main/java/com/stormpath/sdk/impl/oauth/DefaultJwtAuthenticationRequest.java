@@ -35,7 +35,7 @@ public class DefaultJwtAuthenticationRequest implements JwtAuthenticationRequest
         return jwt;
     }
 
-    public Boolean getForLocalValidation() {
+    public Boolean isLocalValidation() {
         return forLocalValidation;
     }
 }

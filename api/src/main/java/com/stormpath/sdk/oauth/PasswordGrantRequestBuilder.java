@@ -22,7 +22,7 @@ import com.stormpath.sdk.directory.AccountStore;
  *
  * @since 1.0.RC6
  */
-public interface PasswordGrantRequestBuilder {
+public interface PasswordGrantRequestBuilder extends Oauth2AuthenticationRequestBuilder<PasswordGrantRequest> {
 
     /**
      * Specifies the login that will be used to create the authentication token.
@@ -48,10 +48,4 @@ public interface PasswordGrantRequestBuilder {
      */
     PasswordGrantRequestBuilder setAccountStore(AccountStore accountStore);
 
-    /**
-     * Creates a new {@code PasswordGrantRequest} instance based on the current builder state
-     *
-     * @return the {@link PasswordGrantRequest} object used to create the authentication token
-     */
-    PasswordGrantRequest build();
 }

@@ -15,14 +15,11 @@
 */
 package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.resource.Resource;
-
 /**
+ * Factory used to construct {@link PasswordGrantRequestBuilder} instances
+ *
  * @since 1.0.RC6
  */
-public interface RefreshAuthenticationAttempt extends Resource {
+public interface PasswordGrantAuthenticationRequestFactory extends AuthenticationRequestFactory<PasswordGrantRequestBuilder> {
 
-    void setRefreshToken(String refreshToken);
-
-    void setGrantType(String grantType);
 }

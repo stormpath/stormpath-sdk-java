@@ -19,7 +19,7 @@ package com.stormpath.sdk.oauth;
  * This class is used to refresh an OAuth 2.0 token created in Stormpath. For example:
  * <pre>
  * Application app = obtainApplication();
- * RefreshGrantRequest request = Authenticators.REFRESH_GRANT_AUTHENTICATOR.builder()
+ * RefreshGrantRequest request = Authenticators.REFRESH_GRANT_REQUEST.builder()
  *      .setRefreshToken(refreshToken)
  *      .build();
  * OauthGrantAuthenticationResult result = app.authenticate(request)
@@ -30,13 +30,13 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface RefreshGrantAuthenticator {
+public interface RefreshGrantAuthenticator extends Authenticator<OauthGrantAuthenticationResult> {
 
-    /**
-     * Method used to get refreshed Oauth 2.0 Access Tokens
-     * @param refreshGrantRequest the {@link RefreshGrantRequest RefreshGrantRequest} instance containing the information required for the request.
-     *
-     * @return an {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
-     */
-    OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
+//    /**
+//     * Method used to get refreshed Oauth 2.0 Access Tokens
+//     * @param refreshGrantRequest the {@link RefreshGrantRequest RefreshGrantRequest} instance containing the information required for the request.
+//     *
+//     * @return an {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
+//     */
+//    OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
 }

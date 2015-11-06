@@ -13,19 +13,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.oauth;
+package com.stormpath.sdk.impl.oauth;
+
+import com.stormpath.sdk.oauth.JwtAuthenticationResult;
 
 /**
- * Factory used to construct {@link PasswordGrantRequestBuilder} instances
+ * This builder is used to obtain an {@link com.stormpath.sdk.oauth.JwtAuthenticationResult JwtAuthenticationResult} object from the result obtained after a JWT Authentication is performed.
  *
  * @since 1.0.RC6
  */
-public interface GrantAuthenticationRequestFactory {
+public interface JwtAuthenticationResultBuilder  {
 
     /**
-     * Returns a builder to generate an attempt to create a Grant Authentication token.
+     * Creates a new {@code JwtAuthenticationResult} instance based on the current builder state.
      *
-     * @return a builder to generate an attempt to create a Grant Authentication token {@link GrantAuthenticationAttempt}
+     * @return a new {@code JwtAuthenticationResult} instance based on the current builder state.
      */
-    PasswordGrantRequestBuilder builder();
+    JwtAuthenticationResult build();
 }

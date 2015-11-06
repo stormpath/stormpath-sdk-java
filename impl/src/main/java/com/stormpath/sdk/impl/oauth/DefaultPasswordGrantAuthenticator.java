@@ -18,7 +18,6 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
@@ -26,22 +25,19 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.0.RC6
  */
-public class DefaultPasswordGrantAuthenticator implements PasswordGrantAuthenticator {
-
-    private Application application;
-
-    private InternalDataStore dataStore;
+public class DefaultPasswordGrantAuthenticator extends AbstractOauth2Authenticator implements PasswordGrantAuthenticator {
 
     final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
     public DefaultPasswordGrantAuthenticator(Application application, DataStore dataStore) {
-        this.application = application;
-        this.dataStore = (InternalDataStore) dataStore;
+        super(application, dataStore);
     }
 
     @Override
-    public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
+    public OauthGrantAuthenticationResult authenticate(Oauth2AuthenticationRequest authenticationRequest) {
         Assert.notNull(this.application, "application cannot be null or empty");
+        Assert.isInstanceOf(PasswordGrantRequest.class, authenticationRequest, "authenticationRequest must be an instance of PasswordGrantRequest.");
+        PasswordGrantRequest passwordGrantRequest = (PasswordGrantRequest) authenticationRequest;
 
         GrantAuthenticationAttempt createGrantAuthenticationAttempt = new DefaultGrantAuthenticationAttempt(dataStore);
         createGrantAuthenticationAttempt.setLogin(passwordGrantRequest.getLogin());

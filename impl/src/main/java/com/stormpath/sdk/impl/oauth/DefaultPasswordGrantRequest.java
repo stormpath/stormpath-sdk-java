@@ -37,7 +37,6 @@ public class DefaultPasswordGrantRequest implements PasswordGrantRequest {
         this.password = password;
     }
 
-    @Override
     public PasswordGrantRequest setAccountStore(AccountStore accountStore) {
         this.accountStore = accountStore;
         return this;

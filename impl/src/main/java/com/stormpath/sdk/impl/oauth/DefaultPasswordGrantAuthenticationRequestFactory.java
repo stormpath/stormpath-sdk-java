@@ -16,17 +16,15 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.GrantAuthenticationRequestFactory;
+import com.stormpath.sdk.oauth.PasswordGrantAuthenticationRequestFactory;
 import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
 
 /**
  * @since 1.0.RC6
  */
-public class DefaultGrantAuthenticationRequestFactory implements GrantAuthenticationRequestFactory {
+public class DefaultPasswordGrantAuthenticationRequestFactory implements PasswordGrantAuthenticationRequestFactory {
 
-    public DefaultGrantAuthenticationRequestFactory() {
-    }
-
+    @Override
     public PasswordGrantRequestBuilder builder() {
         return (PasswordGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantRequestBuilder");
     }

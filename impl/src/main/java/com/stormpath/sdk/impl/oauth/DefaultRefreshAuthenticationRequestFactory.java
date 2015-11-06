@@ -24,9 +24,7 @@ import com.stormpath.sdk.oauth.RefreshGrantRequestBuilder;
  */
 public class DefaultRefreshAuthenticationRequestFactory implements RefreshAuthenticationRequestFactory {
 
-    public DefaultRefreshAuthenticationRequestFactory() {
-    }
-
+    @Override
     public RefreshGrantRequestBuilder builder() {
         return (RefreshGrantRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantRequestBuilder");
     }

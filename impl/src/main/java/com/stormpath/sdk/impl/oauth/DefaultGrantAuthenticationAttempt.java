@@ -20,7 +20,6 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.oauth.GrantAuthenticationAttempt;
 
 import java.util.Map;
 

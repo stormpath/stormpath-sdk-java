@@ -26,23 +26,19 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.0.RC6
  */
-public class DefaultRefreshGrantAuthenticator implements RefreshGrantAuthenticator {
-
-    private Application application;
-
-    private InternalDataStore dataStore;
+public class DefaultRefreshGrantAuthenticator extends AbstractOauth2Authenticator implements RefreshGrantAuthenticator {
 
     final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
     public DefaultRefreshGrantAuthenticator(Application application, DataStore dataStore){
-        this.application = application;
-        this.dataStore = (InternalDataStore) dataStore;
+        super(application, dataStore);
     }
 
     @Override
-    public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {
-
+    public OauthGrantAuthenticationResult authenticate(Oauth2AuthenticationRequest authenticationRequest) {
         Assert.notNull(this.application, "application cannot be null or empty");
+        Assert.isInstanceOf(RefreshGrantRequest.class, authenticationRequest, "authenticationRequest must be an instance of RefreshGrantRequest.");
+        RefreshGrantRequest refreshGrantRequest = (RefreshGrantRequest) authenticationRequest;
 
         RefreshAuthenticationAttempt attempt = new DefaultRefreshAuthenticationAttempt(dataStore);
         attempt.setRefreshToken(refreshGrantRequest.getRefreshToken());

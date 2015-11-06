@@ -34,6 +34,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.*;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.Directory;
@@ -52,6 +53,9 @@ import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
+import com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
@@ -724,32 +728,45 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return this;
     }
 
-    /**
-     * @since 1.0.RC6
-     */
-    @Override
-    public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
-        Assert.notNull(passwordGrantRequest, "passwordGrantRequest is required and cannot be null.");
-        PasswordGrantAuthenticator authenticator = PasswordGrantAuthenticators.forApplication(this, getDataStore());
-        return authenticator.authenticate(passwordGrantRequest);
+//    /**
+//     * @since 1.0.RC6
+//     */
+//    @Override
+//    public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
+//        Assert.notNull(passwordGrantRequest, "passwordGrantRequest is required and cannot be null.");
+//        PasswordGrantAuthenticator authenticator = PasswordGrantAuthenticators.forApplication(this, getDataStore());
+//        return authenticator.authenticate(passwordGrantRequest);
+//    }
+//
+//    /**
+//     * @since 1.0.RC6
+//     */
+//    @Override
+//    public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {
+//        Assert.notNull(refreshGrantRequest, "refreshGrantRequest is required and cannot be null.");
+//        RefreshGrantAuthenticator authenticator = RefreshGrantAuthenticators.forApplication(this, getDataStore());
+//        return authenticator.authenticate(refreshGrantRequest);
+//    }
+//
+//    /**
+//     * @since 1.0.RC6
+//     */
+//    @Override
+//    public JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest) {
+//        JwtAuthenticator jwtAuthenticator = JwtAuthenticators.forApplication(this, getDataStore());
+//        return jwtAuthenticator.authenticate(jwtAuthenticationRequest);
+//    }
+
+    public PasswordGrantAuthenticator createPasswordGrantAuthenticator() {
+        return new DefaultPasswordGrantAuthenticator(this, getDataStore());
     }
 
-    /**
-     * @since 1.0.RC6
-     */
-    @Override
-    public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {
-        Assert.notNull(refreshGrantRequest, "refreshGrantRequest is required and cannot be null.");
-        RefreshGrantAuthenticator authenticator = RefreshGrantAuthenticators.forApplication(this, getDataStore());
-        return authenticator.authenticate(refreshGrantRequest);
+    public RefreshGrantAuthenticator createRefreshGrantAuthenticator() {
+        return new DefaultRefreshGrantAuthenticator(this, getDataStore());
     }
 
-    /**
-     * @since 1.0.RC6
-     */
-    @Override
-    public JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest) {
-        JwtAuthenticator jwtAuthenticator = JwtAuthenticators.forApplication(this, getDataStore());
-        return jwtAuthenticator.authenticate(jwtAuthenticationRequest);
+    public JwtAuthenticator createJwtAuthenticator() {
+        return new DefaultJwtAuthenticator(this, getDataStore());
     }
+
 }

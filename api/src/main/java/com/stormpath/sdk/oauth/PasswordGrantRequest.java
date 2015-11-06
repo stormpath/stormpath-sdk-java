@@ -22,7 +22,7 @@ import com.stormpath.sdk.directory.AccountStore;
  *
  * @since 1.0.RC6
  */
-public interface PasswordGrantRequest {
+public interface PasswordGrantRequest extends GrantRequest {
 
     /**
      * Returns the plain password used for the authentication and token creation.
@@ -45,17 +45,4 @@ public interface PasswordGrantRequest {
      */
     AccountStore getAccountStore();
 
-    /**
-     * Sets the specific {@link AccountStore accountStore} where the provided credentials will be sought in order to authenticate a request.
-     *
-     * @return this instance for method chaining.
-     */
-    PasswordGrantRequest setAccountStore(AccountStore accountStore);
-
-    /**
-     * Returns the Oauth 2.0 method used for the token creation.
-     *
-     * @return the Oauth 2.0 method used for the token creation.
-     */
-    String getGrantType();
 }

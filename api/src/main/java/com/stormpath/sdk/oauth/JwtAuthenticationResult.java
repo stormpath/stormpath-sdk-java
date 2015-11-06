@@ -23,7 +23,7 @@ import com.stormpath.sdk.application.Application;
  *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationResult {
+public interface JwtAuthenticationResult extends Oauth2AuthenticationResult {
 
     /**
      * Returns the {@link com.stormpath.sdk.account.Account Account} associated to the authenticated {@link AccessToken AccessToken}
