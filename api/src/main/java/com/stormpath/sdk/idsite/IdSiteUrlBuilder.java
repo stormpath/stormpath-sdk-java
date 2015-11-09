@@ -130,8 +130,12 @@ public interface IdSiteUrlBuilder {
     IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField);
 
     /**
-     * Sets the {@code sp_token} property to be used during the initial sso call. The {@code sp_token} must correspond to
-     * an actual password reset token and when successful the {@code IdSite} will be redirected to the IdSite.
+     * Sets the {@code sp_token} property used by the {@code IdSite} to complete an account password reset workflow. The
+     * {@code sp_token} must correspond to an actual password reset token issued to one of the accounts of this
+     * {@code application}. If {@code sp_token} property is present and valid, the {@code IdSite} will be redirected to
+     * the IdSite URL (included the configured path, see {@link #setPath(String)}, with the {@code sp_token} embedded in
+     * the signed JWT.
+     *
      * <p>
      * <h5>Example</h5>
      * <p>
