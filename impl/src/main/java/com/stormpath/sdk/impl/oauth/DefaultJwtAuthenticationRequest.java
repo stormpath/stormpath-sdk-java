@@ -24,18 +24,11 @@ public class DefaultJwtAuthenticationRequest implements JwtAuthenticationRequest
 
     private final String jwt;
 
-    private final Boolean forLocalValidation;
-
-    public DefaultJwtAuthenticationRequest(String jwt, Boolean forLocalValidation, String apikey){
+    public DefaultJwtAuthenticationRequest(String jwt){
         this.jwt = jwt;
-        this.forLocalValidation = forLocalValidation;
     }
 
     public String getJwt() {
         return jwt;
-    }
-
-    public Boolean isLocalValidation() {
-        return forLocalValidation;
     }
 }

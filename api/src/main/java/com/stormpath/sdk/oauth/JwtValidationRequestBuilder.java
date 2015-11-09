@@ -16,9 +16,24 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * Utility class to build {@link JwtValidationRequest JwtValidationRequest} instances.
+ *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
+public interface JwtValidationRequestBuilder {
 
-    JwtAuthenticationRequestBuilder setJwt(String jwt);
+    /**
+     * Specifies the JWT that will be validated.
+     *
+     * @param jwt the String representation of the JWT to validate.
+     * @return this instance for method chaining.
+     */
+    JwtValidationRequestBuilder setJwt(String jwt);
+
+    /**
+     * Builds a {@link JwtAuthenticationRequest JwtValidationRequest} instance based on the current state of the builder.
+     *
+     * @return a {@link JwtAuthenticationRequest} instance.
+     */
+    JwtValidationRequest build();
 }

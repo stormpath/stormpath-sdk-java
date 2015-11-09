@@ -16,6 +16,8 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * This class is used to create a request to authenticate a JWT against Stormpath Server.
+ *
  * @since 1.0.RC6
  */
 public interface JwtAuthenticationRequest extends Oauth2AuthenticationRequest {
@@ -26,11 +28,4 @@ public interface JwtAuthenticationRequest extends Oauth2AuthenticationRequest {
      * @return the String representation of the JWT
      */
     String getJwt();
-
-    /**
-     * This method indicates that the JWT sign will be validated locally, without performing a request to Stormpath
-     *
-     * @return true if the JWT sign could be successfully verified
-     */
-    Boolean isLocalValidation();
 }

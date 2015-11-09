@@ -15,32 +15,23 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
-import com.stormpath.sdk.oauth.JwtAuthenticationRequestBuilder;
+import com.stormpath.sdk.oauth.JwtValidationRequest;
 
 /**
  * @since 1.0.RC6
  */
-public class DefaultJwtAuthenticationRequestBuilder implements JwtAuthenticationRequestBuilder {
+public class DefaultJwtValidationRequest implements JwtValidationRequest {
 
-    private String jwt;
+    private final String jwt;
 
+    public DefaultJwtValidationRequest(String jwt) {
+        Assert.notNull(jwt, "jwt argument cannot be null.");
+        this.jwt = jwt;
+    }
+
+    @Override
     public String getJwt() {
         return jwt;
-    }
-
-    @Override
-    public JwtAuthenticationRequestBuilder setJwt(String jwt) {
-        Assert.notNull(jwt, "jwt is a required value and must not be null or empty.");
-        this.jwt = jwt;
-        return this;
-    }
-
-    @Override
-    public JwtAuthenticationRequest build() {
-        Assert.notNull(jwt, "jwt has not been set. It is a required value.");
-        return new DefaultJwtAuthenticationRequest(this.jwt);
     }
 }

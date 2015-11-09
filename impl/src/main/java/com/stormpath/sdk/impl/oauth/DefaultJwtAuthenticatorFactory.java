@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.impl.application.DefaultApplication;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
 import com.stormpath.sdk.oauth.JwtAuthenticatorFactory;
+import com.stormpath.sdk.oauth.JwtValidator;
 
 public class DefaultJwtAuthenticatorFactory implements JwtAuthenticatorFactory {
 

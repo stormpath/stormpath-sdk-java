@@ -45,46 +45,13 @@ public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator impleme
     public JwtAuthenticationResult authenticate(Oauth2AuthenticationRequest authenticationRequest) {
         Assert.notNull(application, "application cannot be null or empty");
         Assert.isInstanceOf(JwtAuthenticationRequest.class, authenticationRequest, "authenticationRequest must be an instance of JwtAuthenticationRequest.");
+
         JwtAuthenticationRequest jwtRequest = (JwtAuthenticationRequest) authenticationRequest;
-
-        if (jwtRequest.isLocalValidation()){
-            byte[] bytes = null;
-            String apiKeySecret = dataStore.getApiKey().getSecret();
-            try {
-                bytes = apiKeySecret.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e){
-                return null;
-            }
-            try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(bytes)
-                        .parseClaimsJws(jwtRequest.getJwt()).getBody();
-
-                Map<String, Object> properties = new HashMap<String, Object>();
-
-                Map<String, Object> account = new HashMap<String, Object>();
-                account.put(DefaultAccount.HREF_PROP_NAME, claims.getSubject().toString());
-                properties.put(DefaultAccessToken.ACCOUNT_PROP_NAME, account);
-
-                properties.put(DefaultAccessToken.APPLICATION_PROP_NAME, this.application);
-                properties.put(DefaultAccessToken.JWT_PROP_NAME, jwtRequest.getJwt());
-
-                AccessToken accessToken = new DefaultAccessToken(dataStore, properties);
-
-                JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
-                return builder.build();
-
-            } catch (SignatureException e){
-                return null;
-            }
-
-        } else {
-            StringBuilder stringBuilder = new StringBuilder(application.getHref());
-            stringBuilder.append(OAUTH_TOKEN_PATH);
-            stringBuilder.append(jwtRequest.getJwt());
-            AccessToken accessToken = dataStore.getResource(stringBuilder.toString(), AccessToken.class);
-            JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
-            return builder.build();
-        }
+        StringBuilder stringBuilder = new StringBuilder(application.getHref());
+        stringBuilder.append(OAUTH_TOKEN_PATH);
+        stringBuilder.append(jwtRequest.getJwt());
+        AccessToken accessToken = dataStore.getResource(stringBuilder.toString(), AccessToken.class);
+        JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
+        return builder.build();
     }
 }

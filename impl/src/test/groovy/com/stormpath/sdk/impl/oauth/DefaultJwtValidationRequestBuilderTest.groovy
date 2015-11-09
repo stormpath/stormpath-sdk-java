@@ -15,39 +15,37 @@
 */
 package com.stormpath.sdk.impl.oauth
 
-import com.stormpath.sdk.oauth.JwtAuthenticationRequest
+import com.stormpath.sdk.oauth.JwtValidationRequest
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.fail
+import static org.testng.AssertJUnit.fail
 
 /**
- * Test for JwtAuthenticationRequestBuilder class
+ * Test for JwtValidationRequestBuilder class
  *
  * @since 1.0.RC6
  */
-class JwtAuthenticationRequestBuilderTest {
+class DefaultJwtValidationRequestBuilderTest {
 
     @Test
-    void testError(){
-        def builder = new DefaultJwtAuthenticationRequestBuilder()
+    void testBuildErrors() {
 
-        try {
+        def builder = new DefaultJwtValidationRequestBuilder()
+
+        try{
             builder.build()
-            fail("Should have failed")
+            fail("Should have failed");
         } catch (IllegalArgumentException e){
-            assertEquals(e.getMessage(), "jwt has not been set. It is a required value.")
+            assertEquals(e.getMessage(), "jwt is mandatory and cannot be empty.")
         }
     }
 
     @Test
     void testMethods(){
-        def builder = new DefaultJwtAuthenticationRequestBuilder()
 
-        builder.setJwt("test_JwtAuthenticationRequestBuilder")
-        JwtAuthenticationRequest request = builder.build()
-
-        assertEquals request.getJwt(), "test_JwtAuthenticationRequestBuilder"
+        def builder = new DefaultJwtValidationRequestBuilder()
+        JwtValidationRequest request = builder.setJwt("jwtValidationRequestBuilderTest")build()
+        assertEquals request.getJwt(), "jwtValidationRequestBuilderTest"
     }
 }

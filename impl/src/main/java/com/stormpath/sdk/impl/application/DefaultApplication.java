@@ -54,6 +54,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
 import com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultJwtValidator;
 import com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
@@ -728,45 +729,23 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return this;
     }
 
-//    /**
-//     * @since 1.0.RC6
-//     */
-//    @Override
-//    public OauthGrantAuthenticationResult authenticate(PasswordGrantRequest passwordGrantRequest) {
-//        Assert.notNull(passwordGrantRequest, "passwordGrantRequest is required and cannot be null.");
-//        PasswordGrantAuthenticator authenticator = PasswordGrantAuthenticators.forApplication(this, getDataStore());
-//        return authenticator.authenticate(passwordGrantRequest);
-//    }
-//
-//    /**
-//     * @since 1.0.RC6
-//     */
-//    @Override
-//    public OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest) {
-//        Assert.notNull(refreshGrantRequest, "refreshGrantRequest is required and cannot be null.");
-//        RefreshGrantAuthenticator authenticator = RefreshGrantAuthenticators.forApplication(this, getDataStore());
-//        return authenticator.authenticate(refreshGrantRequest);
-//    }
-//
-//    /**
-//     * @since 1.0.RC6
-//     */
-//    @Override
-//    public JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtAuthenticationRequest) {
-//        JwtAuthenticator jwtAuthenticator = JwtAuthenticators.forApplication(this, getDataStore());
-//        return jwtAuthenticator.authenticate(jwtAuthenticationRequest);
-//    }
-
+    /* @since 1.0.RC6 */
     public PasswordGrantAuthenticator createPasswordGrantAuthenticator() {
         return new DefaultPasswordGrantAuthenticator(this, getDataStore());
     }
 
+    /* @since 1.0.RC6 */
     public RefreshGrantAuthenticator createRefreshGrantAuthenticator() {
         return new DefaultRefreshGrantAuthenticator(this, getDataStore());
     }
 
+    /* @since 1.0.RC6 */
     public JwtAuthenticator createJwtAuthenticator() {
         return new DefaultJwtAuthenticator(this, getDataStore());
     }
 
+    /* @since 1.0.RC6 */
+    public JwtValidator createJwtValidator() {
+        return new DefaultJwtValidator(getDataStore());
+    }
 }

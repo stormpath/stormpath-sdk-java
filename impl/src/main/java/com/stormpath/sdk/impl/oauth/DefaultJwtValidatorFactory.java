@@ -13,12 +13,19 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.oauth;
+package com.stormpath.sdk.impl.oauth;
+
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.oauth.JwtValidator;
+import com.stormpath.sdk.oauth.JwtValidatorFactory;
 
 /**
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
+public class DefaultJwtValidatorFactory implements JwtValidatorFactory {
 
-    JwtAuthenticationRequestBuilder setJwt(String jwt);
+    public JwtValidator forApplication(Application application) {
+        return ((DefaultApplication) application).createJwtValidator();
+    }
 }

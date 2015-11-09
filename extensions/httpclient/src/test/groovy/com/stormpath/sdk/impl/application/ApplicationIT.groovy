@@ -29,6 +29,7 @@ import com.stormpath.sdk.application.AccountStoreMappingList
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.JwtValidationRequest
 import com.stormpath.sdk.oauth.Oauth2Requests
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
 import com.stormpath.sdk.oauth.OauthPolicy
@@ -50,6 +51,7 @@ import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
+import com.stormpath.sdk.oauth.Validators
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
@@ -204,31 +206,24 @@ class ApplicationIT extends ClientIT {
         PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build();
         def result = Authenticators.passwordGrantAuthenticator.forApplication(app).authenticate(createRequest)
 
-        //Test local token authentication
-        JwtAuthenticationRequest jwtAuthenticationRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
-                .setJwt(result.getAccessTokenString())
-                .withLocalValidation()
-                .build();
-        def authResult = Authenticators.jwtAuthenticator.forApplication(app).authenticate(jwtAuthenticationRequest)
+        // Authenticate token against Stormpath
+        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(result.getAccessTokenString()).build()
+        def authResult = Authenticators.jwtAuthenticator.forApplication(app).authenticate(authRequest)
 
         assertEquals authResult.getApplication().getHref(), app.href
         assertEquals authResult.getAccount().getHref(), created.href
 
-        // Test token authentication against Stormpath
-        jwtAuthenticationRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
-                .setJwt(result.getAccessTokenString())
-                .build();
-        authResult = Authenticators.jwtAuthenticator.forApplication(app).authenticate(jwtAuthenticationRequest)
+        //Test local JWT validation
+        JwtValidationRequest validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST.builder().setJwt(result.getAccessTokenString()).build()
+        authResult = Validators.jwtValidator.forApplication(app).validate(validationRequest)
 
-        assertEquals authResult.getApplication().getHref(), app.href
-        assertEquals authResult.getAccount().getHref(), created.href
+        assertTrue authResult
 
-        //delete token
         result.getAccessToken().delete()
 
         try {
             //try to authenticate deleted token
-            Authenticators.jwtAuthenticator.forApplication(app).authenticate(jwtAuthenticationRequest)
+            Authenticators.jwtAuthenticator.forApplication(app).authenticate(authRequest)
             fail("Should have thrown due to token does not exist error")
         } catch (Exception e){
             def message = e.getMessage()

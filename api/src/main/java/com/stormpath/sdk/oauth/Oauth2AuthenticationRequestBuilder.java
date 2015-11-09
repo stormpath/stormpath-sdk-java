@@ -15,9 +15,21 @@
  */
 package com.stormpath.sdk.oauth;
 
-
+/**
+ * Utility class used to build {@link Oauth2AuthenticationRequest Oauth2AuthenticationRequest} instances.
+ *
+ * @see PasswordGrantRequestBuilder
+ * @see RefreshGrantRequestBuilder
+ * @see JwtAuthenticationRequestBuilder
+ *
+ * @since 1.0.RC6
+ */
 public interface Oauth2AuthenticationRequestBuilder<T extends Oauth2AuthenticationRequest> {
 
+    /**
+     * Builds a {@link Oauth2AuthenticationRequest Oauth2AuthenticationRequest} instance based on the current state of the builder.
+     *
+     * @return a {@link Oauth2AuthenticationRequest} instance.
+     */
     T build();
-
 }

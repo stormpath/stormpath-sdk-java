@@ -15,10 +15,13 @@
 */
 package com.stormpath.sdk.oauth;
 
-/**
- * @since 1.0.RC6
- */
-public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
+import com.stormpath.sdk.lang.Classes;
 
-    JwtAuthenticationRequestBuilder setJwt(String jwt);
+public class Validators {
+
+    private Validators() {
+    }
+
+    public static final JwtValidatorFactory jwtValidator =
+            (JwtValidatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtValidatorFactory");
 }

@@ -16,16 +16,17 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This class is used to authenticate a Json Web Token both locally or against Stormpath. For example:
+ * This class is used to authenticate a Json Web Token against Stormpath. For example:
  * <pre>
  * Application app = obtainApplication();
- * JwtAuthenticationRequest jwtAuthenticationRequest = Authenticators.JWT_AUTHENTICATION_REQUEST.builder()
- *      .setJwt(result.getAccessTokenString())
- *      .withLocalValidation()
- *      .build();
- * JwtAuthenticationResult result = app.authenticate(jwtAuthenticationRequest);
+ * JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST
+ *      .builder()
+ *      .setJwt(jwt)
+ *      .build()
+ * JwtAuthenticationResult result = Authenticators.jwtAuthenticator.forApplication(app).authenticate(authRequest)
  * </pre>
- * Note that to validate the token locally, the builder provides the {@code JwtAuthenticationRequest#withLocalValidation} method. When not specified, the JWT will be validated against Stormpath.
+ *
+ * This validation is always performed against Stormpath server, if you need to validate the token locally, use {@link JwtValidator#validate(JwtValidationRequest)} method instead.
  *
  * @see RefreshGrantAuthenticator
  * @see PasswordGrantAuthenticator
@@ -34,10 +35,11 @@ package com.stormpath.sdk.oauth;
  */
 public interface JwtAuthenticator extends Authenticator<JwtAuthenticationResult> {
 
-//    /**
-//     * This method can be used to authenticate a JWT.
-//     * @param jwtRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} instance containing the information required for the JWT authentication.
-//     * @return a {@link JwtAuthenticationResult JwtAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
-//     */
-//    JwtAuthenticationResult authenticate(JwtAuthenticationRequest jwtRequest);
+    /**
+     * Authenticates a JWT against Stormpath server.
+
+     * @param jwtRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} instance containing the information required for the JWT authentication.
+     * @return a {@link JwtAuthenticationResult JwtAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
+     */
+    JwtAuthenticationResult authenticate(Oauth2AuthenticationRequest jwtRequest);
 }

@@ -16,9 +16,16 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * Creates a request to perform a local validation of a JWT.
+ *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
+public interface JwtValidationRequest {
 
-    JwtAuthenticationRequestBuilder setJwt(String jwt);
+    /**
+     * Returns the value corresponding to the String representation of the Json Web Token
+     *
+     * @return the String representation of the JWT
+     */
+    String getJwt();
 }

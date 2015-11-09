@@ -21,6 +21,4 @@ package com.stormpath.sdk.oauth;
  * @since 1.0.RC6
  */
 public interface JwtAuthenticationRequestFactory extends AuthenticationRequestFactory<JwtAuthenticationRequestBuilder> {
-
-
 }

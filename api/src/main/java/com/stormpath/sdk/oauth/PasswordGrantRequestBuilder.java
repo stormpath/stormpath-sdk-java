@@ -47,5 +47,4 @@ public interface PasswordGrantRequestBuilder extends Oauth2AuthenticationRequest
      * @return this instance for method chaining.
      */
     PasswordGrantRequestBuilder setAccountStore(AccountStore accountStore);
-
 }
