@@ -35,7 +35,7 @@ class ApplicationCustomDataIT extends AbstractCustomDataIT {
 
     // This test is temporarily disabled since a backend issue is causing this test to fail.
     // As soon as AM-2869 this test must be enabled.
-    @Test(enabled=false)
+    @Test
     void testEmptyApplicationCustomData() {
 
         application = createTempApp()
