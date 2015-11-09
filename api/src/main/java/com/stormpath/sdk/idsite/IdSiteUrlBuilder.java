@@ -135,14 +135,15 @@ public interface IdSiteUrlBuilder {
      * <p>
      * <h5>Example</h5>
      * <p>
-     * <p>Assume your ID Site is located at the domain {@code id.myapp.com}.  If you specify an
+     * <p>Assume your ID Site is located at the domain {@code id.myapp.com}.  If you specify a
      * {@link #setSpToken(String) spToken} of {@code aSpToken} and set
      * {@link #setPath(String) path} to {@code #reset}, the user will be sent to
-     * {@code https://id.myapp.com/#reset?jwt=....} to complete the reset password process in your {@code IdSite}.
+     * {@code https://id.myapp.com/#reset?jwt=signedJwt}, with the provided {@code aSpToken} value embedded in the
+     * {@code signedJwt} to complete the reset password process in your {@code IdSite}.
      *
      * @param spToken a unique token used to reset a password.
      * @return this instance for method chaining.
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     IdSiteUrlBuilder setSpToken(String spToken);
 
@@ -163,13 +164,13 @@ public interface IdSiteUrlBuilder {
      * Notes:
      * <p>
      * 1) Properties like "iat", "iss", and "iat" will be overriden when the {@code IdSiteUrl} is being built, to avoid
-     * unknown conflicts when the {@code url} is being consumed by Stormpath.
+     * conflicts when the {@code url} is being consumed by Stormpath.
      * 2) Prefer the setter methods over this one (when possible), since there is type safe guarantee via the setters.
      *
      * @param name  of the new property.
      * @param value of the new property.
      * @return this instance for method chaining.
-     * @since 1.0.RC5
+     * @since 1.0.RC5.1
      */
     IdSiteUrlBuilder addProperty(String name, Object value);
 
