@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC4.6-SNAPSHOT</version>
+        <version>1.0.RC5.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>stormpath-sdk-examples-spring-webmvc</artifactId>
     <name>Stormpath Java SDK :: Examples :: Spring Web MVC</name>
-    <description>A simple Spring Web MVC application with out-of-the-box login and self-service screens!</description>
+    <description>A Spring Boot web application that uses Stormpath and Spring Security</description>
     <packaging>war</packaging>
 
     <dependencies>

@@ -28,11 +28,11 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Auditable;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 

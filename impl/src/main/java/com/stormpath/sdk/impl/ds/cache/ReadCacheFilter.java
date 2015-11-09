@@ -34,8 +34,9 @@ import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.*;
-import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.*;
+import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.LIMIT;
+import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.OFFSET;
 
 public class ReadCacheFilter extends AbstractCacheFilter {
 

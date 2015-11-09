@@ -38,19 +38,20 @@ class DefaultLinkedInProviderTest {
 
         def propertyDescriptors = provider.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 5)
+        assertEquals(propertyDescriptors.size(), 6)
 
         assertTrue(propertyDescriptors.get("providerId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("modifiedAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("clientId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("clientSecret") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("redirectUri") instanceof StringProperty)
         assertTrue(Provider.isInstance(provider))
         assertTrue(LinkedInProvider.isInstance(provider))
     }
 
     @Test
-    void testMethods() {
+    void testMethodsNoRedirectUri() {
 
         def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider",
                 createdAt: "2013-10-01T23:38:55.000Z",
@@ -68,6 +69,34 @@ class DefaultLinkedInProviderTest {
         assertEquals(provider.getModifiedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")) , "2013-10-02T23:38:55.000Z")
         assertEquals(provider.getClientId(), "613598318417022")
         assertEquals(provider.getClientSecret(), "c1ad951d45fdd0010c1c7d67c8f1d800")
+
+        provider.setClientId("999999999999")
+        assertEquals(provider.getClientId(), "999999999999")
+        provider.setClientSecret("AAAAA9999999")
+        assertEquals(provider.getClientSecret(), "AAAAA9999999")
+    }
+
+    @Test
+    void testMethodsWithRedirectUri() {
+
+        def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider",
+                          createdAt: "2013-10-01T23:38:55.000Z",
+                          modifiedAt: "2013-10-02T23:38:55.000Z",
+                          clientId: "613598318417022",
+                          clientSecret: "c1ad951d45fdd0010c1c7d67c8f1d800",
+                          redirectUri: "http://localhost:8080/test/linkedin"
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def provider = new DefaultLinkedInProvider(internalDataStore, properties)
+
+        assertEquals(provider.getHref(), "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider")
+        assertEquals(provider.getProviderId(), "linkedin")
+        assertEquals(provider.getCreatedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")), "2013-10-01T23:38:55.000Z")
+        assertEquals(provider.getModifiedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")) , "2013-10-02T23:38:55.000Z")
+        assertEquals(provider.getClientId(), "613598318417022")
+        assertEquals(provider.getClientSecret(), "c1ad951d45fdd0010c1c7d67c8f1d800")
+        assertEquals(provider.getRedirectUri(), "http://localhost:8080/test/linkedin")
 
         provider.setClientId("999999999999")
         assertEquals(provider.getClientId(), "999999999999")

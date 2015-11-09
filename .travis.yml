@@ -1,35 +1,30 @@
-# https://travis-ci.org/stormpath/stormpath-sdk-java
 language: java
-
-# http://docs.travis-ci.com/user/migrating-from-legacy/
 sudo: false
-
 jdk:
   - openjdk6
   - openjdk7
   - oraclejdk7
   - oraclejdk8
-
-install: echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
-script: mvn install
-
-# Stormpath API Key configuration.
-#
-# If you want to use your own API Key:
-#
-# 1. Ensure you have the travis gem installed:
-#
-#     gem install travis
-#
-# 2. change the value of STORMPATH_API_KEY_ID below to match your own API Key ID
-#
-# 3. Change the 'secure' value to be the output of the following command:
-#
-#     travis encrypt STORMPATH_API_KEY_SECRET=YOUR_API_KEY_SECRET
-#
-# where YOUR_API_KEY_SECRET is your actual API Key secret value.  Once the above command finishes, replace the secure
-# value below with the output of that command.
 env:
   global:
   - STORMPATH_API_KEY_ID=58J8VBZG5WK9CYTEYPZSQX670
+  - STORMPATH_API_KEY_ID_TWO_APP=VN3N09Z6BUE7QWL4RYX4FID3X
   - secure: "ZAs6XDgRX1YIZAKf0IcR6DlfQtGLKJS5fyTOextZsRW3MCwu7WTBe5v6dAS6xoLqZ0iEkICMdIRhs+6DQEW6rju/W39mjxe8HJEcMNI+wZyW+rZ+j7NmPkjovMO+XbiR0aVVvn7ZGjWEKdozCTBVtJSLd8YVHh6Ey+yxOdDoc1A="
+  - secure: "GD3ZS7+oXVngRZdxPAjDbLNSjHNvKQ8IBXlo+DyDQ1kYAfyxSHD6eY0mW2SuqpUZ67e9XKhXd5z0VLgGAtn7JLco+56jyuBQKk8ak+KLctmUKIyFPNk6/11q/+vGIMEeKnmA5lI6UE+rcJOoSTtsubxbQkZE/mlZ79bckcx9W70="
+before_install:
+  - openssl aes-256-cbc -K $encrypted_da634cfd642b_key -iv $encrypted_da634cfd642b_iv
+    -in deployKey_stormpath_github_io_id_rsa.enc -out ~/.ssh/id_rsa
+    -d
+  - chmod 600 ~/.ssh/id_rsa
+  - export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
+  - export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
+  - export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
+install: 
+  - test -z "$BUILD_DOCS" || pip install --user sphinx
+  - echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
+script: 
+  - mvn install
+  - test -z "$BUILD_DOCS" || ./build_docs.sh
+after_success:
+  - test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
+

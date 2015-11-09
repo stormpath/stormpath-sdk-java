@@ -124,7 +124,7 @@ public interface IdSiteUrlBuilder {
      *
      * @param showOrganizationField {@code true} the ID Site will show the
      *                              {@link #setOrganizationNameKey(String) organizationNameKey} field to end-user in
-     *                              the ID Site user interface, {@code false} otherwise.z
+     *                              the ID Site user interface, {@code false} otherwise.
      * @since 1.0.RC5
      */
     IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField);

@@ -31,12 +31,22 @@ public class LogoutController extends AbstractController {
 
     private String nextUri;
 
+    private boolean invalidateHttpSession = true;
+
     public String getNextUri() {
         return nextUri;
     }
 
     public void setNextUri(String nextUri) {
         this.nextUri = nextUri;
+    }
+
+    public boolean isInvalidateHttpSession() {
+        return invalidateHttpSession;
+    }
+
+    public void setInvalidateHttpSession(boolean invalidateHttpSession) {
+        this.invalidateHttpSession = invalidateHttpSession;
     }
 
     public void init() {
@@ -51,7 +61,7 @@ public class LogoutController extends AbstractController {
 
         //it is a security risk to not terminate a session (if one exists) on logout:
         HttpSession session = request.getSession(false);
-        if (session != null) {
+        if (session != null && isInvalidateHttpSession()) {
             session.invalidate();
         }
 

@@ -48,6 +48,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -68,6 +69,7 @@ import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -162,6 +164,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             @Override
             public String getLogoutNextUrl() {
                 return logoutNextUri;
+            }
+
+            @Override
+            public boolean isLogoutInvalidateHttpSession() {
+                return logoutInvalidateHttpSession;
             }
 
             @Override
@@ -270,7 +277,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
             @Override
             public Set<String> keySet() {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
+                //The Spring Boot WebMVC + Spring Security Example causes this method to be invoked. Thus, we cannot throw an exception here.
+                return Collections.EMPTY_SET;
             }
 
             @Override
@@ -433,6 +441,21 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public List<Resolver<Account>> stormpathAccountResolvers() {
         return super.stormpathAccountResolvers();
+    }
+
+    @Bean
+    public Resolver<List<String>> stormpathSubdomainResolver() {
+        return super.stormpathSubdomainResolver();
+    }
+
+    @Bean
+    public Resolver<String> stormpathOrganizationNameKeyResolver() {
+        return super.stormpathOrganizationNameKeyResolver();
+    }
+
+    @Bean
+    public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
+        return super.stormpathIdSiteOrganizationResolver();
     }
 
     @Bean
