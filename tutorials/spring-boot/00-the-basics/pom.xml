@@ -18,33 +18,37 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC5.2-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
-    </parent>
-
+    <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-tutorials-spring-boot-default-the-basics</artifactId>
+    <version>1.0.RC5.2-SNAPSHOT</version>
+
     <name>Stormpath Java SDK :: Tutorials :: Spring Boot Default :: The Basics</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
+
+    <properties>
+        <logback.version>1.1.2</logback.version>
+        <slf4j.version>1.7.8</slf4j.version>
+    </properties>
 
     <dependencies>
         <!-- Compile-time dependencies: -->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-default-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Runtime-only dependencies: -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
         </dependency>
 
