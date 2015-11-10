@@ -18,25 +18,27 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC5.2-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-
+    <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-boot</artifactId>
+    <version>1.0.RC5.2-SNAPSHOT</version>
+
     <name>Stormpath Java SDK :: Examples :: Spring Boot</name>
     <description>A Spring Boot (non-web) application that uses Stormpath.</description>
+
+    <properties>
+        <logback.version>1.1.2</logback.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
@@ -46,6 +48,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
