@@ -18,35 +18,40 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC5.2-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-
+    <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-examples-servlet</artifactId>
+    <version>1.0.RC5.2-SNAPSHOT</version>
     <name>Stormpath Java SDK :: Examples :: Servlet Container-based Webapp</name>
     <description>A simple example webapp deployed in a servlet container.</description>
     <packaging>war</packaging>
+
+    <properties>
+        <logback.version>1.1.2</logback.version>
+        <servlet.version>3.0.1</servlet.version>
+        <jstl.version>1.2</jstl.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-servlet-plugin</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
+            <version>${jstl.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
