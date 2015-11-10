@@ -25,13 +25,21 @@ public class DefaultJwtValidationRequest implements JwtValidationRequest {
 
     private final String jwt;
 
-    public DefaultJwtValidationRequest(String jwt) {
+    private final boolean withLocalValidation;
+
+    public DefaultJwtValidationRequest(String jwt, boolean withLocalValidation) {
         Assert.notNull(jwt, "jwt argument cannot be null.");
         this.jwt = jwt;
+        this.withLocalValidation = withLocalValidation;
     }
 
     @Override
     public String getJwt() {
         return jwt;
+    }
+
+    @Override
+    public boolean isWithLocalValidation() {
+        return withLocalValidation;
     }
 }

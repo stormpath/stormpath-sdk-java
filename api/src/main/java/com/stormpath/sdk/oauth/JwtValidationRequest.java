@@ -28,4 +28,11 @@ public interface JwtValidationRequest {
      * @return the String representation of the JWT
      */
     String getJwt();
+
+    /**
+     * Returns true if the JWT validation will be performed locally and not against Stormpath Server.
+     *
+     * @return true if the JWT validation needs to be performed locally and not against Stormpath Server.
+     */
+    boolean isWithLocalValidation();
 }

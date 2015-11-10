@@ -25,6 +25,7 @@ import com.stormpath.sdk.oauth.JwtValidationRequestBuilder;
 public class DefaultJwtValidationRequestBuilder implements JwtValidationRequestBuilder {
 
     String jwt;
+    boolean withLocalValidation = false;
 
     public DefaultJwtValidationRequestBuilder() {
     }
@@ -39,7 +40,13 @@ public class DefaultJwtValidationRequestBuilder implements JwtValidationRequestB
     public JwtValidationRequest build() {
         Assert.notNull(jwt, "jwt is mandatory and cannot be empty.");
 
-        JwtValidationRequest request = new DefaultJwtValidationRequest(jwt);
+        JwtValidationRequest request = new DefaultJwtValidationRequest(jwt, withLocalValidation);
         return request;
+    }
+
+    @Override
+    public JwtValidationRequestBuilder withLocalValidation() {
+        this.withLocalValidation = true;
+        return this;
     }
 }

@@ -31,6 +31,13 @@ public interface JwtValidationRequestBuilder {
     JwtValidationRequestBuilder setJwt(String jwt);
 
     /**
+     * Specifies that this JWT will be validated locally and not against Stormpath Server.
+     *
+     * @return this instance for method chaining.
+     */
+    JwtValidationRequestBuilder withLocalValidation();
+
+    /**
      * Builds a {@link JwtAuthenticationRequest JwtValidationRequest} instance based on the current state of the builder.
      *
      * @return a {@link JwtAuthenticationRequest} instance.

@@ -146,7 +146,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(created)
 
         PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build();
-        def result = Authenticators.passwordGrantAuthenticator.forApplication(app).authenticate(createRequest)
+        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
 
         assertNotNull result
         assertNotNull result.accessTokenString
@@ -157,7 +157,7 @@ class ApplicationIT extends ClientIT {
         def jwt = result.getAccessTokenString()
 
         RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
-        result = Authenticators.refreshGrantAuthenticator.forApplication(app).authenticate(request)
+        result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request)
 
         assertNotNull result
         assertNotNull result.accessTokenString
@@ -203,18 +203,34 @@ class ApplicationIT extends ClientIT {
         def created = app.createAccount(account)
         assertNotNull created.href
 
-        PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build();
-        def result = Authenticators.passwordGrantAuthenticator.forApplication(app).authenticate(createRequest)
+        PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(email)
+                .setPassword("Change&45+me1!")
+                .build();
+        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
 
         // Authenticate token against Stormpath
-        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(result.getAccessTokenString()).build()
-        def authResult = Authenticators.jwtAuthenticator.forApplication(app).authenticate(authRequest)
+        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
+                .setJwt(result.getAccessTokenString())
+                .build()
+        def authResult = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
 
         assertEquals authResult.getApplication().getHref(), app.href
         assertEquals authResult.getAccount().getHref(), created.href
 
         //Test local JWT validation
-        JwtValidationRequest validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST.builder().setJwt(result.getAccessTokenString()).build()
+        JwtValidationRequest validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST.builder()
+                .setJwt(result.getAccessTokenString())
+                .withLocalValidation()
+                .build()
+        authResult = Validators.jwtValidator.forApplication(app).validate(validationRequest)
+
+        assertTrue authResult
+
+        //Test Server JWT validation
+        validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST.builder()
+                .setJwt(result.getAccessTokenString())
+                .build()
         authResult = Validators.jwtValidator.forApplication(app).validate(validationRequest)
 
         assertTrue authResult
@@ -223,7 +239,7 @@ class ApplicationIT extends ClientIT {
 
         try {
             //try to authenticate deleted token
-            Authenticators.jwtAuthenticator.forApplication(app).authenticate(authRequest)
+            Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
             fail("Should have thrown due to token does not exist error")
         } catch (Exception e){
             def message = e.getMessage()

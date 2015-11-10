@@ -15,10 +15,12 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.impl.application.DefaultApplication;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.oauth.JwtValidationRequest;
-import com.stormpath.sdk.oauth.JwtValidator;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
@@ -31,29 +33,40 @@ public class DefaultJwtValidator implements JwtValidator {
 
     private InternalDataStore dataStore;
 
-    public DefaultJwtValidator(DataStore dataStore){
+    private Application application;
+
+    public DefaultJwtValidator(Application app, DataStore dataStore){
         this.dataStore = (InternalDataStore) dataStore;
+        this.application = app;
     }
 
     @Override
     public boolean validate(JwtValidationRequest jwtValidationRequest) {
-        byte[] bytes = null;
-        String apiKeySecret = dataStore.getApiKey().getSecret();
-        try {
-            bytes = apiKeySecret.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e){
-            return false;
-        }
-        try {
-            // if JWT can be parsed correctly, then it's a valid JWT
-            Claims claims = Jwts.parser()
-                    .setSigningKey(bytes)
-                    .parseClaimsJws(jwtValidationRequest.getJwt()).getBody();
 
-            return true;
-        } catch (SignatureException e){
-            // JWT signature could not be validated and so it cannot be trusted
-            return false;
+        if (jwtValidationRequest.isWithLocalValidation()){
+            byte[] bytes = null;
+            String apiKeySecret = dataStore.getApiKey().getSecret();
+            try {
+                bytes = apiKeySecret.getBytes("UTF-8");
+            } catch (UnsupportedEncodingException e){
+                return false;
+            }
+            try {
+                // if JWT can be parsed correctly, then it's a valid JWT
+                Claims claims = Jwts.parser()
+                        .setSigningKey(bytes)
+                        .parseClaimsJws(jwtValidationRequest.getJwt()).getBody();
+
+                return true;
+            } catch (SignatureException e){
+                // JWT signature could not be validated and so it cannot be trusted
+                return false;
+            }
+        } else {
+            JwtAuthenticationRequest authRequest = new DefaultJwtAuthenticationRequest(jwtValidationRequest.getJwt());
+            JwtAuthenticator jwtAuthenticator = new DefaultJwtAuthenticator(application, dataStore);
+            JwtAuthenticationResult result = jwtAuthenticator.authenticate(authRequest);
+            return result != null;
         }
     }
 }

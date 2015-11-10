@@ -746,6 +746,6 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /* @since 1.0.RC6 */
     public JwtValidator createJwtValidator() {
-        return new DefaultJwtValidator(getDataStore());
+        return new DefaultJwtValidator(this, getDataStore());
     }
 }

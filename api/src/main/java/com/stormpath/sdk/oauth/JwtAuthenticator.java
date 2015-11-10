@@ -23,7 +23,7 @@ package com.stormpath.sdk.oauth;
  *      .builder()
  *      .setJwt(jwt)
  *      .build()
- * JwtAuthenticationResult result = Authenticators.jwtAuthenticator.forApplication(app).authenticate(authRequest)
+ * JwtAuthenticationResult result = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
  * </pre>
  *
  * This validation is always performed against Stormpath server, if you need to validate the token locally, use {@link JwtValidator#validate(JwtValidationRequest)} method instead.

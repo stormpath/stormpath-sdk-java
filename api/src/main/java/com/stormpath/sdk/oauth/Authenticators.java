@@ -26,13 +26,13 @@ public class Authenticators {
     private Authenticators() {
     }
 
-    public static final PasswordGrantAuthenticatorFactory passwordGrantAuthenticator =
+    public static final PasswordGrantAuthenticatorFactory PASSWORD_GRANT_AUTHENTICATOR =
             (PasswordGrantAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticatorFactory");
 
-    public static final RefreshGrantAuthenticatorFactory refreshGrantAuthenticator =
+    public static final RefreshGrantAuthenticatorFactory REFRESH_GRANT_AUTHENTICATOR =
             (RefreshGrantAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticatorFactory");
 
-    public static final JwtAuthenticatorFactory jwtAuthenticator =
+    public static final JwtAuthenticatorFactory JWT_AUTHENTICATOR =
             (JwtAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticatorFactory");
 
 }
