@@ -70,6 +70,17 @@ Don’t believe it? Try it! Start up your Spring Boot web application, and we'll
 
 Wasn't that easy?!
 
+.. ATTENTION::
+
+   You may encounter a circular redirect in your Google Chrome browser when you are in the process of developing your
+   Spring Boot + Spring Security + Stormpath application.
+
+   This is due to a known issue with Google Chrome whereby it aggressively caches ``302`` redirects.
+
+   The solution is to clear cache or use an Icognito window while testing.
+
+   Note: This will never occur in a production release environment.
+
 Any Problems?
 ^^^^^^^^^^^^^
 
