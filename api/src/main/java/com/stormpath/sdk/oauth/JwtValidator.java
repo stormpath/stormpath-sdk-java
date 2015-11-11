@@ -17,18 +17,28 @@ package com.stormpath.sdk.oauth;
 
 
 /**
- * This class is used to perform a local validation of a Json Web Token. For example:
+ * This class is used to validate a Json Web Token, either locally or against Stormpath server.
+ * The local validation verifies the JWT is correctly signed, for example:
  * <pre>
  * Application app = obtainApplication();
- * JwtValidationRequest validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST
- *      .builder()
- *      .setJwt(jwt)
+ * JwtValidationRequest validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST.builder()
+ *      .setJwt(result.getAccessTokenString())
+ *      .withLocalValidation()
  *      .build()
  * boolean result = Validators.jwtValidator.forApplication(app).validate(validationRequest)
  * </pre>
  *
- * This is a local validation that verifies the JWT by making sure its sign is correct and it can be trusted,
- * if you need to authenticate the token against Stormpath server, use {@link JwtAuthenticator#authenticate(Oauth2AuthenticationRequest)} method instead.
+ * Validation against Stormpath server:
+ * <pre>
+ * Application app = obtainApplication();
+ * JwtValidationRequest validationRequest = Oauth2Requests.JWT_VALIDATION_REQUEST.builder()
+ *      .setJwt(result.getAccessTokenString())
+ *      .build()
+ * boolean result = Validators.jwtValidator.forApplication(app).validate(validationRequest)
+ * </pre>
+ *
+ * @see PasswordGrantAuthenticator
+ * @see RefreshGrantAuthenticator
  *
  * @since 1.0.RC6
  */
@@ -36,10 +46,11 @@ package com.stormpath.sdk.oauth;
 public interface JwtValidator {
 
     /**
-     * Performs a local validation of the JWT.
+     * Validates a Json Web Token, either locally or against Stormpath server.
+     *
      *
      * @param jwtValidationRequest the {@link JwtValidationRequest JwtValidationRequest} instance containing the information required for the JWT validation.
-     * @return true if the JWT could be validated.
+     * @return true if the JWT could be successfully validated.
      */
     boolean validate(JwtValidationRequest jwtValidationRequest);
 }

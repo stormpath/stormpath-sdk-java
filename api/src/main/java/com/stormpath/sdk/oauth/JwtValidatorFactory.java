@@ -17,8 +17,18 @@ package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.application.Application;
 
+/**
+ * Factory used to construct {@link JwtValidator JwtValidator} instances required for performing JWT validation requests.
+ *
+ * @since 1.0.RC6
+ */
 public interface JwtValidatorFactory {
 
+    /**
+     * Specifies the new {@link JwtValidator JwtValidator} instance will be used to validate a JWT for a specific application.
+     * @param application the application against which the JWT will be validated
+     * @return a {@link JwtValidator JwtValidator} instances
+     */
     JwtValidator forApplication(Application application);
 
 }
