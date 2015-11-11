@@ -36,7 +36,7 @@ package com.stormpath.sdk.oauth;
 public interface JwtAuthenticator extends Oauth2Authenticator<JwtAuthenticationResult> {
 
     /**
-     * Flags the authenticator to carry out a local validatation rather than a validation against Stormpath's backend.
+     * Flags the authenticator to carry out a local validation rather than a validation against Stormpath's backend.
      * <p>Doing a local validation will for sure be faster since there is no network traffic involved. However, using Stormpath
      * to validate the token through the REST API ensures that the token can actually be validated against the state of your application
      * and account. To illustrate the difference</p>:
