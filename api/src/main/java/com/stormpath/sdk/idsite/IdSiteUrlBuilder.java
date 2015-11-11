@@ -147,7 +147,7 @@ public interface IdSiteUrlBuilder {
      *
      * @param spToken a unique token used to reset a password.
      * @return this instance for method chaining.
-     * @since 1.0.RC5.1
+     * @since 1.0.RC5.2
      */
     IdSiteUrlBuilder setSpToken(String spToken);
 
@@ -174,7 +174,7 @@ public interface IdSiteUrlBuilder {
      * @param name  of the new property.
      * @param value of the new property.
      * @return this instance for method chaining.
-     * @since 1.0.RC5.1
+     * @since 1.0.RC5.2
      */
     IdSiteUrlBuilder addProperty(String name, Object value);
 
