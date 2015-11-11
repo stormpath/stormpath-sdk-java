@@ -24,7 +24,7 @@ import com.stormpath.sdk.oauth.JwtAuthenticationResult;
  */
 public class DefaultJwtAuthenticationResultBuilder implements JwtAuthenticationResultBuilder {
 
-    private AccessToken accessToken;
+    private final AccessToken accessToken;
 
     public AccessToken getAccessToken() {
         return accessToken;
@@ -32,6 +32,11 @@ public class DefaultJwtAuthenticationResultBuilder implements JwtAuthenticationR
 
     public DefaultJwtAuthenticationResultBuilder(AccessToken accessToken) {
         Assert.notNull(accessToken, "accessToken cannot be null.");
+        Assert.hasText(accessToken.getHref(), "accessToken's href cannot be null or empty.");
+        Assert.notNull(accessToken.getApplication(), "accessToken's application cannot be null.");
+        Assert.notNull(accessToken.getAccount(), "accessToken's account cannot be null.");
+        Assert.notNull(accessToken.getTenant(), "accessToken's tenant cannot be null.");
+        Assert.hasText(accessToken.getJwt(), "accessToken's JWT cannot be null or empty.");
         this.accessToken = accessToken;
     }
 
