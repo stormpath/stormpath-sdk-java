@@ -22,8 +22,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 public abstract class AbstractOauth2Authenticator {
 
     protected final Application application;
-
-    protected InternalDataStore dataStore;
+    protected final InternalDataStore dataStore;
 
     public AbstractOauth2Authenticator(Application application, DataStore dataStore){
         this.application = application;

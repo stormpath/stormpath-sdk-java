@@ -30,17 +30,18 @@ import java.util.Map;
  */
 public class DefaultAccessToken extends AbstractInstanceResource implements AccessToken {
 
-    static final StringProperty JWT = new StringProperty("jwt");
-    static final DateProperty CREATED_AT = new DateProperty("created_at");
-
-    // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
-    static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class);
-    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
-
     static final String ACCOUNT_PROP_NAME = "account";
     static final String APPLICATION_PROP_NAME = "application";
     static final String JWT_PROP_NAME = "jwt";
+    static final String TENANT_PROP_NAME = "tenant";
+
+    static final StringProperty JWT = new StringProperty(JWT_PROP_NAME);
+    static final DateProperty CREATED_AT = new DateProperty("created_at");
+
+    // INSTANCE RESOURCE REFERENCES:
+    static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>(ACCOUNT_PROP_NAME, Account.class);
+    static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>(APPLICATION_PROP_NAME, Application.class);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>(TENANT_PROP_NAME, Tenant.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(JWT, ACCOUNT, APPLICATION, TENANT, CREATED_AT);
 

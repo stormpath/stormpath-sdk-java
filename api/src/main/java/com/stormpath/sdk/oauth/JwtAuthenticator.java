@@ -35,6 +35,8 @@ package com.stormpath.sdk.oauth;
  */
 public interface JwtAuthenticator extends Authenticator<JwtAuthenticationResult> {
 
+    JwtAuthenticator withLocalValidation();
+
     /**
      * Authenticates a JWT against Stormpath server.
 

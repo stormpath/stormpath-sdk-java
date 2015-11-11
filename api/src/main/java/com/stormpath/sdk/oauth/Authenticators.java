@@ -15,12 +15,8 @@
  */
 package com.stormpath.sdk.oauth;
 
-
 import com.stormpath.sdk.lang.Classes;
 
-/**
- * Date: 11/6/15
- */
 public class Authenticators {
 
     private Authenticators() {

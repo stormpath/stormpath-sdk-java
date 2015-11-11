@@ -61,10 +61,4 @@ public final class Oauth2Requests {
      */
     public static final JwtAuthenticationRequestFactory JWT_AUTHENTICATION_REQUEST = (JwtAuthenticationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticationRequestFactory");
 
-    /**
-     * Returns a new {@link JwtValidationRequestFactory} instance, used to do a local validation of JWT Access Tokens.
-     *
-     * @return a new {@link JwtValidationRequestFactory} instance, used to do a local validation of JWT Access Tokens.
-     */
-    public static final JwtValidationRequestFactory JWT_VALIDATION_REQUEST = (JwtValidationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtValidationRequestFactory");
 }
