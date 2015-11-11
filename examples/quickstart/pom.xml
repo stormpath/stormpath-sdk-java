@@ -14,8 +14,6 @@
         <logback.version>1.1.2</logback.version>
         <testng.version>6.8</testng.version>
         <groovy.version>1.8.8</groovy.version>
-        <jdk.target>1.8</jdk.target>
-        <jdk.source>1.8</jdk.source>
     </properties>
 
     <dependencies>
@@ -81,10 +79,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
-                <configuration>
-                    <source>${jdk.source}</source>
-                    <target>${jdk.target}</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>
