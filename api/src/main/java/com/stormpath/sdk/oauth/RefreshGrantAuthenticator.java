@@ -22,7 +22,7 @@ package com.stormpath.sdk.oauth;
  * RefreshGrantRequest request = Authenticators.REFRESH_GRANT_REQUEST.builder()
  *      .setRefreshToken(refreshToken)
  *      .build();
- * OauthGrantAuthenticationResult result = app.authenticate(request)
+ * OauthGrantAuthenticationResult result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request)
  * </pre>
  *
  * @see PasswordGrantAuthenticator
@@ -30,13 +30,6 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface RefreshGrantAuthenticator extends Authenticator<OauthGrantAuthenticationResult> {
+public interface RefreshGrantAuthenticator extends Oauth2Authenticator<OauthGrantAuthenticationResult> {
 
-//    /**
-//     * Method used to get refreshed Oauth 2.0 Access Tokens
-//     * @param refreshGrantRequest the {@link RefreshGrantRequest RefreshGrantRequest} instance containing the information required for the request.
-//     *
-//     * @return an {@link OauthGrantAuthenticationResult OauthGrantAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
-//     */
-//    OauthGrantAuthenticationResult authenticate(RefreshGrantRequest refreshGrantRequest);
 }

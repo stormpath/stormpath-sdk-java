@@ -18,5 +18,5 @@ package com.stormpath.sdk.oauth;
 /**
  * Date: 11/6/15
  */
-public interface RefreshGrantAuthenticatorFactory extends AuthenticatorFactory<RefreshGrantAuthenticator> {
+public interface RefreshGrantAuthenticatorFactory extends Oauth2AuthenticatorFactory<RefreshGrantAuthenticator> {
 }

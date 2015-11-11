@@ -16,10 +16,10 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This class stores the {@link AccessToken AccessToken} data received after a Grant Authentication request.
+ * Contains the resultant {@link AccessToken AccessToken} and all its related properties after a successful Grant Authentication request.
  *
- * @see com.stormpath.sdk.application.Application#authenticate(PasswordGrantRequest)
- * @see com.stormpath.sdk.application.Application#authenticate(RefreshGrantRequest)
+ * @see com.stormpath.sdk.oauth.PasswordGrantAuthenticator#authenticate(Oauth2AuthenticationRequest)
+ * @see com.stormpath.sdk.oauth.RefreshGrantAuthenticator#authenticate(Oauth2AuthenticationRequest)
  *
  * @since 1.0.RC6
  */
@@ -62,8 +62,8 @@ public interface OauthGrantAuthenticationResult extends Oauth2AuthenticationResu
     String getTokenType();
 
     /**
-     *
-     * @return
+     * The lifetime in seconds of the access token. For example, the value "3600" denotes that the access token will expire one hour after the response was generated.
+     * @return lifetime in seconds of the access token. For example, the value "3600" denotes that the access token will expire one hour after the response was generated.
      */
     int getExpiresIn();
 

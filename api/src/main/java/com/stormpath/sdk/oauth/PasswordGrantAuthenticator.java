@@ -31,6 +31,6 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC6
  */
-public interface PasswordGrantAuthenticator extends Authenticator<OauthGrantAuthenticationResult> {
+public interface PasswordGrantAuthenticator extends Oauth2Authenticator<OauthGrantAuthenticationResult> {
 
 }

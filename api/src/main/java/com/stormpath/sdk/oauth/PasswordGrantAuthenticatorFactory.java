@@ -15,6 +15,6 @@
  */
 package com.stormpath.sdk.oauth;
 
-public interface PasswordGrantAuthenticatorFactory extends AuthenticatorFactory<PasswordGrantAuthenticator> {
+public interface PasswordGrantAuthenticatorFactory extends Oauth2AuthenticatorFactory<PasswordGrantAuthenticator> {
 
 }

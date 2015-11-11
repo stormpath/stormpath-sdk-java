@@ -1229,8 +1229,6 @@ class ApplicationIT extends ClientIT {
         assertEquals result.getAccessToken().getAccount().getEmail(), email
         assertEquals result.getAccessToken().getApplication().getHref(), app.href
 
-        def jwt = result.getAccessTokenString()
-
         RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request)
 

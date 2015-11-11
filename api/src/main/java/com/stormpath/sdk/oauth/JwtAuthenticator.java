@@ -23,25 +23,51 @@ package com.stormpath.sdk.oauth;
  *      .builder()
  *      .setJwt(jwt)
  *      .build()
- * JwtAuthenticationResult result = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
+ * JwtAuthenticationResult result = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest);
  * </pre>
- *
- * This validation is always performed against Stormpath server, if you need to validate the token locally, use {@link JwtValidator#validate(JwtValidationRequest)} method instead.
- *
- * @see RefreshGrantAuthenticator
- * @see PasswordGrantAuthenticator
+ * This validation is always performed against Stormpath server, if you want to validate the token locally, simply apply
+ * the {@link #withLocalValidation()} when performing the authentication. Like this:
+ * <pre>
+ * JwtAuthenticationResult result = Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest);
+ * </pre>
  *
  * @since 1.0.RC6
  */
-public interface JwtAuthenticator extends Authenticator<JwtAuthenticationResult> {
-
-    JwtAuthenticator withLocalValidation();
+public interface JwtAuthenticator extends Oauth2Authenticator<JwtAuthenticationResult> {
 
     /**
-     * Authenticates a JWT against Stormpath server.
-
-     * @param jwtRequest the {@link JwtAuthenticationRequest JwtAuthenticationRequest} instance containing the information required for the JWT authentication.
-     * @return a {@link JwtAuthenticationResult JwtAuthenticationResult} instance containing the resultant {@link AccessToken AccessToken}.
+     * Flags the authenticator to carry out a local validatation rather than a validation against Stormpath's backend.
+     * <p>Doing a local validation will for sure be faster since there is no network traffic involved. However, using Stormpath
+     * to validate the token through the REST API ensures that the token can actually be validated against the state of your application
+     * and account. To illustrate the difference</p>:
+     * <table summary="JWT validation">
+     *   <tr>
+     *      <td>Validation Criteria</td><td>Locally</td><td>Stormpath</td>
+     *   <tr/>
+     *   <tr>
+     *      <td>Token hasn’t been tampered with</td><td>yes</td><td>yes</td>
+     *   </tr>
+     *   <tr>
+     *      <td>Token hasn’t expired</td><td>yes</td><td>yes</td>
+     *   </tr>
+     *   <tr>
+     *      <td>Token hasn’t been revoked</td><td>no</td><td>yes</td>
+     *   </tr>
+     *   <tr>
+     *      <td>Account hasn’t been disabled, and hasn’t been deleted</td><td>no</td><td>yes</td>
+     *   </tr>
+     *   <tr>
+     *      <td>Issuer is Stormpath</td><td>yes</td><td>yes</td>
+     *   </tr>
+     *   <tr>
+     *      <td>Issuing application is still enabled, and hasn’t been deleted</td><td>no</td><td>yes</td>
+     *   </tr>
+     *   <tr>
+     *      <td>Account is still in an account store for the issuing application</td><td>no</td><td>yes</td>
+     *   </tr>
+     * </table>
+     * @return This instance for method chaining.
      */
-    JwtAuthenticationResult authenticate(Oauth2AuthenticationRequest jwtRequest);
+    JwtAuthenticator withLocalValidation();
+
 }

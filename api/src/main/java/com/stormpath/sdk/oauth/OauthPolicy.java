@@ -58,6 +58,7 @@ public interface OauthPolicy extends Resource, Saveable {
 
     /**
      * Sets the Time To Live for the refresh tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
+     * <p>Since Refresh tokens are optional, if you would like to disable the refresh token from being generated, set a zero duration value (PT0M, PT0S, etc).</p>
      *
      * @return this instance for method chaining.
      */
