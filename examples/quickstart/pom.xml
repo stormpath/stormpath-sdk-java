@@ -14,6 +14,7 @@
         <logback.version>1.1.2</logback.version>
         <testng.version>6.8</testng.version>
         <groovy.version>1.8.8</groovy.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -54,8 +55,6 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <finalName>${artifactId}-uber-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
