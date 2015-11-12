@@ -301,45 +301,39 @@ public class DefaultDataStore implements InternalDataStore {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource> T create(String parentHref, T resource) {
-        return (T)save(parentHref, resource, resource.getClass(), null, true);
+        return (T)save(parentHref, resource, null, resource.getClass(), null, true);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource> T create(String parentHref, T resource, Options options) {
         QueryString qs = toQueryString(parentHref, options);
-        return (T)save(parentHref, resource, resource.getClass(), qs, true);
+        return (T)save(parentHref, resource, null, resource.getClass(), qs, true);
     }
 
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType) {
-        return save(parentHref, resource, returnType, null, true);
+        return save(parentHref, resource, null, returnType, null, true);
     }
 
     /** @since 1.0.RC6 */
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, HttpHeaders requestHeaders) {
-        Map<String, String> test = new LinkedHashMap<String, String>();
-        if (requestHeaders != null){
-        test.put("nomatter", "myvalue");
-        test.put("Ishouldnot", "affectrequests");
-        }
-        QueryString qa = new QueryString(test);
-        return save(parentHref, resource, requestHeaders, returnType, qa, true);
+        return save(parentHref, resource, requestHeaders, returnType, null, true);
     }
 
     /** @since 1.0.RC5 */
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, Options options) {
         QueryString qs = toQueryString(parentHref, options);
-        return save(parentHref, resource, returnType, qs, true);
+        return save(parentHref, resource, null, returnType, qs, true);
     }
 
     @Override
     public <T extends Resource & Saveable> void save(T resource) {
         String href = resource.getHref();
         Assert.hasText(href, HREF_REQD_MSG);
-        save(href, resource, resource.getClass(), null, false);
+        save(href, resource, null, resource.getClass(), null, false);
     }
 
     @Override
@@ -348,13 +342,13 @@ public class DefaultDataStore implements InternalDataStore {
         String href = resource.getHref();
         Assert.hasText(href, HREF_REQD_MSG);
         QueryString qs = toQueryString(href, options);
-        save(href, resource, resource.getClass(), qs, false);
+        save(href, resource, null, resource.getClass(), qs, false);
     }
 
     @Override
     public <T extends Resource & Saveable, R extends Resource> R save(T resource, Class<? extends R> returnType) {
         Assert.hasText(resource.getHref(), HREF_REQD_MSG);
-        return save(resource.getHref(), resource, returnType, null, false);
+        return save(resource.getHref(), resource, null, returnType, null, false);
     }
 
     private QueryString toQueryString(String href, Options options) {
@@ -367,8 +361,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Resource, R extends Resource> R save(String href, final T resource, final Class<? extends R> returnType, final QueryString qs, final boolean create) {
-
+    private <T extends Resource, R extends Resource> R save(String href, final T resource, HttpHeaders requestHeaders, final Class<? extends R> returnType, final QueryString qs, final boolean create) {
         Assert.hasText(href, "href argument cannot be null or empty.");
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.notNull(returnType, "returnType class cannot be null.");
@@ -383,7 +376,13 @@ public class DefaultDataStore implements InternalDataStore {
             @Override
             public ResourceDataResult filter(final ResourceDataRequest req) {
 
-                String bodyString = mapMarshaller.marshal(req.getData());
+                String bodyString;
+                if (req.getHttpHeaders().getContentType() != null && req.getHttpHeaders().getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED)){
+                    bodyString = buildCanonicalBodyQueryParams(req.getData());
+                } else {
+
+                    bodyString = mapMarshaller.marshal(req.getData());
+                }
                 StringInputStream body = new StringInputStream(bodyString);
                 long length = body.available();
 
@@ -391,75 +390,7 @@ public class DefaultDataStore implements InternalDataStore {
                 String href = uri.getAbsolutePath();
                 QueryString qs = uri.getQuery();
 
-                Request request = new DefaultRequest(HttpMethod.POST, href, qs, null, body, length);
-
-                Response response = execute(request);
-                Map<String, Object> responseBody = getBody(response);
-
-                if (Collections.isEmpty(responseBody)) {
-                    // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
-                    if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
-                        responseBody = java.util.Collections.emptyMap();
-                    } else {
-                        throw new IllegalStateException("Unable to obtain resource data from the API server.");
-                    }
-                }
-
-                ResourceAction responseAction = getPostAction(req, response);
-
-                return new DefaultResourceDataResult(responseAction, uri, returnType, responseBody);
-            }
-        });
-
-        ResourceAction action = create ? ResourceAction.CREATE : ResourceAction.UPDATE;
-        ResourceDataRequest request = new DefaultResourceDataRequest(action, uri, abstractResource.getClass(), props);
-
-        ResourceDataResult result = chain.filter(request);
-
-        Map<String,Object> data = result.getData();
-
-        //ensure the caller's argument is updated with what is returned from the server if the types are the same:
-        if (returnType.equals(abstractResource.getClass())) {
-            abstractResource.setProperties(data);
-        }
-
-        return resourceFactory.instantiate(returnType, data);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends Resource, R extends Resource> R save(String href, final T resource, HttpHeaders requestHeaders, final Class<? extends R> returnType, final QueryString qs, final boolean create) {
-
-        Assert.hasText(href, "href argument cannot be null or empty.");
-        Assert.notNull(resource, "resource argument cannot be null.");
-        Assert.isInstanceOf(AbstractResource.class, resource);
-        Assert.isTrue(!CollectionResource.class.isAssignableFrom(resource.getClass()), "Collections cannot be persisted.");
-
-        final CanonicalUri uri = canonicalize(href, qs);
-        final AbstractResource abstractResource = (AbstractResource) resource;
-        final Map<String, Object> props = resourceConverter.convert(abstractResource);
-
-        FilterChain chain = new DefaultFilterChain(this.filters, new FilterChain() {
-            @Override
-            public ResourceDataResult filter(final ResourceDataRequest req) {
-
-                QueryString qs;
-                String bodyString;
-                if (req.getHttpHeaders().getContentType() != null & req.getHttpHeaders().getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED)){
-                    bodyString = buildCanonicalBodyQueryParams(req.getData());
-                } else {
-
-                    bodyString = mapMarshaller.marshal(req.getData());
-                }
-                qs = uri.getQuery();
-
-                StringInputStream body = new StringInputStream(bodyString);
-                long length = body.available();
-
-                CanonicalUri uri = req.getUri();
-                String href = uri.getAbsolutePath();
-
                 HttpHeaders httpHeaders = req.getHttpHeaders();
-
                 Request request = new DefaultRequest(HttpMethod.POST, href, qs, httpHeaders, body, length);
 
                 Response response = execute(request);

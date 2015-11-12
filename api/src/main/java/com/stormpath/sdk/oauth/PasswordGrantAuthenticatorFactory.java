@@ -15,6 +15,11 @@
  */
 package com.stormpath.sdk.oauth;
 
+/**
+ * A Password Grant-specific Authenticator Factory.
+ *
+ * @since 1.0.RC6
+ */
 public interface PasswordGrantAuthenticatorFactory extends Oauth2AuthenticatorFactory<PasswordGrantAuthenticator> {
 
 }

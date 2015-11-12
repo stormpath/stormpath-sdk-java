@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Factory used to construct {@link PasswordGrantRequestBuilder} instances
+ * Factory used to construct {@link PasswordGrantRequestBuilder} instances.
  *
  * @since 1.0.RC6
  */

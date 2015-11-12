@@ -29,5 +29,4 @@ public interface RefreshGrantRequest extends GrantRequest {
      */
     String getRefreshToken();
 
-
 }

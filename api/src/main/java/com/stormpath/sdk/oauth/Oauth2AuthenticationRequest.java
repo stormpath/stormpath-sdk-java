@@ -15,6 +15,15 @@
  */
 package com.stormpath.sdk.oauth;
 
+/**
+ * Interface denoting <a href="https://docs.stormpath.com/guides/token-management/">Oauth2 Authentication Requests</a>.
+ *
+ * @see com.stormpath.sdk.oauth.PasswordGrantRequest
+ * @see com.stormpath.sdk.oauth.RefreshGrantRequest
+ * @see com.stormpath.sdk.oauth.JwtAuthenticationRequest
+ *
+ * @since 1.0.RC6
+ */
 public interface Oauth2AuthenticationRequest {
 
 }

@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This class is used to create a request to authenticate a JWT against Stormpath Server.
+ * This class is used to create a request to authenticate a JWT either locally or against the Stormpath Server.
  *
  * @since 1.0.RC6
  */
