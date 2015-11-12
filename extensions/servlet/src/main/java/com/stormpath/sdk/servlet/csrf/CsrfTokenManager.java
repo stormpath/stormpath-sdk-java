@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface CsrfTokenManager {
 
+    String getTokenName();
+
     /**
      * Returns a new 1-time-use CSRF token.  For an HTML form, every time the form is rendered, a <em>new</em> CSRF
      * token should be embedded in the form as a hidden field.

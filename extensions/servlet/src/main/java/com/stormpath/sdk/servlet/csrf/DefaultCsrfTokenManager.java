@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.csrf;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -38,11 +39,14 @@ import java.util.UUID;
  */
 public class DefaultCsrfTokenManager implements CsrfTokenManager {
 
+    private static final String DEFAULT_CSRF_TOKEN_NAME = "csrfToken";
+
     private static final Logger log = LoggerFactory.getLogger(DefaultCsrfTokenManager.class);
 
     private final Cache<String, String> nonceCache;
     private final String signingKey;
     private final long ttlMillis;
+    private final String tokenName;
 
     /**
      * Instantiates a new DefaultCacheManager.
@@ -56,13 +60,19 @@ public class DefaultCsrfTokenManager implements CsrfTokenManager {
      * @param ttlMillis  the length of time in milliseconds for which a generated CSRF token is valid.  When a token is
      *                   created, it cannot be used after this duration, even if it has not been consumed yet.
      */
-    public DefaultCsrfTokenManager(Cache<String, String> nonceCache, String signingKey, long ttlMillis) {
+    public DefaultCsrfTokenManager(String tokenName, Cache<String, String> nonceCache, String signingKey, long ttlMillis) {
         Assert.notNull(nonceCache, "nonce cache cannot be null.");
         this.nonceCache = nonceCache;
         Assert.hasText(signingKey, "signingKey cannot be null or empty.");
         this.signingKey = signingKey;
         Assert.isTrue(ttlMillis > 0, "ttlMillis must be greater than zero.");
         this.ttlMillis = ttlMillis;
+        this.tokenName = Strings.hasText(tokenName) ? tokenName : DEFAULT_CSRF_TOKEN_NAME;
+    }
+
+    @Override
+    public String getTokenName() {
+        return this.tokenName;
     }
 
     @Override

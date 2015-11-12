@@ -27,6 +27,8 @@ import java.util.Map;
  */
 public class DefaultForm implements Form {
 
+    private String csrfTokenName;
+
     private String csrfToken;
 
     private String next;
@@ -35,6 +37,16 @@ public class DefaultForm implements Form {
 
     public DefaultForm() {
         this.fields = new LinkedHashMap<String, Field>();
+    }
+
+    @Override
+    public String getCsrfTokenName() {
+        return csrfTokenName;
+    }
+
+    public DefaultForm setCsrfTokenName(String csrfTokenName) {
+        this.csrfTokenName = csrfTokenName;
+        return this;
     }
 
     @Override

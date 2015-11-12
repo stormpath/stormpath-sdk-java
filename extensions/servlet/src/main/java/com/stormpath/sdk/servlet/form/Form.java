@@ -24,6 +24,8 @@ import java.util.List;
  */
 public interface Form {
 
+    String getCsrfTokenName();
+
     /**
      * Returns the CSRF token that must be included with the form during submission.  If the CSRF token submitted with
      * the form is missing, expired or has already been used, form submission will fail.
