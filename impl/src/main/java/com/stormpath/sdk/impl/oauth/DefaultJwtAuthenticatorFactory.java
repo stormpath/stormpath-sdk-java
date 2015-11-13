@@ -20,6 +20,9 @@ import com.stormpath.sdk.impl.application.DefaultApplication;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
 import com.stormpath.sdk.oauth.JwtAuthenticatorFactory;
 
+/**
+ * @since 1.0.RC6
+ */
 public class DefaultJwtAuthenticatorFactory implements JwtAuthenticatorFactory {
 
     @Override

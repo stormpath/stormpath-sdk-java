@@ -20,6 +20,9 @@ import com.stormpath.sdk.impl.application.DefaultApplication;
 import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
 import com.stormpath.sdk.oauth.PasswordGrantAuthenticatorFactory;
 
+/**
+ * @since 1.0.RC6
+ */
 public class DefaultPasswordGrantAuthenticatorFactory implements PasswordGrantAuthenticatorFactory {
 
     @Override

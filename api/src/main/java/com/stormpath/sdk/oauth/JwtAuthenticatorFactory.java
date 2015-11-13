@@ -15,6 +15,11 @@
  */
 package com.stormpath.sdk.oauth;
 
+/**
+ * A JWT-specific Authenticator Factory.
+ *
+ * @since 1.0.RC6
+ */
 public interface JwtAuthenticatorFactory extends Oauth2AuthenticatorFactory<JwtAuthenticator> {
 
 }

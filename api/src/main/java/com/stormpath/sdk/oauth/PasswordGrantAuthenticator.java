@@ -16,14 +16,15 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This class is used to authenticate an account and exchange its credentials for a valid OAuth 2.0 token. For example:
+ * Interface denoting a Password Grant-specific {@link Oauth2Authenticator}. It is used to authenticate an account and
+ * exchange its credentials for a valid OAuth 2.0 token. For example:
  * <pre>
  * Application app = obtainApplication();
  * PasswordGrantRequest request = <b>Authenticators.PASSWORD_GRANT_REQUEST.builder()</b>
  *      .setLogin(username)
  *      .setPassword(password)
  *      .build();
- * OauthGrantAuthenticationResult result = app.authenticate(request)
+ * OauthGrantAuthenticationResult result = app.authenticate(request);
  * </pre>
  *
  * @see RefreshGrantAuthenticator

@@ -16,9 +16,17 @@
 package com.stormpath.sdk.oauth;
 
 /**
+ * A JWT-specific {@link Oauth2AuthenticationRequestBuilder}.
+ *
  * @since 1.0.RC6
  */
 public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
 
+    /**
+     * Setter for the jwt to be used in the {@link JwtAuthenticationRequest} that this builder will construct.
+     *
+     * @param jwt the jwt to be used in the {@link JwtAuthenticationRequest} that this builder will construct.
+     * @return this instance for method chaining.
+     */
     JwtAuthenticationRequestBuilder setJwt(String jwt);
 }

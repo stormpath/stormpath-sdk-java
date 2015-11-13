@@ -20,6 +20,9 @@ import com.stormpath.sdk.impl.application.DefaultApplication;
 import com.stormpath.sdk.oauth.RefreshGrantAuthenticator;
 import com.stormpath.sdk.oauth.RefreshGrantAuthenticatorFactory;
 
+/**
+ * @since 1.0.RC6
+ */
 public class DefaultRefreshGrantAuthenticatorFactory implements RefreshGrantAuthenticatorFactory {
 
     @Override
