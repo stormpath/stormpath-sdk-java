@@ -108,7 +108,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
   By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
 
-* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are seeing the wrong version of Spring Security. The current release of the ``spring-boot-starter-parent`` uses Spring Security, version 3.2.8. The ``stormpath-default-spring-boot-starter`` needs Spring Security, version 4.0.x. An easy solution is to override the Spring Security version in your ``pom.xml``
+* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The current release of the ``spring-boot-starter-parent`` uses Spring Security, version 3.2.8. The ``stormpath-default-spring-boot-starter`` relies on Spring Security, version 4.0.x. There is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
 
   .. code-block:: xml
       :emphasize-lines: 15
