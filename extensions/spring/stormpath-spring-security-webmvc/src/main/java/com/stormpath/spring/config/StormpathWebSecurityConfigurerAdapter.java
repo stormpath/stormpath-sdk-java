@@ -57,7 +57,8 @@ public class StormpathWebSecurityConfigurerAdapter extends WebSecurityConfigurer
         if (fullyAuthenticatedEnabled) {
             http
                 .authorizeRequests()
-                .antMatchers("/**").fullyAuthenticated();
+                .anyRequest()
+                .fullyAuthenticated();
         }
     }
 
