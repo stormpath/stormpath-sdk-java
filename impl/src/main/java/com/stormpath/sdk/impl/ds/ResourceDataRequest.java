@@ -17,9 +17,18 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.HttpHeaders;
 
+/**
+ * This class represents a request to obtain a resource and its related data.
+ */
 public interface ResourceDataRequest extends ResourceMessage {
 
     ResourceAction getAction();
 
+    /**
+     * Returns the {@code HttpHeaders HttpHeaders} instance associated with a {@link ResourceDataRequest ResourceDataRequest}
+     * @return the {@link HttpHeaders HttpHeaders} instance representing the Http Headers added to a data request.
+     *
+     * @since 1.0.RC6
+     */
     HttpHeaders getHttpHeaders();
 }
