@@ -19,6 +19,7 @@ import autoconfigure.StormpathWebSecurityAutoConfigurationApplication
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.servlet.config.CookieConfig
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory
 import com.stormpath.sdk.servlet.http.Resolver
@@ -34,6 +35,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.HandlerMapping
 import org.testng.annotations.Test
 
+import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
 
@@ -76,6 +78,9 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     @Autowired
     Resolver<Locale> stormpathLocaleResolver
 
+    @Autowired
+    CsrfTokenManager csrfTokenManager
+
     @Test
     void test() {
 
@@ -102,4 +107,8 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         assertNotNull stormpathLocaleResolver
     }
 
+    @Test
+    void testCsrfTokenManager() {
+        assertEquals csrfTokenManager.tokenName, '_csrf'
+    }
 }
