@@ -26,6 +26,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface CsrfTokenManager {
 
+    /**
+     * The name of CSRF token. This name is used to obtain the token from requests and forms for example.
+     *
+     * @return the name of the CSRF that will be used in form field for example.
+     *
+     * @since 1.0.RC5.2
+     */
     String getTokenName();
 
     /**

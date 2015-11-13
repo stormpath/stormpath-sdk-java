@@ -44,6 +44,13 @@ public class DefaultForm implements Form {
         return csrfTokenName;
     }
 
+    /**
+     * The name of CSRF token. This name is used to customize the token field name in the form.
+     *
+     * @return the name of the CSRF field.
+     *
+     * @since 1.0.RC5.2
+     */
     public DefaultForm setCsrfTokenName(String csrfTokenName) {
         this.csrfTokenName = csrfTokenName;
         return this;

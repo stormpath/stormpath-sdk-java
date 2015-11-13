@@ -51,6 +51,7 @@ public class DefaultCsrfTokenManager implements CsrfTokenManager {
     /**
      * Instantiates a new DefaultCacheManager.
      *
+     * @param tokenName  The name that will be used to identify the CSRF token. This name is used to obtain the token from the forms for example.
      * @param nonceCache a cache to place used CSRF tokens.  This is required to ensure the consumed token is never used
      *                   again, which is mandatory for CSRF protection.  This cache <em>MUST</em> have a TTL value equal
      *                   to or greater than {@code ttlMillis}. Cache key: a unique token ID, Cache value: the used

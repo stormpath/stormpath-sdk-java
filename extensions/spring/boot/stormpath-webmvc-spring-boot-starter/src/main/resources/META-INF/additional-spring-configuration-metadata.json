@@ -193,9 +193,15 @@
     },
     {
       "name": "stormpath.web.csrf.token.ttl",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "The length of time in milliseconds that CSRF tokens in Stormpath-generated UI forms are valid before the form must be filled out again.  The default value is 3600000 (1 hour).  If Spring Security is enabled, this property is not used as Stormpath will delegate to Spring Security's CSRF generator instead.",
       "defaultValue": 3600000
+    },
+    {
+      "name": "stormpath.web.csrf.token.name",
+      "type": "java.lang.String",
+      "description": "The name of CSRF token that will be used in the forms. By default we used 'csrfToken' but Spring Security uses '_csrf'. In the latter case, the name is automatically changed when running in a Spring Security environment so there is no need for developers to change this name themselves in that case.",
+      "defaultValue": "csrfToken"
     },
     {
       "name": "stormpath.web.nonce.cache.name",
@@ -205,13 +211,13 @@
     },
     {
       "name": "stormpath.web.http.authc.challenge",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Whether or not a failed HTTP Authentication attempt (via the Authorization header) should result in a HTTP 401 authentication challenge response, setting the WWW-Authenticate header.  This is expected behavior for HTTP Authentication, so the default value is true, but may be set to false you desire an exception be thrown instead.  This is mostly useful in certain testing scenarios, and it is strongly recommended to keep this value set to true to retain HTTP-compliant behavior.",
       "defaultValue": true
     },
     {
       "name": "stormpath.web.stormpathFilter.enabled",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Defines if the StormpathFilter should enabled or not. This filter is responsible for providing all the Stormpath-related functionality in a Web environment. The StormpathFilter will ignore all filtered requests that do not match recognized URL rules, allowing other frameworks to filter requests as necessary.  Disabling this filter will prevent Stormpath web support from working correctly, but this property is provided as an option in case you wish to temporarily disable the filter for debugging or request tracing reasons.",
       "defaultValue": true
     },

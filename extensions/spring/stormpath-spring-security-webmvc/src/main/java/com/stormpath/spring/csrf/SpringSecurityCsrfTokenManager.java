@@ -43,6 +43,7 @@ public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
      * Instantiates a new SpringSecurityCsrfTokenManager.
      *
      * @param csrfTokenRepository the CsrfTokenRepository that this manager will use to store and load tokens.
+     * @param tokenName the name that will be used to identify the CSRF token.
      */
     public SpringSecurityCsrfTokenManager(CsrfTokenRepository csrfTokenRepository, String tokenName) {
         Assert.notNull(csrfTokenRepository, "csrfTokenRepository cannot be null.");
