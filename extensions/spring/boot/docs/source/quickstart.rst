@@ -70,6 +70,8 @@ Don’t believe it? Try it! Start up your Spring Boot web application, and we'll
 
 Wasn't that easy?!
 
+.. include:: stormpath-spring-boot-circular-warning.txt
+
 Any Problems?
 ^^^^^^^^^^^^^
 
@@ -97,8 +99,38 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
   By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
 
+* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The current release of the ``spring-boot-starter-parent`` uses Spring Security, version 3.2.8. The ``stormpath-default-spring-boot-starter`` relies on Spring Security, version 4.0.x. There is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
 
+  .. code-block:: xml
+      :emphasize-lines: 15
 
+      <?xml version="1.0" encoding="UTF-8"?>
+      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+          <modelVersion>4.0.0</modelVersion>
+          ...
+          <parent>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-parent</artifactId>
+              <version>1.2.7.RELEASE</version>
+              <relativePath/> <!-- lookup parent from repository -->
+          </parent>
+
+          <properties>
+              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+              <java.version>1.8</java.version>
+              <spring-security.version>4.0.2.RELEASE</spring-security.version>
+          </properties>
+
+          <dependencies>
+              ...
+              <dependency>
+                  <groupId>com.stormpath.spring</groupId>
+                  <artifactId>stormpath-default-spring-boot-starter</artifactId>
+              </dependency>
+              ...
+          </dependencies>
+          ...
+      </project>
 
 If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
 

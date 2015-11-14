@@ -193,6 +193,8 @@ methods.
 
 The official Spring Security documentation is `here <http://projects.spring.io/spring-security/>`_.
 
+.. include:: stormpath-spring-boot-circular-warning.txt
+
 Let's take a look at the additions and changes to the project.
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw>`_.
 
