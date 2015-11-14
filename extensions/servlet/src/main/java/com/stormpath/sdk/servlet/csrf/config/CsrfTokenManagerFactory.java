@@ -31,6 +31,7 @@ import javax.servlet.ServletContext;
  */
 public class CsrfTokenManagerFactory extends ConfigSingletonFactory<CsrfTokenManager> {
 
+    public static final String CSRF_TOKEN_NAME = "stormpath.web.csrf.token.name";
     public static final String CSRF_TOKEN_TTL = "stormpath.web.csrf.token.ttl";
     public static final String NONCE_CACHE_NAME = "stormpath.web.nonce.cache.name";
 
@@ -54,6 +55,8 @@ public class CsrfTokenManagerFactory extends ConfigSingletonFactory<CsrfTokenMan
 
         String signingKey = client.getApiKey().getSecret();
 
-        return new DefaultCsrfTokenManager(usedNonceCache, signingKey, ttlMillis);
+        String tokenName = getConfig().get(CSRF_TOKEN_NAME);
+
+        return new DefaultCsrfTokenManager(tokenName, usedNonceCache, signingKey, ttlMillis);
     }
 }

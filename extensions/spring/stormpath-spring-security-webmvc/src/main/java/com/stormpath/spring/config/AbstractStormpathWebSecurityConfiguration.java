@@ -115,6 +115,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
     protected boolean csrfProtectionEnabled;
 
+    @Value("#{ @environment['stormpath.web.csrf.token.name'] ?: '_csrf'}")
+    protected String csrfTokenName;
+
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
     }
@@ -129,12 +132,11 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
         HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
-        csrfTokenRepository.setSessionAttributeName("csrfToken");
-        csrfTokenRepository.setParameterName("csrfToken");
+        csrfTokenRepository.setParameterName(csrfTokenName);
         return csrfTokenRepository;
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository());
+        return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository(), csrfTokenName);
     }
 }

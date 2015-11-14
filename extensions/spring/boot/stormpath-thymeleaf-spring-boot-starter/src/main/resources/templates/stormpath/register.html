@@ -40,7 +40,7 @@
 
                         <form method="post" role="form" class="registration-form form-horizontal sp-form">
 
-                            <input name="csrfToken" type="hidden" th:value="${form.csrfToken}"/>
+                            <input th:name="${form.csrfTokenName}" type="hidden" th:value="${form.csrfToken}"/>
 
                             <div th:each="field : ${form.fields}" form-group="true"
                                  th:class="'form-group group-' + ${field.name}">
