@@ -193,16 +193,7 @@ methods.
 
 The official Spring Security documentation is `here <http://projects.spring.io/spring-security/>`_.
 
-.. ATTENTION::
-
-   You may encounter a circular redirect in your Google Chrome browser when you are in the process of developing your
-   Spring Boot + Spring Security + Stormpath application.
-
-   This is due to a known issue with Google Chrome whereby it aggressively caches ``302`` redirects.
-
-   The solution is to clear cache or use an Icognito window while testing.
-
-   Note: This will never occur in a production release environment.
+.. include:: stormpath-spring-boot-circular-warning.txt
 
 Let's take a look at the additions and changes to the project.
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw>`_.
