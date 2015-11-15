@@ -10,8 +10,6 @@ Spring Boot, check out the :doc:`quickstart`.
 
 If you've already gone through the quickstart, jump over to the :ref:`spring-boot-meet-stormpath` section.
 
-We will be referring to the tutorial code found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot>`_.
-
 All of the code in the tutorial makes use of the ``stormpath-default-spring-boot-starter``. This starter has it all:
 Spring Boot, Spring Web MVC, Spring Security and the Thymeleaf templating engine - all integrated with Stormpath. Component features,
 such as Spring Security, can easily be disabled through the use of properties or via annotations. (You'll see an example of disabling
@@ -24,6 +22,21 @@ Topics:
   :depth: 1
 
 .. include:: stormpath-spring-boot-setup.txt
+
+For the rest of the tutorial, we will be referring to the tutorial code found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot>`_.
+
+Each of the tutorial sections is completely standalone and can be used as a starting point for your own applications.
+
+For instance, if you wanted to build a Spring Boot WebMVC project, including Spring Security integrated with Stormpath, you
+could do the following:
+
+.. code-block:: bash
+
+    mkdir MyProject
+    cd MyProject
+    cp -r <path to Stormpath sdk>/tutorials/spring-boot/03-spring-security-refined/* .
+    mvn clean package
+    java -jar target/*.jar
 
 .. _spring-boot-meet-stormpath:
 

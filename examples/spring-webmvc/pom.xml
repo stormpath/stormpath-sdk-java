@@ -32,6 +32,7 @@
         <spring.version>4.1.7.RELEASE</spring.version>
         <servlet.version>3.0.1</servlet.version>
         <jstl.version>1.2</jstl.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
