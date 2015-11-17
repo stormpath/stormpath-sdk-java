@@ -60,10 +60,6 @@ public class StormpathWebSecurityConfigurerAdapter extends SecurityConfigurerAda
     @Qualifier("stormpathCsrfTokenManager")
     protected CsrfTokenManager csrfTokenManager;
 
-    @Autowired
-    @Qualifier("stormpathAuthenticationProvider")
-    protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
-
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc

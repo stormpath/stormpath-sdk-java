@@ -1,14 +1,19 @@
 package com.stormpath.spring.config;
 
+import java.util.Arrays;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+
 import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.AccountPermissionResolver;
 import com.stormpath.spring.security.provider.AuthenticationTokenFactory;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
  * @since 1.0.RC5
@@ -56,5 +61,11 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathSprin
     @Override
     public AuthenticationProvider stormpathAuthenticationProvider() {
         return super.stormpathAuthenticationProvider();
+    }
+
+    @Bean
+    @Conditional(StormpathSecurityEnabled.class)
+    public AuthenticationManager stormpathAuthenticationManager() {
+        return new ProviderManager(Arrays.asList(stormpathAuthenticationProvider()));
     }
 }
