@@ -6,3 +6,6 @@ build
 *.iws
 *.iml
 .DS_STORE
+.project
+.settings
+.classpath
