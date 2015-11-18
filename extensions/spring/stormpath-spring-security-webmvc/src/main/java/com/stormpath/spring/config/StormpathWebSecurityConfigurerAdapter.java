@@ -118,7 +118,7 @@ public class StormpathWebSecurityConfigurerAdapter extends SecurityConfigurerAda
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
 
-    public static StormpathWebSecurityConfigurerAdapter stormpathDSL() {
+    public static StormpathWebSecurityConfigurerAdapter stormpath() {
         return new StormpathWebSecurityConfigurerAdapter();
     }
 
@@ -152,7 +152,7 @@ public class StormpathWebSecurityConfigurerAdapter extends SecurityConfigurerAda
                         .usernameParameter("login")
                         .passwordParameter("password")
                         .and().authorizeRequests()
-                        .antMatchers(loginUri).permitAll();
+                        .antMatchers(loginUri+"*").permitAll();
             }
 
             if (logoutEnabled) {
@@ -185,6 +185,13 @@ public class StormpathWebSecurityConfigurerAdapter extends SecurityConfigurerAda
             }
             if (verifyEnabled) {
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
+            }
+
+            if (fullyAuthenticatedEnabled) {
+                http
+                    .authorizeRequests()
+                    .antMatchers("/assets/**").permitAll()
+                    .anyRequest().fullyAuthenticated();
             }
         }
     }

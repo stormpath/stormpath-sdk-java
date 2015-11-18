@@ -16,17 +16,15 @@
 package com.stormpath.spring.examples;
 
 import com.stormpath.spring.config.EnableStormpathWebSecurity;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import static com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter.*;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC6
  */
 @Configuration
 @ComponentScan
@@ -41,11 +39,10 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                // apply a domain specific DSL (i.e. maybe framework integration
-                // or a company specific set of configuration)
-                .apply(stormpathDSL())
+            .apply(stormpath())
             .and()
-                .authorizeRequests()
-                .antMatchers("/restricted").fullyAuthenticated();
+            .authorizeRequests()
+            .antMatchers("/restricted").fullyAuthenticated()
+            .antMatchers("/**").permitAll();
     }
 }
