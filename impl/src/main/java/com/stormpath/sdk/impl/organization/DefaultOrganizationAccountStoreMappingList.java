@@ -25,7 +25,7 @@ import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList;
 import java.util.Map;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOrganizationAccountStoreMappingList extends AbstractCollectionResource<OrganizationAccountStoreMapping> implements OrganizationAccountStoreMappingList {
 

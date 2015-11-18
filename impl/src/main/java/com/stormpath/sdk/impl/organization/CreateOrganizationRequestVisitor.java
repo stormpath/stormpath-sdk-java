@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.organization;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface CreateOrganizationRequestVisitor {
 
