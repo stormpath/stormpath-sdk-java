@@ -31,7 +31,7 @@ package com.stormpath.sdk.oauth;
  * JwtAuthenticationResult result = Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest);
  * </pre>
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface JwtAuthenticator extends Oauth2Authenticator<JwtAuthenticationResult> {
 

@@ -23,7 +23,7 @@ import static org.testng.AssertJUnit.fail
 /**
  * Test for OauthGrantAuthenticationResultBuilder class
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOauthGrantAuthenticationResultBuilderTest {
 

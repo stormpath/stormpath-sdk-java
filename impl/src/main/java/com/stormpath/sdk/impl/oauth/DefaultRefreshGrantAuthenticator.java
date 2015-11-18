@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultRefreshGrantAuthenticator extends AbstractOauth2Authenticator implements RefreshGrantAuthenticator {
 

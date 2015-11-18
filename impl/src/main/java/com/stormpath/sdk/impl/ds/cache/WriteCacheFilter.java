@@ -132,7 +132,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
             AbstractResource.isMaterialized(result.getData()) &&
 
-            //@since 1.0.RC6: Let's not cache Access Tokens
+            //@since 1.0.RC7: Let's not cache Access Tokens
             !AccessToken.class.isAssignableFrom(clazz) &&
 
             //@since 1.0.RC4.6: Fix for https://github.com/stormpath/stormpath-sdk-java/issues/164. Let's not cache expanded resources

@@ -20,7 +20,7 @@ import com.stormpath.sdk.directory.AccountStore;
 /**
  * Utility class to build {@link PasswordGrantRequestBuilder PasswordGrantRequestBuilder} instances.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface PasswordGrantRequestBuilder extends Oauth2AuthenticationRequestBuilder<PasswordGrantRequest> {
 

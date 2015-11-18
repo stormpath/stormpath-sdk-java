@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * Interface defining the operations supported by both {@link PasswordGrantRequest} and {@link RefreshGrantRequest}.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface GrantRequest extends Oauth2AuthenticationRequest {
 

@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.JwtAuthenticationResult;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultJwtAuthenticationResultBuilder implements JwtAuthenticationResultBuilder {
 

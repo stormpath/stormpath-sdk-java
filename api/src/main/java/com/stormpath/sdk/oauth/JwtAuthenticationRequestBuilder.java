@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * A JWT-specific {@link Oauth2AuthenticationRequestBuilder}.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface JwtAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<JwtAuthenticationRequest> {
 

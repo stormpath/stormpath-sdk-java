@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * Factory used to construct {@link JwtAuthenticationRequestBuilder} instances
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface JwtAuthenticationRequestFactory extends AuthenticationRequestFactory<JwtAuthenticationRequestBuilder> {
 }

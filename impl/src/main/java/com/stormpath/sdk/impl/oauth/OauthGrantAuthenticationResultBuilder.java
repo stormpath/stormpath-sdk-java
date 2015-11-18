@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
 /**
  * This builder is used to obtain an {@link com.stormpath.sdk.oauth.OauthGrantAuthenticationResult OauthGrantAuthenticationResult} object from the result obtained after a Grant Authentication operation is performed.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface OauthGrantAuthenticationResultBuilder {
 

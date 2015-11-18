@@ -22,7 +22,7 @@ package com.stormpath.sdk.oauth;
  * @param <T> a subclass of {@link Oauth2AuthenticationRequestBuilder} specifying the kind of Oauth2 authentication request
  *           builder that this factory will create.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface AuthenticationRequestFactory<T extends Oauth2AuthenticationRequestBuilder> {
 

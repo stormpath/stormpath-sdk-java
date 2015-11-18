@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultPasswordGrantAuthenticator extends AbstractOauth2Authenticator implements PasswordGrantAuthenticator {
 

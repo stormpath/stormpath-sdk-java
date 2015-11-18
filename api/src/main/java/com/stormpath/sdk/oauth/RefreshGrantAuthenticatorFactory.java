@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * A Refresh Grant-specific Authenticator Factory.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface RefreshGrantAuthenticatorFactory extends Oauth2AuthenticatorFactory<RefreshGrantAuthenticator> {
 }

@@ -21,7 +21,7 @@ import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
 import com.stormpath.sdk.oauth.PasswordGrantAuthenticatorFactory;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultPasswordGrantAuthenticatorFactory implements PasswordGrantAuthenticatorFactory {
 

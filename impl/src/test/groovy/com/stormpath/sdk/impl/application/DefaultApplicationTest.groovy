@@ -95,7 +95,7 @@ class DefaultApplicationTest {
         assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
         //since 1.0.0
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
-        //since 1.0.RC6
+        //since 1.0.RC7
         assertTrue(propertyDescriptors.get("oAuthPolicy") instanceof ResourceReference && propertyDescriptors.get("oAuthPolicy").getType().equals(OauthPolicy))
     }
 

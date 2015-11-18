@@ -316,7 +316,7 @@ public class DefaultDataStore implements InternalDataStore {
         return save(parentHref, resource, null, returnType, null, true);
     }
 
-    /** @since 1.0.RC6 */
+    /** @since 1.0.RC7 */
     @Override
     public <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, HttpHeaders requestHeaders) {
         return save(parentHref, resource, requestHeaders, returnType, null, true);
@@ -442,7 +442,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     /**
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     private String buildCanonicalBodyQueryParams(Map<String, Object> bodyData){
         StringBuilder builder = new StringBuilder();

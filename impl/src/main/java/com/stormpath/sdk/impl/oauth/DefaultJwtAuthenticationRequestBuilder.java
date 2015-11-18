@@ -21,7 +21,7 @@ import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
 import com.stormpath.sdk.oauth.JwtAuthenticationRequestBuilder;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultJwtAuthenticationRequestBuilder implements JwtAuthenticationRequestBuilder {
 

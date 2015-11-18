@@ -68,7 +68,7 @@ public class DefaultResourceMessage implements ResourceMessage {
     }
 
     /**
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     public HttpHeaders getHttpHeaders() {
         return httpHeaders != null ? httpHeaders : new HttpHeaders();

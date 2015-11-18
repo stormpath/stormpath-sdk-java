@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultJwtAuthenticationRequest implements JwtAuthenticationRequest {
 

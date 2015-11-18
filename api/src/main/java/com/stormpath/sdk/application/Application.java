@@ -1468,7 +1468,7 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      * Returns the {@link OauthPolicy} associated with this application.
      * @return the {@link OauthPolicy} associated with this application.
      *
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     OauthPolicy getOauthPolicy();
 }

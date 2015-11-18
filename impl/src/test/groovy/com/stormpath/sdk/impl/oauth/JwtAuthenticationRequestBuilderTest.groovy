@@ -25,7 +25,7 @@ import static org.testng.Assert.fail
 /**
  * Test for JwtAuthenticationRequestBuilder class
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 class JwtAuthenticationRequestBuilderTest {
 

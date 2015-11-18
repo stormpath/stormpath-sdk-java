@@ -558,7 +558,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Returns a paginated list of all the active access tokens that belong to the account.
      *
      * @return a paginated list of all the Account's active access tokens.
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     AccessTokenList getAccessTokens();
 
@@ -566,7 +566,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Returns a paginated list of the refresh tokens that belong to the account.
      *
      * @return a paginated list of the Account's refresh tokens.
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     RefreshTokenList getRefreshTokens();
 }

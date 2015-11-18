@@ -24,7 +24,7 @@ import com.stormpath.sdk.tenant.Tenant;
 /**
  * This class represents an Authentication OAuth2 token created in Stormpath.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface AccessToken extends Resource, Deletable {
 

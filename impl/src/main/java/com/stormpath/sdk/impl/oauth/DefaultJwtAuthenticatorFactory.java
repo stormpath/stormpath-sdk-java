@@ -21,7 +21,7 @@ import com.stormpath.sdk.oauth.JwtAuthenticator;
 import com.stormpath.sdk.oauth.JwtAuthenticatorFactory;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultJwtAuthenticatorFactory implements JwtAuthenticatorFactory {
 

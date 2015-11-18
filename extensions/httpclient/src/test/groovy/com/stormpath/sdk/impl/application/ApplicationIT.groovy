@@ -1202,7 +1202,7 @@ class ApplicationIT extends ClientIT {
         }
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     @Test
     void testCreateAndRefreshTokenForAppAccount() {
 
@@ -1239,7 +1239,7 @@ class ApplicationIT extends ClientIT {
         assertEquals result.getRefreshToken().getApplication().getHref(), app.href
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     @Test
     void testRetrieveAndUpdateOauthPolicy(){
         def app = createTempApp()
@@ -1259,7 +1259,7 @@ class ApplicationIT extends ClientIT {
         assertEquals oauthPolicy.getApplication().getHref(), app.href
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     @Test
     void testAuthenticateAndDeleteTokenForAppAccount() {
 
@@ -1302,7 +1302,7 @@ class ApplicationIT extends ClientIT {
         assertNotNull Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     @Test
     void testInvalidTokenViaLocalValidation() {
 

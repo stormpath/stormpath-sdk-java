@@ -21,7 +21,7 @@ import com.stormpath.sdk.oauth.RefreshGrantAuthenticator;
 import com.stormpath.sdk.oauth.RefreshGrantAuthenticatorFactory;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultRefreshGrantAuthenticatorFactory implements RefreshGrantAuthenticatorFactory {
 

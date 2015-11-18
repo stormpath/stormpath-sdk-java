@@ -81,7 +81,7 @@ import com.stormpath.sdk.lang.Classes;
  *
  * @see com.stormpath.sdk.oauth.OauthPolicy
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class Authenticators {
 

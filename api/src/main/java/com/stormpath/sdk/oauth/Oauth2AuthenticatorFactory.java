@@ -26,7 +26,7 @@ import com.stormpath.sdk.application.Application;
  * @see com.stormpath.sdk.oauth.RefreshGrantAuthenticatorFactory
  * @see com.stormpath.sdk.oauth.JwtAuthenticatorFactory
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface Oauth2AuthenticatorFactory<T extends Oauth2Authenticator> {
 

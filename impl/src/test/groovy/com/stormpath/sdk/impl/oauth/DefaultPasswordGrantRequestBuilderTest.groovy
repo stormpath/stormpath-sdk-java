@@ -28,7 +28,7 @@ import static org.testng.AssertJUnit.fail
 /**
  * Test for PasswordGrantRequestBuilder class
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 class DefaultPasswordGrantRequestBuilderTest {
 

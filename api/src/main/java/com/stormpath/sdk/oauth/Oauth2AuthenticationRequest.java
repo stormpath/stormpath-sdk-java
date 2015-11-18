@@ -22,7 +22,7 @@ package com.stormpath.sdk.oauth;
  * @see com.stormpath.sdk.oauth.RefreshGrantRequest
  * @see com.stormpath.sdk.oauth.JwtAuthenticationRequest
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface Oauth2AuthenticationRequest {
 

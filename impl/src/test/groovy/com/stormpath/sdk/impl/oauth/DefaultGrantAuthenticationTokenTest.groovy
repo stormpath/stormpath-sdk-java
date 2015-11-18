@@ -26,7 +26,7 @@ import static org.testng.Assert.*
 /**
  * Test for DefaultGrantAuthenticationToken class
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 class DefaultGrantAuthenticationTokenTest {
     @Test

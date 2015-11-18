@@ -24,7 +24,7 @@ import static org.testng.Assert.fail
 /**
  * Test for RefreshGrantRequestBuilder class
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 class DefaultRefreshGrantRequestBuilderTest {
 

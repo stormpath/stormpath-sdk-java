@@ -90,7 +90,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<ApplicationList, Application> APPLICATIONS =
             new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
 
-    // @since 1.0.RC6
+    // @since 1.0.RC7
     static final CollectionReference<AccessTokenList, AccessToken> ACCESS_TOKENS =
             new CollectionReference<AccessTokenList, AccessToken>("accessTokens", AccessTokenList.class, AccessToken.class);
 
@@ -452,14 +452,14 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     /**
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     public AccessTokenList getAccessTokens() {
         return getResourceProperty(ACCESS_TOKENS);
     }
 
     /**
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     public RefreshTokenList getRefreshTokens() {
         return getResourceProperty(REFRESH_TOKENS);

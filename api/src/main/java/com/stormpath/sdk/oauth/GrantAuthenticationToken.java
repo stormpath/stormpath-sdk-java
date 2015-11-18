@@ -20,7 +20,7 @@ import com.stormpath.sdk.resource.Resource;
 /**
  * A GrantAuthenticationToken instance reflects the result of executing an Authentication Request to create or refresh an {@link AccessToken AccessToken}.
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface GrantAuthenticationToken extends Resource {
 

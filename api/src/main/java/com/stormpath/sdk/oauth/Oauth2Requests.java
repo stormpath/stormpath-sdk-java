@@ -33,7 +33,7 @@ import com.stormpath.sdk.lang.Classes;
  *      .build();
  * </pre>
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public final class Oauth2Requests {
 

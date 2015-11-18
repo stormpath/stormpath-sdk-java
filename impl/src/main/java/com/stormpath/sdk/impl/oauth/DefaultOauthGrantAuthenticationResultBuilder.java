@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.*;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOauthGrantAuthenticationResultBuilder implements OauthGrantAuthenticationResultBuilder {
 

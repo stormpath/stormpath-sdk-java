@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.RefreshAuthenticationRequestFactory;
 import com.stormpath.sdk.oauth.RefreshGrantRequestBuilder;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultRefreshAuthenticationRequestFactory implements RefreshAuthenticationRequestFactory {
 

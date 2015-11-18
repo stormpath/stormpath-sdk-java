@@ -42,7 +42,7 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType);
 
-    /** @since 1.0.RC6 */
+    /** @since 1.0.RC7 */
     <T extends Resource, R extends Resource> R create(String parentHref, T resource, Class<? extends R> returnType, HttpHeaders customHeaders);
 
     /** @since 1.0.RC5 */

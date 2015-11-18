@@ -21,7 +21,7 @@ package com.stormpath.sdk.oauth;
  * @see com.stormpath.sdk.oauth.PasswordGrantAuthenticator#authenticate(Oauth2AuthenticationRequest)
  * @see com.stormpath.sdk.oauth.RefreshGrantAuthenticator#authenticate(Oauth2AuthenticationRequest)
  *
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public interface OauthGrantAuthenticationResult extends Oauth2AuthenticationResult {
 

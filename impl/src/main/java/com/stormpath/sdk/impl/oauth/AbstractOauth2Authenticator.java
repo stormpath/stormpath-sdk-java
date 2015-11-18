@@ -20,7 +20,7 @@ import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public abstract class AbstractOauth2Authenticator {
 

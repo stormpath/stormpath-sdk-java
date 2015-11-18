@@ -299,7 +299,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return prToken.getAccount();
     }
 
-    /** @since 1.0.RC6 */
+    /** @since 1.0.RC7 */
     public OauthPolicy getOauthPolicy() {
         return getResourceProperty(OAUTH_POLICY);
     }
@@ -728,17 +728,17 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return this;
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     public PasswordGrantAuthenticator createPasswordGrantAuthenticator() {
         return new DefaultPasswordGrantAuthenticator(this, getDataStore());
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     public RefreshGrantAuthenticator createRefreshGrantAuthenticator() {
         return new DefaultRefreshGrantAuthenticator(this, getDataStore());
     }
 
-    /* @since 1.0.RC6 */
+    /* @since 1.0.RC7 */
     public JwtAuthenticator createJwtAuthenticator() {
         return new DefaultJwtAuthenticator(this, getDataStore());
     }
