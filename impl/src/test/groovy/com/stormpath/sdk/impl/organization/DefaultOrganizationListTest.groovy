@@ -30,7 +30,7 @@ import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 class DefaultOrganizationListTest {
 

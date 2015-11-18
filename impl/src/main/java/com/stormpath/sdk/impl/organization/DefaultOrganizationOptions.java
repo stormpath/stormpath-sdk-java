@@ -19,7 +19,7 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.organization.OrganizationOptions;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOrganizationOptions extends DefaultOptions<OrganizationOptions> implements OrganizationOptions {
 

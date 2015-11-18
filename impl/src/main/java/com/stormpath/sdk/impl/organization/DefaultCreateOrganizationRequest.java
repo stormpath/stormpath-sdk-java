@@ -20,7 +20,7 @@ import com.stormpath.sdk.organization.CreateOrganizationRequest;
 import com.stormpath.sdk.organization.Organization;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultCreateOrganizationRequest implements CreateOrganizationRequest {
 

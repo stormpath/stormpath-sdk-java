@@ -20,7 +20,7 @@ import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.OrganizationOptions;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOrganizationCriteria extends DefaultCriteria<OrganizationCriteria, OrganizationOptions> implements OrganizationCriteria {
 

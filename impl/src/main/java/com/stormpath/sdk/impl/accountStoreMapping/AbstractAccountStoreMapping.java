@@ -26,7 +26,7 @@ import com.stormpath.sdk.impl.resource.*;
 import java.util.Map;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping> extends AbstractInstanceResource implements AccountStoreMapping {
 

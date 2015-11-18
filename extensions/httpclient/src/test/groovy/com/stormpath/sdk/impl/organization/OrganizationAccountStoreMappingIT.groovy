@@ -435,7 +435,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC6
+     * @since 1.0.RC7
      */
     @Test
     void testDefaultOrganizationGaps() {

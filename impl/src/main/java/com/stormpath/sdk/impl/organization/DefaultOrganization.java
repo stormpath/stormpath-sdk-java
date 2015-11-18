@@ -49,7 +49,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Map;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOrganization extends AbstractExtendableInstanceResource implements Organization {
 

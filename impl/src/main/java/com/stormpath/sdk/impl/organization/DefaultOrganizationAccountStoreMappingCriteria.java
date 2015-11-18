@@ -20,7 +20,7 @@ import com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingOptions;
 
 /**
- * @since 1.0.RC6
+ * @since 1.0.RC7
  */
 public class DefaultOrganizationAccountStoreMappingCriteria extends DefaultCriteria<OrganizationAccountStoreMappingCriteria, OrganizationAccountStoreMappingOptions> implements OrganizationAccountStoreMappingCriteria {
 
