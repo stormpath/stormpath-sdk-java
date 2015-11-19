@@ -144,25 +144,25 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         if (stormpathWebEnabled) {
             if (loginEnabled) {
                 http
-                        .formLogin()
-                        .loginPage(loginUri)
-                        .defaultSuccessUrl(loginNextUri)
-                        .successHandler(successHandler)
-                        .usernameParameter("login")
-                        .passwordParameter("password")
-                        .and().authorizeRequests()
-                        .antMatchers(loginUri+"*").permitAll();
+                    .formLogin()
+                    .loginPage(loginUri)
+                    .defaultSuccessUrl(loginNextUri)
+                    .successHandler(successHandler)
+                    .usernameParameter("login")
+                    .passwordParameter("password")
+                    .and().authorizeRequests()
+                    .antMatchers(loginUri+"*").permitAll();
             }
 
             if (logoutEnabled) {
                 http
-                        .logout()
-                        .invalidateHttpSession(true)
-                        .logoutUrl(logoutUri)
-                        .logoutSuccessUrl(logoutNextUri)
-                        .addLogoutHandler(logoutHandler)
-                        .and().authorizeRequests()
-                        .antMatchers(logoutUri).permitAll();
+                    .logout()
+                    .invalidateHttpSession(true)
+                    .logoutUrl(logoutUri)
+                    .logoutSuccessUrl(logoutNextUri)
+                    .addLogoutHandler(logoutHandler)
+                    .and().authorizeRequests()
+                    .antMatchers(logoutUri).permitAll();
 
             }
 
