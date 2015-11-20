@@ -22,6 +22,7 @@ import com.stormpath.spring.security.provider.AccountPermissionResolver;
 import com.stormpath.spring.security.provider.AuthenticationTokenFactory;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,7 +30,11 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 
 /**
  * @since 1.0.RC5
@@ -88,4 +93,17 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
         return super.stormpathAuthenticationProvider();
     }
 
+    // This is only working as an inner static class
+    // Need to find out if this is best practice
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Configuration
+    protected static class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
+        @Autowired
+        StormpathSpringSecurityAutoConfiguration stormpathSpringSecurityAutoConfiguration;
+
+        @Override
+        public void init(AuthenticationManagerBuilder auth) throws Exception {
+            auth.authenticationProvider(stormpathSpringSecurityAutoConfiguration.stormpathAuthenticationProvider());
+        }
+    }
 }
