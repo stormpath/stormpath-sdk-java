@@ -45,14 +45,13 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 In order to connect Stormpath and Spring Security, we need one small configuration class in your project:
 
 .. code-block:: java
-    :emphasize-lines: 6
+    :emphasize-lines: 5
 
     @Configuration
     public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http
-                .apply(stormpath());
+            http.apply(stormpath());
         }
     }
 

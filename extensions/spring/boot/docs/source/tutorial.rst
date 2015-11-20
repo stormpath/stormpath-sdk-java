@@ -223,7 +223,7 @@ It has the ``@Configuration`` annotation:
         @Override
         protected void doConfigure(HttpSecurity http) throws Exception {
             http
-                .apply(stormpath())
+                .apply(stormpath()).and()
                 .authorizeRequests()
                 .antMatchers("/").permitAll();
         }

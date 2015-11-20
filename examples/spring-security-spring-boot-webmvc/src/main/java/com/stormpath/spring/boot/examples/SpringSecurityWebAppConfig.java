@@ -22,7 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC6
  */
 @Configuration
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
@@ -33,8 +33,7 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .apply(stormpath())
-            .and()
+            .apply(stormpath()).and()
             .authorizeRequests()
             .antMatchers("/restricted").fullyAuthenticated()
             .antMatchers("/**").permitAll();
