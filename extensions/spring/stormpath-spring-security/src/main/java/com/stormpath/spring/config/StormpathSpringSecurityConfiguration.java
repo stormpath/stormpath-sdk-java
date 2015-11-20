@@ -22,49 +22,42 @@ import com.stormpath.spring.security.provider.GroupPermissionResolver;
 public class StormpathSpringSecurityConfiguration extends AbstractStormpathSpringSecurityConfiguration {
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     @Override
     public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return super.stormpathGroupGrantedAuthorityResolver();
     }
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     @Override
     public GroupPermissionResolver stormpathGroupPermissionResolver() {
         return super.stormpathGroupPermissionResolver();
     }
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     @Override
     public AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver() {
         return super.stormpathAccountGrantedAuthorityResolver();
     }
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     @Override
     public AccountPermissionResolver stormpathAccountPermissionResolver() {
         return super.stormpathAccountPermissionResolver();
     }
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     @Override
     public AuthenticationTokenFactory stormpathAuthenticationTokenFactory() {
         return super.stormpathAuthenticationTokenFactory();
     }
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     @Override
     public AuthenticationProvider stormpathAuthenticationProvider() {
         return super.stormpathAuthenticationProvider();
     }
 
     @Bean
-    @Conditional(StormpathSecurityEnabled.class)
     public AuthenticationManager stormpathAuthenticationManager() {
         return new ProviderManager(Arrays.asList(stormpathAuthenticationProvider()));
     }
