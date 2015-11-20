@@ -117,22 +117,39 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
 
+    /**
+     * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
+     * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
+     * For example:
+     *
+     * <pre>
+     * import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
+     *
+     * @Configuration
+     * public class SecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     @Override
+     *     public void configure(HttpSecurity http) throws Exception {
+     *        http
+     *            .apply(stormpath())
+     *            //other http config here
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the StormpathWebSecurityConfigurer object
+     */
     public static StormpathWebSecurityConfigurer stormpath() {
         return new StormpathWebSecurityConfigurer();
     }
 
     /**
      * The pre-defined Stormpath access control settings are defined here.
-     * <p>This method has been marked as final in order to avoid users to override this method by mistake and thus removing
-     * all the required configurations. Instead, users can extend this class and configure their applications by overriding
-     * the {@link #doConfigure(HttpSecurity)} method. This way the configuration can be explicitly modified but not overwritten
-     * by mistake.</p>
      *
      * @param http
      *            the {@link HttpSecurity} to be modified
      * @throws Exception
      *             if an error occurs
-     * @see #doConfigure(HttpSecurity)
      */
     @Override
     public void init(HttpSecurity http) throws Exception {
@@ -143,6 +160,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
         if (stormpathWebEnabled) {
             if (loginEnabled) {
+                // make sure that /login and /login?status=... is permitted
+                String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
                 http
                     .formLogin()
                     .loginPage(loginUri)
@@ -151,7 +170,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .usernameParameter("login")
                     .passwordParameter("password")
                     .and().authorizeRequests()
-                    .antMatchers(loginUri+"*").permitAll();
+                    .antMatchers(loginUriMatch).permitAll();
             }
 
             if (logoutEnabled) {
@@ -187,15 +206,37 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             }
 
             if (fullyAuthenticatedEnabled) {
-                http
-                    .authorizeRequests()
-                    .antMatchers("/assets/**").permitAll()
+                http.authorizeRequests()
+                    .antMatchers("/assets/css/stormpath.css").permitAll()
+                    .antMatchers("/assets/css/custom.stormpath.css").permitAll()
                     .anyRequest().fullyAuthenticated();
             }
         }
     }
 
     /**
+     * @deprecated
+     *
+     * Instead, extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
+     * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
+     * For example:
+     *
+     * <pre><code>
+     * import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
+     *
+     * &#064;Configuration
+     * public class SecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     public void configure(HttpSecurity http) throws Exception {
+     *        http.apply(stormpath())
+     *        //other http config here
+     *     }
+     * }
+     * </code></pre>
+     *
+     * The old way:<p/>
+     *
      * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked
      * by {@link #configure(HttpSecurity)} after configuring all the properties required by Stormpath. You can override
      * this method to define app-specific security settings like:
@@ -218,6 +259,28 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     }
 
     /**
+     * @deprecated
+     *
+     * Instead, extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
+     * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
+     * For example:
+     *
+     * <pre><code>
+     * import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
+     *
+     * &#064;Configuration
+     * public class SecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     public void configure(HttpSecurity http) throws Exception {
+     *        http.apply(stormpath())
+     *        //other http config here
+     *     }
+     * }
+     * </code></pre>
+     *
+     * The old way:<p/>
+     *
      * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked
      * by {@link #configure(AuthenticationManagerBuilder)} after configuring all the properties required by Stormpath. You can
      * override this method to define app-specific ones.
@@ -233,6 +296,28 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     }
 
     /**
+     * @deprecated
+     *
+     * Instead, extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
+     * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
+     * For example:
+     *
+     * <pre><code>
+     * import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
+     *
+     * &#064;Configuration
+     * public class SecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     public void configure(HttpSecurity http) throws Exception {
+     *        http.apply(stormpath())
+     *        //other http config here
+     *     }
+     * }
+     * </code></pre>
+     *
+     * The old way:<p/>
+     *
      * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked
      * by {@link #configure(WebSecurity)} after configuring all the properties required by Stormpath. You can override
      * this method to define app-specific ones.

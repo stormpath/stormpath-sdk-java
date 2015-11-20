@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -87,7 +86,7 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
 
     // This is only working as an inner static class
     // Need to find out if this is best practice
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(99)
     @Configuration
     protected static class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
         @Autowired
