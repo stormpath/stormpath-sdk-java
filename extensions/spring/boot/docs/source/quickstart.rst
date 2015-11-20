@@ -45,10 +45,16 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 In order to connect Stormpath and Spring Security, we need one small configuration class in your project:
 
 .. code-block:: java
-    :emphasize-lines: 2
+    :emphasize-lines: 6
 
-        @Configuration
-        public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
+    @Configuration
+    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .apply(stormpath());
+        }
+    }
 
 Without this, you will get a popup in your browser prompting for authentication, which is the default basic authentication for Spring Security.
 
@@ -69,8 +75,6 @@ Don’t believe it? Try it! Start up your Spring Boot web application, and we'll
 * Navigate to ``/login``. On the lower-right, click the **Forgot Password?** link, and you'll be shown a form to enter your email.  Enter in your email address and it will send you an email.  Wait for the email and click the link and you'll be able to set a new password!
 
 Wasn't that easy?!
-
-.. include:: stormpath-spring-boot-circular-warning.txt
 
 Any Problems?
 ^^^^^^^^^^^^^
@@ -99,7 +103,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
   By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
 
-* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The current release of the ``spring-boot-starter-parent`` uses Spring Security, version 3.2.8. The ``stormpath-default-spring-boot-starter`` relies on Spring Security, version 4.0.x. There is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
+* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The ``stormpath-default-spring-boot-starter`` relies on Spring Security, version 4.0.x. The current release of the ``spring-boot-starter-parent`` is 1.3.0 and it also relies on Spring Security 4.0.x. Prior versions of the ``spring-boot-starter-parent`` rely on Spring Security 3.2.x. Our first recommendation is to use the latest version of the ``spring-boot-starter-parent``. However, if you must use earlier versions, there is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
 
   .. code-block:: xml
       :emphasize-lines: 15
@@ -118,7 +122,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
           <properties>
               <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
               <java.version>1.8</java.version>
-              <spring-security.version>4.0.2.RELEASE</spring-security.version>
+              <spring-security.version>4.0.3.RELEASE</spring-security.version>
           </properties>
 
           <dependencies>

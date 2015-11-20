@@ -206,8 +206,6 @@ methods.
 
 The official Spring Security documentation is `here <http://projects.spring.io/spring-security/>`_.
 
-.. include:: stormpath-spring-boot-circular-warning.txt
-
 Let's take a look at the additions and changes to the project.
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw>`_.
 
@@ -216,12 +214,16 @@ It has the ``@Configuration`` annotation:
 
 .. code-block:: java
     :linenos:
+    :emphasize-lines: 8
+
+    import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
     @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
+    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void doConfigure(HttpSecurity http) throws Exception {
             http
+                .apply(stormpath())
                 .authorizeRequests()
                 .antMatchers("/").permitAll();
         }
@@ -229,10 +231,9 @@ It has the ``@Configuration`` annotation:
 
 Why have this configuration? Spring Security expects things to be, well - secured. If there is not a class that extends
 ``WebSecurityConfigurerAdapter`` in the application, Spring Security will protect *every* pathway and will provide a default
-basic authentication popup to your browser. In order to easily hook into the Stormpath Spring Security integration, you
-can extend ``StormpathWebSecurityConfigurerAdapter`` which itself extends ``WebSecurityConfigurerAdapter``. NOTE: Please
-refer to the :ref:`advanced-spring-security-integration` section for how to configure your app *without* extending
-``StormpathWebSecurityConfigurerAdapter``.
+basic authentication popup to your browser. In order to easily hook into the Stormpath Spring Security integration, simply
+``apply`` stormpath! The call to ``stormpath()`` sets up all of the default views and hooks the Stormpath ``AuthenticationManager``
+into your application.
 
 Based on the ``SpringSecurityWebAppConfig`` above, we will permit access to the homepage. Any other paths will fall back
 to the default of being secured - you would be redirected to the Stormpath login page. We are going to further protect
@@ -441,12 +442,10 @@ be redirected to the ``/login`` view.
     public class HelloController {
 
         ...
-
         @RequestMapping("/me")
         String me() {
             return "me";
         }
-
         ...
     }
 
@@ -519,81 +518,6 @@ Add the custom data to one of the users, but not the other.
 
 You will find that, although both users are in the right group, only the one with the ``springSecurityPermissions`` custom data
 will be able to get to the ``/restricted`` page.
-
-.. _advanced-spring-security-integration:
-
-Advanced Spring Security Integration
-------------------------------------
-
-There are times when you will want to hook into the Stormpath Spring Security Integration at a deeper level. Or, perhaps you
-have a scenario where you are already extending a class from another library and do not have the option of extending ``StormpathWebSecurityConfigurerAdapter``.
-
-In these situations, your ``@Configuration`` class can interact with the ``StormpathWebSecurityConfigurer`` directly.
-
-Let's say that we want to set it up so that only authenticated users can get to ``/restrcited`` and that unauthenticated users can get anywhere
-else in our application.
-
-Take a look what this looks like when not extending ``StormpathWebSecurityConfigurer``:
-
-.. code-block:: java
-    :linenos:
-    :emphasize-lines: 5,9,18,23
-
-    @Configuration
-    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
-
-        @Autowired
-        StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer;
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            stormpathWebSecurityConfigurer.configure(http);
-            http
-                .authorizeRequests()
-                .antMatchers("/restricted").fullyAuthenticated()
-                .antMatchers("/**").permitAll();
-        }
-
-        @Override
-        public final void configure(AuthenticationManagerBuilder auth) throws Exception {
-            stormpathWebSecurityConfigurer.configure(auth);
-        }
-
-        @Override
-        public final void configure(WebSecurity web) throws Exception {
-            stormpathWebSecurityConfigurer.configure(web);
-        }
-    }
-
-On lines 4 - 5, we use Spring's ``@Autowired`` capability to get access to the ``StormpathWebSecurityConfigurer``.
-
-It's critical that you implement each of the three ``configure`` methods above and that you call Stormpath's ``configure`` method
-within before you call any methods for your own configuration.
-
-Notice above that on line 9 we call ``stormpathWebSecurityConfigurer.configure(http)`` and only then do we call methods
-on the ``HttpSecurity`` object.
-
-Again, in most situations, you will want to simply extend the ``StormpathWebSecurityConfigurerAdapter``. The above code
-would look like this:
-
-.. code-block:: java
-    :linenos:
-
-    @Configuration
-    public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
-
-        @Override
-        protected void doConfigure(HttpSecurity http) throws Exception {
-            http
-                .authorizeRequests()
-                .antMatchers("/restricted").fullyAuthenticated()
-                .antMatchers("/**").permitAll();
-        }
-    }
-
-In this case, you are overriding the ``doConfigure`` method. Stormpath's ``StormpathWebSecurityConfigurerAdapter.configure`` method
-does the housekeeping it needs to for the Stormpath configuration and then calls the ``doConfigure`` method that you've
-overridden.
 
 .. _wrapping-up:
 
