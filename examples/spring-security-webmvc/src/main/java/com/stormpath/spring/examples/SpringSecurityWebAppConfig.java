@@ -16,28 +16,32 @@
 package com.stormpath.spring.examples;
 
 import com.stormpath.spring.config.EnableStormpathWebSecurity;
-import com.stormpath.spring.config.StormpathWebSecurityConfigurerAdapter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.*;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC6
  */
 @Configuration
 @ComponentScan
 @PropertySource("classpath:application.properties")
 @EnableStormpathWebSecurity
-public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {
+public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void doConfigure(HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception {
+
         http
-                .authorizeRequests()
-                .antMatchers("/restricted").fullyAuthenticated();
+            .apply(stormpath()).and()
+            .authorizeRequests()
+            .antMatchers("/restricted").fullyAuthenticated()
+            .antMatchers("/**").permitAll();
     }
 }
