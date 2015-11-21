@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-boot-web</artifactId>
-    <version>1.0.RC6-SNAPSHOT</version>
+    <version>1.0.RC6</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Boot Webapp</name>
     <description>A Spring Boot web application that uses Stormpath.</description>
