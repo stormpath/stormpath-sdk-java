@@ -32,6 +32,11 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC5
@@ -189,7 +194,20 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.csrf().disable();
             } else {
                 //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
-                http.csrf().csrfTokenRepository(csrfTokenRepository);
+                http.csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
+                    private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTIONS)$");
+                    private RegexRequestMatcher oauthMatcher = new RegexRequestMatcher("/oauth/token", null);
+
+                    @Override
+                    public boolean matches(HttpServletRequest req) {
+                        if (
+                            allowedMethods.matcher(req.getMethod()).matches() ||
+                            oauthMatcher.matches(req)
+                        ) { return false; }
+
+                        return true;
+                    }
+                }).csrfTokenRepository(csrfTokenRepository);
             }
 
             if (forgotEnabled) {
