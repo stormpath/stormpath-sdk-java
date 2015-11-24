@@ -206,9 +206,11 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             }
 
             if (fullyAuthenticatedEnabled) {
+                // There doesn't seem to be a config to enable or disable token auth. So, just permit it here
                 http.authorizeRequests()
                     .antMatchers("/assets/css/stormpath.css").permitAll()
                     .antMatchers("/assets/css/custom.stormpath.css").permitAll()
+                    .antMatchers("/oauth/token").permitAll()
                     .anyRequest().fullyAuthenticated();
             }
         }
