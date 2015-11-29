@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -155,9 +155,9 @@ public interface TenantActions {
     Directory createDirectory(Directory directory);
 
     /**
-     * This method creates a new Organization resource in the Tenant.
+     * This method creates a new Organization resource in Tenant or in Stormpath.
      * <p/>
-     * This method creates a natively hosted organization in Stormpath.
+     * This method creates a natively hosted organization in Tenant or in Stormpath.
      *
      * @param organization the Organization resource to create.
      * @return the organization created.

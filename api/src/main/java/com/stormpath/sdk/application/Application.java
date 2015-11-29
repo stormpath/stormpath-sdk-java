@@ -22,7 +22,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.accountStoreMapping.AccountStoreHolder;
+import com.stormpath.sdk.application.AccountStoreHolder;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -1323,7 +1323,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * <code>null</code> if there is no Organization matching the criteria.
      * @throws ResourceException if the found {@link Organization} already exists as an account store in this application.
      * @throws IllegalArgumentException if the criteria matches more than one Organization in the current Tenant.
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     ApplicationAccountStoreMapping addAccountStore(OrganizationCriteria criteria);
 

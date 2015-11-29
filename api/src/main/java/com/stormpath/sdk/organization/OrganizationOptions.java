@@ -21,7 +21,7 @@ import com.stormpath.sdk.query.Options;
 /**
  * Organization-specific options that may be specified when retrieving {@link Organization} resources.
  *
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 public interface OrganizationOptions<T> extends Options {
 

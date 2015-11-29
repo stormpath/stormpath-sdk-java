@@ -15,13 +15,13 @@
 */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
+import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 
 /**
- * An {@code ApplicationAccountStoreMapping} represents the assignment of an {@link AccountStore AccountStore} (either a {@link Group Group} or
+ * An {@code ApplicationAccountStoreMapping} represents the assignment of an {@link AccountStore AccountStore} (either a {@link Group Group}, {@link com.stormpath.sdk.organization.Organization Organization} or
  * {@link Directory Directory}) to an {@link Application Application}.
  * <p/>
  * When an {@code ApplicationAccountStoreMapping} is created, the accounts in the account store are granted access to (become users
@@ -39,6 +39,8 @@ import com.stormpath.sdk.group.Group;
  * <b>Note:</b> A Group cannot store other Groups.  Therefore, the default group store must be a {@code Directory}.
  *
  * @see com.stormpath.sdk.application.Application#createAccountStoreMapping(ApplicationAccountStoreMapping)
+ *
+ * @since 1.0.RC7
  */
 public interface ApplicationAccountStoreMapping extends AccountStoreMapping {
 

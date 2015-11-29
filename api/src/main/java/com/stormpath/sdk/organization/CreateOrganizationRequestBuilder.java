@@ -20,12 +20,14 @@ package com.stormpath.sdk.organization;
  * A Builder to construct {@link CreateOrganizationRequest}s.
  *
  * @see com.stormpath.sdk.organization.Organizations#newCreateRequestFor(Organization)
- * @since 1.0.RC5
- */public interface CreateOrganizationRequestBuilder {
+
+ * @since 1.0.RC7
+ */
+public interface CreateOrganizationRequestBuilder {
 
     /**
-     * Directive to also create a new Directory for the new Organization's needs.  The new Directory will automatically
-     * be assigned as the Organization's default Groups and Accounts store.
+     * Directive indicating that a new Directory shall be created along with this new Organization. The new Directory
+     * will automatically be assigned as the Organization's default Groups and Accounts store.
      * <p/>
      * The directory will be automatically named based on heuristics to ensure a guaranteed unique name based on the
      * organization.  If you want to specify the Directory's name, use the {@link #createDirectoryNamed(String)} method.
@@ -36,7 +38,7 @@ package com.stormpath.sdk.organization;
     CreateOrganizationRequestBuilder createDirectory();
 
     /**
-     * Directive to also create a new Directory for the new Organization's needs.  The new Directory will automatically
+     * Directive indicating that a new Directory shall be created along with this new Organization. The new Directory will automatically
      * be assigned as the Organization's default Groups and Accounts store.
      * <p/>
      * If you don't care about the new Directory's name and want a reasonable default assigned automatically, don't

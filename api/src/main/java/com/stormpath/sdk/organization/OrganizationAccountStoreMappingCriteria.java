@@ -39,7 +39,7 @@ import com.stormpath.sdk.query.Criteria;
  * ...criteria().orderByListIndex()<b>.descending()</b>...
  * </pre>
  *
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 public interface OrganizationAccountStoreMappingCriteria extends Criteria<OrganizationAccountStoreMappingCriteria>, OrganizationAccountStoreMappingOptions<OrganizationAccountStoreMappingCriteria>{
 

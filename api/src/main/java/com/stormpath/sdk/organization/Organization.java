@@ -19,7 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.accountStoreMapping.AccountStoreHolder;
+import com.stormpath.sdk.application.AccountStoreHolder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
@@ -46,7 +46,7 @@ import java.util.Map;
  * You can think of an Organization as a 'virtual' AccountStore that 'wraps' other AccountStores.  Like other
  * AccountStores, an Organization can be mapped to an Application so that users in the Organization can login to that application.
  *
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 public interface Organization extends AccountStoreHolder<Organization>, Resource, Saveable, Deletable, AccountStore, Extendable, Auditable {
 
@@ -202,7 +202,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *                           defaultAccountStore}
      *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
      *                           created.
-     * @since 0.9
      */
     Account createAccount(Account account) throws ResourceException;
 
@@ -244,7 +243,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *                           defaultAccountStore}
      *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
      *                           created.
-     * @since 0.9
      */
     Account createAccount(CreateAccountRequest request) throws ResourceException;
 
@@ -381,7 +379,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
      * @see #addAccountStore(AccountStore)
      *
-     * @since 1.0.RC5
      */
     OrganizationAccountStoreMapping addAccountStore(String hrefOrName);
 

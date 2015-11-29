@@ -13,10 +13,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.impl.accountStoreMapping;
+package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.accountStoreMapping.AccountStoreHolder;
-import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
+import com.stormpath.sdk.application.AccountStoreHolder;
+import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;

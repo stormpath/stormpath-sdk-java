@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.organization;
 
-import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
+import com.stormpath.sdk.application.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**

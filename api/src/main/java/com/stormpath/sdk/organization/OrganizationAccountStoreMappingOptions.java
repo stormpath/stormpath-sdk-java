@@ -19,7 +19,8 @@ import com.stormpath.sdk.query.Options;
 
 /**
  * OrganizationAccountStoreMapping-specific options that may be specified when retrieving {@link OrganizationAccountStoreMapping} resources.
- * @param <T>
+ *
+ * @since 1.0.RC7
  */
 public interface OrganizationAccountStoreMappingOptions<T> extends Options {
 

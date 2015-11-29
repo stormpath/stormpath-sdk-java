@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.accountStoreMapping;
+package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Deletable;
@@ -23,7 +23,7 @@ import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.application.Application;
 
 /**
- * An {@code AccountStoreMapping} represents the assignment of an {@link AccountStore AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
+ * An {@code AccountStoreMapping} represents the assignment of an {@link AccountStore AccountStore} (either a {@link com.stormpath.sdk.group.Group Group}, {@link Organization Organization} or
  * {@link com.stormpath.sdk.directory.Directory Directory}) to an {@link Application Application} or an {@link com.stormpath.sdk.organization.Organization}.
  * <p/>
  * When an {@code AccountStoreMapping} is created, the accounts in the account store are granted access to (become users
@@ -37,27 +37,22 @@ import com.stormpath.sdk.application.Application;
 public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resource, Saveable, Deletable {
 
     /**
-     * Returns this mapping's {@link com.stormpath.sdk.directory.AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
-     * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application.
+     * Returns this mapping's {@link com.stormpath.sdk.directory.AccountStore} (either a {@link com.stormpath.sdk.group.Group Group}, {@link Organization Organization} or
+     * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application or organization.
      *
-     * @return this mapping's {@link com.stormpath.sdk.directory.AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
-     *         {@link com.stormpath.sdk.directory.Directory Directory}) assigned to the application.
+     * @return this mapping's {@link com.stormpath.sdk.directory.AccountStore} (either a {@link com.stormpath.sdk.group.Group Group}, {@link Organization Organization} or
+     *         {@link com.stormpath.sdk.directory.Directory Directory}) assigned to the application or organization.
      */
     AccountStore getAccountStore();
 
     /**
-     * Sets this mapping's {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group} or
-     * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application.
+     * Sets this mapping's {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group}, {@link Organization Organization} or
+     * {@link com.stormpath.sdk.directory.Directory Directory}), to be assigned to the application or organization.
      *
-     * @param accountStore the AccountStore to be assigned to the application.
+     * @param accountStore the AccountStore to be assigned to the application or organization.
      * @return this instance for method chaining.
      */
     AccountStoreMapping<T> setAccountStore(AccountStore accountStore);
-
-//    AccountStoreMapping<T> setHolder(T accountStoreHolder);
-////
-//    T getHolder(T accountStoreHolder);
-
 
     /**
      * Returns the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
@@ -78,19 +73,19 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      * Updates the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
      * by the linked Organization or Application during an account authentication attempt.
      * <p/>
-     * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
-     * other ApplicationAccountStoreMappings.</b>
+     * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's or Organization's
+     * other AccountStoreMappings.</b>
      * <p/>
-     * <h3>Authentication Process and ApplicationAccountStoreMapping Order</h3>
-     * During an authentication attempt, an Application consults its mapped account stores in <em>iteration order</em>,
-     * trying to find the first matching account to use for authentication.  The lower the {@code ApplicationAccountStoreMapping}
+     * <h3>Authentication Process and AccountStoreMapping Order</h3>
+     * During an authentication attempt, an Application or Organization consults its mapped account stores in <em>iteration order</em>,
+     * trying to find the first matching account to use for authentication.  The lower the {@code AccountStoreMapping}
      * index (closer to zero), the earlier that store is consulted during authentication.  If no matching account is
-     * found in an account store, the application will move on to the next {@code AccountStore} (next highest index)
+     * found in an account store, the application/organization will move on to the next {@code AccountStore} (next highest index)
      * in the list.  This continues either a matching account is found, or until all account stores are exhausted.
      * When a matching account is found, the process is short-circuited and the discovered account will be used
      * immediately for authentication.
      * <p/>
-     * When calling this method, you control where the new {@code ApplicationAccountStoreMapping} will reside in the Application's
+     * When calling this method, you control where the new {@code AccountStoreMapping} will reside in the Application's or Organization's
      * overall list by setting its (zero-based) listIndex property before calling this
      * method.
      * <h4>{@code listIndex} values</h4>
@@ -102,10 +97,10 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      * the account store will be in the list at position {@code listIndex - 1}.</li>
      * </ul>
      * Any {@code listIndex} value equal to or greater than the current list size will automatically append the
-     * {@code ApplicationAccountStoreMapping} at the end of the list.
+     * {@code AccountStoreMapping} at the end of the list.
      * <h4>Example</h4>
-     * Setting a new {@code ApplicationAccountStoreMapping}'s {@code listIndex} to {@code 500} and then adding the mapping to
-     * an application with an existing 3-item list will automatically save the {@code ApplicationAccountStoreMapping} at the end
+     * Setting a new {@code AccountStoreMapping}'s {@code listIndex} to {@code 500} and then adding the mapping to
+     * an application/organization with an existing 3-item list will automatically save the {@code AccountStoreMapping} at the end
      * of the list and set its {@code listIndex} value to {@code 3} (items at index 0, 1, 2 were the original items,
      * the new fourth item will be at index 3).
      *
@@ -131,12 +126,12 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      * Sets whether or not the associated {@link #getAccountStore() accountStore} is designated as the
      * Organization's or Application's default account store.
      * <p/>
-     * A {@code true} value indicates that any accounts created directly by the application will be
-     * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
+     * A {@code true} value indicates that any accounts created directly by the application/organization will be
+     * dispatched to and saved in the associated {@code AccountStore}, since Applications and Organizations cannot store accounts
      * directly.
      * <p/>
-     * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
-     * other ApplicationAccountStoreMappings.</b>
+     * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's or Organization's
+     * other AccountStoreMappings.</b>
      *
      * @param defaultAccountStore whether or not the associated {@link #getAccountStore() accountStore} is designated
      *                            as the Organization's or Application's default account store.
@@ -161,12 +156,12 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      * Sets whether or not the associated {@link #getAccountStore() accountStore} is designated as the
      * Organization's or Application's default <b>group</b> store.
      * <p/>
-     * A {@code true} value indicates that any groups created directly by the application will be
-     * dispatched to and saved in the associated {@code AccountStore}, since an Application cannot store accounts
+     * A {@code true} value indicates that any groups created directly by the application/organization will be
+     * dispatched to and saved in the associated {@code AccountStore}, since Applications and Organizations cannot store accounts
      * directly.
      * <p/>
-     * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's
-     * other ApplicationAccountStoreMappings.</b>
+     * <b>USAGE NOTE:  If you use this setter then you will invalidate the cache for all of the associated Application's or Organization's
+     * other AccountStoreMappings.</b>
      * <h3>Directory Only</h3>
      * Stormpath currently only supports Directories (not Groups) as a group store.  Attempting to set this value to
      * {@code true} if the associated {@link #getAccountStore() accountStore} is a Group and then calling

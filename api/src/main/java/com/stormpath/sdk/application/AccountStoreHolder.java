@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.accountStoreMapping;
+package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.directory.AccountStore;
 
@@ -26,16 +26,15 @@ import com.stormpath.sdk.directory.AccountStore;
 public interface AccountStoreHolder<T extends AccountStoreHolder> {
 
     /**
-     * Returns the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group} or a
-     * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
-     * new accounts created by the Application or Directory, or
-     * {@code null} if no accountStore has been designated.
+     * Returns the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group}, a
+     * {@link com.stormpath.sdk.directory.Directory Directory} or an {@link com.stormpath.sdk.organization.Organization Organization})
+     * used to persist new accounts created by the Application or Organization, or {@code null} if no accountStore has been designated.
      * <p/>
-     * Because Applications and Directories are not {@code AccountStore}s, they delegate to a Group or Directory
+     * Because Applications and Organizations are not {@code AccountStore}s, they delegate to an Organization, Group or Directory
      * when creating accounts; this method returns the AccountStore to which the Application or Organization delegate
-     * new account persistence.
+     * the actual storage of new accounts.
      * <h3>Directory or Group?</h3>
-     * As both Group and Directory are sub-interfaces of {@link AccountStore}, you can determine which of the two
+     * As Organization, Group and Directory are sub-interfaces of {@link AccountStore}, you can determine which of the three
      * is returned by using the <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a>.  For
      * example:
      * <p/>
@@ -50,18 +49,23 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      *     public void visit(Group group) {
      *         //the accountStore is a Group;
      *     }
+     *
+     *     public void visit(Organization organization) {
+     *         //the accountStore is an Organization;
+     *     }
      * };
      * </pre>
      *
-     * @return the {@link AccountStore} (which will be either a Group or Directory) used to persist
+     * @return the {@link AccountStore AccountStore} (which will be either a Group, Organization or Directory) used to persist
      *         new accounts created by the Account Store Holder (Application or Organization), or
-     *         {@code null} if no accountStore has been designated.
+     *         {@code null} if no accountStore has been designated. Organizations don't actually store Accounts, instead, they delegate
+     *         the actual storage to their own internal defaultAccountStore. Therefore, Organizations can be seen as a virtual {@link AccountStore AccountStore}s.
      * @since 0.9
      */
     AccountStore getDefaultAccountStore();
 
     /**
-     * Sets the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group} or a
+     * Sets the {@link AccountStore} (either a {@link com.stormpath.sdk.group.Group Group}, {@link com.stormpath.sdk.organization.Organization Organization} or a
      * {@link com.stormpath.sdk.directory.Directory Directory}) used to persist
      * new accounts created by the Application or Organization.
      * <p/>
@@ -83,11 +87,11 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      * Directory if you want your code to be function correctly if/when this support is added.</b>  Avoid casting the
      * returned value directly to a Directory: use the Visitor pattern as explained below.
      * <p/>
-     * Because Applications and Directories are not {@code AccountStore}s, they delegate to a Group or Directory
+     * Because Applications, Organizations and Directories are not {@code AccountStore}s, they delegate to a Group or Directory
      * when creating accounts; this method returns the AccountStore to which the Application or Organization delegate
      * new account persistence.
-     * <h3>Directory or Group?</h3>
-     * As both Group and Directory are sub-interfaces of {@link AccountStore}, you can determine which of the two
+     * <h3>Organization, Directory or Group?</h3>
+     * As Organization, Group and Directory are sub-interfaces of {@link AccountStore}, you can determine which of the three
      * is returned by using the <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a>.  For
      * example:
      * <p/>
@@ -101,6 +105,10 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      *
      *     public void visit(Group group) {
      *         //groupStore is a Group;
+     *     }
+     *
+     *     public void visit(Organization organization) {
+     *         //groupStore is an Organization;
      *     }
      * };
      * </pre>
@@ -126,7 +134,7 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      * when creating accounts; this method returns the AccountStore to which the Application or Organization delegate
      * new account persistence.
      *
-     * @param accountStore the {@link AccountStore} (which will be either a Group or Directory) used to persist
+     * @param accountStore the {@link AccountStore} (which will be either a Group, Organization or Directory) used to persist
      *                     new groups created by the Application or Organization.
      */
     void setDefaultGroupStore(AccountStore accountStore);

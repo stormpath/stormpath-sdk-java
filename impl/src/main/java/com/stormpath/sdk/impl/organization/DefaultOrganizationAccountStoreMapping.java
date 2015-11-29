@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.impl.organization;
 
-import com.stormpath.sdk.impl.accountStoreMapping.AbstractAccountStoreMapping;
+import com.stormpath.sdk.impl.application.AbstractAccountStoreMapping;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.Property;

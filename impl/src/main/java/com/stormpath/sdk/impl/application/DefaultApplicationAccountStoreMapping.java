@@ -17,11 +17,9 @@ package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
-import com.stormpath.sdk.impl.accountStoreMapping.AbstractAccountStoreMapping;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
 

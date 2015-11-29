@@ -18,9 +18,14 @@ package com.stormpath.sdk.organization;
 /**
  * Represents an attempt to create a new {@link com.stormpath.sdk.organization.Organization} record in Stormpath.
  *
- * @since 1.0.RC4.6
+ * @since 1.0.RC7
  */
 public interface CreateOrganizationRequest {
 
+    /**
+     * Returns the {@link Organization Organization} instance for which a new record will be created in Stormpath.
+     *
+     * @return the {@link Organization Organization} instance for which a new record will be created in Stormpath.
+     */
     Organization getOrganization();
 }

@@ -55,7 +55,7 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
  * </pre>
  *
  *
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 public final class OrganizationAccountStoreMappings {
 
