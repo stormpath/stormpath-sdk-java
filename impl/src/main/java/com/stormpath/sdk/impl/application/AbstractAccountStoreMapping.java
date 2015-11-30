@@ -15,8 +15,7 @@
 */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.application.AccountStoreHolder;
-import com.stormpath.sdk.application.AccountStoreMapping;
+import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;

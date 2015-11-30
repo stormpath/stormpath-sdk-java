@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.organization;
 
-import com.stormpath.sdk.application.AccountStoreMapping;
+import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
@@ -37,6 +37,7 @@ import com.stormpath.sdk.directory.AccountStore;
  * <b>Note:</b> A Group cannot store other Groups.  Therefore, the default group store must be a {@code Directory}.
  *
  * @see com.stormpath.sdk.organization.Organization#createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping)
+ *
  * @since 1.0.RC7
  */
 public interface OrganizationAccountStoreMapping extends AccountStoreMapping {

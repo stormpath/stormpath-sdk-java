@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.application
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder

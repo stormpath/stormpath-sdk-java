@@ -70,6 +70,9 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
@@ -597,7 +600,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /** @since 1.0.RC3 */
     @Override
-    public AccountStoreMapping addAccountStore(String hrefOrName) {
+    public ApplicationAccountStoreMapping addAccountStore(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
         AccountStore accountStore = null;
 
