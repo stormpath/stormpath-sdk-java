@@ -202,6 +202,10 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *                           defaultAccountStore}
      *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
      *                           created.
+<<<<<<< HEAD
+=======
+     * @since 0.9
+>>>>>>> origin/organization_resource
      */
     Account createAccount(Account account) throws ResourceException;
 
@@ -243,6 +247,10 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *                           defaultAccountStore}
      *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
      *                           created.
+<<<<<<< HEAD
+=======
+     * @since 0.9
+>>>>>>> origin/organization_resource
      */
     Account createAccount(CreateAccountRequest request) throws ResourceException;
 
@@ -379,6 +387,10 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
      * @see #addAccountStore(AccountStore)
      *
+<<<<<<< HEAD
+=======
+     * @since 1.0.RC5
+>>>>>>> origin/organization_resource
      */
     OrganizationAccountStoreMapping addAccountStore(String hrefOrName);
 

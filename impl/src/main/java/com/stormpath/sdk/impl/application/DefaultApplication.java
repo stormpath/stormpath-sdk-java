@@ -70,9 +70,6 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
-import com.stormpath.sdk.organization.Organization;
-import com.stormpath.sdk.organization.OrganizationCriteria;
-import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
@@ -530,7 +527,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         //TODO enable auto discovery via Tenant resource (should be just /accountStoreMappings)
         String href = "/accountStoreMappings";
         // TODO: Uncomment out below when application's accountStoreMapping endpoint accepts POST request.
-        //        ApplicationAccountStoreMappingList accountStoreMappingList = getApplicationAccountStoreMappings();
+        //        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
         //        return accountStoreMappingList.getHref();
         return href;
     }
@@ -600,7 +597,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /** @since 1.0.RC3 */
     @Override
-    public ApplicationAccountStoreMapping addAccountStore(String hrefOrName) {
+    public AccountStoreMapping addAccountStore(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
         AccountStore accountStore = null;
 

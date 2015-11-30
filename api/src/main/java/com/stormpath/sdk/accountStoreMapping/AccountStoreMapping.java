@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.accountStoreMapping;
 
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Deletable;
@@ -53,6 +53,11 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      * @return this instance for method chaining.
      */
     AccountStoreMapping<T> setAccountStore(AccountStore accountStore);
+
+//    AccountStoreMapping<T> setHolder(T accountStoreHolder);
+////
+//    T getHolder(T accountStoreHolder);
+
 
     /**
      * Returns the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
@@ -97,7 +102,7 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      * the account store will be in the list at position {@code listIndex - 1}.</li>
      * </ul>
      * Any {@code listIndex} value equal to or greater than the current list size will automatically append the
-     * {@code AccountStoreMapping} at the end of the list.
+     * {@code ApplicationAccountStoreMapping} at the end of the list.
      * <h4>Example</h4>
      * Setting a new {@code AccountStoreMapping}'s {@code listIndex} to {@code 500} and then adding the mapping to
      * an application/organization with an existing 3-item list will automatically save the {@code AccountStoreMapping} at the end
