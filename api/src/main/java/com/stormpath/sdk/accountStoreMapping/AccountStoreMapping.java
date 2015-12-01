@@ -54,11 +54,6 @@ public interface AccountStoreMapping<T extends AccountStoreHolder> extends Resou
      */
     AccountStoreMapping<T> setAccountStore(AccountStore accountStore);
 
-//    AccountStoreMapping<T> setHolder(T accountStoreHolder);
-////
-//    T getHolder(T accountStoreHolder);
-
-
     /**
      * Returns the zero-based order in which the associated {@link #getAccountStore() accountStore} will be consulted
      * by the linked Application or Organization during an account authentication attempt.

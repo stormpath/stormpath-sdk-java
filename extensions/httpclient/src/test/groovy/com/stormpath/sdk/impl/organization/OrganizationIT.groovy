@@ -32,7 +32,7 @@ import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 class OrganizationIT extends ClientIT {
 
@@ -141,17 +141,17 @@ class OrganizationIT extends ClientIT {
         organization = client.createOrganization(organization);
         deleteOnTeardown(organization)
 
-        assertAccountStoreMappingListSize(organization.getOrganizationAccountStoreMappings(), 0)
+        assertAccountStoreMappingListSize(organization.getAccountStoreMappings(), 0)
 
         def retrievedAccountStoreMapping = organization.addAccountStore(dir)
-        assertAccountStoreMappingListSize(organization.getOrganizationAccountStoreMappings(), 1)
+        assertAccountStoreMappingListSize(organization.getAccountStoreMappings(), 1)
         assertEquals(retrievedAccountStoreMapping.accountStore.href, dir.href)
 
         retrievedAccountStoreMapping.delete()
-        assertAccountStoreMappingListSize(organization.getOrganizationAccountStoreMappings(), 0)
+        assertAccountStoreMappingListSize(organization.getAccountStoreMappings(), 0)
 
         retrievedAccountStoreMapping = organization.addAccountStore(dir)
-        assertAccountStoreMappingListSize(organization.getOrganizationAccountStoreMappings(), 1)
+        assertAccountStoreMappingListSize(organization.getAccountStoreMappings(), 1)
         assertEquals(retrievedAccountStoreMapping.accountStore.href, dir.href)
     }
 

@@ -27,5 +27,6 @@ public interface AccountStoreVisitor {
 
     void visit(Directory directory);
 
+    /** @since 1.0.RC7 */
     void visit(Organization organization);
 }

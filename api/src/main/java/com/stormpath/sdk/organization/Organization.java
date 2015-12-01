@@ -16,17 +16,11 @@
 package com.stormpath.sdk.organization;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.application.AccountStoreHolder;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.DirectoryCriteria;
-import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.resource.Deletable;
@@ -126,14 +120,14 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * Returns all AccountStoreMappings accessible to the Organization.
      * <p/>
      * Tip: Instead of iterating over all organizationAccountStoreMappings, it might be more convenient (and practical) to execute
-     * a search for one or more organizationAccountStoreMappings using the {@link #getOrganizationAccountStoreMappings()} (java.util.Map)} method
-     * or the {@link #getOrganizationAccountStoreMappings (com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria)} instead of this one.
+     * a search for one or more organizationAccountStoreMappings using the {@link #getAccountStoreMappings()} (java.util.Map)} method
+     * or the {@link #getAccountStoreMappings (com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria)} instead of this one.
      *
      * @return all OrganizationAccountStoreMapping resources accessible to the organization.
-     * @see #getOrganizationAccountStoreMappings(java.util.Map)
-     * @see #getOrganizationAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria)
+     * @see #getAccountStoreMappings(java.util.Map)
+     * @see #getAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria)
      */
-    OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings();
+    OrganizationAccountStoreMappingList getAccountStoreMappings();
 
     /**
      * Returns a paginated list of the organization's mapped Account stores
@@ -146,15 +140,15 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * </pre>
      * <p/>
      * This is a type-unsafe alternative to the
-     * {@link #getOrganizationAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria) getOrganizationAccountStoreMappings(organizationAccountStoreMappingCriteria)}
+     * {@link #getAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria) getAccountStoreMappings(organizationAccountStoreMappingCriteria)}
      * method, and might be useful when using dynamic languages like Groovy or JRuby.  Users of compiled languages,
      * or those that like IDE-completion, might favor the type-safe method instead.
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the organization's mapped account stores that match the specified query criteria.
-     * @see #getOrganizationAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria)
+     * @see #getAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria)
      */
-    OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams);
+    OrganizationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
 
     /**
      * Returns a paginated list of the organization's mapped Account stores that also match the specified query
@@ -162,7 +156,7 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * The {@link com.stormpath.sdk.organization.OrganizationAccountStoreMappings OrganizationAccountStoreMappings} utility class is available to help construct
      * the criteria DSL.  For example:
      * <pre>
-     * organization.getOrganizationAccountStoreMappings(OrganizationAccountStoreMappings.criteria()
+     * organization.getAccountStoreMappings(OrganizationAccountStoreMappings.criteria()
      *     .withAccountStore()
      *     .orderByListIndex();
      * </pre>
@@ -172,7 +166,7 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *
      * ...
      *
-     * organization.getOrganizationAccountStoreMappings(criteria()
+     * organization.getAccountStoreMappings(criteria()
      *     .withAccountStore()
      *     .orderByListIndex();
      * </pre>
@@ -180,7 +174,7 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the organization's mapped account stores that match the specified query criteria.
      */
-    OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
+    OrganizationAccountStoreMappingList getAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 
     /**
      * Creates a new Account that may login to this application.
@@ -202,10 +196,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *                           defaultAccountStore}
      *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
      *                           created.
-<<<<<<< HEAD
-=======
-     * @since 0.9
->>>>>>> origin/organization_resource
      */
     Account createAccount(Account account) throws ResourceException;
 
@@ -247,10 +237,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      *                           defaultAccountStore}
      *                           or if the designated {@code defaultAccountStore} does not allow new accounts to be
      *                           created.
-<<<<<<< HEAD
-=======
-     * @since 0.9
->>>>>>> origin/organization_resource
      */
     Account createAccount(CreateAccountRequest request) throws ResourceException;
 
@@ -387,10 +373,6 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @throws IllegalArgumentException if the given hrefOrName matches more than one resource in the current Tenant.
      * @see #addAccountStore(AccountStore)
      *
-<<<<<<< HEAD
-=======
-     * @since 1.0.RC5
->>>>>>> origin/organization_resource
      */
     OrganizationAccountStoreMapping addAccountStore(String hrefOrName);
 

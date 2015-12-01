@@ -249,7 +249,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     @Override
     public Organization createOrganization(Organization organization) {
@@ -259,7 +259,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     @Override
     public Organization createOrganization(CreateOrganizationRequest request) throws ResourceException {
@@ -269,7 +269,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     @Override
     public OrganizationList getOrganizations() {
@@ -279,7 +279,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     @Override
     public OrganizationList getOrganizations(Map<String, Object> queryParams) {
@@ -289,7 +289,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.0.RC4.6
+     * @since 1.0.RC7
      */
     @Override
     public OrganizationList getOrganizations(OrganizationCriteria criteria) {

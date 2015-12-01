@@ -162,7 +162,7 @@ public interface TenantActions {
      * @param organization the Organization resource to create.
      * @return the organization created.
      * @throws ResourceException if there was a problem creating the organization.
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     Organization createOrganization(Organization organization);
 
@@ -190,7 +190,7 @@ public interface TenantActions {
      * @param request the request reflecting how to create the Organization
      * @return the organization created.
      * @throws ResourceException if there was a problem creating the organization.
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     Organization createOrganization(CreateOrganizationRequest request) throws ResourceException;
 
@@ -205,7 +205,7 @@ public interface TenantActions {
      * @see #getOrganizations(OrganizationCriteria)
      * @see #getOrganizations(java.util.Map)
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     OrganizationList getOrganizations();
 
@@ -221,7 +221,7 @@ public interface TenantActions {
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's organizations that match the specified query criteria.
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     OrganizationList getOrganizations(Map<String, Object> queryParams);
 
@@ -242,7 +242,7 @@ public interface TenantActions {
      * @param criteria the query parameters to use when performing a request to the collection.
      * @return a paginated list of the Tenant's directories that match the specified query criteria.
      *
-     * @since 1.0.RC5
+     * @since 1.0.RC7
      */
     OrganizationList getOrganizations(OrganizationCriteria criteria);
 

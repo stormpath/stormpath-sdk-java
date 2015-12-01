@@ -1,4 +1,3 @@
-package com.stormpath.sdk.organization;
 /*
 * Copyright 2015 Stormpath, Inc.
 *
@@ -14,9 +13,10 @@ package com.stormpath.sdk.organization;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.stormpath.sdk.organization;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 public enum OrganizationStatus {
 

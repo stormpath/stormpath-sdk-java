@@ -31,25 +31,22 @@ import com.stormpath.sdk.organization.OrganizationList
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
 import com.stormpath.sdk.tenant.Tenant
-import org.testng.annotations.AfterClass
-import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static junit.framework.TestCase.assertEquals
-import static junit.framework.TestCase.assertTrue
-import static org.junit.Assert.assertNotEquals
-import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotEquals
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.fail
 
 /**
  * Tests class for OrganizationAccountStoreMapping
  *
- * @since 1.0.RC5
+ * @since 1.0.RC7
  */
 class OrganizationAccountStoreMappingIT extends ClientIT {
 
@@ -73,20 +70,10 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         deleteOnTeardown(org)
     }
 
-//    @AfterMethod
-//    void deleteOrgData(){
-//
-//        OrganizationAccountStoreMappingList accountStoreMappingList = org.getOrganizationAccountStoreMappings()
-//        for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
-//            directories.add(orgAccountStoreMapping.geta)
-//            orgAccountStoreMapping.delete()
-//        }
-//    }
-
     @Test
     void testAccountStoreMappings() {
 
-        OrganizationAccountStoreMappingList accountStoreMappings = org.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList accountStoreMappings = org.getAccountStoreMappings()
 
         6.times{
             def dir = client.instantiate(Directory)
@@ -96,7 +83,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
             org.addAccountStore(dir)  // testing create
         }
-        OrganizationAccountStoreMappingList mappings = org.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList mappings = org.getAccountStoreMappings()
 
         int counter = 0;
         for(OrganizationAccountStoreMapping mapping : mappings) {
@@ -107,7 +94,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
         Organization orgRefresh = client.getResource(org.href, Organization)
 
-        OrganizationAccountStoreMappingList mappings2 = orgRefresh.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList mappings2 = orgRefresh.getAccountStoreMappings()
         counter = 0;
         for(OrganizationAccountStoreMapping mapping : mappings2) {
             counter++;
@@ -159,7 +146,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         AccountStore defaultAccountStore = orgRefresh.getDefaultGroupStore()
         assertNotNull(defaultAccountStore)
 
-        mappings2 = orgRefresh.getOrganizationAccountStoreMappings()
+        mappings2 = orgRefresh.getAccountStoreMappings()
 
         counter = 0;
         for(OrganizationAccountStoreMapping mapping : mappings2) {
@@ -172,7 +159,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgRefreshList = tenant.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org.name)))
         orgRefresh = orgRefreshList.first()
 
-        mappings2 = orgRefresh.getOrganizationAccountStoreMappings()
+        mappings2 = orgRefresh.getAccountStoreMappings()
         counter = 0;
         for(OrganizationAccountStoreMapping mapping : mappings2) {
             counter++;
@@ -200,7 +187,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
         }
 
-        def accStrMaps = org.getOrganizationAccountStoreMappings(OrganizationAccountStoreMappings.where(OrganizationAccountStoreMappings.listIndex().eq(1)))
+        def accStrMaps = org.getAccountStoreMappings(OrganizationAccountStoreMappings.where(OrganizationAccountStoreMappings.listIndex().eq(1)))
         OrganizationAccountStoreMapping orgAccountStoreMapping = accStrMaps.first()
         AccountStore accountStore = orgAccountStoreMapping.accountStore
         assertNotEquals(accountStore, org.getDefaultAccountStore())
@@ -210,7 +197,10 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping.setListIndex(0)
         orgAccountStoreMapping.save()
 
-        OrganizationAccountStoreMappingList accountStoreMappings = org.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList accountStoreMappings = org.getAccountStoreMappings()
+
+        assertTrue (accountStoreMappings.size > 0)
+
         for (OrganizationAccountStoreMapping mapping : accountStoreMappings) {
             deleteOnTeardown(mapping)
             if (mapping.listIndex == 0) {
@@ -336,7 +326,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             orgAccountStoreMapping = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
             deleteOnTeardown(orgAccountStoreMapping)
         }
-        OrganizationAccountStoreMappingList mappings = org.getOrganizationAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore())
+        OrganizationAccountStoreMappingList mappings = org.getAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore())
         assertEquals mappings.getSize(), 2
         String mappingsString = mappings.toString()
         assertTrue(mappingsString.contains("JSDK_AccountStoreMappingTest_dir"))
@@ -351,7 +341,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
 
         org.addAccountStore(dir)
 
-        OrganizationAccountStoreMappingList mappings = org.getOrganizationAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore())
+        OrganizationAccountStoreMappingList mappings = org.getAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore())
         assertEquals mappings.getSize(), 1
         deleteOnTeardown(mappings.iterator().next())
 
@@ -387,7 +377,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             deleteOnTeardown(dir)
             org.addAccountStore(dir)
         }
-        OrganizationAccountStoreMappingList accountStoreMappingList = org.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList accountStoreMappingList = org.getAccountStoreMappings()
         assertEquals accountStoreMappingList.getSize(), 6
 
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
@@ -414,7 +404,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             deleteOnTeardown(dir)
             org.addAccountStore(dir)
         }
-        OrganizationAccountStoreMappingList accountStoreMappingList = org.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList accountStoreMappingList = org.getAccountStoreMappings()
         assertEquals accountStoreMappingList.getSize(), 6
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             deleteOnTeardown(orgAccountStoreMapping)
@@ -458,7 +448,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         org.setDefaultAccountStore(group)
         assertEquals(org.getDefaultAccountStore().getHref(), group.href)
 
-        OrganizationAccountStoreMappingList accountStoreMappingList = org.getOrganizationAccountStoreMappings()
+        OrganizationAccountStoreMappingList accountStoreMappingList = org.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.size, 2)
 
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
@@ -492,7 +482,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         // Set the DefaultAccountStore to be an already existing account store mapping
         org.setDefaultAccountStore(dir)
         assertEquals(org.getDefaultAccountStore().getHref(), dir.getHref())
-        accountStoreMappingList = org.getOrganizationAccountStoreMappings()
+        accountStoreMappingList = org.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 2)
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             deleteOnTeardown(orgAccountStoreMapping)
@@ -517,7 +507,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         org.setDefaultGroupStore(newDir)
 
         assertEquals(org.getDefaultGroupStore().getHref(), newDir.getHref())
-        accountStoreMappingList = org.getOrganizationAccountStoreMappings()
+        accountStoreMappingList = org.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             deleteOnTeardown(orgAccountStoreMapping)
@@ -543,7 +533,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         // Set the DefaultGroupStore to be an already existing account store mapping
         org.setDefaultGroupStore(dir)
         assertEquals(org.getDefaultGroupStore().getHref(), dir.getHref())
-        accountStoreMappingList = org.getOrganizationAccountStoreMappings()
+        accountStoreMappingList = org.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
         for (OrganizationAccountStoreMapping orgAccountStoreMapping : accountStoreMappingList) {
             deleteOnTeardown(orgAccountStoreMapping)

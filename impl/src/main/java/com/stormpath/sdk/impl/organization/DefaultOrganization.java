@@ -143,14 +143,14 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     }
 
     @Override
-    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings() {
+    public OrganizationAccountStoreMappingList getAccountStoreMappings() {
         return getResourceProperty(ACCOUNT_STORE_MAPPINGS);
     }
 
     @Override
-    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams) {
+    public OrganizationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams) {
         OrganizationAccountStoreMappingList accountStoreMappings =
-                getOrganizationAccountStoreMappings(); //obtains the href: does not execute a query until iteration occurs
+                getAccountStoreMappings(); //obtains the href: does not execute a query until iteration occurs
         return getDataStore().getResource(accountStoreMappings.getHref(), OrganizationAccountStoreMappingList.class, queryParams);
     }
     
@@ -161,8 +161,8 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     }
 
     @Override
-    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
-        OrganizationAccountStoreMappingList mappings = getOrganizationAccountStoreMappings();  //safe to get the href: does not execute a query until iteration occurs
+    public OrganizationAccountStoreMappingList getAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
+        OrganizationAccountStoreMappingList mappings = getAccountStoreMappings();  //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(mappings.getHref(), OrganizationAccountStoreMappingList.class, (Criteria<OrganizationAccountStoreMappingCriteria>) criteria);
     }
 
@@ -174,7 +174,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
 
     @Override
     public void setDefaultGroupStore(AccountStore accountStore) {
-        OrganizationAccountStoreMappingList accountStoreMappingList = getOrganizationAccountStoreMappings();
+        OrganizationAccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
         boolean needToCreateNewStore = true;
         for (OrganizationAccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
@@ -195,7 +195,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
 
     @Override
     public void setDefaultAccountStore(AccountStore accountStore) {
-        OrganizationAccountStoreMappingList accountStoreMappingList = getOrganizationAccountStoreMappings();
+        OrganizationAccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
         boolean needToCreateNewStore = true;
         for (OrganizationAccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
