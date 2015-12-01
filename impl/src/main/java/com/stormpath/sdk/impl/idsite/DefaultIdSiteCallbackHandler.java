@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.idsite;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
@@ -39,7 +40,6 @@ import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.error.Error;
 import io.jsonwebtoken.Claims;
 
 import java.lang.reflect.Constructor;
@@ -47,8 +47,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*;
-import static com.stormpath.sdk.impl.jwt.JwtHeaderParameters.*;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.*;
+import static com.stormpath.sdk.impl.jwt.JwtHeaderParameters.KEY_ID;
 
 /**
  * @since 1.0.RC2

@@ -52,7 +52,7 @@
                                 <c:if test="${!empty form.next}">
                                     <input name="next" type="hidden" value="${form.next}">
                                 </c:if>
-                                <input name="csrfToken" type="hidden" value="${form.csrfToken}">
+                                <input name="${form.csrfTokenName}" type="hidden" value="${form.csrfToken}">
 
                                 <c:forEach items="${form.fields}" var="field">
                                     <div form-group="true" class="form-group group-${field.name}">

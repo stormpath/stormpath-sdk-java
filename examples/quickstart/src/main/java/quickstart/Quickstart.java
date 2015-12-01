@@ -104,7 +104,10 @@ public class Quickstart {
         String rawPassword = "Changeme1";
 
         // Create an authentication request using the credentials
-        AuthenticationRequest request = new UsernamePasswordRequest(usernameOrEmail, rawPassword);
+        AuthenticationRequest request = UsernamePasswordRequest.builder()
+            .setUsernameOrEmail(usernameOrEmail)
+            .setPassword(rawPassword)
+            .build();
 
         //Now let's authenticate the account with the application:
         try {

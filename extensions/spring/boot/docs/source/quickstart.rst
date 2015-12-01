@@ -45,10 +45,15 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 In order to connect Stormpath and Spring Security, we need one small configuration class in your project:
 
 .. code-block:: java
-    :emphasize-lines: 2
+    :emphasize-lines: 5
 
-        @Configuration
-        public class SpringSecurityWebAppConfig extends StormpathWebSecurityConfigurerAdapter {}
+    @Configuration
+    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.apply(stormpath());
+        }
+    }
 
 Without this, you will get a popup in your browser prompting for authentication, which is the default basic authentication for Spring Security.
 
@@ -97,8 +102,38 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
   By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
 
+* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The ``stormpath-default-spring-boot-starter`` relies on Spring Security, version 4.0.x. The current release of the ``spring-boot-starter-parent`` is 1.3.0 and it also relies on Spring Security 4.0.x. Prior versions of the ``spring-boot-starter-parent`` rely on Spring Security 3.2.x. Our first recommendation is to use the latest version of the ``spring-boot-starter-parent``. However, if you must use earlier versions, there is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
 
+  .. code-block:: xml
+      :emphasize-lines: 15
 
+      <?xml version="1.0" encoding="UTF-8"?>
+      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+          <modelVersion>4.0.0</modelVersion>
+          ...
+          <parent>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-parent</artifactId>
+              <version>1.2.7.RELEASE</version>
+              <relativePath/> <!-- lookup parent from repository -->
+          </parent>
+
+          <properties>
+              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+              <java.version>1.8</java.version>
+              <spring-security.version>4.0.3.RELEASE</spring-security.version>
+          </properties>
+
+          <dependencies>
+              ...
+              <dependency>
+                  <groupId>com.stormpath.spring</groupId>
+                  <artifactId>stormpath-default-spring-boot-starter</artifactId>
+              </dependency>
+              ...
+          </dependencies>
+          ...
+      </project>
 
 If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
 

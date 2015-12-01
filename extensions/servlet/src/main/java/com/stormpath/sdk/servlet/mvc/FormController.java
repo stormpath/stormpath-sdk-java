@@ -120,7 +120,8 @@ public abstract class FormController extends AbstractController {
 
         DefaultForm form = new DefaultForm();
 
-        String value = Strings.clean(request.getParameter("csrfToken"));
+        form.setCsrfTokenName(csrfTokenManager.getTokenName());
+        String value = Strings.clean(request.getParameter(csrfTokenManager.getTokenName()));
         form.setCsrfToken(value);
 
         value = Strings.clean(request.getParameter("next"));

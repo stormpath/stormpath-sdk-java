@@ -25,6 +25,15 @@ import java.util.List;
 public interface Form {
 
     /**
+     * The name of CSRF token. Since the CSRF name is customizable, this method is used to obtain the actual token name being used in the form.
+     *
+     * @return the name of the CSRF field.
+     *
+     * @since 1.0.RC5.2
+     */
+    String getCsrfTokenName();
+
+    /**
      * Returns the CSRF token that must be included with the form during submission.  If the CSRF token submitted with
      * the form is missing, expired or has already been used, form submission will fail.
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import java.util.UUID;
 
-import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_REQUEST;
 
 /**
  * @since 1.0.RC
@@ -37,26 +37,12 @@ import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*;
 public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
     public static String SSO_LOGOUT_SUFFIX = "/logout";
-
-    private final InternalDataStore internalDataStore;
-
     public final String ssoEndpoint;
-
+    private final InternalDataStore internalDataStore;
     private final String applicationHref;
-
-    private String callbackUri;
-
-    private String state;
-
-    private String path;
+    private final IdSiteClaims claims;
 
     private boolean logout = false;
-
-    private String organizationNameKey;
-
-    private Boolean useSubdomain;
-
-    private Boolean showOrganizationField;
 
     public DefaultIdSiteUrlBuilder(InternalDataStore internalDataStore, String applicationHref) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
@@ -65,41 +51,54 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
         this.ssoEndpoint = getBaseUrl(applicationHref) + "/sso";
         this.internalDataStore = internalDataStore;
         this.applicationHref = applicationHref;
+        this.claims = new IdSiteClaims();
     }
 
     @Override
     public IdSiteUrlBuilder setCallbackUri(String callbackUri) {
-        this.callbackUri = callbackUri;
+        claims.setCallbackUri(callbackUri);
         return this;
     }
 
     @Override
     public IdSiteUrlBuilder setState(String state) {
-        this.state = state;
+        claims.setState(state);
         return this;
     }
 
     @Override
     public IdSiteUrlBuilder setPath(String path) {
-        this.path = path;
+        claims.setPath(path);
         return this;
     }
 
     @Override
     public IdSiteUrlBuilder setOrganizationNameKey(String organizationNameKey) {
-        this.organizationNameKey = organizationNameKey;
+        claims.setOrganizationNameKey(organizationNameKey);
         return this;
     }
 
     @Override
     public IdSiteUrlBuilder setUseSubdomain(boolean useSubdomain) {
-        this.useSubdomain = useSubdomain;
+        claims.setUseSubdomain(useSubdomain);
         return this;
     }
 
     @Override
     public IdSiteUrlBuilder setShowOrganizationField(boolean showOrganizationField) {
-        this.showOrganizationField = showOrganizationField;
+        claims.setShowOrganizationField(showOrganizationField);
+        return this;
+    }
+
+    @Override
+    public IdSiteUrlBuilder setSpToken(String spToken) {
+        claims.setSpToken(spToken);
+        return this;
+    }
+
+    @Override
+    public IdSiteUrlBuilder addProperty(String name, Object value) {
+        claims.put(name, value);
         return this;
     }
 
@@ -111,7 +110,7 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
     @Override
     public String build() {
-        Assert.state(Strings.hasText(this.callbackUri), "callbackUri cannot be null or empty.");
+        Assert.state(Strings.hasText(claims.getCallbackUri()), "callbackUri cannot be null or empty.");
 
         String jti = UUID.randomUUID().toString();
 
@@ -119,28 +118,8 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
         final ApiKey apiKey = this.internalDataStore.getApiKey();
 
-        JwtBuilder jwtBuilder = Jwts.builder().setId(jti).setIssuedAt(now).setIssuer(apiKey.getId())
-                .setSubject(this.applicationHref).claim(REDIRECT_URI, this.callbackUri);
-
-        if (Strings.hasText(this.path)) {
-            jwtBuilder.claim(PATH, this.path);
-        }
-
-        if (Strings.hasText(this.state)) {
-            jwtBuilder.claim(STATE, this.state);
-        }
-
-        if (Strings.hasText(this.organizationNameKey)) {
-            jwtBuilder.claim(ORGANIZATION_NAME_KEY, organizationNameKey);
-        }
-
-        if (useSubdomain != null) {
-            jwtBuilder.claim(USE_SUBDOMAIN, useSubdomain);
-        }
-
-        if (showOrganizationField != null) {
-            jwtBuilder.claim(SHOW_ORGANIZATION_FIELD, showOrganizationField);
-        }
+        JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setId(jti).setIssuedAt(now).setIssuer(apiKey.getId())
+                .setSubject(this.applicationHref);
 
         byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
 

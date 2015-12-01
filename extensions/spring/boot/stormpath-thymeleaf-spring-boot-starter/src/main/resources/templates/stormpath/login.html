@@ -45,7 +45,7 @@
 
                         <form method="post" role="form" class="login-form form-horizontal">
                             <input name="next" type="hidden" th:value="${form.next}" th:if="${not #strings.isEmpty(form.next)}"/>
-                            <input name="csrfToken" type="hidden" th:value="${form.csrfToken}"/>
+                            <input th:name="${form.csrfTokenName}" type="hidden" th:value="${form.csrfToken}"/>
 
                             <div th:each="field : ${form.fields}" form-group="true" th:class="'form-group group-' + ${field.name}">
                                 <label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>

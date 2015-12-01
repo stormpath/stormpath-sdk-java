@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2015 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,20 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.error.jwt.InvalidJwtException
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
-import com.stormpath.sdk.idsite.*
+import com.stormpath.sdk.idsite.AccountResult
+import com.stormpath.sdk.idsite.AuthenticationResult
+import com.stormpath.sdk.idsite.IDSiteException
+import com.stormpath.sdk.idsite.IDSiteRuntimeException
+import com.stormpath.sdk.idsite.IDSiteSessionTimeoutException
+import com.stormpath.sdk.idsite.IdSiteResultListener
+import com.stormpath.sdk.idsite.InvalidIDSiteTokenException
+import com.stormpath.sdk.idsite.LogoutResult
+import com.stormpath.sdk.idsite.RegistrationResult
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor
 import org.testng.annotations.Test
 
-import static com.stormpath.sdk.impl.jwt.IdSiteClaims.*
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_RESPONSE
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
 

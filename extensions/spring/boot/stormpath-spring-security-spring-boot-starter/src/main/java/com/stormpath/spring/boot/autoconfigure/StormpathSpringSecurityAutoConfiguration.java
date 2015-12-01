@@ -16,20 +16,22 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.spring.config.AbstractStormpathSpringSecurityConfiguration;
-import com.stormpath.spring.config.StormpathSecurityEnabled;
 import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.AccountPermissionResolver;
 import com.stormpath.spring.security.provider.AuthenticationTokenFactory;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 
 /**
  * @since 1.0.RC5
@@ -43,7 +45,6 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
-    @Conditional(StormpathSecurityEnabled.class)
     public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return super.stormpathGroupGrantedAuthorityResolver();
     }
@@ -51,7 +52,6 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
-    @Conditional(StormpathSecurityEnabled.class)
     public GroupPermissionResolver stormpathGroupPermissionResolver() {
         return super.stormpathGroupPermissionResolver();
     }
@@ -59,7 +59,6 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
-    @Conditional(StormpathSecurityEnabled.class)
     public AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver() {
         return super.stormpathAccountGrantedAuthorityResolver();
     }
@@ -67,7 +66,6 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
-    @Conditional(StormpathSecurityEnabled.class)
     public AccountPermissionResolver stormpathAccountPermissionResolver() {
         return super.stormpathAccountPermissionResolver();
     }
@@ -75,7 +73,6 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
-    @Conditional(StormpathSecurityEnabled.class)
     public AuthenticationTokenFactory stormpathAuthenticationTokenFactory() {
         return super.stormpathAuthenticationTokenFactory();
     }
@@ -83,9 +80,21 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @Bean
     @Override
     @ConditionalOnMissingBean
-    @Conditional(StormpathSecurityEnabled.class)
     public AuthenticationProvider stormpathAuthenticationProvider() {
         return super.stormpathAuthenticationProvider();
     }
 
+    // This is only working as an inner static class
+    // Need to find out if this is best practice
+    @Order(99)
+    @Configuration
+    protected static class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
+        @Autowired
+        StormpathSpringSecurityAutoConfiguration stormpathSpringSecurityAutoConfiguration;
+
+        @Override
+        public void init(AuthenticationManagerBuilder auth) throws Exception {
+            auth.authenticationProvider(stormpathSpringSecurityAutoConfiguration.stormpathAuthenticationProvider());
+        }
+    }
 }
