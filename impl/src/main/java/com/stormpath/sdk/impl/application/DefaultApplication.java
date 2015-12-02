@@ -33,18 +33,14 @@ import com.stormpath.sdk.application.AccountStoreMappingList;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
@@ -57,6 +53,9 @@ import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
+import com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
@@ -69,7 +68,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
@@ -152,6 +151,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         new ResourceReference<AccountStoreMapping>("defaultAccountStoreMapping", AccountStoreMapping.class);
     static final ResourceReference<AccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
         new ResourceReference<AccountStoreMapping>("defaultGroupStoreMapping", AccountStoreMapping.class);
+    static final ResourceReference<OauthPolicy> OAUTH_POLICY   =
+            new ResourceReference<OauthPolicy>("oAuthPolicy", OauthPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -169,7 +170,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -296,6 +297,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         props.put("href", href);
         PasswordResetToken prToken = getDataStore().instantiate(PasswordResetToken.class, props);
         return prToken.getAccount();
+    }
+
+    /** @since 1.0.RC7 */
+    public OauthPolicy getOauthPolicy() {
+        return getResourceProperty(OAUTH_POLICY);
     }
 
     /** @since 1.0.RC */
@@ -721,4 +727,20 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         getDataStore().save(this, responseOptions);
         return this;
     }
+
+    /* @since 1.0.RC7 */
+    public PasswordGrantAuthenticator createPasswordGrantAuthenticator() {
+        return new DefaultPasswordGrantAuthenticator(this, getDataStore());
+    }
+
+    /* @since 1.0.RC7 */
+    public RefreshGrantAuthenticator createRefreshGrantAuthenticator() {
+        return new DefaultRefreshGrantAuthenticator(this, getDataStore());
+    }
+
+    /* @since 1.0.RC7 */
+    public JwtAuthenticator createJwtAuthenticator() {
+        return new DefaultJwtAuthenticator(this, getDataStore());
+    }
+
 }

@@ -25,8 +25,8 @@ import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
@@ -36,7 +36,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.Auditable;
@@ -1464,4 +1464,11 @@ public interface Application extends Resource, Saveable, Deletable, Extendable, 
      */
     Application saveWithResponseOptions(ApplicationOptions responseOptions);
 
+    /**
+     * Returns the {@link OauthPolicy} associated with this application.
+     * @return the {@link OauthPolicy} associated with this application.
+     *
+     * @since 1.0.RC7
+     */
+    OauthPolicy getOauthPolicy();
 }

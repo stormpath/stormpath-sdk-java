@@ -102,7 +102,6 @@ class DefaultPasswordPolicyTest {
         assertTrue(resource instanceof DefaultUnmodeledEmailTemplateList && resource.getHref().equals(properties.resetSuccessEmailTemplates.href))
 
         verify internalDataStore
-
     }
 
 

@@ -56,6 +56,7 @@ import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
+import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.tenant.Tenant
@@ -63,7 +64,6 @@ import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
-import java.lang.reflect.Field
 import java.text.DateFormat
 
 import static org.easymock.EasyMock.*
@@ -81,7 +81,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 11)
+        assertEquals( propertyDescriptors.size(), 12)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -95,6 +95,8 @@ class DefaultApplicationTest {
         assertTrue(propertyDescriptors.get("accountStoreMappings") instanceof CollectionReference && propertyDescriptors.get("accountStoreMappings").getType().equals(AccountStoreMappingList))
         //since 1.0.0
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
+        //since 1.0.RC7
+        assertTrue(propertyDescriptors.get("oAuthPolicy") instanceof ResourceReference && propertyDescriptors.get("oAuthPolicy").getType().equals(OauthPolicy))
     }
 
     @Test

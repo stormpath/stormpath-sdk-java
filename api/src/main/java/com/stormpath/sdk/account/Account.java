@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
@@ -27,6 +28,8 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.oauth.AccessTokenList;
+import com.stormpath.sdk.oauth.RefreshTokenList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
@@ -550,4 +553,20 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC4
      */
     ApplicationList getApplications(ApplicationCriteria criteria);
+
+    /**
+     * Returns a paginated list of all the active access tokens that belong to the account.
+     *
+     * @return a paginated list of all the Account's active access tokens.
+     * @since 1.0.RC7
+     */
+    AccessTokenList getAccessTokens();
+
+    /**
+     * Returns a paginated list of the refresh tokens that belong to the account.
+     *
+     * @return a paginated list of the Account's refresh tokens.
+     * @since 1.0.RC7
+     */
+    RefreshTokenList getRefreshTokens();
 }

@@ -26,7 +26,6 @@ import java.util.Collection;
  *
  * @see UsernamePasswordAuthenticationTokenFactory
  */
-
 public interface AuthenticationTokenFactory {
 
     /**
