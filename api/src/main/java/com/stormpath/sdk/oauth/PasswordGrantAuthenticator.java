@@ -20,7 +20,7 @@ package com.stormpath.sdk.oauth;
  * exchange its credentials for a valid OAuth 2.0 token. For example:
  * <pre>
  * Application app = obtainApplication();
- * PasswordGrantRequest request = <b>Authenticators.PASSWORD_GRANT_REQUEST.builder()</b>
+ * PasswordGrantRequest request = <b>Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()</b>
  *      .setLogin(username)
  *      .setPassword(password)
  *      .build();

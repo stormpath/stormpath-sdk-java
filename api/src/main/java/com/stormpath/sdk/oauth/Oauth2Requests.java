@@ -21,14 +21,14 @@ import com.stormpath.sdk.lang.Classes;
  * Static utility/helper methods serving Grant Authentication Request Builders. For example, to
  * construct a builder to create a {@link PasswordGrantRequest}:
  * <pre>
- * PasswordGrantRequest request = Authenticators.PASSWORD_GRANT_REQUEST.builder()
+ * PasswordGrantRequest request = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
  *      .setLogin(username)
  *      .setPassword(password)
  *      .build();
  * </pre>
  * or, to construct a builder for a Refresh Grant Authentication request:
  * <pre>
- * RefreshGrantRequest request = Authenticators.REFRESH_GRANT_REQUEST.builder()
+ * RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder()
  *      .setRefreshToken(refreshToken)
  *      .build();
  * </pre>

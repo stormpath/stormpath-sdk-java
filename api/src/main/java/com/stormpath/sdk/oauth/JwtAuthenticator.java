@@ -22,7 +22,7 @@ package com.stormpath.sdk.oauth;
  * JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST
  *      .builder()
  *      .setJwt(jwt)
- *      .build()
+ *      .build();
  * JwtAuthenticationResult result = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest);
  * </pre>
  * This validation is always performed against Stormpath server, if you want to validate the token locally, simply apply

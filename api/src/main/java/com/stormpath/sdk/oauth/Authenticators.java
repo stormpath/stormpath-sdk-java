@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.lang.Classes;
 
 /**
- * Static utility/helper methods serving {@link com.stormpath.sdk.oauth.Oauth2AuthenticatorFactory Oauth2AuthenticatorFactory}s. For example, to
+ * Static utility/helper class serving {@link com.stormpath.sdk.oauth.Oauth2AuthenticatorFactory Oauth2AuthenticatorFactory}s. For example, to
  * construct a {@link com.stormpath.sdk.oauth.PasswordGrantRequest PasswordGrantRequest}:
  * <pre>
  *      PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
