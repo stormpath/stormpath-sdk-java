@@ -16,25 +16,21 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Interface denoting a Password Grant-specific {@link Oauth2Authenticator}. It is used to authenticate an account and
- * exchange its credentials for a valid OAuth 2.0 token. For example:
+ * Interface denoting an Id Site-specific {@link Oauth2Authenticator}. It is used to exchange Id Site credentials
+ * for a valid OAuth 2.0 token. For example:
  * <pre>
  * Application app = obtainApplication();
- * PasswordGrantRequest request = <b>Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()</b>
- *      .setLogin(username)
- *      .setPassword(password)
+ *
+ * IdSiteAuthenticationRequest exchangeRequest = <b>Oauth2Requests.IDSITE_AUTHENTICATION_REQUEST.builder()</b>
+ *      .setToken(idSiteToken)
  *      .build();
  *
- * OauthGrantAuthenticationResult result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
- *      .forApplication(app)
- *      .authenticate(request);
+ * OauthGrantAuthenticationResult result = Authenticators.ID_SITE_AUTHENTICATOR
+ *       .forApplication(app)
+ *       .authenticate(exchangeRequest);
  * </pre>
- *
- * @see RefreshGrantAuthenticator
- * @see JwtAuthenticator
  *
  * @since 1.0.RC7
  */
-public interface PasswordGrantAuthenticator extends Oauth2Authenticator<OauthGrantAuthenticationResult> {
-
+public interface IdSiteAuthenticator extends Oauth2Authenticator<OauthGrantAuthenticationResult> {
 }

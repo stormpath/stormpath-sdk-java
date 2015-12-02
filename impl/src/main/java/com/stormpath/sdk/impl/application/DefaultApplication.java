@@ -57,6 +57,7 @@ import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
+import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticator;
@@ -857,4 +858,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return new DefaultJwtAuthenticator(this, getDataStore());
     }
 
+    /* @since 1.0.RC7 */
+    public IdSiteAuthenticator createIdSiteAuthenticator(){
+        return new DefaultIdSiteAuthenticator(this, getDataStore());
+    }
 }
