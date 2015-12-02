@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.accountStoreMapping;
 
+import com.stormpath.sdk.application.AccountStoreHolder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
