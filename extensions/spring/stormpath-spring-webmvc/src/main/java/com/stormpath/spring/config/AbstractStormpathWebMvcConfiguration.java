@@ -208,6 +208,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.csrf.token.ttl'] ?: 3600000 }") //1 hour (unit is millis)
     protected long csrfTokenTtl;
 
+    @Value("#{ @environment['stormpath.web.csrf.token.name'] ?: 'csrfToken'}")
+    protected String csrfTokenName;
+
     @Value("#{ @environment['stormpath.web.nonce.cache.name'] ?: 'com.stormpath.sdk.servlet.nonces' }")
     protected String nonceCacheName;
 
@@ -612,7 +615,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        return new DefaultCsrfTokenManager(stormpathNonceCache(), stormpathCsrfTokenSigningKey(), csrfTokenTtl);
+        return new DefaultCsrfTokenManager(csrfTokenName, stormpathNonceCache(), stormpathCsrfTokenSigningKey(), csrfTokenTtl);
     }
 
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {

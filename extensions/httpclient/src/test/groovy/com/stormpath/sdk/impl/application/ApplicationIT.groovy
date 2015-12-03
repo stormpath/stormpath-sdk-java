@@ -28,6 +28,15 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.oauth.AccessToken
+import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.JwtAuthenticationResult
+import com.stormpath.sdk.oauth.Oauth2Requests
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest
+import com.stormpath.sdk.oauth.OauthPolicy
+import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.RefreshGrantRequest
+
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -1291,4 +1300,142 @@ class ApplicationIT extends ClientIT {
             assertTrue e.getDeveloperMessage().contains("is in an invalid format")
         }
     }
+
+    /* @since 1.0.RC7 */
+    @Test
+    void testCreateAndRefreshTokenForAppAccount() {
+
+        def app = createTempApp()
+
+        def email = uniquify('testCreateToken+') + '@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email =  email
+        account.password = 'Change&45+me1!'
+
+        def created = app.createAccount(account)
+        assertNotNull created.href
+        deleteOnTeardown(created)
+
+        PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build();
+        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+
+        assertNotNull result
+        assertNotNull result.accessTokenString
+        assertNotNull result.accessTokenHref
+        assertEquals result.getAccessToken().getAccount().getEmail(), email
+        assertEquals result.getAccessToken().getApplication().getHref(), app.href
+
+        RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
+        result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request)
+
+        assertNotNull result
+        assertNotNull result.accessTokenString
+        assertNotNull result.accessTokenHref
+        assertEquals result.getRefreshToken().getAccount().getEmail(), email
+        assertEquals result.getRefreshToken().getApplication().getHref(), app.href
+    }
+
+    /* @since 1.0.RC7 */
+    @Test
+    void testRetrieveAndUpdateOauthPolicy(){
+        def app = createTempApp()
+
+        OauthPolicy oauthPolicy = app.getOauthPolicy()
+        assertNotNull oauthPolicy
+        assertEquals oauthPolicy.getApplication().getHref(), app.href
+        assertNotNull oauthPolicy.getTokenEndpoint()
+
+        oauthPolicy.setAccessTokenTtl("P8D")
+        oauthPolicy.setRefreshTokenTtl("P2D")
+        oauthPolicy.save()
+
+        oauthPolicy = app.getOauthPolicy()
+        assertEquals oauthPolicy.getAccessTokenTtl(), "P8D"
+        assertEquals oauthPolicy.getRefreshTokenTtl(), "P2D"
+        assertEquals oauthPolicy.getApplication().getHref(), app.href
+    }
+
+    /* @since 1.0.RC7 */
+    @Test
+    void testAuthenticateAndDeleteTokenForAppAccount() {
+
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        PasswordGrantRequest grantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(account.email).setPassword("Changeme1!").build();
+        def grantResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        // Authenticate token against Stormpath
+        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(grantResult.getAccessTokenString()).build()
+        def authResultRemote = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
+
+        assertEquals authResultRemote.getApplication().getHref(), app.href
+        assertEquals authResultRemote.getAccount().getHref(), account.href
+
+        // Authenticate locally
+        JwtAuthenticationResult authResultLocal = Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
+
+        assertEquals authResultRemote.getHref(), authResultLocal.getHref()
+        assertEquals authResultRemote.getAccount().getHref(), authResultLocal.getAccount().getHref()
+        assertEquals authResultRemote.getApplication().getHref(), authResultLocal.getApplication().getHref()
+        assertEquals authResultRemote.getJwt(), authResultLocal.getJwt()
+
+        //Let's check the local access token actually exists in the backend
+        assertNotNull client.getResource(authResultLocal.getHref(), AccessToken.class)
+
+        grantResult.getAccessToken().delete()
+
+        try {
+            //try to authenticate deleted token
+            Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
+            fail("Should have thrown due to unexistent token")
+        } catch (Exception e){
+            def message = e.getMessage()
+            assertTrue message.contains("Token does not exist. This can occur if the token has been manually deleted, or if the token has expired and removed by Stormpath.")
+        }
+
+        // Deleted tokens are still valid when local validation is used
+        assertNotNull Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
+    }
+
+    /* @since 1.0.RC7 */
+    @Test
+    void testInvalidTokenViaLocalValidation() {
+
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        PasswordGrantRequest grantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(account.email).setPassword("Changeme1!").build();
+        def grantResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        String jwt = grantResult.getAccessTokenString();
+        def charToChange = jwt.charAt(jwt.indexOf(".") + 5)
+        String tamperedJwt = jwt.replace(charToChange, (Character) charToChange.equals('X') ? 'Z' : 'X')
+
+        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(tamperedJwt).build()
+
+        try {
+            //try to authenticate a tampered token
+            Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
+            fail("Should have thrown")
+        } catch (Exception e){
+            def message = e.getMessage()
+            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+        }
+
+        def app2 = createTempApp()
+        authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(jwt).build()
+        try {
+            //try to use a valid token with another application
+            Authenticators.JWT_AUTHENTICATOR.forApplication(app2).withLocalValidation().authenticate(authRequest)
+            fail("Should have thrown")
+        } catch (Exception e){
+            def message = e.getMessage()
+            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+        }
+    }
+
 }

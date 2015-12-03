@@ -37,15 +37,24 @@ public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
     private static final Logger log = LoggerFactory.getLogger(SpringSecurityCsrfTokenManager.class);
 
     private final CsrfTokenRepository csrfTokenRepository;
+    private final String tokenName;
 
     /**
      * Instantiates a new SpringSecurityCsrfTokenManager.
      *
      * @param csrfTokenRepository the CsrfTokenRepository that this manager will use to store and load tokens.
+     * @param tokenName the name that will be used to identify the CSRF token.
      */
-    public SpringSecurityCsrfTokenManager(CsrfTokenRepository csrfTokenRepository) {
+    public SpringSecurityCsrfTokenManager(CsrfTokenRepository csrfTokenRepository, String tokenName) {
         Assert.notNull(csrfTokenRepository, "csrfTokenRepository cannot be null.");
+        Assert.hasText(tokenName, "tokenName cannot be null or empty.");
         this.csrfTokenRepository = csrfTokenRepository;
+        this.tokenName = tokenName;
+    }
+
+    @Override
+    public String getTokenName() {
+        return this.tokenName;
     }
 
     @Override

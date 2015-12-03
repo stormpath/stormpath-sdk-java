@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
@@ -25,5 +26,9 @@ public class DefaultResourceDataRequest extends DefaultResourceMessage implement
 
     public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data) {
         super(action, uri, resourceClass, data);
+    }
+
+    public DefaultResourceDataRequest(ResourceAction action, CanonicalUri uri, Class<? extends Resource> resourceClass, Map<String,Object> data, HttpHeaders customHeaders) {
+        super(action, uri, resourceClass, data, customHeaders);
     }
 }

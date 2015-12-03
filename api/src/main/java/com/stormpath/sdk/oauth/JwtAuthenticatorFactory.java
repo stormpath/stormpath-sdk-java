@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.config;
-
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+package com.stormpath.sdk.oauth;
 
 /**
- * @since 1.0.RC5
+ * A JWT-specific Authenticator Factory.
+ *
+ * @since 1.0.RC7
  */
-public class StormpathSecurityEnabled implements Condition {
-
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class, Boolean.TRUE);
-    }
+public interface JwtAuthenticatorFactory extends Oauth2AuthenticatorFactory<JwtAuthenticator> {
 
 }
-

@@ -17,7 +17,8 @@ package com.stormpath.sdk.impl.api;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
-import com.stormpath.sdk.impl.io.FileResource;
+import com.stormpath.sdk.impl.io.DefaultResourceFactory;
+import com.stormpath.sdk.impl.io.ResourceFactory;
 import com.stormpath.sdk.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     private Properties  apiKeyProperties;
     private String apiKeyIdPropertyName     = DEFAULT_ID_PROPERTY_NAME;
     private String apiKeySecretPropertyName = DEFAULT_SECRET_PROPERTY_NAME;
+    private ResourceFactory resourceFactory = new DefaultResourceFactory();
 
     @Override
     public ApiKeyBuilder setId(String id) {
@@ -320,7 +322,7 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     }
 
     protected Reader createFileReader(String apiKeyFileLocation) throws IOException {
-        InputStream is = new FileResource(apiKeyFileLocation).getInputStream();
+        InputStream is = this.resourceFactory.createResource(apiKeyFileLocation).getInputStream();
         return toReader(is);
     }
 

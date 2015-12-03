@@ -46,6 +46,10 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.AccessTokenList;
+import com.stormpath.sdk.oauth.RefreshToken;
+import com.stormpath.sdk.oauth.RefreshTokenList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
@@ -86,10 +90,17 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<ApplicationList, Application> APPLICATIONS =
             new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
 
+    // @since 1.0.RC7
+    static final CollectionReference<AccessTokenList, AccessToken> ACCESS_TOKENS =
+            new CollectionReference<AccessTokenList, AccessToken>("accessTokens", AccessTokenList.class, AccessToken.class);
+
+    static final CollectionReference<RefreshTokenList, RefreshToken> REFRESH_TOKENS =
+            new CollectionReference<RefreshTokenList, RefreshToken>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
+
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS, APPLICATIONS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -438,5 +449,19 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         }
 
         return group;
+    }
+
+    /**
+     * @since 1.0.RC7
+     */
+    public AccessTokenList getAccessTokens() {
+        return getResourceProperty(ACCESS_TOKENS);
+    }
+
+    /**
+     * @since 1.0.RC7
+     */
+    public RefreshTokenList getRefreshTokens() {
+        return getResourceProperty(REFRESH_TOKENS);
     }
 }

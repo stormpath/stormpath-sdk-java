@@ -29,6 +29,8 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.group.DefaultGroupMembership
 import com.stormpath.sdk.impl.group.DefaultGroupMembershipList
+import com.stormpath.sdk.impl.oauth.DefaultAccessTokenList
+import com.stormpath.sdk.impl.oauth.DefaultRefreshTokenList
 import com.stormpath.sdk.impl.provider.DefaultProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
@@ -36,6 +38,8 @@ import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.oauth.AccessTokenList
+import com.stormpath.sdk.oauth.RefreshTokenList
 import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -57,7 +61,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 17)
+        assertEquals(propertyDescriptors.size(), 19)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -76,6 +80,8 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("apiKeys") instanceof CollectionReference && propertyDescriptors.get("apiKeys").getType().equals(ApiKeyList))
         assertTrue(propertyDescriptors.get("providerData") instanceof ResourceReference && propertyDescriptors.get("providerData").getType().equals(ProviderData))
         assertTrue(propertyDescriptors.get("applications") instanceof CollectionReference && propertyDescriptors.get("applications").getType().equals(ApplicationList))
+        assertTrue(propertyDescriptors.get("accessTokens") instanceof CollectionReference && propertyDescriptors.get("accessTokens").getType().equals(AccessTokenList))
+        assertTrue(propertyDescriptors.get("refreshTokens") instanceof CollectionReference && propertyDescriptors.get("refreshTokens").getType().equals(RefreshTokenList))
     }
 
     @Test
@@ -87,6 +93,8 @@ class DefaultAccountTest {
                           directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
                           tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
                           groups: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groups"],
+                          accessTokens: [href: "http://localhost:9191/v1/accounts/iouertnw48ufsjnsDFSf/accessTokens"],
+                          refreshTokens: [href: "http://localhost:9191/v1/accounts/iouertnw48ufsjnsDFSf/refreshTokens"],
                           groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
                           providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
                           apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"],
@@ -128,6 +136,10 @@ class DefaultAccountTest {
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
 
+        expect(internalDataStore.instantiate(AccessTokenList, properties.accessTokens)).andReturn(new DefaultAccessTokenList(internalDataStore, properties.accessTokens))
+
+        expect(internalDataStore.instantiate(RefreshTokenList, properties.refreshTokens)).andReturn(new DefaultRefreshTokenList(internalDataStore, properties.refreshTokens))
+
         def groupCriteria = createStrictMock(GroupCriteria)
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteria)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
@@ -162,6 +174,12 @@ class DefaultAccountTest {
 
         resource = defaultAccount.getGroups()
         assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
+
+        resource = defaultAccount.getAccessTokens()
+        assertTrue(resource instanceof AccessTokenList && resource.getHref().equals(properties.accessTokens.href))
+
+        resource = defaultAccount.getRefreshTokens()
+        assertTrue(resource instanceof RefreshTokenList && resource.getHref().equals(properties.refreshTokens.href))
 
         resource = defaultAccount.getGroups(groupCriteria)
         assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))

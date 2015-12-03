@@ -27,6 +27,8 @@ import java.util.Map;
  */
 public class DefaultForm implements Form {
 
+    private String csrfTokenName;
+
     private String csrfToken;
 
     private String next;
@@ -35,6 +37,23 @@ public class DefaultForm implements Form {
 
     public DefaultForm() {
         this.fields = new LinkedHashMap<String, Field>();
+    }
+
+    @Override
+    public String getCsrfTokenName() {
+        return csrfTokenName;
+    }
+
+    /**
+     * The name of CSRF token. This name is used to customize the token field name in the form.
+     *
+     * @return the name of the CSRF field.
+     *
+     * @since 1.0.RC5.2
+     */
+    public DefaultForm setCsrfTokenName(String csrfTokenName) {
+        this.csrfTokenName = csrfTokenName;
+        return this;
     }
 
     @Override

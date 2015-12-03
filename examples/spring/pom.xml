@@ -18,16 +18,19 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.RC5.2-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-
+    <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring</artifactId>
+    <version>1.0.RC7-SNAPSHOT</version>
+
     <name>Stormpath Java SDK :: Examples :: Spring</name>
     <description>A simple (non-web) Spring Application.</description>
+
+    <properties>
+        <logback.version>1.1.2</logback.version>
+        <slf4j.version>1.7.8</slf4j.version>
+        <spring.version>4.2.3.RELEASE</spring.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
 
@@ -35,26 +38,31 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-spring</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Runtime-only dependencies: -->
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-httpclient</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
@@ -78,7 +86,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>App</mainClass>
+                    <killAfter>-1</killAfter>
+                    <mainClass>com.stormpath.spring.examples.App</mainClass>
                     <systemProperties>
                         <systemProperty>
                             <key>logback.configurationFile</key>
@@ -87,9 +96,15 @@
                     </systemProperties>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
-
 
 </project>
