@@ -18,8 +18,8 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.resource.CollectionResource;
 
 /**
- * A {@link CollectionResource} containing {@link AccountStoreMapping} instances.
+ * A {@link CollectionResource} containing {@link ApplicationAccountStoreMapping} instances.
  * @since 0.9
  */
-public interface AccountStoreMappingList extends CollectionResource<AccountStoreMapping> {
+public interface ApplicationAccountStoreMappingList extends CollectionResource<ApplicationAccountStoreMapping> {
 }

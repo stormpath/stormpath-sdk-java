@@ -15,32 +15,32 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingOptions;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
  * @since 0.9
  */
-public class DefaultAccountStoreMappingCriteria extends DefaultCriteria<AccountStoreMappingCriteria, AccountStoreMappingOptions> implements AccountStoreMappingCriteria {
+public class DefaultApplicationAccountStoreMappingCriteria extends DefaultCriteria<ApplicationAccountStoreMappingCriteria, ApplicationAccountStoreMappingOptions> implements ApplicationAccountStoreMappingCriteria {
 
-    public DefaultAccountStoreMappingCriteria() {
-        super(new DefaultAccountStoreMappingOptions());
+    public DefaultApplicationAccountStoreMappingCriteria() {
+        super(new DefaultApplicationAccountStoreMappingOptions());
     }
 
     @Override
-    public AccountStoreMappingCriteria orderByListIndex() {
-        return orderBy(DefaultAccountStoreMapping.LIST_INDEX);
+    public ApplicationAccountStoreMappingCriteria orderByListIndex() {
+        return orderBy(DefaultApplicationAccountStoreMapping.LIST_INDEX);
     }
 
     @Override
-    public AccountStoreMappingCriteria withApplication() {
+    public ApplicationAccountStoreMappingCriteria withApplication() {
         getOptions().withApplication();
         return this;
     }
 
     @Override
-    public AccountStoreMappingCriteria withAccountStore() {
+    public ApplicationAccountStoreMappingCriteria withAccountStore() {
         getOptions().withAccountStore();
         return this;
     }

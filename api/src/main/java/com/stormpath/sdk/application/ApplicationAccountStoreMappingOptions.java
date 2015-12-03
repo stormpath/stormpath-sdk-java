@@ -18,14 +18,14 @@ package com.stormpath.sdk.application;
 import com.stormpath.sdk.query.Options;
 
 /**
- * AccountStoreMapping-specific options that may be specified when retrieving {@link AccountStoreMapping} resources.
+ * ApplicationAccountStoreMapping-specific options that may be specified when retrieving {@link ApplicationAccountStoreMapping ApplicationAccountStoreMapping} resources.
  *
  * @since 0.9
  */
-public interface AccountStoreMappingOptions<T> extends Options {
+public interface ApplicationAccountStoreMappingOptions<T> extends Options {
 
     /**
-     * Ensures that when retrieving an AccountStoreMapping, the AccountStoreMapping's {@link AccountStoreMapping#getApplication() application} is also
+     * Ensures that when retrieving an ApplicationAccountStoreMapping, the ApplicationAccountStoreMapping's {@link ApplicationAccountStoreMapping#getApplication() application} is also
      * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
      * related resources you know you will use.
      *
@@ -34,7 +34,7 @@ public interface AccountStoreMappingOptions<T> extends Options {
     T withApplication();
 
     /**
-     * Ensures that when retrieving an AccountStoreMapping, the AccountStoreMapping's {@link AccountStoreMapping#getAccountStore() accountStore} is also
+     * Ensures that when retrieving an ApplicationAccountStoreMapping, the ApplicationAccountStoreMapping's {@link ApplicationAccountStoreMapping#getAccountStore() accountStore} is also
      * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
      * related resources you know you will use.
      *

@@ -38,6 +38,7 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
@@ -243,6 +244,56 @@ public class DefaultClient implements Client {
     @Override
     public Directory createDirectory(Directory directory) {
         return getCurrentTenant().createDirectory(directory);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC7
+     */
+    @Override
+    public Organization createOrganization(Organization organization) {
+        return getCurrentTenant().createOrganization(organization);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC7
+     */
+    @Override
+    public Organization createOrganization(CreateOrganizationRequest request) throws ResourceException {
+        return getCurrentTenant().createOrganization(request);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC7
+     */
+    @Override
+    public OrganizationList getOrganizations() {
+        return getCurrentTenant().getOrganizations();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC7
+     */
+    @Override
+    public OrganizationList getOrganizations(Map<String, Object> queryParams) {
+        return getCurrentTenant().getOrganizations(queryParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.RC7
+     */
+    @Override
+    public OrganizationList getOrganizations(OrganizationCriteria criteria) {
+        return getCurrentTenant().getOrganizations(criteria);
     }
 
     /**

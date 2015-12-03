@@ -17,13 +17,20 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.application.*
+import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping
+import com.stormpath.sdk.application.ApplicationAccountStoreMappings
+import com.stormpath.sdk.application.ApplicationList
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
+import com.stormpath.sdk.application.ApplicationStatus
+import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.AccountStoreVisitor
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupStatus
+import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
@@ -35,7 +42,7 @@ import static org.testng.Assert.*
 /**
  * @since 0.9
  */
-class AccountStoreMappingIT extends ClientIT {
+class ApplicationAccountStoreMappingIT extends ClientIT {
 
     List<Application> applications
     List<Directory> directories
@@ -85,26 +92,25 @@ class AccountStoreMappingIT extends ClientIT {
     @Test
     void testAccountStoreMappings() {
 
-        AccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings()
-        //println(accountStoreMappings)
+        ApplicationAccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings()
 
         6.times{
-            app.addAccountStore(createDirectory())  //testing AccountStoreMapping Create
+            app.addAccountStore(createDirectory())  // testing create
         }
-        AccountStoreMappingList mappings = app.getAccountStoreMappings()
+        ApplicationAccountStoreMappingList mappings = app.getAccountStoreMappings()
 
         int counter = 0;
-        for(AccountStoreMapping mapping : mappings) {
+        for(ApplicationAccountStoreMapping mapping : mappings) {
             counter++;
-            mapping.delete()      //testing AccountStoreMapping Delete
+            mapping.delete()      //testing ApplicationAccountStoreMapping Delete
         }
         assertEquals(counter, 7) //counter will equal seven because one dir is associated when app is created, and then we add 6 more in the loop.
 
         Application appRefresh = client.getResource(app.href, Application)
 
-        AccountStoreMappingList mappings2 = appRefresh.getAccountStoreMappings()
+        ApplicationAccountStoreMappingList mappings2 = appRefresh.getAccountStoreMappings()
         counter = 0;
-        for(AccountStoreMapping mapping : mappings2) {
+        for(ApplicationAccountStoreMapping mapping : mappings2) {
             counter++;
             //println(mapping)
         }
@@ -112,13 +118,13 @@ class AccountStoreMappingIT extends ClientIT {
 
         5.times {
             Directory dir = createDirectory()
-            def accountStoreMapping = client.instantiate(AccountStoreMapping)
+            def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
             accountStoreMapping.setAccountStore(dir)
             accountStoreMapping.setApplication(appRefresh)
             accountStoreMapping.setDefaultAccountStore(true)
             accountStoreMapping.setDefaultGroupStore(true)
             accountStoreMapping.setListIndex(Integer.MAX_VALUE)
-            appRefresh.createAccountStoreMapping(accountStoreMapping) //testing AccountStoreMapping Create.
+            appRefresh.createAccountStoreMapping(accountStoreMapping) //testing ApplicationAccountStoreMapping Create.
         }
 
         //I think cache was screwing things up, so I reload the application via a different route.
@@ -141,6 +147,11 @@ class AccountStoreMappingIT extends ClientIT {
             void visit(Directory directory) {
                 assertFalse(directory.name.contains(appRefresh.name))
             }
+
+            @Override
+            void visit(Organization organization) {
+                fail("We should not have an organization returned when we set a directory as the default account store.")
+            }
         })
 
         AccountStore defaultAccountStore = appRefresh.getDefaultGroupStore()
@@ -149,9 +160,9 @@ class AccountStoreMappingIT extends ClientIT {
         mappings2 = appRefresh.getAccountStoreMappings()
 
         counter = 0;
-        for(AccountStoreMapping mapping : mappings2) {
+        for(ApplicationAccountStoreMapping mapping : mappings2) {
             counter++;
-            mapping.delete()      //testing AccountStoreMapping Delete
+            mapping.delete()      //testing ApplicationAccountStoreMapping Delete
         }
         assertEquals(counter, 5)
 
@@ -161,7 +172,7 @@ class AccountStoreMappingIT extends ClientIT {
 
         mappings2 = appRefresh.getAccountStoreMappings()
         counter = 0;
-        for(AccountStoreMapping mapping : mappings2) {
+        for(ApplicationAccountStoreMapping mapping : mappings2) {
             counter++;
             //println(mapping)
         }
@@ -176,7 +187,7 @@ class AccountStoreMappingIT extends ClientIT {
     void testAccountStoreMappingUpdate() {
         5.times { i ->
             Directory dir = createDirectory()
-            def accountStoreMapping = client.instantiate(AccountStoreMapping)
+            def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
             accountStoreMapping.setAccountStore(dir)
             accountStoreMapping.setApplication(app)
             accountStoreMapping.setDefaultAccountStore(true)   //Should make last one in loop the defaultAccountStore
@@ -184,8 +195,8 @@ class AccountStoreMappingIT extends ClientIT {
             app.createAccountStoreMapping(accountStoreMapping)
         }
 
-        def accStrMaps = app.getAccountStoreMappings(AccountStoreMappings.where(AccountStoreMappings.listIndex().eq(1)))
-        AccountStoreMapping accountStoreMapping = accStrMaps.first()
+        def accStrMaps = app.getApplicationAccountStoreMappings(ApplicationAccountStoreMappings.where(ApplicationAccountStoreMappings.listIndex().eq(1)))
+        ApplicationAccountStoreMapping accountStoreMapping = accStrMaps.first()
         AccountStore accountStore = accountStoreMapping.accountStore
         assertNotEquals(accountStore, app.getDefaultAccountStore())
         assertNotEquals(accountStore, app.getDefaultGroupStore())
@@ -194,8 +205,8 @@ class AccountStoreMappingIT extends ClientIT {
         accountStoreMapping.setListIndex(0)
         accountStoreMapping.save()
 
-        AccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings()
-        for (AccountStoreMapping mapping : accountStoreMappings) {
+        ApplicationAccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings()
+        for (ApplicationAccountStoreMapping mapping : accountStoreMappings) {
             if (mapping.listIndex == 0) {
                 assertTrue(mapping.isDefaultAccountStore())
                 assertTrue(mapping.isDefaultGroupStore())
@@ -203,17 +214,13 @@ class AccountStoreMappingIT extends ClientIT {
                 assertFalse(mapping.isDefaultAccountStore())
                 assertFalse(mapping.isDefaultGroupStore())
             }
-
-            if (mapping.accountStore.href.equals(accountStore.href)) {
-
-            }
         }
     }
 
     @Test
     void testAccountStoreMappingsUpdateNegativeListIndex() {
         Directory dir = createDirectory()
-        def accountStoreMapping = client.instantiate(AccountStoreMapping)
+        def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
         accountStoreMapping.setAccountStore(dir)
         accountStoreMapping.setApplication(app)
         accountStoreMapping.setDefaultAccountStore(true)
@@ -224,10 +231,9 @@ class AccountStoreMappingIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException re) {
             assertTrue(re.message.contains("listIndex minimum value"))
         }
-
     }
 
-    @Test(enabled = false) //until we can merge https://github.com/stormpath/stormpath-sdk-java/pull/45
+    @Test
     void testSettingNewDefaultAccountStore() {
         Directory newDefaultAccountStore;
 
@@ -236,7 +242,7 @@ class AccountStoreMappingIT extends ClientIT {
             if (i == 2) {
                 newDefaultAccountStore=dir
             }
-            def accountStoreMapping = client.instantiate(AccountStoreMapping)
+            def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
             accountStoreMapping.setAccountStore(dir)
             accountStoreMapping.setApplication(app)
             accountStoreMapping.setDefaultAccountStore(true)   //Should make last one in loop the defaultAccountStore
@@ -250,8 +256,8 @@ class AccountStoreMappingIT extends ClientIT {
         app.setDefaultAccountStore(newDefaultAccountStore)
         app.setDefaultGroupStore(newDefaultAccountStore)
 
-        assertEquals(newDefaultAccountStore, app.getDefaultAccountStore())
-        assertEquals(newDefaultAccountStore, app.getDefaultGroupStore())
+        assertEquals(newDefaultAccountStore.href, app.getDefaultAccountStore().getHref())
+        assertEquals(newDefaultAccountStore.href, app.getDefaultGroupStore().getHref())
     }
 
     @Test(expectedExceptions = com.stormpath.sdk.resource.ResourceException)
@@ -262,31 +268,31 @@ class AccountStoreMappingIT extends ClientIT {
         5.times {
             Directory dir = createDirectory()
             dirs.add(dir)
-            def accountStoreMapping = client.instantiate(AccountStoreMapping)
+            def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
             accountStoreMapping.setAccountStore(dir)
             accountStoreMapping.setApplication(app)
             app.createAccountStoreMapping(accountStoreMapping)
         }
 
         def dir = dirs.get(3)
-        def accountStoreMapping = client.instantiate(AccountStoreMapping)
+        def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
         accountStoreMapping.setAccountStore(dir)
         accountStoreMapping.setApplication(app)
         app.createAccountStoreMapping(accountStoreMapping)
     }
 
     @Test
-    void testAccountStoreMappingCriteria() {
+    void testApplicationAccountStoreMappingCriteria() {
         2.times { i ->
             Directory dir = createDirectory()
-            def accountStoreMapping = client.instantiate(AccountStoreMapping)
+            def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
             accountStoreMapping.setAccountStore(dir)
             accountStoreMapping.setApplication(app)
             accountStoreMapping.setDefaultAccountStore(true)   //Should make last one in loop the defaultAccountStore
             accountStoreMapping.setDefaultGroupStore(true)     //Should make last one in loop the defaultGroupStore
             app.createAccountStoreMapping(accountStoreMapping)
         }
-        AccountStoreMappingList mappings = app.getAccountStoreMappings(AccountStoreMappings.criteria().withAccountStore().withApplication())
+        ApplicationAccountStoreMappingList mappings = app.getApplicationAccountStoreMappings(ApplicationAccountStoreMappings.criteria().withAccountStore().withApplication())
         String mappingsString = mappings.toString()
         assertTrue(mappingsString.contains("Directory"))
         assertTrue(mappingsString.contains("name"))
@@ -370,17 +376,17 @@ class AccountStoreMappingIT extends ClientIT {
         //let's check the changes are visible even without saving
         assertEquals(app.getDefaultAccountStore().getHref(), group.getHref())
 
-        AccountStoreMappingList accountStoreMappingList = app.getAccountStoreMappings()
+        ApplicationAccountStoreMappingList accountStoreMappingList = app.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.size, 2)
 
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
                 if(!accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is not marked as default in the AccountStoreMappingList")
+                    fail("The DefaultAccountStoreMapping is not marked as default in the ApplicationAccountStoreMappingList")
                 }
             } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
                 if(accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the AccountStoreMappingList")
+                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the ApplicationAccountStoreMappingList")
                 }
             }
         }
@@ -403,14 +409,14 @@ class AccountStoreMappingIT extends ClientIT {
         assertEquals(app.getDefaultAccountStore().getHref(), dir.getHref())
         accountStoreMappingList = app.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 2)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(group.getHref())) {
                 if(accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the AccountStoreMappingList")
+                    fail("The DefaultAccountStoreMapping is wrongly marked as default in the ApplicationAccountStoreMappingList")
                 }
             } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
                 if(!accountStoreMapping.isDefaultAccountStore()) {
-                    fail("The DefaultAccountStoreMapping is not marked as default in the AccountStoreMappingList")
+                    fail("The DefaultAccountStoreMapping is not marked as default in the ApplicationAccountStoreMappingList")
                 }
             }
         }
@@ -424,14 +430,14 @@ class AccountStoreMappingIT extends ClientIT {
         assertEquals(app.getDefaultGroupStore().getHref(), newDir.getHref())
         accountStoreMappingList = app.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
                 if(!accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is not marked as default in the AccountStoreMappingList")
+                    fail("The DefaultGroupStoreMapping is not marked as default in the ApplicationAccountStoreMappingList")
                 }
             } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
                 if(accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is wrongly marked as default in the AccountStoreMappingList")
+                    fail("The DefaultGroupStoreMapping is wrongly marked as default in the ApplicationAccountStoreMappingList")
                 }
 
             }
@@ -449,14 +455,14 @@ class AccountStoreMappingIT extends ClientIT {
         assertEquals(app.getDefaultGroupStore().getHref(), dir.getHref())
         accountStoreMappingList = app.getAccountStoreMappings()
         assertEquals(accountStoreMappingList.iterator().size(), 3)
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(newDir.getHref())) {
                 if(accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is wronlgy marked as default in the AccountStoreMappingList")
+                    fail("The DefaultGroupStoreMapping is wronlgy marked as default in the ApplicationAccountStoreMappingList")
                 }
             } else if (accountStoreMapping.getAccountStore().getHref().equals(dir.getHref())) {
                 if(!accountStoreMapping.isDefaultGroupStore()) {
-                    fail("The DefaultGroupStoreMapping is not marked as default in the AccountStoreMappingList")
+                    fail("The DefaultGroupStoreMapping is not marked as default in the ApplicationAccountStoreMappingList")
                 }
             }
         }
@@ -481,6 +487,4 @@ class AccountStoreMappingIT extends ClientIT {
         assertFalse iterator.hasNext() //should only be the one matching dir
         return dir;
     }
-
-
 }

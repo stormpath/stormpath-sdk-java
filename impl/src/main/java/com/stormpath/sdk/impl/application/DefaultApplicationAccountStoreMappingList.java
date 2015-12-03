@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingList;
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
@@ -27,27 +27,27 @@ import java.util.Map;
 /**
  * @since 0.9
  */
-public class DefaultAccountStoreMappingList extends AbstractCollectionResource<AccountStoreMapping> implements AccountStoreMappingList {
+public class DefaultApplicationAccountStoreMappingList extends AbstractCollectionResource<ApplicationAccountStoreMapping> implements ApplicationAccountStoreMappingList {
 
-    private static final ArrayProperty<AccountStoreMapping> ITEMS = new ArrayProperty<AccountStoreMapping>("items", AccountStoreMapping.class);
+    private static final ArrayProperty<ApplicationAccountStoreMapping> ITEMS = new ArrayProperty<ApplicationAccountStoreMapping>("items", ApplicationAccountStoreMapping.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(OFFSET, LIMIT, ITEMS);
 
-    public DefaultAccountStoreMappingList(InternalDataStore dataStore) {
+    public DefaultApplicationAccountStoreMappingList(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAccountStoreMappingList(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultApplicationAccountStoreMappingList(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
-    public DefaultAccountStoreMappingList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
+    public DefaultApplicationAccountStoreMappingList(InternalDataStore dataStore, Map<String, Object> properties, Map<String, Object> queryParams) {
         super(dataStore, properties, queryParams);
     }
 
     @Override
-    protected Class<AccountStoreMapping> getItemType() {
-        return AccountStoreMapping.class;
+    protected Class<ApplicationAccountStoreMapping> getItemType() {
+        return ApplicationAccountStoreMapping.class;
     }
 
     @Override

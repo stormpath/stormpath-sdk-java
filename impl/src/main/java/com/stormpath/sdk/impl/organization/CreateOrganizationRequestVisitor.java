@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.directory;
-
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.organization.Organization;
+package com.stormpath.sdk.impl.organization;
 
 /**
- * @since 0.9
+ * @since 1.0.RC7
  */
-public interface AccountStoreVisitor {
+public interface CreateOrganizationRequestVisitor {
 
-    void visit(Group group);
+    void visit(DefaultCreateOrganizationRequest request);
 
-    void visit(Directory directory);
-
-    /** @since 1.0.RC7 */
-    void visit(Organization organization);
+    void visit(CreateOrganizationAndDirectoryRequest request);
 }

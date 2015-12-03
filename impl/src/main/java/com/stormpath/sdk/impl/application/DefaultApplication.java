@@ -27,20 +27,24 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.AccountStoreMapping;
-import com.stormpath.sdk.application.AccountStoreMappingCriteria;
-import com.stormpath.sdk.application.AccountStoreMappingList;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationStatus;
-import com.stormpath.sdk.authc.*;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.CreateGroupRequest;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
@@ -68,7 +72,14 @@ import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.JwtAuthenticator;
+import com.stormpath.sdk.oauth.OauthPolicy;
+import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
+import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
+import com.stormpath.sdk.oauth.RefreshGrantAuthenticator;
+import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
@@ -147,22 +158,23 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant>              TENANT                        =
         new ResourceReference<Tenant>("tenant", Tenant.class);
-    static final ResourceReference<AccountStoreMapping> DEFAULT_ACCOUNT_STORE_MAPPING =
-        new ResourceReference<AccountStoreMapping>("defaultAccountStoreMapping", AccountStoreMapping.class);
-    static final ResourceReference<AccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
-        new ResourceReference<AccountStoreMapping>("defaultGroupStoreMapping", AccountStoreMapping.class);
+    static final ResourceReference<ApplicationAccountStoreMapping> DEFAULT_ACCOUNT_STORE_MAPPING =
+        new ResourceReference<ApplicationAccountStoreMapping>("defaultAccountStoreMapping", ApplicationAccountStoreMapping.class);
+    static final ResourceReference<ApplicationAccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
+        new ResourceReference<ApplicationAccountStoreMapping>("defaultGroupStoreMapping", ApplicationAccountStoreMapping.class);
     static final ResourceReference<OauthPolicy> OAUTH_POLICY   =
             new ResourceReference<OauthPolicy>("oAuthPolicy", OauthPolicy.class);
+
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
         new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupList, Group>                             GROUPS                 =
         new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
-    static final CollectionReference<AccountStoreMappingList, AccountStoreMapping> ACCOUNT_STORE_MAPPINGS =
-        new CollectionReference<AccountStoreMappingList, AccountStoreMapping>("accountStoreMappings",
-                                                                              AccountStoreMappingList.class,
-                                                                              AccountStoreMapping.class);
+    static final CollectionReference<ApplicationAccountStoreMappingList, ApplicationAccountStoreMapping> ACCOUNT_STORE_MAPPINGS =
+        new CollectionReference<ApplicationAccountStoreMappingList, ApplicationAccountStoreMapping>("accountStoreMappings",
+                                                                              ApplicationAccountStoreMappingList.class,
+                                                                              ApplicationAccountStoreMapping.class);
     static final CollectionReference<PasswordResetTokenList, PasswordResetToken>   PASSWORD_RESET_TOKENS  =
         new CollectionReference<PasswordResetTokenList, PasswordResetToken>("passwordResetTokens",
                                                                             PasswordResetTokenList.class,
@@ -388,39 +400,39 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /** @since 0.9 */
     @Override
-    public AccountStoreMappingList getAccountStoreMappings() {
+    public ApplicationAccountStoreMappingList getAccountStoreMappings() {
         return getResourceProperty(ACCOUNT_STORE_MAPPINGS);
     }
 
     /** @since 0.9 */
     @Override
-    public AccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams) {
-        AccountStoreMappingList accountStoreMappings =
+    public ApplicationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams) {
+        ApplicationAccountStoreMappingList accountStoreMappings =
             getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, queryParams);
+        return getDataStore().getResource(accountStoreMappings.getHref(), ApplicationAccountStoreMappingList.class, queryParams);
     }
 
     /** @since 0.9 */
     @Override
-    public AccountStoreMappingList getAccountStoreMappings(AccountStoreMappingCriteria criteria) {
-        AccountStoreMappingList accountStoreMappings =
+    public ApplicationAccountStoreMappingList getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria) {
+        ApplicationAccountStoreMappingList accountStoreMappings =
             getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(accountStoreMappings.getHref(), AccountStoreMappingList.class, (Criteria<AccountStoreMappingCriteria>) criteria);
+        return getDataStore().getResource(accountStoreMappings.getHref(), ApplicationAccountStoreMappingList.class, (Criteria<ApplicationAccountStoreMappingCriteria>) criteria);
     }
 
     /** @since 0.9 */
     @Override
     public AccountStore getDefaultAccountStore() {
-        AccountStoreMapping accountStoreMap = getResourceProperty(DEFAULT_ACCOUNT_STORE_MAPPING);
+        ApplicationAccountStoreMapping accountStoreMap = getResourceProperty(DEFAULT_ACCOUNT_STORE_MAPPING);
         return accountStoreMap == null ? null : accountStoreMap.getAccountStore();
     }
 
     /** @since 0.9 */
     @Override
     public void setDefaultAccountStore(AccountStore accountStore) {
-        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
+        ApplicationAccountStoreMappingList applicationAccountStoreMappingList = getAccountStoreMappings();
         boolean needToCreateNewStore = true;
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : applicationAccountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultAccountStore(true);
@@ -430,7 +442,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             }
         }
         if (needToCreateNewStore) {
-            AccountStoreMapping mapping = addAccountStore(accountStore);
+            ApplicationAccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultAccountStore(true);
             mapping.save();
             setProperty(DEFAULT_ACCOUNT_STORE_MAPPING, mapping);
@@ -441,16 +453,16 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     /** @since 0.9 */
     @Override
     public AccountStore getDefaultGroupStore() {
-        AccountStoreMapping accountStoreMap = getResourceProperty(DEFAULT_GROUP_STORE_MAPPING);
+        ApplicationAccountStoreMapping accountStoreMap = getResourceProperty(DEFAULT_GROUP_STORE_MAPPING);
         return accountStoreMap == null ? null : accountStoreMap.getAccountStore();
     }
 
     /** @since 0.9 */
     @Override
     public void setDefaultGroupStore(AccountStore accountStore) {
-        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
+        ApplicationAccountStoreMappingList applicationAccountStoreMappingList = getAccountStoreMappings();
         boolean needToCreateNewStore = true;
-        for (AccountStoreMapping accountStoreMapping : accountStoreMappingList) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : applicationAccountStoreMappingList) {
             if (accountStoreMapping.getAccountStore().getHref().equals(accountStore.getHref())) {
                 needToCreateNewStore = false;
                 accountStoreMapping.setDefaultGroupStore(true);
@@ -460,7 +472,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             }
         }
         if (needToCreateNewStore) {
-            AccountStoreMapping mapping = addAccountStore(accountStore);
+            ApplicationAccountStoreMapping mapping = addAccountStore(accountStore);
             mapping.setDefaultGroupStore(true);
             mapping.save();
             setProperty(DEFAULT_GROUP_STORE_MAPPING, mapping);
@@ -470,20 +482,19 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /** @since 0.9 */
     @Override
-    public AccountStoreMapping createAccountStoreMapping(AccountStoreMapping mapping) throws ResourceException {
+    public ApplicationAccountStoreMapping createAccountStoreMapping(ApplicationAccountStoreMapping mapping) throws ResourceException {
         String href = getAccountStoreMappingsHref();
         return getDataStore().create(href, mapping);
     }
 
     /** @since 0.9 */
     @Override
-    public AccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException {
-        AccountStoreMapping accountStoreMapping = getDataStore().instantiate(AccountStoreMapping.class);
+    public ApplicationAccountStoreMapping addAccountStore(AccountStore accountStore) throws ResourceException {
+        ApplicationAccountStoreMapping accountStoreMapping = getDataStore().instantiate(ApplicationAccountStoreMapping.class);
         accountStoreMapping.setAccountStore(accountStore);
         accountStoreMapping.setApplication(this);
         accountStoreMapping.setListIndex(Integer.MAX_VALUE);
         return createAccountStoreMapping(accountStoreMapping);
-
     }
 
     /** @since 1.0.RC */
@@ -604,7 +615,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /** @since 1.0.RC3 */
     @Override
-    public AccountStoreMapping addAccountStore(String hrefOrName) {
+    public ApplicationAccountStoreMapping addAccountStore(String hrefOrName) {
         Assert.hasText(hrefOrName, "hrefOrName cannot be null or empty.");
         AccountStore accountStore = null;
 
@@ -650,7 +661,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /** @since 1.0.RC3 */
     @Override
-    public AccountStoreMapping addAccountStore(DirectoryCriteria criteria) {
+    public ApplicationAccountStoreMapping addAccountStore(DirectoryCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");
         Directory directory = getSingleTenantDirectory(criteria);
         if (directory != null) {
@@ -660,9 +671,23 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return null;
     }
 
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public ApplicationAccountStoreMapping addAccountStore(OrganizationCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+        Organization organization = getSingleOrganization(criteria);
+        if (organization != null) {
+            return addAccountStore(organization);
+        }
+        //No organization matching the given information could be found; therefore no account store can be added. Return null.
+        return null;
+    }
+
     /** @since 1.0.RC3 */
     @Override
-    public AccountStoreMapping addAccountStore(GroupCriteria criteria) {
+    public ApplicationAccountStoreMapping addAccountStore(GroupCriteria criteria) {
         Assert.notNull(criteria, "criteria cannot be null.");
         Group group = getSingleTenantGroup(criteria);
         if (group != null) {
@@ -715,6 +740,31 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             }
         }
         return foundGroup;
+    }
+
+    /**
+     * @throws IllegalArgumentException if the criteria matches more than one Group in the current Tenant.
+     * @since 1.0.RC5
+     * */
+    private Organization getSingleOrganization(OrganizationCriteria criteria) {
+        Assert.notNull(criteria, "criteria cannot be null.");
+
+        Tenant tenant = getDataStore().getResource("/tenants/current", Tenant.class);
+        OrganizationList organizations = tenant.getOrganizations(criteria);
+        Organization found = null;
+        int count = 0;
+
+        //There cannot be more than one organization with the same name in a single tenant. Thus, the group list will have either
+        //zero or one items, never more.
+        for (Organization org : organizations) {
+            count++;
+            found = org;
+        }
+        if(count > 1) {
+            //The provided criteria matched more than one Organizations in the tenant, we will throw
+            throw new IllegalArgumentException("The provided criteria matched more than one Organization in the current Tenant.");
+        }
+        return found;
     }
 
     /**

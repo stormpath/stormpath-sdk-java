@@ -36,12 +36,17 @@ import com.stormpath.sdk.impl.application.CreateApplicationRequestVisitor;
 import com.stormpath.sdk.impl.application.DefaultCreateApplicationRequest;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.organization.CreateOrganizationAndDirectoryRequest;
+import com.stormpath.sdk.impl.organization.CreateOrganizationRequestVisitor;
+import com.stormpath.sdk.impl.organization.DefaultCreateOrganizationRequest;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
@@ -66,9 +71,11 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
             new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupList, Group> GROUPS =
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+    static final CollectionReference<OrganizationList, Organization> ORGANIZATIONS =
+            new CollectionReference<OrganizationList, Organization>("organizations", OrganizationList.class, Organization.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS, ORGANIZATIONS);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
@@ -140,6 +147,71 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         ApplicationList proxy = getApplications(); //just a proxy - does not execute a query until iteration occurs
         return getDataStore().getResource(proxy.getHref(), ApplicationList.class, (Criteria<ApplicationCriteria>) criteria);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Organization createOrganization(Organization organization) {
+        CreateOrganizationRequest request = Organizations.newCreateRequestFor(organization).build();
+        return createOrganization(request);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public Organization createOrganization(CreateOrganizationRequest orgRequest) throws ResourceException {
+        Assert.isInstanceOf(DefaultCreateOrganizationRequest.class, orgRequest);
+        DefaultCreateOrganizationRequest request = (DefaultCreateOrganizationRequest) orgRequest;
+
+        final Organization organization = request.getOrganization();
+        final String[] href = new String[]{"/" + ORGANIZATIONS.getName()};
+
+        request.accept(new CreateOrganizationRequestVisitor() {
+            @Override
+            public void visit(DefaultCreateOrganizationRequest ignored) {
+            }
+
+            @Override
+            public void visit(CreateOrganizationAndDirectoryRequest request) {
+                String name = request.getDirectoryName();
+                if (name == null) {
+                    name = "true"; //boolean true means 'auto name the directory'
+                }
+                href[0] += "?createDirectory=" + name;
+            }
+        });
+
+        return getDataStore().create(href[0], organization);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public OrganizationList getOrganizations() {
+        return getResourceProperty(ORGANIZATIONS);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public OrganizationList getOrganizations(Map<String, Object> queryParams) {
+        //This is just a proxy - does not execute a query until iteration occurs
+        DirectoryList proxy = getDirectories();
+        return getDataStore().getResource(proxy.getHref(), OrganizationList.class, queryParams);
+    }
+
+    /**
+     * @since 1.0.RC5
+     */
+    @Override
+    public OrganizationList getOrganizations(OrganizationCriteria criteria) {
+        OrganizationList proxy = getOrganizations(); // this is just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), OrganizationList.class, (Criteria<OrganizationCriteria>) criteria);
     }
 
     @Override

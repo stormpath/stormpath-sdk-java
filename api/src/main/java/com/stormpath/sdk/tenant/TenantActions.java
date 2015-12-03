@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Map;
@@ -152,6 +153,98 @@ public interface TenantActions {
      * @since 0.9.0
      */
     Directory createDirectory(Directory directory);
+
+    /**
+     * This method creates a new Organization resource in Tenant or in Stormpath.
+     * <p/>
+     * This method creates a natively hosted organization in Tenant or in Stormpath.
+     *
+     * @param organization the Organization resource to create.
+     * @return the organization created.
+     * @throws ResourceException if there was a problem creating the organization.
+     * @since 1.0.RC7
+     */
+    Organization createOrganization(Organization organization);
+
+    /**
+     * Creates a new Organization resource in the current tenant based on the specified {@code CreateOrganizationRequest}.
+     * <h3>Usage</h3>
+     * <pre>
+     * client.createOrganization(Organizations.newCreateRequestFor(organization).build());
+     * </pre>
+     * <p/>
+     * If you would like to automatically create a Directory for this organization's own needs:
+     * <pre>
+     * client.createOrganization(Organizations.newCreateRequestFor(organization).createDirectory().build());
+     * </pre>
+     * The directory's name will be auto-generated to reflect your Organization as closely as possible and not conflict
+     * with any existing Directories in your tenant.
+     * <p/>
+     * Or if you prefer to specify the directory name yourself:
+     * <pre>
+     * client.createOrganization(Organizations.newCreateRequestFor(organization).createDirectoryNamed("My Directory").build());
+     * </pre>
+     * But note - if the specified directory name is already in use, a Resource Exception will be thrown to let you
+     * know you must choose another Directory name.
+     *
+     * @param request the request reflecting how to create the Organization
+     * @return the organization created.
+     * @throws ResourceException if there was a problem creating the organization.
+     * @since 1.0.RC7
+     */
+    Organization createOrganization(CreateOrganizationRequest request) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all of the current tenant's {@link com.stormpath.sdk.organization.Organization Organization}
+     * instances.
+     * <p/>
+     * Tip: Instead of iterating over all organizations, it might be more convenient (and practical) to execute a search
+     * for one or more organizations using the {@link #getOrganizations(OrganizationCriteria)} method instead of this one.
+     *
+     * @return a paginated list of all of the Tenant's {@link com.stormpath.sdk.organization.Organization Organization} instances.
+     * @see #getOrganizations(OrganizationCriteria)
+     * @see #getOrganizations(java.util.Map)
+     *
+     * @since 1.0.RC7
+     */
+    OrganizationList getOrganizations();
+
+    /**
+     * Returns a paginated list of the current tenant's organizations that match the specified query criteria.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../tenants/tenantId/organizations?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's organizations that match the specified query criteria.
+     *
+     * @since 1.0.RC7
+     */
+    OrganizationList getOrganizations(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the current tenant's organizations that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.directory.Directories Directories} utility class is available to help construct
+     * the criteria DSL.  For example:
+     * <pre>
+     * client.getDirectories(Directories
+     *     .where(Directories.description().containsIgnoreCase("foo"))
+     *     .and(Directories.name().startsWithIgnoreCase("bar"))
+     *     .orderByName().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the Tenant's directories that match the specified query criteria.
+     *
+     * @since 1.0.RC7
+     */
+    OrganizationList getOrganizations(OrganizationCriteria criteria);
 
     /**
      * Creates a new <b>Provider-based</b> Directory resource in the current tenant based on the specified
@@ -343,6 +436,5 @@ public interface TenantActions {
      * @since 1.0.RC3
      */
     GroupList getGroups(Map<String, Object> queryParams);
-
 }
 
