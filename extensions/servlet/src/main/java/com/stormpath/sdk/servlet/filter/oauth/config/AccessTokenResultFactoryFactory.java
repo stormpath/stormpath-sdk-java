@@ -34,7 +34,7 @@ public class AccessTokenResultFactoryFactory extends ConfigSingletonFactory<Acce
     protected AccessTokenResultFactory createInstance(ServletContext servletContext) throws Exception {
         Application application = (Application)servletContext.getAttribute(Application.class.getName());
         AuthenticationJwtFactory factory = getConfig().getInstance(ACCOUNT_JWT_FACTORY);
-        int ttl = getConfig().getAccountJwtTtl();
+        long ttl = getConfig().getAccountJwtTtl();
         return new DefaultAccessTokenResultFactory(application, factory, ttl);
     }
 }

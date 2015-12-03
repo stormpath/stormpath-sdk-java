@@ -103,6 +103,27 @@ public class ExpressionConfigReader implements ConfigReader {
     }
 
     @Override
+    public long getLong(String name) {
+        String val = PROPS.get(name);
+        try {
+            if (isExpression(val)) {
+                Expression exp = EXPR_PARSER.parseExpression(val, PARSER_CONTEXT);
+                Object o = exp.getValue(EXPR_CONTEXT);
+                if (o instanceof Long) {
+                    return (Long) o;
+                }
+                if (o instanceof Integer) {
+                    return ((Integer) o).longValue();
+                }
+                throw new IllegalArgumentException("The " + name + " property expression must evaluate to a long.");
+            }
+            return Long.parseLong(val);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(name + " value must be an long.", e);
+        }
+    }
+
+    @Override
     public boolean getBoolean(String name) {
         String val = PROPS.get(name);
         try {

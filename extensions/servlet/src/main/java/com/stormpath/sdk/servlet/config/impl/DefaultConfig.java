@@ -65,7 +65,7 @@ public class DefaultConfig implements Config {
     private final Map<String, String> props;
 
     private final CookieConfig ACCOUNT_COOKIE_CONFIG;
-    private final int _ACCOUNT_JWT_TTL;
+    private final long _ACCOUNT_JWT_TTL;
 
     private final Map<String, Object> SINGLETONS;
 
@@ -79,8 +79,8 @@ public class DefaultConfig implements Config {
 
         this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
 
-        int accountJwtTtl = CFG.getInt(ACCOUNT_JWT_TTL);
-        Assert.isTrue(accountJwtTtl > 0, ACCOUNT_JWT_TTL + " value must be a positive integer.");
+        long accountJwtTtl = CFG.getLong(ACCOUNT_JWT_TTL);
+        Assert.isTrue(accountJwtTtl > 0, ACCOUNT_JWT_TTL + " value must be a positive long.");
 
         int accountCookieMaxAge = this.ACCOUNT_COOKIE_CONFIG.getMaxAge();
 
@@ -173,7 +173,7 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public int getAccountJwtTtl() {
+    public long getAccountJwtTtl() {
         return _ACCOUNT_JWT_TTL;
     }
 

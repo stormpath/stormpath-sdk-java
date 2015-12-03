@@ -24,6 +24,15 @@ public interface ConfigReader {
 
     int getInt(String name);
 
+    /**
+     * Returns the value of a long property identified by {@code name} or an {@code IllegalArgumentException} if
+     * the value doesn't evaluate to a long.
+     *
+     * @param name name of the long property to retrieve
+     * @return the long value corresponding to the property identified by {@code name}
+     */
+    long getLong(String name);
+
     boolean getBoolean(String name);
 
 }

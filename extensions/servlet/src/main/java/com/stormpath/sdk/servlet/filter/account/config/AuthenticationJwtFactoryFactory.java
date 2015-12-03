@@ -36,7 +36,7 @@ public class AuthenticationJwtFactoryFactory extends ConfigSingletonFactory<Auth
         JwtSigningKeyResolver resolver = getConfig().getInstance(JWT_SIGNING_KEY_RESOLVER);
         String algName = getConfig().get(JWT_SIGNATURE_ALGORITHM);
         SignatureAlgorithm alg = SignatureAlgorithm.forName(algName);
-        int ttl = getConfig().getAccountJwtTtl();
+        long ttl = getConfig().getAccountJwtTtl();
         return new DefaultAuthenticationJwtFactory(resolver, alg, ttl);
     }
 }

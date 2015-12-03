@@ -35,7 +35,7 @@ public class DefaultOauthGrantAuthenticationResult implements OauthGrantAuthenti
 
     private final String tokenType;
 
-    private final int expiresIn;
+    private final long expiresIn;
 
     public DefaultOauthGrantAuthenticationResult(DefaultOauthGrantAuthenticationResultBuilder builder) {
         this.accessToken = builder.getAccessToken();
@@ -67,7 +67,7 @@ public class DefaultOauthGrantAuthenticationResult implements OauthGrantAuthenti
         return tokenType;
     }
 
-    public int getExpiresIn() {
+    public long getExpiresIn() {
         return expiresIn;
     }
 
