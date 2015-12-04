@@ -33,10 +33,12 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.spring.security.provider.IdSiteListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -146,5 +148,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         //Spring Security supports CSRF protection already, so we
         //turn off our internal implementation to avoid conflicts
         return new DisabledCsrfTokenManager(csrfTokenName);
+    }
+
+    public IdSiteResultListener springSecurityIdSiteResultListener() {
+        return new IdSiteListener(stormpathAuthenticationProvider);
     }
 }

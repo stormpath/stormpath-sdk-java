@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import org.springframework.context.annotation.Bean;
@@ -63,5 +64,10 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     @Override
     public ErrorModelFactory stormpathLoginErrorModelFactory() {
         return super.stormpathLoginErrorModelFactory();
+    }
+
+    @Bean
+    public IdSiteResultListener springSecurityIdSiteResultListener() {
+        return super.springSecurityIdSiteResultListener();
     }
 }
