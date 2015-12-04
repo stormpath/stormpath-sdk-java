@@ -35,10 +35,10 @@ public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory
 
     private final JwtSigningKeyResolver jwtSigningKeyResolver;
     private final SignatureAlgorithm jwtSignatureAlgorithm;
-    private final int jwtTtl;
+    private final long jwtTtl;
 
     public DefaultAuthenticationJwtFactory(JwtSigningKeyResolver jwtSigningKeyResolver,
-                                           SignatureAlgorithm signatureAlgorithm, int jwtTtl) {
+                                           SignatureAlgorithm signatureAlgorithm, long jwtTtl) {
         Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
         Assert.notNull(signatureAlgorithm, "JWT SignatureAlgorithm cannot be null.");
         Assert.isTrue(signatureAlgorithm != SignatureAlgorithm.NONE, "SignatureAlgorithm 'none' is not allowed.");
@@ -55,7 +55,7 @@ public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory
         return this.jwtSignatureAlgorithm;
     }
 
-    protected int getJwtTtl() {
+    protected long getJwtTtl() {
         return jwtTtl;
     }
 
@@ -77,7 +77,7 @@ public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory
         JwtBuilder builder =
             Jwts.builder().setId(id).setIssuedAt(now).setSubject(sub).signWith(alg, signingKey);
 
-        int ttl = getJwtTtlSeconds(request, response, result);
+        long ttl = getJwtTtlSeconds(request, response, result);
         if (ttl >= 0) {
             long ttlMillis = ttl * 1000; //JWT requires times to be in seconds (not millis) since epoch
             long expMillis = nowMillis + ttlMillis;
@@ -120,7 +120,7 @@ public class DefaultAuthenticationJwtFactory implements AuthenticationJwtFactory
     }
 
     @SuppressWarnings("UnusedParameters")
-    protected int getJwtTtlSeconds(HttpServletRequest request, HttpServletResponse response,
+    protected long getJwtTtlSeconds(HttpServletRequest request, HttpServletResponse response,
                                    AuthenticationResult result) {
         return getJwtTtl();
     }

@@ -63,7 +63,7 @@ public interface Config extends Map<String, String> {
 
     CookieConfig getAccountCookieConfig();
 
-    int getAccountJwtTtl();
+    long getAccountJwtTtl();
 
     <T> T getInstance(String classPropertyName) throws ServletException;
 
