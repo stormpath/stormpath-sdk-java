@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
+import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
@@ -84,5 +85,11 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @Override
     public ErrorModelFactory stormpathLoginErrorModelFactory() {
         return super.stormpathLoginErrorModelFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="springSecurityIdSiteResultListener")
+    public IdSiteResultListener springSecurityIdSiteResultListener() {
+        return super.springSecurityIdSiteResultListener();
     }
 }

@@ -43,8 +43,10 @@ import com.stormpath.sdk.lang.Strings;
 import io.jsonwebtoken.Claims;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.stormpath.sdk.impl.idsite.IdSiteClaims.*;
@@ -77,7 +79,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
     private NonceStore nonceStore;
 
-    private IdSiteResultListener resultListener;
+    private List<IdSiteResultListener> resultListeners = new ArrayList<IdSiteResultListener>();
 
     public DefaultIdSiteCallbackHandler(InternalDataStore dataStore, Application application, Object httpRequest) {
         Assert.notNull(dataStore, "datastore cannot be null or empty.");
@@ -160,7 +162,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
         //@since 1.0.RC3
-        if(this.resultListener != null) {
+        if(this.resultListeners.size() > 0) {
             dispatchResponseStatus(resultStatus, properties);
         }
 
@@ -172,7 +174,13 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
      */
     @Override
     public IdSiteCallbackHandler setResultListener(IdSiteResultListener idSiteResultListener) {
-        this.resultListener = idSiteResultListener;
+        this.resultListeners = new ArrayList<IdSiteResultListener>();
+        return addResultListener(idSiteResultListener);
+    }
+
+    @Override
+    public IdSiteCallbackHandler addResultListener(IdSiteResultListener idSiteResultListener) {
+        this.resultListeners.add(idSiteResultListener);
         return this;
     }
 
@@ -266,13 +274,19 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     private void dispatchResponseStatus(IdSiteResultStatus status, Map<String, Object> properties) {
         switch (status) {
             case REGISTERED:
-                this.resultListener.onRegistered(new DefaultRegistrationResult(dataStore, properties));
+                for (IdSiteResultListener resultListener : this.resultListeners) {
+                    resultListener.onRegistered(new DefaultRegistrationResult(dataStore, properties));
+                }
                 break;
             case AUTHENTICATED:
-                this.resultListener.onAuthenticated(new DefaultAuthenticationResult(dataStore, properties));
+                for (IdSiteResultListener resultListener : this.resultListeners) {
+                    resultListener.onAuthenticated(new DefaultAuthenticationResult(dataStore, properties));
+                }
                 break;
             case LOGOUT:
-                resultListener.onLogout(new DefaultLogoutResult(dataStore, properties));
+                for (IdSiteResultListener resultListener : this.resultListeners) {
+                    resultListener.onLogout(new DefaultLogoutResult(dataStore, properties));
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Encountered unknown IdSite result status: " + status);

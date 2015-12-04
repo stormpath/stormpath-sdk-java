@@ -118,4 +118,5 @@ public interface IdSiteCallbackHandler {
      */
     IdSiteCallbackHandler setResultListener(IdSiteResultListener resultListener);
 
+    IdSiteCallbackHandler addResultListener(IdSiteResultListener idSiteResultListener);
 }
