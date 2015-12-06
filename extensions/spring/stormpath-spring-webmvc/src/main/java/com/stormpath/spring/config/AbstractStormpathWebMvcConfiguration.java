@@ -300,7 +300,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected String registerView;
 
     @Value(
-        "#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password)' }")
+        "#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password), confirmPassword(required,password)' }")
     protected String registerFormFields;
 
     // ================  Verify Email Controller properties  ===================

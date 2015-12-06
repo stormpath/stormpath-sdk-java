@@ -190,7 +190,7 @@ public class RegisterController extends FormController {
 
         List<String> errors = new ArrayList<String>();
 
-        if (e instanceof IllegalArgumentException) {
+        if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException) {
             errors.add(e.getMessage());
         } else if (e instanceof ResourceException) {
             errors.add(((ResourceException)e).getStormpathError().getMessage());
@@ -237,6 +237,22 @@ public class RegisterController extends FormController {
                     throw new IllegalArgumentException(msg);
                 }
             }
+        }
+
+        //ensure passwords match:
+        String password = form.getFieldValue("password");
+        String confirmPassword = form.getFieldValue("confirmPassword");
+
+        if (!password.equals(confirmPassword)) {
+            String key = "stormpath.web.register.form.errors.passwordMismatch";
+            String msg = i18n(request, key);
+            throw new MismatchedPasswordException(msg);
+        }
+    }
+
+    protected static class MismatchedPasswordException extends RuntimeException {
+        public MismatchedPasswordException(String msg) {
+            super(msg);
         }
     }
 
