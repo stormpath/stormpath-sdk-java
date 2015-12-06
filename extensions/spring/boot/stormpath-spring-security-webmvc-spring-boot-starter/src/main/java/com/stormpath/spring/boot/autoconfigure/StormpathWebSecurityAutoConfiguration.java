@@ -16,6 +16,7 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -53,6 +55,13 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     }
 
     @Bean
+    @ConditionalOnMissingBean(name="stormpathAuthenticationFailureHandler")
+    @Override
+    public AuthenticationFailureHandler stormpathAuthenticationFailureHandler() {
+        return super.stormpathAuthenticationFailureHandler();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name="stormpathWebSecurityConfigurer")
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return super.stormpathWebSecurityConfigurer();
@@ -66,14 +75,14 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean
-    public CsrfTokenRepository stormpathCsrfTokenRepository() {
-        return super.stormpathCsrfTokenRepository();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public ErrorModelFactory stormpathLoginErrorModelFactory() {
+        return super.stormpathLoginErrorModelFactory();
+    }
 }

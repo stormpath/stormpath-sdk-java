@@ -16,8 +16,10 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -37,6 +39,12 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
+    @Override
+    public AuthenticationFailureHandler stormpathAuthenticationFailureHandler() {
+        return super.stormpathAuthenticationFailureHandler();
+    }
+
+    @Bean
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return super.stormpathWebSecurityConfigurer();
     }
@@ -47,12 +55,13 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
-    public CsrfTokenRepository stormpathCsrfTokenRepository() {
-        return super.stormpathCsrfTokenRepository();
+    public CsrfTokenManager stormpathCsrfTokenManager() {
+        return super.stormpathCsrfTokenManager();
     }
 
     @Bean
-    public CsrfTokenManager stormpathCsrfTokenManager() {
-        return super.stormpathCsrfTokenManager();
+    @Override
+    public ErrorModelFactory stormpathLoginErrorModelFactory() {
+        return super.stormpathLoginErrorModelFactory();
     }
 }

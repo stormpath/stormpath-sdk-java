@@ -17,7 +17,6 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,9 +28,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 /**
  * @since 1.0.RC5
@@ -52,12 +51,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     protected AuthenticationSuccessHandler successHandler;
 
     @Autowired
-    @Qualifier("stormpathCsrfTokenRepository")
-    protected CsrfTokenRepository csrfTokenRepository;
-
-    @Autowired
-    @Qualifier("stormpathCsrfTokenManager")
-    protected CsrfTokenManager csrfTokenManager;
+    @Qualifier("stormpathAuthenticationFailureHandler")
+    protected AuthenticationFailureHandler failureHandler;
 
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
@@ -111,9 +106,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
     protected String verifyUri;
 
-    @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
-    protected boolean csrfProtectionEnabled;
-
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
 
@@ -160,13 +152,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
         if (stormpathWebEnabled) {
             if (loginEnabled) {
+
                 // make sure that /login and /login?status=... is permitted
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
+
                 http
                     .formLogin()
                     .loginPage(loginUri)
                     .defaultSuccessUrl(loginNextUri)
                     .successHandler(successHandler)
+                    .failureHandler(failureHandler)
                     .usernameParameter("login")
                     .passwordParameter("password")
                     .and().authorizeRequests()
@@ -185,13 +180,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
             }
 
-            if (!csrfProtectionEnabled) {
-                http.csrf().disable();
-            } else {
-                //Let's configure HttpSessionCsrfTokenRepository to play nicely with our Controllers' forms
-                http.csrf().csrfTokenRepository(csrfTokenRepository);
-            }
-
             if (forgotEnabled) {
                 http.authorizeRequests().antMatchers(forgotUri).permitAll();
             }
@@ -205,11 +193,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
 
-            if (fullyAuthenticatedEnabled) {
-                http.authorizeRequests()
+            http.authorizeRequests()
                     .antMatchers("/assets/css/stormpath.css").permitAll()
-                    .antMatchers("/assets/css/custom.stormpath.css").permitAll()
-                    .anyRequest().fullyAuthenticated();
+                    .antMatchers("/assets/css/custom.stormpath.css").permitAll();
+
+            if (fullyAuthenticatedEnabled) {
+                http.authorizeRequests().anyRequest().fullyAuthenticated();
             }
         }
     }
@@ -238,7 +227,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
      * The old way:<p/>
      *
      * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked
-     * by {@link #configure(HttpSecurity)} after configuring all the properties required by Stormpath. You can override
+     * by {@link #doConfigure(HttpSecurity)} after configuring all the properties required by Stormpath. You can override
      * this method to define app-specific security settings like:
      *
      * <pre>
@@ -282,7 +271,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
      * The old way:<p/>
      *
      * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked
-     * by {@link #configure(AuthenticationManagerBuilder)} after configuring all the properties required by Stormpath. You can
+     * by {@link #doConfigure(AuthenticationManagerBuilder)} after configuring all the properties required by Stormpath. You can
      * override this method to define app-specific ones.
      *
      * @param auth
@@ -319,7 +308,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
      * The old way:<p/>
      *
      * Convenience <a href="https://en.wikipedia.org/wiki/Template_method_pattern">Hook Method</a> that will be invoked
-     * by {@link #configure(WebSecurity)} after configuring all the properties required by Stormpath. You can override
+     * by {@link #doConfigure(WebSecurity)} after configuring all the properties required by Stormpath. You can override
      * this method to define app-specific ones.
      *
      * @param web

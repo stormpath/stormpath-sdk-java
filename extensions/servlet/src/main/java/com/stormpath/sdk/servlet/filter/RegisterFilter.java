@@ -65,6 +65,7 @@ public class RegisterFilter extends ControllerFilter {
         controller.setLocaleResolver(localeResolver);
         controller.setMessageSource(i18n);
         controller.setAuthenticationResultSaver(authenticationResultSaver);
+        controller.setUri(getConfig().getRegisterUrl());
         controller.setView("stormpath/register");
         controller.setVerifyViewName("stormpath/verify");
         controller.setNextUri(getConfig().getRegisterNextUrl());

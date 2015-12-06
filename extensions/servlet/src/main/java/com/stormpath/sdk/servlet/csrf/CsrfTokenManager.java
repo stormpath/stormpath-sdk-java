@@ -30,7 +30,6 @@ public interface CsrfTokenManager {
      * The name of CSRF token. This name is used to obtain the token from requests and forms for example.
      *
      * @return the name of the CSRF that will be used in form field for example.
-     *
      * @since 1.0.RC5.2
      */
     String getTokenName();
@@ -49,19 +48,18 @@ public interface CsrfTokenManager {
      * Returns {@code true} if the specified token is valid and the request (e.g. form post) should be allowed to be
      * processed, or {@code false} if the token is not valid and request processing should be disallowed.  In either
      * case, the token is consumed and may not be used again (this method is not idempotent).
-     *
      * <h4>Forms</h4>
-     *
      * <p>Every time a form is submitted, the token (presumably submitted in a hidden form field) must be checked for
      * validity with this method.  If the token is valid, form processing is allowed. If the token is not valid, the
      * form post should be rejected.  In either case, if showing the form again, a <b>new</b> token <em>must</em> be
      * {@link #createCsrfToken(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) generated}
      * and embedded in the form as a hidden form field to ensure it is submitted on the next form post.</p>
      *
-     * @param request inbound request
-     * @param response outbound response
+     * @param request   inbound request
+     * @param response  outbound response
      * @param csrfToken the CSRF token discovered during the request.  Can be null.
-     * @return
+     * @return {@code true} if the specified token is valid and the request (e.g. form post) should be allowed to be
+     * processed, or {@code false} if the token is not valid and request processing should be disallowed.
      */
     boolean isValidCsrfToken(HttpServletRequest request, HttpServletResponse response, String csrfToken);
 

@@ -38,6 +38,7 @@ public class LoginFilter extends ControllerFilter {
         CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
 
         LoginController controller = new LoginController();
+        controller.setUri(getConfig().getLoginUrl());
         controller.setView("stormpath/login");
         controller.setNextUri(getConfig().getLoginNextUrl());
         controller.setForgotLoginUri(getConfig().getForgotPasswordUrl());

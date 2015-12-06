@@ -38,11 +38,11 @@
                             <!--/*/ </th-block> /*/-->
                         </div>
 
-                        <form method="post" role="form" class="registration-form form-horizontal sp-form">
+                        <form method="post" th:action="@{${form.action}}" role="form" class="registration-form form-horizontal sp-form">
 
-                            <input th:name="${form.csrfTokenName}" type="hidden" th:value="${form.csrfToken}"/>
+                            <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
 
-                            <div th:each="field : ${form.fields}" form-group="true"
+                            <div th:each="field : ${form.visibleFields}" form-group="true"
                                  th:class="'form-group group-' + ${field.name}">
                                 <label class="col-sm-4" th:text="#{${field.label}}">|Field label|</label>
 

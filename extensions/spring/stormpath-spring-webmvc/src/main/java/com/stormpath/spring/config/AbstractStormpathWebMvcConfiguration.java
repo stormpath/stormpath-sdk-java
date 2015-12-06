@@ -27,6 +27,7 @@ import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager;
+import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
@@ -73,20 +74,9 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.*;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
-import com.stormpath.sdk.servlet.mvc.AccessTokenController;
-import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
-import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
-import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
-import com.stormpath.sdk.servlet.mvc.FormFieldParser;
-import com.stormpath.sdk.servlet.mvc.IdSiteController;
-import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
-import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
-import com.stormpath.sdk.servlet.mvc.LoginController;
-import com.stormpath.sdk.servlet.mvc.LogoutController;
-import com.stormpath.sdk.servlet.mvc.RegisterController;
-import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
@@ -204,6 +194,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     //lower numbers have higher precedence):
     @Value("#{ @environment['stormpath.web.handlerMapping.order'] ?: 10 }")
     protected int handlerMappingOrder;
+
+    @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
+    protected boolean csrfTokenEnabled;
 
     @Value("#{ @environment['stormpath.web.csrf.token.ttl'] ?: 3600000 }") //1 hour (unit is millis)
     protected long csrfTokenTtl;
@@ -398,6 +391,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired(required = false)
     protected LocaleChangeInterceptor localeChangeInterceptor;
+
+    @Autowired(required = false)
+    protected ErrorModelFactory loginErrorModelFactory;
 
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
@@ -615,7 +611,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        return new DefaultCsrfTokenManager(csrfTokenName, stormpathNonceCache(), stormpathCsrfTokenSigningKey(), csrfTokenTtl);
+
+        if (csrfTokenEnabled) {
+            return new DefaultCsrfTokenManager(csrfTokenName, stormpathNonceCache(), stormpathCsrfTokenSigningKey(), csrfTokenTtl);
+        }
+
+        //otherwise disabled, return dummy implementation (NullObject design pattern):
+        return new DisabledCsrfTokenManager(csrfTokenName);
     }
 
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {
@@ -714,6 +716,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         //otherwise standard login controller:
         LoginController controller = new LoginController();
+        controller.setUri(loginUri);
         controller.setView(loginView);
         controller.setNextUri(loginNextUri);
         controller.setForgotLoginUri(forgotUri);
@@ -721,6 +724,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutUri(logoutUri);
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+
+        if (loginErrorModelFactory != null) {
+            controller.setErrorModelFactory(loginErrorModelFactory);
+        }
+
         controller.init();
 
         return createSpringController(controller);
@@ -733,6 +741,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         ForgotPasswordController controller = new ForgotPasswordController();
+        controller.setUri(forgotUri);
         controller.setView(forgotView);
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setAccountStoreResolver(stormpathAccountStoreResolver());
@@ -907,6 +916,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLocaleResolver(stormpathLocaleResolver());
         controller.setMessageSource(stormpathMessageSource());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setUri(registerUri);
         controller.setView(registerView);
         controller.setNextUri(registerNextUri);
         controller.setLoginUri(loginUri);
@@ -940,6 +950,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         ChangePasswordController controller = new ChangePasswordController();
         controller.setView(changePasswordView);
+        controller.setUri(changePasswordUri);
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setNextUri(changePasswordNextUri);
         controller.setLoginUri(loginUri);
