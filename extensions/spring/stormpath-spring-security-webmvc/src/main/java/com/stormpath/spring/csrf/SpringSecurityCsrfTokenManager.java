@@ -31,7 +31,10 @@ import javax.servlet.http.HttpServletResponse;
  * attacks. This {@link SpringSecurityCsrfTokenManager} can delegate the creation and processing of csrf tokens to Spring Security.</p>
  *
  * @since 1.0.RC5
+ * @deprecated As of release 1.0.RC7, Stormpath defaults to Spring Security's native CSRF protection.  This
+ * implementation should not be used - it will be removed completely before the 1.0 final release.
  */
+@Deprecated
 public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
 
     private static final Logger log = LoggerFactory.getLogger(SpringSecurityCsrfTokenManager.class);
@@ -43,7 +46,7 @@ public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
      * Instantiates a new SpringSecurityCsrfTokenManager.
      *
      * @param csrfTokenRepository the CsrfTokenRepository that this manager will use to store and load tokens.
-     * @param tokenName the name that will be used to identify the CSRF token.
+     * @param tokenName           the name that will be used to identify the CSRF token.
      */
     public SpringSecurityCsrfTokenManager(CsrfTokenRepository csrfTokenRepository, String tokenName) {
         Assert.notNull(csrfTokenRepository, "csrfTokenRepository cannot be null.");

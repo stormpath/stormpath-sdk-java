@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
@@ -25,12 +26,11 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,13 +39,12 @@ import java.util.Map;
  */
 public class LoginController extends FormController {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
-
     private String nextUri;
     private String forgotLoginUri;
     private String registerUri;
     private String logoutUri;
     private Saver<AuthenticationResult> authenticationResultSaver;
+    private ErrorModelFactory errorModelFactory = new LoginErrorModelFactory();
 
     public void init() {
         super.init();
@@ -54,6 +53,7 @@ public class LoginController extends FormController {
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
+        Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
     }
 
     public String getNextUri() {
@@ -89,6 +89,14 @@ public class LoginController extends FormController {
         this.logoutUri = logoutUri;
     }
 
+    public ErrorModelFactory getErrorModelFactory() {
+        return errorModelFactory;
+    }
+
+    public void setErrorModelFactory(ErrorModelFactory errorModelFactory) {
+        this.errorModelFactory = errorModelFactory;
+    }
+
     public Saver<AuthenticationResult> getAuthenticationResultSaver() {
         return this.authenticationResultSaver;
     }
@@ -121,6 +129,13 @@ public class LoginController extends FormController {
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<String> errors,
                                Map<String, Object> model) {
+        if (Collections.isEmpty(errors)) {
+            //allow factory to populate if necessary:
+            errors = errorModelFactory.toErrors(request, form, null);
+            if (!Collections.isEmpty(errors)) {
+                model.put("errors", errors);
+            }
+        }
         model.put("forgotLoginUri", getForgotLoginUri());
         model.put("registerUri", getRegisterUri());
     }
@@ -130,7 +145,7 @@ public class LoginController extends FormController {
 
         List<Field> fields = new ArrayList<Field>(2);
 
-        String[] fieldNames = new String[]{ "login", "password" };
+        String[] fieldNames = new String[]{"login", "password"};
 
         for (String fieldName : fieldNames) {
 
@@ -158,10 +173,7 @@ public class LoginController extends FormController {
 
     @Override
     protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
-        log.debug("Unable to login user.", e);
-        List<String> errors = new ArrayList<String>(1);
-        errors.add("Invalid username or password.");
-        return errors;
+        return errorModelFactory.toErrors(request, form, e);
     }
 
     @Override

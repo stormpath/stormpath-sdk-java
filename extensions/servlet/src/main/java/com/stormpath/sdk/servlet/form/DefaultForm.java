@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.form;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import java.util.ArrayList;
@@ -27,9 +28,14 @@ import java.util.Map;
  */
 public class DefaultForm implements Form {
 
-    private String csrfTokenName;
+    public static final String HIDDEN_FIELD_TYPE = "hidden";
 
-    private String csrfToken;
+    private static final String DEFAULT_FIELD_IMPL_REQD_MESSAGE = "The ensureCsrfTokenField method requires that the " +
+            "csrf token field be a " + DefaultField.class.getName() + " instance.";
+
+    private String action;
+
+    private String csrfTokenName;
 
     private String next;
 
@@ -37,6 +43,15 @@ public class DefaultForm implements Form {
 
     public DefaultForm() {
         this.fields = new LinkedHashMap<String, Field>();
+    }
+
+    @Override
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     @Override
@@ -48,7 +63,6 @@ public class DefaultForm implements Form {
      * The name of CSRF token. This name is used to customize the token field name in the form.
      *
      * @return the name of the CSRF field.
-     *
      * @since 1.0.RC5.2
      */
     public DefaultForm setCsrfTokenName(String csrfTokenName) {
@@ -58,23 +72,34 @@ public class DefaultForm implements Form {
 
     @Override
     public String getCsrfToken() {
-        return csrfToken;
+        return ensureCsrfTokenField().getValue();
     }
 
     public DefaultForm setCsrfToken(String csrfToken) {
-        this.csrfToken = csrfToken;
+        DefaultField field = ensureCsrfTokenField();
+        field.setValue(csrfToken);
         return this;
+    }
+
+    protected DefaultField ensureCsrfTokenField() {
+        Field field = getField(csrfTokenName);
+        if (field == null) {
+            field = new DefaultField().setName(csrfTokenName).setType(HIDDEN_FIELD_TYPE);
+            fields.put(csrfTokenName, field);
+        }
+        Assert.isInstanceOf(DefaultField.class, field, DEFAULT_FIELD_IMPL_REQD_MESSAGE);
+        return (DefaultField) field;
     }
 
     @Override
     public void autofocus() {
 
-        List<Field> fields = getFields();
+        List<Field> fields = getVisibleFields();
 
         Field first = null;
         boolean autofocusSet = false;
 
-        for(Field field : fields) {
+        for (Field field : fields) {
             if (first == null) {
                 first = field;
             }
@@ -84,7 +109,7 @@ public class DefaultForm implements Form {
         }
 
         if (!autofocusSet && first instanceof DefaultField) {
-            ((DefaultField)first).setAutofocus(true);
+            ((DefaultField) first).setAutofocus(true);
         }
     }
 
@@ -101,6 +126,32 @@ public class DefaultForm implements Form {
     @Override
     public List<Field> getFields() {
         return new ArrayList<Field>(fields.values());
+    }
+
+    @Override
+    public List<Field> getHiddenFields() {
+        List<Field> hiddenFields = new ArrayList<Field>(5);
+
+        for (Field field : fields.values()) {
+            if (HIDDEN_FIELD_TYPE.equalsIgnoreCase(field.getType())) {
+                hiddenFields.add(field);
+            }
+        }
+
+        return hiddenFields;
+    }
+
+    @Override
+    public List<Field> getVisibleFields() {
+        List<Field> visibleFields = new ArrayList<Field>(fields.size());
+
+        for (Field field : fields.values()) {
+            if (!HIDDEN_FIELD_TYPE.equalsIgnoreCase(field.getType())) {
+                visibleFields.add(field);
+            }
+        }
+
+        return visibleFields;
     }
 
     @Override

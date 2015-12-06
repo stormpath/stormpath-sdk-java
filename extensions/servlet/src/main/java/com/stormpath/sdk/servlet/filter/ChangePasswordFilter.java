@@ -41,6 +41,7 @@ public class ChangePasswordFilter extends ControllerFilter {
         MessageSource messageSource = getConfig().getInstance(MESSAGE_SOURCE);
 
         ChangePasswordController controller = new ChangePasswordController();
+        controller.setUri(getConfig().getChangePasswordUrl());
         controller.setView("stormpath/change");
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setNextUri(getConfig().getChangePasswordNextUrl());

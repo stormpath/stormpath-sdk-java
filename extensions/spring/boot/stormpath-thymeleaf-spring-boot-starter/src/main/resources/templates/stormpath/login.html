@@ -43,11 +43,12 @@
                             <!--/*/ </th-block> /*/-->
                         </div>
 
-                        <form method="post" role="form" class="login-form form-horizontal">
+                        <form method="post" th:action="@{${form.action}}" role="form" class="login-form form-horizontal">
                             <input name="next" type="hidden" th:value="${form.next}" th:if="${not #strings.isEmpty(form.next)}"/>
-                            <input th:name="${form.csrfTokenName}" type="hidden" th:value="${form.csrfToken}"/>
 
-                            <div th:each="field : ${form.fields}" form-group="true" th:class="'form-group group-' + ${field.name}">
+                            <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
+
+                            <div th:each="field : ${form.visibleFields}" form-group="true" th:class="'form-group group-' + ${field.name}">
                                 <label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>
 
                                 <div class="col-sm-8">

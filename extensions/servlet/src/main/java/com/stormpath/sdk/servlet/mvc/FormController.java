@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
@@ -36,9 +37,11 @@ public abstract class FormController extends AbstractController {
 
     private CsrfTokenManager csrfTokenManager;
     private String view;
+    private String uri;
 
     public void init() {
         Assert.hasText(this.view, "view cannot be null or empty.");
+        Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.csrfTokenManager, "csrfTokenManager cannot be null.");
     }
 
@@ -50,6 +53,14 @@ public abstract class FormController extends AbstractController {
         this.view = view;
     }
 
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
     public CsrfTokenManager getCsrfTokenManager() {
         return csrfTokenManager;
     }
@@ -58,14 +69,20 @@ public abstract class FormController extends AbstractController {
         this.csrfTokenManager = csrfTokenManager;
     }
 
+    protected boolean isCsrfProtectionEnabled() {
+        return csrfTokenManager != null && !(csrfTokenManager instanceof DisabledCsrfTokenManager);
+    }
+
     protected void setNewCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
         Assert.isInstanceOf(DefaultForm.class, form, "Form implementation class must equal or extend DefaultForm");
         ((DefaultForm)form).setCsrfToken(getCsrfTokenManager().createCsrfToken(request, response));
     }
 
     protected void validateCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
-        String csrfToken = form.getCsrfToken();
-        Assert.isTrue(getCsrfTokenManager().isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
+        if (isCsrfProtectionEnabled()) {
+            String csrfToken = form.getCsrfToken();
+            Assert.isTrue(getCsrfTokenManager().isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
+        }
     }
 
     protected void setForm(Map<String,Object> model, Form form) {
@@ -98,8 +115,9 @@ public abstract class FormController extends AbstractController {
             form = createForm(request);
         }
 
-        //always ensure new csrf token is used:
-        setNewCsrfToken(request, response, form);
+        if (isCsrfProtectionEnabled()) {
+            setNewCsrfToken(request, response, form);
+        }
         setForm(model, form);
 
         String status = Strings.clean(request.getParameter("status"));
@@ -120,11 +138,16 @@ public abstract class FormController extends AbstractController {
 
         DefaultForm form = new DefaultForm();
 
-        form.setCsrfTokenName(csrfTokenManager.getTokenName());
-        String value = Strings.clean(request.getParameter(csrfTokenManager.getTokenName()));
-        form.setCsrfToken(value);
+        form.setAction(getUri());
 
-        value = Strings.clean(request.getParameter("next"));
+        if (isCsrfProtectionEnabled()) {
+            String csrfTokenName = csrfTokenManager.getTokenName();
+            form.setCsrfTokenName(csrfTokenName);
+            String value = Strings.clean(request.getParameter(csrfTokenName));
+            form.setCsrfToken(value);
+        }
+
+        String value = Strings.clean(request.getParameter("next"));
         if (value != null) {
             form.setNext(value);
         }
