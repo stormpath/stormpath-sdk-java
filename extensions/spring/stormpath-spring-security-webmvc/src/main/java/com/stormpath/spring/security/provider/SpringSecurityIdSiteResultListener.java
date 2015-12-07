@@ -31,12 +31,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * @since 1.0.RC7
  */
-public class IdSiteListener implements IdSiteResultListener {
-    private static final Logger logger = LoggerFactory.getLogger(IdSiteListener.class);
+public class SpringSecurityIdSiteResultListener implements IdSiteResultListener {
+    private static final Logger logger = LoggerFactory.getLogger(SpringSecurityIdSiteResultListener.class);
 
     protected StormpathAuthenticationProvider authenticationProvider;
 
-    public IdSiteListener(AuthenticationProvider stormpathAuthenticationProvider) {
+    public SpringSecurityIdSiteResultListener(AuthenticationProvider stormpathAuthenticationProvider) {
         Assert.isTrue(
             stormpathAuthenticationProvider instanceof StormpathAuthenticationProvider,
             "AuthenticationProvider must be a StormpathAuthenticationProvider"
