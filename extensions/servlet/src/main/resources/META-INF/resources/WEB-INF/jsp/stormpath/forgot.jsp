@@ -52,9 +52,12 @@
                                 <c:if test="${!empty form.next}">
                                     <input name="next" type="hidden" value="${form.next}">
                                 </c:if>
-                                <input name="${form.csrfTokenName}" type="hidden" value="${form.csrfToken}">
 
-                                <c:forEach items="${form.fields}" var="field">
+                                <c:forEach items="${form.hiddenFields}" var="field">
+                                    <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                </c:forEach>
+
+                                <c:forEach items="${form.visibleFields}" var="field">
                                     <div form-group="true" class="form-group group-${field.name}">
                                         <label class="col-sm-4"><sp:message key="${field.label}"/></label>
                                         <div class="col-sm-8">
