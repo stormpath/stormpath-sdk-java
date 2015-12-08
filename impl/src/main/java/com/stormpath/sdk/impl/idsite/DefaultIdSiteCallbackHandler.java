@@ -161,7 +161,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
-        //@since 1.0.RC3
+        //@since 1.0.RC7.2
         if(this.resultListeners.size() > 0) {
             dispatchResponseStatus(resultStatus, properties);
         }
@@ -178,6 +178,9 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         return addResultListener(idSiteResultListener);
     }
 
+    /**
+     * @since 1.0.RC7.2
+     */
     @Override
     public IdSiteCallbackHandler addResultListener(IdSiteResultListener idSiteResultListener) {
         this.resultListeners.add(idSiteResultListener);
@@ -258,7 +261,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     }
 
     /**
-     * Notifies the {@link com.stormpath.sdk.idsite.IdSiteResultListener} about the actual operation of the Id Site invocation:
+     * Notifies the collection of {@link com.stormpath.sdk.idsite.IdSiteResultListener} about the actual operation of the Id Site invocation:
      * <ul>
      *     <li> Registered -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(com.stormpath.sdk.idsite.RegistrationResult) IdSiteResultListener#onRegistered(RegistrationResult)}</li>
      *     <li> Authenticated -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated(com.stormpath.sdk.idsite.AuthenticationResult) IdSiteResultListener#onAuthenticated(AuthenticationResult)} </li>
