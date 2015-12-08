@@ -43,8 +43,6 @@ import static org.testng.Assert.assertEquals
  */
 class DefaultIdSiteCallbackHandlerTest {
 
-    enum IdSiteResultListenerType { SINGLE, MULTI }
-
     @Test
     void testRegisteredListener() {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3N0dXJkeS1zaGllbGQuaWQuc3Rvcm1w" +
