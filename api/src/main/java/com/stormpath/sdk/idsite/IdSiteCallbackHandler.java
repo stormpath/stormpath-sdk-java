@@ -118,5 +118,14 @@ public interface IdSiteCallbackHandler {
      */
     IdSiteCallbackHandler setResultListener(IdSiteResultListener resultListener);
 
-    IdSiteCallbackHandler addResultListener(IdSiteResultListener idSiteResultListener);
+    /**
+     *
+     * @param resultListener the {@link IdSiteResultListener} that will be notified about the actual operation of the ID Site
+     *                       invocation: registration, authentication or logout. If <code>resultListener<code/> is null, no notification
+     *                       will be sent.
+     * @return this instance for method chaining
+     * @see IdSiteResultListener
+     * @since 1.0.RC7.2
+     */
+    IdSiteCallbackHandler addResultListener(IdSiteResultListener resultListener);
 }
