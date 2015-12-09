@@ -124,7 +124,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        return new StormpathLoginSuccessHandler(client, authenticationResultSaver);
+        StormpathLoginSuccessHandler loginSuccessHandler = new StormpathLoginSuccessHandler(client, authenticationResultSaver);
+        loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
+        return loginSuccessHandler;
     }
 
     public AuthenticationFailureHandler stormpathAuthenticationFailureHandler() {

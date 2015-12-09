@@ -70,9 +70,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
 
-    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
-    protected String loginNextUri;
-
     @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
     protected boolean logoutEnabled;
 
@@ -159,8 +156,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http
                     .formLogin()
                     .loginPage(loginUri)
-                    .defaultSuccessUrl(loginNextUri)
-                    .successHandler(successHandler)
+                    .successHandler(successHandler) // success handler will pickup the configured loginNextUri
                     .failureHandler(failureHandler)
                     .usernameParameter("login")
                     .passwordParameter("password")
