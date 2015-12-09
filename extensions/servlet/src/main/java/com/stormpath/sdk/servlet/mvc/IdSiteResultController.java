@@ -77,9 +77,8 @@ public class IdSiteResultController extends AbstractController {
     }
 
     public void addIdSiteResultListener(IdSiteResultListener resultListener) {
-        if (resultListener != null) {
-            idSiteResultListeners.add(resultListener);
-        }
+        Assert.notNull(resultListener, "resultListener cannot be null");
+        idSiteResultListeners.add(resultListener);
     }
 
     public void init() {
@@ -101,7 +100,7 @@ public class IdSiteResultController extends AbstractController {
 
         final ViewModel[] viewModel = new ViewModel[1];
 
-        IdSiteCallbackHandler idSiteCallbackHandler = app.newIdSiteCallbackHandler(request).setResultListener(new IdSiteResultListener() {
+        IdSiteCallbackHandler idSiteCallbackHandler = app.newIdSiteCallbackHandler(request).addResultListener(new IdSiteResultListener() {
             @Override
             public void onRegistered(RegistrationResult result) {
                 viewModel[0] = IdSiteResultController.this.onRegistration(request, response, app, result);

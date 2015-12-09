@@ -107,7 +107,9 @@ public interface IdSiteCallbackHandler {
      * });
      * Account account = callbackHandler.getAccountResult().getAccount();
      * </code>
-     * </pre
+     * </pre>
+     * <p>Usage Note: setting a listener using this method will reset the current list removing any listener previously added via
+     * the {@link #addResultListener(IdSiteResultListener)} method.</p>
      *
      * @param resultListener the {@link IdSiteResultListener} that will be notified about the actual operation of the ID Site
      *                       invocation: registration, authentication or logout. If <code>resultListener<code/> is null, no notification
@@ -119,9 +121,12 @@ public interface IdSiteCallbackHandler {
     IdSiteCallbackHandler setResultListener(IdSiteResultListener resultListener);
 
     /**
+     * Adds a {@link IdSiteResultListener listener} to the list of listeners that will be notified about the actual operation of
+     * the Id Site invocation: registration, authentication or logout.
+     * <p></p>
      *
-     * @param resultListener the {@link IdSiteResultListener} that will be notified about the actual operation of the ID Site
-     *                       invocation: registration, authentication or logout. If <code>resultListener<code/> is null, no notification
+     * @param resultListener the {@link IdSiteResultListener} that will be added to the list of listeners which will be notified
+     *                       about the actual operation of the ID Site invocation: registration, authentication or logout.
      *                       will be sent.
      * @return this instance for method chaining
      * @see IdSiteResultListener

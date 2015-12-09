@@ -261,16 +261,16 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     }
 
     /**
-     * Notifies the collection of {@link com.stormpath.sdk.idsite.IdSiteResultListener} about the actual operation of the Id Site invocation:
+     * Notifies the collection of {@link IdSiteResultListener} about the actual operation of the Id Site invocation:
      * <ul>
-     *     <li> Registered -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onRegistered(com.stormpath.sdk.idsite.RegistrationResult) IdSiteResultListener#onRegistered(RegistrationResult)}</li>
-     *     <li> Authenticated -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onAuthenticated(com.stormpath.sdk.idsite.AuthenticationResult) IdSiteResultListener#onAuthenticated(AuthenticationResult)} </li>
-     *     <li> Logout -> {@link com.stormpath.sdk.idsite.IdSiteResultListener#onLogout(com.stormpath.sdk.idsite.LogoutResult) IdSiteResultListener#onLogout(LogoutResult)} </li>
+     *     <li> Registered -> {@link IdSiteResultListener#onRegistered(com.stormpath.sdk.idsite.RegistrationResult) IdSiteResultListener#onRegistered(RegistrationResult)}</li>
+     *     <li> Authenticated -> {@link IdSiteResultListener#onAuthenticated(com.stormpath.sdk.idsite.AuthenticationResult) IdSiteResultListener#onAuthenticated(AuthenticationResult)} </li>
+     *     <li> Logout -> {@link IdSiteResultListener#onLogout(com.stormpath.sdk.idsite.LogoutResult) IdSiteResultListener#onLogout(LogoutResult)} </li>
      * </ul>
      *
      * @param status describing the operation executed at Id Site: registration, authentication or logout.
      * @param properties a map of attributes extracted from the JSON Payload that is used to create the specific Account Result sub-class:
-     *                   like: {@link RegistrationResult}, {@link AuthenticationResult} or {@ling LogoutResult}.
+     *                   like: {@link RegistrationResult}, {@link AuthenticationResult} or {@link com.stormpath.sdk.idsite.LogoutResult LogoutResult}.
      * @throws IllegalArgumentException if the result status is unknown.
      * @since 1.0.RC3
      */

@@ -38,7 +38,7 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
+import com.stormpath.spring.security.listener.SpringSecurityIdSiteResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,47 +73,8 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.enabled'] ?: true }")
     protected boolean stormpathWebEnabled;
 
-    @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
-    protected boolean loginEnabled;
-
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
-
-    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
-    protected String loginNextUri;
-
-    @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
-    protected boolean logoutEnabled;
-
-    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
-    protected String logoutUri;
-
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
-    protected String logoutNextUri;
-
-    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
-    protected boolean forgotEnabled;
-
-    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/forgot' }")
-    protected String forgotUri;
-
-    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
-    protected boolean changeEnabled;
-
-    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/change' }")
-    protected String changeUri;
-
-    @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
-    protected boolean registerEnabled;
-
-    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/register' }")
-    protected String registerUri;
-
-    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
-    protected boolean verifyEnabled;
-
-    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
-    protected String verifyUri;
 
     @Value("#{ @environment['stormpath.web.csrfProtection.enabled'] ?: true }")
     protected boolean csrfProtectionEnabled;

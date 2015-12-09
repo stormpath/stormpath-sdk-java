@@ -13,45 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.security.provider;
+package com.stormpath.spring.security.listener;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.idsite.AuthenticationResult;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.idsite.RegistrationResult;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.spring.security.token.PreAuthenticatedAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC7.2
  */
 public class SpringSecurityIdSiteResultListener implements IdSiteResultListener {
+
     private static final Logger logger = LoggerFactory.getLogger(SpringSecurityIdSiteResultListener.class);
 
-    protected StormpathAuthenticationProvider authenticationProvider;
+    protected final AuthenticationProvider authenticationProvider;
 
-    public SpringSecurityIdSiteResultListener(AuthenticationProvider stormpathAuthenticationProvider) {
-        Assert.isTrue(
-            stormpathAuthenticationProvider instanceof StormpathAuthenticationProvider,
-            "AuthenticationProvider must be a StormpathAuthenticationProvider"
-        );
-        this.authenticationProvider = (StormpathAuthenticationProvider) stormpathAuthenticationProvider;
+    public SpringSecurityIdSiteResultListener(AuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
     }
 
     @Override
     public void onRegistered(RegistrationResult result) {
-        setAuthentication(result.getAccount());
+        doAuthenticate(result.getAccount());
     }
 
     @Override
     public void onAuthenticated(AuthenticationResult result) {
-        setAuthentication(result.getAccount());
+        doAuthenticate(result.getAccount());
     }
 
     @Override
@@ -59,11 +55,10 @@ public class SpringSecurityIdSiteResultListener implements IdSiteResultListener 
         SecurityContextHolder.clearContext();
     }
 
-    private void setAuthentication(Account account) {
+    protected void doAuthenticate(Account account) {
         SecurityContextHolder.clearContext();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-            account.getEmail(), null, authenticationProvider.getGrantedAuthorities(account)
-        );
+        Authentication authentication = new PreAuthenticatedAuthenticationToken(account.getEmail(), null, account);
+        authentication = authenticationProvider.authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

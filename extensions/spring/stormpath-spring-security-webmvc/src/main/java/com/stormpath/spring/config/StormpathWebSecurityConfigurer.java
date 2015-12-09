@@ -109,6 +109,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
 
+    @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
+    protected boolean idSiteEnabled;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -150,33 +153,44 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        if (stormpathWebEnabled) {
+        if (idSiteEnabled) { //IDSite
             if (loginEnabled) {
-
+                http.formLogin().loginPage(loginUri)
+                        .and().authorizeRequests().antMatchers(loginUri).permitAll();
+            }
+        } else if (stormpathWebEnabled) { //Servlet plugin
+            if (loginEnabled) {
                 // make sure that /login and /login?status=... is permitted
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 
                 http
-                    .formLogin()
-                    .loginPage(loginUri)
-                    .defaultSuccessUrl(loginNextUri)
-                    .successHandler(successHandler)
-                    .failureHandler(failureHandler)
-                    .usernameParameter("login")
-                    .passwordParameter("password")
-                    .and().authorizeRequests()
-                    .antMatchers(loginUriMatch).permitAll();
+                        .formLogin()
+                        .loginPage(loginUri)
+                        .defaultSuccessUrl(loginNextUri)
+                        .successHandler(successHandler)
+                        .failureHandler(failureHandler)
+                        .usernameParameter("login")
+                        .passwordParameter("password")
+                        .and().authorizeRequests()
+                        .antMatchers(loginUriMatch).permitAll();
             }
 
+            http.authorizeRequests()
+                    .antMatchers("/assets/css/stormpath.css").permitAll()
+                    .antMatchers("/assets/css/custom.stormpath.css").permitAll();
+        }
+
+        if (stormpathWebEnabled || idSiteEnabled) {
+            //Identical settings for both IDSite and local Servlet pages
             if (logoutEnabled) {
                 http
-                    .logout()
-                    .invalidateHttpSession(true)
-                    .logoutUrl(logoutUri)
-                    .logoutSuccessUrl(logoutNextUri)
-                    .addLogoutHandler(logoutHandler)
-                    .and().authorizeRequests()
-                    .antMatchers(logoutUri).permitAll();
+                        .logout()
+                        .invalidateHttpSession(true)
+                        .logoutUrl(logoutUri)
+                        .logoutSuccessUrl(logoutNextUri)
+                        .addLogoutHandler(logoutHandler)
+                        .and().authorizeRequests()
+                        .antMatchers(logoutUri).permitAll();
 
             }
 
@@ -192,10 +206,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             if (verifyEnabled) {
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
-
-            http.authorizeRequests()
-                    .antMatchers("/assets/css/stormpath.css").permitAll()
-                    .antMatchers("/assets/css/custom.stormpath.css").permitAll();
 
             if (fullyAuthenticatedEnabled) {
                 http.authorizeRequests().anyRequest().fullyAuthenticated();
