@@ -28,6 +28,7 @@ import com.stormpath.spring.security.authz.permission.Permission;
 import com.stormpath.spring.security.token.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -388,7 +389,9 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public boolean supports(Class<?> authentication) {
-        return Authentication.class.isAssignableFrom(authentication);
+        if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        if (PreAuthenticatedAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        return false;
     }
 
     //This is not thread safe, but the Client is, and this is only executed during initial Application
