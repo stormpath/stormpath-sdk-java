@@ -77,9 +77,8 @@ public class IdSiteResultController extends AbstractController {
     }
 
     public void addIdSiteResultListener(IdSiteResultListener resultListener) {
-        if (resultListener != null) {
-            idSiteResultListeners.add(resultListener);
-        }
+        Assert.notNull(resultListener, "resultListener cannot be null");
+        idSiteResultListeners.add(resultListener);
     }
 
     public void init() {
