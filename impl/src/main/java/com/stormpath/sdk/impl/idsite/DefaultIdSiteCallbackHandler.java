@@ -161,7 +161,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
-        //@since 1.0.RC7.2
+        //@since 1.0.RC7.3
         if(this.resultListeners.size() > 0) {
             dispatchResponseStatus(resultStatus, properties);
         }
@@ -174,16 +174,21 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
      */
     @Override
     public IdSiteCallbackHandler setResultListener(IdSiteResultListener idSiteResultListener) {
-        this.resultListeners = new ArrayList<IdSiteResultListener>();
-        return addResultListener(idSiteResultListener);
+        if (idSiteResultListener != null) {
+            this.resultListeners = new ArrayList<IdSiteResultListener>();
+            return addResultListener(idSiteResultListener);
+        }
+        return this;
     }
 
     /**
-     * @since 1.0.RC7.2
+     * @since 1.0.RC7.3
      */
     @Override
     public IdSiteCallbackHandler addResultListener(IdSiteResultListener idSiteResultListener) {
-        this.resultListeners.add(idSiteResultListener);
+        if (idSiteResultListener != null) {
+            this.resultListeners.add(idSiteResultListener);
+        }
         return this;
     }
 
