@@ -185,7 +185,7 @@ public class AccessTokenController extends AbstractController {
 
         try {
 
-//            assertAuthorized(request, response);
+            assertAuthorized(request, response);
             String grantType = null;
 
             try {
