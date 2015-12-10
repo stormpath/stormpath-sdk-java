@@ -15,19 +15,15 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
+import com.stormpath.sdk.oauth.RefreshGrantRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.RC8
  */
-public interface AccessTokenResultFactory {
+public interface RefreshTokenAuthenticationRequestFactory {
 
-    AccessTokenResult createAccessTokenResult(HttpServletRequest request,
-                                              HttpServletResponse response,
-                                              OauthGrantAuthenticationResult result);
+    RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request)
+            throws OauthException;
 }

@@ -32,40 +32,25 @@ import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0.RC
+ * @since 1.0.RC8
  */
-public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implements AuthenticationRequest<String, String> {
-
-    public static final long DEFAULT_TTL = 3600; //3600 seconds = 1 hour
+public class RefreshGrantAuthenticationRequest extends OAuthTokenRequest implements AuthenticationRequest<String, String> {
 
     public static final long DEFAULT_REFRESH_TOKEN_TTL = 3600 * 24 * 365; // Default TTL for refresh tokens is 1 year
 
-    private final ScopeFactory scopeFactory;
-
     private final long ttl;
 
-    private final String id;
-
-    private final String secret;
-
     @SuppressWarnings("UnusedDeclaration") //used via reflection in com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory
-    public AccessTokenAuthenticationRequest(HttpRequest httpRequest) throws Exception {
-        this(getHttpServletRequest(httpRequest), null, DEFAULT_TTL);
+    public RefreshGrantAuthenticationRequest(HttpRequest httpRequest) throws Exception {
+        this(getHttpServletRequest(httpRequest), DEFAULT_REFRESH_TOKEN_TTL);
     }
 
-    public AccessTokenAuthenticationRequest(HttpServletRequest httpServletRequest, ScopeFactory scopeFactory, long ttl) throws Exception {
+    public RefreshGrantAuthenticationRequest(HttpServletRequest httpServletRequest, long ttl) throws Exception {
         super(httpServletRequest);
         Assert.isTrue(ttl > 0, "ttl cannot be less or equal to 0 (zero).");
 
-        this.scopeFactory = scopeFactory;
-
-        String[] credentials = OAuthUtils.decodeClientAuthenticationHeader(request.getHeader(OAuth.HeaderType.AUTHORIZATION));
-        if (credentials == null) {
-            throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(MissingApiKeyException.class);
-        }
-        this.id = credentials[0];
-        this.secret = credentials[1];
         this.ttl = ttl;
+
     }
 
     private static HttpServletRequest getHttpServletRequest(HttpRequest httpRequest) {
@@ -78,32 +63,6 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
 
     public long getTtl() {
         return ttl;
-    }
-
-    public ScopeFactory getScopeFactory() {
-        return scopeFactory;
-    }
-
-    public boolean hasScopeFactory() {
-        return scopeFactory != null;
-    }
-
-    public String getClientId() {
-        return id;
-    }
-
-    public String getClientSecret() {
-        return secret;
-    }
-
-    @Override
-    public String getPrincipals() {
-        return id;
-    }
-
-    @Override
-    public String getCredentials() {
-        return secret;
     }
 
     @Override
@@ -121,9 +80,18 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
         throw new UnsupportedOperationException("getAccountStore() method hasn't been implemented.");
     }
 
-    /* @since 1.0.RC5 */
     @Override
     public AuthenticationOptions getResponseOptions() {
         throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() is not supported.");
+    }
+
+    @Override
+    public String getPrincipals() {
+        throw new UnsupportedOperationException(getClass().getName() + " .getPrincipals() is not supported.");
+    }
+
+    @Override
+    public String getCredentials() {
+        throw new UnsupportedOperationException(getClass().getName() + " .getCredentials() is not supported.");
     }
 }

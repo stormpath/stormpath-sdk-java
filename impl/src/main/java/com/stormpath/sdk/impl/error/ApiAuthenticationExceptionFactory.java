@@ -39,6 +39,8 @@ public class ApiAuthenticationExceptionFactory {
 
     private static final String DEFAULT_CLIENT_MESSAGE = "Authentication Required";
 
+    private static final String DEFAULT_REFRESH_GRANT_MESSAGE = "refresh_token is required";
+
     public static ResourceException newApiAuthenticationException(Class<? extends ResourceException> clazz) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
@@ -74,6 +76,18 @@ public class ApiAuthenticationExceptionFactory {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
                 .developerMessage(DEFAULT_DEVELOPER_MESSAGE).message(oauthClientError).build();
+
+        Constructor<? extends ResourceException> constructor = getConstructorFromClass(clazz);
+
+        return Classes.instantiate(constructor, error, oauthError);
+    }
+
+    public static ResourceException newOauthRefreshGrantException(Class<? extends OauthAuthenticationException> clazz, String oauthError) {
+
+        String oauthClientError = "error: " + oauthError;
+
+        Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
+                .developerMessage(DEFAULT_REFRESH_GRANT_MESSAGE).message(oauthClientError).build();
 
         Constructor<? extends ResourceException> constructor = getConstructorFromClass(clazz);
 

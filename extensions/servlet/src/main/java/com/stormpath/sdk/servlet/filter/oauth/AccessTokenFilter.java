@@ -34,6 +34,9 @@ public class AccessTokenFilter extends ControllerFilter {
     protected static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
         "stormpath.web.accessToken.authenticationRequestFactory";
     protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.accessToken.resultFactory";
+    protected static final String REFRESH_TOKEN_RESULT_FACTORY = "stormpath.web.accessToken.refreshTokenResultFactory";
+    protected static final String REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
+        "stormpath.web.accessToken.refreshTokenAuthenticationRequestFactory";
     protected static final String REQUEST_AUTHORIZER = "stormpath.web.accessToken.authorizer";
     protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
     protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
@@ -44,8 +47,11 @@ public class AccessTokenFilter extends ControllerFilter {
         Config config = getConfig();
         AccessTokenAuthenticationRequestFactory authenticationRequestFactory =
             config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+        RefreshTokenAuthenticationRequestFactory refreshTokenAuthenticationRequestFactory =
+            config.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
         RequestAuthorizer requestAuthorizer = config.getInstance(REQUEST_AUTHORIZER);
         AccessTokenResultFactory resultFactory = config.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
+        RefreshTokenResultFactory refreshTokenResultFactory = config.getInstance(REFRESH_TOKEN_RESULT_FACTORY);
         Saver<AuthenticationResult> accountSaver = config.getInstance(ACCOUNT_SAVER);
         Publisher<RequestEvent> eventPublisher = config.getInstance(EVENT_PUBLISHER);
 
@@ -53,6 +59,8 @@ public class AccessTokenFilter extends ControllerFilter {
         c.setEventPublisher(eventPublisher);
         c.setAccessTokenAuthenticationRequestFactory(authenticationRequestFactory);
         c.setAccessTokenResultFactory(resultFactory);
+        c.setRefreshTokenResultFactory(refreshTokenResultFactory);
+        c.setRefreshTokenAuthenticationRequestFactory(refreshTokenAuthenticationRequestFactory);
         c.setAccountSaver(accountSaver);
         c.setRequestAuthorizer(requestAuthorizer);
         c.init();

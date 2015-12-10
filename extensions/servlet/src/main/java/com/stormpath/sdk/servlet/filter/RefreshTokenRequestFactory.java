@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter.oauth;
+package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.RC8
  */
-public interface AccessTokenResultFactory {
+public interface RefreshTokenRequestFactory {
 
-    AccessTokenResult createAccessTokenResult(HttpServletRequest request,
-                                              HttpServletResponse response,
-                                              OauthGrantAuthenticationResult result);
+    AuthenticationRequest createRefreshTokenRequest(HttpServletRequest request,
+                                                        HttpServletResponse response,
+                                                        String refreshToken);
 }
