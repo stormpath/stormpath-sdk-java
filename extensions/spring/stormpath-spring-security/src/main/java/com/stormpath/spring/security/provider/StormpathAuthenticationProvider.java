@@ -398,7 +398,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     protected AuthenticationRequest createAuthenticationRequest(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
-        return new UsernamePasswordRequest(username, password);
+        return UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build();
     }
 
     protected Collection<GrantedAuthority> getGrantedAuthorities(Account account) {
