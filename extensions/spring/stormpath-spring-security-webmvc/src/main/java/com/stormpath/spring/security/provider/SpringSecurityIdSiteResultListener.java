@@ -21,12 +21,12 @@ import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.idsite.RegistrationResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.spring.security.token.IdSiteAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
  * @since 1.0.RC7
@@ -61,9 +61,8 @@ public class SpringSecurityIdSiteResultListener implements IdSiteResultListener 
 
     private void doAuthenticate(Account account) {
         SecurityContextHolder.clearContext();
-        Authentication authentication = new PreAuthenticatedAuthenticationToken(
-            account.getEmail(), null, authenticationProvider.getGrantedAuthorities(account)
-        );
+        Authentication authentication = new IdSiteAuthentication(account);
+        authenticationProvider.authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
