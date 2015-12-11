@@ -22,11 +22,11 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 /**
  * @since 1.0.RC7.2
  */
-public class IdSiteAuthentication extends AbstractAuthenticationToken {
+public class IdSiteAuthenticationToken extends AbstractAuthenticationToken {
     private final Object principal;
     private final Account account;
 
-    public IdSiteAuthentication(Account account) {
+    public IdSiteAuthenticationToken(Account account) {
         super(null);
         Assert.notNull(account.getEmail(), "email cannot be null");
         Assert.notNull(account, "account cannot be null");

@@ -25,7 +25,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
-import com.stormpath.spring.security.token.IdSiteAuthentication;
+import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -350,8 +350,8 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         Account account;
 
         try {
-            if (authentication instanceof IdSiteAuthentication) {
-                account = handleIdSiteAuthentication((IdSiteAuthentication)authentication);
+            if (authentication instanceof IdSiteAuthenticationToken) {
+                account = handleIdSiteAuthentication((IdSiteAuthenticationToken)authentication);
             } else {
                 account = handleUsernamePasswordAuthentication(authentication);
             }
@@ -389,7 +389,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         return account;
     }
 
-    private Account handleIdSiteAuthentication(IdSiteAuthentication authentication) {
+    private Account handleIdSiteAuthentication(IdSiteAuthenticationToken authentication) {
         return authentication.getAccount();
     }
 

@@ -21,7 +21,7 @@ import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.idsite.RegistrationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.spring.security.token.IdSiteAuthentication;
+import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -61,7 +61,7 @@ public class SpringSecurityIdSiteResultListener implements IdSiteResultListener 
 
     private void doAuthenticate(Account account) {
         SecurityContextHolder.clearContext();
-        Authentication authentication = new IdSiteAuthentication(account);
+        Authentication authentication = new IdSiteAuthenticationToken(account);
         authenticationProvider.authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
