@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-webmvc</artifactId>
-    <version>1.0.RC7.3</version>
+    <version>1.0.RC7.4-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Web MVC</name>
     <description>A Spring Boot web application that uses Stormpath and Spring Security</description>
