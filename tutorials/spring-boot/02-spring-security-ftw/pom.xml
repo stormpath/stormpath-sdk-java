@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-tutorials-spring-boot-default-spring-security-ftw</artifactId>
-    <version>1.0.RC7.3-SNAPSHOT</version>
+    <version>1.0.RC7.3</version>
 
     <name>Stormpath Java SDK :: Tutorials :: Spring Boot Default :: Spring Security FTW!</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
