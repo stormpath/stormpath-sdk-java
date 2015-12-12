@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.idsite.RegistrationResult;
@@ -33,6 +34,8 @@ import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IdSiteResultController extends AbstractController {
 
@@ -42,6 +45,8 @@ public class IdSiteResultController extends AbstractController {
     private Controller logoutController;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private Publisher<RequestEvent> eventPublisher;
+
+    private List<IdSiteResultListener> idSiteResultListeners = new ArrayList<IdSiteResultListener>();
 
     public void setRegisterNextUri(String registerNextUri) {
         this.registerNextUri = registerNextUri;
@@ -71,6 +76,11 @@ public class IdSiteResultController extends AbstractController {
         this.authenticationResultSaver = authenticationResultSaver;
     }
 
+    public void addIdSiteResultListener(IdSiteResultListener resultListener) {
+        Assert.notNull(resultListener, "resultListener cannot be null");
+        idSiteResultListeners.add(resultListener);
+    }
+
     public void init() {
         Assert.hasText(registerNextUri, "registerNextUri must be configured.");
         Assert.hasText(loginNextUri, "loginNextUri must be configured.");
@@ -90,7 +100,7 @@ public class IdSiteResultController extends AbstractController {
 
         final ViewModel[] viewModel = new ViewModel[1];
 
-        app.newIdSiteCallbackHandler(request).setResultListener(new IdSiteResultListener() {
+        IdSiteCallbackHandler idSiteCallbackHandler = app.newIdSiteCallbackHandler(request).setResultListener(new IdSiteResultListener() {
             @Override
             public void onRegistered(RegistrationResult result) {
                 viewModel[0] = IdSiteResultController.this.onRegistration(request, response, app, result);
@@ -106,7 +116,13 @@ public class IdSiteResultController extends AbstractController {
                 viewModel[0] = IdSiteResultController.this.onLogout(request, response, app, result);
 
             }
-        }).getAccountResult();
+        });
+
+        for (IdSiteResultListener resultListener : idSiteResultListeners) {
+            idSiteCallbackHandler.addResultListener(resultListener);
+        }
+
+        idSiteCallbackHandler.getAccountResult();
 
         return viewModel[0];
     }

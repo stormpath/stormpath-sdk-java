@@ -25,6 +25,7 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
+import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -345,13 +346,15 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         assertState();
-        AuthenticationRequest request = createAuthenticationRequest(authentication);
-        Application application = ensureApplicationReference();
 
         Account account;
 
         try {
-            account = application.authenticateAccount(request).getAccount();
+            if (authentication instanceof IdSiteAuthenticationToken) {
+                account = handleIdSiteAuthentication((IdSiteAuthenticationToken)authentication);
+            } else {
+                account = handleUsernamePasswordAuthentication(authentication);
+            }
         } catch (ResourceException e) {
             String msg = Strings.clean(e.getMessage());
             if (msg == null) {
@@ -361,15 +364,33 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
                 msg = "Invalid login or password.";
             }
             throw new AuthenticationServiceException(msg, e);
+        }
+
+        Authentication authToken = this.authenticationTokenFactory.createAuthenticationToken(
+            authentication.getPrincipal(), null, getGrantedAuthorities(account), account
+        );
+
+        return authToken;
+    }
+
+    private Account handleUsernamePasswordAuthentication(Authentication authentication) throws AuthenticationException {
+        AuthenticationRequest request = createAuthenticationRequest(authentication);
+        Application application = ensureApplicationReference();
+
+        Account account;
+
+        try {
+            account = application.authenticateAccount(request).getAccount();
         } finally {
             //Clear the request data to prevent later memory access
             request.clear();
         }
 
-        Authentication authToken = this.authenticationTokenFactory.createAuthenticationToken(
-                authentication.getPrincipal(), null, getGrantedAuthorities(account), account);
+        return account;
+    }
 
-        return authToken;
+    private Account handleIdSiteAuthentication(IdSiteAuthenticationToken authentication) {
+        return authentication.getAccount();
     }
 
     /**
@@ -398,7 +419,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     protected AuthenticationRequest createAuthenticationRequest(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
-        return new UsernamePasswordRequest(username, password);
+        return UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build();
     }
 
     protected Collection<GrantedAuthority> getGrantedAuthorities(Account account) {

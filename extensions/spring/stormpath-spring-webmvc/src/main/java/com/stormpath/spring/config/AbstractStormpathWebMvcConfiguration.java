@@ -20,6 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -403,6 +404,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired(required = false)
     protected LocaleChangeInterceptor localeChangeInterceptor;
+
+    @Autowired(required = false)
+    @Qualifier("springSecurityIdSiteResultListener")
+    IdSiteResultListener springSecurityIdSiteResultListener;
 
     @Autowired(required = false)
     protected ErrorModelFactory loginErrorModelFactory;
@@ -997,6 +1002,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutController(stormpathMvcLogoutController());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setEventPublisher(stormpathRequestEventPublisher());
+        if (springSecurityIdSiteResultListener != null) {
+            controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
+        }
         controller.init();
         return createSpringController(controller);
     }

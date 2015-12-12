@@ -37,6 +37,7 @@ import org.testng.annotations.Test
 import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_RESPONSE
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
+import static IdSiteResultListenerType.*
 
 /**
  * @since 1.0.RC3
@@ -50,7 +51,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
                 "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
                 "N1YiI6ZmFsc2UsInN0YXR1cyI6IlJFR0lTVEVSRUQifQ.4_yCiF6Cik2wep3iwyinTTcn5GHAEvCbIezO1aA5Kkk"
-        testListener(jwtResponse, IdSiteResultStatus.REGISTERED)
+        testListener(jwtResponse, IdSiteResultStatus.REGISTERED, IdSiteResultListenerType.SINGLE)
     }
 
     @Test
@@ -60,7 +61,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
                 "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
                 "N1YiI6ZmFsc2UsInN0YXR1cyI6IkFVVEhFTlRJQ0FURUQifQ.rpp0lsM1JDFeqkrOdwrtYOB1aitnLwhJuH3iaeuLIXY"
-        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED)
+        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED, IdSiteResultListenerType.SINGLE)
     }
 
     @Test
@@ -70,7 +71,40 @@ class DefaultIdSiteCallbackHandlerTest {
                 "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
                 "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
                 "N1YiI6ZmFsc2UsInN0YXR1cyI6IkxPR09VVCJ9.T6ClI4znHCElk1gMQoBpVvE9Jc5Vf4BEjrQ0IWvKYIc"
-        testListener(jwtResponse, IdSiteResultStatus.LOGOUT)
+        testListener(jwtResponse, IdSiteResultStatus.LOGOUT, IdSiteResultListenerType.SINGLE)
+    }
+
+    /* @since 1.0.RC7.3 */
+    @Test
+    void testRegisteredListenerMulti() {
+        String jwtResponse = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3N0dXJkeS1zaGllbGQuaWQuc3Rvcm1w" +
+                "YXRoLmlvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIi" +
+                "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
+                "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
+                "N1YiI6ZmFsc2UsInN0YXR1cyI6IlJFR0lTVEVSRUQifQ.4_yCiF6Cik2wep3iwyinTTcn5GHAEvCbIezO1aA5Kkk"
+        testListener(jwtResponse, IdSiteResultStatus.REGISTERED, IdSiteResultListenerType.MULTI)
+    }
+
+    /* @since 1.0.RC7.3 */
+    @Test
+    void testAuthenticatedListenerMulti() {
+        String jwtResponse = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3N0dXJkeS1zaGllbGQuaWQuc3Rvcm1w" +
+                "YXRoLmlvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIi" +
+                "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
+                "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
+                "N1YiI6ZmFsc2UsInN0YXR1cyI6IkFVVEhFTlRJQ0FURUQifQ.rpp0lsM1JDFeqkrOdwrtYOB1aitnLwhJuH3iaeuLIXY"
+        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED, IdSiteResultListenerType.MULTI)
+    }
+
+    /* @since 1.0.RC7.3 */
+    @Test
+    void testLogoutListenerMulti() {
+        String jwtResponse = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3N0dXJkeS1zaGllbGQuaWQuc3Rvcm1w" +
+                "YXRoLmlvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIi" +
+                "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
+                "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
+                "N1YiI6ZmFsc2UsInN0YXR1cyI6IkxPR09VVCJ9.T6ClI4znHCElk1gMQoBpVvE9Jc5Vf4BEjrQ0IWvKYIc"
+        testListener(jwtResponse, IdSiteResultStatus.LOGOUT, IdSiteResultListenerType.MULTI)
     }
 
     /* @since 1.0.RC5 */
@@ -130,13 +164,71 @@ class DefaultIdSiteCallbackHandlerTest {
         testRethrow(jwtResponse, IDSiteSessionTimeoutException.class, 12001, 401, "The session on ID Site has timed out.", "The session on ID Site has timed out. This can occur if the user stays on ID Site without logging in, registering, or resetting a password.")
     }
 
-    private void testListener(String jwtResponse, IdSiteResultStatus expectedListenerMethod) {
+    @Test
+    public void testNoIdSiteResultListenerSet() {
+        testNoListener(IdSiteResultListenerType.NONE)
+    }
+
+    @Test
+    public void testNullIdSiteResultListenerSet() {
+        testNoListener(IdSiteResultListenerType.SET)
+    }
+
+    @Test
+    public void testNullIdSiteResultListenerAdd() {
+        testNoListener(IdSiteResultListenerType.ADD)
+    }
+
+    private void testNoListener(IdSiteResultListenerType idSiteResultListenerType) {
+        String jwtResponse = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3N0dXJkeS1zaGllbGQuaWQuc3Rvcm1w" +
+                "YXRoLmlvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIi" +
+                "wiYXVkIjoiMkVWNzBBSFJUWUYwSk9BN09FRk8zU00yOSIsImV4cCI6MjUwMjQ2NjY1MDAwLCJpYXQiOjE0MDcxOTg1NTAsImp0aSI6" +
+                "IjQzNnZra0hnazF4MzA1N3BDUHFUYWgiLCJpcnQiOiIxZDAyZDMzNS1mYmZjLTRlYTgtYjgzNi04NWI5ZTJhNmYyYTAiLCJpc05ld1" +
+                "N1YiI6ZmFsc2UsInN0YXR1cyI6IlJFR0lTVEVSRUQifQ.4_yCiF6Cik2wep3iwyinTTcn5GHAEvCbIezO1aA5Kkk"
+
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def requestExecutor = createStrictMock(RequestExecutor)
         def dataStore = new DefaultDataStore(requestExecutor, apiKey)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
+        def account = createStrictMock(Account)
+
+        expect(request.getMethod()).andReturn(HttpMethod.GET)
+        expect(request.getParameter(JWT_RESPONSE)).andReturn(jwtResponse)
+
+        replay application, request, account
+
+        DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
+
+        switch(idSiteResultListenerType) {
+            case SET:     callbackHandler.setResultListener(null)
+                          break
+
+            case ADD:     callbackHandler.addResultListener(null)
+                          break
+
+            case NONE:
+                 default: break
+        }
+
+        AccountResult accountResult = callbackHandler.getAccountResult()
+        assertEquals accountResult.account.href, 'https://api.stormpath.com/v1/accounts/7Ora8KfVDEIQP38KzrYdAs'
+
+        verify application, request, account
+    }
+
+    private void testListener(
+        String jwtResponse, IdSiteResultStatus expectedListenerMethod, IdSiteResultListenerType idSiteResultListenerType
+    ) {
+        def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKey)
+        def application = createStrictMock(Application)
+        def request = createStrictMock(HttpRequest)
+
         def listener = createStrictMock(IdSiteResultListener)
+        def listener2 = createStrictMock(IdSiteResultListener)
+
         def account = createStrictMock(Account)
 
         AccountResult accountResultFromListener = null
@@ -145,7 +237,7 @@ class DefaultIdSiteCallbackHandlerTest {
         expect(request.getParameter(JWT_RESPONSE)).andReturn(jwtResponse)
 
         if (expectedListenerMethod.equals(IdSiteResultStatus.REGISTERED)) {
-            expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
+            def listenerDelegate = new IdSiteResultListener() {
                 @Override
                 public void onRegistered(RegistrationResult result) {
                     accountResultFromListener = result
@@ -158,9 +250,13 @@ class DefaultIdSiteCallbackHandlerTest {
                 public void onLogout(LogoutResult Result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
-            })
+            }
+            expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
+            if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+                expect(listener2.onRegistered(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
+            }
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.AUTHENTICATED)) {
-            expect(listener.onAuthenticated(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
+            def listenerDelegate = new IdSiteResultListener() {
                 @Override
                 public void onRegistered(RegistrationResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
@@ -173,9 +269,13 @@ class DefaultIdSiteCallbackHandlerTest {
                 public void onLogout(LogoutResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
                 }
-            })
+            }
+            expect(listener.onAuthenticated(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
+            if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+                expect(listener2.onAuthenticated(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
+            }
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.LOGOUT)) {
-            expect(listener.onLogout(anyObject(AccountResult))).andDelegateTo( new IdSiteResultListener() {
+            def listenerDelegate = new IdSiteResultListener() {
                 @Override
                 public void onRegistered(RegistrationResult result) {
                     throw new UnsupportedOperationException("This method should have not been executed")
@@ -188,13 +288,20 @@ class DefaultIdSiteCallbackHandlerTest {
                 public void onLogout(LogoutResult result) {
                     accountResultFromListener = result
                 }
-            })
+            }
+            expect(listener.onLogout(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
+            if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+                expect(listener2.onLogout(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
+            }
         }
 
-        replay application, request, listener, account
+        replay application, request, listener, listener2, account
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
+        if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+            callbackHandler.addResultListener(listener2)
+        }
 
         AccountResult accountResult = callbackHandler.getAccountResult()
         assertEquals accountResult.account.href, 'https://api.stormpath.com/v1/accounts/7Ora8KfVDEIQP38KzrYdAs'
