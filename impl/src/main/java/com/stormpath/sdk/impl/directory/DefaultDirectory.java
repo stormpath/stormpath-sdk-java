@@ -40,11 +40,14 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
+
+import static com.stormpath.sdk.impl.directory.DefaultDirectory.ORGANIZATIONS;
 
 /**
  * @since 0.2
@@ -67,9 +70,13 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
             new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupList, Group> GROUPS =
             new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+    static final CollectionReference<OrganizationList, Organization> ORGANIZATIONS =
+            new CollectionReference<OrganizationList, Organization>("organizations", OrganizationList.class, Organization.class);
+    static final CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping> ORGANIZATION_MAPPINGS =
+            new CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping>("organizationMappings", OrganizationAccountStoreMappingList.class, OrganizationAccountStoreMapping.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY, ACCOUNT_CREATION_POLICY);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY, ACCOUNT_CREATION_POLICY, ORGANIZATION_MAPPINGS, ORGANIZATIONS);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -288,5 +295,43 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         return this;
     }
 
+    /** @since 1.0.RC7 */
+    @Override
+    public OrganizationList getOrganizations() {
+        return getResourceProperty(ORGANIZATIONS);
+    }
 
+    /** @since 1.0.RC7 */
+    @Override
+    public OrganizationList getOrganizations(Map<String, Object> queryParams) {
+        OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), OrganizationList.class, queryParams);
+    }
+
+    /** @since 1.0.RC7 */
+    @Override
+    public OrganizationList getOrganizations(OrganizationCriteria criteria) {
+        OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), OrganizationList.class, (Criteria<OrganizationCriteria>) criteria);
+    }
+
+    /** @since 1.0.RC7 */
+    @Override
+    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings() {
+        return getResourceProperty(ORGANIZATION_MAPPINGS);
+    }
+
+    /** @since 1.0.RC7 */
+    @Override
+    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams) {
+        OrganizationAccountStoreMappingList list = getOrganizationAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), OrganizationAccountStoreMappingList.class, queryParams);
+    }
+
+    /** @since 1.0.RC7 */
+    @Override
+    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
+        OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), OrganizationAccountStoreMappingList.class, (Criteria<OrganizationAccountStoreMappingCriteria>) criteria);
+    }
 }

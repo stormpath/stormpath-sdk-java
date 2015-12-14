@@ -23,7 +23,6 @@ import com.stormpath.sdk.query.Criteria;
  * constructed by using the {@link OrganizationAccountStoreMappings} utility class, for example:
  * <pre>
  * OrganizationAccountStoreMappings.where(OrganizationAccountStoreMappings.listIndex().eq(4))
- *     .orderByListIndex().descending()
  *     .withAccountStore()
  *     .offsetBy(50)
  *     .limitTo(25));
