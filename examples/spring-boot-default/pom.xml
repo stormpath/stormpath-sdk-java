@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-boot-default</artifactId>
-    <version>1.0.RC7.4</version>
+    <version>1.0.RC7.5-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Boot Default</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
