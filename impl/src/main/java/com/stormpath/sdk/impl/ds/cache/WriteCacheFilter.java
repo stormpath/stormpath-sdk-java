@@ -44,7 +44,6 @@ import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.oauth.AccessToken;
-import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.CollectionResource;
@@ -265,7 +264,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                     //use that data instead of issuing a request.
                     value = toCanonicalReference(name, nested);
                 }
-            } else if (value instanceof Collection) { //array property, i.e. the 'items' collection resource property
+            } else if (value instanceof Collection && name.equals("items") && data.get("href") != null) { //array property, i.e. the 'items' collection resource property
                 Collection c = (Collection) value;
                 //Create a new collection that has only references, recursively caching any materialized references:
                 List list = new ArrayList(c.size());
