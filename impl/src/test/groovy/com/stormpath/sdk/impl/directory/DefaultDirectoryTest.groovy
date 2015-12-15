@@ -146,6 +146,9 @@ class DefaultDirectoryTest {
         expect(internalDataStore.getResource(properties.organizations.href, OrganizationList, organizationCriteriaMap)).
                 andReturn(new DefaultOrganizationList(internalDataStore, properties.organizations))
 
+        expect(internalDataStore.instantiate(OrganizationAccountStoreMappingList, properties.organizationMappings)).
+                andReturn(new DefaultOrganizationAccountStoreMappingList(internalDataStore, properties.organizationMappings))
+
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).
                 andReturn(new DefaultTenant(internalDataStore, properties.tenant))
 
@@ -235,6 +238,9 @@ class DefaultDirectoryTest {
 
         resource = defaultDirectory.getOrganizations(organizationCriteriaMap)
         assertTrue(resource instanceof DefaultOrganizationList && resource.getHref().equals(properties.organizations.href))
+
+        resource = defaultDirectory.getOrganizationAccountStoreMappings()
+        assertTrue(resource instanceof DefaultOrganizationAccountStoreMappingList && resource.getHref().equals(properties.organizationMappings.href))
 
         resource = defaultDirectory.getTenant()
         assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
