@@ -46,9 +46,12 @@ import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.Organization;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -1381,4 +1384,36 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @since 1.0.RC7
      */
     OauthPolicy getOauthPolicy();
+
+    /**
+     * Returns the {@link SamlPolicy} associated with this application.
+     * @return the {@link SamlPolicy} associated with this application.
+     *
+     * @since 1.0.RC8
+     */
+    SamlPolicy getSamlPolicy();
+
+    /**
+     * Returns the valid list of Valid Callback URIs for this application.
+     * @return the list of String valid callback URIs for this application.
+     *
+     * @since 1.0.RC8
+     */
+    List<String> getAuthorizedCallbackUris();
+
+    /**
+     * Sets the list of Authorized Callback URIs for this application.
+     * @return this instance for method chaining.
+     *
+     * @since 1.0.RC8
+     */
+    Application setAuthorizedCallbackUris(List<String> authorizedCallbackUris);
+
+    /**
+     * Adds a valid URI as an authorized callback URI for this application.
+     * @return this instance for method chaining.
+     *
+     * @since 1.0.RC8
+     */
+    Application addAuthorizedCallbackUri(String authorizedCallbackUri);
 }

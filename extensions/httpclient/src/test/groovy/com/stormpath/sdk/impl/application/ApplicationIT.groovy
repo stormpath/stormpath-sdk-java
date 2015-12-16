@@ -578,6 +578,48 @@ class ApplicationIT extends ClientIT {
     }
 
     @Test
+    void testSamlProperties(){
+        def app = createTempApp()
+
+        def samlPolicy = app.getSamlPolicy()
+
+        assertNotNull samlPolicy.href
+        assertNotNull samlPolicy.getSamlProvider()
+        assertEquals samlPolicy.getSamlProvider().getProviderId(), "saml"
+
+        //test invalid URI assignment attempt
+        try {
+            app.addAuthorizedCallbackUri("invalid")
+            fail("should have thrown")
+        } catch (IllegalArgumentException e) {
+            //ignore, exception was expected.
+        }
+
+        def callbackUris = app.getAuthorizedCallbackUris()
+        assertNotNull callbackUris
+        assertFalse callbackUris.iterator().hasNext()
+
+        String uri = "https://myapplication.com/whatever/callback"
+        app.addAuthorizedCallbackUri(uri)
+
+        callbackUris = app.getAuthorizedCallbackUris()
+        assertNotNull callbackUris
+        assertTrue callbackUris.iterator().hasNext()
+        assertEquals callbackUris.iterator().next(), uri
+
+        List<String> testUris = new ArrayList<String>()
+            testUris.add("https://myapplication.com/callback1")
+            testUris.add("https://myapplication.com/callback2")
+            testUris.add("https://myapplication.com/callback3")
+            testUris.add("https://myapplication.com/callback4")
+
+        app.setAuthorizedCallbackUris(testUris)
+        callbackUris = app.getAuthorizedCallbackUris()
+        assertNotNull callbackUris
+        assertEquals callbackUris.size(), 4
+    }
+
+    @Test
     void testGetApiKeyByIdWithOptions() {
 
         def app = createTempApp()

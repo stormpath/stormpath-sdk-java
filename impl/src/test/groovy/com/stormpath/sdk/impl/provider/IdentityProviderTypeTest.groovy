@@ -28,7 +28,7 @@ class IdentityProviderTypeTest {
     @Test
     void testMaps() {
 
-        final int PROVIDER_COUNT = 5;
+        final int PROVIDER_COUNT = 6;
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), PROVIDER_COUNT)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
@@ -56,12 +56,18 @@ class IdentityProviderTypeTest {
         assertEquals(item.getProviderClass(), LinkedInProvider.class)
         assertEquals(item.getProviderDataClass(), LinkedInProviderData.class)
 
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("saml");
+        assertEquals(item.getNameKey(), "saml")
+        assertEquals(item.getProviderClass(), SamlProvider.class)
+        assertEquals(item.getProviderDataClass(), SamlProviderData.class)
+
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), PROVIDER_COUNT)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("facebook"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("google"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("github"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("linkedin"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("saml"))
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), PROVIDER_COUNT)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("stormpath"))
@@ -69,6 +75,7 @@ class IdentityProviderTypeTest {
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("google"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("github"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("linkedin"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("saml"))
     }
 
     @Test

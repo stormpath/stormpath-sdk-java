@@ -64,12 +64,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
@@ -84,16 +79,16 @@ import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
+import com.sun.media.sound.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
@@ -118,6 +113,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG =
         "Class [%s] is not one of the supported http requests classes [%s].";
+
+    private static final String INVALID_URI_FORMAT_MSG = "The provided URI does not match a valid URI scheme.";
 
     static {
         if (Classes.isAvailable(OAUTH_REQUEST_AUTHENTICATOR_FQCN)) {
@@ -164,7 +161,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         new ResourceReference<ApplicationAccountStoreMapping>("defaultGroupStoreMapping", ApplicationAccountStoreMapping.class);
     static final ResourceReference<OauthPolicy> OAUTH_POLICY   =
             new ResourceReference<OauthPolicy>("oAuthPolicy", OauthPolicy.class);
-
+    static final ResourceReference<SamlPolicy> SAML_POLICY =
+            new ResourceReference<SamlPolicy>("samlPolicy", SamlPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -180,9 +178,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
                                                                             PasswordResetTokenList.class,
                                                                             PasswordResetToken.class);
 
+    // LIST PROPERTIES
+    static final ListProperty AUTHORIZED_CALLBACK_URIS = new ListProperty("authorizedCallbackUris");
+
+    public static final String AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME = "authorizedCallbackUris";
+
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -300,6 +303,37 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         Map<String, String> passwordResetTokensLink =
             (Map<String, String>) getProperty(PASSWORD_RESET_TOKENS.getName());
         return passwordResetTokensLink.get(HREF_PROP_NAME);
+    }
+
+    // @since 1.0.RC8
+    public SamlPolicy getSamlPolicy() {
+        return getResourceProperty(SAML_POLICY);
+    }
+
+    // @since 1.0.RC8
+    public List<String> getAuthorizedCallbackUris() {
+        return new ArrayList<String>(getListProperty(AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME));
+    }
+
+    // @since 1.0.RC8
+    @Override
+    public Application setAuthorizedCallbackUris(List<String> authorizedCallbackUris) {
+        setProperty(AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME, authorizedCallbackUris);
+        save();
+        return this;
+    }
+
+    // @since 1.0.RC8
+    @Override
+    public Application addAuthorizedCallbackUri(String authorizedCallbackUri) {
+        // validate URI
+        this.validateUri(authorizedCallbackUri);
+
+        List<String> authorizedCallbackUris = this.getAuthorizedCallbackUris();
+        authorizedCallbackUris.add(authorizedCallbackUri);
+        setProperty(AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME, authorizedCallbackUris);
+        save();
+        return this;
     }
 
     @Override
@@ -539,6 +573,16 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         // we expect only one api key to be in the collection
         return iterator.hasNext() ? iterator.next() : null;
     }
+
+    // since 1.0.RC8
+    private void validateUri(String uri){
+        try {
+            URL url = new URL(uri);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(INVALID_URI_FORMAT_MSG);
+        }
+    }
+
 
     /** @since 0.9 */
     private String getAccountStoreMappingsHref() {
