@@ -18,9 +18,14 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
+import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.ClientBuilder;
+import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +44,12 @@ public class TwoAppTenantStormpathConfiguration {
     @Value("#{ @environment['stormpath.twoApp.apiKey.secret.envName'] ?: 'STORMPATH_API_KEY_SECRET_TWO_APP' }")
     protected String twoAppApiKeySecretEnvName;
 
+    @Value("#{ @environment['STORMPATH_BASE_URL'] ?: 'https://api.stormpath.com/v1' }")
+    protected String baseUrl;
+
+    @Autowired
+    CacheManager stormpathCacheManager;
+
     @Bean
     public ApiKey stormpathClientApiKey() {
         ApiKeyBuilder builder = ApiKeys.builder();
@@ -53,6 +64,17 @@ public class TwoAppTenantStormpathConfiguration {
                 "no " + twoAppApiKeyIdEnvName + " and/or " + twoAppApiKeySecretEnvName + " set"
             );
         }
+
+        return builder.build();
+    }
+
+    @Bean
+    public Client stormpathClient() {
+        ClientBuilder builder = Clients.builder();
+
+        builder.setCacheManager(stormpathCacheManager);
+        builder.setApiKey(stormpathClientApiKey());
+        builder.setBaseUrl(baseUrl);
 
         return builder.build();
     }
