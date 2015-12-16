@@ -72,6 +72,10 @@ public class DefaultForm implements Form {
 
     @Override
     public String getCsrfToken() {
+        Field field = getField(csrfTokenName);
+        if (field == null) {
+            return null;
+        }
         return ensureCsrfTokenField().getValue();
     }
 

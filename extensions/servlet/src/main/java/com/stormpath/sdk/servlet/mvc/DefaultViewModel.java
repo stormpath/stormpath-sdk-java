@@ -23,9 +23,10 @@ import java.util.Map;
 public class DefaultViewModel implements ViewModel {
 
     private final String viewName;
-    private final Map<String,?> model;
+    private final Map<String, ?> model;
 
     private boolean redirect = false;
+    private boolean forward = false;
 
     public DefaultViewModel() {
         this.viewName = null;
@@ -37,7 +38,7 @@ public class DefaultViewModel implements ViewModel {
         this.model = null;
     }
 
-    public DefaultViewModel(Map<String,?> model) {
+    public DefaultViewModel(Map<String, ?> model) {
         this.viewName = null;
         this.model = model;
     }
@@ -57,12 +58,29 @@ public class DefaultViewModel implements ViewModel {
         return this.model;
     }
 
+    @Override
     public boolean isRedirect() {
         return redirect;
     }
 
     public DefaultViewModel setRedirect(boolean redirect) {
         this.redirect = redirect;
+        if (redirect) {
+            forward = false; //mutually exclusive
+        }
+        return this;
+    }
+
+    @Override
+    public boolean isForward() {
+        return forward;
+    }
+
+    public DefaultViewModel setForward(boolean forward) {
+        this.forward = forward;
+        if (forward) {
+            redirect = false; //mutually exclusive
+        }
         return this;
     }
 }

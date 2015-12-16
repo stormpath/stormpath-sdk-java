@@ -166,8 +166,9 @@ public class RegisterController extends FormController {
 
             DefaultField field = template.copy();
             String fieldName = field.getName();
-            String param = request.getParameter(fieldName);
-            field.setValue(param != null ? param : "");
+
+            String val = fieldValueResolver.getValue(request, fieldName);
+            field.setValue(val != null ? val : "");
 
             if ("password".equals(fieldName) && !retainPassword) {
                 field.setValue("");

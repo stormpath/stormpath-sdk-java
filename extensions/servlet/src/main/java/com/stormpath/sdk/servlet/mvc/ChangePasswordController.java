@@ -151,8 +151,8 @@ public class ChangePasswordController extends FormController {
             field.setPlaceholder("stormpath.web.change.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("password");
-            String param = request.getParameter(fieldName);
-            field.setValue(retainPassword && param != null ? param : "");
+            String val = fieldValueResolver.getValue(request, fieldName);
+            field.setValue(retainPassword && val != null ? val : "");
 
             fields.add(field);
         }

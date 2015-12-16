@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.http.impl
 
+import com.stormpath.sdk.servlet.http.MediaType
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
@@ -38,22 +39,26 @@ class DefaultUserAgentTest {
 
         replay request
 
-        List<DefaultUserAgent.AcceptedMediaType> mimeTypes = new DefaultUserAgent(request).getMimeTypes();
+        List<MediaType> mimeTypes = new DefaultUserAgent(request).getAcceptedMediaTypes();
 
         assertNotNull mimeTypes
         assertEquals mimeTypes.size(), 4
 
-        assertEquals mimeTypes[0].name, 'text/html'
-        assertEquals mimeTypes[0].quality, 1d
+        assertEquals mimeTypes[0].type, 'text'
+        assertEquals mimeTypes[0].subtype, 'html'
+        assertEquals mimeTypes[0].qualityValue, 1d
 
-        assertEquals mimeTypes[1].name, 'application/xhtml+xml'
-        assertEquals mimeTypes[1].quality, 1d
+        assertEquals mimeTypes[1].type, 'application'
+        assertEquals mimeTypes[1].subtype, 'xhtml+xml'
+        assertEquals mimeTypes[1].qualityValue, 1d
 
-        assertEquals mimeTypes[2].name, 'application/xml'
-        assertEquals mimeTypes[2].quality, 0.9d
+        assertEquals mimeTypes[2].type, 'application'
+        assertEquals mimeTypes[2].subtype, 'xml'
+        assertEquals mimeTypes[2].qualityValue, 0.9d
 
-        assertEquals mimeTypes[3].name, '*/*'
-        assertEquals mimeTypes[3].quality, 0.8d
+        assertEquals mimeTypes[3].type, '*'
+        assertEquals mimeTypes[3].subtype, '*'
+        assertEquals mimeTypes[3].qualityValue, 0.8d
 
         verify request
     }
@@ -69,22 +74,26 @@ class DefaultUserAgentTest {
 
         replay request
 
-        List<DefaultUserAgent.AcceptedMediaType> mimeTypes = new DefaultUserAgent(request).getMimeTypes();
+        List<MediaType> mimeTypes = new DefaultUserAgent(request).getAcceptedMediaTypes();
 
         assertNotNull mimeTypes
         assertEquals mimeTypes.size(), 4
 
-        assertEquals mimeTypes[0].name, 'text/html'
-        assertEquals mimeTypes[0].quality, 1d
+        assertEquals mimeTypes[0].type, 'text'
+        assertEquals mimeTypes[0].subtype, 'html'
+        assertEquals mimeTypes[0].qualityValue, 1d
 
-        assertEquals mimeTypes[1].name, 'application/xhtml+xml'
-        assertEquals mimeTypes[1].quality, 1d
+        assertEquals mimeTypes[1].type, 'application'
+        assertEquals mimeTypes[1].subtype, 'xhtml+xml'
+        assertEquals mimeTypes[1].qualityValue, 1d
 
-        assertEquals mimeTypes[2].name, 'application/xml'
-        assertEquals mimeTypes[2].quality, 0.9d
+        assertEquals mimeTypes[2].type, 'application'
+        assertEquals mimeTypes[2].subtype, 'xml'
+        assertEquals mimeTypes[2].qualityValue, 0.9d
 
-        assertEquals mimeTypes[3].name, '*/*'
-        assertEquals mimeTypes[3].quality, 0.8d
+        assertEquals mimeTypes[3].type, '*'
+        assertEquals mimeTypes[3].subtype, '*'
+        assertEquals mimeTypes[3].qualityValue, 0.8d
 
         verify request
     }

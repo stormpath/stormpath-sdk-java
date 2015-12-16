@@ -18,7 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
+import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,6 +81,6 @@ public class LogoutController extends AbstractController {
     }
 
     protected UserAgent getUserAgent(HttpServletRequest request) {
-        return new DefaultUserAgent(request);
+        return UserAgents.get(request);
     }
 }

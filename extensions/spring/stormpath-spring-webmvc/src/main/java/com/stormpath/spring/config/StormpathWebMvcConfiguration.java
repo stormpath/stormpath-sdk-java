@@ -28,13 +28,7 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.filter.StormpathFilter;
-import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.*;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
@@ -42,6 +36,7 @@ import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.form.Field;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -50,14 +45,13 @@ import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -68,19 +62,14 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @since 1.0.RC4
  */
 @Configuration
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
-    implements ServletContextAware, InitializingBean {
+        implements ServletContextAware, InitializingBean {
 
     private ServletContext servletContext;
 
@@ -115,6 +104,24 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         bean.setPrefix("/WEB-INF/jsp/");
         bean.setSuffix(".jsp");
         return bean;
+    }
+
+    @Bean
+    @Override
+    public List<MediaType> stormpathProducedMediaTypes() {
+        return super.stormpathProducedMediaTypes();
+    }
+
+    @Bean
+    @Override
+    public View stormpathJsonView() {
+        return super.stormpathJsonView();
+    }
+
+    @Bean
+    @Override
+    public ViewResolver stormpathJsonViewResolver() {
+        return super.stormpathJsonViewResolver();
     }
 
     //this isn't needed in a Spring environment, but we have to have it because the
@@ -230,19 +237,19 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             @Override
             public <T> T getInstance(String classPropertyName) throws ServletException {
                 if (MessageTag.LOCALE_RESOLVER_CONFIG_KEY.equals(classPropertyName)) {
-                    return (T)localeResolver;
+                    return (T) localeResolver;
                 } else if (MessageTag.MESSAGE_SOURCE_CONFIG_KEY.equals(classPropertyName)) {
-                    return (T)messageSource;
+                    return (T) messageSource;
                 } else {
                     String msg = "The config key '" + classPropertyName + "' is not supported in Spring environments " +
-                                 "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
+                            "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
                     throw new UnsupportedOperationException(msg);
                 }
             }
 
             @Override
             public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType)
-                throws ServletException {
+                    throws ServletException {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
             }
 
@@ -480,6 +487,18 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
+    public Controller stormpathSpaController() {
+        return super.stormpathSpaController();
+    }
+
+    @Bean
+    @Override
+    public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
+        return super.stormpathAccountStoreModelFactory();
+    }
+
+    @Bean
     public Controller stormpathForgotPasswordController() {
         return super.stormpathForgotPasswordController();
     }
@@ -540,6 +559,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
+    public Controller stormpathMeController() {
+        return super.stormpathMeController();
+    }
+
+    @Bean
     public Controller stormpathIdSiteResultController() {
         return super.stormpathIdSiteResultController();
     }
@@ -583,8 +608,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public Filter stormpathFilter() throws ServletException {
 
         FilterBuilder builder = new DefaultFilterBuilder().setFilterClass(
-            SpringStormpathFilter.class) //suppress config logic since Spring is used for config here
-            .setServletContext(servletContext).setName("stormpathFilter");
+                SpringStormpathFilter.class) //suppress config logic since Spring is used for config here
+                .setServletContext(servletContext).setName("stormpathFilter");
 
         StormpathFilter filter = (StormpathFilter) builder.build();
 

@@ -38,11 +38,13 @@ public abstract class FormController extends AbstractController {
     private CsrfTokenManager csrfTokenManager;
     private String view;
     private String uri;
+    protected RequestFieldValueResolver fieldValueResolver = new ContentNegotiatingFieldValueResolver();
 
     public void init() {
         Assert.hasText(this.view, "view cannot be null or empty.");
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.csrfTokenManager, "csrfTokenManager cannot be null.");
+        Assert.notNull(this.fieldValueResolver, "fieldValueResolver cannot be null.");
     }
 
     public String getView() {
@@ -71,6 +73,14 @@ public abstract class FormController extends AbstractController {
 
     protected boolean isCsrfProtectionEnabled() {
         return csrfTokenManager != null && !(csrfTokenManager instanceof DisabledCsrfTokenManager);
+    }
+
+    public RequestFieldValueResolver getFieldValueResolver() {
+        return fieldValueResolver;
+    }
+
+    public void setFieldValueResolver(RequestFieldValueResolver fieldValueResolver) {
+        this.fieldValueResolver = fieldValueResolver;
     }
 
     protected void setNewCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
@@ -105,7 +115,8 @@ public abstract class FormController extends AbstractController {
 
         Map<String,Object> model = newModel();
 
-        model.put("social", false); //until social login is enabled
+        model.put("social", false); //TODO: remove
+        model.put("accountStores", java.util.Collections.emptyList()); //overridden by subclasses that support providers
 
         if (!Collections.isEmpty(errors)) {
             model.put("errors", errors);

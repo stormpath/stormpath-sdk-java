@@ -25,10 +25,10 @@
 
                 <div class="box row">
 
-                    <div th:class="'email-password-area col-xs-12 ' + ${social? 'small col-sm-8' : 'large col-sm-12'}">
+                    <div th:class="'email-password-area col-xs-12 ' + ${#lists.isEmpty(accountStores) ? 'large col-sm-12' : 'small col-sm-8'}">
 
                         <div class="header" th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
-                                <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Login|</span>
+                                <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Register|</span>
                         </div>
 
                         <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
@@ -49,9 +49,9 @@
                             <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
 
                             <div th:each="field : ${form.visibleFields}" form-group="true" th:class="'form-group group-' + ${field.name}">
-                                <label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>
+                                <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}" th:text="#{${field.label}}">|Field label|</label>
 
-                                <div class="col-sm-8">
+                                <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
                                            th:placeholder="#{${field.placeholder}}"
                                            th:autofocus="${field.autofocus}"
@@ -66,6 +66,16 @@
                         </form>
 
                     </div>
+
+                    <!-- TODO:
+                    <div th:if="${not #lists.isEmpty(accountStores)}" class="social-area col-xs-12 col-sm-4">
+
+                        <div class="header">
+                            <label>Easy 1-click login:</label>
+                        </div>
+
+                    </div>
+                    -->
 
                 </div>
 
