@@ -638,7 +638,7 @@ class DirectoryIT extends ClientIT {
     /**
      * @since 1.0.RC7
      */
-    @Test(enabled = false) //disabling test until AM-2935 is fixed
+    @Test
     void testGetOrganizations() {
 
         Directory directory = client.instantiate(Directory)
