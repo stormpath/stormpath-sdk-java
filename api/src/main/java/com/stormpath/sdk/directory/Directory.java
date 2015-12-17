@@ -394,7 +394,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @return a paginated list of all organizations in the Directory.
      * @see #getOrganizations(java.util.Map)
      *
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     OrganizationList getOrganizations();
 
@@ -410,7 +410,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the directory's organizations that match the specified query criteria.
      *
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     OrganizationList getOrganizations(Map<String, Object> queryParams);
 
@@ -441,7 +441,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the directory's organizations that match the specified query criteria.
      *
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     OrganizationList getOrganizations(OrganizationCriteria criteria);
 
@@ -454,7 +454,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @return a paginated list of all OrganizationAccountStoreMappings in the Directory.
      * @see #getOrganizationAccountStoreMappings(java.util.Map)
      *
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings();
 
@@ -470,7 +470,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the directory's OrganizationAccountStoreMappings that match the specified query criteria.
      *
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams);
 
@@ -498,7 +498,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the directory's organizations that match the specified query criteria.
      *
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 }

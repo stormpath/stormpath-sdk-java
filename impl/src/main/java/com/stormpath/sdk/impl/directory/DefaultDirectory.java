@@ -295,40 +295,40 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         return this;
     }
 
-    /** @since 1.0.RC7 */
+    /** @since 1.0.RC7.5 */
     @Override
     public OrganizationList getOrganizations() {
         return getResourceProperty(ORGANIZATIONS);
     }
 
-    /** @since 1.0.RC7 */
+    /** @since 1.0.RC7.5 */
     @Override
     public OrganizationList getOrganizations(Map<String, Object> queryParams) {
         OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), OrganizationList.class, queryParams);
     }
 
-    /** @since 1.0.RC7 */
+    /** @since 1.0.RC7.5 */
     @Override
     public OrganizationList getOrganizations(OrganizationCriteria criteria) {
         OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), OrganizationList.class, (Criteria<OrganizationCriteria>) criteria);
     }
 
-    /** @since 1.0.RC7 */
+    /** @since 1.0.RC7.5 */
     @Override
     public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings() {
         return getResourceProperty(ORGANIZATION_MAPPINGS);
     }
 
-    /** @since 1.0.RC7 */
+    /** @since 1.0.RC7.5 */
     @Override
     public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams) {
         OrganizationAccountStoreMappingList list = getOrganizationAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), OrganizationAccountStoreMappingList.class, queryParams);
     }
 
-    /** @since 1.0.RC7 */
+    /** @since 1.0.RC7.5 */
     @Override
     public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
         OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
