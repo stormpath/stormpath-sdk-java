@@ -636,7 +636,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC7
+     * @since 1.0.RC7.5
      */
     @Test
     void testGetOrganizations() {
