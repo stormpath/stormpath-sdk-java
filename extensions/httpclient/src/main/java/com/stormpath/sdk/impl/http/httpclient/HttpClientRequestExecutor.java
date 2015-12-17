@@ -124,8 +124,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         int connectionMaxPerRoute = DEFAULT_MAX_CONNECTIONS_PER_ROUTE;
         try {
-            if (System.getProperty("MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY") != null) {
-                connectionMaxPerRoute = Integer.parseInt(System.getProperty("MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY"));
+            if (System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY) != null) {
+                connectionMaxPerRoute = Integer.parseInt(System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY));
             }
         } catch (NumberFormatException nfe) {
             log.error(
