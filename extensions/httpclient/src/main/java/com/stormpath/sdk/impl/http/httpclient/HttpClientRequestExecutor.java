@@ -81,6 +81,12 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private static final int DEFAULT_MAX_RETRIES = 4;
 
+    private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = 10;
+    private static final String MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor.connPoolControl.maxPerRoute";
+
+    private static final int DEFAULT_MAX_CONNECTIONS_TOTAL = 20;
+    private static final String MAX_CONNECTIONS_TOTAL_PROPERTY_KEY = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor.connPoolControl.maxTotal";
+
     private int numRetries = DEFAULT_MAX_RETRIES;
 
     private final ApiKey apiKey;
@@ -116,8 +122,42 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
+        int connectionMaxPerRoute = DEFAULT_MAX_CONNECTIONS_PER_ROUTE;
+        try {
+            if (System.getProperty("MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY") != null) {
+                connectionMaxPerRoute = Integer.parseInt(System.getProperty("MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY"));
+            }
+        } catch (NumberFormatException nfe) {
+            log.error(
+                "Bad max connection per route value: " + System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY) +
+                ". Using default: " + DEFAULT_MAX_CONNECTIONS_PER_ROUTE
+            );
+        }
+
+        int connectionMaxTotal = DEFAULT_MAX_CONNECTIONS_TOTAL;
+        try {
+            if (System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY) != null) {
+                connectionMaxTotal = Integer.parseInt(System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY));
+            }
+        } catch (NumberFormatException nfe) {
+            log.error(
+                "Bad max connection total value: " + System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY) +
+                ". Using default: " + DEFAULT_MAX_CONNECTIONS_TOTAL
+            );
+        }
+
+        if (connectionMaxTotal < connectionMaxPerRoute) {
+            log.error(
+                "connectionMaxTotal (" + connectionMaxTotal + ") is less than connectionMaxPerRoute (" + connectionMaxPerRoute + "). " +
+                "Reverting to defaults: connectionMaxTotal (" + DEFAULT_MAX_CONNECTIONS_TOTAL + ") and connectionMaxPerRoute (" + DEFAULT_MAX_CONNECTIONS_TOTAL + ")."
+            );
+            connectionMaxPerRoute = DEFAULT_MAX_CONNECTIONS_PER_ROUTE;
+            connectionMaxTotal = DEFAULT_MAX_CONNECTIONS_TOTAL;
+        }
+
         PoolingClientConnectionManager connMgr = new PoolingClientConnectionManager();
-        connMgr.setDefaultMaxPerRoute(10);
+        connMgr.setDefaultMaxPerRoute(connectionMaxPerRoute);
+        connMgr.setMaxTotal(connectionMaxTotal);
 
         this.httpClient = new DefaultHttpClient(connMgr);
         httpClient.getParams().setParameter(AllClientPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
