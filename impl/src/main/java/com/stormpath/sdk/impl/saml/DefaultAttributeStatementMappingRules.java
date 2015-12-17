@@ -18,36 +18,30 @@ package com.stormpath.sdk.impl.saml;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.saml.SamlPolicy;
-import com.stormpath.sdk.saml.SamlServiceProvider;
+import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 import java.util.Map;
 
 /**
  * @since 1.0.RC8
  */
-public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlPolicy {
+public class DefaultAttributeStatementMappingRules extends AbstractInstanceResource implements AttributeStatementMappingRules {
 
-    // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<SamlServiceProvider> SAML_SERVICE_PROVIDER = new ResourceReference<SamlServiceProvider>("serviceProvider", SamlServiceProvider.class);
+    // SIMPLE PROPERTIES:
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SAML_SERVICE_PROVIDER);
+//    TODO
+//    Map items property as a new JsonProperty
 
-    public DefaultSamlPolicy(InternalDataStore dataStore) {
+    public DefaultAttributeStatementMappingRules(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultSamlPolicy(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultAttributeStatementMappingRules(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
     @Override
     public Map<String, Property> getPropertyDescriptors() {
-        return PROPERTY_DESCRIPTORS;
-    }
-
-    public SamlServiceProvider getSamlServiceProvider() {
-        return getResourceProperty(SAML_SERVICE_PROVIDER);
+        return null;
     }
 }

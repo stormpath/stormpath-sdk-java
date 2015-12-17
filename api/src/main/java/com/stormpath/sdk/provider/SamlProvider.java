@@ -15,11 +15,50 @@
 */
 package com.stormpath.sdk.provider;
 
+import com.stormpath.sdk.saml.AttributeStatementMappingRules;
+import com.stormpath.sdk.saml.SAMLServiceProviderMetadata;
+
 /**
  * A SAML-specific {@link com.stormpath.sdk.provider.Provider} Resource.
  *
  * @since 1.0.RC8
  */
 public interface SamlProvider extends Provider {
+
+    /**
+     * Returns the URL for the Identity Provider (IdP) SSO Login Endpoint.
+     * @return the URL for the Identity Provider (IdP) SSO Login Endpoint.
+     */
+    String getSsoLoginUrl();
+
+    /**
+     * Returns the URL for the Identity Provider (IdP) SSO Logout Endpoint.
+     * @return the URL for the Identity Provider (IdP) SSO Logout Endpoint.
+     */
+    String getSsoLogoutUrl();
+
+    /**
+     * Returns the valid String for the PEM encoded certificate.
+     * @return the valid String for the PEM encoded certificate.
+     */
+    String getEncodedX509SigningCert();
+
+    /**
+     * Returns the algorithm used to sign the request.
+     * @return the algorithm used to sign the request.
+     */
+    String getRequestSignatureAlgorithm();
+
+    /**
+     * Returns the {@link AttributeStatementMappingRules AttributeStatementMappingRules} instace containing the rules for mapping Stormpath's Account attributes to client application attributes.
+     * @return the {@link AttributeStatementMappingRules AttributeStatementMappingRules} resource containing the rules for mapping Stormpath's Account attributes to client application attributes.
+     */
+    AttributeStatementMappingRules getAttributeStatementMappingRules();
+
+    /**
+     *
+     * @return
+     */
+    SAMLServiceProviderMetadata getServiceProviderMetadata();
 }
 

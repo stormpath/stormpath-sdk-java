@@ -18,15 +18,10 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * A SamlPolicy resource contains information about the SAML configuration for the parent {@link com.stormpath.sdk.application.Application}.
+ * The AttributeStatementMappingRules resource contains the rules for Mapping Stormpath's account attributes to client application's attributes.
  *
  * @since 1.0.RC8
  */
-public interface SamlPolicy extends Resource {
+public interface AttributeStatementMappingRules extends Resource {
 
-    /**
-     * Returns the SAML Service Provider ({@link SamlServiceProvider SamlServiceProvider}) associated to this policy.
-     * @return
-     */
-    SamlServiceProvider getSamlServiceProvider();
 }

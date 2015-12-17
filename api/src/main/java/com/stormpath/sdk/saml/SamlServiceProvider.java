@@ -18,15 +18,15 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * A SamlPolicy resource contains information about the SAML configuration for the parent {@link com.stormpath.sdk.application.Application}.
+ * SAML-specific Resource to represent the SAML service provider for an Application.
  *
  * @since 1.0.RC8
  */
-public interface SamlPolicy extends Resource {
+public interface SamlServiceProvider extends Resource {
 
     /**
-     * Returns the SAML Service Provider ({@link SamlServiceProvider SamlServiceProvider}) associated to this policy.
-     * @return
+     * Returns the SSO initialization Endpoint for this Saml Service provider
+     * @return the String SSO initialization Endpoint for this Saml Service Provider
      */
-    SamlServiceProvider getSamlServiceProvider();
+    String getSsoInitiationEndpoint();
 }

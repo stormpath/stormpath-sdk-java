@@ -18,8 +18,7 @@ package com.stormpath.sdk.impl.saml;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.saml.SamlPolicy;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.saml.SamlServiceProvider;
 
 import java.util.Map;
@@ -27,19 +26,19 @@ import java.util.Map;
 /**
  * @since 1.0.RC8
  */
-public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlPolicy {
+public class DefaultSamlServiceProvider extends AbstractInstanceResource implements SamlServiceProvider {
 
-    // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<SamlServiceProvider> SAML_SERVICE_PROVIDER = new ResourceReference<SamlServiceProvider>("serviceProvider", SamlServiceProvider.class);
+    // SIMPLE PROPERTIES
+    static final StringProperty SSO_INITIALIZATION_ENDPOINT = new StringProperty("ssoInitiationEndpoint");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SAML_SERVICE_PROVIDER);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SSO_INITIALIZATION_ENDPOINT);
 
-    public DefaultSamlPolicy(InternalDataStore dataStore) {
-        super(dataStore);
+    public DefaultSamlServiceProvider(InternalDataStore dataStore, Map<String, Object> properties) {
+        super(dataStore, properties);
     }
 
-    public DefaultSamlPolicy(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+    public DefaultSamlServiceProvider(InternalDataStore dataStore) {
+        super(dataStore);
     }
 
     @Override
@@ -47,7 +46,8 @@ public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlP
         return PROPERTY_DESCRIPTORS;
     }
 
-    public SamlServiceProvider getSamlServiceProvider() {
-        return getResourceProperty(SAML_SERVICE_PROVIDER);
+    @Override
+    public String getSsoInitiationEndpoint() {
+        return getString(SSO_INITIALIZATION_ENDPOINT);
     }
 }

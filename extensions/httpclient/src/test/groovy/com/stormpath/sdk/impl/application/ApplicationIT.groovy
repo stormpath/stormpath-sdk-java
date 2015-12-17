@@ -36,7 +36,6 @@ import com.stormpath.sdk.oauth.JwtAuthenticationRequest
 import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
-
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -577,6 +576,9 @@ class ApplicationIT extends ClientIT {
         assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), appApiKey.secret
     }
 
+    /**
+     * @since 1.0.RC8
+     */
     @Test
     void testSamlProperties(){
         def app = createTempApp()
@@ -584,8 +586,8 @@ class ApplicationIT extends ClientIT {
         def samlPolicy = app.getSamlPolicy()
 
         assertNotNull samlPolicy.href
-        assertNotNull samlPolicy.getSamlProvider()
-        assertEquals samlPolicy.getSamlProvider().getProviderId(), "saml"
+        assertNotNull samlPolicy.getSamlServiceProvider()
+        assertNotNull samlPolicy.getSamlServiceProvider().getSsoInitiationEndpoint()
 
         //test invalid URI assignment attempt
         try {
