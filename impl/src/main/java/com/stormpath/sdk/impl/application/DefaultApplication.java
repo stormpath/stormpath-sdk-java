@@ -629,6 +629,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
                     accountStoreType = Directory.class;
                 } else if (splitHrefOrName[4].equals("groups")) {
                     accountStoreType = Group.class;
+                } else if (splitHrefOrName[4].equals("organizations")){
+                    accountStoreType = Organization.class;
                 }
             }
             if (accountStoreType != null) {
