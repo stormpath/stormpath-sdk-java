@@ -425,7 +425,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC7.5
+     * @since 1.0.RC7.7
      */
     @Test
     void testAddOrganizationAccountStore_Href() {
