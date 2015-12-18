@@ -437,7 +437,8 @@ class ApplicationIT extends ClientIT {
                 .setDescription("Organization")
                 .setNameKey(uniquify("test").substring(2, 8))
                 .setStatus(OrganizationStatus.ENABLED)
-        org = client.currentTenant.createOrganization(org)
+        org = cli
+        ent.currentTenant.createOrganization(org)
         deleteOnTeardown(org)
 
         def accountStoreMapping = app2.addAccountStore(org.href)
