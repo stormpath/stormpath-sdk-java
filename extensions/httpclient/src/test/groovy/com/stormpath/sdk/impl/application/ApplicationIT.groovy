@@ -403,7 +403,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC7.7
+     * @since 1.0.RC5
      */
     @Test
     void testAddOrganizationAccountStoreWithCriteria() {
