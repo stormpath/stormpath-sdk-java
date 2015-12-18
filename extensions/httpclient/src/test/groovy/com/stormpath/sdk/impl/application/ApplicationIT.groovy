@@ -403,7 +403,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC5
+     * @since 1.0.RC7.7
      */
     @Test
     void testAddOrganizationAccountStoreWithCriteria() {
@@ -419,6 +419,28 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(org)
 
         def accountStoreMapping = app2.addAccountStore(Organizations.where(Organizations.name().eqIgnoreCase(org.name)))
+        assertNotNull accountStoreMapping
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
+        deleteOnTeardown(accountStoreMapping)
+    }
+
+    /**
+     * @since 1.0.RC7.5
+     */
+    @Test
+    void testAddOrganizationAccountStore_Href() {
+        def app2 = createTempApp()
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 1)
+
+        Organization org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_testAddOrganizationAccountStoreMapping_Href"))
+                .setDescription("Organization")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(org)
+
+        def accountStoreMapping = app2.addAccountStore(org.href)
         assertNotNull accountStoreMapping
         assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
         deleteOnTeardown(accountStoreMapping)
