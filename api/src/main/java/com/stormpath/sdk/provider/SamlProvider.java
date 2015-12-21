@@ -16,7 +16,7 @@
 package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
-import com.stormpath.sdk.saml.SAMLServiceProviderMetadata;
+import com.stormpath.sdk.saml.SamlServiceProviderMetadata;
 
 /**
  * A SAML-specific {@link com.stormpath.sdk.provider.Provider} Resource.
@@ -59,6 +59,6 @@ public interface SamlProvider extends Provider {
      *
      * @return
      */
-    SAMLServiceProviderMetadata getServiceProviderMetadata();
+    SamlServiceProviderMetadata getServiceProviderMetadata();
 }
 

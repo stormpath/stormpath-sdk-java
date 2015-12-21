@@ -21,8 +21,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.SamlProvider;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
-import com.stormpath.sdk.saml.SAMLServiceProviderMetadata;
-import com.stormpath.sdk.saml.SamlServiceProvider;
+import com.stormpath.sdk.saml.SamlServiceProviderMetadata;
 
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<AttributeStatementMappingRules> ATTRIBUTE_STATEMENT_MAPPING_RULES = new ResourceReference<AttributeStatementMappingRules>("attributeStatementMappingRules", AttributeStatementMappingRules.class);
 
-    static final ResourceReference<SAMLServiceProviderMetadata> SERVICE_PROVIDER_METADATA  = new ResourceReference<SAMLServiceProviderMetadata>("serviceProviderMetadata", SAMLServiceProviderMetadata.class);
+    static final ResourceReference<SamlServiceProviderMetadata> SERVICE_PROVIDER_METADATA  = new ResourceReference<SamlServiceProviderMetadata>("serviceProviderMetadata", SamlServiceProviderMetadata.class);
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, SSO_LOGIN_URL, SSO_LOGOUT_URL, ENCODED_X509_SIGNING_CERT, REQUEST_SIGNATURE_ALGORITHM, SERVICE_PROVIDER_METADATA, ATTRIBUTE_STATEMENT_MAPPING_RULES);
 
@@ -82,7 +81,7 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
         return getResourceProperty(ATTRIBUTE_STATEMENT_MAPPING_RULES);
     }
 
-    public SAMLServiceProviderMetadata getServiceProviderMetadata() {
+    public SamlServiceProviderMetadata getServiceProviderMetadata() {
         return getResourceProperty(SERVICE_PROVIDER_METADATA);
     }
 }
