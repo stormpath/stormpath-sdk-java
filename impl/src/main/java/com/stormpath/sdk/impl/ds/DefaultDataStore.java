@@ -291,6 +291,11 @@ public class DefaultDataStore implements InternalDataStore {
         if (httpStatus == 201) {
             return ResourceAction.CREATE;
         }
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/403
+        if (httpStatus == 200) {
+            return ResourceAction.READ;
+        }
+
         return request.getAction();
     }
 
