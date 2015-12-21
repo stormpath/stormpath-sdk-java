@@ -36,8 +36,7 @@ public class DefaultRefreshTokenResultFactory implements RefreshTokenResultFacto
     private final Application application;
 
     public DefaultRefreshTokenResultFactory(Application application) {
-
-        Assert.notNull(application, "Application argument cannot be null.");
+        Assert.notNull(application, "application argument cannot be null.");
         this.application = application;
     }
 

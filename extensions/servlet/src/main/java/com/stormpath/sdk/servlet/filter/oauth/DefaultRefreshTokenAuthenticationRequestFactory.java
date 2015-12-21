@@ -36,7 +36,6 @@ public class DefaultRefreshTokenAuthenticationRequestFactory implements RefreshT
     public RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
 
         try {
-
             String refreshToken = Strings.clean(request.getParameter(REFRESH_TOKEN_GRANT_TYPE));
             Assert.hasText(refreshToken, "refreshToken must not be null or empty.");
 

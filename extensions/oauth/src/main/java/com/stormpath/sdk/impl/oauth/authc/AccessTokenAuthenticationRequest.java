@@ -38,8 +38,6 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
 
     public static final long DEFAULT_TTL = 3600; //3600 seconds = 1 hour
 
-    public static final long DEFAULT_REFRESH_TOKEN_TTL = 3600 * 24 * 365; // Default TTL for refresh tokens is 1 year
-
     private final ScopeFactory scopeFactory;
 
     private final long ttl;

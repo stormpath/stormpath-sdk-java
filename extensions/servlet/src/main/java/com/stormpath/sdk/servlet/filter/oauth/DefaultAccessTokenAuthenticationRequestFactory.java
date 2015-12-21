@@ -20,6 +20,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.Oauth2Requests;
 import com.stormpath.sdk.oauth.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,7 +36,11 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
     protected static final String ACCOUNT_STORE_PARAM_NAME = "accountStore";
 
-    public DefaultAccessTokenAuthenticationRequestFactory() {
+    private AccountStoreResolver accountStoreResolver;
+
+    public DefaultAccessTokenAuthenticationRequestFactory(AccountStoreResolver accountStoreResolver) {
+        Assert.notNull(accountStoreResolver, "AccountStoreResolver cannot be null.");
+        this.accountStoreResolver = accountStoreResolver;
     }
 
     @Override
@@ -48,22 +54,16 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
             String password = Strings.clean(request.getParameter(PASSWORD_PARAM_NAME));
             Assert.hasText(password, "password must not be null or empty.");
 
-            String accountStoreId = Strings.clean(request.getParameter(ACCOUNT_STORE_PARAM_NAME));
+            AccountStore accountStore = accountStoreResolver.getAccountStore(request, null);
 
-            AccountStore accountStore = null;
-
+            PasswordGrantRequestBuilder requestBuilder = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+                    .setPassword(password)
+                    .setLogin(username);
             if (accountStore != null){
-                return Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
-                    .setPassword(password)
-                    .setLogin(username)
-                    .setAccountStore(accountStore)
-                    .build();
-            } else {
-                return Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
-                    .setPassword(password)
-                    .setLogin(username)
-                    .build();
+                requestBuilder.setAccountStore(accountStore);
             }
+
+            return requestBuilder.build();
         } catch (Exception e){
             throw new OauthException(OauthErrorCode.INVALID_REQUEST);
         }

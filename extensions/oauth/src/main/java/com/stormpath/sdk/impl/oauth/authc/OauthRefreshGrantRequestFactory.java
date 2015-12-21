@@ -26,19 +26,17 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OauthRefreshGrantRequestFactory extends ApiAuthenticationRequestFactory {
 
+    public static final long DEFAULT_REFRESH_TOKEN_TTL = 3600 * 24 * 365; // Default TTL for refresh tokens is 1 year
+
     public RefreshGrantAuthenticationRequest createFrom(HttpServletRequest httpServletRequest) {
 
         final String REFRESH_TOKEN_PARAM_NAME = "refresh_token";
 
         final String refreshToken = httpServletRequest.getParameter(REFRESH_TOKEN_PARAM_NAME);
 
-        String authzHeaderValue = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
-
-        String[] schemeAndValue = getSchemeAndValue(authzHeaderValue);
-
         try {
             if (refreshToken != null){
-                return new RefreshGrantAuthenticationRequest(httpServletRequest, AccessTokenAuthenticationRequest.DEFAULT_REFRESH_TOKEN_TTL);
+                return new RefreshGrantAuthenticationRequest(httpServletRequest, DEFAULT_REFRESH_TOKEN_TTL);
             }
             throw ApiAuthenticationExceptionFactory.newOauthRefreshGrantException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         } catch (Exception e) {

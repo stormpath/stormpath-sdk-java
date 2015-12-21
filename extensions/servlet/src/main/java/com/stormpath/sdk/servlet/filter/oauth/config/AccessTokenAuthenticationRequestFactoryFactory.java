@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.filter.oauth.config;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.ServletContext;
 
@@ -29,6 +30,8 @@ public class AccessTokenAuthenticationRequestFactoryFactory
 
     @Override
     protected AccessTokenAuthenticationRequestFactory createInstance(ServletContext sc) throws Exception {
-        return new DefaultAccessTokenAuthenticationRequestFactory();
+        AccountStoreResolver resolver =
+                getConfig().getInstance("stormpath.web.accountStoreResolver");
+        return new DefaultAccessTokenAuthenticationRequestFactory(resolver);
     }
 }

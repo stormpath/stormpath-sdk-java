@@ -50,7 +50,6 @@ public class RefreshGrantAuthenticationRequest extends OAuthTokenRequest impleme
         Assert.isTrue(ttl > 0, "ttl cannot be less or equal to 0 (zero).");
 
         this.ttl = ttl;
-
     }
 
     private static HttpServletRequest getHttpServletRequest(HttpRequest httpRequest) {
@@ -67,31 +66,31 @@ public class RefreshGrantAuthenticationRequest extends OAuthTokenRequest impleme
 
     @Override
     public String getHost() {
-        throw new UnsupportedOperationException("getHost() method hasn't been implemented.");
+        throw new UnsupportedOperationException("getHost() method is not supported. It should have never been invoked.");
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("clear() method hasn't been implemented.");
+        throw new UnsupportedOperationException("clear() method is not supported. It should have never been invoked.");
     }
 
     @Override
     public AccountStore getAccountStore() {
-        throw new UnsupportedOperationException("getAccountStore() method hasn't been implemented.");
+        throw new UnsupportedOperationException("getAccountStore() method is not supported. It should have never been invoked.");
     }
 
     @Override
     public AuthenticationOptions getResponseOptions() {
-        throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() is not supported.");
+        throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() method is not supported. It should have never been invoked.");
     }
 
     @Override
     public String getPrincipals() {
-        throw new UnsupportedOperationException(getClass().getName() + " .getPrincipals() is not supported.");
+        throw new UnsupportedOperationException(getClass().getName() + " .getPrincipals() method is not supported. It should have never been invoked.");
     }
 
     @Override
     public String getCredentials() {
-        throw new UnsupportedOperationException(getClass().getName() + " .getCredentials() is not supported.");
+        throw new UnsupportedOperationException(getClass().getName() + " .getCredentials() method is not supported. It should have never been invoked.");
     }
 }

@@ -1006,7 +1006,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
-        return new DefaultAccessTokenAuthenticationRequestFactory();
+        return new DefaultAccessTokenAuthenticationRequestFactory(stormpathAccountStoreResolver());
     }
 
     /**
