@@ -18,9 +18,7 @@ package com.stormpath.sdk.impl.saml;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.SetProperty;
 import com.stormpath.sdk.saml.AttributeStatementMappingRule;
-import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,19 +26,15 @@ import java.util.Set;
 /**
  * @since 1.0.RC8
  */
-public class DefaultAttributeStatementMappingRules extends AbstractInstanceResource implements AttributeStatementMappingRules {
+public class DefaultAttributeStatementMappingRule extends AbstractInstanceResource implements AttributeStatementMappingRule {
 
-    private static final SetProperty<AttributeStatementMappingRule> ITEMS = new SetProperty<AttributeStatementMappingRule>("items", AttributeStatementMappingRule.class);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap();
 
-    private static final String ITEMS_PROPERTY_NAME = "ITEMS";
-
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ITEMS);
-
-    public DefaultAttributeStatementMappingRules(InternalDataStore dataStore) {
+    public DefaultAttributeStatementMappingRule(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAttributeStatementMappingRules(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultAttributeStatementMappingRule(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -50,12 +44,17 @@ public class DefaultAttributeStatementMappingRules extends AbstractInstanceResou
     }
 
     @Override
-    public Set<AttributeStatementMappingRule> getAttributeStatementMappingRules() {
-        return getSetProperty(ITEMS_PROPERTY_NAME);
+    public AttributeStatementMappingRule create(String name, String... accountAttributeNames) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void setAttributeStatementMappingRules(Set<AttributeStatementMappingRule> attributeStatementMappingRules) {
-        setProperty(ITEMS, attributeStatementMappingRules);
+    public String getName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Set<String> getAccountAttributeNames() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

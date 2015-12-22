@@ -22,6 +22,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.saml.AssertionConsumerServicePostEndpoint;
 import com.stormpath.sdk.saml.SamlServiceProviderMetadata;
+import com.stormpath.sdk.saml.X509SigningCert;
 
 import java.util.Map;
 
@@ -31,14 +32,14 @@ import java.util.Map;
 public class DefaultSamlServiceProviderMetadata extends AbstractInstanceResource implements SamlServiceProviderMetadata {
 
     // SIMPLE PROPERTIES
-    static final StringProperty X509_CERTIFICATE_ID = new StringProperty("x509CertificateId");
-
-    static final StringProperty SAML_ENTITY_ID = new StringProperty("entityId");
+    static final StringProperty ENTITY_ID = new StringProperty("entityId");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<AssertionConsumerServicePostEndpoint> ASSERTION_CONSUMER_SERVICE_POST_ENDPOINT = new ResourceReference<AssertionConsumerServicePostEndpoint>("assertionConsumerServicePostEndpoint", AssertionConsumerServicePostEndpoint.class);
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(X509_CERTIFICATE_ID, SAML_ENTITY_ID);
+    static final ResourceReference<X509SigningCert> X509_CERTIFICATE_ID = new ResourceReference<X509SigningCert>("x509CertificateId", X509SigningCert.class);
+
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(X509_CERTIFICATE_ID, ENTITY_ID, ASSERTION_CONSUMER_SERVICE_POST_ENDPOINT);
 
     public DefaultSamlServiceProviderMetadata(InternalDataStore dataStore) {
         super(dataStore);
@@ -53,12 +54,14 @@ public class DefaultSamlServiceProviderMetadata extends AbstractInstanceResource
         return PROPERTY_DESCRIPTORS;
     }
 
-    public String getX509CertificateId() {
-        return getString(X509_CERTIFICATE_ID);
+    @Override
+    public String getEntityId() {
+        return getString(ENTITY_ID);
     }
 
-    public String getSamlEntityId() {
-        return getString(SAML_ENTITY_ID);
+    @Override
+    public X509SigningCert getX509SigningCert() {
+        return getResourceProperty(X509_CERTIFICATE_ID);
     }
 
     public AssertionConsumerServicePostEndpoint getAssertionConsumerServicePostEndpoint() {

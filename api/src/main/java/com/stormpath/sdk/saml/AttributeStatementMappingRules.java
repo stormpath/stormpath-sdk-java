@@ -17,6 +17,8 @@ package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.resource.Resource;
 
+import java.util.Set;
+
 /**
  * The AttributeStatementMappingRules resource contains the rules for Mapping Stormpath's account attributes to client application's attributes.
  *
@@ -24,4 +26,7 @@ import com.stormpath.sdk.resource.Resource;
  */
 public interface AttributeStatementMappingRules extends Resource {
 
+    Set<AttributeStatementMappingRule> getAttributeStatementMappingRules();
+
+    void setAttributeStatementMappingRules(Set<AttributeStatementMappingRule> attributeStatementMappingRules);
 }

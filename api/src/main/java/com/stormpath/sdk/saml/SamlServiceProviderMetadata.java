@@ -18,14 +18,25 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- *
  * @since 1.0.RC8
  */
 public interface SamlServiceProviderMetadata extends Resource {
 
-    String getX509CertificateId();
+    /**
+     *
+     * @return
+     */
+    String getEntityId();
 
-    String getSamlEntityId();
+    /**
+     *
+     * @return
+     */
+    X509SigningCert getX509SigningCert();
 
+    /**
+     *
+     * @return
+     */
     AssertionConsumerServicePostEndpoint getAssertionConsumerServicePostEndpoint();
 }

@@ -50,6 +50,26 @@ public interface SamlProvider extends Provider {
     String getRequestSignatureAlgorithm();
 
     /**
+     * Sets the URL for the Identity Provider (IdP) SSO Login Endpoint.
+     */
+    void setSsoLoginUrl(String ssoLoginUrl);
+
+    /**
+     * Sets the URL for the Identity Provider (IdP) SSO Logout Endpoint.
+     */
+    void setSsoLogoutUrl(String ssoLogoutUrl);
+
+    /**
+     * Sets the value for the PEM encoded certificate.
+     */
+    void setEncodedX509SigningCert(String encodedX509SigningCert);
+
+    /**
+     * Sets the algorithm used to sign the request.
+     */
+    void setRequestSignatureAlgorithm(String requestSignatureAlgorithm);
+
+    /**
      * Returns the {@link AttributeStatementMappingRules AttributeStatementMappingRules} instace containing the rules for mapping Stormpath's Account attributes to client application attributes.
      * @return the {@link AttributeStatementMappingRules AttributeStatementMappingRules} resource containing the rules for mapping Stormpath's Account attributes to client application attributes.
      */

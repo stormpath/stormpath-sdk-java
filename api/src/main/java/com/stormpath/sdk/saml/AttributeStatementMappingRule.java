@@ -15,10 +15,19 @@
 */
 package com.stormpath.sdk.saml;
 
+
 import com.stormpath.sdk.resource.Resource;
+
+import java.util.Set;
 
 /**
  * @since 1.0.RC8
  */
-public interface AssertionConsumerServicePostEndpoint extends Resource {
+public interface AttributeStatementMappingRule extends Resource {
+
+    AttributeStatementMappingRule create(String name, String... accountAttributeNames);
+
+    String getName();
+
+    Set<String> getAccountAttributeNames();
 }

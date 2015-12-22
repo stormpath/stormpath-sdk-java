@@ -13,12 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.saml;
+package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.resource.Resource;
 
 /**
  * @since 1.0.RC8
  */
-public interface AssertionConsumerServicePostEndpoint extends Resource {
+public class SetProperty<T extends Resource> extends Property<T> {
+
+    public SetProperty(String name, Class<T> type) {
+        super(name, type);
+    }
 }

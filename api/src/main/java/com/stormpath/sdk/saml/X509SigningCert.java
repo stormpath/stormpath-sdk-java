@@ -18,7 +18,9 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.resource.Resource;
 
 /**
+ * This resource represents a <a href="https://en.wikipedia.org/wiki/X.509">X.509</a> certificate
+ *
  * @since 1.0.RC8
  */
-public interface AssertionConsumerServicePostEndpoint extends Resource {
+public interface X509SigningCert extends Resource {
 }

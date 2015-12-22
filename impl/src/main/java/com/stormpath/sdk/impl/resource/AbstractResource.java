@@ -406,6 +406,16 @@ public abstract class AbstractResource implements Resource {
         return (List) list;
     }
 
+    /**
+     * Returns the {@link Set} property identified by {@code key}
+     *
+     * @since 1.0.RC8
+     */
+    protected Set getSetProperty(String key){
+        Object set = getProperty(key);
+        return (Set) set;
+    }
+
 //    /**
 //     * @since 0.8
 //     */
