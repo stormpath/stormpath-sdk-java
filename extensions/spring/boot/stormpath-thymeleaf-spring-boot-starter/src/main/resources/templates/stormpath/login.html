@@ -33,7 +33,7 @@
 
                         <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <p th:utext="#{'stormpath.web.login.status.' + ${status}}">|Login Status|</p>
+                            <p th:text="#{'stormpath.web.login.status.' + ${status}}">|Login Status|</p>
                         </div>
 
                         <div class="alert alert-dismissable alert-danger bad-login" th:if="${errors != null and not #lists.isEmpty(errors)}">
