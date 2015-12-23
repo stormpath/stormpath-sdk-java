@@ -26,10 +26,11 @@
     <packaging>war</packaging>
 
     <properties>
-        <logback.version>1.1.2</logback.version>
-        <servlet.version>3.0.1</servlet.version>
+        <jdk.version>1.6</jdk.version>
         <jstl.version>1.2</jstl.version>
+        <logback.version>1.1.2</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <servlet.version>3.0.1</servlet.version>
     </properties>
 
     <dependencies>
@@ -59,6 +60,16 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

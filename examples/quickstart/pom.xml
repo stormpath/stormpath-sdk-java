@@ -11,10 +11,11 @@
     <packaging>jar</packaging>
 
     <properties>
-        <logback.version>1.1.2</logback.version>
-        <testng.version>6.8</testng.version>
         <groovy.version>1.8.8</groovy.version>
+        <jdk.version>1.6</jdk.version>
+        <logback.version>1.1.2</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <testng.version>6.8</testng.version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,16 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
