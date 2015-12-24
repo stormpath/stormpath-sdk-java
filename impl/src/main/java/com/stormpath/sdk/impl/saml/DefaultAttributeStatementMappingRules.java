@@ -19,11 +19,11 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.SetProperty;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.saml.AttributeStatementMappingRule;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @since 1.0.RC8
@@ -34,7 +34,7 @@ public class DefaultAttributeStatementMappingRules extends AbstractInstanceResou
 
     private static final String ITEMS_PROPERTY_NAME = "ITEMS";
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ITEMS);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ITEMS);
 
     public DefaultAttributeStatementMappingRules(InternalDataStore dataStore) {
         super(dataStore);
@@ -49,13 +49,118 @@ public class DefaultAttributeStatementMappingRules extends AbstractInstanceResou
         return PROPERTY_DESCRIPTORS;
     }
 
-    @Override
-    public Set<AttributeStatementMappingRule> getAttributeStatementMappingRules() {
+    @SuppressWarnings("unchecked")
+    public Set<AttributeStatementMappingRule> getItems() {
         return getSetProperty(ITEMS_PROPERTY_NAME);
     }
 
-    @Override
-    public void setAttributeStatementMappingRules(Set<AttributeStatementMappingRule> attributeStatementMappingRules) {
+    public void setItems(Set<AttributeStatementMappingRule> attributeStatementMappingRules) {
         setProperty(ITEMS, attributeStatementMappingRules);
+    }
+
+    @Override
+    public Set<AttributeStatementMappingRule> removeByName(String... ruleNames) {
+        if (ruleNames == null && ruleNames.length == 0) {
+            return java.util.Collections.emptySet();
+        }
+
+        Set<AttributeStatementMappingRule> rules = nullSafeItems();
+
+        Set<AttributeStatementMappingRule> removed = new HashSet<AttributeStatementMappingRule>();
+
+        for (AttributeStatementMappingRule rule : rules) {
+            for (String name : ruleNames) {
+                if (rule.getName().equals(name)) {
+                    removed.add(rule);
+                    break;
+                }
+            }
+        }
+
+        nullSafeItems().removeAll(removed);
+
+        return removed;
+    }
+
+    @Override
+    public int size() {
+        return nullSafeItems().size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return nullSafeItems().isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return o != null && nullSafeItems().contains(o);
+    }
+
+    @Override
+    public Iterator<AttributeStatementMappingRule> iterator() {
+        return nullSafeItems().iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return nullSafeItems().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return nullSafeItems().toArray(a);
+    }
+
+    @Override
+    public boolean add(AttributeStatementMappingRule attributeStatementMappingRule) {
+        return attributeStatementMappingRule != null && ensureItems().add(attributeStatementMappingRule);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return o != null && nullSafeItems().remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return !Collections.isEmpty(c) && nullSafeItems().containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends AttributeStatementMappingRule> c) {
+        return !Collections.isEmpty(c) && ensureItems().addAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return !Collections.isEmpty(c) && ensureItems().retainAll(c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return !Collections.isEmpty(c) && nullSafeItems().removeAll(c);
+    }
+
+    @Override
+    public void clear() {
+        nullSafeItems().clear();
+    }
+
+    private Set<AttributeStatementMappingRule> nullSafeItems() {
+        Set<AttributeStatementMappingRule> items = getItems();
+        if (items == null) {
+            items = java.util.Collections.emptySet();
+        }
+        return items;
+    }
+
+    private Set<AttributeStatementMappingRule> ensureItems() {
+        Set<AttributeStatementMappingRule> items = getItems();
+        if (items == null) {
+            items = new LinkedHashSet<AttributeStatementMappingRule>();
+            setItems(items);
+        }
+        return items;
     }
 }

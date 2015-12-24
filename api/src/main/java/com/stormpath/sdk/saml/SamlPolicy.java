@@ -18,15 +18,20 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * A SamlPolicy resource contains information about the SAML configuration for the parent {@link com.stormpath.sdk.application.Application}.
+ * A SamlPolicy represents an {@link com.stormpath.sdk.application.Application Application}'s SAML-specific
+ * configuration.
  *
  * @since 1.0.RC8
  */
 public interface SamlPolicy extends Resource {
 
     /**
-     * Returns the SAML Service Provider ({@link SamlServiceProvider SamlServiceProvider}) associated to this policy.
-     * @return
+     * Returns the relevant SAML Service Provider information necessary to redirect an end-user to login at
+     * a SAML Identity Provider.  This is used when the owning Application acts as a SAML Service Provider.
+     *
+     * @return the relevant SAML Service Provider information necessary to redirect an end-user to login at
+     * a SAML Identity Provider.
+     * @see SamlServiceProvider#getSsoInitiationEndpoint()
      */
     SamlServiceProvider getSamlServiceProvider();
 }

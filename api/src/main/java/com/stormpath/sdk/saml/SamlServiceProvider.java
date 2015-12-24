@@ -15,18 +15,27 @@
 */
 package com.stormpath.sdk.saml;
 
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * SAML-specific Resource to represent the SAML service provider for an Application.
+ * A {@code SamlServiceProvider} instance represents the information necessary to redirect an end-user to login at
+ * a SAML Identity Provider.  This is used when the owning Application acts as a SAML Service Provider.
  *
  * @since 1.0.RC8
  */
 public interface SamlServiceProvider extends Resource {
 
     /**
-     * Returns the SSO initialization Endpoint for this Saml Service provider
-     * @return the String SSO initialization Endpoint for this Saml Service Provider
+     * Returns the endpoint to where end-users (web browsers) should be redirected when they need to login to a SAML
+     * Identity Provider.  This is an application-specific URL in Stormpath.  Once the browser is redirected there,
+     * they will transparently be redirected to the appropriate SAML Identity Provider based on the Application's
+     * {@link com.stormpath.sdk.application.Application#getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria) accountStoreMappings}.
+     * This transparent redirect is what allows Stormpath to handle all SAML protocol specifics so you don't have to
+     * worry about SAML concepts at all.
+     *
+     * @return the endpoint to where end-users (web browsers) should be redirected when they need to login to a SAML
+     * Identity Provider.
      */
     String getSsoInitiationEndpoint();
 }

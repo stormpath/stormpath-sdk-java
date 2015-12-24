@@ -19,65 +19,92 @@ import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 import com.stormpath.sdk.saml.SamlServiceProviderMetadata;
 
 /**
- * A SAML-specific {@link com.stormpath.sdk.provider.Provider} Resource.
+ * A {@link com.stormpath.sdk.provider.Provider} Resource that represents a SAML Identity Provider (IdP).  Accounts
+ * authenticated at the IdP will automatically be synchronized to the associated Stormpath Directory.
  *
  * @since 1.0.RC8
  */
 public interface SamlProvider extends Provider {
 
     /**
-     * Returns the URL for the Identity Provider (IdP) SSO Login Endpoint.
-     * @return the URL for the Identity Provider (IdP) SSO Login Endpoint.
+     * Returns the URL at the SAML Identity Provider where end-users should be redirected to login. This is often called
+     * an “SSO URL”, “Login URL” or “Sign-in URL”.for the Identity Provider (IdP) SSO Login Endpoint.
+     *
+     * @return the URL at the SAML Identity Provider where end-users should be redirected to login.
      */
     String getSsoLoginUrl();
 
     /**
-     * Returns the URL for the Identity Provider (IdP) SSO Logout Endpoint.
-     * @return the URL for the Identity Provider (IdP) SSO Logout Endpoint.
-     */
-    String getSsoLogoutUrl();
-
-    /**
-     * Returns the valid String for the PEM encoded certificate.
-     * @return the valid String for the PEM encoded certificate.
-     */
-    String getEncodedX509SigningCert();
-
-    /**
-     * Returns the algorithm used to sign the request.
-     * @return the algorithm used to sign the request.
-     */
-    String getRequestSignatureAlgorithm();
-
-    /**
-     * Sets the URL for the Identity Provider (IdP) SSO Login Endpoint.
+     * Sets the URL at the SAML Identity Provider where end-users should be redirected to login. This is often called
+     * an “SSO URL”, “Login URL” or “Sign-in URL”.for the Identity Provider (IdP) SSO Login Endpoint.
      */
     void setSsoLoginUrl(String ssoLoginUrl);
 
     /**
-     * Sets the URL for the Identity Provider (IdP) SSO Logout Endpoint.
+     * Returns the URL at the SAML Idenity Provider where end-users should be redirected to logout of all applications.
+     * This is often called a “Logout URL”, “Global Logout URL” or “Single Logout URL”.
+     *
+     * @return the URL at the SAML Idenity Provider where end-users should be redirected to logout of all applications.
+     */
+    String getSsoLogoutUrl();
+
+    /**
+     * Sets the URL at the SAML Idenity Provider where end-users should be redirected to logout of all applications.
+     * This is often called a “Logout URL”, “Global Logout URL” or “Single Logout URL”.
      */
     void setSsoLogoutUrl(String ssoLogoutUrl);
 
     /**
-     * Sets the value for the PEM encoded certificate.
+     * Returns the algorithm used by the SAML Identity provider to sign SAML assertions.  If signatures are used, this
+     * value is usually either {@code RSA-SHA1} or {@code RSA-SHA256}.
+     *
+     * @return the algorithm used by the SAML Identity provider to sign SAML assertions.
      */
-    void setEncodedX509SigningCert(String encodedX509SigningCert);
+    String getRequestSignatureAlgorithm();
 
     /**
-     * Sets the algorithm used to sign the request.
+     * Sets the algorithm used by the SAML Identity provider to sign SAML assertions.  If signatures are used, this
+     * value is usually either {@code RSA-SHA1} or {@code RSA-SHA256}.
      */
     void setRequestSignatureAlgorithm(String requestSignatureAlgorithm);
 
     /**
-     * Returns the {@link AttributeStatementMappingRules AttributeStatementMappingRules} instace containing the rules for mapping Stormpath's Account attributes to client application attributes.
-     * @return the {@link AttributeStatementMappingRules AttributeStatementMappingRules} resource containing the rules for mapping Stormpath's Account attributes to client application attributes.
+     * Returns the <a href="https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail">PEM</a>-formatted
+     * {@code X.509} certificate used validate the SAML Identity Provider's signed SAML assertions.
+     *
+     * @return the <a href="https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail">PEM</a>-formatted
+     * {@code X.509} certificate used validate the SAML Identity Provider's signed SAML assertions.
+     */
+    String getEncodedX509SigningCert();
+
+    /**
+     * Sets the <a href="https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail">PEM</a>-formatted
+     * {@code X.509} certificate used validate the SAML Identity Provider's signed SAML assertions.  This <b>MUST</b>
+     * be a valid PEM formatting, otherwise the value will be rejected.
+     */
+    void setEncodedX509SigningCert(String encodedX509SigningCert);
+
+    /**
+     * Returns the rules for mapping SAML Assertion Attributes to Stormpath Account attributes for Accounts created
+     * in the associated Stormpath Directory.
+     *
+     * @return the rules for mapping SAML Assertion Attributes to Stormpath Account attributes for Accounts created
+     * in the associated Stormpath Directory.
      */
     AttributeStatementMappingRules getAttributeStatementMappingRules();
 
     /**
+     * Returns the (read-only) Service Provider metadata that can be used to register and/or configure an
+     * application with a SAML Identity Provider.
+     * <p>This metadata is almost always accessed as an XML document and
+     * provided to the SAML Identity Provider when registering with the Identity Provider, and not often accessed
+     * in Java code or as JSON.  It is provided as a type-safe resource however should you wish to read the associated
+     * values.</p>
+     * <p>The returned object is read-only.  Because Stormpath fully automates SAML assertion exchange between the
+     * Identity Provider, there is nothing to configure, so there are no mutator (setter) methods necessary.</p>
      *
-     * @return
+     * @return the (read-only) Service Provider metadata that can be used to register and/or configure an
+     * application with a SAML Identity Provider.
      */
     SamlServiceProviderMetadata getServiceProviderMetadata();
 }

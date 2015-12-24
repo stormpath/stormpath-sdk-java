@@ -17,16 +17,22 @@ package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.resource.Resource;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
- * The AttributeStatementMappingRules resource contains the rules for Mapping Stormpath's account attributes to client application's attributes.
+ * An ordered Set of all {@link AttributeStatementMappingRule}s that indicate how SAML Attribute Statements should
+ * populate one or more Stormpath Account field values after a successful SAML login.
+ *
+ * <p>{@link AttributeStatementMappingRule} instances are immutable.  You therefore control which rules are applied
+ * by manipulating this {@code AttributeStatementMappingRules} instance.</p>
+ *
+ * <p>Rules are evaluated in iteration order.  Later rules can override values set by previous rules.</p>
  *
  * @since 1.0.RC8
  */
-public interface AttributeStatementMappingRules extends Resource {
+public interface AttributeStatementMappingRules extends Resource, Set<AttributeStatementMappingRule> {
 
-    Set<AttributeStatementMappingRule> getAttributeStatementMappingRules();
+    Set<AttributeStatementMappingRule> removeByName(String... ruleNames);
 
-    void setAttributeStatementMappingRules(Set<AttributeStatementMappingRule> attributeStatementMappingRules);
 }
