@@ -15,9 +15,6 @@
 */
 package com.stormpath.sdk.saml;
 
-
-import com.stormpath.sdk.resource.Resource;
-
 import java.util.Set;
 
 /**
@@ -41,9 +38,7 @@ import java.util.Set;
  *
  * @since 1.0.RC8
  */
-public interface AttributeStatementMappingRule extends Resource {
-
-    AttributeStatementMappingRule create(String name, String... accountAttributeNames);
+public interface AttributeStatementMappingRule {
 
     /**
      * Returns the SAML Attribute name, that when encountered, should have its value applied as Account field values.

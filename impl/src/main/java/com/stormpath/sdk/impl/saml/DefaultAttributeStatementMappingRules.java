@@ -32,8 +32,6 @@ public class DefaultAttributeStatementMappingRules extends AbstractInstanceResou
 
     private static final SetProperty<AttributeStatementMappingRule> ITEMS = new SetProperty<AttributeStatementMappingRule>("items", AttributeStatementMappingRule.class);
 
-    private static final String ITEMS_PROPERTY_NAME = "ITEMS";
-
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ITEMS);
 
     public DefaultAttributeStatementMappingRules(InternalDataStore dataStore) {
@@ -51,7 +49,7 @@ public class DefaultAttributeStatementMappingRules extends AbstractInstanceResou
 
     @SuppressWarnings("unchecked")
     public Set<AttributeStatementMappingRule> getItems() {
-        return getSetProperty(ITEMS_PROPERTY_NAME);
+        return getSetProperty(ITEMS.getName());
     }
 
     public void setItems(Set<AttributeStatementMappingRule> attributeStatementMappingRules) {

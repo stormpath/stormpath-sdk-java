@@ -15,12 +15,10 @@
 */
 package com.stormpath.sdk.impl.resource;
 
-import com.stormpath.sdk.resource.Resource;
-
 /**
  * @since 1.0.RC8
  */
-public class SetProperty<T extends Resource> extends Property<T> {
+public class SetProperty<T> extends Property<T> {
 
     public SetProperty(String name, Class<T> type) {
         super(name, type);
