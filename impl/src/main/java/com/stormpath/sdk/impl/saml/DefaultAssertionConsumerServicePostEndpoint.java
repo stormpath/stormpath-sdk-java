@@ -27,6 +27,8 @@ import java.util.Map;
  */
 public class DefaultAssertionConsumerServicePostEndpoint extends AbstractInstanceResource implements AssertionConsumerServicePostEndpoint {
 
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap();
+
     public DefaultAssertionConsumerServicePostEndpoint(InternalDataStore dataStore) {
         super(dataStore);
     }
@@ -37,6 +39,6 @@ public class DefaultAssertionConsumerServicePostEndpoint extends AbstractInstanc
 
     @Override
     public Map<String, Property> getPropertyDescriptors() {
-        return null;
+        return PROPERTY_DESCRIPTORS;
     }
 }

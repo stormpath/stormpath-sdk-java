@@ -96,17 +96,17 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
     public void setSsoLogoutUrl(String ssoLogoutUrl) {
         Assert.notNull(ssoLogoutUrl, "ssoLogoutUrl cannot be null or empty.");
         setProperty(SSO_LOGOUT_URL, ssoLogoutUrl);
-        }
+    }
 
     @Override
     public void setEncodedX509SigningCert(String encodedX509SigningCert) {
         Assert.notNull(encodedX509SigningCert, "encodedX509SigningCert cannot be null or empty.");
         setProperty(ENCODED_X509_SIGNING_CERT, encodedX509SigningCert);
-        }
+    }
 
     @Override
     public void setRequestSignatureAlgorithm(String requestSignatureAlgorithm) {
         Assert.notNull(requestSignatureAlgorithm, "requestSignatureAlgorithm cannot be null or empty.");
         setProperty(REQUEST_SIGNATURE_ALGORITHM, requestSignatureAlgorithm);
-        }
+    }
 }
