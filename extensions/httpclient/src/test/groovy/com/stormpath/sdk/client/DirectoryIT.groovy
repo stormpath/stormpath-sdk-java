@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 package com.stormpath.sdk.client
-
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.directory.*
+import com.stormpath.sdk.directory.AccountCreationPolicy
+import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryOptions
+import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.organization.Organization
-import com.stormpath.sdk.organization.OrganizationCriteria
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
 import com.stormpath.sdk.provider.GoogleProvider
@@ -34,7 +36,6 @@ import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
-
 /**
  *
  * @since 0.8.1
@@ -636,7 +637,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC7.5
+     * @since 1.0.RC7.7
      */
     @Test
     void testGetOrganizations() {

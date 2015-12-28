@@ -15,9 +15,21 @@
  */
 package com.stormpath.sdk.impl.directory
 
-import com.stormpath.sdk.account.*
-import com.stormpath.sdk.directory.*
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.CreateAccountRequest
+import com.stormpath.sdk.directory.AccountCreationPolicy
+import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryStatus
+import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.group.CreateGroupRequest
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
@@ -30,8 +42,6 @@ import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
-import com.stormpath.sdk.organization.CreateOrganizationRequest
-import com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList
 import com.stormpath.sdk.organization.OrganizationCriteria
 import com.stormpath.sdk.organization.OrganizationList
@@ -42,7 +52,6 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
-
 /**
  * @since 0.8
  */
@@ -70,9 +79,9 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("passwordPolicy") instanceof ResourceReference && propertyDescriptors.get("passwordPolicy").getType().equals(PasswordPolicy))
         //@since 1.0.RC4
         assertTrue(propertyDescriptors.get("accountCreationPolicy") instanceof ResourceReference && propertyDescriptors.get("accountCreationPolicy").getType().equals(AccountCreationPolicy))
-        //@since 1.0.RC7.5
+        //@since 1.0.RC7.7
         assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
-        //@since 1.0.RC7.5
+        //@since 1.0.RC7.7
         assertTrue(propertyDescriptors.get("organizationMappings") instanceof CollectionReference && propertyDescriptors.get("organizationMappings").getType().equals(OrganizationAccountStoreMappingList))
     }
 
