@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +37,12 @@ public class SessionAccountResolver implements Resolver<Account> {
             return null;
         }
 
-        return (Account) session.getAttribute(Account.class.getName());
+        Account account = (Account) session.getAttribute(Account.class.getName());
+
+        if (account != null) {
+            request.setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, HttpServletRequest.FORM_AUTH);
+        }
+
+        return account;
     }
 }
