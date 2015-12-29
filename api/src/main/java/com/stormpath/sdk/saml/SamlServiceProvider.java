@@ -16,6 +16,7 @@
 package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -24,7 +25,7 @@ import com.stormpath.sdk.resource.Resource;
  *
  * @since 1.0.RC8
  */
-public interface SamlServiceProvider extends Resource {
+public interface SamlServiceProvider extends Resource, Auditable {
 
     /**
      * Returns the endpoint to where end-users (web browsers) should be redirected when they need to login to a SAML

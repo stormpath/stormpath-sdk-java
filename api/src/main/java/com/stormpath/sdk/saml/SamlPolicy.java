@@ -15,6 +15,7 @@
 */
 package com.stormpath.sdk.saml;
 
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
 
 /**
@@ -23,7 +24,7 @@ import com.stormpath.sdk.resource.Resource;
  *
  * @since 1.0.RC8
  */
-public interface SamlPolicy extends Resource {
+public interface SamlPolicy extends Resource, Auditable {
 
     /**
      * Returns the relevant SAML Service Provider information necessary to redirect an end-user to login at

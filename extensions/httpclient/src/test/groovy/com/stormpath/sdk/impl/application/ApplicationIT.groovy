@@ -58,6 +58,8 @@ import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.resource.ResourceException
+import com.stormpath.sdk.saml.SamlPolicy
+import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
@@ -1502,6 +1504,25 @@ class ApplicationIT extends ClientIT {
             def message = e.getMessage()
             assertTrue message.equals("JWT failed validation; it cannot be trusted.")
         }
+    }
+
+    /** @since 1.0.RC8 **/
+    @Test
+    void testDefaultSAMLPolicyAndProvider() {
+
+        Date testStart = new Date();
+        def app = createTempApp()
+
+        SamlPolicy samlPolicy = app.getSamlPolicy();
+        assertTrue samlPolicy.getHref().contains("/samlPolicies/")
+        assertTrue samlPolicy.getSamlServiceProvider().getHref().contains("/samlServiceProviders/")
+        assertTrue samlPolicy.getCreatedAt().after(testStart)
+        assertTrue samlPolicy.getModifiedAt().after(testStart)
+        SamlServiceProvider samlServiceProvider = samlPolicy.getSamlServiceProvider()
+        assertTrue samlServiceProvider.getHref().contains("/samlServiceProviders/")
+        assertTrue samlServiceProvider.getSsoInitiationEndpoint().contains("/saml/sso/idpRedirect")
+        assertTrue samlServiceProvider.getCreatedAt().after(testStart)
+        assertTrue samlServiceProvider.getModifiedAt().after(testStart)
     }
 
 }
