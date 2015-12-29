@@ -82,6 +82,12 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
         return getResourceProperty(ATTRIBUTE_STATEMENT_MAPPING_RULES);
     }
 
+    @Override
+    public void setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules) {
+        Assert.notNull(attributeStatementMappingRules, "attributeStatementMappingRules cannot be null or empty.");
+        setProperty(ATTRIBUTE_STATEMENT_MAPPING_RULES, attributeStatementMappingRules);
+    }
+
     public SamlServiceProviderMetadata getServiceProviderMetadata() {
         return getResourceProperty(SERVICE_PROVIDER_METADATA);
     }

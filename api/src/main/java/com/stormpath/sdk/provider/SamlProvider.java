@@ -94,6 +94,12 @@ public interface SamlProvider extends Provider {
     AttributeStatementMappingRules getAttributeStatementMappingRules();
 
     /**
+     * Sets the rules for mapping SAML Assertion Attributes to Stormpath Account attributes for Accounts created
+     * in the associated Stormpath Directory.
+     */
+    void setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules);
+
+    /**
      * Returns the (read-only) Service Provider metadata that can be used to register and/or configure an
      * application with a SAML Identity Provider.
      * <p>This metadata is almost always accessed as an XML document and

@@ -76,5 +76,12 @@ public final class Providers {
      */
     public static final LinkedInRequestFactory LINKEDIN = (LinkedInRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultLinkedInRequestFactory");
 
+    /**
+     * Returns a new {@link SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
+     *
+     * @return a new {@link SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
+     * @since 1.0.RC8
+     */
+    public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultSamlRequestFactory");
 }
 
