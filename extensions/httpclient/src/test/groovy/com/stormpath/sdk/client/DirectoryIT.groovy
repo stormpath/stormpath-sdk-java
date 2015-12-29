@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 package com.stormpath.sdk.client
-
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.directory.*
+import com.stormpath.sdk.directory.AccountCreationPolicy
+import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryOptions
+import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.lang.Duration
 import com.stormpath.sdk.mail.EmailStatus
+import com.stormpath.sdk.organization.Organization
+import com.stormpath.sdk.organization.OrganizationStatus
+import com.stormpath.sdk.organization.Organizations
 import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
@@ -30,7 +36,6 @@ import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
 import static org.testng.Assert.*
-
 /**
  *
  * @since 0.8.1
@@ -631,4 +636,49 @@ class DirectoryIT extends ClientIT {
         assertTrue retrieved.getAccounts().iterator().hasNext()
     }
 
+    /**
+     * @since 1.0.RC7.7
+     */
+    @Test
+    void testGetOrganizations() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.setName(uniquify("JSDK.DirectoryIT.testGetOrganizations"))
+        directory = client.createDirectory(directory);
+        assertNotNull directory.href
+        deleteOnTeardown(directory)
+
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK.DirectoryIT.testGetOrganizations_First"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        org.addAccountStore(directory)
+
+        def orgList = directory.getOrganizations()
+        assertTrue orgList.iterator().hasNext()
+        assertEquals orgList.iterator().next().href, org.href
+
+        def org2 = client.instantiate(Organization)
+        org2.setName(uniquify("JSDK.DirectoryIT.testGetOrganizations.Second"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org2 = client.createOrganization(org2)
+        assertNotNull org2.href
+        deleteOnTeardown(org2)
+
+        org2.addAccountStore(directory)
+
+        orgList = directory.getOrganizations()
+        assertEquals orgList.size, 2
+
+        orgList = directory.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org2.name)))
+        assertEquals orgList.size, 1
+        assertEquals orgList.iterator().next().href, org2.href
+    }
 }

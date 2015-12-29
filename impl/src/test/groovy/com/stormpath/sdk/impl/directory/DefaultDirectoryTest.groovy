@@ -15,12 +15,26 @@
  */
 package com.stormpath.sdk.impl.directory
 
-import com.stormpath.sdk.account.*
-import com.stormpath.sdk.directory.*
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.CreateAccountRequest
+import com.stormpath.sdk.directory.AccountCreationPolicy
+import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryStatus
+import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.group.CreateGroupRequest
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
+import com.stormpath.sdk.impl.organization.DefaultOrganizationAccountStoreMappingList
+import com.stormpath.sdk.impl.organization.DefaultOrganizationList
 import com.stormpath.sdk.impl.provider.DefaultProvider
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
@@ -28,6 +42,9 @@ import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList
+import com.stormpath.sdk.organization.OrganizationCriteria
+import com.stormpath.sdk.organization.OrganizationList
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
@@ -35,7 +52,6 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
-
 /**
  * @since 0.8
  */
@@ -48,7 +64,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 10)
+        assertEquals(propertyDescriptors.size(), 12)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -63,6 +79,10 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("passwordPolicy") instanceof ResourceReference && propertyDescriptors.get("passwordPolicy").getType().equals(PasswordPolicy))
         //@since 1.0.RC4
         assertTrue(propertyDescriptors.get("accountCreationPolicy") instanceof ResourceReference && propertyDescriptors.get("accountCreationPolicy").getType().equals(AccountCreationPolicy))
+        //@since 1.0.RC7.7
+        assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
+        //@since 1.0.RC7.7
+        assertTrue(propertyDescriptors.get("organizationMappings") instanceof CollectionReference && propertyDescriptors.get("organizationMappings").getType().equals(OrganizationAccountStoreMappingList))
     }
 
 
@@ -83,7 +103,9 @@ class DefaultDirectoryTest {
                 provider: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider"],
                 customData: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/customData"],
                 passwordPolicy: [href: "https://api.stormpath.com/v1/passwordPolicies/42YN9IWiow0lVtfPOh9qO1"],
-                accountCreationPolicy: [href: "https://api.stormpath.com/v1/accountCreationPolicies/42YN9IWiow0lVtfPOh9qO1"]
+                accountCreationPolicy: [href: "https://api.stormpath.com/v1/accountCreationPolicies/42YN9IWiow0lVtfPOh9qO1"],
+                organizations: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/organizations"],
+                organizationMappings: [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/organizationMappings"]
         ]
 
         expect(internalDataStore.instantiate(CustomData, properties.customData)).
@@ -117,6 +139,24 @@ class DefaultDirectoryTest {
         expect(internalDataStore.instantiate(GroupList, properties.groups)).
                 andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.getResource(properties.groups.href, GroupList, groupCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+
+        expect(internalDataStore.instantiate(OrganizationList, properties.organizations)).
+                andReturn(new DefaultOrganizationList(internalDataStore, properties.organizations))
+
+        def organizationCriteria = createStrictMock(OrganizationCriteria)
+        expect(internalDataStore.instantiate(OrganizationList, properties.organizations)).
+                andReturn(new DefaultOrganizationList(internalDataStore, properties.organizations))
+        expect(internalDataStore.getResource(properties.organizations.href, OrganizationList, organizationCriteria)).
+                andReturn(new DefaultOrganizationList(internalDataStore, properties.organizations))
+
+        def organizationCriteriaMap = [name: "some+search"]
+        expect(internalDataStore.instantiate(OrganizationList, properties.organizations)).
+                andReturn(new DefaultOrganizationList(internalDataStore, properties.organizations))
+        expect(internalDataStore.getResource(properties.organizations.href, OrganizationList, organizationCriteriaMap)).
+                andReturn(new DefaultOrganizationList(internalDataStore, properties.organizations))
+
+        expect(internalDataStore.instantiate(OrganizationAccountStoreMappingList, properties.organizationMappings)).
+                andReturn(new DefaultOrganizationAccountStoreMappingList(internalDataStore, properties.organizationMappings))
 
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).
                 andReturn(new DefaultTenant(internalDataStore, properties.tenant))
@@ -199,6 +239,18 @@ class DefaultDirectoryTest {
         resource = defaultDirectory.getGroups(groupCriteriaMap)
         assertTrue(resource instanceof DefaultGroupList && resource.getHref().equals(properties.groups.href))
 
+        resource = defaultDirectory.getOrganizations()
+        assertTrue(resource instanceof DefaultOrganizationList && resource.getHref().equals(properties.organizations.href))
+
+        resource = defaultDirectory.getOrganizations(organizationCriteria)
+        assertTrue(resource instanceof DefaultOrganizationList && resource.getHref().equals(properties.organizations.href))
+
+        resource = defaultDirectory.getOrganizations(organizationCriteriaMap)
+        assertTrue(resource instanceof DefaultOrganizationList && resource.getHref().equals(properties.organizations.href))
+
+        resource = defaultDirectory.getOrganizationAccountStoreMappings()
+        assertTrue(resource instanceof DefaultOrganizationAccountStoreMappingList && resource.getHref().equals(properties.organizationMappings.href))
+
         resource = defaultDirectory.getTenant()
         assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
 
@@ -234,9 +286,7 @@ class DefaultDirectoryTest {
         assertSame(returnedGroup, group)
 
         verify internalDataStore, accountCriteria, groupCriteria, account, group, createAccountRequest, createGroupRequest
-
     }
-
 
     @Test
     void testMissingProviderHref() {

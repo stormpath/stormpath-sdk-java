@@ -23,6 +23,10 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList;
+import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
@@ -381,4 +385,175 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      */
     Directory saveWithResponseOptions(DirectoryOptions responseOptions);
 
+    /**
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that map this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore}. For any {@link com.stormpath.sdk.organization.Organization}s
+     * returned, this Directory and all of the {@link com.stormpath.sdk.account.Account}s in it are seen as part of the
+     * total account population attributed to the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * Tip: Instead of iterating over all {@link com.stormpath.sdk.organization.Organization}s, it might be more
+     * convenient (and practical) to execute a search for one or more {@link com.stormpath.sdk.organization.Organization}s
+     * using the {@link #getOrganizations(java.util.Map)} method instead of this one.
+     * <p/>
+     * You may to work with the {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s rather than the
+     * {@link com.stormpath.sdk.organization.Organization}s. For instance, if you wanted to delete the mapping between an
+     * {@link com.stormpath.sdk.organization.Organization} and this Directory, you would do that through the
+     * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}. This would preserve both this Directory
+     * and the {@link com.stormpath.sdk.organization.Organization}. Only the mapping between the two would be deleted.
+     * See {@link #getOrganizationAccountStoreMappings()}.
+     *
+     * @return a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore}.
+     * @see #getOrganizations(java.util.Map)
+     * @see #getOrganizationAccountStoreMappings()
+     *
+     * @since 1.0.RC7.7
+     */
+    OrganizationList getOrganizations();
+
+    /**
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that map this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore} and also match the specified query criteria. For any
+     * {@link com.stormpath.sdk.organization.Organization}s returned, this Directory and all of the
+     * {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total account population attributed to
+     * the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../directories/directoryId/organizations?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria.
+     * @see #getOrganizationAccountStoreMappings(java.util.Map)
+     *
+     * @since 1.0.RC7.7
+     */
+    OrganizationList getOrganizations(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that map this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore} and also match the specified query criteria. For any
+     * {@link com.stormpath.sdk.organization.Organization}s returned, this Directory and all of the
+     * {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total account population attributed to
+     * the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * The {@link com.stormpath.sdk.organization.Organizations Organizations} utility class is available to help
+     * construct the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an
+     * easy query-building experience.  For example:
+     * <pre>
+     * directory.getOrganizations(
+     *     Organizations.where(Organizations.name().containsIgnoreCase("foo"))
+     *     .and(Organizations.name().startsWithIgnoreCase("Principal"))
+     *     .offsetBy(20)
+     *     .limitTo(25)
+     * );
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.organization.Organizations.*;
+     *
+     * ...
+     *
+     * directory.getOrganizations(
+     *     where(name().containsIgnoreCase("foo"))
+     *     .and(name().startsWithIgnoreCase("Principal"))
+     *     .offsetBy(20)
+     *     .limitTo(25)
+     * );
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria
+     * @see #getOrganizationAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria).
+     *
+     * @since 1.0.RC7.7
+     */
+    OrganizationList getOrganizations(OrganizationCriteria criteria);
+
+    /**
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that
+     * represent the link between an {@link com.stormpath.sdk.organization.Organization} and this Directory. For any
+     * {@link com.stormpath.sdk.organization.Organization} reflected in a mapping, this Directory and all of the
+     * {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total account population attributed to
+     * the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * Tip: Instead of iterating over all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s, it
+     * might be more convenient (and practical) to execute a search for one or more
+     * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s using the
+     * {@link #getOrganizationAccountStoreMappings(java.util.Map)} method instead of this one.
+     * <p/>
+     * If you don't need the mapping information between this Directory and its
+     * {@link com.stormpath.sdk.organization.Organization}s, you may want to just work directly with the Organization
+     * objects. See {@link #getOrganizations()}.
+     *
+     * @return a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
+     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore}.
+     * @see #getOrganizationAccountStoreMappings(java.util.Map)
+     * @see #getOrganizations()
+     *
+     * @since 1.0.RC7.7
+     */
+    OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings();
+
+    /**
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that
+     * represent the link between an {@link com.stormpath.sdk.organization.Organization} and this Directory that match
+     * the specified query criteria. For any {@link com.stormpath.sdk.organization.Organization} reflected in a mapping,
+     * this Directory and all of the {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total
+     * account population attributed to the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../directories/directoryId/organizationMappings?param1=value1&param2=value2&...
+     * </pre>
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
+     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore}.
+     * @see #getOrganizations(java.util.Map)
+     *
+     * @since 1.0.RC7.7
+     */
+    OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that
+     * represent the link between an {@link com.stormpath.sdk.organization.Organization} and this Directory that match
+     * the specified query criteria. For any {@link com.stormpath.sdk.organization.Organization} reflected in a mapping,
+     * this Directory and all of the {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total
+     * account population attributed to the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * The {@link com.stormpath.sdk.organization.OrganizationAccountStoreMappings OrganizationAccountStoreMappings}
+     * utility class is available to help construct the criteria DSL - most modern IDEs can auto-suggest and
+     * auto-complete as you type, allowing for an easy query-building experience.  For example:
+     * <pre>
+     * directory.getOrganizationAccountStoreMappings(
+     *     OrganizationAccountStoreMappings.where(OrganizationAccountStoreMappings.listIndex().eq(4))
+     *     .withAccountStore()
+     * );
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.organization.OrganizationAccountStoreMappings.*;
+     *
+     * ...
+     *
+     * directory.getOrganizationAccountStoreMappings(
+     *     where(listIndex().eq(4))
+     *     .withAccountStore()
+     * );
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the directory's organizations that match the specified query criteria.
+     * @see #getOrganizations(com.stormpath.sdk.organization.OrganizationCriteria)
+     *
+     * @since 1.0.RC7.7
+     */
+    OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 }
