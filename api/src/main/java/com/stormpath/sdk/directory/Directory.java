@@ -386,8 +386,10 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     Directory saveWithResponseOptions(DirectoryOptions responseOptions);
 
     /**
-     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
-     * an {@link com.stormpath.sdk.directory.AccountStore}.
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that map this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore}. For any {@link com.stormpath.sdk.organization.Organization}s
+     * returned, this Directory and all of the {@link com.stormpath.sdk.account.Account}s in it are seen as part of the
+     * total account population attributed to the respective {@link com.stormpath.sdk.organization.Organization}.
      * <p/>
      * Tip: Instead of iterating over all {@link com.stormpath.sdk.organization.Organization}s, it might be more
      * convenient (and practical) to execute a search for one or more {@link com.stormpath.sdk.organization.Organization}s
@@ -410,8 +412,11 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     OrganizationList getOrganizations();
 
     /**
-     * Returns a paginated list of the {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
-     * an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria.
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that map this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore} and also match the specified query criteria. For any
+     * {@link com.stormpath.sdk.organization.Organization}s returned, this Directory and all of the
+     * {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total account population attributed to
+     * the respective {@link com.stormpath.sdk.organization.Organization}.
      * <p/>
      * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
      * the resource URL as query parameters, for example:
@@ -429,11 +434,15 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     OrganizationList getOrganizations(Map<String, Object> queryParams);
 
     /**
-     * Returns a paginated list of the {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
-     * an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria.  The
-     * {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
-     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
-     * query-building experience.  For example:
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that map this Directory as
+     * an {@link com.stormpath.sdk.directory.AccountStore} and also match the specified query criteria. For any
+     * {@link com.stormpath.sdk.organization.Organization}s returned, this Directory and all of the
+     * {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total account population attributed to
+     * the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
+     * The {@link com.stormpath.sdk.organization.Organizations Organizations} utility class is available to help
+     * construct the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an
+     * easy query-building experience.  For example:
      * <pre>
      * directory.getOrganizations(
      *     Organizations.where(Organizations.name().containsIgnoreCase("foo"))
@@ -466,8 +475,11 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     OrganizationList getOrganizations(OrganizationCriteria criteria);
 
     /**
-     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
-     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore}.
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that
+     * represent the link between an {@link com.stormpath.sdk.organization.Organization} and this Directory. For any
+     * {@link com.stormpath.sdk.organization.Organization} reflected in a mapping, this Directory and all of the
+     * {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total account population attributed to
+     * the respective {@link com.stormpath.sdk.organization.Organization}.
      * <p/>
      * Tip: Instead of iterating over all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s, it
      * might be more convenient (and practical) to execute a search for one or more
@@ -488,8 +500,11 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings();
 
     /**
-     * Returns a paginated list of the {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
-     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria.
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that
+     * represent the link between an {@link com.stormpath.sdk.organization.Organization} and this Directory that match
+     * the specified query criteria. For any {@link com.stormpath.sdk.organization.Organization} reflected in a mapping,
+     * this Directory and all of the {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total
+     * account population attributed to the respective {@link com.stormpath.sdk.organization.Organization}.
      * <p/>
      * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
      * the resource URL as query parameters, for example:
@@ -507,8 +522,12 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams);
 
     /**
-     * Returns a paginated list of the {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
-     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria.
+     * Returns a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that
+     * represent the link between an {@link com.stormpath.sdk.organization.Organization} and this Directory that match
+     * the specified query criteria. For any {@link com.stormpath.sdk.organization.Organization} reflected in a mapping,
+     * this Directory and all of the {@link com.stormpath.sdk.account.Account}s in it are seen as part of the total
+     * account population attributed to the respective {@link com.stormpath.sdk.organization.Organization}.
+     * <p/>
      * The {@link com.stormpath.sdk.organization.OrganizationAccountStoreMappings OrganizationAccountStoreMappings}
      * utility class is available to help construct the criteria DSL - most modern IDEs can auto-suggest and
      * auto-complete as you type, allowing for an easy query-building experience.  For example:
