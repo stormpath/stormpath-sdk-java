@@ -23,7 +23,7 @@ import java.util.Set;
  *
  *  AttributeStatementMappingRule rule = SamlEntitiesFactory.getAttributeStatementMappingRuleBuilder()
  *      .setName("name")
- *      .setAccountAttributeNames("field1", "field2")
+ *      .setAccountAttributes("field1", "field2")
  *      .build();
  *
  * @see AttributeStatementMappingRule
@@ -36,29 +36,42 @@ public interface AttributeStatementMappingRuleBuilder {
      * Sets the SAML Attribute name, that when encountered, should have its value applied as Account field values.
      * When this name is encountered when processing a SAML Attribute Statement, its associated value will be set as the
      * value for all Stormpath Account field names specified in the
-     * {@link AttributeStatementMappingRule#getAccountAttributeNames() accountAttributeNames} collection.
+     * {@link AttributeStatementMappingRule#getAccountAttributes() accountAttributes} collection.
      *
      * @param name the SAML Attribute name that when encountered, should have its value applied as Account field values.
      */
     AttributeStatementMappingRuleBuilder setName(String name);
 
     /**
-     * Sets the Stormpath account fields that should be updated when encountering {@link AttributeStatementMappingRule#getName() named}
-     * SAML Attribute name.  If discovered, that SAML Attribute value will be set on all of the Stormpath account
-     * fields named in this collection.
+     * Sets the format for the SAML Attribute specified by {@link com.stormpath.sdk.saml.AttributeStatementMappingRule#getName() getName()}.
+     * Examples of valid formats are:
+     *  urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+     *  urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+     *  urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+     *  urn:oasis:names:tc:SAML:2.0:attrname-format:basic
+     *  urn:oasis:names:tc:SAML:2.0:nameid-format:entity
      *
-     * @param accountAttributeNames the account fields that should be updated when there's a match with SAML Attribute name.
+     * @param nameFormat the format for the SAML Attribute specified by {@link com.stormpath.sdk.saml.AttributeStatementMappingRule#getName() getName()}.
      */
-    AttributeStatementMappingRuleBuilder setAccountAttributeNames(String... accountAttributeNames);
+    AttributeStatementMappingRuleBuilder setNameFormat(String nameFormat);
 
     /**
      * Sets the Stormpath account fields that should be updated when encountering {@link AttributeStatementMappingRule#getName() named}
      * SAML Attribute name.  If discovered, that SAML Attribute value will be set on all of the Stormpath account
      * fields named in this collection.
      *
-     * @param accountAttributeNames the account fields that should be updated when there's a match with SAML Attribute name.
+     * @param accountAttributes the account fields that should be updated when there's a match with SAML Attribute name.
      */
-    AttributeStatementMappingRuleBuilder setAccountAttributeNames(Set<String> accountAttributeNames);
+    AttributeStatementMappingRuleBuilder setAccountAttributes(String... accountAttributes);
+
+    /**
+     * Sets the Stormpath account fields that should be updated when encountering {@link AttributeStatementMappingRule#getName() named}
+     * SAML Attribute name.  If discovered, that SAML Attribute value will be set on all of the Stormpath account
+     * fields named in this collection.
+     *
+     * @param accountAttributes the account fields that should be updated when there's a match with SAML Attribute name.
+     */
+    AttributeStatementMappingRuleBuilder setAccountAttributes(Set<String> accountAttributes);
 
     /**
      * Builds a new {@link AttributeStatementMappingRule} based on the current state of this builder.

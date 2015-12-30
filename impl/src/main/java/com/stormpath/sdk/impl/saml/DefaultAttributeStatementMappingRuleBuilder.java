@@ -28,7 +28,8 @@ import java.util.Set;
 public class DefaultAttributeStatementMappingRuleBuilder implements AttributeStatementMappingRuleBuilder {
 
     private String name;
-    private Set<String> accountAttributeNames;
+    private Set<String> accountAttributes;
+    private String nameFormat;
 
     public AttributeStatementMappingRuleBuilder setName(String name){
         Assert.hasText(name, "name argument cannot be null or empty.");
@@ -36,29 +37,36 @@ public class DefaultAttributeStatementMappingRuleBuilder implements AttributeSta
         return this;
     }
 
-    public AttributeStatementMappingRuleBuilder setAccountAttributeNames(String... accountAttributeNames){
-        Assert.notEmpty(accountAttributeNames, "accountAttributeNames cannot be null or empty.");
-
-        Set<String> names = new LinkedHashSet<String>(accountAttributeNames.length);
-        for (String attrName : accountAttributeNames) {
-            Assert.hasText("individual accountAttributeNames cannot be null or empty.");
-            names.add(attrName);
-        }
-        this.accountAttributeNames = names;
+    @Override
+    public AttributeStatementMappingRuleBuilder setNameFormat(String nameFormat) {
+        Assert.hasText(nameFormat, "nameFormat argument cannot be null or empty.");
+        this.nameFormat = nameFormat;
         return this;
     }
 
-    public AttributeStatementMappingRuleBuilder setAccountAttributeNames(Set<String> accountAttributeNames){
-        Assert.notEmpty(accountAttributeNames, "accountAttributeNames cannot be null or empty.");
+    public AttributeStatementMappingRuleBuilder setAccountAttributes(String... accountAttributes){
+        Assert.notEmpty(accountAttributes, "accountAttributes cannot be null or empty.");
 
-        this.accountAttributeNames = accountAttributeNames;
+        Set<String> names = new LinkedHashSet<String>(accountAttributes.length);
+        for (String attrName : accountAttributes) {
+            Assert.hasText("individual accountAttributes cannot be null or empty.");
+            names.add(attrName);
+        }
+        this.accountAttributes = names;
+        return this;
+    }
+
+    public AttributeStatementMappingRuleBuilder setAccountAttributes(Set<String> accountAttributes){
+        Assert.notEmpty(accountAttributes, "accountAttributes cannot be null or empty.");
+
+        this.accountAttributes = accountAttributes;
         return this;
     }
 
     public AttributeStatementMappingRule build(){
         Assert.hasText(name, "name argument cannot be null or empty.");
-        Assert.notEmpty(accountAttributeNames, "accountAttributeNames cannot be null or empty.");
+        Assert.notEmpty(accountAttributes, "accountAttributes cannot be null or empty.");
 
-        return new DefaultAttributeStatementMappingRule(name, accountAttributeNames);
+        return new DefaultAttributeStatementMappingRule(name, nameFormat, accountAttributes);
     }
 }

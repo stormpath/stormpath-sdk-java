@@ -28,10 +28,10 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
-import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.Providers
-import com.stormpath.sdk.provider.SamlProvider
+import com.stormpath.sdk.saml.AttributeStatementMappingRule
 import com.stormpath.sdk.saml.AttributeStatementMappingRules
+import com.stormpath.sdk.saml.SamlEntitiesFactory
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -164,6 +164,75 @@ class DirectoryIT extends ClientIT {
                     .setSsoLoginUrl("https://idp.whatever.com/saml2/sso/login")
                     .setSsoLogoutUrl("https://idp.whatever.com/saml2/sso/logout")
                     .build())
+                .build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+
+        def provider = dir.provider
+        assertNotNull provider.href
+        assertNotNull provider.serviceProviderMetadata.href
+        assertEquals provider.providerId, "saml"
+        assertEquals provider.ssoLoginUrl, "https://idp.whatever.com/saml2/sso/login"
+        assertEquals provider.ssoLogoutUrl, "https://idp.whatever.com/saml2/sso/logout"
+    }
+
+    /**
+     * @since 1.0.RC8
+     */
+    @Test
+    void testCreateSamlDirectoryWithAttributeStatementMappingRules() {
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateSamlDirectoryWithAttributeStatementMappingRules")
+
+
+        AttributeStatementMappingRule rule1 = SamlEntitiesFactory.getAttributeStatementMappingRuleBuilder()
+                .setName("name1")
+                .setNameFormat("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified")
+                .setAccountAttributes("customData.name1", "customData.otherName1")
+                .build()
+
+        AttributeStatementMappingRule rule2 = SamlEntitiesFactory.getAttributeStatementMappingRuleBuilder()
+                .setName("name2")
+                .setNameFormat("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified")
+                .setAccountAttributes("customData.name2")
+                .build()
+
+        AttributeStatementMappingRules attributeStatementMappingRules = SamlEntitiesFactory.getAttributeStatementMappingRulesBuilder()
+                .addAttributeStatementMappingRule(rule1)
+                .addAttributeStatementMappingRule(rule2)
+                .build()
+
+        def validX509Cert = '''-----BEGIN CERTIFICATE-----
+            MIIDBjCCAe4CCQDkkfBwuV3jqTANBgkqhkiG9w0BAQUFADBFMQswCQYDVQQGEwJV
+            UzETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0
+            cyBQdHkgTHRkMB4XDTE1MTAxNDIyMDUzOFoXDTE2MTAxMzIyMDUzOFowRTELMAkG
+            A1UEBhMCVVMxEzARBgNVBAgTClNvbWUtU3RhdGUxITAfBgNVBAoTGEludGVybmV0
+            IFdpZGdpdHMgUHR5IEx0ZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+            ALuZBSfp4ecigQGFL6zawVi9asVstXHy3cpj3pPXjDx5Xj4QlbBL7KbZhVd4B+j3
+            Paacetpn8N0g06sYe1fIeddZE7PZeD2vxTLglriOCB8exH9ZAcYNHIGy3pMFdXHY
+            lS7xXYWb+BNLVU7ka3tJnceDjhviAjICzQJs0JXDVQUeYxB80a+WtqJP+ZMbAxvA
+            QbPzkcvK8CMctRSRqKkpC4gWSxUAJOqEmyvQVQpaLGrI2zFroD2Bgt0cZzBHN5tG
+            wC2qgacDv16qyY+90rYgX/WveA+MSd8QKGLcpPlEzzVJp7Z5Boc3T8wIR29jaDtR
+            cK4bWQ2EGLJiJ+Vql5qaOmsCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAmCND/4tB
+            +yVsIZBAQgul/rK1Qj26FlyO0i0Rmm2OhGRhrd9JPQoZ+xCtBixopNICKG7kvUeQ
+            Sk8Bku6rQ3VquxKtqAjNFeiLykd9Dn2HUOGpNlRcpzFXHtX+L1f34lMaT54qgWAh
+            PgWkzh8xo5HT4M83DaG+HT6BkaVAQwIlJ26S/g3zJ00TrWRP2E6jlhR5KHLN+8eE
+            D7/ENlqO5ThU5uX07/Bf+S0q5NK0NPuy0nO2w064kHdIX5/O64ktT1/MgWBV6yV7
+            mg1osHToeo4WXGz2Yo6+VFMM3IKRqMDbkR7N4cNKd1KvEKrMaRE7vC14H/G5NSOh
+            yl85oFHAdkguTA==
+            -----END CERTIFICATE-----''';
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(
+                Providers.SAML.builder()
+                        .setEncodedX509SigningCert(validX509Cert)
+                        .setRequestSignatureAlgorithm("RSA-SHA256")
+                        .setSsoLoginUrl("https://idp.whatever.com/saml2/sso/login")
+                        .setSsoLogoutUrl("https://idp.whatever.com/saml2/sso/logout")
+                        .setAttributeStatementMappingRules(attributeStatementMappingRules)
+                        .build())
                 .build()
         dir = client.createDirectory(request);
         deleteOnTeardown(dir)

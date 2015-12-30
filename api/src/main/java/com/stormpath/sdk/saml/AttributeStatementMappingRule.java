@@ -25,12 +25,12 @@ import java.util.Set;
  * Directory Provider's {@link AttributeStatementMappingRules} instance.
  * <h4>How does it work?</h4>
  * <p>Each {@code AttributeStatementMappingRule} has a {@code name} and a collection of Stormpath account
- * {@link #getAccountAttributeNames() attribute names}.</p>
+ * {@link #getAccountAttributes() attribute names}.</p>
  * <p>When a SAML Attribute Statement is encountered, every SAML Attribute with a matching name will have its value
  * copied to the corresponding specified Stormpath account fields.</p>
  * <h5>Example</h5>
  * <p>For example, assume that a mapping rule's {@code name} is {@code foo}, and the rule's
- * {@link #getAccountAttributeNames() accountAttributeNames} collection contains the Stormpath Account field names
+ * {@link #getAccountAttributes() accountAttributes} collection contains the Stormpath Account field names
  * of {@code givenName} and {@code surname}.</p>
  * <p>If an Attribute Statement named {@code foo} is encountered on login to have a value of {@code bar}, then
  * {@code bar} will automatically be copied to the specified Stormpath Account fields for that user.  This user would
@@ -44,12 +44,19 @@ public interface AttributeStatementMappingRule {
      * Returns the SAML Attribute name, that when encountered, should have its value applied as Account field values.
      * When this name is encountered when processing a SAML Attribute Statement, its associated value will be set as the
      * value for all Stormpath Account field names specified in the
-     * {@link #getAccountAttributeNames() accountAttributeNames} collection.
+     * {@link #getAccountAttributes() accountAttributes} collection.
      *
      * @return SAML Attribute name, that when encountered, should have its value set on the
-     * {@link #getAccountAttributeNames() specified} Account fields.
+     * {@link #getAccountAttributes() specified} Account fields.
      */
     String getName();
+
+    /**
+     * Returns the format for the SAML Attribute identified by {@link #getName() getName()}.
+     *
+     * @return SAML format for the SAML Attribute identified by {@link #getName() getName()}.
+     */
+    String getNameFormat();
 
     /**
      * Returns the Stormpath account fields that should be updated when encountering {@link #getName() named}
@@ -59,5 +66,5 @@ public interface AttributeStatementMappingRule {
      * @return the Stormpath account fields that should be updated when encountering {@link #getName() named}
      * SAML Attribute name.
      */
-    Set<String> getAccountAttributeNames();
+    Set<String> getAccountAttributes();
 }
