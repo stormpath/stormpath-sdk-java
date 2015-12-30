@@ -24,6 +24,7 @@ import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
@@ -87,6 +88,8 @@ import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
@@ -380,6 +383,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
     protected Boolean idSiteShowOrganizationField;
 
+    @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
+    protected String samlResultUri;
+
+    @Value("#{ @environment['stormpath.web.saml.enabled'] ?: false }")
+    protected boolean samlEnabled;
+
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
 
@@ -408,6 +417,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Autowired(required = false)
     @Qualifier("springSecurityIdSiteResultListener")
     IdSiteResultListener springSecurityIdSiteResultListener;
+
+    @Autowired(required = false)
+    @Qualifier("samlResultListener")
+    SamlResultListener samlResultListener;
 
     @Autowired(required = false)
     protected ErrorModelFactory loginErrorModelFactory;
@@ -439,6 +452,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (idSiteEnabled) {
             mappings.put(idSiteResultUri, stormpathIdSiteResultController());
+        }
+        if (samlEnabled) {
+            mappings.put(samlResultUri, stormpathSamlResultController());
         }
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
@@ -726,10 +742,24 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
+    protected Controller createSamlController(String samlUri) {
+        SamlController controller = new SamlController();
+        controller.setServerUriResolver(stormpathServerUriResolver());
+        controller.setSamlUri(samlUri);
+        controller.setCallbackUri(samlResultUri);
+        //controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+        controller.init();
+        return createSpringController(controller);
+    }
+
     public Controller stormpathLoginController() {
 
         if (idSiteEnabled) {
             return createIdSiteController(idSiteLoginUri);
+        }
+
+        if (samlEnabled) {
+            return createSamlController(idSiteLoginUri);
         }
 
         //otherwise standard login controller:
@@ -1004,6 +1034,20 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setEventPublisher(stormpathRequestEventPublisher());
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
+        }
+        controller.init();
+        return createSpringController(controller);
+    }
+
+    public Controller stormpathSamlResultController() {
+        SamlResultController controller = new SamlResultController();
+        controller.setLoginNextUri(loginNextUri);
+        //controller.setRegisterNextUri(registerNextUri);
+        controller.setLogoutController(stormpathMvcLogoutController());
+        controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setEventPublisher(stormpathRequestEventPublisher());
+        if (samlResultListener != null) {
+            controller.addSamlResultListener(samlResultListener);
         }
         controller.init();
         return createSpringController(controller);

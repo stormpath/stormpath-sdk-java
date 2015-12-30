@@ -46,7 +46,9 @@ import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlPolicy;
+import com.stormpath.sdk.saml.SamlUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.Organization;
@@ -1138,6 +1140,8 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      */
     IdSiteUrlBuilder newIdSiteUrlBuilder();
 
+    SamlUrlBuilder newSamlUrlBuilder();
+
     /**
      * Creates a new {@link IdSiteCallbackHandler} used to handle HTTP replies from your ID Site to your
      * application's {@code callbackUri}, as described in the {@link #newIdSiteUrlBuilder()} method.
@@ -1199,6 +1203,8 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @since 1.0.RC2
      */
     IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
+
+    SamlCallbackHandler newSamlCallbackHandler(Object httpRequest);
 
     /**
      * Triggers the delivery of a new verification email for the specified account.

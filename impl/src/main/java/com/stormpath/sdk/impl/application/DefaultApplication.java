@@ -65,6 +65,8 @@ import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.saml.DefaultSamlCallbackHandler;
+import com.stormpath.sdk.impl.saml.DefaultSamlUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
@@ -79,7 +81,9 @@ import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlPolicy;
+import com.stormpath.sdk.saml.SamlUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 import com.sun.media.sound.InvalidFormatException;
 import org.slf4j.Logger;
@@ -619,6 +623,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return new DefaultIdSiteUrlBuilder(getDataStore(), getHref());
     }
 
+    @Override
+    public SamlUrlBuilder newSamlUrlBuilder() {
+        return new DefaultSamlUrlBuilder(getDataStore(), getHref(), this.getSamlPolicy().getSamlServiceProvider().getSsoInitiationEndpoint());
+    }
+
     /** @since 1.0.RC */
     @Override
     public IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest) {
@@ -626,6 +635,14 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         validateHttpRequest(httpRequest);
 
         return new DefaultIdSiteCallbackHandler(getDataStore(), this, httpRequest);
+    }
+
+    @Override
+    public SamlCallbackHandler newSamlCallbackHandler(Object httpRequest) {
+
+        validateHttpRequest(httpRequest);
+
+        return new DefaultSamlCallbackHandler(getDataStore(), this, httpRequest);
     }
 
     /** @since 1.0.0 */
