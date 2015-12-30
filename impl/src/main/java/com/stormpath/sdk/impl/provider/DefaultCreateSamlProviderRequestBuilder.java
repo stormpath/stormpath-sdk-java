@@ -24,7 +24,6 @@ import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @since 1.0.RC8

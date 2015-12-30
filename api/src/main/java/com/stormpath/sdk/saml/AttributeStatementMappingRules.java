@@ -27,12 +27,37 @@ import java.util.Set;
  * <p>{@link AttributeStatementMappingRule} instances are immutable.  You therefore control which rules are applied
  * by manipulating this {@code AttributeStatementMappingRules} instance.</p>
  *
- * <p>Rules are evaluated in iteration order.  Later rules can override values set by previous rules.</p>
+ * <p>Rules are evaluated in iteration order. Later rules can override values set by previous rules.</p>
  *
  * @since 1.0.RC8
  */
 public interface AttributeStatementMappingRules extends Resource, Set<AttributeStatementMappingRule> {
 
+    /**
+     * Removes the {@link AttributeStatementMappingRule}(s) identified by {@code ruleNames}.
+     *
+     * @param ruleNames the name of the {@link AttributeStatementMappingRule}(s) to remove.
+     *
+     * @return  the {@code Set<AttributeStatementMappingRule>} after the "remove" operation is performed.
+     */
     Set<AttributeStatementMappingRule> removeByName(String... ruleNames);
 
+    /**
+     * Specifies the Set of all {@link AttributeStatementMappingRule}s that indicate how SAML Attribute Statements should
+     * populate one or more Stormpath Account field values after a successful SAML login.
+     *
+     * @param attributeStatementMappingRules the set of {@link AttributeStatementMappingRule AttributeStatementMappingRule}s to build a SAML provider.
+     *
+     * @return this instance for method chaining.
+     */
+    void setItems(Set<AttributeStatementMappingRule> attributeStatementMappingRules);
+
+    /**
+     * Returns the Set of all {@link AttributeStatementMappingRule}s that indicate how SAML Attribute Statements should
+     * populate one or more Stormpath Account field values after a successful SAML login.
+     *
+     * @return the Set of all {@link AttributeStatementMappingRule}s that indicate how SAML Attribute Statements should
+     * populate one or more Stormpath Account field values after a successful SAML login.
+     */
+    Set<AttributeStatementMappingRule> getItems();
 }
