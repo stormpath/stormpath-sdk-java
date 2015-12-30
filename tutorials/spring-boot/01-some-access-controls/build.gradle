@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE")
     }
 }
 
@@ -24,6 +24,6 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.stormpath.spring', name: 'stormpath-webmvc-spring-boot-starter', version:'1.0.RC5-SNAPSHOT'
-    runtime group: 'com.stormpath.spring', name: 'stormpath-thymeleaf-spring-boot-starter', version:'1.0.RC5-SNAPSHOT'
+    compile group: 'com.stormpath.spring', name: 'stormpath-webmvc-spring-boot-starter', version:'1.0.RC8'
+    runtime group: 'com.stormpath.spring', name: 'stormpath-thymeleaf-spring-boot-starter', version:'1.0.RC8'
 }
