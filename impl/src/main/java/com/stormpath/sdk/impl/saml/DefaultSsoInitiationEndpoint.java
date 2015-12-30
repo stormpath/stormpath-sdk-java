@@ -46,5 +46,4 @@ public class DefaultSsoInitiationEndpoint extends AbstractInstanceResource imple
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
     }
-
 }

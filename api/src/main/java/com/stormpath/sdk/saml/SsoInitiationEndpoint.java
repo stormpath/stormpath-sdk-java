@@ -15,9 +15,11 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
 
+/**
+ * @since 1.0.RC8
+ */
 public interface SsoInitiationEndpoint extends Resource {
 
 }
