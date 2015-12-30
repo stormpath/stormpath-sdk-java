@@ -37,6 +37,7 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlResultListener;
+import com.stormpath.sdk.saml.SamlRuntimeException;
 import io.jsonwebtoken.Claims;
 
 import java.lang.reflect.Constructor;
@@ -46,7 +47,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.*;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.ERROR;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.IS_NEW_SUBJECT;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_RESPONSE;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.RESPONSE_ID;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATE;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATUS;
 import static com.stormpath.sdk.impl.jwt.JwtHeaderParameters.KEY_ID;
 
 public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
@@ -117,10 +123,8 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
 
         String issuer = getRequiredValue(jsonPayload, Claims.ISSUER);
 
-        //JSDK-261: Enable Java SDK to handle new ID Site error callbacks
-        //We are processing the error after the token has been properly validated
         if (isError(jsonPayload)) {
-            throw new IDSiteRuntimeException(constructError(jsonPayload));
+            throw new SamlRuntimeException(constructError(jsonPayload));
         }
 
         String responseNonce = getRequiredValue(jsonPayload, RESPONSE_ID);
