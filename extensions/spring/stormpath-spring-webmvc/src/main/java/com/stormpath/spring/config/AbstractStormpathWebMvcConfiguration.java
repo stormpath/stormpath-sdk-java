@@ -89,6 +89,7 @@ import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
@@ -383,11 +384,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
     protected Boolean idSiteShowOrganizationField;
 
-    @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
-    protected String samlResultUri;
-
     @Value("#{ @environment['stormpath.web.saml.enabled'] ?: false }")
     protected boolean samlEnabled;
+
+    @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
+    protected String samlResultUri;
 
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
@@ -759,7 +760,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         if (samlEnabled) {
-            return createSamlController(idSiteLoginUri);
+            return createSamlController("/");
         }
 
         //otherwise standard login controller:
@@ -1086,6 +1087,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setIdSiteResultUri(idSiteResultUri);
             c.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller = c;
+        }
+
+        if (samlEnabled) {
+            SamlLogoutController c = new SamlLogoutController();
+            c.setServerUriResolver(stormpathServerUriResolver());
+            c.setSamlResultUri(samlResultUri);
             controller = c;
         }
 

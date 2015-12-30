@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.saml.SamlUrlBuilder;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -83,27 +84,27 @@ public class SamlController extends AbstractController {
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String idSiteUrl = createIdSiteUrl(request);
+        String samlUrl = createSamlUrl(request);
 
         response.setHeader("Cache-control", "no-cache, no-store");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Expires", "-1");
 
-        return new DefaultViewModel(idSiteUrl).setRedirect(true);
+        return new DefaultViewModel(samlUrl).setRedirect(true);
     }
 
-    protected String createIdSiteUrl(HttpServletRequest request) {
-        IdSiteUrlBuilder builder = createIdSiteUrlBuilder(request);
+    protected String createSamlUrl(HttpServletRequest request) {
+        SamlUrlBuilder builder = createSamlUrlBuilder(request);
         return builder.build();
     }
 
-    protected IdSiteUrlBuilder createIdSiteUrlBuilder(HttpServletRequest request) {
+    protected SamlUrlBuilder createSamlUrlBuilder(HttpServletRequest request) {
 
         Application application = getApplication(request);
 
         String callbackUri = buildCallbackUri(request);
 
-        IdSiteUrlBuilder builder = application.newIdSiteUrlBuilder().setCallbackUri(callbackUri);
+        SamlUrlBuilder builder = application.newSamlUrlBuilder().setCallbackUri(callbackUri);
 
 //        IdSiteOrganizationContext orgCtx = idSiteOrganizationResolver.get(request, null);
 
