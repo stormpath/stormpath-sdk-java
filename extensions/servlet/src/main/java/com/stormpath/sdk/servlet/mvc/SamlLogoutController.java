@@ -15,13 +15,8 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
-import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.saml.SamlUrlBuilder;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +25,9 @@ public class SamlLogoutController extends LogoutController {
 
     private ServerUriResolver serverUriResolver;
     private String samlResultUri;
-    private Controller samlController; //not injected - created during init()
-    //private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
+
+    // not implemented yet
+    //private Resolver<SamlOrganizationContext> samlOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -41,40 +37,27 @@ public class SamlLogoutController extends LogoutController {
         this.samlResultUri = samlResultUri;
     }
 
-//    public void setIdSiteOrganizationResolver(Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver) {
-//        this.idSiteOrganizationResolver = idSiteOrganizationResolver;
-//    }
+    // not implemented yet
+    /*
+    public void setSamlOrganizationResolver(Resolver<SamlOrganizationContext> SamlOrganizationResolver) {
+        this.samlOrganizationResolver = samlOrganizationResolver;
+    }
+    */
 
     public void init() {
         super.init();
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
-        SamlController controller = new LogoutSamlController();
-        controller.setServerUriResolver(serverUriResolver);
-        controller.setCallbackUri(samlResultUri);
-        //controller.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
-        controller.init();
-        this.samlController = controller;
+
+        //not implemented yet
+        //controller.setSamlOrganizationResolver(idSiteOrganizationResolver);
     }
 
     @Override
     public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         //ensure the local application user state is cleared no matter what:
         ViewModel vm = super.handleRequest(request, response);
 
-        if (request.getAttribute(LogoutResult.class.getName()) != null) {
-            //We're currently processing a reply from ID site, don't send back to ID site:
-            return vm;
-        }
-
-        //redirect to ID Site to perform the SSO logout to effectively log out the user across all applications:
-        return samlController.handleRequest(request, response);
-    }
-
-    private static class LogoutSamlController extends SamlController {
-        @Override
-        protected SamlUrlBuilder createSamlUrlBuilder(HttpServletRequest request) {
-            return super.createSamlUrlBuilder(request).forLogout();
-        }
+        //not dealing with SAML SSO logout right now.
+        return vm;
     }
 }

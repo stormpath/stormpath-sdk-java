@@ -101,12 +101,6 @@ public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
     }
 
     @Override
-    public SamlUrlBuilder forLogout() {
-        this.logout = true;
-        return this;
-    }
-
-    @Override
     public String build() {
         Assert.state(Strings.hasText(claims.getCallbackUri()), "callbackUri cannot be null or empty.");
 

@@ -34,7 +34,5 @@ public interface SamlUrlBuilder {
 
     SamlUrlBuilder addProperty(String name, Object value);
 
-    SamlUrlBuilder forLogout();
-
     String build();
 }
