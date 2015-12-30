@@ -16,7 +16,6 @@
 package com.stormpath.sdk.impl.saml;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.idsite.IdSiteClaims;
@@ -31,7 +30,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import java.util.UUID;
 
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_REQUEST;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.ACCESS_TOKEN;
 
 public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
 
@@ -122,10 +121,10 @@ public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
 
         byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
 
-        String jwt = jwtBuilder.setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE).signWith(SignatureAlgorithm.HS256, secret).compact();
+        String jwt = jwtBuilder.setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE).setHeaderParam(JwsHeader.KEY_ID, apiKey.getId()).signWith(SignatureAlgorithm.HS256, secret).compact();
 
         QueryString queryString = new QueryString();
-        queryString.put(JWT_REQUEST, jwt);
+        queryString.put(ACCESS_TOKEN, jwt);
 
         StringBuilder urlBuilder = new StringBuilder(ssoEndpoint);
 

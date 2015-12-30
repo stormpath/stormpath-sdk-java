@@ -33,6 +33,7 @@ public class IdSiteClaims extends DefaultClaims {
     public static final String USE_SUBDOMAIN = "usd";
     public static final String SP_TOKEN = "sp_token";
 
+    public static final String ACCESS_TOKEN = "accessToken";
     public static final String JWT_REQUEST = "jwtRequest";
     public static final String JWT_RESPONSE = "jwtResponse";
 

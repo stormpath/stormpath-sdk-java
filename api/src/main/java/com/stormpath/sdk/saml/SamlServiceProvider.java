@@ -38,5 +38,5 @@ public interface SamlServiceProvider extends Resource, Auditable {
      * @return the endpoint to where end-users (web browsers) should be redirected when they need to login to a SAML
      * Identity Provider.
      */
-    String getSsoInitiationEndpoint();
+    SsoInitiationEndpoint getSsoInitiationEndpoint();
 }

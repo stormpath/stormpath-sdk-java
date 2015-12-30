@@ -19,8 +19,10 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.saml.SamlServiceProvider;
+import com.stormpath.sdk.saml.SsoInitiationEndpoint;
 
 import java.util.Date;
 import java.util.Map;
@@ -31,9 +33,10 @@ import java.util.Map;
 public class DefaultSamlServiceProvider extends AbstractInstanceResource implements SamlServiceProvider {
 
     // SIMPLE PROPERTIES
-    static final StringProperty SSO_INITIALIZATION_ENDPOINT = new StringProperty("ssoInitiationEndpoint");
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
+
+    static final ResourceReference<SsoInitiationEndpoint> SSO_INITIALIZATION_ENDPOINT = new ResourceReference<SsoInitiationEndpoint>("ssoInitiationEndpoint", SsoInitiationEndpoint.class);
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SSO_INITIALIZATION_ENDPOINT, CREATED_AT, MODIFIED_AT);
 
@@ -51,8 +54,8 @@ public class DefaultSamlServiceProvider extends AbstractInstanceResource impleme
     }
 
     @Override
-    public String getSsoInitiationEndpoint() {
-        return getString(SSO_INITIALIZATION_ENDPOINT);
+    public SsoInitiationEndpoint getSsoInitiationEndpoint() {
+        return getResourceProperty(SSO_INITIALIZATION_ENDPOINT);
     }
 
     @Override

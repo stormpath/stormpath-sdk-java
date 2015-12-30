@@ -625,7 +625,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public SamlUrlBuilder newSamlUrlBuilder() {
-        return new DefaultSamlUrlBuilder(getDataStore(), getHref(), this.getSamlPolicy().getSamlServiceProvider().getSsoInitiationEndpoint());
+        return new DefaultSamlUrlBuilder(getDataStore(), getHref(), this.getSamlPolicy().getSamlServiceProvider().getSsoInitiationEndpoint().getHref());
     }
 
     /** @since 1.0.RC */
