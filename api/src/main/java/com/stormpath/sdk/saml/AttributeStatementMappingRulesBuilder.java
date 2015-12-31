@@ -21,7 +21,7 @@ import java.util.Set;
  * A Builder to construct {@link AttributeStatementMappingRules} resources.
  * Use example:
  *
- *  AttributeStatementMappingRules attributeStatementMappingRules = SamlEntitiesFactory.rulesBuilder()
+ *  AttributeStatementMappingRules attributeStatementMappingRules = SamlAttributeStatementMappingRules.rulesBuilder()
  *      .addAttributeStatementMappingRule(attributeStatementMappingRule1)
  *      .addAttributeStatementMappingRule(attributeStatementMappingRule2)
  *      ...
