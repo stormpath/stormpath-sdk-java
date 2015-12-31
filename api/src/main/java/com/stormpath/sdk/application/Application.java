@@ -22,7 +22,6 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.application.AccountStoreHolder;
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
@@ -47,8 +46,8 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.saml.SamlCallbackHandler;
+import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import com.stormpath.sdk.saml.SamlPolicy;
-import com.stormpath.sdk.saml.SamlUrlBuilder;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.Organization;
@@ -1140,7 +1139,53 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      */
     IdSiteUrlBuilder newIdSiteUrlBuilder();
 
-    SamlUrlBuilder newSamlUrlBuilder();
+    /**
+     * Creates a new {@link SamlIdpUrlBuilder} that allows you to build a URL you can use to redirect your
+     * application users to a SAML authentication site (Identity Provider or IdP) for performing common user identity functionality.  When
+     * users are done (logging in, logging out, etc), they will be redirected back to a {@code callbackUri} of
+     * your choice.
+     *
+     * <h5>Example</h5>
+     *
+     * <p>Let's assume your application's end-users use a web browser to visit your web application at
+     * {@code https://awesomeapp.com}.  When they login, you want to send them to something like
+     * {@code https://awesomeapp.com/userHome} so you don't have to build all the
+     * login, registration, and forgot password screens from scratch.</p>
+     *
+     * <p>When your end-user clicks a 'login' link, you would redirect them to your SAML IdP page.  That link click request
+     * might be handled as follows:</p>
+     *
+     * <pre>
+     * public void onLoginLinkClick(HttpServletRequest request, HttpServletResponse response) {
+     *
+     *    Application application = client.getResource(myApplicationRestUrl, Application.class);
+     *
+     *    // This is the <b>fully qualified</b> URL that your end-user should return to after they are finished at the
+     *    // SAML IdP Site.  It is usually a URL in your web application, for example: https://my.awesomeapp.com
+     *
+     *    String callbackUri = "https://awesomeapp.com/userHome";
+     *    String redirectUrl = <b>application.newSamlIdpUrlBuilder().{@link SamlIdpUrlBuilder#setCallbackUri(String)} setCallbackUri}(callbackUri).build()</b>;
+     *
+     *    response.setHeader("Cache-control", "no-cache, no-store");
+     *    response.setHeader("Pragma", "no-cache");
+     *
+     *    //send a 302 redirect to your SAML IdP.  When they're done, they will return to your callbackUri:
+     *    response.sendRedirect(redirectUrl);
+     * }
+     * </pre>
+     *
+     * <p>When the end-user is done using your ID Site, he will be redirected back to your specified
+     * {@code callbackUri}.  <b>Requests submitted to your {@code callbackUri} should be handled via the
+     * {@link #newSamlCallbackHandler(Object)} method.</b></p>
+     *
+     * @return a new {@link SamlIdpUrlBuilder} that allows you to build a URL you can use to redirect your
+     * application users to a SAML authentication site (Identity Provider or IdP).
+     *
+     * @see SamlIdpUrlBuilder#setCallbackUri(String)
+     *
+     * @since 1.0.RC8
+     */
+    SamlIdpUrlBuilder newSamlIdpUrlBuilder();
 
     /**
      * Creates a new {@link IdSiteCallbackHandler} used to handle HTTP replies from your ID Site to your
@@ -1204,6 +1249,58 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      */
     IdSiteCallbackHandler newIdSiteCallbackHandler(Object httpRequest);
 
+    /**
+     * Creates a new {@link SamlCallbackHandler} used to handle HTTP replies from your SAML Identity Provider (SAML IdP) to your
+     * application's {@code callbackUri}, as described in the {@link #newSamlIdpUrlBuilder()} method.
+     *
+     * <p><b>This method should be called when processing an HTTP request sent by the SAML IdP to the
+     * {@code callbackUri} specified via the {@link #newSamlIdpUrlBuilder()} method.</b></p>
+     *
+     * <h5>Example</h5>
+     *
+     * <p>Assume that you previously built the URL using the {@link #newSamlIdpUrlBuilder()}, and redirected your end-user to
+     * that URL.  When the end-user is finished interacting with your SAML IdP Site, they will be redirected back to the
+     * {@code callbackUri} you specified when constructing the URL. You would call this method when processing the
+     * request to that {@code callbackUri}.</p>
+     *
+     * <p>For example, assume your callbackUri is {@code https://awesomeapp.com/userHome} and you process requests to that
+     * URI with a (sample) {@code onSamlIdpCallback} method below:</p>
+     *
+     * <pre>
+     * public void onSamlIdpCallback(HttpServletRequest request, HttpServletResponse response) {
+     *
+     *    Application application = client.getResource(myApplicationRestUrl, Application.class);
+     *
+     *    <b>AccountResult result = application.newSamlCallbackHandler(request).getAccountResult();</b>
+     *
+     *    //get the account that signed-up or logged in successfully:
+     *    Account account = result.getAccount();
+     *
+     * }
+     * </pre>
+     *
+     * <h5>Servlet Container or No Servlet Container?</h5>
+     *
+     * <p>This method will accept either a {@code javax.servlet.http.HttpServletRequest} instance if your app is running
+     * in a Servlet container, or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest} instance if it is
+     * not.  See the {@link com.stormpath.sdk.http.HttpRequests} helper class to help build the request object if you
+     * are running in a non-servlet environment.</p>
+     *
+     * @param httpRequest either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
+     *                    Servlet container) or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
+     *                    instance if it does not.
+     * @return an {@link SamlCallbackHandler} that allows you customize how the {@code httpRequest} will be handled.
+     * @throws IllegalArgumentException if the method argument is null or is not either a either a
+     *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
+     *                                  {@code javax.servlet.http.HttpServletRequest}</a> or
+     *                                  {@link com.stormpath.sdk.http.HttpRequest} instance.
+     * @see #newSamlIdpUrlBuilder()
+     * @see com.stormpath.sdk.http.HttpRequests
+     * @see com.stormpath.sdk.idsite.IdSiteCallbackHandler
+     * @see com.stormpath.sdk.idsite.IdSiteCallbackHandler#getAccountResult()
+     *
+     * @since 1.0.RC8
+     */
     SamlCallbackHandler newSamlCallbackHandler(Object httpRequest);
 
     /**

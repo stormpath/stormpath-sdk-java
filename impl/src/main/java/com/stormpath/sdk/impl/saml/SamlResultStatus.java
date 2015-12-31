@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.saml;
 
 /**
- * Date: 12/29/15
+ * @since 1.0.RC8
  */
 public enum SamlResultStatus {
 

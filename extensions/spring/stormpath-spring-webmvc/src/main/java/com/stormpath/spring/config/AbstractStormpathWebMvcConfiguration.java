@@ -744,7 +744,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Resolver<SamlOrganizationContext> stormpathSamlOrganizationResolver() {
         DefaultSamlOrganizationResolver resolver = new DefaultSamlOrganizationResolver();
         resolver.setOrganizationNameKeyResolver(stormpathOrganizationNameKeyResolver());
-        resolver.setUseSubdomain(samlUseSubdomain);
         return resolver;
     }
 

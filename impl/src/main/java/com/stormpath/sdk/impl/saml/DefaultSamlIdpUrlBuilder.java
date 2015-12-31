@@ -21,7 +21,7 @@ import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.idsite.IdSiteClaims;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.saml.SamlUrlBuilder;
+import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -32,7 +32,10 @@ import java.util.UUID;
 
 import static com.stormpath.sdk.impl.idsite.IdSiteClaims.ACCESS_TOKEN;
 
-public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
+/**
+ * @since 1.0.RC8
+ */
+public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
 
     public static String SSO_LOGOUT_SUFFIX = "/logout";
     public final String ssoEndpoint;
@@ -42,7 +45,7 @@ public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
 
     private boolean logout = false;
 
-    public DefaultSamlUrlBuilder(InternalDataStore internalDataStore, String applicationHref, String samlProviderEndpoint) {
+    public DefaultSamlIdpUrlBuilder(InternalDataStore internalDataStore, String applicationHref, String samlProviderEndpoint) {
         Assert.notNull(internalDataStore, "internalDataStore cannot be null.");
         Assert.hasText(samlProviderEndpoint, "samlProviderEndpoint cannot be null or empty");
 
@@ -53,49 +56,37 @@ public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
     }
 
     @Override
-    public SamlUrlBuilder setCallbackUri(String callbackUri) {
+    public SamlIdpUrlBuilder setCallbackUri(String callbackUri) {
         claims.setCallbackUri(callbackUri);
         return this;
     }
 
     @Override
-    public SamlUrlBuilder setState(String state) {
+    public SamlIdpUrlBuilder setState(String state) {
         claims.setState(state);
         return this;
     }
 
     @Override
-    public SamlUrlBuilder setPath(String path) {
+    public SamlIdpUrlBuilder setPath(String path) {
         claims.setPath(path);
         return this;
     }
 
     @Override
-    public SamlUrlBuilder setOrganizationNameKey(String organizationNameKey) {
+    public SamlIdpUrlBuilder setOrganizationNameKey(String organizationNameKey) {
         claims.setOrganizationNameKey(organizationNameKey);
         return this;
     }
 
     @Override
-    public SamlUrlBuilder setUseSubdomain(boolean useSubdomain) {
-        claims.setUseSubdomain(useSubdomain);
-        return this;
-    }
-
-    @Override
-    public SamlUrlBuilder setShowOrganizationField(boolean showOrganizationField) {
-        claims.setShowOrganizationField(showOrganizationField);
-        return this;
-    }
-
-    @Override
-    public SamlUrlBuilder setSpToken(String spToken) {
+    public SamlIdpUrlBuilder setSpToken(String spToken) {
         claims.setSpToken(spToken);
         return this;
     }
 
     @Override
-    public SamlUrlBuilder addProperty(String name, Object value) {
+    public SamlIdpUrlBuilder addProperty(String name, Object value) {
         claims.put(name, value);
         return this;
     }

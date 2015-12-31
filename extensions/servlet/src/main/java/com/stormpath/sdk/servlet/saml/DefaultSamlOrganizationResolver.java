@@ -29,16 +29,10 @@ public class DefaultSamlOrganizationResolver implements Resolver<SamlOrganizatio
 
     private Resolver<String> organizationNameKeyResolver;
 
-    private Boolean useSubdomain;
-
     private Boolean showOrganizationField;
 
     public void setOrganizationNameKeyResolver(Resolver<String> organizationNameKeyResolver) {
         this.organizationNameKeyResolver = organizationNameKeyResolver;
-    }
-
-    public void setUseSubdomain(Boolean useSubdomain) {
-        this.useSubdomain = useSubdomain;
     }
 
     public void setShowOrganizationField(Boolean showOrganizationField) {
@@ -50,6 +44,6 @@ public class DefaultSamlOrganizationResolver implements Resolver<SamlOrganizatio
 
         String subdomain = organizationNameKeyResolver.get(request, response);
 
-        return new DefaultSamlOrganizationContext(subdomain, useSubdomain, showOrganizationField);
+        return new DefaultSamlOrganizationContext(subdomain, false, showOrganizationField);
     }
 }

@@ -18,10 +18,27 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.idsite.AuthenticationResult;
 import com.stormpath.sdk.idsite.LogoutResult;
 
+/**
+ * Listener interface to get notifications about effective operations of the SAML IdP invocation:
+ * authentication or logout.
+ * <p/>
+ * For usage, see {@link com.stormpath.sdk.saml.SamlCallbackHandler#setResultListener(SamlResultListener)}
+ *
+ * @since 1.0.RC8
+ */
 public interface SamlResultListener {
 
+    /**
+     * This method will be invoked if a successful authentication operation takes place on SAML IdP.
+     *
+     * @param result the {@link AuthenticationResult} containing data specific to this event.
+     */
     public void onAuthenticated(AuthenticationResult result);
 
+    /**
+     * This method will be invoked if a successful logout operation takes place on SAML IdP.
+     *
+     * @param result the {@link LogoutResult} containing data specific to this event.
+     */
     public void onLogout(LogoutResult result);
-
 }

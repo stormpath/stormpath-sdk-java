@@ -21,7 +21,4 @@ package com.stormpath.sdk.servlet.saml;
 public interface SamlOrganizationContext {
 
     String getOrganizationNameKey();
-
-    Boolean isUseSubdomain();
-
 }

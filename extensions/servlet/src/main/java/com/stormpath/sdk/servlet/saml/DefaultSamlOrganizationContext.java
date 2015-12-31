@@ -34,10 +34,4 @@ public class DefaultSamlOrganizationContext implements SamlOrganizationContext {
     public String getOrganizationNameKey() {
         return organizationNameKey;
     }
-
-    @Override
-    public Boolean isUseSubdomain() {
-        return useSubdomain;
-    }
-
 }

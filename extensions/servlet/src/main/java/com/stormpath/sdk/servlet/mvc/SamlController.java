@@ -18,7 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.saml.SamlUrlBuilder;
+import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
@@ -109,17 +109,17 @@ public class SamlController extends AbstractController {
     }
 
     protected String createSamlUrl(HttpServletRequest request) {
-        SamlUrlBuilder builder = createSamlUrlBuilder(request);
+        SamlIdpUrlBuilder builder = createSamlIdpUrlBuilder(request);
         return builder.build();
     }
 
-    protected SamlUrlBuilder createSamlUrlBuilder(HttpServletRequest request) {
+    protected SamlIdpUrlBuilder createSamlIdpUrlBuilder(HttpServletRequest request) {
 
         Application application = getApplication(request);
 
         String callbackUri = buildCallbackUri(request);
 
-        SamlUrlBuilder builder = application.newSamlUrlBuilder().setCallbackUri(callbackUri);
+        SamlIdpUrlBuilder builder = application.newSamlIdpUrlBuilder().setCallbackUri(callbackUri);
 
         SamlOrganizationContext orgCtx = samlOrganizationResolver.get(request, null);
 
@@ -129,19 +129,12 @@ public class SamlController extends AbstractController {
             if (Strings.hasText(nameKey)) {
 
                 builder.setOrganizationNameKey(nameKey);
-
-                //this next field is only relevant if a namekey is set:
-                Boolean val = orgCtx.isUseSubdomain();
-                if (val != null) {
-                    builder.setUseSubdomain(orgCtx.isUseSubdomain());
-                }
             }
         }
 
         if (this.samlUri != null) {
             builder.setPath(this.samlUri);
         }
-
         return builder;
     }
 }
