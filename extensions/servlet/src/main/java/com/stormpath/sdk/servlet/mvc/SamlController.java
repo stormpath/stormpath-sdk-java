@@ -36,7 +36,7 @@ public class SamlController extends AbstractController {
 
     private String samlUri;
 
-    private String alreadyLoggedInUri;
+    private String alreadyLoggedInUri = "/";
 
     //Todo: implement
     // may want to refactor IdSiteOrganizationResolver to be more polymorphic

@@ -738,6 +738,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
         controller.setCallbackUri(idSiteResultUri);
+        controller.setAlreadyLoggedInUri(loginNextUri);
         controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
         controller.init();
         return createSpringController(controller);

@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -35,6 +36,8 @@ public class IdSiteController extends AbstractController {
 
     private String idSiteUri;
 
+    private String alreadyLoggedInUri = "/";
+
     private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
@@ -47,6 +50,10 @@ public class IdSiteController extends AbstractController {
 
     public void setIdSiteUri(String idSiteUri) {
         this.idSiteUri = idSiteUri;
+    }
+
+    public void setAlreadyLoggedInUri(String alreadyLoggedInUri) {
+        this.alreadyLoggedInUri = alreadyLoggedInUri;
     }
 
     public void setIdSiteOrganizationResolver(Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver) {
@@ -82,6 +89,11 @@ public class IdSiteController extends AbstractController {
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        //Let's redirect to "alreadyLoggedInUri" if the user is already logged in
+        if (AccountResolver.INSTANCE.getAccount(request) != null) {
+            return new DefaultViewModel(alreadyLoggedInUri).setRedirect(true);
+        }
 
         String idSiteUrl = createIdSiteUrl(request);
 
