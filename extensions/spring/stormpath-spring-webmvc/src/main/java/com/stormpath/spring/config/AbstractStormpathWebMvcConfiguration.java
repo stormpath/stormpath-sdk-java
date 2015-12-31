@@ -420,8 +420,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     IdSiteResultListener springSecurityIdSiteResultListener;
 
     @Autowired(required = false)
-    @Qualifier("samlResultListener")
-    SamlResultListener samlResultListener;
+    @Qualifier("springSecuritySamlResultListener")
+    SamlResultListener springSecuritySamlResultListener;
 
     @Autowired(required = false)
     protected ErrorModelFactory loginErrorModelFactory;
@@ -1047,8 +1047,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutController(stormpathMvcLogoutController());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setEventPublisher(stormpathRequestEventPublisher());
-        if (samlResultListener != null) {
-            controller.addSamlResultListener(samlResultListener);
+        if (springSecuritySamlResultListener != null) {
+            controller.addSamlResultListener(springSecuritySamlResultListener);
         }
         controller.init();
         return createSpringController(controller);

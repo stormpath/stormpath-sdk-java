@@ -55,6 +55,9 @@ import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATE;
 import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATUS;
 import static com.stormpath.sdk.impl.jwt.JwtHeaderParameters.KEY_ID;
 
+/**
+ * @since 1.0.RC8
+ */
 public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
@@ -159,7 +162,6 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
 
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
 
-        //@since 1.0.RC7.3
         if(this.resultListeners.size() > 0) {
             dispatchResponseStatus(resultStatus, properties);
         }
@@ -167,9 +169,6 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
         return accountResult;
     }
 
-    /**
-     * @since 1.0.RC3
-     */
     @Override
     public SamlCallbackHandler setResultListener(SamlResultListener idSiteResultListener) {
         if (idSiteResultListener != null) {
@@ -179,9 +178,6 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
         return this;
     }
 
-    /**
-     * @since 1.0.RC7.3
-     */
     @Override
     public SamlCallbackHandler addResultListener(SamlResultListener idSiteResultListener) {
         if (idSiteResultListener != null) {
