@@ -16,14 +16,11 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlUrlBuilder;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +33,8 @@ public class SamlController extends AbstractController {
 
     private String samlUri;
 
+    private String alreadyLoggedInUri;
+
     //private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
@@ -44,6 +43,10 @@ public class SamlController extends AbstractController {
 
     public void setCallbackUri(String callbackUri) {
         this.callbackUri = callbackUri;
+    }
+
+    public void setAlreadyLoggedInUri(String alreadyLoggedInUri) {
+        this.alreadyLoggedInUri = alreadyLoggedInUri;
     }
 
     public void setSamlUri(String samlUri) {
@@ -83,6 +86,11 @@ public class SamlController extends AbstractController {
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        //Let's redirect to "alreadyLoggedInUri" if the user is already logged in
+        if (AccountResolver.INSTANCE.getAccount(request) != null) {
+            return new DefaultViewModel(alreadyLoggedInUri).setRedirect(true);
+        }
 
         String samlUrl = createSamlUrl(request);
 
