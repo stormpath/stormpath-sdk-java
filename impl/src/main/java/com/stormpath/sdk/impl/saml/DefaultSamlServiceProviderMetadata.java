@@ -22,7 +22,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.saml.AssertionConsumerServicePostEndpoint;
 import com.stormpath.sdk.saml.SamlServiceProviderMetadata;
-import com.stormpath.sdk.saml.X509SigningCert;
+import com.stormpath.sdk.cert.X509SigningCert;
 
 import java.util.Map;
 

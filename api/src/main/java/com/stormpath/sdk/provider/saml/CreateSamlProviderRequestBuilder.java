@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.provider.saml;
 
+import com.stormpath.sdk.provider.CreateProviderRequest;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 /**
- * A Builder to construct Saml-specific {@link CreateProviderRequest}s.
+ * A Builder to construct Saml-specific {@link com.stormpath.sdk.provider.CreateProviderRequest}s.
  * A simple SAML create provider request creation looks like:
  *
  * CreateProviderRequest request = Providers.SAML.builder()
@@ -74,7 +75,7 @@ public interface CreateSamlProviderRequestBuilder {
     CreateSamlProviderRequestBuilder setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules);
 
     /**
-     * Builds a {@link CreateProviderRequest} based on the current state of the builder.
+     * Builds a {@link com.stormpath.sdk.provider.CreateProviderRequest} based on the current state of the builder.
      *
      * @return a {@code CreateProviderRequest} instance
      */

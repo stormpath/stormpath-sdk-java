@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.saml;
+package com.stormpath.sdk.cert;
 
 import com.stormpath.sdk.resource.Resource;
 

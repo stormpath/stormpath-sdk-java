@@ -31,7 +31,7 @@ import com.stormpath.sdk.organization.Organizations
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.saml.AttributeStatementMappingRule
 import com.stormpath.sdk.saml.AttributeStatementMappingRules
-import com.stormpath.sdk.saml.SamlEntitiesFactory
+import com.stormpath.sdk.saml.SamlAttributeStatementMappingRules
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -187,19 +187,19 @@ class DirectoryIT extends ClientIT {
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateSamlDirectoryWithAttributeStatementMappingRules")
 
 
-        AttributeStatementMappingRule rule1 = SamlEntitiesFactory.getAttributeStatementMappingRuleBuilder()
+        AttributeStatementMappingRule rule1 = SamlAttributeStatementMappingRules.ruleBuilder()
                 .setName("name1")
                 .setNameFormat("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified")
                 .setAccountAttributes("customData.name1", "customData.otherName1")
                 .build()
 
-        AttributeStatementMappingRule rule2 = SamlEntitiesFactory.getAttributeStatementMappingRuleBuilder()
+        AttributeStatementMappingRule rule2 = SamlAttributeStatementMappingRules.ruleBuilder()
                 .setName("name2")
                 .setNameFormat("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified")
                 .setAccountAttributes("customData.name2")
                 .build()
 
-        AttributeStatementMappingRules attributeStatementMappingRules = SamlEntitiesFactory.getAttributeStatementMappingRulesBuilder()
+        AttributeStatementMappingRules attributeStatementMappingRules = SamlAttributeStatementMappingRules.rulesBuilder()
                 .addAttributeStatementMappingRule(rule1)
                 .addAttributeStatementMappingRule(rule2)
                 .build()

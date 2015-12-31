@@ -16,6 +16,7 @@
 package com.stormpath.sdk.provider;
 
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.provider.saml.SamlRequestFactory;
 
 /**
  * Static utility/helper methods serving Provider-specific {@link ProviderRequestFactory}s. For example, to
@@ -77,9 +78,9 @@ public final class Providers {
     public static final LinkedInRequestFactory LINKEDIN = (LinkedInRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultLinkedInRequestFactory");
 
     /**
-     * Returns a new {@link SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
+     * Returns a new {@link com.stormpath.sdk.provider.saml.SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
      *
-     * @return a new {@link SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
+     * @return a new {@link com.stormpath.sdk.provider.saml.SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
      * @since 1.0.RC8
      */
     public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultSamlRequestFactory");

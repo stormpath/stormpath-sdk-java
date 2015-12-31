@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.saml;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.saml.X509SigningCert;
+import com.stormpath.sdk.cert.X509SigningCert;
 
 import java.util.Map;
 

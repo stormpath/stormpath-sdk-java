@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.provider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
-import com.stormpath.sdk.provider.SamlAccountRequestBuilder
+import com.stormpath.sdk.provider.saml.SamlAccountRequestBuilder
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*

@@ -21,7 +21,7 @@ import java.util.Set;
  * A Builder to construct {@link AttributeStatementMappingRule} resources.
  * Usage Example:
  *
- *  AttributeStatementMappingRule rule = SamlEntitiesFactory.getAttributeStatementMappingRuleBuilder()
+ *  AttributeStatementMappingRule rule = SamlEntitiesFactory.ruleBuilder()
  *      .setName("name")
  *      .setAccountAttributes("field1", "field2")
  *      .build();

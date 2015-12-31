@@ -16,6 +16,7 @@
 package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.cert.X509SigningCert;
 import com.stormpath.sdk.resource.Resource;
 
 /**

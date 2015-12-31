@@ -16,7 +16,6 @@
 package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.provider.LinkedInRequestFactory;
 
 /**
  * Static utility/helper methods for working with SAML-related resources. Most methods are
@@ -25,7 +24,7 @@ import com.stormpath.sdk.provider.LinkedInRequestFactory;
  *
  * @since 1.0.RC8
  */
-public final class SamlEntitiesFactory {
+public final class SamlAttributeStatementMappingRules {
 
     /**
      * Returns a new {@link AttributeStatementMappingRuleBuilder} instance, used to construct {@link AttributeStatementMappingRule} objects,
@@ -33,17 +32,17 @@ public final class SamlEntitiesFactory {
      *
      * @return a new {@link AttributeStatementMappingRuleBuilder} instance, used to construct {@link AttributeStatementMappingRule} objects.
      */
-    public static AttributeStatementMappingRuleBuilder getAttributeStatementMappingRuleBuilder() {
+    public static AttributeStatementMappingRuleBuilder ruleBuilder() {
         return (AttributeStatementMappingRuleBuilder) Classes.newInstance("com.stormpath.sdk.impl.saml.DefaultAttributeStatementMappingRuleBuilder");
     }
 
     /**
      * Returns a new {@link AttributeStatementMappingRulesBuilder} instance, used to construct {@link AttributeStatementMappingRules},
-     * to be added to the {@link com.stormpath.sdk.provider.SamlProvider} entity, for example, when creating a new Saml Directory.
+     * to be added to the {@link com.stormpath.sdk.provider.saml.SamlProvider} entity, for example, when creating a new Saml Directory.
      *
      * @return a new {@link AttributeStatementMappingRuleBuilder} instance, used to construct {@link AttributeStatementMappingRules}.
      */
-    public static AttributeStatementMappingRulesBuilder getAttributeStatementMappingRulesBuilder() {
+    public static AttributeStatementMappingRulesBuilder rulesBuilder() {
         return (AttributeStatementMappingRulesBuilder) Classes.newInstance("com.stormpath.sdk.impl.saml.DefaultAttributeStatementMappingRulesBuilder");
     }
 }

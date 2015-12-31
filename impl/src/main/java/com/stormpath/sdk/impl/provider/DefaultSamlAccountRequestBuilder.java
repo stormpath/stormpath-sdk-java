@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.SamlAccountRequestBuilder;
+import com.stormpath.sdk.provider.saml.SamlAccountRequestBuilder;
 
 import java.util.Map;
 

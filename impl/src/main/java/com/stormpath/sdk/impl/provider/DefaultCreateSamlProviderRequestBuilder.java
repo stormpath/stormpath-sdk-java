@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.provider;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.CreateProviderRequest;
-import com.stormpath.sdk.provider.CreateSamlProviderRequestBuilder;
+import com.stormpath.sdk.provider.saml.CreateSamlProviderRequestBuilder;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 import java.util.Collections;

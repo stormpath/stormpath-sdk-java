@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.provider.saml;
+
+import com.stormpath.sdk.provider.ProviderAccountRequestBuilder;
 
 /**
  * Saml's specific {@link com.stormpath.sdk.provider.ProviderAccountRequestBuilder} interface.

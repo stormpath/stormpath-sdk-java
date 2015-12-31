@@ -16,8 +16,7 @@
 package com.stormpath.sdk.impl.saml
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.resource.SetProperty
-import com.stormpath.sdk.saml.X509SigningCert
+import com.stormpath.sdk.cert.X509SigningCert
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*

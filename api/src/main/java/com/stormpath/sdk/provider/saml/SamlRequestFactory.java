@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.provider.saml;
 
 /**
  * Saml-specific {@link com.stormpath.sdk.provider.ProviderRequestFactory} interface.
@@ -23,9 +23,9 @@ package com.stormpath.sdk.provider;
 public interface SamlRequestFactory  {
 
     /**
-     * Creates a new {@link CreateSamlProviderRequestBuilder} that allows you to build Saml-specific {@link CreateProviderRequest}s.
+     * Creates a new {@link CreateSamlProviderRequestBuilder} that allows you to build Saml-specific {@link com.stormpath.sdk.provider.CreateProviderRequest}s.
      *
-     * @return a new {@link CreateSamlProviderRequestBuilder} to build Saml-specific {@link CreateProviderRequest}s.
+     * @return a new {@link CreateSamlProviderRequestBuilder} to build Saml-specific {@link com.stormpath.sdk.provider.CreateProviderRequest}s.
      */
     CreateSamlProviderRequestBuilder builder();
 
