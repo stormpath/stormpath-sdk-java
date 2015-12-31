@@ -392,9 +392,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
 
-    @Value("#{ @environment['stormpath.web.saml.useSubdomain'] }")
-    protected Boolean samlUseSubdomain;
-
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
 
