@@ -15,10 +15,33 @@
 */
 package com.stormpath.sdk.impl.saml
 
+import com.stormpath.sdk.saml.AttributeStatementMappingRule
+import org.testng.annotations.Test
+
+import static org.testng.Assert.*
+
 /**
  * Test for AttributeStatementMappingRule class
  *
  * @since 1.0.RC8
  */
 class DefaultAttributeStatementMappingRuleTest {
+
+    @Test
+    void testMethods() {
+
+        AttributeStatementMappingRule rule = new DefaultAttributeStatementMappingRule("testName", "nameFormat", "value1", "value2", "value3")
+        assertTrue(rule.getName().equals("testName"))
+        assertTrue(rule.getNameFormat().equals("nameFormat"))
+        assertTrue(rule.getAccountAttributes() instanceof Set && rule.getAccountAttributes().size() == 3)
+
+        Set<String> values = new HashSet<String>()
+        values.add("value1")
+        values.add("value2")
+
+        rule = new DefaultAttributeStatementMappingRule("testName1", "nameFormat1", (Set<String>) values)
+        assertTrue(rule.getName().equals("testName1"))
+        assertTrue(rule.getNameFormat().equals("nameFormat1"))
+        assertTrue(rule.getAccountAttributes() instanceof Set && rule.getAccountAttributes().size() == 2)
+    }
 }

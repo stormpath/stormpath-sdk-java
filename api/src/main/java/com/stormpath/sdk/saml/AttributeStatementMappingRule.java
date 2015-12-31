@@ -23,11 +23,13 @@ import java.util.Set;
  * <p>{@code AttributeStatementMappingRule}s are immutable.  If you want to change the mapping rules for Accounts in a
  * particular SAML Directory, you must remove and add new {@code AttributeStatementMappingRule} instances to the
  * Directory Provider's {@link AttributeStatementMappingRules} instance.
+ *
  * <h4>How does it work?</h4>
  * <p>Each {@code AttributeStatementMappingRule} has a {@code name} and a collection of Stormpath account
  * {@link #getAccountAttributes() attribute names}.</p>
  * <p>When a SAML Attribute Statement is encountered, every SAML Attribute with a matching name will have its value
  * copied to the corresponding specified Stormpath account fields.</p>
+ *
  * <h5>Example</h5>
  * <p>For example, assume that a mapping rule's {@code name} is {@code foo}, and the rule's
  * {@link #getAccountAttributes() accountAttributes} collection contains the Stormpath Account field names

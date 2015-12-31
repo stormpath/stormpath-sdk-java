@@ -42,4 +42,29 @@ class DefaultAttributeStatementMappingRulesTest {
 
         assertTrue(propertyDescriptors.get("items") instanceof SetProperty && propertyDescriptors.get("items").getType().equals(AttributeStatementMappingRule.class))
     }
+
+    @Test
+    void testMethods() {
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        Set<String> itemsSet = new HashSet<String>(Arrays.asList("this set has five items".split(" ")));
+
+        def properties = [href: "https://api.stormpath.com/v1/directories/45YM3OwioW9PVtfLOh6q1e/saml/sso/post",
+            items: itemsSet]
+
+        AttributeStatementMappingRules mappingRules = new DefaultAttributeStatementMappingRules(internalDataStore, properties)
+
+        replay internalDataStore
+
+        Set<AttributeStatementMappingRule> items = new HashSet<AttributeStatementMappingRule>()
+        items.add(new DefaultAttributeStatementMappingRule("name", "nameFormat", "value1", "value2"))
+        items.add(new DefaultAttributeStatementMappingRule("name1", "nameFormat1", "value3", "value4"))
+        mappingRules.setItems()
+
+        assertTrue(mappingRules.getHref().equals(properties.href))
+        assertTrue(mappingRules.getItems().size() == 5)
+
+        verify internalDataStore
+    }
 }

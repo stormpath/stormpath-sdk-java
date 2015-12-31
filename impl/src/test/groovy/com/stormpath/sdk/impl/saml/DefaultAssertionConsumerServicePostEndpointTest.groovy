@@ -16,14 +16,11 @@
 package com.stormpath.sdk.impl.saml
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.saml.AssertionConsumerServicePostEndpoint
-import com.stormpath.sdk.saml.SamlServiceProvider
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
-
 
 /**
  * Test for AssertionConsumerServicePostEndpointTest class
@@ -39,7 +36,6 @@ class DefaultAssertionConsumerServicePostEndpointTest {
 
         def propertyDescriptors = consumerServicePostEndpoint.getPropertyDescriptors()
         assertEquals(propertyDescriptors.size(), 0)
-
     }
 
     @Test
@@ -49,7 +45,7 @@ class DefaultAssertionConsumerServicePostEndpointTest {
 
         def properties = [href: "https://api.stormpath.com/v1/directories/45YM3OwioW9PVtfLOh6q1e/saml/sso/post"]
 
-        DefaultAssertionConsumerServicePostEndpoint consumerServicePostEndpoint = new DefaultAssertionConsumerServicePostEndpoint(internalDataStore, properties)
+        AssertionConsumerServicePostEndpoint consumerServicePostEndpoint = new DefaultAssertionConsumerServicePostEndpoint(internalDataStore, properties)
 
         replay internalDataStore
 
