@@ -189,13 +189,13 @@ class DirectoryIT extends ClientIT {
 
         AttributeStatementMappingRule rule1 = SamlAttributeStatementMappingRules.ruleBuilder()
                 .setName("name1")
-                .setNameFormat("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified")
+                .setNameFormat("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified")
                 .setAccountAttributes("customData.name1", "customData.otherName1")
                 .build()
 
         AttributeStatementMappingRule rule2 = SamlAttributeStatementMappingRules.ruleBuilder()
                 .setName("name2")
-                .setNameFormat("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified")
+                .setNameFormat("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified")
                 .setAccountAttributes("customData.name2")
                 .build()
 

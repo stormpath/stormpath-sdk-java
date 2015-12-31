@@ -1411,7 +1411,13 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
 
     /**
      * Adds a valid URI as an authorized callback URI for this application.
+     * This is a convenience method and using it is equivalent to:
+     * <pre>
+     *     setAuthorizedCallbackUris(getAuthorizedCallbackUris().add(authorizedCallbackUri));
+     * </pre>
+     *
      * @return this instance for method chaining.
+     * @see #setAuthorizedCallbackUris(java.util.List)
      *
      * @since 1.0.RC8
      */
