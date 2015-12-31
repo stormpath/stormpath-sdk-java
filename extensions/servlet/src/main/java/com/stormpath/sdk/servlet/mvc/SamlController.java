@@ -25,6 +25,9 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * @since 1.0.RC8
+ */
 public class SamlController extends AbstractController {
 
     private ServerUriResolver serverUriResolver;
@@ -35,7 +38,10 @@ public class SamlController extends AbstractController {
 
     private String alreadyLoggedInUri;
 
-    //private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
+    //Todo: implement
+    // may want to refactor IdSiteOrganizationResolver to be more polymorphic
+    // rather than have a separate SamlOrganizationResolver
+    //private Resolver<SamlOrganizationContext> samlOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -53,14 +59,19 @@ public class SamlController extends AbstractController {
         this.samlUri = samlUri;
     }
 
-//    public void setIdSiteOrganizationResolver(Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver) {
-//        this.idSiteOrganizationResolver = idSiteOrganizationResolver;
-//    }
+    //Todo: implement
+    /*
+    public void setSamlOrganizationResolver(Resolver<SamlOrganizationContext> samlOrganizationResolver) {
+        this.samlOrganizationResolver = samlOrganizationResolver;
+    }
+    */
 
     public void init() {
         Assert.notNull(serverUriResolver, "Application must be configured.");
         Assert.notNull(callbackUri, "callbackUri must be configured.");
-//        Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
+
+        //Todo: implement
+        //Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
     }
 
     protected Application getApplication(HttpServletRequest request) {
@@ -114,27 +125,30 @@ public class SamlController extends AbstractController {
 
         SamlUrlBuilder builder = application.newSamlUrlBuilder().setCallbackUri(callbackUri);
 
-//        IdSiteOrganizationContext orgCtx = idSiteOrganizationResolver.get(request, null);
+        //Todo: implement
+        /*
+        SamlOrganizationContext orgCtx = SamlOrganizationResolver.get(request, null);
 
-//        if (orgCtx != null) {
-//
-//            String nameKey = orgCtx.getOrganizationNameKey();
-//            if (Strings.hasText(nameKey)) {
-//
-//                builder.setOrganizationNameKey(nameKey);
-//
-//                //this next field is only relevant if a namekey is set:
-//                Boolean val = orgCtx.isUseSubdomain();
-//                if (val != null) {
-//                    builder.setUseSubdomain(orgCtx.isUseSubdomain());
-//                }
-//            }
-//
-//            Boolean val = orgCtx.isShowOrganizationField();
-//            if (val != null) {
-//                builder.setShowOrganizationField(val);
-//            }
-//        }
+        if (orgCtx != null) {
+
+            String nameKey = orgCtx.getOrganizationNameKey();
+            if (Strings.hasText(nameKey)) {
+
+                builder.setOrganizationNameKey(nameKey);
+
+                //this next field is only relevant if a namekey is set:
+                Boolean val = orgCtx.isUseSubdomain();
+                if (val != null) {
+                    builder.setUseSubdomain(orgCtx.isUseSubdomain());
+                }
+            }
+
+            Boolean val = orgCtx.isShowOrganizationField();
+            if (val != null) {
+                builder.setShowOrganizationField(val);
+            }
+        }
+        */
 
         if (this.samlUri != null) {
             builder.setPath(this.samlUri);
