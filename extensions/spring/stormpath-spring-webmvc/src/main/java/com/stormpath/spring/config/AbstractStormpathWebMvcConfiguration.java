@@ -93,6 +93,8 @@ import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
+import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
+import com.stormpath.sdk.servlet.saml.SamlOrganizationContext;
 import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
@@ -389,6 +391,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
+
+    @Value("#{ @environment['stormpath.web.saml.useSubdomain'] }")
+    protected Boolean samlUseSubdomain;
 
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
@@ -733,6 +738,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolver;
     }
 
+    /**
+     * @since 1.0.RC8
+     */
+    public Resolver<SamlOrganizationContext> stormpathSamlOrganizationResolver() {
+        DefaultSamlOrganizationResolver resolver = new DefaultSamlOrganizationResolver();
+        resolver.setOrganizationNameKeyResolver(stormpathOrganizationNameKeyResolver());
+        resolver.setUseSubdomain(samlUseSubdomain);
+        return resolver;
+    }
+
     protected Controller createIdSiteController(String idSiteUri) {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
@@ -744,13 +759,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
+    /**
+     * @since 1.0.RC8
+     */
     protected Controller createSamlController(String samlUri) {
         SamlController controller = new SamlController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setSamlUri(samlUri);
         controller.setCallbackUri(samlResultUri);
         controller.setAlreadyLoggedInUri(loginNextUri);
-        //controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+        controller.setSamlOrganizationResolver(stormpathSamlOrganizationResolver());
         controller.init();
         return createSpringController(controller);
     }
@@ -1045,7 +1063,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathSamlResultController() {
         SamlResultController controller = new SamlResultController();
         controller.setLoginNextUri(loginNextUri);
-        //controller.setRegisterNextUri(registerNextUri);
         controller.setLogoutController(stormpathMvcLogoutController());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setEventPublisher(stormpathRequestEventPublisher());

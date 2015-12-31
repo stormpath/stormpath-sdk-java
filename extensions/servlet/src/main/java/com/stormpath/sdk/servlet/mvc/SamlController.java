@@ -17,10 +17,13 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlUrlBuilder;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.saml.SamlOrganizationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,10 +41,8 @@ public class SamlController extends AbstractController {
 
     private String alreadyLoggedInUri = "/";
 
-    //Todo: implement
-    // may want to refactor IdSiteOrganizationResolver to be more polymorphic
-    // rather than have a separate SamlOrganizationResolver
-    //private Resolver<SamlOrganizationContext> samlOrganizationResolver;
+    //Todo: may want to refactor IdSiteOrganizationResolver to be more polymorphic rather than have a separate SamlOrganizationResolver
+    private Resolver<SamlOrganizationContext> samlOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -59,19 +60,14 @@ public class SamlController extends AbstractController {
         this.samlUri = samlUri;
     }
 
-    //Todo: implement
-    /*
     public void setSamlOrganizationResolver(Resolver<SamlOrganizationContext> samlOrganizationResolver) {
         this.samlOrganizationResolver = samlOrganizationResolver;
     }
-    */
 
     public void init() {
         Assert.notNull(serverUriResolver, "Application must be configured.");
         Assert.notNull(callbackUri, "callbackUri must be configured.");
-
-        //Todo: implement
-        //Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
+        Assert.notNull(samlOrganizationResolver, "idSiteOrganizationResolver must be configured.");
     }
 
     protected Application getApplication(HttpServletRequest request) {
@@ -125,9 +121,7 @@ public class SamlController extends AbstractController {
 
         SamlUrlBuilder builder = application.newSamlUrlBuilder().setCallbackUri(callbackUri);
 
-        //Todo: implement
-        /*
-        SamlOrganizationContext orgCtx = SamlOrganizationResolver.get(request, null);
+        SamlOrganizationContext orgCtx = samlOrganizationResolver.get(request, null);
 
         if (orgCtx != null) {
 
@@ -142,13 +136,7 @@ public class SamlController extends AbstractController {
                     builder.setUseSubdomain(orgCtx.isUseSubdomain());
                 }
             }
-
-            Boolean val = orgCtx.isShowOrganizationField();
-            if (val != null) {
-                builder.setShowOrganizationField(val);
-            }
         }
-        */
 
         if (this.samlUri != null) {
             builder.setPath(this.samlUri);

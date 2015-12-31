@@ -115,7 +115,11 @@ public class DefaultSamlUrlBuilder implements SamlUrlBuilder {
 
         byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
 
-        String jwt = jwtBuilder.setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE).setHeaderParam(JwsHeader.KEY_ID, apiKey.getId()).signWith(SignatureAlgorithm.HS256, secret).compact();
+        String jwt = jwtBuilder
+                .setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE)
+                .setHeaderParam(JwsHeader.KEY_ID, apiKey.getId())
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
 
         QueryString queryString = new QueryString();
         queryString.put(ACCESS_TOKEN, jwt);

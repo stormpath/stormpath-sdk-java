@@ -39,6 +39,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @since 1.0.RC8
+ */
 public class SamlResultController extends AbstractController {
 
     private String loginNextUri;
