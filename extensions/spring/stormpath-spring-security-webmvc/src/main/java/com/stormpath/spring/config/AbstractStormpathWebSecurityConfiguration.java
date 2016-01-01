@@ -34,11 +34,13 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
+import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -154,5 +156,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     public IdSiteResultListener springSecurityIdSiteResultListener() {
         return new SpringSecurityIdSiteResultListener(stormpathAuthenticationProvider);
+    }
+
+    public SamlResultListener springSecuritySamlResultListener() {
+        return new SpringSecuritySamlResultListener(stormpathAuthenticationProvider);
     }
 }

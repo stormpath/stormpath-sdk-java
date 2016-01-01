@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.security.token;
-
-import com.stormpath.sdk.account.Account;
+package com.stormpath.sdk.impl.saml;
 
 /**
- * @since 1.0.RC7.2
+ * @since 1.0.RC8
  */
-public class IdSiteAuthenticationToken extends ThirdPartyAuthenticationToken {
-    public IdSiteAuthenticationToken(Account account) {
-        super(account);
-    }
+public enum SamlResultStatus {
+
+    AUTHENTICATED, LOGOUT;
+
 }

@@ -1520,7 +1520,7 @@ class ApplicationIT extends ClientIT {
         assertTrue samlPolicy.getModifiedAt().after(testStart)
         SamlServiceProvider samlServiceProvider = samlPolicy.getSamlServiceProvider()
         assertTrue samlServiceProvider.getHref().contains("/samlServiceProviders/")
-        assertTrue samlServiceProvider.getSsoInitiationEndpoint().contains("/saml/sso/idpRedirect")
+        assertTrue samlServiceProvider.getSsoInitiationEndpoint().getHref().contains("/saml/sso/idpRedirect")
         assertTrue samlServiceProvider.getCreatedAt().after(testStart)
         assertTrue samlServiceProvider.getModifiedAt().after(testStart)
     }

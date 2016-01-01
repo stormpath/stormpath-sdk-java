@@ -16,6 +16,7 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
@@ -91,5 +92,12 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnProperty(name="stormpath.web.idSite.enabled")
     public IdSiteResultListener springSecurityIdSiteResultListener() {
         return super.springSecurityIdSiteResultListener();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="springSecuritySamlResultListener")
+    @ConditionalOnProperty(name="stormpath.web.saml.enabled")
+    public SamlResultListener springSecuritySamlResultListener() {
+        return super.springSecuritySamlResultListener();
     }
 }

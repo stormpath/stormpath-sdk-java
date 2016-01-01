@@ -62,7 +62,7 @@ public class SpringSecurityIdSiteResultListener implements IdSiteResultListener 
     private void doAuthenticate(Account account) {
         SecurityContextHolder.clearContext();
         Authentication authentication = new IdSiteAuthenticationToken(account);
-        authenticationProvider.authenticate(authentication);
+        authentication = authenticationProvider.authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

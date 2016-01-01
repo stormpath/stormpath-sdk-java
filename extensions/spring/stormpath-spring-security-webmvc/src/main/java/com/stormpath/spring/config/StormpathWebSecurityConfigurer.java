@@ -109,8 +109,14 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
 
+    @Value("#{ @environment['stormpath.web.saml.enabled'] ?: false }")
+    protected boolean samlEnabled;
+
     @Value("#{ @environment['stormpath.web.idSite.result.uri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
+
+    @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
+    protected String samlResultUri;
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
@@ -153,16 +159,18 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        if (idSiteEnabled && loginEnabled) {
+        if ((idSiteEnabled || samlEnabled) && loginEnabled) {
             http
                 .formLogin()
                 .loginPage(loginUri).and()
                 .authorizeRequests()
                 .antMatchers(loginUri).permitAll();
 
+            String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
+
             http
                 .authorizeRequests()
-                .antMatchers(idSiteResultUri).permitAll();
+                .antMatchers(permittedResultPath).permitAll();
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
 
@@ -185,7 +193,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 .antMatchers("/assets/css/custom.stormpath.css").permitAll();
         }
 
-        if (idSiteEnabled || stormpathWebEnabled) {
+        if (idSiteEnabled || samlEnabled || stormpathWebEnabled) {
             if (logoutEnabled) {
                 http
                     .logout()
