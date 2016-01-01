@@ -29,7 +29,10 @@ import java.util.List;
 public class SamlRuntimeException extends ResourceException {
 
     // TODO: Micah - What are the right error codes here?
-    private final static List<Integer> supportedErrors = java.util.Collections.unmodifiableList(Arrays.asList(10011, 10012, 11001, 11002, 11003, 12001));
+    // Internal documentation here: https://stormpath.atlassian.net/wiki/display/AM/Stormpath+as+a+SAML+Service+Provider
+    // the first 3 are taken from the above page. The last one is the timeout code for IDSite. Not sure if it would be
+    // the same for SAML.
+    private final static List<Integer> supportedErrors = java.util.Collections.unmodifiableList(Arrays.asList(10100, 10101, 10102, 12001));
 
     public SamlRuntimeException(Error error) {
         super(error);
@@ -40,7 +43,7 @@ public class SamlRuntimeException extends ResourceException {
     public void rethrow() throws InvalidSamlTokenException, SamlSessionTimeoutException {
         Error error = this.getStormpathError();
 
-        if (error.getCode() == 10011 || error.getCode() == 10012 || error.getCode() == 11001 || error.getCode() == 11002 || error.getCode() == 11003) {
+        if (error.getCode() == 10100 || error.getCode() == 10101 || error.getCode() == 10102) {
             throw new InvalidSamlTokenException(error);
         }
 
