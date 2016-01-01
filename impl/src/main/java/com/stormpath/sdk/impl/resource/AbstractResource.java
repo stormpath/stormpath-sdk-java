@@ -27,12 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -401,6 +396,25 @@ public abstract class AbstractResource implements Resource {
         throw new IllegalArgumentException(msg);
     }
 
+    /**
+     * Returns the {@link List} property identified by {@code key}
+     *
+     * @since 1.0.RC8
+     */
+    protected List getListProperty(String key){
+        Object list = getProperty(key);
+        return (List) list;
+    }
+
+    /**
+     * Returns the {@link Set} property identified by {@code key}
+     *
+     * @since 1.0.RC8
+     */
+    protected Set getSetProperty(String key){
+        Object set = getProperty(key);
+        return (Set) set;
+    }
 
 //    /**
 //     * @since 0.8

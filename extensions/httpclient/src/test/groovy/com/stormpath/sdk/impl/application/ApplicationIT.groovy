@@ -36,7 +36,6 @@ import com.stormpath.sdk.oauth.JwtAuthenticationRequest
 import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
-
 import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
@@ -59,6 +58,8 @@ import com.stormpath.sdk.provider.GoogleProvider
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.resource.ResourceException
+import com.stormpath.sdk.saml.SamlPolicy
+import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
@@ -575,6 +576,51 @@ class ApplicationIT extends ClientIT {
         assertNotEquals apiKeyCacheValue['secret'], appApiKey.secret
 
         assertEquals decryptSecretFromCacheMap(apiKeyCacheValue), appApiKey.secret
+    }
+
+    /**
+     * @since 1.0.RC8
+     */
+    @Test
+    void testSamlProperties(){
+        def app = createTempApp()
+
+        def samlPolicy = app.getSamlPolicy()
+
+        assertNotNull samlPolicy.href
+        assertNotNull samlPolicy.getSamlServiceProvider()
+        assertNotNull samlPolicy.getSamlServiceProvider().getSsoInitiationEndpoint()
+
+        //test invalid URI assignment attempt
+        try {
+            app.addAuthorizedCallbackUri("invalid")
+            fail("should have thrown")
+        } catch (IllegalArgumentException e) {
+            //ignore, exception was expected.
+        }
+
+        def callbackUris = app.getAuthorizedCallbackUris()
+        assertNotNull callbackUris
+        assertFalse callbackUris.iterator().hasNext()
+
+        String uri = "https://myapplication.com/whatever/callback"
+        app.addAuthorizedCallbackUri(uri)
+
+        callbackUris = app.getAuthorizedCallbackUris()
+        assertNotNull callbackUris
+        assertTrue callbackUris.iterator().hasNext()
+        assertEquals callbackUris.iterator().next(), uri
+
+        List<String> testUris = new ArrayList<String>()
+            testUris.add("https://myapplication.com/callback1")
+            testUris.add("https://myapplication.com/callback2")
+            testUris.add("https://myapplication.com/callback3")
+            testUris.add("https://myapplication.com/callback4")
+
+        app.setAuthorizedCallbackUris(testUris)
+        callbackUris = app.getAuthorizedCallbackUris()
+        assertNotNull callbackUris
+        assertEquals callbackUris.size(), 4
     }
 
     @Test
@@ -1458,6 +1504,25 @@ class ApplicationIT extends ClientIT {
             def message = e.getMessage()
             assertTrue message.equals("JWT failed validation; it cannot be trusted.")
         }
+    }
+
+    /** @since 1.0.RC8 **/
+    @Test
+    void testDefaultSAMLPolicyAndProvider() {
+
+        Date testStart = new Date();
+        def app = createTempApp()
+
+        SamlPolicy samlPolicy = app.getSamlPolicy();
+        assertTrue samlPolicy.getHref().contains("/samlPolicies/")
+        assertTrue samlPolicy.getSamlServiceProvider().getHref().contains("/samlServiceProviders/")
+        assertTrue samlPolicy.getCreatedAt().after(testStart)
+        assertTrue samlPolicy.getModifiedAt().after(testStart)
+        SamlServiceProvider samlServiceProvider = samlPolicy.getSamlServiceProvider()
+        assertTrue samlServiceProvider.getHref().contains("/samlServiceProviders/")
+        assertTrue samlServiceProvider.getSsoInitiationEndpoint().getHref().contains("/saml/sso/idpRedirect")
+        assertTrue samlServiceProvider.getCreatedAt().after(testStart)
+        assertTrue samlServiceProvider.getModifiedAt().after(testStart)
     }
 
 }

@@ -24,10 +24,10 @@ import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.saml.AttributeStatementMappingRule;
+import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultResourceConverter implements ResourceConverter {
 
@@ -85,6 +85,9 @@ public class DefaultResourceConverter implements ResourceConverter {
 
                 for (String updatedCustomPropertyName : updatedPropertyNames) {
                     Object object = abstractResource.getProperty(updatedCustomPropertyName);
+                    if (object instanceof AttributeStatementMappingRules){
+                        object = convertAttributeStatementMappingRulesToMap(object);
+                    }
                     properties.put(updatedCustomPropertyName, object);
                 }
 
@@ -112,5 +115,19 @@ public class DefaultResourceConverter implements ResourceConverter {
         }
 
         return value;
+    }
+
+    /**
+     * @since 1.0.RC8
+     */
+    private Object convertAttributeStatementMappingRulesToMap(Object object){
+
+        Set<Object> elementsSet = (Set<Object>) object;
+        Map<String, List<Object>> map = new HashMap<String, List<Object>>();
+
+        List<Object> list = Collections.toList(elementsSet.toArray());
+
+        map.put("items", list);
+        return map;
     }
 }

@@ -51,14 +51,17 @@ import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder
 import com.stormpath.sdk.impl.provider.DefaultProviderAccountAccess
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess
 import com.stormpath.sdk.impl.resource.CollectionReference
+import com.stormpath.sdk.impl.resource.ListProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StatusProperty
 import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.saml.DefaultSamlPolicy
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.resource.Resource
+import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.easymock.IArgumentMatcher
@@ -81,7 +84,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 12)
+        assertEquals( propertyDescriptors.size(), 14)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -97,6 +100,9 @@ class DefaultApplicationTest {
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         //since 1.0.RC7
         assertTrue(propertyDescriptors.get("oAuthPolicy") instanceof ResourceReference && propertyDescriptors.get("oAuthPolicy").getType().equals(OauthPolicy))
+        //since 1.0.RC8
+        assertTrue(propertyDescriptors.get("samlPolicy") instanceof ResourceReference && propertyDescriptors.get("samlPolicy").getType().equals(SamlPolicy))
+        assertTrue(propertyDescriptors.get("authorizedCallbackUris") instanceof ListProperty)
     }
 
     @Test
@@ -108,7 +114,8 @@ class DefaultApplicationTest {
                 groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"],
                 passwordResetTokens: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/passwordResetTokens"],
                 createdAt: "2015-01-01T00:00:00Z",
-                modifiedAt: "2015-02-01T00:00:00Z"]
+                modifiedAt: "2015-02-01T00:00:00Z",
+                samlPolicy: [href: "https://api.stormpath.com/v1/samlPolicies/5DxyJhixTppxnW8b6nJlpx"]]
 
         def internalDataStore = createStrictMock(InternalDataStore)
 
@@ -149,6 +156,8 @@ class DefaultApplicationTest {
         expect(internalDataStore.getResource(properties.accounts.href, AccountList, accountCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
 
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
+
+        expect(internalDataStore.instantiate(SamlPolicy, properties.samlPolicy)).andReturn(new DefaultSamlPolicy(internalDataStore, properties.samlPolicy))
 
         expect(internalDataStore.delete(defaultApplication))
 
@@ -201,6 +210,9 @@ class DefaultApplicationTest {
 
         resource = defaultApplication.getTenant()
         assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
+
+        resource = defaultApplication.getSamlPolicy()
+        assertTrue(resource instanceof SamlPolicy && resource.getHref().equals(properties.samlPolicy.href))
 
         defaultApplication.delete()
 
