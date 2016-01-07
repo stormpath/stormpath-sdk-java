@@ -21,6 +21,7 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.organization.Organization;
 
 import java.util.Map;
 
@@ -54,6 +55,8 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
             accountStore = getDataStore().getResource(href, Directory.class);
         } else if (href.contains("groups")) {
             accountStore = getDataStore().getResource(href, Group.class);
+        } else if (href.contains("organizations")){
+            accountStore = getDataStore().getResource(href, Organization.class);
         }
         return accountStore;
     }
@@ -102,14 +105,4 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
     public void delete() {
         getDataStore().delete(this);
     }
-//
-//    @Override
-//    public AccountStoreMapping setHolder(AccountStoreHolder accountStoreHolder) {
-//        if
-//    }
-//
-//    @Override
-//    public AccountStoreHolder getHolder(AccountStoreHolder accountStoreHolder) {
-//        return null;  //To change body of implemented methods use File | Settings | File Templates.
-//    }
 }
