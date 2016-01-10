@@ -29,7 +29,7 @@ import static org.testng.Assert.assertTrue
 /**
  * Test for IdSiteAuthenticationAttempt class
  *
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 class DefaultCreateIdSiteAuthenticationAttemptTest {
 

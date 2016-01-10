@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.IdSiteAuthenticationRequestBuilder;
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequestFactory;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 public class DefaultIdSiteAuthenticationRequestFactory implements IdSiteAuthenticationRequestFactory {
 
