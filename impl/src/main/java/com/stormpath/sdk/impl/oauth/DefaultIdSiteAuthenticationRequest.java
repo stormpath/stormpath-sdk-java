@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 public class DefaultIdSiteAuthenticationRequest implements IdSiteAuthenticationRequest {
 

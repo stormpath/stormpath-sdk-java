@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import java.util.Map;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 public class DefaultIdSiteAuthenticationAttempt extends AbstractResource implements IdSiteAuthenticationAttempt {
 

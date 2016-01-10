@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 public interface IdSiteAuthenticationRequest extends GrantRequest {
 

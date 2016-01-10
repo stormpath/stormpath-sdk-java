@@ -21,7 +21,7 @@ import com.stormpath.sdk.oauth.IdSiteAuthenticator;
 import com.stormpath.sdk.oauth.IdSiteAuthenticatorFactory;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 public class DefaultIdSiteAuthenticatorFactory implements IdSiteAuthenticatorFactory {
 

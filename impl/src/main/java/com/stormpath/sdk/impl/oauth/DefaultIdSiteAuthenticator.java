@@ -27,7 +27,7 @@ import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8.1
  */
 public class DefaultIdSiteAuthenticator extends AbstractOauth2Authenticator implements IdSiteAuthenticator {
 

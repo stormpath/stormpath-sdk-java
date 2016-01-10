@@ -65,6 +65,8 @@ public final class Oauth2Requests {
      * Returns a new {@link PasswordGrantAuthenticationRequestFactory} instance, used to construct Create Grant Authentication requests.
      *
      * @return a new {@link PasswordGrantAuthenticationRequestFactory} instance, used to construct Create Grant Authentication requests.
+     *
+     * @since 1.0.RC8.1
      */
     public static final IdSiteAuthenticationRequestFactory IDSITE_AUTHENTICATION_REQUEST = (IdSiteAuthenticationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticationRequestFactory");
 }
