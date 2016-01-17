@@ -42,7 +42,7 @@ Below are some resources you might find useful!
 
 **Spring Support**
 - [Spring Boot Stormpath Web Starter](https://docs.stormpath.com/java/spring-boot-web/)
-- [Example Stormapth Spring App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring)
+- [Example Stormpath Spring App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring)
 - [Example Stormpath Spring Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-webmvc)
 - [Example Stormpath Spring Boot App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot)
 - [Example Stormpath Spring Boot Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot-webmvc)
