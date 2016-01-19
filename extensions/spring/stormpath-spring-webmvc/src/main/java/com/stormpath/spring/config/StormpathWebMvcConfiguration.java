@@ -212,6 +212,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public String getAccessTokenValidationStrategy() {
+                return accessTokenValidationStrategy;
+            }
+
+            @Override
             public <T> T getInstance(String classPropertyName) throws ServletException {
                 if (MessageTag.LOCALE_RESOLVER_CONFIG_KEY.equals(classPropertyName)) {
                     return (T)localeResolver;

@@ -65,6 +65,8 @@ public interface Config extends Map<String, String> {
 
     long getAccountJwtTtl();
 
+    String getAccessTokenValidationStrategy();
+
     <T> T getInstance(String classPropertyName) throws ServletException;
 
     <T> Map<String,T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;

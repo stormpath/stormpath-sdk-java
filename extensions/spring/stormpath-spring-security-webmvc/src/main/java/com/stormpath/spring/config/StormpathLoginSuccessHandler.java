@@ -18,9 +18,14 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.security.provider.StormpathUserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
@@ -38,6 +43,9 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
 
     private Saver<AuthenticationResult> authenticationResultSaver;
 
+    @Autowired
+    private Publisher<RequestEvent> stormpathRequestEventPublisher;
+
     public StormpathLoginSuccessHandler(Client client, Saver<AuthenticationResult> saver) {
         this.stormpathClient = client;
         this.authenticationResultSaver = saver;
@@ -46,6 +54,10 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
         saveAccount(request, response, authentication);
+
+        SuccessfulAuthenticationRequestEvent e = createSuccessEvent(request, response, getAccount(authentication));
+        stormpathRequestEventPublisher.publish(e);
+
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
@@ -58,6 +70,12 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
     protected Account getAccount(Authentication authentication) {
         String accountHref = ((StormpathUserDetails) authentication.getPrincipal()).getProperties().get("href");
         return stormpathClient.getResource(accountHref, Account.class);
+    }
+
+    protected SuccessfulAuthenticationRequestEvent createSuccessEvent(HttpServletRequest request,
+                                                                      HttpServletResponse response,
+                                                                      Account account) {
+        return new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, new TransientAuthenticationResult(account));
     }
 
 }

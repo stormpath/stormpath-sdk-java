@@ -19,7 +19,11 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.Oauth2Authenticator;
+import com.stormpath.sdk.oauth.Oauth2Requests;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.PasswordGrantRequest;
 import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 import com.stormpath.sdk.oauth.ScopeFactory;
 import com.stormpath.sdk.oauth.RequestLocation;
@@ -46,7 +50,9 @@ public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequ
         Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
                 "The specified httpRequest argument must be an instance of " + HTTP_SERVLET_REQUEST_FQCN);
 
+        //TODO: TM ???
         com.stormpath.sdk.impl.http.ServletHttpRequest stmpHttpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpRequest);
+
         return Applications.oauthRequestAuthenticator(application).authenticate(stmpHttpRequest);
     }
 

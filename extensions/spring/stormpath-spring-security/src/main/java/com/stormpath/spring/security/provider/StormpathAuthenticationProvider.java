@@ -25,9 +25,11 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
+import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
 import com.stormpath.spring.security.token.ThirdPartyAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -403,7 +405,10 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public boolean supports(Class<?> authentication) {
-        return Authentication.class.isAssignableFrom(authentication);
+        if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        if (IdSiteAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        if (ThirdPartyAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        return false;
     }
 
     //This is not thread safe, but the Client is, and this is only executed during initial Application
@@ -475,6 +480,4 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         }
         return Collections.emptySet();
     }
-
-
 }

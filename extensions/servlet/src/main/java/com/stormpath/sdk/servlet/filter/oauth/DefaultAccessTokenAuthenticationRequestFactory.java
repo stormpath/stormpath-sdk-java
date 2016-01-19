@@ -15,10 +15,13 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
+import com.stormpath.sdk.oauth.Oauth2Requests;
+import com.stormpath.sdk.oauth.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,46 +30,40 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTokenAuthenticationRequestFactory {
 
-    protected static final String GRANT_TYPE_PARAM_NAME = "grant_type";
+    protected static final String USERNAME_PARAM_NAME = "username";
 
-    private UsernamePasswordRequestFactory usernamePasswordRequestFactory;
+    protected static final String PASSWORD_PARAM_NAME = "password";
 
-    public DefaultAccessTokenAuthenticationRequestFactory(UsernamePasswordRequestFactory factory) {
-        Assert.notNull(factory, "UsernamePasswordRequestFactory cannot be null.");
-        this.usernamePasswordRequestFactory = factory;
-    }
+    private AccountStoreResolver accountStoreResolver;
 
-    public UsernamePasswordRequestFactory getUsernamePasswordRequestFactory() {
-        return usernamePasswordRequestFactory;
+    public DefaultAccessTokenAuthenticationRequestFactory(AccountStoreResolver accountStoreResolver) {
+        Assert.notNull(accountStoreResolver, "AccountStoreResolver cannot be null.");
+        this.accountStoreResolver = accountStoreResolver;
     }
 
     @Override
-    public AuthenticationRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
-        throws OauthException {
+    public PasswordGrantRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
+            throws OauthException {
 
-        String grantType = Strings.clean(request.getParameter(GRANT_TYPE_PARAM_NAME));
-        //this is asserted in the AccessTokenFilter so it should never be null/empty here:
-        Assert.hasText(grantType, "grant_type must not be null or empty.");
+        try {
+            String username = Strings.clean(request.getParameter(USERNAME_PARAM_NAME));
+            Assert.hasText(username, "username must not be null or empty.");
 
-        if ("password".equals(grantType)) {
-            return createUsernamePasswordRequest(request);
+            String password = Strings.clean(request.getParameter(PASSWORD_PARAM_NAME));
+            Assert.hasText(password, "password must not be null or empty.");
+
+            AccountStore accountStore = accountStoreResolver.getAccountStore(request, null);
+
+            PasswordGrantRequestBuilder requestBuilder = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+                    .setPassword(password)
+                    .setLogin(username);
+            if (accountStore != null){
+                requestBuilder.setAccountStore(accountStore);
+            }
+
+            return requestBuilder.build();
+        } catch (Exception e){
+            throw new OauthException(OauthErrorCode.INVALID_REQUEST);
         }
-
-        throw new OauthException(OauthErrorCode.UNSUPPORTED_GRANT_TYPE);
-    }
-
-    protected AuthenticationRequest createUsernamePasswordRequest(HttpServletRequest request) throws OauthException {
-
-        String username = Strings.clean(request.getParameter("username"));
-        if (username == null) {
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Missing username value.", null);
-        }
-
-        String password = Strings.clean(request.getParameter("password"));
-        if (password == null) {
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Missing password value.", null);
-        }
-
-        return getUsernamePasswordRequestFactory().createUsernamePasswordRequest(request, null, username, password);
     }
 }

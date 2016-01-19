@@ -17,7 +17,10 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,9 +31,16 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC5
@@ -38,6 +48,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @Configuration
 @EnableStormpathWebSecurity
 public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+    @Autowired
+    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter;
 
     @Autowired
     protected Client client;
@@ -49,6 +62,10 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired
     @Qualifier("stormpathAuthenticationSuccessHandler")
     protected AuthenticationSuccessHandler successHandler;
+
+    @Autowired
+    @Qualifier("stormpathCsrfTokenRepository")
+    private CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
     @Qualifier("stormpathAuthenticationFailureHandler")
@@ -102,6 +119,18 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
     @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
     protected String verifyUri;
+
+    @Value("#{ @environment['stormpath.web.accessToken.enabled'] ?: true }")
+    protected boolean accessTokenEnabled;
+
+    @Value("#{ @environment['stormpath.web.accessToken.uri'] ?: '/oauth/token' }")
+    protected String accessTokenUri;
+
+    @Value("#{ @environment['stormpath.web.accessToken.revokeOnLogout'] ?: true }")
+    protected boolean accessTokenRevokeOnLogout;
+
+    @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
+    protected boolean csrfTokenEnabled;
 
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
@@ -217,10 +246,23 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             if (verifyEnabled) {
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
+            if (accessTokenEnabled) {
+                http.addFilterBefore(oAuth2AuthenticationProcessingFilter, AnonymousAuthenticationFilter.class);
+            }
 
             if (fullyAuthenticatedEnabled) {
                 http.authorizeRequests().anyRequest().fullyAuthenticated();
             }
+
+            if (!csrfTokenEnabled) {
+                http.csrf().disable();
+            } else {
+                http.csrf().csrfTokenRepository(csrfTokenRepository);
+                if (accessTokenEnabled) {
+                    http.csrf().ignoringAntMatchers(accessTokenUri);
+                }
+            }
+
         }
     }
 

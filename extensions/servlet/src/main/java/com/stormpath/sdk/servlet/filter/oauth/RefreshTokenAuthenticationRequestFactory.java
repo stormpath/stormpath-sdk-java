@@ -15,15 +15,15 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.oauth.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.RefreshGrantRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.RC8
  */
-public interface AccessTokenAuthenticationRequestFactory {
+public interface RefreshTokenAuthenticationRequestFactory {
 
-    PasswordGrantRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
-        throws OauthException;
+    RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request)
+            throws OauthException;
 }

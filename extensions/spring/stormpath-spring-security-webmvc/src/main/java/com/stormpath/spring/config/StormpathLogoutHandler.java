@@ -15,8 +15,20 @@
  */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
+import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationAttempt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
@@ -30,12 +42,26 @@ public class StormpathLogoutHandler implements LogoutHandler {
 
     private Saver<AuthenticationResult> authenticationResultSaver;
 
+    @Autowired
+    private Publisher<RequestEvent> stormpathRequestEventPublisher;
+
     public StormpathLogoutHandler(Saver<AuthenticationResult> authenticationResultSaver) {
         this.authenticationResultSaver = authenticationResultSaver;
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        Account account = AccountResolver.INSTANCE.getAccount(request);
         authenticationResultSaver.set(request, response, null);
+
+        LogoutRequestEvent e = createLogoutEvent(request, response, account);
+
+        stormpathRequestEventPublisher.publish(e);
+    }
+
+    protected LogoutRequestEvent createLogoutEvent(HttpServletRequest request,
+                                                                      HttpServletResponse response,
+                                                                      Account account) {
+        return new DefaultLogoutRequestEvent(request, response, account);
     }
 }

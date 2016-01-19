@@ -62,7 +62,11 @@ import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenRequestAuthorizer;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -92,6 +96,7 @@ import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
 import com.stormpath.sdk.servlet.saml.SamlOrganizationContext;
@@ -362,6 +367,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.accessToken.origin.authorizer.originUris'] }")
     protected String accessTokenAuthorizedOriginUris;
+
+    @Value("#{ @environment['stormpath.web.accessToken.validationStrategy'] ?: 'stormpath'}")
+    protected String accessTokenValidationStrategy;
 
     // ================  ID Site properties  ===================
 
@@ -659,7 +667,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {
-        return new DefaultAccessTokenResultFactory(application, stormpathAuthenticationJwtFactory(), accountJwtTtl);
+        return new DefaultAccessTokenResultFactory(application);
+    }
+
+    /** @since 1.0.RC8 */
+    public RefreshTokenResultFactory stormpathRefreshTokenResultFactory() {
+        return new DefaultRefreshTokenResultFactory(application);
     }
 
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
@@ -674,7 +687,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public HttpAuthenticationScheme stormpathBearerAuthenticationScheme() {
-        return new BearerAuthenticationScheme(stormpathJwtSigningKeyResolver());
+        return new BearerAuthenticationScheme(stormpathJwtSigningKeyResolver(), AccessTokenValidationStrategy.fromName(accessTokenValidationStrategy));
     }
 
     public List<HttpAuthenticationScheme> stormpathHttpAuthenticationSchemes() {
@@ -1035,6 +1048,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setEventPublisher(stormpathRequestEventPublisher());
         c.setAccessTokenAuthenticationRequestFactory(stormpathAccessTokenAuthenticationRequestFactory());
         c.setAccessTokenResultFactory(stormpathAccessTokenResultFactory());
+        c.setRefreshTokenAuthenticationRequestFactory(stormpathRefreshTokenAuthenticationRequestFactory());
+        c.setRefreshTokenResultFactory(stormpathRefreshTokenResultFactory());
         c.setAccountSaver(stormpathAuthenticationResultSaver());
         c.setRequestAuthorizer(stormpathAccessTokenRequestAuthorizer());
         c.init();
@@ -1070,7 +1085,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
-        return new DefaultAccessTokenAuthenticationRequestFactory(stormpathUsernamePasswordRequestFactory());
+        return new DefaultAccessTokenAuthenticationRequestFactory(stormpathAccountStoreResolver());
+    }
+
+    /** @since 1.0.RC8 */
+    public RefreshTokenAuthenticationRequestFactory stormpathRefreshTokenAuthenticationRequestFactory() {
+        return new DefaultRefreshTokenAuthenticationRequestFactory();
     }
 
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
