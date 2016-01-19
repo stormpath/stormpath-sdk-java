@@ -51,7 +51,7 @@ class DefaultCreateIdSiteAuthenticationAttemptTest {
 
         def properties = [
                 token: "test_token",
-                grant_type: "id_site_token"
+                grant_type: "stormpath_token"
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)

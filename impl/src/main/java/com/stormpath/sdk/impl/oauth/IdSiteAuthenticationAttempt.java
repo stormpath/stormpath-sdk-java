@@ -30,7 +30,7 @@ public interface IdSiteAuthenticationAttempt extends Resource {
 
     /**
      * Method used to set the Authentication Grant Type that will be used for the token exchange request.
-     * Currently only "id_site_token" grant type is supported for this operation.
+     * Currently only "stormpath_token" grant type is supported for this operation.
      * @param grantType the Authentication Grant Type that will be used for the token exchange request.
      */
     void setGrantType(String grantType);
