@@ -23,7 +23,7 @@ import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
  */
 public class DefaultIdSiteAuthenticationRequest implements IdSiteAuthenticationRequest {
 
-    private final static String grant_type = "id_site_token";
+    private final static String grant_type = "stormpath_token";
     private final String token;
 
     public DefaultIdSiteAuthenticationRequest(String token) {
