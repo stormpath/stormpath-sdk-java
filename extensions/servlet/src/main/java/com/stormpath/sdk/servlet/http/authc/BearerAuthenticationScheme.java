@@ -23,7 +23,14 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.oauth.JwtAuthenticationResultBuilder;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
+import com.stormpath.sdk.oauth.JwtAuthenticationRequestBuilder;
+import com.stormpath.sdk.oauth.JwtAuthenticationResult;
+import com.stormpath.sdk.oauth.JwtAuthenticator;
+import com.stormpath.sdk.oauth.Oauth2Requests;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
@@ -31,6 +38,7 @@ import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OauthException;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
+import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -59,9 +67,12 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private JwtSigningKeyResolver jwtSigningKeyResolver;
 
-    public BearerAuthenticationScheme(JwtSigningKeyResolver jwtSigningKeyResolver) {
+    private boolean withLocalValidation;
+
+    public BearerAuthenticationScheme(JwtSigningKeyResolver jwtSigningKeyResolver, AccessTokenValidationStrategy validation) {
         Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
         this.jwtSigningKeyResolver = jwtSigningKeyResolver;
+        this.withLocalValidation = validation.equals(AccessTokenValidationStrategy.LOCAL);
     }
 
     @Override
@@ -121,21 +132,18 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
     protected HttpAuthenticationResult authenticate(final HttpServletRequest request,
                                                     final HttpServletResponse response, String token) {
 
-        Jws<Claims> jws;
-
         try {
-            final JwtSigningKeyResolver resolver = getJwtSigningKeyResolver();
 
-            SigningKeyResolver signingKeyResolver = new SigningKeyResolverAdapter() {
-                @Override
-                public Key resolveSigningKey(JwsHeader header, Claims claims) {
-                    return resolver.getSigningKey(request, response, header, claims);
-                }
-            };
+            JwtAuthenticationRequest jwtrequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(token).build();
+            JwtAuthenticator jwtAuthenticator = Authenticators.JWT_AUTHENTICATOR.forApplication(getApplication(request));
 
-            jws = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(token);
+            if (withLocalValidation) {
+                jwtAuthenticator.withLocalValidation();
+            }
 
-            return createAuthenticationResult(request, response, jws);
+            JwtAuthenticationResult jwtResult = jwtAuthenticator.authenticate(jwtrequest);
+
+            return createAuthenticationResult(request, response, jwtResult.getAccount());
 
         } catch (ExpiredJwtException e) {
             throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
@@ -147,18 +155,19 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
         }
     }
 
-    protected HttpAuthenticationResult createAuthenticationResult(HttpServletRequest request,
-                                                                  HttpServletResponse response, Jws<Claims> jws)
-        throws OauthException {
 
-        String href = jws.getBody().getSubject();
+    protected HttpAuthenticationResult createAuthenticationResult(HttpServletRequest request,
+                                                                  HttpServletResponse response, Account account)
+        throws OauthException {
 
         AuthenticationResult authcResult;
 
-        if (href.contains("apiKeys")) {
+        String accountHref = account.getHref();
 
-            int i = href.lastIndexOf('/');
-            String id = href.substring(i + 1);
+        if (account.getHref().contains("apiKeys")) {
+
+            int i = accountHref.lastIndexOf('/');
+            String id = accountHref.substring(i + 1);
             final ApiKey apiKey = getTokenApiKey(request, id);
 
             authcResult = new OauthAuthenticationResult() {
@@ -190,10 +199,6 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
                 }
             };
         } else {
-
-            Client client = getClient(request);
-
-            final Account account = client.getResource(href, Account.class);
 
             if (account.getStatus() != AccountStatus.ENABLED) {
                 throw new OauthException(OauthErrorCode.INVALID_CLIENT, "account is disabled.", null);

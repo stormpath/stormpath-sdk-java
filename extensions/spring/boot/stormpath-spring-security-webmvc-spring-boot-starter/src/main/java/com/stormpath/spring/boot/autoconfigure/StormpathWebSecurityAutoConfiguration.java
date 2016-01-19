@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.Filter;
@@ -72,6 +73,12 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnMissingBean(name="stormpathLogoutHandler")
     public LogoutHandler stormpathLogoutHandler() {
         return super.stormpathLogoutHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
+        return super.stormpathCsrfTokenRepository();
     }
 
     @Bean

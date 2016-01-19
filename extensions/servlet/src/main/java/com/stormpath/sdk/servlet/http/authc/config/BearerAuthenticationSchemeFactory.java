@@ -20,6 +20,7 @@ import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
+import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 
 import javax.servlet.ServletContext;
 
@@ -32,6 +33,8 @@ public class BearerAuthenticationSchemeFactory extends ConfigSingletonFactory<Be
     protected BearerAuthenticationScheme createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
-        return new BearerAuthenticationScheme(resolver);
+        String validationStrategy = config.getAccessTokenValidationStrategy();
+
+        return new BearerAuthenticationScheme(resolver, AccessTokenValidationStrategy.fromName(validationStrategy));
     }
 }

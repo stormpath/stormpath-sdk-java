@@ -56,6 +56,11 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
+        return super.stormpathCsrfTokenRepository();
+    }
+
+    @Bean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }
@@ -70,4 +75,6 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     public IdSiteResultListener springSecurityIdSiteResultListener() {
         return super.springSecurityIdSiteResultListener();
     }
+
+
 }

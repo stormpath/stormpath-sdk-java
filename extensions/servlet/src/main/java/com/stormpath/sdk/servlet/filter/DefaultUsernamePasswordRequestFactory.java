@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -47,6 +48,15 @@ public class DefaultUsernamePasswordRequestFactory implements UsernamePasswordRe
         AccountStore accountStore =
             getAccountStoreResolver().getAccountStore(request, response);
 
-        return new UsernamePasswordRequest(username, password, request.getRemoteHost(), accountStore);
+        UsernamePasswordRequestBuilder builder = UsernamePasswordRequest.builder()
+                .setUsernameOrEmail(username)
+                .setPassword(password)
+                .setHost(request.getRemoteHost());
+
+        if (accountStore != null) {
+            builder.inAccountStore(accountStore);
+        }
+
+        return builder.build();
     }
 }

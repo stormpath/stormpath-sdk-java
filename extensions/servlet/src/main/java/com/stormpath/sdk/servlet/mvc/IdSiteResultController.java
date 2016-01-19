@@ -24,6 +24,7 @@ import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.idsite.RegistrationResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
 import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;

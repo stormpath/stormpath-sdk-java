@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,19 @@ package com.stormpath.sdk.servlet.filter.oauth.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
-import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 
 import javax.servlet.ServletContext;
 
 /**
  * @since 1.0.RC3
  */
-public class AccessTokenResultFactoryFactory extends ConfigSingletonFactory<AccessTokenResultFactory> {
+public class RefreshTokenResultFactoryFactory extends ConfigSingletonFactory<RefreshTokenResultFactory> {
 
     @Override
-    protected AccessTokenResultFactory createInstance(ServletContext servletContext) throws Exception {
+    protected RefreshTokenResultFactory createInstance(ServletContext servletContext) throws Exception {
         Application application = (Application)servletContext.getAttribute(Application.class.getName());
-        return new DefaultAccessTokenResultFactory(application);
+        return new DefaultRefreshTokenResultFactory(application);
     }
 }
