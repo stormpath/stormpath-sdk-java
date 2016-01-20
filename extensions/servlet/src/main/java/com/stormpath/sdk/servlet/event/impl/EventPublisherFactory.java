@@ -25,11 +25,11 @@ import javax.servlet.ServletContext;
  */
 public class EventPublisherFactory extends ConfigSingletonFactory<Publisher> {
 
-    public static final String REQUEST_EVENT_PUBLISHER = "stormpath.web.request.event.listener";
+    public static final String REQUEST_EVENT_LISTENER = "stormpath.web.request.event.listener";
 
     @Override
     protected Publisher createInstance(ServletContext servletContext) throws Exception {
-        RequestEventListener listener = getConfig().getInstance(REQUEST_EVENT_PUBLISHER);
+        RequestEventListener listener = getConfig().getInstance(REQUEST_EVENT_LISTENER);
         return new RequestEventPublisher(listener);
     }
 }

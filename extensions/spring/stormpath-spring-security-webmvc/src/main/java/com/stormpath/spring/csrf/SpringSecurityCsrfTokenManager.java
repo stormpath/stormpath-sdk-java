@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServletResponse;
  * A {@link CsrfTokenManager} specific to be used with Spring Security.
  * <p>Spring Security provides its onw protection against Cross Site Request Forgery (CSRF)
  * attacks. This {@link SpringSecurityCsrfTokenManager} can delegate the creation and processing of csrf tokens to Spring Security.</p>
+ * <p>Although Spring Security has its own CSRF strategy, it is only working on our Spring Boot integration. It does not work in
+ * Spring since our web pages are not based on Thymeleaf but JSP instead. This causes the hidden CSRF field not to be automatically
+ * injected by Spring Security.</p>
  *
  * @since 1.0.RC5
- * @deprecated As of release 1.0.RC7, Stormpath defaults to Spring Security's native CSRF protection.  This
- * implementation should not be used - it will be removed completely before the 1.0 final release.
  */
-@Deprecated
 public class SpringSecurityCsrfTokenManager implements CsrfTokenManager {
 
     private static final Logger log = LoggerFactory.getLogger(SpringSecurityCsrfTokenManager.class);
