@@ -33,8 +33,8 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -105,6 +105,7 @@ import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
+import com.stormpath.spring.event.TokenRevocationRequestEventListener;
 import com.stormpath.spring.mvc.SpringController;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -641,7 +642,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Publisher<RequestEvent> stormpathRequestEventPublisher() {
-        return new RequestEventPublisher(stormpathRequestEventListener());
+        List<RequestEventListener> listeners = new ArrayList<RequestEventListener>();
+        listeners.add(stormpathRequestEventListener());
+        listeners.add(new TokenRevocationRequestEventListener()); //revoke access and refresh tokens after logout
+        return new RequestEventPublisher(listeners);
     }
 
     public String stormpathCsrfTokenSigningKey() {

@@ -78,47 +78,47 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.enabled'] ?: true }")
     protected boolean stormpathWebEnabled;
 
-    @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
-    protected boolean loginEnabled;
-
+//    @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
+//    protected boolean loginEnabled;
+//
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
-
+//
     @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
     protected String loginNextUri;
+//
+//    @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
+//    protected boolean logoutEnabled;
+//
+//    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
+//    protected String logoutUri;
+//
+//    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
+//    protected String logoutNextUri;
+//
+//    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
+//    protected boolean forgotEnabled;
+//
+//    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/forgot' }")
+//    protected String forgotUri;
+//
+//    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+//    protected boolean changeEnabled;
 
-    @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
-    protected boolean logoutEnabled;
-
-    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
-    protected String logoutUri;
-
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
-    protected String logoutNextUri;
-
-    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
-    protected boolean forgotEnabled;
-
-    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/forgot' }")
-    protected String forgotUri;
-
-    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
-    protected boolean changeEnabled;
-
-    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/change' }")
-    protected String changeUri;
-
-    @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
-    protected boolean registerEnabled;
-
-    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/register' }")
-    protected String registerUri;
-
-    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
-    protected boolean verifyEnabled;
-
-    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
-    protected String verifyUri;
+//    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/change' }")
+//    protected String changeUri;
+//
+//    @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
+//    protected boolean registerEnabled;
+//
+//    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/register' }")
+//    protected String registerUri;
+//
+//    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+//    protected boolean verifyEnabled;
+//
+//    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
+//    protected String verifyUri;
 
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
     protected boolean csrfTokenEnabled;
@@ -166,12 +166,13 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
-//        //Spring Security supports CSRF protection already, so we
-//        //turn off our internal implementation to avoid conflicts
-//        return new DisabledCsrfTokenManager(csrfTokenName);
-        return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository(), csrfTokenName);
+        //Spring Security supports CSRF protection only in Thymeleaf or JSP's with Sec taglib., therefore we
+        //cannot just delegate the CSRF strategy to Spring Security, we need to handle it ourselves in Spring.
+        if (csrfTokenEnabled) {
+            return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository(), csrfTokenName);
+        }
+        return new DisabledCsrfTokenManager(csrfTokenName);
+
     }
-
-
 
 }

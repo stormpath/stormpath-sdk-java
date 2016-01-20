@@ -184,7 +184,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name="stormpathRequestEventListener")
     public RequestEventListener stormpathRequestEventListener() {
         return super.stormpathRequestEventListener();
     }
