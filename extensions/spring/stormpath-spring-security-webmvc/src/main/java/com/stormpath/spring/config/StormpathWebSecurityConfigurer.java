@@ -18,6 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -38,6 +40,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @Configuration
 @EnableStormpathWebSecurity
 public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+    @Autowired
+    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
 
     @Autowired
     protected Client client;
@@ -171,6 +176,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http
                 .authorizeRequests()
                 .antMatchers(permittedResultPath).permitAll();
+
+            http
+                .addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
 
@@ -186,6 +194,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .passwordParameter("password")
                     .and().authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll();
+
+                http
+                    .addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
             }
 
             http.authorizeRequests()
