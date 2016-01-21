@@ -36,3 +36,4 @@ notifications:
       secure: WXJLZTnleKQd5DIfdPSNYk4ZT7bssV9esdaacZjwb9sdKLZAQ+ujL97uuVK4oDMbua9XJxYTsKK45QQp56+PgJc4KG0Regvs/e7NtoxahrNnpsHCob4+Hc2MSmFfJgsdAQ9dFemNZ3BQ2ec1gO6SToYk+7pwMPScUYnmAOrsHjU=
     template:
       '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)' 
+    format: html
