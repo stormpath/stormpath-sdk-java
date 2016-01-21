@@ -97,16 +97,16 @@ class HttpRequestBuilderTest {
                 .method(HttpMethod.POST)
                 .addHeader("name", headerValue).build()
         assertNotNull request
-        assertEquals 1, request.headers.size()
-        assertEquals 'testHeader', request.headers.get("name").getAt(0)
+        assertEquals request.headers.size(), 1
+        assertEquals request.headers.get("name").getAt(0), 'testHeader'
 
         String[] paramValue = ['testParam']
         request = HttpRequests
                 .method(HttpMethod.POST)
                 .addParameter("paramName", paramValue).build()
         assertNotNull request
-        assertEquals 1, request.parameters.size()
-        assertEquals 'testParam', request.parameters.get("paramName").getAt(0)
+        assertEquals request.parameters.size(), 1
+        assertEquals request.parameters.get("paramName").getAt(0), 'testParam'
 
         request = HttpRequests
                 .method(HttpMethod.POST)
@@ -114,9 +114,9 @@ class HttpRequestBuilderTest {
                 .addParameter("param", paramValue)
                 .build()
 
-        assertEquals 1, request.parameters.size()
-        assertEquals 1, request.headers.size()
-        assertEquals 'testHeader', request.headers.get("addHeader").getAt(0)
-        assertEquals 'testParam', request.parameters.get("param").getAt(0)
+        assertEquals request.parameters.size(), 1
+        assertEquals request.headers.size(), 1
+        assertEquals request.headers.get("addHeader").getAt(0), 'testHeader'
+        assertEquals request.parameters.get("param").getAt(0), 'testParam'
     }
 }

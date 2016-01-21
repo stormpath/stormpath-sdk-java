@@ -152,9 +152,9 @@ class ApplicationIT extends ClientIT {
 
         def apps = client.getApplications(Applications.where(Applications.name().startsWithIgnoreCase(applicationBaseName)).limitTo(1))
 
-        assertEquals 1, apps.limit
-        assertEquals 0, apps.offset
-        assertEquals 2, apps.size
+        assertEquals apps.limit, 1
+        assertEquals apps.offset, 0
+        assertEquals apps.size, 2
 
         def iterator = apps.iterator()
         while (iterator.hasNext()) {
@@ -162,7 +162,7 @@ class ApplicationIT extends ClientIT {
             assertTrue expected.remove(app.href)
         }
 
-        assertEquals 0, expected.size()
+        assertEquals expected.size(), 0
 
         try {
             iterator.next()
@@ -182,7 +182,7 @@ class ApplicationIT extends ClientIT {
             assertTrue expected.remove(app.href)
         }
 
-        assertEquals 0, expected.size()
+        assertEquals expected.size(), 0
     }
 
     @Test
@@ -668,7 +668,7 @@ class ApplicationIT extends ClientIT {
         //Making sure that only two request were made to the server
         // 1) request to get the application
         // 2) request to get the apiKey (with options)
-        assertEquals 2, client.requestCount
+        assertEquals client.requestCount, 2
 
         // Compare apiKey get from the cache to the apiKey requested from cache
         assertEquals appApiKey.secret, appApiKey2.secret
@@ -676,7 +676,7 @@ class ApplicationIT extends ClientIT {
         assertEquals appApiKey.tenant.name, appApiKey2.tenant.name
 
         // Making sure that still only 2 requests were made to the server.
-        assertEquals 2, client.requestCount
+        assertEquals client.requestCount, 2
 
         def dataStore = (DefaultDataStore) client.dataStore
 
@@ -718,7 +718,7 @@ class ApplicationIT extends ClientIT {
 
         String[] ssoUrlPath = ssoURL.split("jwtRequest=")
 
-        assertEquals 2, ssoUrlPath.length
+        assertEquals ssoUrlPath.length, 2
         assertTrue ssoURL.startsWith(app.getHref().substring(0, app.getHref().indexOf("/", 8)))
 
         StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
@@ -760,7 +760,7 @@ class ApplicationIT extends ClientIT {
 
         String[] ssoUrlPath = ssoURL.split("jwtRequest=")
 
-        assertEquals 2, ssoUrlPath.length
+        assertEquals ssoUrlPath.length, 2
 
         StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
 
@@ -1364,7 +1364,7 @@ class ApplicationIT extends ClientIT {
             app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
             fail("Should have thrown")
         } catch (ResourceException e){
-            assertEquals 2006, e.getCode()
+            assertEquals e.getCode(), 2006
             assertTrue e.getDeveloperMessage().contains("is in an invalid format")
         }
     }

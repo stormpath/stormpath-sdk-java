@@ -246,8 +246,8 @@ class ClientApplicationBuilderTest {
         assertNotNull clientApp
         assertSame clientApp.client, client
         assertSame clientApp.application, application
-        assertEquals 'foo', id
-        assertEquals 'bar', secret
+        assertEquals id, 'foo'
+        assertEquals secret, 'bar'
 
         verify client, ds, application
     }

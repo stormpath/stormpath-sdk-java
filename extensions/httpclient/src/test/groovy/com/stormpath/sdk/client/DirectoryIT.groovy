@@ -749,8 +749,8 @@ class DirectoryIT extends ClientIT {
 
         def retrieved = dir.saveWithResponseOptions(Directories.options().withAccounts().withCustomData())
 
-        assertEquals href, retrieved.getHref()
-        assertEquals "testValue", retrieved.getCustomData().get("testKey")
+        assertEquals retrieved.getHref(), href
+        assertEquals retrieved.getCustomData().get("testKey"), "testValue"
         assertTrue retrieved.getAccounts().iterator().hasNext()
         assertTrue retrieved.getAccounts().iterator().hasNext()
     }
