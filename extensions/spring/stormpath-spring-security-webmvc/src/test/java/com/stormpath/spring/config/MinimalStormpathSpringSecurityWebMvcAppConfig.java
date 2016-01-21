@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -23,4 +24,5 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableStormpathWebSecurity
+@ComponentScan(basePackages = {"com.stormpath.spring"})
 public class MinimalStormpathSpringSecurityWebMvcAppConfig {}

@@ -19,10 +19,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.stormpath.spring</groupId>
-    <artifactId>stormpath-sdk-examples-spring-boot-webmvc-spring-security</artifactId>
+    <artifactId>stormpath-sdk-examples-spring-security-spring-boot-bare-bones</artifactId>
     <version>1.0.RC8.1-SNAPSHOT</version>
 
-    <name>Stormpath Java SDK :: Examples :: Spring Boot WebMVC Spring Security</name>
+    <name>Stormpath Java SDK :: Examples :: Spring Security :: Spring Boot :: Bare Bones</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
 
     <properties>
@@ -31,13 +31,21 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.8</slf4j.version>
         <spring.boot.version>1.3.0.RELEASE</spring.boot.version>
+        <tomcat.version>7.0.59</tomcat.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
         <!-- Compile-time dependencies: -->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-default-spring-boot-starter</artifactId>
+            <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -47,6 +55,11 @@
             <artifactId>stormpath-sdk-httpclient</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.spring</groupId>
+            <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
