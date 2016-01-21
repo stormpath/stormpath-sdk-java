@@ -15,6 +15,11 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/450
+ *
+ * @since 1.0.RC.8.1
+ **/
 public class SpringSecurityResolvedAccountFilter extends HttpFilter implements InitializingBean {
 
     @Autowired

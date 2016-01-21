@@ -164,6 +164,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
+        if (loginEnabled) {
+            // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
+            // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
+            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+        }
+
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
             http
                 .formLogin()
@@ -176,12 +182,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http
                 .authorizeRequests()
                 .antMatchers(permittedResultPath).permitAll();
-
-            http
-                .addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
-
                 // make sure that /login and /login?status=... is permitted
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 
@@ -194,9 +196,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .passwordParameter("password")
                     .and().authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll();
-
-                http
-                    .addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
             }
 
             http.authorizeRequests()
