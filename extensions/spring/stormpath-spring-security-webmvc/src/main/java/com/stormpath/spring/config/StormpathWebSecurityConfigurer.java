@@ -18,16 +18,20 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -157,7 +161,17 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
         // autowire this bean
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
-        context.getAutowireCapableBeanFactory().autowireBean(this);
+        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
+
+        if (loginEnabled) {
+            // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
+            // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
+            http.addFilterBefore(
+                new SpringSecurityResolvedAccountFilter(beanFactory.getBean(AuthenticationManager.class)),
+                AnonymousAuthenticationFilter.class
+            );
+        }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
             http
@@ -173,7 +187,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 .antMatchers(permittedResultPath).permitAll();
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
-
                 // make sure that /login and /login?status=... is permitted
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 

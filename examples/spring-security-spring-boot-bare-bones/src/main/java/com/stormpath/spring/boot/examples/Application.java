@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.config;
+package com.stormpath.spring.boot.examples;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC8.1
  */
-@Configuration
-@EnableStormpathWebSecurity
-public class MinimalStormpathSpringSecurityWebMvcAppConfig {}
+@SpringBootApplication
+public class Application  {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+}

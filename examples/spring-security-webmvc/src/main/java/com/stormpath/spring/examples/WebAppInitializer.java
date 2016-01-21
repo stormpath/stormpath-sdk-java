@@ -16,6 +16,7 @@
 package com.stormpath.spring.examples;
 
 import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -39,6 +40,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext sc) throws ServletException {
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(SpringSecurityResolvedAccountFilter.class);
         context.register(SpringSecurityWebAppConfig.class);
         context.register(StormpathMethodSecurityConfiguration.class);
         sc.addListener(new ContextLoaderListener(context));

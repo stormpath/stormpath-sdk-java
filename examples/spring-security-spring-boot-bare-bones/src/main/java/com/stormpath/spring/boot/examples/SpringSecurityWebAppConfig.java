@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.config;
+package com.stormpath.spring.boot.examples;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC8.1
  */
 @Configuration
-@EnableStormpathWebSecurity
-public class MinimalStormpathSpringSecurityWebMvcAppConfig {}
+public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.apply(stormpath());
+    }
+}
