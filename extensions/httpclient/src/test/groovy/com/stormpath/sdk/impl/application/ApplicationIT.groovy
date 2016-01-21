@@ -30,7 +30,6 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest
 import com.stormpath.sdk.oauth.JwtAuthenticationResult
 import com.stormpath.sdk.oauth.Oauth2Requests
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
