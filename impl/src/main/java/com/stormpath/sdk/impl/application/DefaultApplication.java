@@ -77,6 +77,7 @@ import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
+import com.stormpath.sdk.oauth.IdSiteAuthenticator;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
 import com.stormpath.sdk.oauth.OauthPolicy;
 import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
@@ -874,5 +875,5 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     /* @since 1.0.RC8.1 */
     public IdSiteAuthenticator createIdSiteAuthenticator(){
         return new DefaultIdSiteAuthenticator(this, getDataStore());
-    }
+    }    
 }
