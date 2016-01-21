@@ -108,7 +108,7 @@ public class Authenticators {
 
     /**
      * Constructs {@link IdSiteAuthenticator}s.
-     * @since 1.0.RC8.1
+     * @since 1.0.RC8.2
      */
     public static final IdSiteAuthenticatorFactory ID_SITE_AUTHENTICATOR =
             (IdSiteAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticatorFactory");

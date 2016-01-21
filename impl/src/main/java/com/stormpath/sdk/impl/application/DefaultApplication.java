@@ -871,7 +871,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return new DefaultJwtAuthenticator(this, getDataStore());
     }
 
-    /* @since 1.0.RC8.1 */
+    /* @since 1.0.RC8.2 */
     public IdSiteAuthenticator createIdSiteAuthenticator(){
         return new DefaultIdSiteAuthenticator(this, getDataStore());
     }    

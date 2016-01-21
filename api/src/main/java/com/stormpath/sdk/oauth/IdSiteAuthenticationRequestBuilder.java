@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * Builder that can construct {@link IdSiteAuthenticationRequest} instances.
  *
- * @since 1.0.RC8.1
+ * @since 1.0.RC8.2
  */
 public interface IdSiteAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<IdSiteAuthenticationRequest> {
 

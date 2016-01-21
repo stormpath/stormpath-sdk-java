@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * @since 1.0.RC8.1
+ * @since 1.0.RC8.2
  */
 public interface IdSiteAuthenticationAttempt extends Resource {
 
