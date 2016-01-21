@@ -22,8 +22,10 @@ import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,9 +42,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @Configuration
 @EnableStormpathWebSecurity
 public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
-
-    @Autowired
-    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
 
     @Autowired
     protected Client client;
@@ -162,12 +161,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
         // autowire this bean
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
-        context.getAutowireCapableBeanFactory().autowireBean(this);
+        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
 
         if (loginEnabled) {
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
-            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+            http.addFilterBefore(
+                new SpringSecurityResolvedAccountFilter(beanFactory.getBean(AuthenticationManager.class)),
+                AnonymousAuthenticationFilter.class
+            );
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
