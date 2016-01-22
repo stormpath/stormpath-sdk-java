@@ -106,5 +106,12 @@ public class Authenticators {
     public static final JwtAuthenticatorFactory JWT_AUTHENTICATOR =
             (JwtAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticatorFactory");
 
+    /**
+     * Constructs {@link IdSiteAuthenticator}s.
+     * @since 1.0.RC8.2
+     */
+    public static final IdSiteAuthenticatorFactory ID_SITE_AUTHENTICATOR =
+            (IdSiteAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticatorFactory");
+
 }
 

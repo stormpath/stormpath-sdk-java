@@ -57,6 +57,7 @@ import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
+import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticator;
@@ -64,11 +65,18 @@ import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.ListProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.saml.DefaultSamlCallbackHandler;
 import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.oauth.IdSiteAuthenticator;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
 import com.stormpath.sdk.oauth.OauthPolicy;
 import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
@@ -91,7 +99,13 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
@@ -857,4 +871,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return new DefaultJwtAuthenticator(this, getDataStore());
     }
 
+    /* @since 1.0.RC8.2 */
+    public IdSiteAuthenticator createIdSiteAuthenticator(){
+        return new DefaultIdSiteAuthenticator(this, getDataStore());
+    }    
 }
