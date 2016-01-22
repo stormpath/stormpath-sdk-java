@@ -18,25 +18,20 @@ package com.stormpath.spring.oauth;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.spring.security.provider.PreAuthenticatedAuthenticationToken;
-import com.stormpath.spring.security.token.ThirdPartyAuthenticationToken;
+import com.stormpath.sdk.servlet.filter.HttpFilter;
+import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.apache.oltu.oauth2.rs.extractor.BearerHeaderTokenExtractor;
 import org.apache.oltu.oauth2.rs.extractor.TokenExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -47,13 +42,12 @@ import java.io.IOException;
  * <p>
  * Most of this code was taken from <a href="https://github.com/spring-projects/spring-security-oauth/blob/master/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/provider/authentication/OAuth2AuthenticationProcessingFilter.java">spring-security-oauth</a>.</p>
  *
- * @since 1.0.RC8
+ * @since 1.0.RC8.2
  */
-public class OAuth2AuthenticationProcessingFilter implements Filter, InitializingBean {
+public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements InitializingBean {
 
     private final static Logger logger = LoggerFactory.getLogger(OAuth2AuthenticationProcessingFilter.class);
 
-    @Autowired
     private AuthenticationManager authenticationManager;
 
     private boolean stateless = true;
@@ -75,12 +69,10 @@ public class OAuth2AuthenticationProcessingFilter implements Filter, Initializin
         Assert.state(authenticationManager != null, "AuthenticationManager is required");
     }
 
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
+    public void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
             ServletException {
 
         final boolean debug = logger.isDebugEnabled();
-        final HttpServletRequest request = (HttpServletRequest) req;
-        final HttpServletResponse response = (HttpServletResponse) res;
 
         String accessToken = tokenExtractor.getAccessToken(request);
 
@@ -96,7 +88,7 @@ public class OAuth2AuthenticationProcessingFilter implements Filter, Initializin
             }
         } else {
             Account account = AccountResolver.INSTANCE.getAccount(request);
-            Authentication authentication = new ThirdPartyAuthenticationToken(account);
+            Authentication authentication = new ProviderAuthenticationToken(account);
             authentication = authenticationManager.authenticate(authentication);
             SecurityContextHolder.clearContext();
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -113,7 +105,9 @@ public class OAuth2AuthenticationProcessingFilter implements Filter, Initializin
         return true;
     }
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public OAuth2AuthenticationProcessingFilter setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+        return this;
     }
 
     public void destroy() {

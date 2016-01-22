@@ -4,11 +4,11 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
-public class ThirdPartyAuthenticationToken extends AbstractAuthenticationToken {
+public class ProviderAuthenticationToken extends AbstractAuthenticationToken {
     private final Object principal;
     private final Account account;
 
-    public ThirdPartyAuthenticationToken(Account account) {
+    public ProviderAuthenticationToken(Account account) {
         super(null);
         Assert.notNull(account.getEmail(), "email cannot be null");
         Assert.notNull(account, "account cannot be null");

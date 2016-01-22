@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.Account;
 /**
  * @since 1.0.RC7.2
  */
-public class IdSiteAuthenticationToken extends ThirdPartyAuthenticationToken {
+public class IdSiteAuthenticationToken extends ProviderAuthenticationToken {
     public IdSiteAuthenticationToken(Account account) {
         super(account);
     }

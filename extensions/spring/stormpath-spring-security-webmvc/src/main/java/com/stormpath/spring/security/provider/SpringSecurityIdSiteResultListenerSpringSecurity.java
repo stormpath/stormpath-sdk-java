@@ -24,34 +24,28 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @since 1.0.RC7
  */
-public class SpringSecurityIdSiteResultListener implements IdSiteResultListener {
-    private static final Logger logger = LoggerFactory.getLogger(SpringSecurityIdSiteResultListener.class);
+public class SpringSecurityIdSiteResultListenerSpringSecurity extends AbstractSpringSecurityProviderResultListener implements IdSiteResultListener {
 
-    protected StormpathAuthenticationProvider authenticationProvider;
+    private static final Logger logger = LoggerFactory.getLogger(SpringSecurityIdSiteResultListenerSpringSecurity.class);
 
-    public SpringSecurityIdSiteResultListener(AuthenticationProvider stormpathAuthenticationProvider) {
-        Assert.isTrue(
-            stormpathAuthenticationProvider instanceof StormpathAuthenticationProvider,
-            "AuthenticationProvider must be a StormpathAuthenticationProvider"
-        );
-        this.authenticationProvider = (StormpathAuthenticationProvider) stormpathAuthenticationProvider;
+    public SpringSecurityIdSiteResultListenerSpringSecurity(AuthenticationManager authenticationManager) {
+        super(authenticationManager);
     }
 
     @Override
     public void onRegistered(RegistrationResult result) {
-        doAuthenticate(result.getAccount());
+        doAuthenticate(new IdSiteAuthenticationToken(result.getAccount()));
     }
 
     @Override
     public void onAuthenticated(AuthenticationResult result) {
-        doAuthenticate(result.getAccount());
+        doAuthenticate(new IdSiteAuthenticationToken(result.getAccount()));
     }
 
     @Override
@@ -59,10 +53,4 @@ public class SpringSecurityIdSiteResultListener implements IdSiteResultListener 
         SecurityContextHolder.clearContext();
     }
 
-    private void doAuthenticate(Account account) {
-        SecurityContextHolder.clearContext();
-        Authentication authentication = new IdSiteAuthenticationToken(account);
-        authentication = authenticationProvider.authenticate(authentication);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
 }

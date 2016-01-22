@@ -31,5 +31,5 @@ import java.lang.annotation.Target;
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
 @EnableWebSecurity
-@Import(StormpathWebSecurityConfiguration.class)
+@Import({StormpathWebSecurityConfiguration.class, StormpathMethodSecurityConfiguration.class})
 public @interface EnableStormpathWebSecurity {}

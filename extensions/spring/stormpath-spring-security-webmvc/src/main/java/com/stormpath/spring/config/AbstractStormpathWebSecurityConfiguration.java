@@ -24,13 +24,13 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
-import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
-import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
+import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListenerSpringSecurity;
+import com.stormpath.spring.security.provider.SpringSecuritySamlResultListenerSpringSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -49,8 +49,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     protected Client client;
 
     @Autowired
-    @Qualifier("stormpathAuthenticationProvider")
-    protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
+    protected AuthenticationManager authenticationManager;
 
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
@@ -94,11 +93,11 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public IdSiteResultListener springSecurityIdSiteResultListener() {
-        return new SpringSecurityIdSiteResultListener(stormpathAuthenticationProvider);
+        return new SpringSecurityIdSiteResultListenerSpringSecurity(authenticationManager);
     }
 
     public SamlResultListener springSecuritySamlResultListener() {
-        return new SpringSecuritySamlResultListener(stormpathAuthenticationProvider);
+        return new SpringSecuritySamlResultListenerSpringSecurity(authenticationManager);
     }
 
     public CsrfTokenRepository stormpathCsrfTokenRepository() {

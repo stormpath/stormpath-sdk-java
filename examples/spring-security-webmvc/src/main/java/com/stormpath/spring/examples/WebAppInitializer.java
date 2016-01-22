@@ -40,9 +40,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext sc) throws ServletException {
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(OAuth2AuthenticationProcessingFilter.class);
         context.register(SpringSecurityWebAppConfig.class);
-        context.register(StormpathMethodSecurityConfiguration.class);
         sc.addListener(new ContextLoaderListener(context));
 
         ServletRegistration.Dynamic dispatcher = sc.addServlet("dispatcher", new DispatcherServlet(context));

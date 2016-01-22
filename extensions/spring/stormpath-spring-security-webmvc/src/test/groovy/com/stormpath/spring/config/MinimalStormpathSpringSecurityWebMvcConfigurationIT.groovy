@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
+import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -56,6 +57,9 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     Filter stormpathFilter;
 
     @Autowired
+    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter;
+
+    @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider;
 
     @Test
@@ -65,9 +69,11 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         assertNotNull client
         assertNotNull application
         assertNotNull stormpathFilter
+        assertNotNull oAuth2AuthenticationProcessingFilter
 
         assertNotNull stormpathAuthenticationProvider
         assertNotNull stormpathAuthenticationProvider.applicationRestUrl
+        assertNotNull stormpathAuthenticationProvider.client
         assertNotNull stormpathAuthenticationProvider.client
     }
 }
