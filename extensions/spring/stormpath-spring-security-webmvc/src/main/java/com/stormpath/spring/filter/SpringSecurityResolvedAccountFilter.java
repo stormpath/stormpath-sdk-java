@@ -5,6 +5,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.spring.security.token.ThirdPartyAuthenticationToken;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,11 +22,8 @@ import javax.servlet.http.HttpServletResponse;
  **/
 public class SpringSecurityResolvedAccountFilter extends HttpFilter implements InitializingBean {
 
+    @Autowired
     private AuthenticationManager authenticationManager;
-
-    public SpringSecurityResolvedAccountFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

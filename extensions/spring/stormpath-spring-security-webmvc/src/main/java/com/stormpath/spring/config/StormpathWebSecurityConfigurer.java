@@ -44,6 +44,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     @Autowired
+    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+
+    @Autowired
     protected Client client;
 
     @Autowired
@@ -161,16 +164,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
         // autowire this bean
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
-        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
-        beanFactory.autowireBean(this);
+        context.getAutowireCapableBeanFactory().autowireBean(this);
 
         if (loginEnabled) {
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
-            http.addFilterBefore(
-                new SpringSecurityResolvedAccountFilter(beanFactory.getBean(AuthenticationManager.class)),
-                AnonymousAuthenticationFilter.class
-            );
+            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
