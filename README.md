@@ -1,5 +1,5 @@
 [![Build Status](https://api.travis-ci.org/stormpath/stormpath-sdk-java.png?branch=master)](https://travis-ci.org/stormpath/stormpath-sdk-java)
-[![Coverage Status](https://coveralls.io/repos/github/stormpath/stormpath-sdk-java/badge.svg?branch=master)](https://coveralls.io/github/stormpath/stormpath-sdk-java?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/stormpath/stormpath-sdk-java/badge.svg?branch=coverage_jacoco_coveralls)](https://coveralls.io/github/stormpath/stormpath-sdk-java?branch=coverage_jacoco_coveralls)
 # Stormpath Java SDK #
 
 *An advanced, reliable and easy-to-use user management API, built by Java security experts*
