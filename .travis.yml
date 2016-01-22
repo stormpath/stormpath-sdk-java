@@ -28,6 +28,7 @@ script:
 - test -z "$BUILD_DOCS" || ./build_docs.sh
 after_success:
 - test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
+- mvn jacoco:report coveralls:jacoco
 notifications:
   hipchat:
     on_success: always

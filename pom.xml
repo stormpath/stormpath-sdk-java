@@ -116,6 +116,7 @@
         <testng.version>6.8</testng.version>
         <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
         <skipITs>true</skipITs>
+        <skipCoverage>true</skipCoverage>
 
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
@@ -552,6 +553,44 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.1.0</version>
+                <configuration>
+                    <repoToken>t8t2LuJ9cEyWl0MDlslaeVkEoBms21Nol</repoToken>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.4.2</version>
@@ -624,6 +663,37 @@
                 <skipITs>false</skipITs>
             </properties>
         </profile>
+        <!--<profile>-->
+            <!--<id>coverage</id>-->
+            <!--<build>-->
+                <!--<plugins>-->
+                    <!--<plugin><groupId>org.jacoco</groupId>-->
+                        <!--<artifactId>jacoco-maven-plugin</artifactId>-->
+                        <!--<version>0.7.5.201505241946</version>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>default-prepare-agent</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>prepare-agent</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                            <!--<execution>-->
+                                <!--<id>default-report</id>-->
+                                <!--<phase>prepare-package</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>report</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.eluder.coveralls</groupId>-->
+                        <!--<artifactId>coveralls-maven-plugin</artifactId>-->
+                        <!--<version>2.2.0</version>-->
+                    <!--</plugin>-->
+                <!--</plugins>-->
+            <!--</build>-->
+        <!--</profile>-->
         <profile>
             <id>stormpath-signature</id>
             <build>
