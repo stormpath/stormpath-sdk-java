@@ -1,4 +1,5 @@
 [![Build Status](https://api.travis-ci.org/stormpath/stormpath-sdk-java.png?branch=master)](https://travis-ci.org/stormpath/stormpath-sdk-java)
+[![Coverage Status](https://coveralls.io/repos/stormpath/stormpath-sdk-java/badge.svg?branch=master&service=github)](https://coveralls.io/github/stormpath/stormpath-sdk-java?branch=master)
 
 # Stormpath Java SDK #
 
