@@ -583,8 +583,9 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>**/api/**</exclude>
-                        <exclude>commons-logging</exclude>
+                        <exclude>api/**</exclude>
+                        <exclude>examples/**</exclude>
+                        <exclude>extensions/**</exclude>
                 </excludes>
     </configuration>
             </plugin>
@@ -594,6 +595,7 @@
                 <version>4.1.0</version>
                 <configuration>
                     <repoToken>t8t2LuJ9cEyWl0MDlslaeVkEoBms21Nol</repoToken>
+                    <branch>coverage_jacoco_coveralls</branch>
                 </configuration>
             </plugin>
             <plugin>
