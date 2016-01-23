@@ -562,6 +562,9 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <!--<configuration>-->
+                            <!--<propertyName>surefireArgLine</propertyName>-->
+                        <!--</configuration>-->
                     </execution>
                     <execution>
                         <id>default-report</id>
@@ -570,7 +573,20 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <!--<execution>-->
+                        <!--<id>post-unit-test</id>-->
+                        <!--<phase>test</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>report</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/api/**</exclude>
+                        <exclude>commons-logging</exclude>
+                </excludes>
+    </configuration>
             </plugin>
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
@@ -663,6 +679,7 @@
                 <skipITs>false</skipITs>
             </properties>
         </profile>
+
         <!--<profile>-->
             <!--<id>coverage</id>-->
             <!--<build>-->
