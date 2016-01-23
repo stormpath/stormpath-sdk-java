@@ -585,7 +585,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.1.0</version>
                 <configuration>
-                    <repoToken>t8t2LuJ9cEyWl0MDlslaeVkEoBms21Nol</repoToken>
+                    <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
                     <branch>coverage_jacoco_coveralls</branch>
                 </configuration>
             </plugin>
