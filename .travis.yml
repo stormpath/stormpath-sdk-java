@@ -28,7 +28,7 @@ script:
 - test -z "$BUILD_DOCS" || ./build_docs.sh
 after_success:
 - test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
-- mvn clean test jacoco:report coveralls:report
+- mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify coveralls:report
 notifications:
   hipchat:
     on_success: always

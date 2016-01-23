@@ -116,7 +116,7 @@
         <testng.version>6.8</testng.version>
         <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
         <skipITs>true</skipITs>
-        <skipCoverage>true</skipCoverage>
+        <skipCoverage>false</skipCoverage>
 
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
@@ -556,15 +556,20 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.5.201505241946</version>
+                <configuration>
+                    <skip>${skipCoverage}</skip>
+                    <excludes>
+                        <exclude>api/**</exclude>
+                        <exclude>examples/**</exclude>
+                        <exclude>extensions/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <!--<configuration>-->
-                            <!--<propertyName>surefireArgLine</propertyName>-->
-                        <!--</configuration>-->
                     </execution>
                     <execution>
                         <id>default-report</id>
@@ -573,21 +578,7 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
-                    <!--<execution>-->
-                        <!--<id>post-unit-test</id>-->
-                        <!--<phase>test</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>report</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
                 </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>api/**</exclude>
-                        <exclude>examples/**</exclude>
-                        <exclude>extensions/**</exclude>
-                </excludes>
-    </configuration>
             </plugin>
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
@@ -679,40 +670,10 @@
             </activation>
             <properties>
                 <skipITs>false</skipITs>
+                <skipCoverage>false</skipCoverage>
             </properties>
         </profile>
 
-        <!--<profile>-->
-            <!--<id>coverage</id>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin><groupId>org.jacoco</groupId>-->
-                        <!--<artifactId>jacoco-maven-plugin</artifactId>-->
-                        <!--<version>0.7.5.201505241946</version>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>default-prepare-agent</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>prepare-agent</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                            <!--<execution>-->
-                                <!--<id>default-report</id>-->
-                                <!--<phase>prepare-package</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>report</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-                    <!--<plugin>-->
-                        <!--<groupId>org.eluder.coveralls</groupId>-->
-                        <!--<artifactId>coveralls-maven-plugin</artifactId>-->
-                        <!--<version>2.2.0</version>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
         <profile>
             <id>stormpath-signature</id>
             <build>
