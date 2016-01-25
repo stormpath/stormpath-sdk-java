@@ -8,7 +8,7 @@ public class DisabledCsrfTokenManager implements CsrfTokenManager {
 
     private static final String DUMMY_TOKEN = UUID.randomUUID().toString();
 
-    public static final String DEFAULT_CSRF_TOKEN_NAME = "csrfToken";
+    public static final String DEFAULT_CSRF_TOKEN_NAME = "_csrf";
 
     private String csrfTokenName;
 
