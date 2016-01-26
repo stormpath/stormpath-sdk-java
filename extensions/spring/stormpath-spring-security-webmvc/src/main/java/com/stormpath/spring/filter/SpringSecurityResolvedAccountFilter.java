@@ -5,7 +5,8 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.spring.security.token.ThirdPartyAuthenticationToken;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
@@ -21,11 +22,8 @@ import javax.servlet.http.HttpServletResponse;
  **/
 public class SpringSecurityResolvedAccountFilter extends HttpFilter implements InitializingBean {
 
-    private AuthenticationManager authenticationManager;
-
-    public SpringSecurityResolvedAccountFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -35,7 +33,7 @@ public class SpringSecurityResolvedAccountFilter extends HttpFilter implements I
 
         if (account != null) {
             Authentication authentication = new ThirdPartyAuthenticationToken(account);
-            authentication = authenticationManager.authenticate(authentication);
+            authentication = authenticationProvider.authenticate(authentication);
             SecurityContextHolder.clearContext();
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -45,6 +43,6 @@ public class SpringSecurityResolvedAccountFilter extends HttpFilter implements I
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(authenticationManager != null, "AuthenticationManager is required");
+        Assert.state(authenticationProvider != null, "AuthenticationProvider is required");
     }
 }

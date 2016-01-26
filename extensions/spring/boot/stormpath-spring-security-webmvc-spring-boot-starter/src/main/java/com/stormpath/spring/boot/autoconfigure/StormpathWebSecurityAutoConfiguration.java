@@ -18,9 +18,11 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.Filter;
@@ -76,8 +79,16 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
+        return super.stormpathCsrfTokenRepository();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        return super.stormpathCsrfTokenManager();
+        //Spring Security supports CSRF protection already when Thymeleaf is used (and we do use it in Spring Boot),
+        // so we turn off our internal implementation to avoid conflicts
+        return new DisabledCsrfTokenManager(csrfTokenName);
     }
 
     @Bean
@@ -99,5 +110,12 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnProperty(name="stormpath.web.saml.enabled")
     public SamlResultListener springSecuritySamlResultListener() {
         return super.springSecuritySamlResultListener();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="springSecurityResolvedAccountFilter")
+    @Override
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return super.springSecurityResolvedAccountFilter();
     }
 }

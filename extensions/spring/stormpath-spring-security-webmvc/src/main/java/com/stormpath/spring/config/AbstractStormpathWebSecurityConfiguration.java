@@ -39,17 +39,22 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 
 /**
@@ -123,6 +128,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.csrf.token.name'] ?: '_csrf'}")
     protected String csrfTokenName;
 
+    @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
+    protected boolean csrfTokenEnabled;
+
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
     }
@@ -148,17 +156,30 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         return new StormpathLogoutHandler(authenticationResultSaver);
     }
 
-    public CsrfTokenManager stormpathCsrfTokenManager() {
-        //Spring Security supports CSRF protection already, so we
-        //turn off our internal implementation to avoid conflicts
-        return new DisabledCsrfTokenManager(csrfTokenName);
-    }
-
     public IdSiteResultListener springSecurityIdSiteResultListener() {
         return new SpringSecurityIdSiteResultListener(stormpathAuthenticationProvider);
     }
 
     public SamlResultListener springSecuritySamlResultListener() {
         return new SpringSecuritySamlResultListener(stormpathAuthenticationProvider);
+    }
+
+    public CsrfTokenRepository stormpathCsrfTokenRepository() {
+        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
+        csrfTokenRepository.setParameterName(csrfTokenName);
+        return csrfTokenRepository;
+    }
+
+    public CsrfTokenManager stormpathCsrfTokenManager() {
+        //Spring Security supports CSRF protection only in Thymeleaf or JSP's with Sec taglib., therefore we
+        //cannot just delegate the CSRF strategy to Spring Security, we need to handle it ourselves in Spring.
+        if (csrfTokenEnabled) {
+            return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository(), csrfTokenName);
+        }
+        return new DisabledCsrfTokenManager(csrfTokenName);
+    }
+
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return new SpringSecurityResolvedAccountFilter();
     }
 }
