@@ -28,6 +28,8 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest
@@ -424,6 +426,38 @@ class ApplicationIT extends ClientIT {
         assertNotNull accountStoreMapping
         assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
         deleteOnTeardown(accountStoreMapping)
+    }
+
+    /**
+     * @since 1.0.RC8.2
+     */
+    @Test
+    void testAddOrganizationAccountStoreAndRetrieveIt() {
+        def app2 = createTempApp()
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 1)
+
+        def name = uniquify("testAddOrganizationAccountStoresAndIterateOnIt");
+        Organization org = client.instantiate(Organization)
+        org.setName(name)
+                .setDescription("Organization")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(org)
+
+        def accountStoreMapping = app2.addAccountStore(Organizations.where(Organizations.name().eqIgnoreCase(org.name)))
+        assertNotNull accountStoreMapping
+
+        ApplicationAccountStoreMappingList accountStoreMappings = app2.getAccountStoreMappings();
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
+
+        for (ApplicationAccountStoreMapping mapping : accountStoreMappings) {
+            AccountStore accountStore = mapping.getAccountStore();
+            if (!(accountStore instanceof Organization)) { continue; }
+            Organization organization = (Organization) accountStore;
+            assertNotNull organization.href
+            assertEquals organization.name, name
+        }
     }
 
     /**

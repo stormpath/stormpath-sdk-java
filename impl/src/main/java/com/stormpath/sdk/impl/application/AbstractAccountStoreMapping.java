@@ -21,6 +21,7 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.organization.Organization;
 
 import java.util.Map;
 
@@ -50,10 +51,12 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
         // The href will tell us what we need to return and works since directories and groups are subclasses of AccountStore.
         String href = getAccountStoreHref();
         AccountStore accountStore = null;
-        if (href.contains("directories")) {
+        if (href.contains("/directories/")) {
             accountStore = getDataStore().getResource(href, Directory.class);
-        } else if (href.contains("groups")) {
+        } else if (href.contains("/groups/")) {
             accountStore = getDataStore().getResource(href, Group.class);
+        } else if (href.contains("/organizations/")){
+            accountStore = getDataStore().getResource(href, Organization.class);
         }
         return accountStore;
     }
@@ -102,14 +105,4 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
     public void delete() {
         getDataStore().delete(this);
     }
-//
-//    @Override
-//    public AccountStoreMapping setHolder(AccountStoreHolder accountStoreHolder) {
-//        if
-//    }
-//
-//    @Override
-//    public AccountStoreHolder getHolder(AccountStoreHolder accountStoreHolder) {
-//        return null;  //To change body of implemented methods use File | Settings | File Templates.
-//    }
 }
