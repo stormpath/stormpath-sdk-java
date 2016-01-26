@@ -1,5 +1,11 @@
 ## Change Log ##
 
+### 1.0.RC8.2 ##
+
+Notes:
+
+- Please see the [1.0.RC8.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC8.2+is%3Aclosed) issues list for more information
+
 ### 1.0.RC8.1 ##
 
 Notes:
