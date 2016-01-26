@@ -715,14 +715,14 @@ class AccountIT extends ClientIT {
 
         //Let's check with have 2 groups
         def groups = account.getGroups(Groups.criteria().orderByName().ascending());
-        assertEquals(25, groups.getLimit());
-        assertEquals(2, groups.getProperty("items").size);
+        assertEquals(groups.getLimit(), 25);
+        assertEquals(groups.getProperty("items").size, 2);
 
         //Let's retrieve 1 group per page
         groups = account.getGroups(Groups.criteria().limitTo(1).orderByName().ascending());
-        assertEquals(1, groups.getLimit());
-        assertEquals(1, groups.getProperty("items").size);
-        assertEquals(0, groups.getOffset());
+        assertEquals(groups.getLimit(), 1);
+        assertEquals(groups.getProperty("items").size, 1);
+        assertEquals(groups.getOffset(), 0);
 
         Group firstGroupWithOffset0 = groups.iterator().next();
 
@@ -731,9 +731,9 @@ class AccountIT extends ClientIT {
 
         //Since we have 2 groups and offset = 1 here, then this page should only have 1 group, the last one
         groups = account.getGroups(Groups.criteria().offsetBy(1).orderByName().ascending());
-        assertEquals(25, groups.getLimit());
-        assertEquals(1, groups.getProperty("items").size);
-        assertEquals(1, groups.getOffset());
+        assertEquals(groups.getLimit(), 25);
+        assertEquals(groups.getProperty("items").size, 1);
+        assertEquals(groups.getOffset(), 1);
 
         Group firstGroupWithOffset1 = groups.iterator().next();
 
@@ -780,15 +780,15 @@ class AccountIT extends ClientIT {
 
         Group groupFromCollecion = groups.iterator().next()
 
-        assertEquals(25, groupFromCollecion.getProperty("accountMemberships").get("limit"))
-        assertEquals(2, groupFromCollecion.getProperty("accountMemberships").get("items").size)
+        assertEquals(groupFromCollecion.getProperty("accountMemberships").get("limit"), 25)
+        assertEquals(groupFromCollecion.getProperty("accountMemberships").get("items").size, 2)
 
         groups = account01.getGroups(Groups.criteria().withAccountMemberships(1).orderByName().ascending());
 
         groupFromCollecion = groups.iterator().next()
 
-        assertEquals(1, groupFromCollecion.getProperty("accountMemberships").get("limit"))
-        assertEquals(1, groupFromCollecion.getProperty("accountMemberships").get("items").size)
+        assertEquals(groupFromCollecion.getProperty("accountMemberships").get("limit"), 1)
+        assertEquals(groupFromCollecion.getProperty("accountMemberships").get("items").size, 1)
 
         def accountHrefFromGroupCollectionWithLimit1 = groupFromCollecion.getProperty("accountMemberships").get("items").get(0).get("href")
 
@@ -796,8 +796,8 @@ class AccountIT extends ClientIT {
 
         groupFromCollecion = groups.iterator().next()
 
-        assertEquals(25, groupFromCollecion.getProperty("accountMemberships").get("limit"))
-        assertEquals(1, groupFromCollecion.getProperty("accountMemberships").get("items").size)
+        assertEquals(groupFromCollecion.getProperty("accountMemberships").get("limit"), 25)
+        assertEquals(groupFromCollecion.getProperty("accountMemberships").get("items").size, 1)
 
         def accountHrefFromGroupCollectionWithOffset1 = groupFromCollecion.getProperty("accountMemberships").get("items").get(0).get("href")
 

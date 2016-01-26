@@ -75,7 +75,7 @@ class DefaultCustomDataTest {
         defaultCustomData.spanishCharacters = "El niño está usando Stormpath para su aplicación."
         defaultCustomData.trueProperty = true
 
-        assertEquals defaultPropertiesSize + 3, defaultCustomData.size()
+        assertEquals defaultCustomData.size(), defaultPropertiesSize + 3
 
         assertFalse defaultCustomData.isEmpty()
 
@@ -85,15 +85,15 @@ class DefaultCustomDataTest {
 
         assertTrue defaultCustomData.trueProperty
 
-        assertEquals "El niño está usando Stormpath para su aplicación.", defaultCustomData.getProperty("spanishCharacters")
+        assertEquals defaultCustomData.getProperty("spanishCharacters"), "El niño está usando Stormpath para su aplicación."
 
         assertNotNull defaultCustomData.entrySet()
 
         defaultCustomData.putAll(["falseProperty": false, "integerProperty": 1234])
 
-        assertEquals defaultPropertiesSize + 5, defaultCustomData.keySet().size()
+        assertEquals defaultCustomData.keySet().size(), defaultPropertiesSize + 5
 
-        assertEquals defaultPropertiesSize + 5, defaultCustomData.values().size()
+        assertEquals defaultCustomData.values().size(), defaultPropertiesSize + 5
 
         assertTrue defaultCustomData.containsValue("アナリストは「Apacheの史郎は、今日日本のソフトウェアエンジニアのた")
 
