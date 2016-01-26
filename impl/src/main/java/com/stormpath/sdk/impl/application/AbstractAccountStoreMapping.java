@@ -51,11 +51,11 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
         // The href will tell us what we need to return and works since directories and groups are subclasses of AccountStore.
         String href = getAccountStoreHref();
         AccountStore accountStore = null;
-        if (href.contains("directories")) {
+        if (href.contains("/directories/")) {
             accountStore = getDataStore().getResource(href, Directory.class);
-        } else if (href.contains("groups")) {
+        } else if (href.contains("/groups/")) {
             accountStore = getDataStore().getResource(href, Group.class);
-        } else if (href.contains("organizations")){
+        } else if (href.contains("/organizations/")){
             accountStore = getDataStore().getResource(href, Organization.class);
         }
         return accountStore;

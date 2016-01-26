@@ -428,7 +428,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.RC9
+     * @since 1.0.RC8.2
      */
     @Test
     void testAddOrganizationAccountStoreAndRetrieveIt() {
