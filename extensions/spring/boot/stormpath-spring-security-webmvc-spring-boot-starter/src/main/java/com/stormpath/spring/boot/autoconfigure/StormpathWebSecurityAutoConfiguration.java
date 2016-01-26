@@ -22,6 +22,7 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -109,5 +110,12 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnProperty(name="stormpath.web.saml.enabled")
     public SamlResultListener springSecuritySamlResultListener() {
         return super.springSecuritySamlResultListener();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="springSecurityResolvedAccountFilter")
+    @Override
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return super.springSecurityResolvedAccountFilter();
     }
 }

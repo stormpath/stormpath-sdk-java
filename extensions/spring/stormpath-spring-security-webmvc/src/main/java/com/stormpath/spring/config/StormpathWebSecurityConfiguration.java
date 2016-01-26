@@ -73,7 +73,8 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
+    @Override
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
-        return new SpringSecurityResolvedAccountFilter();
+        return super.springSecurityResolvedAccountFilter();
     }
 }

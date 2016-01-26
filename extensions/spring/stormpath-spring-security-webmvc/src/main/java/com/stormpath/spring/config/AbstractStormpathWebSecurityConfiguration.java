@@ -40,12 +40,14 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -175,6 +177,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
             return new SpringSecurityCsrfTokenManager(stormpathCsrfTokenRepository(), csrfTokenName);
         }
         return new DisabledCsrfTokenManager(csrfTokenName);
+    }
 
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return new SpringSecurityResolvedAccountFilter();
     }
 }
