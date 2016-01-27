@@ -36,12 +36,14 @@ public class VerifyController extends AbstractController {
 
     private String nextUri;
     private String logoutUri;
+    private String resendVerificationUri;
     private Client client;
     private Publisher<RequestEvent> eventPublisher;
 
     public void init() {
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
+        Assert.hasText(resendVerificationUri, "resendVerificationUri cannot be null or empty.");
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
@@ -60,6 +62,14 @@ public class VerifyController extends AbstractController {
 
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
+    }
+
+    public String getResendVerificationUri() {
+        return resendVerificationUri;
+    }
+
+    public void setResendVerificationUri(String resendVerificationUri) {
+        this.resendVerificationUri = resendVerificationUri;
     }
 
     public Client getClient() {
@@ -84,9 +94,9 @@ public class VerifyController extends AbstractController {
         String sptoken = Strings.clean(request.getParameter("sptoken"));
 
         if (sptoken == null) {
-            //safest thing to do if token is invalid or if there is an error (could be illegal access)
-            String logoutUri = getLogoutUri();
-            return new DefaultViewModel(logoutUri).setRedirect(true);
+            //redirect to resend verification email form
+            String resendVerificationUri = getResendVerificationUri();
+            return new DefaultViewModel(resendVerificationUri).setRedirect(true);
         }
 
         try {

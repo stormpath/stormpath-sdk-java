@@ -89,26 +89,29 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
     protected boolean forgotEnabled;
 
-    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/forgot' }")
+    @Value("#{ @environment['stormpath.web.forgot.uri'] ?: '/forgot' }")
     protected String forgotUri;
 
     @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
     protected boolean changeEnabled;
 
-    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/change' }")
+    @Value("#{ @environment['stormpath.web.change.uri'] ?: '/change' }")
     protected String changeUri;
 
     @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
     protected boolean registerEnabled;
 
-    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/register' }")
+    @Value("#{ @environment['stormpath.web.register.uri'] ?: '/register' }")
     protected String registerUri;
 
     @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
     protected boolean verifyEnabled;
 
-    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/verify' }")
+    @Value("#{ @environment['stormpath.web.verify.uri'] ?: '/verify' }")
     protected String verifyUri;
+
+    @Value("#{ @environment['stormpath.web.resendVerification.uri'] ?: '/resendVerification' }")
+    protected String resendVerificationUri;
 
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
@@ -227,7 +230,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.authorizeRequests().antMatchers(registerUri).permitAll();
             }
             if (verifyEnabled) {
-                http.authorizeRequests().antMatchers(verifyUri).permitAll();
+                http.authorizeRequests()
+                    .antMatchers(verifyUri).permitAll()
+                    .antMatchers(resendVerificationUri).permitAll();
             }
 
             if (fullyAuthenticatedEnabled) {
