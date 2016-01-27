@@ -177,6 +177,12 @@ p {
     font-size: 13px;
 }
 
+.view a.verify {
+    float: left;
+    padding: 17px 0;
+    font-size: 13px;
+}
+
 .view form button {
     display: block;
     float: right;

@@ -330,6 +330,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.verify.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
+    @Value("#{ @environment['stormpath.web.resendVerification.uri'] ?: '/resendVerification' }")
+    protected String resendVerificationUri;
+
     // ================  Logout Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
@@ -802,6 +805,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setView(loginView);
         controller.setNextUri(loginNextUri);
         controller.setForgotLoginUri(forgotUri);
+        controller.setVerifyUri(verifyUri);
         controller.setRegisterUri(registerUri);
         controller.setLogoutUri(logoutUri);
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
@@ -1019,6 +1023,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         VerifyController controller = new VerifyController();
         controller.setNextUri(verifyNextUri);
         controller.setLogoutUri(logoutUri);
+        controller.setResendVerificationUri(resendVerificationUri);
         controller.setClient(client);
         controller.setEventPublisher(stormpathRequestEventPublisher());
         controller.init();

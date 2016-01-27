@@ -30,7 +30,6 @@ import com.stormpath.sdk.servlet.http.Saver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +40,7 @@ public class LoginController extends FormController {
 
     private String nextUri;
     private String forgotLoginUri;
+    private String verifyUri;
     private String registerUri;
     private String logoutUri;
     private Saver<AuthenticationResult> authenticationResultSaver;
@@ -50,6 +50,7 @@ public class LoginController extends FormController {
         super.init();
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
         Assert.hasText(this.forgotLoginUri, "forgotLoginUri property cannot be null or empty.");
+        Assert.hasText(this.verifyUri, "verifyUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
@@ -70,6 +71,14 @@ public class LoginController extends FormController {
 
     public void setForgotLoginUri(String forgotLoginUri) {
         this.forgotLoginUri = forgotLoginUri;
+    }
+
+    public String getVerifyUri() {
+        return verifyUri;
+    }
+
+    public void setVerifyUri(String verifyUri) {
+        this.verifyUri = verifyUri;
     }
 
     public String getRegisterUri() {
@@ -137,6 +146,7 @@ public class LoginController extends FormController {
             }
         }
         model.put("forgotLoginUri", getForgotLoginUri());
+        model.put("verifyUri", getVerifyUri());
         model.put("registerUri", getRegisterUri());
     }
 
