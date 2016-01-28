@@ -92,6 +92,7 @@ import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.ResendVerificationController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
@@ -333,6 +334,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.resendVerification.uri'] ?: '/resendVerification' }")
     protected String resendVerificationUri;
 
+    @Value("#{ @environment['stormpath.web.resendVerification.view'] ?: 'stormpath/resendVerification' }")
+    protected String resendVerificationView;
+
     // ================  Logout Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
@@ -455,6 +459,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (verifyEnabled) {
             mappings.put(verifyUri, stormpathVerifyController());
+            mappings.put(resendVerificationUri, stormpathResendVerificationController());
         }
         if (forgotEnabled) {
             mappings.put(forgotUri, stormpathForgotPasswordController());
@@ -1026,6 +1031,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setResendVerificationUri(resendVerificationUri);
         controller.setClient(client);
         controller.setEventPublisher(stormpathRequestEventPublisher());
+        controller.init();
+
+        return createSpringController(controller);
+    }
+
+    public Controller stormpathResendVerificationController() {
+        if (idSiteEnabled) {
+            return createIdSiteController(null);
+        }
+
+        ResendVerificationController controller = new ResendVerificationController();
+        controller.setUri(resendVerificationUri);
+        controller.setView(resendVerificationView);
+        controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+        controller.setAccountStoreResolver(stormpathAccountStoreResolver());
+        controller.setNextView(verifyView);
+        controller.setLoginUri(loginUri);
         controller.init();
 
         return createSpringController(controller);
