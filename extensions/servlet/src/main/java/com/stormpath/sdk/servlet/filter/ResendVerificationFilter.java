@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,37 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.mvc.ResendVerificationController;
 
 import javax.servlet.ServletException;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.RC8.4
  */
-public class LoginFilter extends ControllerFilter {
+public class ResendVerificationFilter extends ControllerFilter {
 
-    public static final String AUTHENTICATION_RESULT_SAVER = "stormpath.web.authc.saver";
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
+    public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
 
     @Override
     protected void onInit() throws ServletException {
-
-        Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance(AUTHENTICATION_RESULT_SAVER);
         CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
+        AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
 
-        LoginController controller = new LoginController();
-        controller.setUri(getConfig().getLoginUrl());
-        controller.setView("stormpath/login");
-        controller.setNextUri(getConfig().getLoginNextUrl());
-        controller.setForgotLoginUri(getConfig().getForgotPasswordUrl());
-        controller.setRegisterUri(getConfig().getRegisterUrl());
-        controller.setLogoutUri(getConfig().getLogoutUrl());
-        controller.setVerifyUri(getConfig().getVerifyUrl());
-        controller.setVerifyEnabled(getConfig().isVerifyEnabled());
-        controller.setAuthenticationResultSaver(authenticationResultSaver);
+        ResendVerificationController controller = new ResendVerificationController();
+        controller.setUri(getConfig().getResendVerificationUrl());
+        controller.setView("stormpath/resendVerification");
         controller.setCsrfTokenManager(csrfTokenManager);
+        controller.setAccountStoreResolver(accountStoreResolver);
+        controller.setNextView("stormpath/verify");
+        controller.setLoginUri(getConfig().getLoginUrl());
         controller.init();
 
         setController(controller);
 
         super.onInit();
     }
-
 }

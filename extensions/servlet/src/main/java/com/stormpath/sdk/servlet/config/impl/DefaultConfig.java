@@ -49,6 +49,9 @@ public class DefaultConfig implements Config {
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
     public static final String VERIFY_URL = "stormpath.web.verify.uri";
     public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUri";
+    public static final String RESEND_VERIFICATION_URL = "stormpath.web.resendVerification.uri";
+    public static final String VERIFY_ENABLED = "stormpath.web.verify.enabled";
+
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
     public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.uri";
@@ -155,6 +158,16 @@ public class DefaultConfig implements Config {
     @Override
     public String getVerifyNextUrl() {
         return CFG.getString(VERIFY_NEXT_URL);
+    }
+
+    @Override
+    public String getResendVerificationUrl() {
+        return CFG.getString(RESEND_VERIFICATION_URL);
+    }
+
+    @Override
+    public boolean isVerifyEnabled() {
+        return CFG.getBoolean(VERIFY_ENABLED);
     }
 
     @Override

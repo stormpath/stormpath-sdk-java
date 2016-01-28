@@ -197,6 +197,16 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public String getResendVerificationUrl() {
+                return resendVerificationUri;
+            }
+
+            @Override
+            public boolean isVerifyEnabled() {
+                return verifyEnabled;
+            }
+
+            @Override
             public String getUnauthorizedUrl() {
                 return "/unauthorized";
             }

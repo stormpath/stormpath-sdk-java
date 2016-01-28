@@ -57,6 +57,16 @@ public interface Config extends Map<String, String> {
 
     String getVerifyUrl();
 
+    /**
+     * @since 1.0.RC8.4
+     */
+    String getResendVerificationUrl();
+
+    /**
+     * @since 1.0.RC8.4
+     */
+    boolean isVerifyEnabled();
+
     String getVerifyNextUrl();
 
     String getUnauthorizedUrl();
