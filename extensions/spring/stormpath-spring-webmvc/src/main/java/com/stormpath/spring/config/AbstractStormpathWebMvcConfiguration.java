@@ -810,6 +810,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setView(loginView);
         controller.setNextUri(loginNextUri);
         controller.setForgotLoginUri(forgotUri);
+        controller.setVerifyEnabled(verifyEnabled);
         controller.setVerifyUri(verifyUri);
         controller.setRegisterUri(registerUri);
         controller.setLogoutUri(logoutUri);
