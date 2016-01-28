@@ -43,6 +43,7 @@ public class LoginController extends FormController {
     private String verifyUri;
     private String registerUri;
     private String logoutUri;
+    private Boolean verifyEnabled;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private ErrorModelFactory errorModelFactory = new LoginErrorModelFactory();
 
@@ -53,6 +54,7 @@ public class LoginController extends FormController {
         Assert.hasText(this.verifyUri, "verifyUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
+        Assert.notNull(this.verifyEnabled, "verifyEnabled property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
     }
@@ -96,6 +98,14 @@ public class LoginController extends FormController {
 
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
+    }
+
+    public Boolean isVerifyEnabled() {
+        return verifyEnabled;
+    }
+
+    public void setVerifyEnabled(Boolean verifyEnabled) {
+        this.verifyEnabled = verifyEnabled;
     }
 
     public ErrorModelFactory getErrorModelFactory() {
@@ -147,6 +157,7 @@ public class LoginController extends FormController {
         }
         model.put("forgotLoginUri", getForgotLoginUri());
         model.put("verifyUri", getVerifyUri());
+        model.put("verifyEnabled", isVerifyEnabled());
         model.put("registerUri", getRegisterUri());
     }
 
