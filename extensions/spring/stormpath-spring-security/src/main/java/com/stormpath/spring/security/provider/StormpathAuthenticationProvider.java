@@ -406,7 +406,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)) return true;
-        if (IdSiteAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         if (ProviderAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         return false;
     }

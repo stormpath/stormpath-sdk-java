@@ -53,6 +53,7 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean(name="stormpathAuthenticationSuccessHandler")
+    @Override
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return super.stormpathAuthenticationSuccessHandler();
     }

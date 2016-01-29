@@ -17,8 +17,6 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +34,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC5
@@ -247,6 +240,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
+                if (!samlEnabled && !idSiteEnabled && !loginEnabled) {
+                    oAuth2AuthenticationProcessingFilter.setStateless(true);
+                }
                 http.addFilterBefore(oAuth2AuthenticationProcessingFilter, AnonymousAuthenticationFilter.class);
             }
 

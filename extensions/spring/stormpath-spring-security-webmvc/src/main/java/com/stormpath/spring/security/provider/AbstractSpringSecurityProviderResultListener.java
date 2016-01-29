@@ -17,25 +17,25 @@ package com.stormpath.spring.security.provider;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * @since 1.0.RC8.2
+ * @since 1.0.RC8.3
  */
 public abstract class AbstractSpringSecurityProviderResultListener {
 
-    protected final AuthenticationManager authenticationManager;
+    protected final AuthenticationProvider authenticationProvider;
 
-    public AbstractSpringSecurityProviderResultListener(AuthenticationManager authenticationManager) {
-        Assert.notNull(authenticationManager, "authenticationManager cannot be null.");
-        this.authenticationManager = authenticationManager;
+    public AbstractSpringSecurityProviderResultListener(AuthenticationProvider authenticationProvider) {
+        Assert.notNull(authenticationProvider, "authenticationProvider cannot be null.");
+        this.authenticationProvider = authenticationProvider;
     }
 
     protected final void doAuthenticate(ProviderAuthenticationToken token) {
         SecurityContextHolder.clearContext();
-        Authentication authentication = authenticationManager.authenticate(token);
+        Authentication authentication = authenticationProvider.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

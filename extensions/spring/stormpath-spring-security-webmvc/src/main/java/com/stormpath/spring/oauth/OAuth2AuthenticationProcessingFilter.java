@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.stormpath.spring.oauth;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
@@ -25,8 +24,9 @@ import org.apache.oltu.oauth2.rs.extractor.TokenExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -38,24 +38,25 @@ import java.io.IOException;
 
 /**
  * A pre-authentication filter for OAuth2 protected resources. Extracts an access token token from the incoming request and
- * uses it to populate the Spring Security context with an {@link com.stormpath.spring.security.provider.PreAuthenticatedAuthenticationToken PreAuthenticatedAuthenticationToken}.
+ * uses it to populate the Spring Security context with an {@link com.stormpath.spring.security.token.ProviderAuthenticationToken ProviderAuthenticationToken}.
  * <p>
  * Most of this code was taken from <a href="https://github.com/spring-projects/spring-security-oauth/blob/master/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/provider/authentication/OAuth2AuthenticationProcessingFilter.java">spring-security-oauth</a>.</p>
  *
- * @since 1.0.RC8.2
+ * @since 1.0.RC8.3
  */
 public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements InitializingBean {
 
     private final static Logger logger = LoggerFactory.getLogger(OAuth2AuthenticationProcessingFilter.class);
 
-    private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
 
-    private boolean stateless = true;
+    private boolean stateless = false;
 
     private TokenExtractor tokenExtractor = new BearerHeaderTokenExtractor();
 
     /**
-     * Flag to say that this filter guards stateless resources (default true). Set this to true if the only way the
+     * Flag to say that this filter guards stateless resources (default false). Set this to true if the only way the
      * resource can be accessed is with a token. If false then an incoming cookie can populate the security context and
      * allow access to a caller that isn't an OAuth2 client.
      *
@@ -66,7 +67,6 @@ public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements 
     }
 
     public void afterPropertiesSet() {
-        Assert.state(authenticationManager != null, "AuthenticationManager is required");
     }
 
     public void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
@@ -89,7 +89,7 @@ public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements 
         } else {
             Account account = AccountResolver.INSTANCE.getAccount(request);
             Authentication authentication = new ProviderAuthenticationToken(account);
-            authentication = authenticationManager.authenticate(authentication);
+            authentication = authenticationProvider.authenticate(authentication);
             SecurityContextHolder.clearContext();
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -103,11 +103,6 @@ public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements 
             return false;
         }
         return true;
-    }
-
-    public OAuth2AuthenticationProcessingFilter setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-        return this;
     }
 
     public void destroy() {

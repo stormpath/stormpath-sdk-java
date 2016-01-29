@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.event;
+package com.stormpath.sdk.servlet.event;
 
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenList;
@@ -24,12 +24,11 @@ import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
-import com.stormpath.sdk.servlet.event.RequestEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @since 1.0.RC8.1
+ * @since 1.0.RC8.3
  */
 public class TokenRevocationRequestEventListener implements RequestEventListener {
 
@@ -37,22 +36,22 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
 
     @Override
     public void on(SuccessfulAuthenticationRequestEvent e) {
-        //No op
+        //No-op
     }
 
     @Override
     public void on(FailedAuthenticationRequestEvent e) {
-        //No op
+        //No-op
     }
 
     @Override
     public void on(RegisteredAccountRequestEvent e) {
-        //No op
+        //No-op
     }
 
     @Override
     public void on(VerifiedAccountRequestEvent e) {
-        //No op
+        //No-op
     }
 
     @Override

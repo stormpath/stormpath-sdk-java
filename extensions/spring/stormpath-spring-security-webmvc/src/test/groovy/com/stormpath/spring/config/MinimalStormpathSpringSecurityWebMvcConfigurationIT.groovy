@@ -15,21 +15,56 @@
  */
 package com.stormpath.spring.config
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.http.HttpRequest
+import com.stormpath.sdk.http.HttpRequests
+import com.stormpath.sdk.impl.util.Base64
+import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.Oauth2Requests
+import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.resource.Deletable
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
+import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
+import com.stormpath.sdk.servlet.event.RequestEventListener
+import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
+import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
+import com.stormpath.sdk.servlet.filter.FilterChainManager
+import com.stormpath.sdk.servlet.filter.FilterChainResolver
 import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
+import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
+import com.stormpath.spring.security.provider.StormpathUserDetails
+import com.stormpath.spring.security.token.ProviderAuthenticationToken
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.mock.web.MockFilterChain
+import org.springframework.mock.web.PassThroughFilterChain
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
+import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
+import org.testng.annotations.AfterTest
+import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import javax.servlet.Filter
 
+import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.RC5
@@ -37,6 +72,8 @@ import static org.testng.Assert.assertNotNull
 @ContextConfiguration(classes = [MinimalStormpathSpringSecurityWebMvcAppConfig.class, TwoAppTenantStormpathConfiguration.class])
 @WebAppConfiguration
 class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
+
+    private static final Logger log = LoggerFactory.getLogger(MinimalStormpathSpringSecurityWebMvcConfigurationIT)
 
     @Autowired
     StormpathWebSecurityConfigurer c;
@@ -62,18 +99,149 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider;
 
+    @Autowired
+    MethodSecurityExpressionHandler stormpathMethodSecurityExpressionHandler
+
+    @Autowired
+    AuthenticationManager authenticationManager
+
+    @Autowired
+    CsrfTokenManager csrfTokenManager
+
+    @Autowired
+    RequestEventPublisher requestEventPublisher
+
+    def password = "Pass123!" + UUID.randomUUID()
+
+    Account account;
+
     @Test
-    void test() {
+    void testRequiredBeans() {
         assertNotNull apiKey
         assertNotNull stormpathCacheManager
         assertNotNull client
         assertNotNull application
         assertNotNull stormpathFilter
         assertNotNull oAuth2AuthenticationProcessingFilter
+        assertNotNull oAuth2AuthenticationProcessingFilter.getServletContext()
+        assertNotNull oAuth2AuthenticationProcessingFilter.authenticationProvider
+        assertNotNull authenticationManager
+        assertNotNull stormpathMethodSecurityExpressionHandler
+        assertTrue stormpathMethodSecurityExpressionHandler.defaultRolePrefix.equals("")
 
         assertNotNull stormpathAuthenticationProvider
         assertNotNull stormpathAuthenticationProvider.applicationRestUrl
         assertNotNull stormpathAuthenticationProvider.client
         assertNotNull stormpathAuthenticationProvider.client
+    }
+
+    /**
+     * @since 1.0.RC8.3
+     */
+    @Test
+    void testTokenRevocationListener() {
+        def hasTokenRevocationListener = false
+        for (RequestEventListener listener : requestEventPublisher.listeners) {
+            if (listener instanceof TokenRevocationRequestEventListener) {
+                hasTokenRevocationListener = true
+                break
+            }
+        }
+        assertTrue hasTokenRevocationListener
+    }
+
+    /**
+     * @since 1.0.RC8.3
+     */
+    @Test
+    void testLogin() {
+        Directory directory = createTempDir()
+        application.setDefaultAccountStore(directory)
+        account = createTempAccount(password)
+
+        new CustomDataPermissionsEditor(account.getCustomData()).append("user:edit");
+        account.save()
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getEmail(), password))
+        assertTrue authentication.authenticated
+        assertTrue (((StormpathUserDetails)authentication.principal).getUsername().equals(account.getUsername()))
+        assertTrue hasRole(authentication, ["user:edit"] as String[])
+        SecurityContextHolder.clearContext()
+    }
+
+    @Test
+    void testCsrfTokenManager() {
+        assertTrue (!(csrfTokenManager instanceof DefaultCsrfTokenManager))
+        assertEquals csrfTokenManager.tokenName, '_csrf'
+    }
+
+    ///Supporting properties and methods
+
+    List<Deletable> resourcesToDelete;
+
+    private Account createTempAccount(String password) {
+        Account account = client.instantiate(Account.class)
+        String username = "foo-account-deleteme-" + UUID.randomUUID();
+        account.setEmail(username + "@stormpath.com")
+        account.setUsername(username)
+        account.setPassword(password)
+        account.setGivenName(username)
+        account.setSurname(username)
+        application.createAccount(account)
+        deleteOnTeardown(account)
+        return account
+    }
+
+    private Directory createTempDir() {
+        Directory dir = client.instantiate(Directory.class)
+        String name = "foo-dir-deleteme-" + UUID.randomUUID();
+        dir.setName(name);
+        client.createDirectory(dir);
+        deleteOnTeardown(dir)
+        return dir
+    }
+
+    protected void deleteOnTeardown(Deletable d) {
+        this.resourcesToDelete.add(d)
+    }
+
+    @BeforeTest
+    public void setUp() {
+        resourcesToDelete = []
+        password = "Pass123!" + UUID.randomUUID();
+    }
+
+    @AfterTest
+    public void tearDown() {
+        def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
+
+        for (def r : reversed) {
+            try {
+                r.delete()
+            } catch (Throwable t) {
+                log.error('Unable to delete resource ' + r, t)
+            }
+        }
+    }
+
+    /**
+     * @return true if the user has one of the specified roles.
+     */
+    protected static boolean hasRole(Authentication authentication, String[] roles) {
+        boolean result = false;
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            String userRole = authority.getAuthority();
+            for (String role : roles) {
+                if (role.equals(userRole)) {
+                    result = true;
+                    break;
+                }
+            }
+            if (result) {
+                break;
+            }
+        }
+
+        return result;
     }
 }

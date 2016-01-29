@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,37 +15,29 @@
  */
 package com.stormpath.spring.security.provider;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.idsite.AuthenticationResult;
-import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
-import com.stormpath.sdk.idsite.RegistrationResult;
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
+import com.stormpath.sdk.saml.SamlResultListener;
+import com.stormpath.spring.security.token.SamlAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * @since 1.0.RC7
+ * @since 1.0.RC8
  */
-public class SpringSecurityIdSiteResultListenerSpringSecurity extends AbstractSpringSecurityProviderResultListener implements IdSiteResultListener {
+public class SpringSecuritySamlResultListener extends AbstractSpringSecurityProviderResultListener implements SamlResultListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringSecurityIdSiteResultListenerSpringSecurity.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpringSecuritySamlResultListener.class);
 
-    public SpringSecurityIdSiteResultListenerSpringSecurity(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
-
-    @Override
-    public void onRegistered(RegistrationResult result) {
-        doAuthenticate(new IdSiteAuthenticationToken(result.getAccount()));
+    public SpringSecuritySamlResultListener(AuthenticationProvider authenticationProvider) {
+        super(authenticationProvider);
     }
 
     @Override
     public void onAuthenticated(AuthenticationResult result) {
-        doAuthenticate(new IdSiteAuthenticationToken(result.getAccount()));
+        super.doAuthenticate(new SamlAuthenticationToken(result.getAccount()));
     }
 
     @Override

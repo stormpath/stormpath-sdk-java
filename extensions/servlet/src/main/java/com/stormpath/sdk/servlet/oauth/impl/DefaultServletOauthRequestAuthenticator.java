@@ -50,7 +50,6 @@ public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequ
         Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
                 "The specified httpRequest argument must be an instance of " + HTTP_SERVLET_REQUEST_FQCN);
 
-        //TODO: TM ???
         com.stormpath.sdk.impl.http.ServletHttpRequest stmpHttpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpRequest);
 
         return Applications.oauthRequestAuthenticator(application).authenticate(stmpHttpRequest);

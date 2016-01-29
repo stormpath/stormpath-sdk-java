@@ -16,18 +16,13 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
-import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
-import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
-import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationAttempt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -54,9 +49,11 @@ public class StormpathLogoutHandler implements LogoutHandler {
         Account account = AccountResolver.INSTANCE.getAccount(request);
         authenticationResultSaver.set(request, response, null);
 
-        LogoutRequestEvent e = createLogoutEvent(request, response, account);
-
-        stormpathRequestEventPublisher.publish(e);
+        //This logout handler is invoked twice when IDSite is enabled. In the second time the account is not in the request any longer, it has all been cleared in the first round
+        if (account != null) {
+            LogoutRequestEvent e = createLogoutEvent(request, response, account);
+            stormpathRequestEventPublisher.publish(e);
+        }
     }
 
     protected LogoutRequestEvent createLogoutEvent(HttpServletRequest request,

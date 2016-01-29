@@ -105,7 +105,7 @@ import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
-import com.stormpath.spring.event.TokenRevocationRequestEventListener;
+import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.spring.mvc.SpringController;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import io.jsonwebtoken.SignatureAlgorithm;

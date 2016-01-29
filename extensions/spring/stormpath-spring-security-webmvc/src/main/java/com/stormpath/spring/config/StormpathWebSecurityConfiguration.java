@@ -44,6 +44,7 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     private ServletContext servletContext;
 
     @Bean
+    @Override
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         return super.stormpathAuthenticationSuccessHandler();
     }
@@ -93,7 +94,6 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
                 .setServletContext(servletContext).setName("oauth2AuthenticationProcessingFilter");
 
         OAuth2AuthenticationProcessingFilter filter = (OAuth2AuthenticationProcessingFilter) builder.build();
-        filter.setAuthenticationManager(this.authenticationManager);
         filter.setEnabled(csrfTokenEnabled);
 
         return filter;
