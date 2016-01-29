@@ -35,7 +35,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
+import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -71,7 +71,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     Application application;
 
     @Autowired
-    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter;
+    Oauth2AuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter;
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
@@ -139,8 +139,8 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
 
         assertNotNull springSecurityResolvedAccountFilter
         assertNotNull springSecurityResolvedAccountFilter
-        assertNotNull oAuth2AuthenticationProcessingFilter
-        assertNotNull oAuth2AuthenticationProcessingFilter.authenticationProvider
+        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter
+        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter.authenticationProvider
 
         assertNotNull stormpathWildcardPermissionEvaluator
         assertNotNull stormpathMethodSecurityExpressionHandler

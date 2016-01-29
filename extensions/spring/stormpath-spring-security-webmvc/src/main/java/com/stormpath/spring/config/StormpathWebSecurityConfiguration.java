@@ -17,10 +17,8 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterBuilder;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
+import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,10 +26,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.web.context.ServletContextAware;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
  * @since 1.0.RC5
@@ -40,9 +34,7 @@ import javax.servlet.ServletException;
 @Configuration
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
-public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration implements ServletContextAware {
-
-    private ServletContext servletContext;
+public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
     @Override
@@ -89,32 +81,14 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
 
     @Bean
     @Override
-    public OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter() throws ServletException {
-
-        FilterBuilder builder = new DefaultFilterBuilder().setFilterClass(
-                OAuth2AuthenticationProcessingFilter.class) //suppress config logic since Spring is used for config here
-                .setServletContext(servletContext).setName("oauth2AuthenticationProcessingFilter");
-
-        OAuth2AuthenticationProcessingFilter filter = (OAuth2AuthenticationProcessingFilter) builder.build();
-        filter.setEnabled(accessTokenEnabled);
-
-        return filter;
+    public Oauth2AuthenticationSpringSecurityProcessingFilter oAuth2AuthenticationProcessingFilter() {
+        return super.oAuth2AuthenticationProcessingFilter();
     }
 
     @Bean
     @Override
-    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() throws ServletException {
-
-        FilterBuilder builder = new DefaultFilterBuilder().setFilterClass(
-                SpringSecurityResolvedAccountFilter.class) //suppress config logic since Spring is used for config here
-                .setServletContext(servletContext).setName("springSecurityResolvedAccountFilter");
-
-        return (SpringSecurityResolvedAccountFilter) builder.build();
-    }
-
-    @Override
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return super.springSecurityResolvedAccountFilter();
     }
 
 }

@@ -25,7 +25,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
-import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
+import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +39,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-
-import javax.servlet.ServletException;
 
 
 /**
@@ -124,8 +122,14 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     }
 
-    public abstract OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter() throws ServletException;
+    public Oauth2AuthenticationSpringSecurityProcessingFilter oAuth2AuthenticationProcessingFilter() {
+        Oauth2AuthenticationSpringSecurityProcessingFilter fitler = new Oauth2AuthenticationSpringSecurityProcessingFilter();
+        fitler.setEnabled(accessTokenEnabled);
+        return fitler;
+    }
 
-    public abstract SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() throws ServletException;
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return new SpringSecurityResolvedAccountFilter();
+    }
 
 }

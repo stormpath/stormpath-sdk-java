@@ -44,9 +44,9 @@ import java.io.IOException;
  *
  * @since 1.0.RC8.3
  */
-public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements InitializingBean {
+public class Oauth2AuthenticationSpringSecurityProcessingFilter extends HttpFilter implements InitializingBean {
 
-    private final static Logger logger = LoggerFactory.getLogger(OAuth2AuthenticationProcessingFilter.class);
+    private final static Logger logger = LoggerFactory.getLogger(Oauth2AuthenticationSpringSecurityProcessingFilter.class);
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -74,7 +74,7 @@ public class OAuth2AuthenticationProcessingFilter extends HttpFilter implements 
 
         final boolean debug = logger.isDebugEnabled();
 
-        String accessToken = tokenExtractor.getAccessToken(request);
+            String accessToken = tokenExtractor.getAccessToken(request);
 
         if (accessToken == null) {
             if (stateless && isAuthenticated()) {

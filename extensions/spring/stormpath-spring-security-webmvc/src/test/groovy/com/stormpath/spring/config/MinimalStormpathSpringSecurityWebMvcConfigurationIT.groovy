@@ -21,35 +21,22 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.http.HttpMethod
-import com.stormpath.sdk.http.HttpRequest
-import com.stormpath.sdk.http.HttpRequests
-import com.stormpath.sdk.impl.util.Base64
-import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.Oauth2Requests
-import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
-import com.stormpath.sdk.servlet.filter.FilterChainManager
-import com.stormpath.sdk.servlet.filter.FilterChainResolver
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
+import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.StormpathUserDetails
-import com.stormpath.spring.security.token.ProviderAuthenticationToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.mock.web.MockFilterChain
-import org.springframework.mock.web.PassThroughFilterChain
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
-import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -96,7 +83,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     Filter stormpathFilter
 
     @Autowired
-    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter
+    Oauth2AuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter
@@ -131,9 +118,8 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         assertNotNull application
         assertNotNull stormpathFilter
         assertNotNull springSecurityResolvedAccountFilter
-        assertNotNull oAuth2AuthenticationProcessingFilter
-        assertNotNull oAuth2AuthenticationProcessingFilter.getServletContext()
-        assertNotNull oAuth2AuthenticationProcessingFilter.authenticationProvider
+        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter
+        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter.authenticationProvider
         assertNotNull authenticationManager
         assertNotNull stormpathWildcardPermissionEvaluator
         assertNotNull stormpathMethodSecurityExpressionHandler
