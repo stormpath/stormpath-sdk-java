@@ -74,7 +74,7 @@ public class Oauth2AuthenticationSpringSecurityProcessingFilter extends HttpFilt
 
         final boolean debug = logger.isDebugEnabled();
 
-            String accessToken = tokenExtractor.getAccessToken(request);
+        String accessToken = tokenExtractor.getAccessToken(request);
 
         if (accessToken == null) {
             if (stateless && isAuthenticated()) {
