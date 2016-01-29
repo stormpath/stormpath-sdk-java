@@ -36,6 +36,7 @@ import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
 import com.stormpath.sdk.servlet.filter.FilterChainManager
 import com.stormpath.sdk.servlet.filter.FilterChainResolver
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.PassThroughFilterChain
+import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
@@ -91,13 +93,19 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     Application application;
 
     @Autowired
-    Filter stormpathFilter;
+    Filter stormpathFilter
 
     @Autowired
-    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter;
+    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter
 
     @Autowired
-    StormpathAuthenticationProvider stormpathAuthenticationProvider;
+    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter
+
+    @Autowired
+    StormpathAuthenticationProvider stormpathAuthenticationProvider
+
+    @Autowired
+    PermissionEvaluator stormpathWildcardPermissionEvaluator
 
     @Autowired
     MethodSecurityExpressionHandler stormpathMethodSecurityExpressionHandler
@@ -122,10 +130,12 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         assertNotNull client
         assertNotNull application
         assertNotNull stormpathFilter
+        assertNotNull springSecurityResolvedAccountFilter
         assertNotNull oAuth2AuthenticationProcessingFilter
         assertNotNull oAuth2AuthenticationProcessingFilter.getServletContext()
         assertNotNull oAuth2AuthenticationProcessingFilter.authenticationProvider
         assertNotNull authenticationManager
+        assertNotNull stormpathWildcardPermissionEvaluator
         assertNotNull stormpathMethodSecurityExpressionHandler
         assertTrue stormpathMethodSecurityExpressionHandler.defaultRolePrefix.equals("")
 

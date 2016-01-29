@@ -24,6 +24,8 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+
+import javax.servlet.ServletException;
 
 
 /**
@@ -62,11 +66,14 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
     protected String loginNextUri;
 
+    @Value("#{ @environment['stormpath.web.csrf.token.name'] ?: '_csrf'}")
+    protected String csrfTokenName;
+
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
     protected boolean csrfTokenEnabled;
 
-    @Value("#{ @environment['stormpath.web.csrf.token.name'] ?: '_csrf'}")
-    protected String csrfTokenName;
+    @Value("#{ @environment['stormpath.web.accessToken.enabled'] ?: true }")
+    protected boolean accessTokenEnabled;
 
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
@@ -116,5 +123,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         return new DisabledCsrfTokenManager(csrfTokenName);
 
     }
+
+    public abstract OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter() throws ServletException;
+
+    public abstract SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() throws ServletException;
 
 }

@@ -15,6 +15,8 @@
  */
 package com.stormpath.spring.examples;
 
+import com.stormpath.spring.config.StormpathMethodSecurityConfiguration;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;

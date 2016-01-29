@@ -51,12 +51,12 @@ class DefaultCreateAccountRequestBuilderTest {
                 .build()
         assertSame account, request.account
         assertTrue request.isPasswordFormatSpecified()
-        assertEquals PasswordFormat.MCF, request.getPasswordFormat()
+        assertEquals request.getPasswordFormat(), PasswordFormat.MCF
 
         request = new DefaultCreateAccountRequestBuilder(account).setRegistrationWorkflowEnabled(false).setPasswordFormat(PasswordFormat.MCF).build()
         assertSame account, request.account
-        assertEquals false, request.isRegistrationWorkflowEnabled()
-        assertEquals PasswordFormat.MCF, request.getPasswordFormat()
+        assertEquals request.isRegistrationWorkflowEnabled(), false
+        assertEquals request.getPasswordFormat(), PasswordFormat.MCF
     }
 
     @Test(expectedExceptions = IllegalStateException)

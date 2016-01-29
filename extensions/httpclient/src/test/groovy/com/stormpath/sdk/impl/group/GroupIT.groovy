@@ -50,7 +50,7 @@ class GroupIT extends ClientIT {
             group.addAccount("SuperInvalid")
             fail("Should have failed due to Account not found.")
         } catch (Exception e){
-            assertEquals "No matching account for hrefOrEmailOrUsername was found.", e.getMessage()
+            assertEquals e.getMessage(), "No matching account for hrefOrEmailOrUsername was found."
         }
     }
 
@@ -138,19 +138,19 @@ class GroupIT extends ClientIT {
         
         //Remove account using object
         group = group.removeAccount(acct3)
-        assertEquals 3, group.getAccounts().size
+        assertEquals group.getAccounts().size, 3
 
         //Remove account using href
         group = group.removeAccount(acct4.href)
-        assertEquals 2, group.getAccounts().size
+        assertEquals group.getAccounts().size, 2
 
         //Remove account using email
         group = group.removeAccount(acct1.email)
-        assertEquals 1, group.getAccounts().size
+        assertEquals group.getAccounts().size, 1
 
         //Remove account using username
         group = group.removeAccount(acct2.username)
-        assertEquals 0, group.getAccounts().size
+        assertEquals group.getAccounts().size, 0
 
         // Test remove account error
 
@@ -168,7 +168,7 @@ class GroupIT extends ClientIT {
             fail ("Should have failed due to account not present in group")
         } catch (Exception e){
             assertTrue e instanceof IllegalStateException
-            assertEquals "The specified account does not belong to this Group.", e.getMessage()
+            assertEquals e.getMessage(), "The specified account does not belong to this Group."
         }
 
         try {
@@ -176,7 +176,7 @@ class GroupIT extends ClientIT {
             fail ("Should have failed due to account not present in group")
         } catch (Exception e){
             assertTrue e instanceof IllegalStateException
-            assertEquals "The specified account does not belong to this Group.", e.getMessage()
+            assertEquals e.getMessage(), "The specified account does not belong to this Group."
         }
     }
 }

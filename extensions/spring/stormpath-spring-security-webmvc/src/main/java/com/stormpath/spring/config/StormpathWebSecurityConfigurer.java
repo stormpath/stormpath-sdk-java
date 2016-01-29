@@ -19,6 +19,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
     @Autowired
     OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter;
+
+    @Autowired
+    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
 
     @Autowired
     protected Client client;
@@ -181,6 +185,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
+        if (loginEnabled) {
+            // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
+            // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
+            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+        }
+
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
             http
                 .formLogin()
@@ -195,7 +205,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 .antMatchers(permittedResultPath).permitAll();
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
-
                 // make sure that /login and /login?status=... is permitted
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 

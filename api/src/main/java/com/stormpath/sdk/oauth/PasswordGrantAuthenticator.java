@@ -24,7 +24,10 @@ package com.stormpath.sdk.oauth;
  *      .setLogin(username)
  *      .setPassword(password)
  *      .build();
- * OauthGrantAuthenticationResult result = app.authenticate(request);
+ *
+ * OauthGrantAuthenticationResult result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+ *      .forApplication(app)
+ *      .authenticate(request);
  * </pre>
  *
  * @see RefreshGrantAuthenticator

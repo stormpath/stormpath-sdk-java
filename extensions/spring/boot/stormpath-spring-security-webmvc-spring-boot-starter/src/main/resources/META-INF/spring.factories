@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration = com.stormpath.spring.boot.autoconfigure.StormpathWebSecurityAutoConfiguration,\
-com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
+com.stormpath.spring.boot.autoconfigure.StormpathMethodSecurityAutoConfiguration

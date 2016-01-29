@@ -22,6 +22,8 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,6 +40,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 /**
  * @since 1.0.RC5
@@ -110,5 +113,19 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnProperty(name="stormpath.web.saml.enabled")
     public SamlResultListener springSecuritySamlResultListener() {
         return super.springSecuritySamlResultListener();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="oAuth2AuthenticationProcessingFilter")
+    public OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter() {
+        OAuth2AuthenticationProcessingFilter filter = new OAuth2AuthenticationProcessingFilter();
+        filter.setEnabled(accessTokenEnabled);
+        return filter;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="springSecurityResolvedAccountFilter")
+    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
+        return new SpringSecurityResolvedAccountFilter();
     }
 }

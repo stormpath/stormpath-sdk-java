@@ -381,7 +381,7 @@ class ApiAuthenticationIT extends ClientIT {
 
                 assertEquals tokenResponse.applicationHref, expectedApp.href
                 assertNotNull tokenResponse.accessToken
-                assertEquals 3, new StringTokenizer(tokenResponse.accessToken, ".").countTokens()
+                assertEquals new StringTokenizer(tokenResponse.accessToken, ".").countTokens(), 3
                 assertEquals tokenResponse.tokenType, "Bearer"
                 assertNotNull tokenResponse.expiresIn
                 assertNull tokenResponse.refreshToken

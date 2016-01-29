@@ -16,7 +16,6 @@
 package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 /**
  * @since 1.0.RC5

@@ -28,8 +28,11 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.directory.AccountStore
+import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest
 import com.stormpath.sdk.oauth.JwtAuthenticationResult
 import com.stormpath.sdk.oauth.Oauth2Requests
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
@@ -152,9 +155,9 @@ class ApplicationIT extends ClientIT {
 
         def apps = client.getApplications(Applications.where(Applications.name().startsWithIgnoreCase(applicationBaseName)).limitTo(1))
 
-        assertEquals 1, apps.limit
-        assertEquals 0, apps.offset
-        assertEquals 2, apps.size
+        assertEquals apps.limit, 1
+        assertEquals apps.offset, 0
+        assertEquals apps.size, 2
 
         def iterator = apps.iterator()
         while (iterator.hasNext()) {
@@ -162,7 +165,7 @@ class ApplicationIT extends ClientIT {
             assertTrue expected.remove(app.href)
         }
 
-        assertEquals 0, expected.size()
+        assertEquals expected.size(), 0
 
         try {
             iterator.next()
@@ -182,7 +185,7 @@ class ApplicationIT extends ClientIT {
             assertTrue expected.remove(app.href)
         }
 
-        assertEquals 0, expected.size()
+        assertEquals expected.size(), 0
     }
 
     @Test
@@ -423,6 +426,38 @@ class ApplicationIT extends ClientIT {
         assertNotNull accountStoreMapping
         assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
         deleteOnTeardown(accountStoreMapping)
+    }
+
+    /**
+     * @since 1.0.RC8.2
+     */
+    @Test
+    void testAddOrganizationAccountStoreAndRetrieveIt() {
+        def app2 = createTempApp()
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 1)
+
+        def name = uniquify("testAddOrganizationAccountStoresAndIterateOnIt");
+        Organization org = client.instantiate(Organization)
+        org.setName(name)
+                .setDescription("Organization")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(org)
+
+        def accountStoreMapping = app2.addAccountStore(Organizations.where(Organizations.name().eqIgnoreCase(org.name)))
+        assertNotNull accountStoreMapping
+
+        ApplicationAccountStoreMappingList accountStoreMappings = app2.getAccountStoreMappings();
+        assertAccountStoreMappingListSize(app2.getAccountStoreMappings(), 2)
+
+        for (ApplicationAccountStoreMapping mapping : accountStoreMappings) {
+            AccountStore accountStore = mapping.getAccountStore();
+            if (!(accountStore instanceof Organization)) { continue; }
+            Organization organization = (Organization) accountStore;
+            assertNotNull organization.href
+            assertEquals organization.name, name
+        }
     }
 
     /**
@@ -668,7 +703,7 @@ class ApplicationIT extends ClientIT {
         //Making sure that only two request were made to the server
         // 1) request to get the application
         // 2) request to get the apiKey (with options)
-        assertEquals 2, client.requestCount
+        assertEquals client.requestCount, 2
 
         // Compare apiKey get from the cache to the apiKey requested from cache
         assertEquals appApiKey.secret, appApiKey2.secret
@@ -676,7 +711,7 @@ class ApplicationIT extends ClientIT {
         assertEquals appApiKey.tenant.name, appApiKey2.tenant.name
 
         // Making sure that still only 2 requests were made to the server.
-        assertEquals 2, client.requestCount
+        assertEquals client.requestCount, 2
 
         def dataStore = (DefaultDataStore) client.dataStore
 
@@ -718,7 +753,7 @@ class ApplicationIT extends ClientIT {
 
         String[] ssoUrlPath = ssoURL.split("jwtRequest=")
 
-        assertEquals 2, ssoUrlPath.length
+        assertEquals ssoUrlPath.length, 2
         assertTrue ssoURL.startsWith(app.getHref().substring(0, app.getHref().indexOf("/", 8)))
 
         StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
@@ -760,7 +795,7 @@ class ApplicationIT extends ClientIT {
 
         String[] ssoUrlPath = ssoURL.split("jwtRequest=")
 
-        assertEquals 2, ssoUrlPath.length
+        assertEquals ssoUrlPath.length, 2
 
         StringTokenizer tokenizer = new StringTokenizer(ssoUrlPath[1], ".")
 
@@ -1364,7 +1399,7 @@ class ApplicationIT extends ClientIT {
             app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
             fail("Should have thrown")
         } catch (ResourceException e){
-            assertEquals 2006, e.getCode()
+            assertEquals e.getCode(), 2006
             assertTrue e.getDeveloperMessage().contains("is in an invalid format")
         }
     }

@@ -34,10 +34,14 @@ import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
+import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
+import com.stormpath.spring.oauth.OAuth2AuthenticationProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.security.access.PermissionEvaluator
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
@@ -66,9 +70,21 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     @Autowired
     Application application;
 
+    @Autowired
+    OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter;
+
+    @Autowired
+    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+
     //Spring Security Bean
     @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider
+
+    @Autowired
+    PermissionEvaluator stormpathWildcardPermissionEvaluator
+
+    @Autowired
+    MethodSecurityExpressionHandler stormpathMethodSecurityExpressionHandler
 
     //Some WebMVC Beans
     @Autowired
@@ -120,6 +136,15 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         assertTrue stormpathAuthenticationProvider.accountGrantedAuthorityResolver instanceof EmptyAccountGrantedAuthorityResolver
         assertTrue stormpathAuthenticationProvider.accountPermissionResolver instanceof AccountCustomDataPermissionResolver
         assertTrue stormpathAuthenticationProvider.authenticationTokenFactory instanceof UsernamePasswordAuthenticationTokenFactory
+
+        assertNotNull springSecurityResolvedAccountFilter
+        assertNotNull springSecurityResolvedAccountFilter
+        assertNotNull oAuth2AuthenticationProcessingFilter
+        assertNotNull oAuth2AuthenticationProcessingFilter.authenticationProvider
+
+        assertNotNull stormpathWildcardPermissionEvaluator
+        assertNotNull stormpathMethodSecurityExpressionHandler
+        assertTrue stormpathMethodSecurityExpressionHandler.defaultRolePrefix.equals("")
 
         //Some WebMVC beans
         assertNotNull stormpathHandlerMapping
