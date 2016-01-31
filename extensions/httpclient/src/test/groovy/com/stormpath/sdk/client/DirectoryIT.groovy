@@ -290,7 +290,18 @@ class DirectoryIT extends ClientIT {
     @Test
     void testGetDirectoriesWithDirCriteriaViaTenantActions() {
         def dirCriteria = Directories.criteria()
-        def dirList = client.getDirectories(dirCriteria)
+
+        // In a concurrent environment, this can throw a ResourceException.
+        // This addresses that until a better solution can be found.
+        for (int i=0; i<10; i++) {
+            try {
+                def dirList = client.getDirectories(dirCriteria)
+                break;
+            } catch (Exception e) {
+
+            }
+        }
+
         assertNotNull dirList.href
     }
 
