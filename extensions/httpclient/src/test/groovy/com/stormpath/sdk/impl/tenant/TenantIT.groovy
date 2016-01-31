@@ -166,7 +166,6 @@ class TenantIT extends ClientIT {
         assert tenant2.applications.collect { it.href }.contains(app.href)
 
         assert tenant2.directories.collect { it.href }.contains(dir.href)
-        
 
         assert tenant2.groups.collect { it.href }.contains(group.href)
     }
