@@ -39,6 +39,7 @@ import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.TenantOptions
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
+import org.testng.collections.CollectionUtils
 
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
@@ -125,9 +126,10 @@ class TenantIT extends ClientIT {
         assertNotNull tenant
 
         Map properties = getValue(AbstractResource, tenant, "properties")
-        def apps = properties.get("applications").get("size")
-        def dirs = properties.get("directories").get("size")
-        def groups = properties.get("groups").get("size")
+
+        def appHrefs = properties.get("applications").items.collect { it.href }
+        def dirHrefs = properties.get("directories").items.collect { it.href }
+        def groupHrefs = properties.get("groups").items.collect { it.href }
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -155,15 +157,35 @@ class TenantIT extends ClientIT {
         assertNotNull tenant2
 
         properties = getValue(AbstractResource, tenant2, "properties")
-        assertTrue properties.get("applications").get("size") == apps + 1
-        assertTrue properties.get("directories").get("size") == dirs + 1
-        assertTrue properties.get("groups").get("size") == groups + 1
+
+        def appHrefs2 = properties.get("applications").items.collect { it.href }
+        def dirHrefs2 = properties.get("directories").items.collect { it.href }
+        def groupHrefs2 = properties.get("groups").items.collect { it.href }
+
+        assert appHrefs2.containsAll(appHrefs)
+        assert dirHrefs2.containsAll(dirHrefs)
+        assert groupHrefs2.containsAll(groupHrefs)
 
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164
-        assertEquals dirs + 1, tenant2.directories.size
-        assertEquals apps + 1, tenant2.applications.size
-        assertEquals groups + 1, tenant2.groups.size
+        def commons = tenant2.applications.collect { it.href }.intersect(appHrefs)
+        def difference = tenant2.applications.collect { it.href }.plus(appHrefs)
+        difference.removeAll(commons)
+
+        assert difference.contains(app.href)
+
+        commons = tenant2.directories.collect { it.href }.intersect(dirHrefs)
+        difference = tenant2.directories.collect { it.href }.plus(dirHrefs)
+        difference.removeAll(commons)
+
+        assert difference.contains(dir.href)
+
+        commons = tenant2.groups.collect { it.href }.intersect(groupHrefs)
+        difference = tenant2.groups.collect { it.href }.plus(groupHrefs)
+        difference.removeAll(commons)
+
+        assert difference.contains(group.href)
+
     }
 
     //@since 1.0.beta
