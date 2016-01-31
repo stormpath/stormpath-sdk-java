@@ -119,6 +119,7 @@ class TenantIT extends ClientIT {
      */
     @Test
     void testCurrentTenantWithOptions() {
+        
 
         TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
         def tenant = client.getCurrentTenant(options)
