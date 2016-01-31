@@ -579,7 +579,7 @@ class TenantIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testTenantExpansionWithoutCache(){
+    void testTenantExpansionWithoutCache() {
 
         Client client = buildClient(false);
 
@@ -599,8 +599,6 @@ class TenantIT extends ClientIT {
         assertTrue tenantProperties.get("groups").size() > 1
         assertTrue tenantProperties.get("applications").size() > 1
         assertTrue tenantProperties.get("accounts").size() == 1 //this is not expanded, must be 1
-        def groupsQty = tenantProperties.get("groups").get("size")
-        def applicationsQty = tenantProperties.get("applications").get("size")
 
         def app = createTempApp()
         Group group1 = client.instantiate(Group)
@@ -618,16 +616,16 @@ class TenantIT extends ClientIT {
         tenantProperties = getValue(AbstractResource, retrieved, "properties")
         assertEquals(tenant.href, retrieved.href)
 
-        assertTrue tenantProperties.get("groups").get("size") > groupsQty
-        assertTrue tenantProperties.get("applications").get("size") > applicationsQty
-
+        assertTrue tenantProperties.get("groups").items.collect { it.href }.contains(group1.href)
+        assertTrue tenantProperties.get("groups").items.collect { it.href }.contains(group2.href)
+        assertTrue tenantProperties.get("applications").items.collect { it.href }.contains(app.href)
     }
 
     /**
      * @since 1.0.RC4.6
      */
     @Test
-    void testTenantExpansionWithCache(){
+    void testTenantExpansionWithCache() {
 
         def tenant = client.currentTenant
 
@@ -651,9 +649,6 @@ class TenantIT extends ClientIT {
         assertTrue apps > 1
         assertTrue accounts == 1 //this is not expanded, must be 1
 
-        def groupsQty = tenantProperties.get("groups").get("size")
-        def applicationsQty = tenantProperties.get("applications").get("size")
-
         def app = createTempApp()
 
         Group group1 = client.instantiate(Group)
@@ -672,8 +667,9 @@ class TenantIT extends ClientIT {
 
         tenantProperties = getValue(AbstractResource, retrieved2, "properties")
 
-        assertTrue tenantProperties.get("groups").get("size") > groupsQty
-        assertTrue tenantProperties.get("applications").get("size") > applicationsQty
+        assertTrue tenantProperties.get("groups").items.collect { it.href }.contains(group1.href)
+        assertTrue tenantProperties.get("groups").items.collect { it.href }.contains(group2.href)
+        assertTrue tenantProperties.get("applications").items.collect { it.href }.contains(app.href)
     }
 
     /**
