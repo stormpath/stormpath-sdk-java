@@ -119,18 +119,10 @@ class TenantIT extends ClientIT {
      */
     @Test
     void testCurrentTenantWithOptions() {
-        
 
-        TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
-        def tenant = client.getCurrentTenant(options)
+        def tenant = client.getCurrentTenant()
 
         assertNotNull tenant
-
-        Map properties = getValue(AbstractResource, tenant, "properties")
-
-        def appHrefs = properties.get("applications").items.collect { it.href }
-        def dirHrefs = properties.get("directories").items.collect { it.href }
-        def groupHrefs = properties.get("groups").items.collect { it.href }
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: TenantIT.testCurrentTenantWithOptions Dir")
@@ -153,40 +145,29 @@ class TenantIT extends ClientIT {
 
         assertNotNull group.href
 
+        TenantOptions options = Tenants.options().withDirectories().withApplications().withGroups()
+        tenant = client.getCurrentTenant(options)
+        Map properties = getValue(AbstractResource, tenant, "properties")
+
+        def dirHrefs = properties.get("directories").items.collect { it.href }
+        def groupHrefs = properties.get("groups").items.collect { it.href }
+        def appHrefs = properties.get("applications").items.collect { it.href }
+
+        assert dirHrefs.contains(dir.href)
+        assert groupHrefs.contains(group.href)
+        assert appHrefs.contains(app.href)
+
         def tenant2 = client.getCurrentTenant(options)
 
         assertNotNull tenant2
 
-        properties = getValue(AbstractResource, tenant2, "properties")
-
-        def appHrefs2 = properties.get("applications").items.collect { it.href }
-        def dirHrefs2 = properties.get("directories").items.collect { it.href }
-        def groupHrefs2 = properties.get("groups").items.collect { it.href }
-
-        assert appHrefs2.containsAll(appHrefs)
-        assert dirHrefs2.containsAll(dirHrefs)
-        assert groupHrefs2.containsAll(groupHrefs)
-
         // this also validates the workaround that avoids the incorrect load of expanded resources from the cache
         // https://github.com/stormpath/stormpath-sdk-java/issues/164
-        def commons = tenant2.applications.collect { it.href }.intersect(appHrefs)
-        def difference = tenant2.applications.collect { it.href }.plus(appHrefs)
-        difference.removeAll(commons)
+        assert tenant2.applications.collect { it.href }.contains(app.href)
 
-        assert difference.contains(app.href)
+        assert tenant2.directories.collect { it.href }.contains(dir.href)
 
-        commons = tenant2.directories.collect { it.href }.intersect(dirHrefs)
-        difference = tenant2.directories.collect { it.href }.plus(dirHrefs)
-        difference.removeAll(commons)
-
-        assert difference.contains(dir.href)
-
-        commons = tenant2.groups.collect { it.href }.intersect(groupHrefs)
-        difference = tenant2.groups.collect { it.href }.plus(groupHrefs)
-        difference.removeAll(commons)
-
-        assert difference.contains(group.href)
-
+        assert tenant2.groups.collect { it.href }.contains(group.href)
     }
 
     //@since 1.0.beta
