@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
@@ -293,9 +294,10 @@ class DirectoryIT extends ClientIT {
 
         // In a concurrent environment, this can throw a ResourceException.
         // This addresses that until a better solution can be found.
+        DirectoryList dirList = null
         for (int i=0; i<10; i++) {
             try {
-                def dirList = client.getDirectories(dirCriteria)
+                dirList = client.getDirectories(dirCriteria)
                 break;
             } catch (Exception e) {
 
