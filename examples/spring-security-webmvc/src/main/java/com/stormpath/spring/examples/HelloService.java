@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class HelloService {
 
     //Let's just specify some role here so we can grant it access to restricted resources
-    public static final String MY_GROUP = "https://api.stormpath.com/v1/groups/d8UDkz9QPcn2z73j93m6Z";
+    public static final String MY_GROUP = "GROUP_HREF_HERE";
 
     /**
      * Only users who have a Custom Data entry in their Stormpath Account or Group containing something like
