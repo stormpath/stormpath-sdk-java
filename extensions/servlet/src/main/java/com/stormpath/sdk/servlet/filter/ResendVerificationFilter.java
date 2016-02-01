@@ -23,7 +23,7 @@ import com.stormpath.sdk.servlet.mvc.ResendVerificationController;
 import javax.servlet.ServletException;
 
 /**
- * @since 1.0.RC8.4
+ * @since 1.0.RC8.3
  */
 public class ResendVerificationFilter extends ControllerFilter {
 

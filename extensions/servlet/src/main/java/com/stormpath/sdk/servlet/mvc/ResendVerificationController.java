@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 1.0.RC8.4
+ * @since 1.0.RC8.3
  */
 public class ResendVerificationController extends FormController {
 
