@@ -623,7 +623,7 @@ class ApplicationIT extends ClientIT {
      *
      * (!request.getUri().hasQuery() || !request.getUri().getQuery().containsKey("expand") .....
      *
-     * @since 1.0.RC9
+     * @since 1.0.RC8.3
      */
     @Test(enabled = false)
     void testExpansionNotWorkingBecauseOfCache(){
