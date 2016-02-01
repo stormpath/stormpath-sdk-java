@@ -466,8 +466,38 @@
     {
       "name": "stormpath.web.idSite.result.uri",
       "type": "java.lang.String",
-      "description": "The context-relative path where ID Site will call back into your application order to inform about the outcome of the Id Site invocation.  Only used when stormpath.web.idSite.enabled is true.",
+      "description": "The context-relative path where ID Site will call back into your application in order to inform about the outcome of the Id Site invocation.  Only used when stormpath.web.idSite.enabled is true.",
       "defaultValue": "/idSiteResult"
+    },
+    {
+      "name": "stormpath.web.idSite.useSubdomain",
+      "type": "java.lang.Boolean",
+      "description": "Set it to 'true' to ensure that the user will visit ID Site using a subdomain equal to the Organization, 'false' to ensure that the standard ID Site domain will be used. Assume your ID Site is located at the domain 'id.myapp.com'. If you specify an Organization of 'greatcustomer' and set this property to 'true'', the user will be sent to 'https://greatcustomer.id.myapp.com' instead, providing for a more customized white-labeled URL experience.",
+      "defaultValue": "Uses ID Site defaults."
+    },
+    {
+      "name": "stormpath.web.idSite.showOrganizationField",
+      "type": "java.lang.Boolean",
+      "description": "Ensures that ID Site will show the Organization field to the end-user in the ID Site user interface. Setting this to 'true' allows the user to see the field and potentially change the value. This might be useful if users can have accounts in different organizations - it would allow the user to specify which organization they want to login to.",
+      "defaultValue": "Uses ID Site defaults."
+    },
+    {
+      "name": "stormpath.web.saml.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether login via a SAML provider will be enabled or not. This setting tells your project to use a 3rd party SAML login page to authenticate users instead of the built-in local functionality.",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.saml.result.uri",
+      "type": "java.lang.String",
+      "description": "The context-relative path where the SAML provider will call back into your application to inform about the outcome of the authentication attempt. Only relevant when 'stormpath.web.saml.enabled' is true.",
+      "defaultValue": "/samlResult"
+    },
+    {
+      "name": "stormpath.web.application.domain",
+      "type": "java.lang.String",
+      "description": "The base domain of your application. For example if your app resides in 'myapp.mycompany.com', your base domain will be 'mycompany.com'.",
+      "defaultValue": "Inferred based on heuristics by default. However if your application is not deployed to an apex domain, like myapp.com, you *must* specify your application's base domain, e.g. 'myapp.mycompany.com'."
     }
   ]
 }
