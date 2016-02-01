@@ -58,12 +58,12 @@ public interface Config extends Map<String, String> {
     String getVerifyUrl();
 
     /**
-     * @since 1.0.RC8.4
+     * @since 1.0.RC8.3
      */
     String getResendVerificationUrl();
 
     /**
-     * @since 1.0.RC8.4
+     * @since 1.0.RC8.3
      */
     boolean isVerifyEnabled();
 
