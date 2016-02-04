@@ -14,6 +14,9 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * @since 1.0.RC8.3
+ */
 public abstract class AbstractBaseOauth2Token extends AbstractInstanceResource implements BaseOauth2Token {
 
     static final String ACCOUNT_PROP_NAME = "account";

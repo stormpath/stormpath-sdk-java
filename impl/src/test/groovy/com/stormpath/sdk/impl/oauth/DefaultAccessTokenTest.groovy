@@ -44,6 +44,7 @@ import static org.testng.Assert.*
  */
 class DefaultAccessTokenTest {
 
+    @Test
     void testGetPropertyDescriptors() {
         def secret = "a_very_secret_key"
         def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
