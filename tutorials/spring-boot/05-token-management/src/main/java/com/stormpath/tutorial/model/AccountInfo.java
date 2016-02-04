@@ -19,6 +19,7 @@ package com.stormpath.tutorial.model;
  * @since 1.0.RC8.3
  */
 public class AccountInfo {
+
     private String href;
     private String fullName;
     private String email;
@@ -40,4 +41,5 @@ public class AccountInfo {
     public String getEmail() {
         return email;
     }
+    
 }

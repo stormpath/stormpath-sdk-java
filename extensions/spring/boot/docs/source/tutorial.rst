@@ -557,7 +557,7 @@ In order to hit the `/me` endpoint, we'll first, we'll get an `access_token` and
     curl -v -X POST \
       -H "Origin: http://localhost:8080" \
       -H "Content-Type: application/x-www-form-urlencoded" \
-      -d "grant_type=password&username=<valid email address>&password=<valid password>" \
+      -d "grant_type=password&username=<valid_email_address>&password=<valid_password>" \
       http://localhost:8080/oauth/token
 
 
@@ -628,7 +628,7 @@ You will get a response like this:
 
 While the `refresh_token` is the same, we get a new `access_token`.
 
-By default, when you logout, the `access_token` will be revoked. Let's see this in action:
+By default, when you logout, both the `access_token` and the `refresh_token` will be revoked. Let's see this in action:
 
 .. code-block:: bash
 

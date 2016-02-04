@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 public class MeController {
+
     @RequestMapping(value="/me", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountInfo info(HttpServletRequest req) {
         // must be logged in to get here per Spring Security config
@@ -36,4 +37,5 @@ public class MeController {
 
         return new AccountInfo(account.getEmail(), account.getFullName(), account.getHref());
     }
+
 }
