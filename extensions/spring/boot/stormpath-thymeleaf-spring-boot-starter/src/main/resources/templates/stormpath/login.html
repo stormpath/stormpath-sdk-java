@@ -69,7 +69,7 @@
 
                 </div>
 
-                <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify" th:text="#{stormpath.web.login.form.resendVerification.text}">|Resend Email Verification|</a>
+                <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify" th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
                 <a th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot Password?|</a>
 
             </div>

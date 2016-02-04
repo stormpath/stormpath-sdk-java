@@ -108,8 +108,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.verify.uri'] ?: '/verify' }")
     protected String verifyUri;
 
-    @Value("#{ @environment['stormpath.web.resendVerification.uri'] ?: '/resendVerification' }")
-    protected String resendVerificationUri;
+    @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
+    protected String sendVerificationEmailUri;
 
     @Value("#{ @environment['stormpath.spring.security.fullyAuthenticated.enabled'] ?: true }")
     protected boolean fullyAuthenticatedEnabled;
@@ -230,7 +230,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             if (verifyEnabled) {
                 http.authorizeRequests()
                     .antMatchers(verifyUri).permitAll()
-                    .antMatchers(resendVerificationUri).permitAll();
+                    .antMatchers(sendVerificationEmailUri).permitAll();
             }
 
             if (fullyAuthenticatedEnabled) {

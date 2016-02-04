@@ -39,7 +39,7 @@ public class VerifyFilter extends ControllerFilter {
         VerifyController controller = new VerifyController();
         controller.setNextUri(getConfig().getVerifyNextUrl());
         controller.setLogoutUri(getConfig().getLogoutUrl());
-        controller.setResendVerificationUri(getConfig().getResendVerificationUrl());
+        controller.setSendVerificationEmailUri(getConfig().getSendVerificationEmailUrl());
         controller.setClient(client);
         controller.setEventPublisher(eventPublisher);
         controller.init();

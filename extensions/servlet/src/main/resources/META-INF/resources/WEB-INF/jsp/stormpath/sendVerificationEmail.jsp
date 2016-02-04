@@ -20,8 +20,8 @@
 <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
 
 <t:page>
-    <jsp:attribute name="title"><sp:message key="stormpath.web.resendVerification.title"/></jsp:attribute>
-    <jsp:attribute name="description"><sp:message key="stormpath.web.resendVerification.title"/></jsp:attribute>
+    <jsp:attribute name="title"><sp:message key="stormpath.web.sendVerificationEmail.title"/></jsp:attribute>
+    <jsp:attribute name="description"><sp:message key="stormpath.web.sendVerificationEmail.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -35,8 +35,8 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span><sp:message key="stormpath.web.resendVerification.form.title"/></span>
-                                <p><sp:message key="stormpath.web.resendVerification.form.instructions"/></p>
+                                <span><sp:message key="stormpath.web.sendVerificationEmail.form.title"/></span>
+                                <p><sp:message key="stormpath.web.sendVerificationEmail.form.instructions"/></p>
                             </div>
 
                             <c:if test="${!empty errors}">
@@ -71,7 +71,7 @@
                                 </c:forEach>
 
                                 <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.resendVerification.form.button.value"/></button>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.sendVerificationEmail.form.button.value"/></button>
                                 </div>
                             </form>
 
@@ -79,7 +79,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${loginUri}" class="to-login"><sp:message key="stormpath.web.resendVerification.form.loginLink.text"/></a>
+                    <a href="${pageContext.request.contextPath}${loginUri}" class="to-login"><sp:message key="stormpath.web.sendVerificationEmail.form.loginLink.text"/></a>
 
                 </div>
 

@@ -18,14 +18,14 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
-import com.stormpath.sdk.servlet.mvc.ResendVerificationController;
+import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 
 import javax.servlet.ServletException;
 
 /**
  * @since 1.0.RC8.3
  */
-public class ResendVerificationFilter extends ControllerFilter {
+public class SendVerificationEmailFilter extends ControllerFilter {
 
     public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
     public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
@@ -35,9 +35,9 @@ public class ResendVerificationFilter extends ControllerFilter {
         CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
         AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
 
-        ResendVerificationController controller = new ResendVerificationController();
-        controller.setUri(getConfig().getResendVerificationUrl());
-        controller.setView("stormpath/resendVerification");
+        SendVerificationEmailController controller = new SendVerificationEmailController();
+        controller.setUri(getConfig().getSendVerificationEmailUrl());
+        controller.setView("stormpath/sendVerificationEmail");
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setAccountStoreResolver(accountStoreResolver);
         controller.setNextView("stormpath/verify");

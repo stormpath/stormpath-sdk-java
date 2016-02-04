@@ -197,8 +197,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
-            public String getResendVerificationUrl() {
-                return resendVerificationUri;
+            public String getSendVerificationEmailUrl() {
+                return sendVerificationEmailUri;
             }
 
             @Override
