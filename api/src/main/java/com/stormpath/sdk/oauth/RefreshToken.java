@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This class represents an Authentication OAuth2 token created in Stormpath.
+ * This interface represents an Authentication OAuth2 token created in Stormpath.
  * Specifically, a
  * <a href="https://docs.stormpath.com/guides/token-management/#refreshing-access-tokens">Refresh Token</a>
  *

@@ -22,13 +22,13 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * This class represents an Authentication OAuth2 token created in Stormpath.
+ * This interface represents an Authentication OAuth2 token created in Stormpath.
  * Specifically, an
  * <a href="https://docs.stormpath.com/guides/token-management/#using-stormpath-to-generate-an-oauth-20-access-tokens">AccessToken</a>
  *
  * @since 1.0.RC7
  */
 public interface AccessToken extends BaseOauth2Token {
-    AccessToken ensureAccessToken();
+
 }
 

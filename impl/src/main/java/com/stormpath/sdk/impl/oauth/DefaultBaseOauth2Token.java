@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class DefaultBaseOauth2Token extends AbstractInstanceResource implements BaseOauth2Token {
+
     static final String ACCOUNT_PROP_NAME = "account";
     static final String APPLICATION_PROP_NAME = "application";
     static final String JWT_PROP_NAME = "jwt";

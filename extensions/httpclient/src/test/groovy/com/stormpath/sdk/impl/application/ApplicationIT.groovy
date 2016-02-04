@@ -1504,6 +1504,7 @@ class ApplicationIT extends ClientIT {
         assertNotNull Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
     }
 
+    /* @since 1.0.RC8.3 */
     @Test
     void testAttemptAuthenticationWithRefreshToken() {
         def app = createTempApp()
@@ -1532,6 +1533,7 @@ class ApplicationIT extends ClientIT {
         }
     }
 
+    /* @since 1.0.RC8.3 */
     @Test
     void testAttemptAuthenticationWithRefreshTokenWithLocalValidation() {
         def app = createTempApp()

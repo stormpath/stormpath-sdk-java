@@ -38,8 +38,7 @@ public class DefaultAccessToken extends DefaultBaseOauth2Token implements Access
         super(dataStore, properties);
     }
 
-    @Override
-    public AccessToken ensureAccessToken() {
+    protected AccessToken ensureAccessToken() {
         try {
             Claims claims = Jwts.parser()
                 .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))

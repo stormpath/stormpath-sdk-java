@@ -98,7 +98,7 @@ public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator impleme
         stringBuilder.append(OAUTH_TOKEN_PATH);
         stringBuilder.append(jwtRequest.getJwt());
         AccessToken accessToken =
-            dataStore.getResource(stringBuilder.toString(), AccessToken.class).ensureAccessToken();
+            dataStore.getResource(stringBuilder.toString(), DefaultAccessToken.class).ensureAccessToken();
 
         JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
         return builder.build();

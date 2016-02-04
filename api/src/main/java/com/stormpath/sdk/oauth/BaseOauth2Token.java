@@ -31,6 +31,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * @since 1.0.RC8.3
  */
 public interface BaseOauth2Token extends Resource, Deletable {
+
     /**
      * Returns the String representation of the Json Web Token.
      *
@@ -58,4 +59,5 @@ public interface BaseOauth2Token extends Resource, Deletable {
      * @return the {@link Tenant} this {@link AccessToken} belongs to.
      */
     Tenant getTenant();
+
 }
