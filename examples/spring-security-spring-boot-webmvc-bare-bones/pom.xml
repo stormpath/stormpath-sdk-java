@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.stormpath.spring</groupId>
-    <artifactId>stormpath-sdk-examples-spring-security-spring-boot-bare-bones</artifactId>
+    <artifactId>stormpath-sdk-examples-spring-security-spring-boot-webmvc-bare-bones</artifactId>
     <version>1.0.RC8.3-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Security :: Spring Boot :: Bare Bones</name>
