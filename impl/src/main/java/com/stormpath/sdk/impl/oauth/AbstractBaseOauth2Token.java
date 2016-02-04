@@ -14,7 +14,7 @@ import com.stormpath.sdk.tenant.Tenant;
 import java.util.Date;
 import java.util.Map;
 
-public class DefaultBaseOauth2Token extends AbstractInstanceResource implements BaseOauth2Token {
+public abstract class AbstractBaseOauth2Token extends AbstractInstanceResource implements BaseOauth2Token {
 
     static final String ACCOUNT_PROP_NAME = "account";
     static final String APPLICATION_PROP_NAME = "application";
@@ -31,11 +31,11 @@ public class DefaultBaseOauth2Token extends AbstractInstanceResource implements 
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(JWT, ACCOUNT, APPLICATION, TENANT, CREATED_AT);
 
-    public DefaultBaseOauth2Token(InternalDataStore dataStore) {
+    public AbstractBaseOauth2Token(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultBaseOauth2Token(InternalDataStore dataStore, Map<String, Object> properties) {
+    public AbstractBaseOauth2Token(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

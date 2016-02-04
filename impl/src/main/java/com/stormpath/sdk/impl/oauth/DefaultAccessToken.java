@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * @since 1.0.RC7
  */
-public class DefaultAccessToken extends DefaultBaseOauth2Token implements AccessToken {
+public class DefaultAccessToken extends AbstractBaseOauth2Token implements AccessToken {
 
     public DefaultAccessToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);

@@ -15,12 +15,6 @@
 */
 package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.tenant.Tenant;
-
 /**
  * This interface represents an Authentication OAuth2 token created in Stormpath.
  * Specifically, an
