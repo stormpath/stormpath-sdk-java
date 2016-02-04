@@ -16,9 +16,12 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This interfaces denotes a specific kind of {@link AccessToken}: a
- * <a href="https://docs.stormpath.com/guides/token-management/#refreshing-access-tokens">Refresh Token</a>.
+ * This class represents an Authentication OAuth2 token created in Stormpath.
+ * Specifically, a
+ * <a href="https://docs.stormpath.com/guides/token-management/#refreshing-access-tokens">Refresh Token</a>
  *
+ * @since 1.0.RC7
  */
-public interface RefreshToken extends AccessToken {
+public interface RefreshToken extends BaseOauth2Token {
+
 }

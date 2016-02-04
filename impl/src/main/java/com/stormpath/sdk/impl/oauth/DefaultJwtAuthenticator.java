@@ -19,9 +19,12 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.account.DefaultAccount;
-import com.stormpath.sdk.oauth.JwtAuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
+import com.stormpath.sdk.oauth.JwtAuthenticationResult;
+import com.stormpath.sdk.oauth.JwtAuthenticator;
+import com.stormpath.sdk.oauth.Oauth2AuthenticationRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -81,7 +84,7 @@ public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator impleme
                 properties.put(DefaultAccessToken.JWT_PROP_NAME, jwtRequest.getJwt());
                 properties.put(DefaultAccessToken.TENANT_PROP_NAME, application.getTenant());
 
-                AccessToken accessToken = new DefaultAccessToken(dataStore, properties);
+                AccessToken accessToken = new DefaultAccessToken(dataStore, properties).ensureAccessToken();
 
                 JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
                 return builder.build();
@@ -94,7 +97,9 @@ public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator impleme
         StringBuilder stringBuilder = new StringBuilder(application.getHref());
         stringBuilder.append(OAUTH_TOKEN_PATH);
         stringBuilder.append(jwtRequest.getJwt());
-        AccessToken accessToken = dataStore.getResource(stringBuilder.toString(), AccessToken.class);
+        AccessToken accessToken =
+            dataStore.getResource(stringBuilder.toString(), AccessToken.class).ensureAccessToken();
+
         JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
         return builder.build();
     }
