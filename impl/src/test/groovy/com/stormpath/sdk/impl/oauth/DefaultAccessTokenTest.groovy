@@ -44,6 +44,50 @@ import static org.testng.Assert.*
  */
 class DefaultAccessTokenTest {
 
+    void testGetPropertyDescriptors() {
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
+
+        String jwt = Jwts.builder()
+            .setSubject(href)
+            .claim("rti", "abcdefg")
+            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+            .compact();
+
+        def properties = [
+            href: href,
+            jwt: jwt,
+            tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+            application: [href: "https://api.stormpath.com/v1/applications/928glsjeorigjj09etiij"],
+            account: [href: "https://api.stormpath.com/v1/accounts/apsd98f2kj09etiij"],
+            created_at: "2015-01-01T00:00:00Z"
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getSecret()).andReturn(secret)
+
+        replay internalDataStore, apiKey
+
+        def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
+
+        def propertyDescriptors = defaultAccessToken.getPropertyDescriptors()
+
+        assertEquals(propertyDescriptors.size(), 5)
+
+        assertTrue(propertyDescriptors.get("jwt") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("created_at") instanceof DateProperty)
+
+        assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
+        assertTrue(propertyDescriptors.get("application") instanceof ResourceReference && propertyDescriptors.get("application").getType().equals(Application))
+        assertTrue(propertyDescriptors.get("account") instanceof ResourceReference && propertyDescriptors.get("account").getType().equals(Account))
+
+
+        verify internalDataStore, apiKey
+    }
+
     @Test
     void testMethods() {
 
@@ -78,8 +122,7 @@ class DefaultAccessTokenTest {
         expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
         expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
 
-        replay internalDataStore
-        replay apiKey
+        replay internalDataStore, apiKey
 
         def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
 
@@ -120,8 +163,7 @@ class DefaultAccessTokenTest {
         expect(apiKey.getSecret()).andReturn(secret)
         expect(internalDataStore.getApiKey()).andReturn(apiKey)
 
-        replay internalDataStore
-        replay apiKey
+        replay internalDataStore, apiKey
 
         try {
             new DefaultAccessToken(internalDataStore, properties)
@@ -155,8 +197,7 @@ class DefaultAccessTokenTest {
         expect(apiKey.getSecret()).andReturn(secret)
         expect(internalDataStore.getApiKey()).andReturn(apiKey)
 
-        replay internalDataStore
-        replay apiKey
+        replay internalDataStore, apiKey
 
         AccessToken accessToken = new DefaultAccessToken(internalDataStore, properties)
         assertEquals(accessToken.getHref(), href)
