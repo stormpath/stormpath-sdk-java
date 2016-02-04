@@ -25,7 +25,6 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
-import com.stormpath.spring.security.token.IdSiteAuthenticationToken;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;

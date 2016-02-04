@@ -237,33 +237,24 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     public void tearDown() {
         def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
 
-        for (def r : reversed) {
-            try {
-                r.delete()
-            } catch (Throwable t) {
-                log.error('Unable to delete resource ' + r, t)
-            }
-        }
+        reversed.collect { it.delete() }
     }
 
     /**
      * @return true if the user has one of the specified roles.
      */
     protected static boolean hasRole(Authentication authentication, String[] roles) {
-        boolean result = false;
+        boolean result = false
+        outerloop:
         for (GrantedAuthority authority : authentication.getAuthorities()) {
             String userRole = authority.getAuthority();
             for (String role : roles) {
                 if (role.equals(userRole)) {
-                    result = true;
-                    break;
+                    result = true
+                    break outerloop
                 }
             }
-            if (result) {
-                break;
-            }
         }
-
         return result;
     }
 }

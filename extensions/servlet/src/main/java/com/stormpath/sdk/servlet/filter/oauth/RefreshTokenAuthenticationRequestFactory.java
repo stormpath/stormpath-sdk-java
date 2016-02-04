@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.RefreshGrantRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0.RC8
+ * @since 1.0.RC8.3
  */
 public interface RefreshTokenAuthenticationRequestFactory {
 

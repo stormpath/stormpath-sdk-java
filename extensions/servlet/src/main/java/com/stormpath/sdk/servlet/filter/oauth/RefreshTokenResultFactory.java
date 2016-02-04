@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.RC8
+ * @since 1.0.RC8.3
  */
 public interface RefreshTokenResultFactory {
 

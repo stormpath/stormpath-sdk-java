@@ -674,7 +674,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultAccessTokenResultFactory(application);
     }
 
-    /** @since 1.0.RC8 */
+    /** @since 1.0.RC8.3 */
     public RefreshTokenResultFactory stormpathRefreshTokenResultFactory() {
         return new DefaultRefreshTokenResultFactory(application);
     }
@@ -1092,7 +1092,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultAccessTokenAuthenticationRequestFactory(stormpathAccountStoreResolver());
     }
 
-    /** @since 1.0.RC8 */
+    /** @since 1.0.RC8.3 */
     public RefreshTokenAuthenticationRequestFactory stormpathRefreshTokenAuthenticationRequestFactory() {
         return new DefaultRefreshTokenAuthenticationRequestFactory();
     }

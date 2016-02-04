@@ -23,7 +23,7 @@ import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import javax.servlet.ServletContext;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.RC8.3
  */
 public class RefreshTokenResultFactoryFactory extends ConfigSingletonFactory<RefreshTokenResultFactory> {
 

@@ -106,18 +106,30 @@ public class AccessTokenController extends AbstractController {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * @since 1.0.RC8.3
+     */
     public RefreshTokenResultFactory getRefreshTokenResultFactory() {
         return refreshTokenResultFactory;
     }
 
+    /**
+     * @since 1.0.RC8.3
+     */
     public void setRefreshTokenResultFactory(RefreshTokenResultFactory refreshTokenResultFactory) {
         this.refreshTokenResultFactory = refreshTokenResultFactory;
     }
 
+    /**
+     * @since 1.0.RC8.3
+     */
     public RefreshTokenAuthenticationRequestFactory getRefreshTokenAuthenticationRequestFactory() {
         return refreshTokenAuthenticationRequestFactory;
     }
 
+    /**
+     * @since 1.0.RC8.3
+     */
     public void setRefreshTokenAuthenticationRequestFactory(RefreshTokenAuthenticationRequestFactory refreshTokenAuthenticationRequestFactory) {
         this.refreshTokenAuthenticationRequestFactory = refreshTokenAuthenticationRequestFactory;
     }
@@ -143,7 +155,7 @@ public class AccessTokenController extends AbstractController {
     }
 
     /**
-     * @since 1.0.RC8
+     * @since 1.0.RC8.3
      */
     private AccessTokenResult tokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -165,7 +177,7 @@ public class AccessTokenController extends AbstractController {
     }
 
     /**
-     * @since 1.0.RC8
+     * @since 1.0.RC8.3
      */
     private AccessTokenResult refreshTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -264,21 +276,21 @@ public class AccessTokenController extends AbstractController {
     }
 
     /**
-     * @since 1.0.RC8
+     * @since 1.0.RC8.3
      */
     protected RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
         return getRefreshTokenAuthenticationRequestFactory().createRefreshTokenAuthenticationRequest(request);
     }
 
     /**
-     * @since 1.0.RC8
+     * @since 1.0.RC8.3
      */
     protected PasswordGrantRequest createPasswordGrantAuthenticationRequest(HttpServletRequest request) throws OauthException {
         return getAccessTokenAuthenticationRequestFactory().createAccessTokenAuthenticationRequest(request);
     }
 
     /**
-     * @since 1.0.RC8
+     * @since 1.0.RC8.3
      */
     protected AccessTokenResult createRefreshTokenResult(final HttpServletRequest request,
                                                          final HttpServletResponse response,
@@ -292,7 +304,7 @@ public class AccessTokenController extends AbstractController {
     }
 
     /**
-     * @since 1.0.RC8
+     * @since 1.0.RC8.3
      */
     protected AccessTokenResult createAccessTokenResult(final HttpServletRequest request,
                                                         final HttpServletResponse response,

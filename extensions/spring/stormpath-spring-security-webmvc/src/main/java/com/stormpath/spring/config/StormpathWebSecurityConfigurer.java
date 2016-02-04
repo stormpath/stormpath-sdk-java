@@ -253,6 +253,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     oauth2AuthenticationSpringSecurityProcessingFilter.setStateless(true);
                 }
                 http.addFilterBefore(oauth2AuthenticationSpringSecurityProcessingFilter, AnonymousAuthenticationFilter.class);
+                http.authorizeRequests().antMatchers(accessTokenUri).permitAll();
             }
 
             if (fullyAuthenticatedEnabled) {

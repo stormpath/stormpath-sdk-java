@@ -15,21 +15,19 @@
 */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
 import com.stormpath.sdk.oauth.TokenResponse;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import org.apache.oltu.oauth2.common.message.types.TokenType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.RC8
+ * @since 1.0.RC8.3
  */
 public class DefaultRefreshTokenResultFactory implements RefreshTokenResultFactory {
 
