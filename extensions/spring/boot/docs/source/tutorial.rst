@@ -526,8 +526,8 @@ Token Management
 
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/05-token-management>`_.
 
-The Java SDK supports `oauth2 <http://oauth.net/2/>`_ workflows for obtaining and interacting with access tokens and refresh tokens. The Token
-Management feature is included "out of the box" and is used via the `/oauth/token` path.
+The Java SDK supports `oauth2 <http://oauth.net/2/>`_ workflows for obtaining and interacting with access tokens and
+refresh tokens. The Token Management feature is included "out of the box" and is used via the `/oauth/token` endpoint.
 
 The Token Management feature is supported all through the Java SDK stack, including Servlet, Spring, Spring Boot and
 Spring Security (with and without WebMVC).
@@ -549,7 +549,8 @@ There's a simple `@RestController` called `MeController` that returns informatio
         }
     }
 
-First, we'll get an `access_token` and a `refresh_token` by hitting the `/oauth/token` endpoint:
+In order to hit the `/me` endpoint, we'll first, we'll get an `access_token` and a `refresh_token` by hitting the
+`/oauth/token` endpoint:
 
 .. code-block:: bash
 
@@ -597,7 +598,7 @@ You will get a response like this:
 
 Refresh tokens are used to obtain a new access token. This is useful when you want to allow your users to have a longer
 lived session - such as in a mobile application - but you still want to maintain control over how the session is
-managed. Your application can automatically use the `refresh_token` to obtain a new `access_token` when the
+managed. Your application could automatically use the `refresh_token` to obtain a new `access_token` when the
 `access_token` expires. With this approach, you could revoke the user's `access_token` and they would be kicked out of
 the system sooner because the `access_token` is short lived.
 
@@ -635,8 +636,8 @@ By default, when you logout, the `access_token` will be revoked. Let's see this 
       -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
       http://localhost:8080/logout
 
-Now, if we attempt to use the `access_token` again, we will not be granted access as it's been invalidated. We will need
-to login again.
+Now, if you attempt to use the `access_token` again, you will not be granted access as it's been invalidated. You will
+need to login again.
 
 
 .. code-block:: bash
@@ -655,7 +656,8 @@ Here's the response:
     }
 
 As you can see from the examples above, Stormpath provides powerful oauth2 Token Management out-of-the-box using the
-`/oauth/token` endpoint. There is no additional coding required on your part to make use of this feature.
+`/oauth/token` endpoint. There is no additional coding required on your part to make use of the Token Management
+feature.
 
 .. _wrapping-up:
 
