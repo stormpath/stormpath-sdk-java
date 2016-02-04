@@ -117,9 +117,9 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String verifyUrlPattern = cleanUri(verifyUrl);
         boolean verifyChainSpecified = false;
 
-        String resendVerificationUrl = config.getResendVerificationUrl();
-        String resendVerificationUrlPattern = cleanUri(resendVerificationUrl);
-        boolean resendVerificationChainSpecified = false;
+        String sendVerificationUrl = config.getSendVerificationEmailUrl();
+        String sendVerificationUrlPattern = cleanUri(sendVerificationUrl);
+        boolean sendVerificationEmailChainSpecified = false;
 
         String accessTokenUrl = config.getAccessTokenUrl();
         String accessTokenUrlPattern = cleanUri(accessTokenUrl);
@@ -188,11 +188,11 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
-                } else if(uriPattern.startsWith(resendVerificationUrlPattern)) {
-                    resendVerificationChainSpecified = true;
+                } else if(uriPattern.startsWith(sendVerificationUrlPattern)) {
+                    sendVerificationEmailChainSpecified = true;
 
                     //did they specify the filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.resendVerification.name();
+                    String filterName = DefaultFilter.sendVerificationEmail.name();
                     if (!chainDefinition.contains(filterName))  {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
@@ -242,8 +242,8 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         if (!verifyChainSpecified) {
             fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
         }
-        if (!resendVerificationChainSpecified) {
-            fcManager.createChain(resendVerificationUrlPattern, DefaultFilter.resendVerification.name());
+        if (!sendVerificationEmailChainSpecified) {
+            fcManager.createChain(sendVerificationUrlPattern, DefaultFilter.sendVerificationEmail.name());
         }
         if (!accessTokenChainSpecified) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());

@@ -92,7 +92,7 @@ import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
-import com.stormpath.sdk.servlet.mvc.ResendVerificationController;
+import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
@@ -331,11 +331,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.verify.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
-    @Value("#{ @environment['stormpath.web.resendVerification.uri'] ?: '/resendVerification' }")
-    protected String resendVerificationUri;
+    @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
+    protected String sendVerificationEmailUri;
 
-    @Value("#{ @environment['stormpath.web.resendVerification.view'] ?: 'stormpath/resendVerification' }")
-    protected String resendVerificationView;
+    @Value("#{ @environment['stormpath.web.sendVerificationEmail.view'] ?: 'stormpath/sendVerificationEmail' }")
+    protected String sendVerificationEmailView;
 
     // ================  Logout Controller properties  ===================
 
@@ -459,7 +459,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (verifyEnabled) {
             mappings.put(verifyUri, stormpathVerifyController());
-            mappings.put(resendVerificationUri, stormpathResendVerificationController());
+            mappings.put(sendVerificationEmailUri, stormpathSendVerificationEmailController());
         }
         if (forgotEnabled) {
             mappings.put(forgotUri, stormpathForgotPasswordController());
@@ -1029,7 +1029,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         VerifyController controller = new VerifyController();
         controller.setNextUri(verifyNextUri);
         controller.setLogoutUri(logoutUri);
-        controller.setResendVerificationUri(resendVerificationUri);
+        controller.setSendVerificationEmailUri(sendVerificationEmailUri);
         controller.setClient(client);
         controller.setEventPublisher(stormpathRequestEventPublisher());
         controller.init();
@@ -1037,14 +1037,14 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
-    public Controller stormpathResendVerificationController() {
+    public Controller stormpathSendVerificationEmailController() {
         if (idSiteEnabled) {
             return createIdSiteController(null);
         }
 
-        ResendVerificationController controller = new ResendVerificationController();
-        controller.setUri(resendVerificationUri);
-        controller.setView(resendVerificationView);
+        SendVerificationEmailController controller = new SendVerificationEmailController();
+        controller.setUri(sendVerificationEmailUri);
+        controller.setView(sendVerificationEmailView);
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setAccountStoreResolver(stormpathAccountStoreResolver());
         controller.setNextView(verifyView);

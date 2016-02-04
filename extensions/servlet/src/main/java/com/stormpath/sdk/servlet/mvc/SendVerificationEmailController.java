@@ -38,9 +38,9 @@ import java.util.Map;
 /**
  * @since 1.0.RC8.3
  */
-public class ResendVerificationController extends FormController {
+public class SendVerificationEmailController extends FormController {
 
-    private static final Logger log = LoggerFactory.getLogger(ResendVerificationController.class);
+    private static final Logger log = LoggerFactory.getLogger(SendVerificationEmailController.class);
 
     private String loginUri;
     private String nextView;
@@ -95,8 +95,8 @@ public class ResendVerificationController extends FormController {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
-            field.setLabel("stormpath.web.resendVerification.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.resendVerification.form.fields." + fieldName + ".placeholder");
+            field.setLabel("stormpath.web.sendVerificationEmail.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.sendVerificationEmail.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
             String param = request.getParameter(fieldName);
@@ -110,7 +110,7 @@ public class ResendVerificationController extends FormController {
 
     @Override
     protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
-        log.debug("Unable to re-send verification password email.", e);
+        log.debug("Unable to send account verification email.", e);
 
         List<String> errors = new ArrayList<String>(1);
         errors.add("Invalid email address.");

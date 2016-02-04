@@ -60,7 +60,7 @@ public interface Config extends Map<String, String> {
     /**
      * @since 1.0.RC8.3
      */
-    String getResendVerificationUrl();
+    String getSendVerificationEmailUrl();
 
     /**
      * @since 1.0.RC8.3
