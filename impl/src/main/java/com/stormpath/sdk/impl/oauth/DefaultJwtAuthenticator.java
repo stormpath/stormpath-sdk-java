@@ -19,12 +19,15 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.account.DefaultAccount;
+import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.InstantiationException;
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
 import com.stormpath.sdk.oauth.JwtAuthenticationResult;
 import com.stormpath.sdk.oauth.JwtAuthenticator;
 import com.stormpath.sdk.oauth.Oauth2AuthenticationRequest;
+import com.stormpath.sdk.resource.ResourceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -84,7 +87,7 @@ public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator impleme
                 properties.put(DefaultAccessToken.JWT_PROP_NAME, jwtRequest.getJwt());
                 properties.put(DefaultAccessToken.TENANT_PROP_NAME, application.getTenant());
 
-                AccessToken accessToken = new DefaultAccessToken(dataStore, properties).ensureAccessToken();
+                AccessToken accessToken = new DefaultAccessToken(dataStore, properties);
 
                 JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
                 return builder.build();
@@ -97,8 +100,15 @@ public class DefaultJwtAuthenticator extends AbstractOauth2Authenticator impleme
         StringBuilder stringBuilder = new StringBuilder(application.getHref());
         stringBuilder.append(OAUTH_TOKEN_PATH);
         stringBuilder.append(jwtRequest.getJwt());
-        AccessToken accessToken =
-            dataStore.getResource(stringBuilder.toString(), DefaultAccessToken.class).ensureAccessToken();
+        AccessToken accessToken = null;
+
+        try {
+            accessToken = dataStore.getResource(stringBuilder.toString(), AccessToken.class);
+        } catch (ResourceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new JwtException("JWT failed validation; it cannot be trusted.");
+        }
 
         JwtAuthenticationResultBuilder builder = new DefaultJwtAuthenticationResultBuilder(accessToken);
         return builder.build();
