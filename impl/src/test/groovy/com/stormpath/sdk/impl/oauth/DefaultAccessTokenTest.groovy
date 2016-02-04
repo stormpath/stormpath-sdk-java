@@ -97,6 +97,7 @@ class DefaultAccessTokenTest {
         assertTrue(application instanceof Application && application.getHref().equals(properties.application.href))
     }
 
+    /* @since 1.0.RC8.3 */
     @Test
     void testInvalidAccessToken() {
         def secret = "a_very_secret_key"
@@ -131,6 +132,7 @@ class DefaultAccessTokenTest {
         }
     }
 
+    /* @since 1.0.RC8.3 */
     @Test
     void testValidAccessToken() {
         def secret = "a_very_secret_key"

@@ -35,6 +35,14 @@ public class DefaultAccessToken extends AbstractBaseOauth2Token implements Acces
         ensureAccessToken();
     }
 
+    /**
+     * This method will validate that the received jwt corresponds to an `access_token` (as opposed to a
+     * `refresh_token`). If that is not the case then this operation will throw a JwtException. It is called
+     * from the constructor, so an AccessToken cannot be instantiated without verifying the jwt is a proper
+     * `access_token`
+     * 
+     * @since 1.0.RC8.3
+     */
     private void ensureAccessToken() {
         try {
             Claims claims = Jwts.parser()
