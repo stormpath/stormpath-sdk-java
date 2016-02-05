@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @since 1.0.RC7
  */
-public class DefaultRefreshToken extends DefaultAccessToken implements RefreshToken {
+public class DefaultRefreshToken extends AbstractBaseOauth2Token implements RefreshToken {
 
     public DefaultRefreshToken(InternalDataStore dataStore) {
         super(dataStore);
