@@ -92,6 +92,7 @@ import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
@@ -330,6 +331,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.verify.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
+    @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
+    protected String sendVerificationEmailUri;
+
+    @Value("#{ @environment['stormpath.web.sendVerificationEmail.view'] ?: 'stormpath/sendVerificationEmail' }")
+    protected String sendVerificationEmailView;
+
     // ================  Logout Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
@@ -452,6 +459,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (verifyEnabled) {
             mappings.put(verifyUri, stormpathVerifyController());
+            mappings.put(sendVerificationEmailUri, stormpathSendVerificationEmailController());
         }
         if (forgotEnabled) {
             mappings.put(forgotUri, stormpathForgotPasswordController());
@@ -802,6 +810,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setView(loginView);
         controller.setNextUri(loginNextUri);
         controller.setForgotLoginUri(forgotUri);
+        controller.setVerifyEnabled(verifyEnabled);
+        controller.setVerifyUri(verifyUri);
         controller.setRegisterUri(registerUri);
         controller.setLogoutUri(logoutUri);
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
@@ -1019,8 +1029,26 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         VerifyController controller = new VerifyController();
         controller.setNextUri(verifyNextUri);
         controller.setLogoutUri(logoutUri);
+        controller.setSendVerificationEmailUri(sendVerificationEmailUri);
         controller.setClient(client);
         controller.setEventPublisher(stormpathRequestEventPublisher());
+        controller.init();
+
+        return createSpringController(controller);
+    }
+
+    public Controller stormpathSendVerificationEmailController() {
+        if (idSiteEnabled) {
+            return createIdSiteController(null);
+        }
+
+        SendVerificationEmailController controller = new SendVerificationEmailController();
+        controller.setUri(sendVerificationEmailUri);
+        controller.setView(sendVerificationEmailView);
+        controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+        controller.setAccountStoreResolver(stormpathAccountStoreResolver());
+        controller.setNextView(verifyView);
+        controller.setLoginUri(loginUri);
         controller.init();
 
         return createSpringController(controller);

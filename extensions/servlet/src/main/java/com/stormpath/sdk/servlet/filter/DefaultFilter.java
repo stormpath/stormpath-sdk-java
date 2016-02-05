@@ -37,7 +37,8 @@ public enum DefaultFilter {
     change(ChangePasswordFilter.class),
     register(RegisterFilter.class),
     unauthorized(UnauthorizedFilter.class),
-    verify(VerifyFilter.class);
+    verify(VerifyFilter.class),
+    sendVerificationEmail(SendVerificationEmailFilter.class);
 
     private final Class<? extends Filter> filterClass;
 
