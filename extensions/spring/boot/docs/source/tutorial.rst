@@ -519,6 +519,146 @@ Add the custom data to one of the users, but not the other.
 You will find that, although both users are in the right group, only the one with the ``springSecurityPermissions`` custom data
 will be able to get to the ``/restricted`` page.
 
+.. _token-management:
+
+Token Management
+----------------
+
+The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/05-token-management>`_.
+
+The Java SDK supports `oauth2 <http://oauth.net/2/>`_ workflows for obtaining and interacting with access tokens and
+refresh tokens. The Token Management feature is included "out of the box" and is used via the `/oauth/token` endpoint.
+
+The Token Management feature is supported all through the Java SDK stack, including Servlet, Spring, Spring Boot and
+Spring Security (with and without WebMVC).
+
+This part of the tutorial exercises the Token Magement features using Spring Security Spring Boot WebMVC.
+
+There's a simple `@RestController` called `MeController` that returns information about the authenticated account.
+
+.. code-block:: java
+
+    @RestController
+    public class MeController {
+        @RequestMapping(value="/me", produces = MediaType.APPLICATION_JSON_VALUE)
+        public AccountInfo info(HttpServletRequest req) {
+            // must be logged in to get here per Spring Security config
+            Account account = AccountResolver.INSTANCE.getAccount(req);
+
+            return new AccountInfo(account.getEmail(), account.getFullName(), account.getHref());
+        }
+    }
+
+In order to hit the `/me` endpoint, we'll first, we'll get an `access_token` and a `refresh_token` by hitting the
+`/oauth/token` endpoint:
+
+.. code-block:: bash
+
+    curl -v -X POST \
+      -H "Origin: http://localhost:8080" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d "grant_type=password&username=<valid_email_address>&password=<valid_password>" \
+      http://localhost:8080/oauth/token
+
+
+Note: Make sure that the email address and password are URL encoded.
+
+You will get back a response that looks something like this:
+
+.. code-block:: javascript
+
+    {
+      "access_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa1FBNjRTdEdUQjFhVEhlNGdPIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQxNzQ3LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.-3NNpi7-DTvl2VNCfHHFNwWVikmeCyNPy6KEu--XYjk",
+      "refresh_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo",
+      "token_type":"Bearer",
+      "expires_in":3600
+    }
+
+
+The response includes the tokens as well as information on their type (`Bearer` in this case) and when it expires.
+
+We can now use the `access_token` to hit the `/me` endpoint:
+
+
+.. code-block:: bash
+
+    curl \
+      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa1FBNjRTdEdUQjFhVEhlNGdPIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQxNzQ3LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.-3NNpi7-DTvl2VNCfHHFNwWVikmeCyNPy6KEu--XYjk" \
+      http://localhost:8080/me
+
+You will get a response like this:
+
+.. code-block:: javascript
+
+    {
+      "href":"https://api.stormpath.com/v1/accounts/4WScMbAno3V95iiSswkjPX",
+      "fullName":"Micah Silverman",
+      "email":"micah@stormpath.com"
+    }
+
+Refresh tokens are used to obtain a new access token. This is useful when you want to allow your users to have a longer
+lived session - such as in a mobile application - but you still want to maintain control over how the session is
+managed. Your application could automatically use the `refresh_token` to obtain a new `access_token` when the
+`access_token` expires. With this approach, you could revoke the user's `access_token` and they would be kicked out of
+the system sooner because the `access_token` is short lived.
+
+Let's use the `refresh_token` above to get a new `access_token`:
+
+.. code-block:: bash
+
+    curl -v -X POST \
+      -H "Origin: http://localhost:8080" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d "grant_type=refresh_token&refresh_token=eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo" \
+      http://localhost:8080/oauth/token
+
+Notice that in this case the `grant_type` is `refresh_token` and that we are using the `refresh_token` that we obtained
+previously.
+
+You will get a response like this:
+
+.. code-block:: javascript
+
+    {
+      "access_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q",
+      "refresh_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo",
+      "token_type":"Bearer",
+      "expires_in":3600
+    }
+
+While the `refresh_token` is the same, we get a new `access_token`.
+
+By default, when you logout, both the `access_token` and the `refresh_token` will be revoked. Let's see this in action:
+
+.. code-block:: bash
+
+    curl -v \
+      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
+      http://localhost:8080/logout
+
+Now, if you attempt to use the `access_token` again, you will not be granted access as it's been invalidated. You will
+need to login again.
+
+
+.. code-block:: bash
+
+    curl \
+      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
+      http://localhost:8080/me
+
+Here's the response:
+
+.. code-block:: javascript
+
+    {
+      "error":"invalid_client",
+      "error_description":"access_token is invalid."
+    }
+
+As you can see from the examples above, Stormpath provides powerful oauth2 Token Management out-of-the-box using the
+`/oauth/token` endpoint. There is no additional coding required on your part to make use of the Token Management
+feature.
+
 .. _wrapping-up:
 
 Wrapping Up

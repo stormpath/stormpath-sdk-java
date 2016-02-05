@@ -45,7 +45,9 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
 In order to connect Stormpath and Spring Security, we need one small configuration class in your project:
 
 .. code-block:: java
-    :emphasize-lines: 5
+    :emphasize-lines: 7
+
+    import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
     @Configuration
     public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
@@ -114,7 +116,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
           <parent>
               <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-starter-parent</artifactId>
-              <version>1.2.7.RELEASE</version>
+              <version>1.3.2.RELEASE</version>
               <relativePath/> <!-- lookup parent from repository -->
           </parent>
 
