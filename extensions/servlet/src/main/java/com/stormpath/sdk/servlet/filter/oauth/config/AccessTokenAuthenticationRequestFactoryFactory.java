@@ -16,9 +16,9 @@
 package com.stormpath.sdk.servlet.filter.oauth.config;
 
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.ServletContext;
 
@@ -28,11 +28,11 @@ import javax.servlet.ServletContext;
 public class AccessTokenAuthenticationRequestFactoryFactory
     extends ConfigSingletonFactory<AccessTokenAuthenticationRequestFactory> {
 
-    public static final String USERNAME_PASSWORD_REQUEST_FACTORY = "stormpath.web.authc.usernamePasswordRequestFactory";
+    public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
 
     @Override
     protected AccessTokenAuthenticationRequestFactory createInstance(ServletContext sc) throws Exception {
-        UsernamePasswordRequestFactory factory = getConfig().getInstance(USERNAME_PASSWORD_REQUEST_FACTORY);
-        return new DefaultAccessTokenAuthenticationRequestFactory(factory);
+        AccountStoreResolver resolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
+        return new DefaultAccessTokenAuthenticationRequestFactory(resolver);
     }
 }

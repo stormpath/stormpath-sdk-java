@@ -16,10 +16,7 @@
 package com.stormpath.sdk.idsite;
 
 import com.stormpath.sdk.error.Error;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.ResourceException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * A sub-class of {@link ResourceException} representing an IDSite error.
@@ -38,11 +35,8 @@ import java.util.List;
  */
 public class IDSiteRuntimeException extends ResourceException {
 
-    private final static List<Integer> supportedErrors = java.util.Collections.unmodifiableList(Arrays.asList(10011, 10012, 11001, 11002, 11003, 12001));
-
     public IDSiteRuntimeException(Error error) {
         super(error);
-        Assert.isTrue(supports(error), "error type not supported; must be one of: " + supportedErrors.toString());
     }
 
     /**
@@ -54,7 +48,7 @@ public class IDSiteRuntimeException extends ResourceException {
     public void rethrow() throws InvalidIDSiteTokenException, IDSiteSessionTimeoutException {
         Error error = this.getStormpathError();
 
-        if (error.getCode() == 10011 || error.getCode() == 10012 || error.getCode() == 11001 || error.getCode() == 11002 || error.getCode() == 11003) {
+        if (error.getCode() == 10011 || error.getCode() == 10012 || error.getCode() == 11001 || error.getCode() == 11002 || error.getCode() == 11003 || error.getCode() == 11005 ) {
             throw new InvalidIDSiteTokenException(error);
         }
 
@@ -62,12 +56,11 @@ public class IDSiteRuntimeException extends ResourceException {
             throw new IDSiteSessionTimeoutException(error);
         }
 
+        if (this.getStormpathError().getCode() == 11005) {
+            throw new IDSiteSessionTimeoutException(error);
+        }
+
         throw new IllegalStateException("error type is unrecognized: " + error.getCode());
     }
-
-    protected boolean supports(Error error) {
-        return supportedErrors.contains(error.getCode());
-    }
-
 
 }

@@ -28,13 +28,9 @@ import javax.servlet.ServletContext;
  */
 public class AccessTokenResultFactoryFactory extends ConfigSingletonFactory<AccessTokenResultFactory> {
 
-    protected static final String ACCOUNT_JWT_FACTORY = "stormpath.web.account.jwt.factory";
-
     @Override
     protected AccessTokenResultFactory createInstance(ServletContext servletContext) throws Exception {
         Application application = (Application)servletContext.getAttribute(Application.class.getName());
-        AuthenticationJwtFactory factory = getConfig().getInstance(ACCOUNT_JWT_FACTORY);
-        long ttl = getConfig().getAccountJwtTtl();
-        return new DefaultAccessTokenResultFactory(application, factory, ttl);
+        return new DefaultAccessTokenResultFactory(application);
     }
 }

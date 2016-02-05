@@ -52,6 +52,7 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
     public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.uri";
+    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.accessToken.validationStrategy";
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
@@ -175,6 +176,11 @@ public class DefaultConfig implements Config {
     @Override
     public long getAccountJwtTtl() {
         return _ACCOUNT_JWT_TTL;
+    }
+
+    @Override
+    public String getAccessTokenValidationStrategy() {
+        return CFG.getString(ACCESS_TOKEN_VALIDATION_STRATEGY);
     }
 
     @SuppressWarnings("unchecked")

@@ -25,9 +25,10 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
-import com.stormpath.spring.security.token.ThirdPartyAuthenticationToken;
+import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -350,8 +351,8 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         Account account;
 
         try {
-            if (authentication instanceof ThirdPartyAuthenticationToken) {
-                account = handleThirdPartyAuthentication((ThirdPartyAuthenticationToken) authentication);
+            if (authentication instanceof ProviderAuthenticationToken) {
+                account = handleProviderAuthentication((ProviderAuthenticationToken) authentication);
             } else {
                 account = handleUsernamePasswordAuthentication(authentication);
             }
@@ -389,7 +390,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         return account;
     }
 
-    private Account handleThirdPartyAuthentication(ThirdPartyAuthenticationToken authentication) {
+    private Account handleProviderAuthentication(ProviderAuthenticationToken authentication) {
         return authentication.getAccount();
     }
 
@@ -403,7 +404,9 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public boolean supports(Class<?> authentication) {
-        return Authentication.class.isAssignableFrom(authentication);
+        if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        if (ProviderAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        return false;
     }
 
     //This is not thread safe, but the Client is, and this is only executed during initial Application
@@ -475,6 +478,4 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         }
         return Collections.emptySet();
     }
-
-
 }

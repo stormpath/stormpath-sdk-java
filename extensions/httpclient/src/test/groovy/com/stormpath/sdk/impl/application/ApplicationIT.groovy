@@ -1504,6 +1504,65 @@ class ApplicationIT extends ClientIT {
         assertNotNull Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
     }
 
+    /* @since 1.0.RC8.3 */
+    @Test
+    void testAttemptAuthenticationWithRefreshToken() {
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        PasswordGrantRequest grantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+            .setLogin(account.email)
+            .setPassword("Changeme1!")
+            .build()
+
+        def grantResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+            .forApplication(app)
+            .authenticate(grantRequest)
+
+        // Authenticate token against Stormpath using refresh token <--- INVALID
+        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
+            .setJwt(grantResult.getRefreshTokenString())
+            .build()
+
+        try {
+            Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
+            fail("Should have thrown")
+        } catch (Exception e) {
+            def message = e.getMessage()
+            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+        }
+    }
+
+    /* @since 1.0.RC8.3 */
+    @Test
+    void testAttemptAuthenticationWithRefreshTokenWithLocalValidation() {
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        PasswordGrantRequest grantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email)
+                .setPassword("Changeme1!")
+                .build()
+
+        def grantResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+                .forApplication(app)
+                .authenticate(grantRequest)
+
+        // Authenticate token against Stormpath using refresh token <--- INVALID
+        JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
+                .setJwt(grantResult.getRefreshTokenString())
+                .build()
+
+        try {
+            Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
+            fail("Should have thrown")
+        } catch (Exception e) {
+            def message = e.getMessage()
+            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+        }
+    }
+
+
     /* @since 1.0.RC7 */
     @Test
     void testInvalidTokenViaLocalValidation() {

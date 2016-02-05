@@ -47,6 +47,7 @@ public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequ
                 "The specified httpRequest argument must be an instance of " + HTTP_SERVLET_REQUEST_FQCN);
 
         com.stormpath.sdk.impl.http.ServletHttpRequest stmpHttpRequest = new com.stormpath.sdk.impl.http.ServletHttpRequest(httpRequest);
+
         return Applications.oauthRequestAuthenticator(application).authenticate(stmpHttpRequest);
     }
 

@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.oauth
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.application.DefaultApplication
@@ -25,7 +26,10 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.tenant.Tenant
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import org.testng.annotations.Test
 
 import java.text.DateFormat
@@ -42,8 +46,33 @@ class DefaultAccessTokenTest {
 
     @Test
     void testGetPropertyDescriptors() {
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
 
-        def defaultAccessToken = new DefaultAccessToken(createStrictMock(InternalDataStore))
+        String jwt = Jwts.builder()
+            .setSubject(href)
+            .claim("rti", "abcdefg")
+            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+            .compact();
+
+        def properties = [
+            href: href,
+            jwt: jwt,
+            tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
+            application: [href: "https://api.stormpath.com/v1/applications/928glsjeorigjj09etiij"],
+            account: [href: "https://api.stormpath.com/v1/accounts/apsd98f2kj09etiij"],
+            created_at: "2015-01-01T00:00:00Z"
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getSecret()).andReturn(secret)
+
+        replay internalDataStore, apiKey
+
+        def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
 
         def propertyDescriptors = defaultAccessToken.getPropertyDescriptors()
 
@@ -55,6 +84,9 @@ class DefaultAccessTokenTest {
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
         assertTrue(propertyDescriptors.get("application") instanceof ResourceReference && propertyDescriptors.get("application").getType().equals(Application))
         assertTrue(propertyDescriptors.get("account") instanceof ResourceReference && propertyDescriptors.get("account").getType().equals(Account))
+
+
+        verify internalDataStore, apiKey
     }
 
     @Test
@@ -62,26 +94,42 @@ class DefaultAccessTokenTest {
 
         DateFormat df = new ISO8601DateFormat();
 
-        def properties = [href: "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP",
-            jwt: "eyJraWQiOiI2UDVKTjRTQVMwOFFIRlhNTzdGNTY4Ukc2IiwiYWxnIjoiSFMyNT",
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
+
+        // no rti claim means it's not a valid access token
+        String jwt = Jwts.builder()
+            .setSubject(href)
+            .claim("rti", "abcdefg")
+            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+            .compact();
+
+        def properties = [
+            href: href,
+            jwt: jwt,
             tenant: [href: "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"],
             application: [href: "https://api.stormpath.com/v1/applications/928glsjeorigjj09etiij"],
             account: [href: "https://api.stormpath.com/v1/accounts/apsd98f2kj09etiij"],
-            created_at: "2015-01-01T00:00:00Z",
+            created_at: "2015-01-01T00:00:00Z"
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(apiKey.getSecret()).andReturn(secret)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
+        expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
+        expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
+
+        replay internalDataStore, apiKey
+
         def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
 
         assertEquals(defaultAccessToken.getHref(), properties.href)
         assertEquals(defaultAccessToken.getJwt(), properties.jwt)
         assertEquals(df.format(defaultAccessToken.getCreatedAt()), "2015-01-01T00:00:00Z", properties.created_at)
-
-        expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
-        expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
-        expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
-
-        replay internalDataStore
 
         def tenant = defaultAccessToken.getTenant()
         assertTrue(tenant instanceof Tenant && tenant.getHref().equals(properties.tenant.href))
@@ -92,4 +140,68 @@ class DefaultAccessTokenTest {
         def application = defaultAccessToken.getApplication()
         assertTrue(application instanceof Application && application.getHref().equals(properties.application.href))
     }
+
+    /* @since 1.0.RC8.3 */
+    @Test
+    void testInvalidAccessToken() {
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
+
+        // no rti claim means it's not a valid access token
+        String jwt = Jwts.builder()
+            .setSubject(href)
+            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+            .compact();
+
+        def properties = [
+            href: href,
+            jwt: jwt
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(apiKey.getSecret()).andReturn(secret)
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+
+        replay internalDataStore, apiKey
+
+        try {
+            new DefaultAccessToken(internalDataStore, properties)
+            fail("should have thrown")
+        } catch (Exception e) {
+            def message = e.getMessage()
+            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+        }
+    }
+
+    /* @since 1.0.RC8.3 */
+    @Test
+    void testValidAccessToken() {
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
+
+        String jwt = Jwts.builder()
+            .setSubject(href)
+            .claim("rti", "abcdefg")
+            .signWith(SignatureAlgorithm.HS512, secret.getBytes("UTF-8"))
+            .compact();
+
+        def properties = [
+            href: href,
+            jwt: jwt
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(apiKey.getSecret()).andReturn(secret)
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+
+        replay internalDataStore, apiKey
+
+        AccessToken accessToken = new DefaultAccessToken(internalDataStore, properties)
+        assertEquals(accessToken.getHref(), href)
+    }
+
 }

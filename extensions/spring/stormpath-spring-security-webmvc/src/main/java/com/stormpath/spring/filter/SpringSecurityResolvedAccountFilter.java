@@ -3,7 +3,7 @@ package com.stormpath.spring.filter;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.spring.security.token.ThirdPartyAuthenticationToken;
+import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -32,7 +32,7 @@ public class SpringSecurityResolvedAccountFilter extends HttpFilter implements I
         Account account = AccountResolver.INSTANCE.getAccount(request);
 
         if (account != null) {
-            Authentication authentication = new ThirdPartyAuthenticationToken(account);
+            Authentication authentication = new ProviderAuthenticationToken(account);
             authentication = authenticationProvider.authenticate(authentication);
             SecurityContextHolder.clearContext();
             SecurityContextHolder.getContext().setAuthentication(authentication);

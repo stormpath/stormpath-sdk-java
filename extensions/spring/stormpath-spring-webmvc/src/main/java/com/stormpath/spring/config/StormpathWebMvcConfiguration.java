@@ -51,6 +51,8 @@ import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,6 +85,10 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     implements ServletContextAware, InitializingBean {
 
     private ServletContext servletContext;
+
+    @Autowired(required = false)
+    @Qualifier("requestEventListener")
+    RequestEventListener requestEventListener;
 
     @Override
     public void setServletContext(ServletContext servletContext) {
@@ -209,6 +215,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             @Override
             public long getAccountJwtTtl() {
                 return accountJwtTtl;
+            }
+
+            @Override
+            public String getAccessTokenValidationStrategy() {
+                return accessTokenValidationStrategy;
             }
 
             @Override
@@ -365,7 +376,10 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     public RequestEventListener stormpathRequestEventListener() {
-        return super.stormpathRequestEventListener();
+        if (this.requestEventListener == null) {
+            return super.stormpathRequestEventListener();
+        }
+        return this.requestEventListener;
     }
 
     @Bean

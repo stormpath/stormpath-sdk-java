@@ -19,16 +19,25 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @since 1.0.RC3
  */
 public class RequestEventPublisher implements Publisher<RequestEvent> {
 
-    public final RequestEventListener listener;
+    private final List<RequestEventListener> listeners;
 
     public RequestEventPublisher(RequestEventListener listener) {
-        Assert.notNull(listener, "RequestEventListener argument cannot be null.");
-        this.listener = listener;
+        Assert.notNull(listener, "listener argument cannot be null.");
+        this.listeners = new ArrayList<RequestEventListener>();
+        this.listeners.add(listener);
+    }
+
+    public RequestEventPublisher(List<RequestEventListener> listeners) {
+        Assert.notNull(listeners, "listeners argument cannot be null.");
+        this.listeners = listeners;
     }
 
     @Override
@@ -37,6 +46,8 @@ public class RequestEventPublisher implements Publisher<RequestEvent> {
         Assert.notNull(e, "RequestEvent argument cannot be null.");
 
         //visitor pattern / double dispatch for type safe event handling:
-        e.accept(listener);
+        for (RequestEventListener listener : listeners) {
+            e.accept(listener);
+        }
     }
 }

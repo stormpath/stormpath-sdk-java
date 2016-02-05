@@ -17,19 +17,27 @@ package com.stormpath.sdk.servlet.event.impl;
 
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
+import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 
 import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 1.0.RC3
  */
 public class EventPublisherFactory extends ConfigSingletonFactory<Publisher> {
 
-    public static final String REQUEST_EVENT_PUBLISHER = "stormpath.web.request.event.listener";
+    public static final String REQUEST_EVENT_LISTENER = "stormpath.web.request.event.listener";
+
+    public static final RequestEventListener tokenRevocation = new TokenRevocationRequestEventListener();  //revoke access and refresh tokens after logout
 
     @Override
     protected Publisher createInstance(ServletContext servletContext) throws Exception {
-        RequestEventListener listener = getConfig().getInstance(REQUEST_EVENT_PUBLISHER);
-        return new RequestEventPublisher(listener);
+        RequestEventListener configuredListener = getConfig().getInstance(REQUEST_EVENT_LISTENER);
+        List<RequestEventListener> listeners = new ArrayList<RequestEventListener>();
+        listeners.add(configuredListener);
+        listeners.add(tokenRevocation);
+        return new RequestEventPublisher(listeners);
     }
 }

@@ -108,7 +108,7 @@ public interface IdSiteUrlBuilder {
      *
      * @param useSubdomain {@code true} to ensure that the user will visit ID Site using a subdomain equal to the
      *                     {@link #setOrganizationNameKey(String) organizationNameKey}, {@code false} to ensure that
-     *                     the standard ID Site domain.
+     *                     the standard ID Site domain will be used.
      * @return this instance for method chaining.
      * @since 1.0.RC5
      */
