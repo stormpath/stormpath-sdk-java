@@ -64,10 +64,12 @@ public class VerifyController extends AbstractController {
         this.logoutUri = logoutUri;
     }
 
+    /* @since 1.0.RC8.3 */
     public String getSendVerificationEmailUri() {
         return sendVerificationEmailUri;
     }
 
+    /* @since 1.0.RC8.3 */
     public void setSendVerificationEmailUri(String sendVerificationEmailUri) {
         this.sendVerificationEmailUri = sendVerificationEmailUri;
     }
