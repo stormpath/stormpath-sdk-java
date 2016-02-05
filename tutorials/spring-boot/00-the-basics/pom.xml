@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-tutorials-spring-boot-default-the-basics</artifactId>
-    <version>1.0.RC8.3</version>
+    <version>1.0.RC8.4-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Tutorials :: Spring Boot Default :: The Basics</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
