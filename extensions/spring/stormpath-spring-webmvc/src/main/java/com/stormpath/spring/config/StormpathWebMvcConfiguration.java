@@ -196,6 +196,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
                 return verifyNextUri;
             }
 
+            /* @since 1.0.RC8.3 */
             @Override
             public String getSendVerificationEmailUrl() {
                 return sendVerificationEmailUri;

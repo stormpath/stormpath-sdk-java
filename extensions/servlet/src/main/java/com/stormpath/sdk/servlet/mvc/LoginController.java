@@ -75,10 +75,12 @@ public class LoginController extends FormController {
         this.forgotLoginUri = forgotLoginUri;
     }
 
+    /* @since 1.0.RC8.3 */
     public String getVerifyUri() {
         return verifyUri;
     }
 
+    /* @since 1.0.RC8.3 */
     public void setVerifyUri(String verifyUri) {
         this.verifyUri = verifyUri;
     }
@@ -100,6 +102,7 @@ public class LoginController extends FormController {
         this.logoutUri = logoutUri;
     }
 
+    /* @since 1.0.RC8.3 */
     public Boolean isVerifyEnabled() {
         return verifyEnabled;
     }
