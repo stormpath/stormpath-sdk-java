@@ -35,6 +35,8 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC4
@@ -50,6 +52,9 @@ public abstract class AbstractStormpathConfiguration {
 
     @Value("#{ @environment['stormpath.baseUrl'] }")
     protected String baseUrl;
+
+    @Value("#{ @environment['stormpath.discoverBaseUrl'] ?: true }")
+    protected boolean discoverBaseUrl;
 
     @Value("#{ @environment['stormpath.apiKey.id'] }")
     protected String apiKeyId;
@@ -190,6 +195,13 @@ public abstract class AbstractStormpathConfiguration {
 
         if (Strings.hasText(baseUrl)) {
             builder.setBaseUrl(baseUrl);
+        } else if (discoverBaseUrl && Strings.hasText(applicationHref)) {
+            Pattern pattern = Pattern.compile("(.*)://([^/]*)/([^/]*)/.*");
+            Matcher matcher = pattern.matcher(applicationHref);
+            if (matcher.find()) {
+                builder.setBaseUrl(matcher.group(1) + "://" + matcher.group(2) + "/" + matcher.group(3));
+            }
+
         }
 
         Proxy proxy = resolveProxy();
