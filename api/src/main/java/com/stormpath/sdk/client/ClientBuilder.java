@@ -350,6 +350,16 @@ public interface ClientBuilder {
     ClientBuilder setBaseUrl(String baseUrl);
 
     /**
+     * Sets the base URL for the Stormpath REST API to use based on the root URI found in the Stormpath Application
+     * href.
+     *
+     * @param applicationHref the Stormpath Application href that the baseUrl will be inferred from
+     * @return the ClientBuilder instance for method chaining
+     * @since 1.0.RC9
+     */
+    ClientBuilder setDefaultBaseUrl(String applicationHref);
+
+    /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.

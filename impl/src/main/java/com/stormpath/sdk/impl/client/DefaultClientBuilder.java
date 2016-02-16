@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The default {@link ClientBuilder} implementation.
@@ -119,6 +121,19 @@ public class DefaultClientBuilder implements ClientBuilder {
             throw new IllegalArgumentException("baseUrl argument cannot be null.");
         }
         this.baseUrl = baseUrl;
+        return this;
+    }
+
+    @Override
+    public ClientBuilder setDefaultBaseUrl(String applicationHref) {
+        if (applicationHref == null) {
+            throw new IllegalArgumentException("applicationHref argument cannot be null.");
+        }
+        Pattern pattern = Pattern.compile("(.*)://([^/]*)/([^/]*)/.*");
+        Matcher matcher = pattern.matcher(applicationHref);
+        if (matcher.find()) {
+            setBaseUrl(matcher.group(1) + "://" + matcher.group(2) + "/" + matcher.group(3));
+        }
         return this;
     }
 

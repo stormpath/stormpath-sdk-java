@@ -53,9 +53,6 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['stormpath.baseUrl'] }")
     protected String baseUrl;
 
-    @Value("#{ @environment['stormpath.discoverBaseUrl'] ?: true }")
-    protected boolean discoverBaseUrl;
-
     @Value("#{ @environment['stormpath.apiKey.id'] }")
     protected String apiKeyId;
 
@@ -195,13 +192,8 @@ public abstract class AbstractStormpathConfiguration {
 
         if (Strings.hasText(baseUrl)) {
             builder.setBaseUrl(baseUrl);
-        } else if (discoverBaseUrl && Strings.hasText(applicationHref)) {
-            Pattern pattern = Pattern.compile("(.*)://([^/]*)/([^/]*)/.*");
-            Matcher matcher = pattern.matcher(applicationHref);
-            if (matcher.find()) {
-                builder.setBaseUrl(matcher.group(1) + "://" + matcher.group(2) + "/" + matcher.group(3));
-            }
-
+        } else if (Strings.hasText(applicationHref)) {
+            builder.setDefaultBaseUrl(applicationHref);
         }
 
         Proxy proxy = resolveProxy();
