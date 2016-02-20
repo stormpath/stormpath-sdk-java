@@ -31,12 +31,12 @@ import javax.servlet.ServletContext;
 public class AuthorizationHeaderAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
 
     public static final String HTTP_AUTHENTICATOR = "stormpath.web.http.authc";
+    public static final String ID_SITE_RESULT_URI = "stormpath.web.idSite.result.uri";
 
     @Override
     protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         HttpAuthenticator httpAuthenticator = config.getInstance(HTTP_AUTHENTICATOR);
-        return new AuthorizationHeaderAccountResolver(httpAuthenticator);
+        return new AuthorizationHeaderAccountResolver(httpAuthenticator, ID_SITE_RESULT_URI);
     }
-
 }
