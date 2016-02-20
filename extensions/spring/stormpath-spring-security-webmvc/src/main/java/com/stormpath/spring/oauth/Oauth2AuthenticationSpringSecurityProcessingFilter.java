@@ -88,10 +88,12 @@ public class Oauth2AuthenticationSpringSecurityProcessingFilter extends HttpFilt
             }
         } else {
             Account account = AccountResolver.INSTANCE.getAccount(request);
-            Authentication authentication = new ProviderAuthenticationToken(account);
-            authentication = authenticationProvider.authenticate(authentication);
-            SecurityContextHolder.clearContext();
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (account != null) {
+                Authentication authentication = new ProviderAuthenticationToken(account);
+                authentication = authenticationProvider.authenticate(authentication);
+                SecurityContextHolder.clearContext();
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         chain.doFilter(request, response);

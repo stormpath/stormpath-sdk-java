@@ -717,7 +717,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Resolver<Account> stormpathAuthorizationHeaderAccountResolver() {
-        return new AuthorizationHeaderAccountResolver(stormpathAuthorizationHeaderAuthenticator());
+        return new AuthorizationHeaderAccountResolver(stormpathAuthorizationHeaderAuthenticator(), idSiteResultUri);
     }
 
     public Resolver<Account> stormpathCookieAccountResolver() {

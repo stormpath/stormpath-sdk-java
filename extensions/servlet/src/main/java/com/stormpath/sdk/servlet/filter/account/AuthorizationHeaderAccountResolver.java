@@ -16,6 +16,8 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.impl.idsite.IdSiteResultStatus;
+import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationException;
@@ -26,6 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATUS;
 
 /**
  * @since 1.0.RC3
@@ -36,9 +41,13 @@ public class AuthorizationHeaderAccountResolver implements Resolver<Account> {
 
     private HttpAuthenticator httpAuthenticator;
 
-    public AuthorizationHeaderAccountResolver(HttpAuthenticator authenticator) {
+    protected final String idSiteResultURI;
+
+    public AuthorizationHeaderAccountResolver(HttpAuthenticator authenticator, String idSiteResultURI) {
         Assert.notNull(authenticator, "HttpAuthenticator argument cannot be null.");
+        Assert.notNull(authenticator, "idSiteResultURI argument cannot be null.");
         this.httpAuthenticator = authenticator;
+        this.idSiteResultURI = idSiteResultURI;
     }
 
     @Override
@@ -47,6 +56,15 @@ public class AuthorizationHeaderAccountResolver implements Resolver<Account> {
         String authzHeaderValue = request.getHeader("Authorization");
 
         if (authzHeaderValue != null) {
+            // This is a fix for https://github.com/stormpath/stormpath-sdk-java/issues/482
+            if (request.getRequestURI().contains(idSiteResultURI)) {
+                JwtWrapper jwtWrapper = new JwtWrapper(request.getParameter("jwtResponse"));
+                Map jsonPayload = jwtWrapper.getJsonPayloadAsMap();
+                IdSiteResultStatus resultStatus = IdSiteResultStatus.valueOf((String) jsonPayload.get(STATUS));
+                if (resultStatus.equals(IdSiteResultStatus.LOGOUT)) {
+                    return null;
+                }
+            }
 
             try {
 
