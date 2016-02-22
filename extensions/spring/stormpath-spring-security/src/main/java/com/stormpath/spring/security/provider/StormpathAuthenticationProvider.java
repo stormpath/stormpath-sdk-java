@@ -18,6 +18,7 @@ package com.stormpath.spring.security.provider;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.BasicAuthenticationOptions;
 import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.group.Group;
@@ -422,7 +423,12 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     protected AuthenticationRequest createAuthenticationRequest(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
-        return UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build();
+        BasicAuthenticationOptions options = UsernamePasswordRequest.options().withAccount();
+        return UsernamePasswordRequest.builder()
+            .setUsernameOrEmail(username)
+            .setPassword(password)
+            .withResponseOptions(options)
+            .build();
     }
 
     protected Collection<GrantedAuthority> getGrantedAuthorities(Account account) {
