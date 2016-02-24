@@ -21,6 +21,8 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Map;
+
 /**
  * This is a base interface for those methods that Stormpath
  * {@link AccessToken}s and {@link RefreshToken}s have in common.
@@ -59,5 +61,14 @@ public interface BaseOauth2Token extends Resource, Deletable {
      * @return the {@link Tenant} this {@link AccessToken} belongs to.
      */
     Tenant getTenant();
+
+    /**
+     * Returns the expanded (un-compacted) properties of this {@link AccessToken}'s JWT.
+     *
+     * @return the expanded (un-compacted) properties of this {@link AccessToken}'s JWT.
+     *
+     * @version 1.0.RC9
+     */
+    Map<String, Object> getExpandedJwt();
 
 }
