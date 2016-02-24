@@ -19,10 +19,18 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.Oauth2Requests;
+import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
+import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
@@ -36,12 +44,17 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.PasswordGrantAccessTokenResult;
 import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
 import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
 import com.stormpath.sdk.servlet.http.HrefPrincipal;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UsernamePrincipal;
+import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
+import com.stormpath.sdk.servlet.oauth.impl.AccessTokenResolver;
+import com.stormpath.sdk.servlet.oauth.impl.RefreshTokenResolver;
+import org.apache.oltu.oauth2.common.message.types.TokenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +80,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     private static final Logger log = LoggerFactory.getLogger(StormpathHttpServletRequest.class.getName());
 
     public static final String AUTH_TYPE_REQUEST_ATTRIBUTE_NAME =
-        StormpathHttpServletRequest.class.getName() + ".authType";
+            StormpathHttpServletRequest.class.getName() + ".authType";
 
     public static final String AUTH_TYPE_BEARER = "Bearer";
 
@@ -145,9 +158,9 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         final Enumeration<String> enumeration = super.getAttributeNames();
 
-        Map<String,?> config = getConfig();
+        Map<String, ?> config = getConfig();
         if (config == null) { //spring environments
-            config = new HashMap<String,Object>();
+            config = new HashMap<String, Object>();
         }
 
         final Set<String> keys = config.keySet();
@@ -171,7 +184,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
     protected Config getConfig() {
         ServletContext servletContext = getServletContext();
-        return (Config)servletContext.getAttribute(Config.class.getName());
+        return (Config) servletContext.getAttribute(Config.class.getName());
     }
 
     protected boolean hasAccount() {
@@ -231,7 +244,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         //strategy not recognized - warn and return:
         if (!remoteUserWarned) {
             String msg = "Unrecognized remote user strategy name [" + strategy + "].  Ignoring and " +
-                         "defaulting to [" + USERNAME + "].  Please check your configuration.";
+                    "defaulting to [" + USERNAME + "].  Please check your configuration.";
             log.warn(msg);
             remoteUserWarned = true;
         }
@@ -277,7 +290,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         //strategy not recognized - warn and return:
         if (!userPrincipalWarned) {
             String msg = "Unrecognized user principal strategy name [" + strategy + "].  Ignoring and " +
-                         "defaulting to [" + USERNAME + "].  Please check your configuration.";
+                    "defaulting to [" + USERNAME + "].  Please check your configuration.";
             log.warn(msg);
             userPrincipalWarned = true;
         }
@@ -319,8 +332,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
                 sval = String.valueOf(value);
             }
             Assert.hasText(sval, "An authenticated account must be represented with a specific request authType.  " +
-                                 "This must be set by a Resolver<Account> on account discovery or immediately after " +
-                                 "login.  This is an implementation bug and should be reported.");
+                    "This must be set by a Resolver<Account> on account discovery or immediately after " +
+                    "login.  This is an implementation bug and should be reported.");
             return sval;
         }
 
@@ -330,11 +343,11 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
         throw new UnsupportedOperationException("The HttpServletRequest.authenticate(response) method is not " +
-                                                "supported.  Various HTTP-based authentication mechanisms " +
-                                                "(Basic, OAuth Bearer, Form-based authentication, etc) are supported " +
-                                                "via other url (path)-based mechanisms by the StormpathFilter " +
-                                                "automatically.  Ensure you use those instead of calling " +
-                                                "HttpServletRequest.authenticate(response) directly.");
+                "supported.  Various HTTP-based authentication mechanisms " +
+                "(Basic, OAuth Bearer, Form-based authentication, etc) are supported " +
+                "via other url (path)-based mechanisms by the StormpathFilter " +
+                "automatically.  Ensure you use those instead of calling " +
+                "HttpServletRequest.authenticate(response) directly.");
     }
 
     @Override
@@ -345,7 +358,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         if (hasAccount()) {
             Account account = getRequiredAccount();
             String msg = "The current request is already associated with an authenticated user [" + account.getEmail() +
-                         "].  Login attempt for submitted username [" + username + "] is denied.";
+                    "].  Login attempt for submitted username [" + username + "] is denied.";
 
             ServletException ex = new ServletException(msg);
 
@@ -356,11 +369,23 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             throw ex;
         }
 
-        Application application = getApplication();
-
-        AuthenticationResult result;
+        AccessTokenResult result;
         try {
-            result = application.authenticateAccount(authcRequest);
+            PasswordGrantRequestBuilder requestBuilder = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+                    .setPassword(password)
+                    .setLogin(username);
+
+            AccountStore accountStore = authcRequest.getAccountStore();
+
+            if (accountStore != null) {
+                requestBuilder.setAccountStore(accountStore);
+            }
+
+            OauthGrantAuthenticationResult authenticationResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+                    .forApplication(getApplication())
+                    .authenticate(requestBuilder.build());
+
+            result = createAccessTokenResult(authenticationResult);
         } catch (ResourceException e) {
             FailedAuthenticationRequestEvent evt = createEvent(authcRequest, e);
             publish(evt);
@@ -374,8 +399,23 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         Account account = result.getAccount();
         setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
 
+        setAttribute(AccessTokenResolver.REQUEST_ATTR_NAME, result.getTokenResponse().getAccessToken());
+        setAttribute(RefreshTokenResolver.REQUEST_ATTR_NAME, result.getTokenResponse().getRefreshToken());
+
+        setAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME, result);
+
         SuccessfulAuthenticationRequestEvent e = createEvent(authcRequest, result);
         publish(e);
+    }
+
+    protected AccessTokenResult createAccessTokenResult(final OauthGrantAuthenticationResult result) {
+        final TokenResponse tokenResponse =
+                DefaultTokenResponse.tokenType(TokenType.BEARER)
+                        .accessToken(result.getAccessTokenString())
+                        .refreshToken(result.getRefreshTokenString())
+                        .applicationHref(getApplication().getHref())
+                        .expiresIn(String.valueOf(result.getExpiresIn())).build();
+        return new PasswordGrantAccessTokenResult(result.getAccessToken().getAccount(), tokenResponse);
     }
 
     protected FailedAuthenticationRequestEvent createEvent(AuthenticationRequest authcRequest, Exception ex) {
@@ -407,7 +447,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     protected Application getApplication() {
-        return (Application)getAttribute(Application.class.getName());
+        return (Application) getAttribute(Application.class.getName());
     }
 
     @Override

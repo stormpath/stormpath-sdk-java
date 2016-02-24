@@ -54,22 +54,15 @@ public class DefaultConfig implements Config {
 
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
-    public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
-    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.validationStrategy";
-    public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
-    public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
-    public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";
-    public static final String ACCOUNT_COOKIE_MAX_AGE = "stormpath.web.account.cookie.maxAge";
-    public static final String ACCOUNT_COOKIE_PATH = "stormpath.web.account.cookie.path";
-    public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
-    public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
+    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.uri";
+    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.accessToken.validationStrategy";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
     private final Map<String, String> props;
 
-    private final CookieConfig ACCOUNT_COOKIE_CONFIG;
-    private final long _ACCOUNT_JWT_TTL;
+    private final CookieConfig ACCESS_TOKEN_COOKIE_CONFIG;
+    private final CookieConfig REFRESH_TOKEN_COOKIE_CONFIG;
 
     private final Map<String, Object> SINGLETONS;
 
@@ -81,19 +74,8 @@ public class DefaultConfig implements Config {
         this.CFG = new ExpressionConfigReader(servletContext, this.props);
         this.SINGLETONS = new LinkedHashMap<String, Object>();
 
-        this.ACCOUNT_COOKIE_CONFIG = new AccountCookieConfig(CFG);
-
-        long accountJwtTtl = CFG.getLong(ACCOUNT_JWT_TTL);
-        Assert.isTrue(accountJwtTtl > 0, ACCOUNT_JWT_TTL + " value must be a positive long.");
-
-        int accountCookieMaxAge = this.ACCOUNT_COOKIE_CONFIG.getMaxAge();
-
-        if (accountCookieMaxAge > 0 && accountCookieMaxAge > accountJwtTtl) {
-            String msg = ACCOUNT_JWT_TTL + " must be greater than or equal to " + ACCOUNT_COOKIE_MAX_AGE;
-            throw new IllegalArgumentException(msg);
-        }
-
-        this._ACCOUNT_JWT_TTL = accountJwtTtl;
+        this.ACCESS_TOKEN_COOKIE_CONFIG = new AccessTokenCookieConfig(CFG);
+        this.REFRESH_TOKEN_COOKIE_CONFIG = new RefreshTokenCookieConfig(CFG);
     }
 
     @Override
@@ -182,13 +164,13 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public CookieConfig getAccountCookieConfig() {
-        return this.ACCOUNT_COOKIE_CONFIG;
+    public CookieConfig getRefreshTokenCookieConfig() {
+        return this.REFRESH_TOKEN_COOKIE_CONFIG;
     }
 
     @Override
-    public long getAccountJwtTtl() {
-        return _ACCOUNT_JWT_TTL;
+    public CookieConfig getAccessTokenCookieConfig() {
+        return this.ACCESS_TOKEN_COOKIE_CONFIG;
     }
 
     @Override
@@ -220,7 +202,7 @@ public class DefaultConfig implements Config {
 
         if (!expectedType.isInstance(instance)) {
             String msg = "Configured " + classPropertyName + " class name must be an instance of " +
-                         expectedType.getName();
+                    expectedType.getName();
             throw new ServletException(msg);
         }
 
@@ -229,12 +211,12 @@ public class DefaultConfig implements Config {
 
     @Override
     public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException {
-        Map<String,Class<T>> classes =
-            new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
+        Map<String, Class<T>> classes =
+                new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
-        Map<String,T> instances = new LinkedHashMap<String, T>(classes.size());
+        Map<String, T> instances = new LinkedHashMap<String, T>(classes.size());
 
-        for(Map.Entry<String,Class<T>> entry : classes.entrySet()) {
+        for (Map.Entry<String, Class<T>> entry : classes.entrySet()) {
 
             String name = entry.getKey();
 
@@ -264,7 +246,7 @@ public class DefaultConfig implements Config {
             instance = Classes.newInstance(val);
         } catch (Exception e) {
             String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                         val + ": " + e.getMessage();
+                    val + ": " + e.getMessage();
             throw new ServletException(msg, e);
         }
 
@@ -273,14 +255,14 @@ public class DefaultConfig implements Config {
                 ((ServletContextInitializable) instance).init(this.servletContext);
             } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                             val + ": " + e.getMessage();
+                        val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }
 
         try {
             if (instance instanceof Factory) {
-                instance = ((Factory<T>)instance).getInstance();
+                instance = ((Factory<T>) instance).getInstance();
             }
         } catch (Exception e) {
             String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();

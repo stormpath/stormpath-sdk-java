@@ -1,5 +1,6 @@
 package com.stormpath.sdk.servlet.filter.account
 
+import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver
@@ -10,7 +11,9 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static org.easymock.EasyMock.expect
-import static org.powermock.api.easymock.PowerMock.*
+import static org.powermock.api.easymock.PowerMock.createMock
+import static org.powermock.api.easymock.PowerMock.replay
+import static org.powermock.api.easymock.PowerMock.verify
 import static org.testng.Assert.assertFalse
 
 /**
@@ -25,8 +28,9 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
     void testIsCookieSecureWithLocalhost() {
 
         HttpServletRequest request = createMock(HttpServletRequest.class)
-        CookieConfig config = createMock(CookieConfig.class)
-        AuthenticationJwtFactory factory = createMock(AuthenticationJwtFactory.class)
+        CookieConfig accessTokenConfig = createMock(CookieConfig.class)
+        CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
+        Application application = createMock(Application.class)
         def localhost = createMock(Resolver.class)
 
         def resolver = new SecureRequiredExceptForLocalhostResolver(localhost) {
@@ -36,14 +40,14 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
             }
         }
 
-        expect(config.isSecure()).andReturn(true)
+        expect(accessTokenConfig.isSecure()).andReturn(true)
 
-        replay request, config, localhost, factory
+        replay request, accessTokenConfig, refreshTokenConfig, localhost
 
-        def saver = new CookieAuthenticationResultSaver(config, resolver, factory)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, application)
 
-        assertFalse saver.isCookieSecure(request, config)
+        assertFalse saver.isCookieSecure(request, accessTokenConfig)
 
-        verify request, config, localhost, factory
+        verify request, refreshTokenConfig, refreshTokenConfig, localhost
     }
 }
