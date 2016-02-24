@@ -180,6 +180,25 @@ public class DefaultDataStore implements InternalDataStore {
         return this.resourceFactory.instantiate(clazz, properties);
     }
 
+    /**
+     * **Only intended for internal use, not exposed in the API**
+     * <p>Convenience method that returns a new resource instance without contacting the backend. This operation allows
+     * the <code>href</code> to be a fragment, where the <code>baseUrl</code> can be missing and will be added automatically.<p/>
+     * @param hrefFragment when <code>true</code>, the baseUrl will be appended to the value found in the href key of the properties map.
+     *                     If <code>false</code> the href will not be altered and will be kept as-is.
+     * @return a resource instance corresponding to the specified clazz.
+     * @version 1.0.RC9
+     */
+    public <T extends Resource> T instantiate(Class<T> clazz, Map<String, Object> properties, QueryString qs, boolean hrefFragment) {
+        if (hrefFragment) {
+            Assert.hasText((String) properties.get("href"), "when hrefFragment is set to true the properties map must contain an href key.");
+            String hrefValue = (String) properties.get("href");
+            hrefValue = qualify(hrefValue);
+            properties.put("href", hrefValue);
+        }
+        return this.instantiate(clazz, properties, qs);
+    }
+
     /* =====================================================================
        Resource Retrieval
        ===================================================================== */

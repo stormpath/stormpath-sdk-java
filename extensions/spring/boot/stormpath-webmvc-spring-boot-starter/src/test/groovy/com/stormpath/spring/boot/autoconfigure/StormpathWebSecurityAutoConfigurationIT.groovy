@@ -32,6 +32,7 @@ import static org.testng.Assert.assertEquals
 @SpringApplicationConfiguration(classes = [StormpathWebSecurityAutoConfigurationApplication.class, TwoAppTenantStormpathConfiguration.class])
 @WebAppConfiguration
 class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
+
     @Autowired
     CsrfTokenManager csrfTokenManager
 
@@ -39,5 +40,4 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     void testCsrfTokenManager() {
         assertEquals csrfTokenManager.tokenName, 'csrfToken'
     }
-
 }
