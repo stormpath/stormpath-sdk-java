@@ -21,7 +21,13 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.lang.Assert
+import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.Oauth2Requests
+import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.resource.Deletable
+import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
+import com.stormpath.sdk.servlet.client.ClientLoader
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
@@ -45,12 +51,19 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeTest
+import org.testng.annotations.AfterClass
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 import javax.servlet.Filter
+import javax.servlet.ServletContext
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
+import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.verify
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
@@ -106,9 +119,9 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     @Autowired
     RequestEventPublisher requestEventPublisher
 
+    //State shared by these internal tests
     def password = "Pass123!" + UUID.randomUUID()
-
-    Account account;
+    Account account
 
     @Test
     void testRequiredBeans() {
@@ -146,15 +159,17 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         assertTrue hasTokenRevocationListener
     }
 
+    @Test
+    void testCsrfTokenManager() {
+        assertTrue (!(csrfTokenManager instanceof DefaultCsrfTokenManager))
+        assertEquals csrfTokenManager.tokenName, '_csrf'
+    }
+
     /**
      * @since 1.0.RC8.3
      */
     @Test
     void testLogin() {
-        Directory directory = createTempDir()
-        application.setDefaultAccountStore(directory)
-        account = createTempAccount(password)
-
         new CustomDataPermissionsEditor(account.getCustomData()).append("user:edit");
         account.save()
 
@@ -165,10 +180,35 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         SecurityContextHolder.clearContext()
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
-    void testCsrfTokenManager() {
-        assertTrue (!(csrfTokenManager instanceof DefaultCsrfTokenManager))
-        assertEquals csrfTokenManager.tokenName, '_csrf'
+    void testAccessTokenRevocation() {
+        def httpServletRequest = createStrictMock(HttpServletRequest.class)
+        def httpServletResponse = createStrictMock(HttpServletResponse.class)
+        def servletContext = createStrictMock(ServletContext.class)
+
+        PasswordGrantRequest passwordGrantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(account.getEmail()).setPassword(password).build();
+        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(application).authenticate(passwordGrantRequest)
+        def accessToken = result.getAccessToken()
+
+        expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
+        expect(httpServletRequest.getServletContext()).andReturn(servletContext)
+        expect(httpServletRequest.getAttribute(Client.class.getName())).andReturn(client)
+        expect(servletContext.getAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY)).andReturn(client)
+
+        replay(httpServletRequest, httpServletResponse, servletContext)
+
+        Assert.notNull(accessToken.getHref())
+        Assert.isTrue(account.getAccessTokens().getSize() == 1)
+        Assert.isTrue(account.getRefreshTokens().getSize() == 1)
+        def logoutRequestEvent = new DefaultLogoutRequestEvent(httpServletRequest, httpServletResponse, account)
+        requestEventPublisher.publish(logoutRequestEvent)
+        Assert.isTrue(account.getAccessTokens().getSize() == 0)
+        Assert.isTrue(account.getRefreshTokens().getSize() == 0)
+
+        verify(httpServletRequest, httpServletResponse, servletContext)
     }
 
     ///Supporting properties and methods
@@ -188,7 +228,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         return account
     }
 
-    private Directory createTempDir() {
+    protected Directory createTempDir() {
         Directory dir = client.instantiate(Directory.class)
         String name = "foo-dir-deleteme-" + UUID.randomUUID();
         dir.setName(name);
@@ -201,23 +241,18 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         this.resourcesToDelete.add(d)
     }
 
-    @BeforeTest
+    @BeforeClass
     public void setUp() {
         resourcesToDelete = []
-        password = "Pass123!" + UUID.randomUUID();
+        def dir = createTempDir()
+        application.setDefaultAccountStore(dir)
+        account = createTempAccount(password)
     }
 
-    @AfterTest
+    @AfterClass
     public void tearDown() {
         def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
-
-        for (def r : reversed) {
-            try {
-                r.delete()
-            } catch (Throwable t) {
-                log.error('Unable to delete resource ' + r, t)
-            }
-        }
+        reversed.collect { it.delete() }
     }
 
     /**
