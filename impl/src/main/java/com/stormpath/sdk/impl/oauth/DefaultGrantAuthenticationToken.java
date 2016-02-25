@@ -81,7 +81,8 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
 
     public RefreshToken getAsRefreshToken(){
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
-        props.put("href", this.getAccessTokenHref());
+        String accessTokenID = (String)((Map)this.getAsAccessToken().getExpandedJwt().get("claims")).get("rti");
+        props.put("href", "/refreshTokens/" + accessTokenID);
         return getDataStore().instantiate(RefreshToken.class, props);
     }
 }

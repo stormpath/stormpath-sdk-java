@@ -29,10 +29,8 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.directory.AccountStore
-import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest
 import com.stormpath.sdk.oauth.JwtAuthenticationResult
 import com.stormpath.sdk.oauth.Oauth2Requests
 import com.stormpath.sdk.oauth.JwtAuthenticationRequest
@@ -64,6 +62,7 @@ import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
+import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
 
@@ -1430,6 +1429,10 @@ class ApplicationIT extends ClientIT {
         assertNotNull result.accessTokenHref
         assertEquals result.getAccessToken().getAccount().getEmail(), email
         assertEquals result.getAccessToken().getApplication().getHref(), app.href
+        assertEquals(((Map)result.getAccessToken().getExpandedJwt().get("claims")).get("iss"), app.getHref())
+        assertNotNull(((Map)result.getAccessToken().getExpandedJwt().get("claims")).get("rti"))
+        assertEquals(((Map)result.getAccessToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
+        assertNotNull(result.getAccessToken().getExpandedJwt().get("signature"))
 
         RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
         result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request)
@@ -1439,6 +1442,10 @@ class ApplicationIT extends ClientIT {
         assertNotNull result.accessTokenHref
         assertEquals result.getRefreshToken().getAccount().getEmail(), email
         assertEquals result.getRefreshToken().getApplication().getHref(), app.href
+        assertEquals(((Map)result.getRefreshToken().getExpandedJwt().get("claims")).get("sub"), account.getHref())
+        assertNull(((Map)result.getRefreshToken().getExpandedJwt().get("claims")).get("rti"))
+        assertEquals(((Map)result.getRefreshToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
+        assertNotNull(result.getRefreshToken().getExpandedJwt().get("signature"))
     }
 
     /* @since 1.0.RC7 */
