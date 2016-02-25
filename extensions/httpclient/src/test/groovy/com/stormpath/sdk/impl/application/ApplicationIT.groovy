@@ -1438,8 +1438,11 @@ class ApplicationIT extends ClientIT {
         result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request)
 
         assertNotNull result
-        assertNotNull result.accessTokenString
-        assertNotNull result.accessTokenHref
+        assertTrue result.accessTokenString.size() > 1
+        assertTrue result.refreshTokenString.size() > 1
+        assertFalse(result.accessTokenString.equals(result.refreshTokenString))
+        assertTrue(result.getAccessToken().getHref().contains("/accessTokens/"))
+        assertTrue(result.getRefreshToken().getHref().contains("/refreshTokens/"))
         assertEquals result.getRefreshToken().getAccount().getEmail(), email
         assertEquals result.getRefreshToken().getApplication().getHref(), app.href
         assertEquals(((Map)result.getRefreshToken().getExpandedJwt().get("claims")).get("sub"), account.getHref())
