@@ -5,6 +5,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
+import com.stormpath.sdk.impl.resource.MapProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 public abstract class AbstractBaseOauth2Token extends AbstractInstanceResource implements BaseOauth2Token {
 
+    // SIMPLE PROPERTIES
     static final String ACCOUNT_PROP_NAME = "account";
     static final String APPLICATION_PROP_NAME = "application";
     static final String JWT_PROP_NAME = "jwt";
@@ -26,6 +28,7 @@ public abstract class AbstractBaseOauth2Token extends AbstractInstanceResource i
 
     static final StringProperty JWT = new StringProperty(JWT_PROP_NAME);
     static final DateProperty CREATED_AT = new DateProperty("created_at");
+    static final MapProperty EXPANDED_JWT = new MapProperty("expandedJwt");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>(ACCOUNT_PROP_NAME, Account.class);
@@ -75,6 +78,11 @@ public abstract class AbstractBaseOauth2Token extends AbstractInstanceResource i
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    @Override
+    public Map<String, Object> getExpandedJwt() {
+        return getMap(EXPANDED_JWT);
     }
 
 }
