@@ -245,19 +245,19 @@ public class ImmutableAccount implements Account {
         return null;
     }
 
-    /** @version 1.0.RC4 */
+    /** @since 1.0.RC4 */
     @Override
     public ApplicationList getApplications() {
         return account.getApplications();
     }
 
-    /** @version 1.0.RC4 */
+    /** @since 1.0.RC4 */
     @Override
     public ApplicationList getApplications(Map<String, Object> queryParams) {
         return account.getApplications(queryParams);
     }
 
-    /** @version 1.0.RC4 */
+    /** @since 1.0.RC4 */
     @Override
     public ApplicationList getApplications(ApplicationCriteria criteria) {
         return account.getApplications(criteria);

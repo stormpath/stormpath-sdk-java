@@ -16,7 +16,7 @@
 package com.stormpath.sdk.servlet.event;
 
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.ds.DefaultDataStore;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.resource.ResourceException;
@@ -107,7 +107,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             String href = "/accessTokens/" + accessTokenId;
             Map<String, Object> map = new LinkedHashMap<String, Object>();
             map.put("href", href);
-            AccessToken accessToken = ((DefaultDataStore)client.getDataStore()).instantiate(AccessToken.class, map, null, true);
+            AccessToken accessToken = ((InternalDataStore)client.getDataStore()).instantiate(AccessToken.class, map, true);
             accessToken.delete();
         } catch (ResourceException e) {
             //Let's prevent an error to avoid the flow to continue
@@ -120,7 +120,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             String href =  "/refreshTokens/" + refreshTokenId;
             Map<String, Object> map = new LinkedHashMap<String, Object>();
             map.put("href", href);
-            RefreshToken refreshToken = ((DefaultDataStore)client.getDataStore()).instantiate(RefreshToken.class, map, null, true);
+            RefreshToken refreshToken = ((InternalDataStore)client.getDataStore()).instantiate(RefreshToken.class, map, true);
             refreshToken.delete();
         } catch (ResourceException e) {
             //Let's prevent an error to avoid the flow to continue, this component is basically a listener that tries to delete
