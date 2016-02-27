@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.event;
 
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.resource.ResourceException;
@@ -35,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.Key;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @since 1.0.RC8.3
@@ -47,39 +50,37 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
 
     private final JwtTokenSigningKeyResolver jwtTokenSigningKeyResolver = new JwtTokenSigningKeyResolver();
 
-    private final SignatureAlgorithm alg = SignatureAlgorithm.HS256;
-
     private Client client = null;
 
     @Override
-    public void on(SuccessfulAuthenticationRequestEvent e) {
+    public void on(SuccessfulAuthenticationRequestEvent event) {
         //No-op
     }
 
     @Override
-    public void on(FailedAuthenticationRequestEvent e) {
+    public void on(FailedAuthenticationRequestEvent event) {
         //No-op
     }
 
     @Override
-    public void on(RegisteredAccountRequestEvent e) {
+    public void on(RegisteredAccountRequestEvent event) {
         //No-op
     }
 
     @Override
-    public void on(VerifiedAccountRequestEvent e) {
+    public void on(VerifiedAccountRequestEvent event) {
         //No-op
     }
 
     @Override
-    public void on(LogoutRequestEvent e) {
-        String jwt = tokenExtractor.getAccessToken(e.getRequest());
+    public void on(LogoutRequestEvent event) {
+        String jwt = tokenExtractor.getAccessToken(event.getRequest());
         if (jwt != null) {
             if (this.client == null) {
-                this.client = ClientResolver.INSTANCE.getClient(e.getRequest());
+                this.client = ClientResolver.INSTANCE.getClient(event.getRequest()); //will throw if not found
             }
 
-            Key signingKey = jwtTokenSigningKeyResolver.getSigningKey(e.getRequest(), e.getResponse(), null, SignatureAlgorithm.HS256);
+            Key signingKey = jwtTokenSigningKeyResolver.getSigningKey(event.getRequest(), event.getResponse(), null, SignatureAlgorithm.HS256);
             Claims claims = Jwts.parser().setSigningKey(signingKey.getEncoded()).parseClaimsJws(jwt).getBody();
 
             //Let's be sure this jwt is actually an access token otherwise we will have an error when trying to retrieve
@@ -93,7 +94,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             //obtaining a new access token
         }
         if (log.isDebugEnabled()) {
-            log.debug("The current access and refresh token for {} has been revoked.", e.getAccount().getEmail());
+            log.debug("The current access and refresh tokens for {} have been revoked.", event.getAccount().getEmail());
         }
     }
 
@@ -101,28 +102,30 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
         return claims.containsKey("rti");
     }
 
-    private void gracefullyDeleteAccessToken(String resourceID) {
+    private void gracefullyDeleteAccessToken(String accessTokenId) {
         try {
-            AccessToken accessToken = client.getResource("/accessTokens/" + resourceID, AccessToken.class);
+            String href = "/accessTokens/" + accessTokenId;
+            Map<String, Object> map = new LinkedHashMap<String, Object>();
+            map.put("href", href);
+            AccessToken accessToken = ((InternalDataStore)client.getDataStore()).instantiate(AccessToken.class, map, true);
             accessToken.delete();
         } catch (ResourceException e) {
-            //Let's prevent an error to avoid the flow to continue (failing to try to delete an access token for example)
-            if (log.isDebugEnabled()) {
-                log.debug("There was an error trying to delete a refresh token with ID " + resourceID + ". Exception was: " + e.getStackTrace());
-            }
+            //Let's prevent an error to avoid the flow to continue
+            log.error("There was an error trying to delete access token with ID " + accessTokenId + ". Exception was: " + e.getStackTrace());
         }
     }
 
-    private void gracefullyDeleteRefreshToken(String resourceID) {
+    private void gracefullyDeleteRefreshToken(String refreshTokenId) {
         try{
-            RefreshToken refreshToken = client.getResource("/refreshTokens/" + resourceID, RefreshToken.class);
+            String href =  "/refreshTokens/" + refreshTokenId;
+            Map<String, Object> map = new LinkedHashMap<String, Object>();
+            map.put("href", href);
+            RefreshToken refreshToken = ((InternalDataStore)client.getDataStore()).instantiate(RefreshToken.class, map, true);
             refreshToken.delete();
         } catch (ResourceException e) {
             //Let's prevent an error to avoid the flow to continue, this component is basically a listener that tries to delete
-            //access tokens on logout, we will only post this error in the log
-            if (log.isDebugEnabled()) {
-                log.debug("There was an error trying to delete an access token with ID " + resourceID + ". Exception was: " + e.getStackTrace());
-            }
+            //the current access and refresh tokens on logout, we will only post this error in the log
+            log.error("There was an error trying to delete refresh token with ID " + refreshTokenId + ". Exception was: " + e.getStackTrace());
         }
     }
 }

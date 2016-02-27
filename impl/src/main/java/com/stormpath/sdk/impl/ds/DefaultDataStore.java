@@ -171,13 +171,23 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     private <T extends Resource> T instantiate(Class<T> clazz, Map<String, ?> properties, QueryString qs) {
-
         if (CollectionResource.class.isAssignableFrom(clazz)) {
             //only collections can support a query string constructor argument:
             return this.resourceFactory.instantiate(clazz, properties, qs);
         }
         //otherwise it must be an instance resource, so use the two-arg constructor:
         return this.resourceFactory.instantiate(clazz, properties);
+    }
+
+    @Override
+    public <T extends Resource> T instantiate(Class<T> clazz, Map<String, Object> properties, boolean hrefFragment) {
+        if (hrefFragment) {
+            Assert.hasText((String) properties.get("href"), "when hrefFragment is set to true the properties map must contain an href key.");
+            String hrefValue = (String) properties.get("href");
+            hrefValue = qualify(hrefValue);
+            properties.put("href", hrefValue);
+        }
+        return this.instantiate(clazz, properties);
     }
 
     /* =====================================================================

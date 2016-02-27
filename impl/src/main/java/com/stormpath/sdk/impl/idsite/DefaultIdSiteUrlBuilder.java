@@ -141,7 +141,7 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/184.
      * Base URL for IDSite is constructed from the applicationHref received in the constructor.
      *
-     * @version 1.0.RC4.2
+     * @since 1.0.RC4.2
      */
     protected String getBaseUrl(String href) {
 

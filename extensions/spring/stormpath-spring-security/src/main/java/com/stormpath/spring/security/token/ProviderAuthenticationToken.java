@@ -20,7 +20,7 @@ import com.stormpath.sdk.lang.Assert;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 /**
- * @version 1.0.RC7.2
+ * @since 1.0.RC7.2
  */
 public class ProviderAuthenticationToken extends AbstractAuthenticationToken {
 

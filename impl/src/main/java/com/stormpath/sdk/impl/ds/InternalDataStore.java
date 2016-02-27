@@ -36,6 +36,21 @@ public interface InternalDataStore extends DataStore {
 
     <T extends Resource> T instantiate(Class<T> clazz, Map<String,Object> properties);
 
+    /**
+     * Instantiates and returns a new instance of the specified Resource type. The instance is merely instantiated and
+     * is not saved/synchronized with the server in any way. This operation allows
+     * the <code>href</code> to be a fragment, where the <code>baseUrl</code> can be missing and will be added automatically.
+     *
+     * @param clazz the Resource class to instantiate.
+     * @param <T>   the Resource sub-type
+     * @param properties the properties the instantiated resource will have
+     * @param hrefFragment when <code>true</code>, the baseUrl will be appended to the value found in the href key of the properties map.
+     *                     If <code>false</code> the href will not be altered and will be kept as-is.
+     * @return a resource instance corresponding to the specified clazz.
+     * @since 1.0.RC9
+     */
+    public <T extends Resource> T instantiate(Class<T> clazz, Map<String, Object> properties, boolean hrefFragment);
+
     <T extends Resource> T create(String parentHref, T resource);
 
     <T extends Resource> T create(String parentHref, T resource, Options options);
