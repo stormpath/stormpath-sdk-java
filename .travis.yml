@@ -21,7 +21,7 @@ before_install:
 - export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH
   == 'master' ] && echo 'true')"
 - export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
-- export COVERALLS_REPORT="$([ $TRAVIS_JDK_VERSION == 'openjdk6' ] && echo 'true')"
+- export COVERALLS_REPORT="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
 install:
 - test -z "$BUILD_DOCS" || pip -q install --user sphinx
 - echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."

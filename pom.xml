@@ -700,7 +700,7 @@
             <activation>
                 <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
                 the REST api unnecessarily. -->
-                <jdk>1.6</jdk>
+                <jdk>1.7</jdk>
             </activation>
             <properties>
                 <skipITs>false</skipITs>
