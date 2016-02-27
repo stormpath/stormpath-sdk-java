@@ -88,11 +88,14 @@
         <module>extensions</module>
         <module>examples</module>
         <module>tutorials</module>
+        <module>jacoco-multi-coverage</module>
     </modules>
 
     <properties>
 
         <jdk.version>1.6</jdk.version>
+
+        <jacoco.version>0.7.6.201602180812</jacoco.version>
 
         <slf4j.version>1.7.8</slf4j.version>
         <hazelcast.version>3.2.4</hazelcast.version>
@@ -117,6 +120,8 @@
         <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
         <skipITs>true</skipITs>
         <skipCoverage>false</skipCoverage>
+        <!-- should be post-integration-test when running unit and integration tests -->
+        <report-phase>test</report-phase>
 
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
@@ -505,6 +510,14 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.16</version>
                 <configuration>
@@ -519,6 +532,7 @@
                         <exclude>**/*ManualIT.java</exclude>
                         <exclude>**/*ManualIT.groovy</exclude>
                     </excludes>
+                    <argLine>${failsafeArgLine}</argLine>
                 </configuration>
                 <executions>
                     <execution>
@@ -555,7 +569,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
+                <version>${jacoco.version}</version>
                 <configuration>
                     <skip>${skipCoverage}</skip>
                     <excludes>
@@ -566,17 +580,47 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>default-prepare-agent</id>
+                        <id>pre-unit-test</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>default-report</id>
-                        <phase>prepare-package</phase>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            <propertyName>failsafeArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -587,16 +631,6 @@
                 <configuration>
                     <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
                     <branch>coverage_jacoco_coveralls</branch>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
