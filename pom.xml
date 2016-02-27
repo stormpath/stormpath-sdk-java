@@ -693,16 +693,6 @@
                 <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
                      clean up the HTML source in JavaDoc comments: -->
                 <additionalparam>-Xdoclint:none</additionalparam>
-            </properties>
-        </profile>
-        <profile>
-            <id>it</id>
-            <activation>
-                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
-                the REST api unnecessarily. -->
-                <jdk>1.7</jdk>
-            </activation>
-            <properties>
                 <skipITs>false</skipITs>
                 <skipCoverage>false</skipCoverage>
             </properties>
