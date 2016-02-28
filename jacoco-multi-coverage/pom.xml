@@ -22,6 +22,7 @@
         <base.extensions.hazelcast>${base.extensions}/hazelcast</base.extensions.hazelcast>
         <base.extensions.httpclient>${base.extensions}/httpclient</base.extensions.httpclient>
         <base.extensions.servlet>${base.extensions}/servlet</base.extensions.servlet>
+        <base.extensions.oauth>${base.extensions}/oauth</base.extensions.oauth>
 
         <base.stormpath-spring>${base.extensions.spring}/stormpath-spring</base.stormpath-spring>
         <base.stormpath-spring-webmvc>${base.extensions.spring}/stormpath-spring-webmvc</base.stormpath-spring-webmvc>
@@ -39,6 +40,7 @@
         <build.hazelcast>${base.extensions.hazelcast}/target</build.hazelcast>
         <build.httpclient>${base.extensions.httpclient}/target</build.httpclient>
         <build.servlet>${base.extensions.servlet}/target</build.servlet>
+        <build.oauth>${base.extensions.oauth}/target</build.oauth>
         <build.stormpath-spring>${base.stormpath-spring}/target</build.stormpath-spring>
         <build.stormpath-spring-webmvc>${base.stormpath-spring-webmvc}/target</build.stormpath-spring-webmvc>
         <build.stormpath-spring-security>${base.stormpath-spring-security}/target</build.stormpath-spring-security>
@@ -54,6 +56,7 @@
         <classes.extensions.hazelcast>${build.hazelcast}/classes</classes.extensions.hazelcast>
         <classes.extensions.httpclient>${build.httpclient}/classes</classes.extensions.httpclient>
         <classes.extensions.servlet>${build.servlet}/classes</classes.extensions.servlet>
+        <classes.extensions.oauth>${build.oauth}/classes</classes.extensions.oauth>
         <classes.stormpath-spring>${build.stormpath-spring}/classes</classes.stormpath-spring>
         <classes.stormpath-spring-webmvc>${build.stormpath-spring-webmvc}/classes</classes.stormpath-spring-webmvc>
         <classes.stormpath-spring-security>${build.stormpath-spring-security}/classes</classes.stormpath-spring-security>
@@ -70,6 +73,7 @@
         <sources.extensions.hazelcast>${base.extensions.hazelcast}/src/main/java</sources.extensions.hazelcast>
         <sources.extensions.httpclient>${base.extensions.httpclient}/src/main/java</sources.extensions.httpclient>
         <sources.extensions.servlet>${base.extensions.servlet}/src/main/java</sources.extensions.servlet>
+        <sources.extensions.oauth>${base.extensions.oauth}/src/main/java</sources.extensions.oauth>
         <sources.stormpath-spring>${base.stormpath-spring}/src/main/java</sources.stormpath-spring>
         <sources.stormpath-spring-webmvc>${base.stormpath-spring-webmvc}/src/main/java</sources.stormpath-spring-webmvc>
         <sources.stormpath-spring-security>${base.stormpath-spring-security}/src/main/java</sources.stormpath-spring-security>
@@ -85,6 +89,7 @@
         <generated-sources.extensions.hazelcast>${build.hazelcast}/generated-sources</generated-sources.extensions.hazelcast>
         <generated-sources.extensions.httpclient>${build.httpclient}/generated-sources</generated-sources.extensions.httpclient>
         <generated-sources.extensions.servlet>${build.servlet}/generated-sources</generated-sources.extensions.servlet>
+        <generated-sources.extensions.oauth>${build.oauth}/generated-sources</generated-sources.extensions.oauth>
         <generated-sources.stormpath-spring>${build.stormpath-spring}/generated-sources</generated-sources.stormpath-spring>
         <generated-sources.stormpath-spring-webmvc>${build.stormpath-spring-webmvc}/generated-sources</generated-sources.stormpath-spring-webmvc>
         <generated-sources.stormpath-spring-security>${build.stormpath-spring-security}/generated-sources</generated-sources.stormpath-spring-security>
@@ -164,6 +169,9 @@
                                         <fileset dir="${build.servlet}">
                                             <include name="jacoco.exec" />
                                         </fileset>
+                                        <fileset dir="${build.oauth}">
+                                            <include name="jacoco.exec" />
+                                        </fileset>
                                         <fileset dir="${build.stormpath-spring}">
                                             <include name="jacoco.exec" />
                                         </fileset>
@@ -192,52 +200,55 @@
                                     </executiondata>
 
                                     <structure name="jacoco-multi Coverage Project">
-                                      <group name="jacoco-multi">
-                                        <classfiles>
-                                          <fileset dir="${classes.api}" />
-                                          <fileset dir="${classes.impl}" />
-                                          <fileset dir="${classes.extensions.hazelcast}" />
-                                          <fileset dir="${classes.extensions.httpclient}" />
-                                          <fileset dir="${classes.extensions.servlet}" />
-                                          <fileset dir="${classes.stormpath-spring}" />
-                                          <fileset dir="${classes.stormpath-spring-webmvc}" />
-                                          <fileset dir="${classes.stormpath-spring-security}" />
-                                          <fileset dir="${classes.stormpath-spring-security-webmvc}" />
-                                          <fileset dir="${classes.stormpath-spring-boot-starter}" />
-                                          <fileset dir="${classes.stormpath-webmvc-spring-boot-starter}" />
-                                          <fileset dir="${classes.stormpath-spring-security-spring-boot-starter}" />
-                                          <fileset dir="${classes.stormpath-spring-security-webmvc-spring-boot-starter}" />
-                                        </classfiles>
-                                        <sourcefiles encoding="UTF-8">
-                                          <fileset dir="${sources.api}" />
-                                          <fileset dir="${sources.impl}" />
-                                          <fileset dir="${sources.extensions.hazelcast}" />
-                                          <fileset dir="${sources.extensions.httpclient}" />
-                                          <fileset dir="${sources.extensions.servlet}" />
-                                          <fileset dir="${sources.stormpath-spring}" />
-                                          <fileset dir="${sources.stormpath-spring-webmvc}" />
-                                          <fileset dir="${sources.stormpath-spring-security}" />
-                                          <fileset dir="${sources.stormpath-spring-security-webmvc}" />
-                                          <fileset dir="${sources.stormpath-spring-boot-starter}" />
-                                          <fileset dir="${sources.stormpath-webmvc-spring-boot-starter}" />
-                                          <fileset dir="${sources.stormpath-spring-security-spring-boot-starter}" />
-                                          <fileset dir="${sources.stormpath-spring-security-webmvc-spring-boot-starter}" />
+                                        <group name="jacoco-multi">
+                                            <classfiles>
+                                                <fileset dir="${classes.api}" />
+                                                <fileset dir="${classes.impl}" />
+                                                <fileset dir="${classes.extensions.hazelcast}" />
+                                                <fileset dir="${classes.extensions.httpclient}" />
+                                                <fileset dir="${classes.extensions.servlet}" />
+                                                <fileset dir="${classes.extensions.oauth}" />
+                                                <fileset dir="${classes.stormpath-spring}" />
+                                                <fileset dir="${classes.stormpath-spring-webmvc}" />
+                                                <fileset dir="${classes.stormpath-spring-security}" />
+                                                <fileset dir="${classes.stormpath-spring-security-webmvc}" />
+                                                <fileset dir="${classes.stormpath-spring-boot-starter}" />
+                                                <fileset dir="${classes.stormpath-webmvc-spring-boot-starter}" />
+                                                <fileset dir="${classes.stormpath-spring-security-spring-boot-starter}" />
+                                                <fileset dir="${classes.stormpath-spring-security-webmvc-spring-boot-starter}" />
+                                            </classfiles>
+                                            <sourcefiles encoding="UTF-8">
+                                                <fileset dir="${sources.api}" />
+                                                <fileset dir="${sources.impl}" />
+                                                <fileset dir="${sources.extensions.hazelcast}" />
+                                                <fileset dir="${sources.extensions.httpclient}" />
+                                                <fileset dir="${sources.extensions.servlet}" />
+                                                <fileset dir="${sources.extensions.oauth}" />
+                                                <fileset dir="${sources.stormpath-spring}" />
+                                                <fileset dir="${sources.stormpath-spring-webmvc}" />
+                                                <fileset dir="${sources.stormpath-spring-security}" />
+                                                <fileset dir="${sources.stormpath-spring-security-webmvc}" />
+                                                <fileset dir="${sources.stormpath-spring-boot-starter}" />
+                                                <fileset dir="${sources.stormpath-webmvc-spring-boot-starter}" />
+                                                <fileset dir="${sources.stormpath-spring-security-spring-boot-starter}" />
+                                                <fileset dir="${sources.stormpath-spring-security-webmvc-spring-boot-starter}" />
 
-                                          <fileset dir="${generated-sources.api}" />
-                                          <fileset dir="${generated-sources.impl}" />
-                                          <fileset dir="${generated-sources.extensions.hazelcast}" />
-                                          <fileset dir="${generated-sources.extensions.httpclient}" />
-                                          <fileset dir="${generated-sources.extensions.servlet}" />
-                                          <fileset dir="${generated-sources.stormpath-spring}" />
-                                          <fileset dir="${generated-sources.stormpath-spring-webmvc}" />
-                                          <fileset dir="${generated-sources.stormpath-spring-security}" />
-                                          <fileset dir="${generated-sources.stormpath-spring-security-webmvc}" />
-                                          <fileset dir="${generated-sources.stormpath-spring-boot-starter}" />
-                                          <fileset dir="${generated-sources.stormpath-webmvc-spring-boot-starter}" />
-                                          <fileset dir="${generated-sources.stormpath-spring-security-spring-boot-starter}" />
-                                          <fileset dir="${generated-sources.stormpath-spring-security-webmvc-spring-boot-starter}" />
-                                        </sourcefiles>
-                                      </group>
+                                                <fileset dir="${generated-sources.api}" />
+                                                <fileset dir="${generated-sources.impl}" />
+                                                <fileset dir="${generated-sources.extensions.hazelcast}" />
+                                                <fileset dir="${generated-sources.extensions.httpclient}" />
+                                                <fileset dir="${generated-sources.extensions.servlet}" />
+                                                <fileset dir="${generated-sources.extensions.oauth}" />
+                                                <fileset dir="${generated-sources.stormpath-spring}" />
+                                                <fileset dir="${generated-sources.stormpath-spring-webmvc}" />
+                                                <fileset dir="${generated-sources.stormpath-spring-security}" />
+                                                <fileset dir="${generated-sources.stormpath-spring-security-webmvc}" />
+                                                <fileset dir="${generated-sources.stormpath-spring-boot-starter}" />
+                                                <fileset dir="${generated-sources.stormpath-webmvc-spring-boot-starter}" />
+                                                <fileset dir="${generated-sources.stormpath-spring-security-spring-boot-starter}" />
+                                                <fileset dir="${generated-sources.stormpath-spring-security-webmvc-spring-boot-starter}" />
+                                            </sourcefiles>
+                                        </group>
                                     </structure>
 
                                     <html destdir="${basedir}/target/coverage-report/html" />

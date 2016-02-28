@@ -117,7 +117,7 @@
         <logback.version>1.1.2</logback.version>
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
-        <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
+        <!-- false in JDK 8 profile (i.e. JDK 8 build has ITs turned on): -->
         <skipITs>true</skipITs>
         <skipCoverage>false</skipCoverage>
         <!-- should be post-integration-test when running unit and integration tests -->

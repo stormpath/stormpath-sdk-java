@@ -122,6 +122,6 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
     /* @since 1.0.RC5 */
     @Override
     public AuthenticationOptions getResponseOptions() {
-        throw new UnsupportedOperationException(getClass().getName() + " .getResponseOptions() is not supported.");
+        throw new UnsupportedOperationException(getClass().getName() + ".getResponseOptions() is not supported.");
     }
 }
