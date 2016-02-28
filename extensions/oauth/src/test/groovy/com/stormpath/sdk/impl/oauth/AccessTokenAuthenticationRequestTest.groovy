@@ -15,11 +15,12 @@ import static org.testng.Assert.fail
 
 class AccessTokenAuthenticationRequestTest {
 
-    def httpServletRequest = createMock(HttpRequest.class)
+    def httpRequest = createMock(HttpRequest.class)
     AccessTokenAuthenticationRequest accessTokenAuthenticationRequest
 
     @BeforeTest
     public void setup() {
+
         def params = [
                 grant_type: ["password"] as String[],
                 username: ["blarg@blargity.com"] as String[],
@@ -28,18 +29,18 @@ class AccessTokenAuthenticationRequestTest {
                 client_secret: ["secret"] as String[]
         ]
 
-        expect(httpServletRequest.getParameters())
+        expect(httpRequest.getParameters())
                 .andReturn(params).times(6)
-        expect(httpServletRequest.getMethod())
+        expect(httpRequest.getMethod())
                 .andReturn(HttpMethod.POST)
-        expect(httpServletRequest.getHeader("Content-Type"))
+        expect(httpRequest.getHeader("Content-Type"))
                 .andReturn("application/x-www-form-urlencoded")
-        expect(httpServletRequest.getHeader("Authorization"))
-                .andReturn("Basic " + new BASE64Encoder().encode("a:b".bytes)).times(2)
+        expect(httpRequest.getHeader("Authorization"))
+                .andReturn("Basic " + new BASE64Encoder().encode("id:secret".bytes)).times(2)
 
-        replay httpServletRequest
+        replay httpRequest
 
-        accessTokenAuthenticationRequest = new AccessTokenAuthenticationRequest(httpServletRequest)
+        accessTokenAuthenticationRequest = new AccessTokenAuthenticationRequest(httpRequest)
     }
 
     @Test
@@ -49,7 +50,7 @@ class AccessTokenAuthenticationRequestTest {
             accessTokenAuthenticationRequest.getHost()
             fail("shouldn't be here")
         } catch (UnsupportedOperationException e) {
-            assertEquals(e.getMessage(), "getHost() method hasn't been implemented.")
+            assertEquals e.getMessage(), "getHost() method hasn't been implemented."
         }
     }
 
@@ -60,7 +61,7 @@ class AccessTokenAuthenticationRequestTest {
             accessTokenAuthenticationRequest.clear()
             fail("shouldn't be here")
         } catch (UnsupportedOperationException e) {
-            assertEquals(e.getMessage(), "clear() method hasn't been implemented.")
+            assertEquals e.getMessage(), "clear() method hasn't been implemented."
         }
     }
 
@@ -71,7 +72,60 @@ class AccessTokenAuthenticationRequestTest {
             accessTokenAuthenticationRequest.getResponseOptions()
             fail("shouldn't be here")
         } catch (UnsupportedOperationException e) {
-            assertEquals(e.getMessage(), "com.stormpath.sdk.impl.oauth.authc.AccessTokenAuthenticationRequest.getResponseOptions() is not supported.")
+            assertEquals e.getMessage(), "com.stormpath.sdk.impl.oauth.authc.AccessTokenAuthenticationRequest.getResponseOptions() is not supported."
         }
+    }
+
+    @Test
+    public void testGetAccountStore() {
+
+        try {
+            accessTokenAuthenticationRequest.getAccountStore()
+            fail("shouldn't be here")
+        } catch (UnsupportedOperationException e) {
+            assertEquals e.getMessage(), "getAccountStore() method hasn't been implemented."
+        }
+    }
+
+    @Test
+    public void testDefaultTtl() {
+
+        assertEquals accessTokenAuthenticationRequest.getTtl(), AccessTokenAuthenticationRequest.DEFAULT_TTL
+    }
+
+    @Test
+    public void testDefaultScopeFactory() {
+
+        assertEquals accessTokenAuthenticationRequest.getScopeFactory(), null
+    }
+
+    @Test
+    public void testDefaultHasScopeFactory() {
+
+        assertEquals accessTokenAuthenticationRequest.hasScopeFactory(), false
+    }
+
+    @Test
+    public void testGetClentId() {
+
+        assertEquals accessTokenAuthenticationRequest.getClientId(), "id"
+    }
+
+    @Test
+    public void testGetClientSecret() {
+
+        assertEquals accessTokenAuthenticationRequest.getClientSecret(), "secret"
+    }
+
+    @Test
+    public void testGetPrincipals() {
+
+        assertEquals accessTokenAuthenticationRequest.getPrincipals(), "id"
+    }
+
+    @Test
+    public void testGetCredentials() {
+
+        assertEquals accessTokenAuthenticationRequest.getCredentials(), "secret"
     }
 }
