@@ -178,15 +178,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * Sets the {@code Client} instance used to communicate with Stormpath's REST API.
-     *
-     * @param client the {@code Client} instance used to communicate with Stormpath's REST API.
-     */
-    //public void setClient(Client client) {
-    //    this.client = client;
-    //}///
-
-    /**
      * Returns the Stormpath REST URL of the specific application communicating with Stormpath.
      * <p/>
      * Any application supported by Stormpath will have a
@@ -199,20 +190,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     public String getApplicationRestUrl() {
         return applicationRestUrl;
     }
-
-    /**
-     * Sets the Stormpath REST URL of the specific application communicating with Stormpath.
-     * <p/>
-     * Any application supported by Stormpath will have a
-     * <a href="http://www.stormpath.com/docs/quickstart/authenticate-account">dedicated unique REST URL</a>.  The
-     * Stormpath REST URL of the Spring Security-enabled application communicating with Stormpath via this Provider must be
-     * configured by this property.
-     *
-     * @param applicationRestUrl the Stormpath REST URL of the specific application communicating with Stormpath.
-     */
-    //public void setApplicationRestUrl(String applicationRestUrl) {
-     //   this.applicationRestUrl = applicationRestUrl;
-    //}
 
     /**
      * Returns the {@link GroupGrantedAuthorityResolver} used to translate Stormpath Groups into Spring Security granted authorities.
