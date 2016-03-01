@@ -22,6 +22,8 @@ import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupStatus;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
@@ -140,8 +142,8 @@ import java.util.Set;
  */
 public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
-    private Client client;
-    private String applicationRestUrl;
+    private final Client client;
+    private final String applicationRestUrl;
     private GroupGrantedAuthorityResolver groupGrantedAuthorityResolver;
     private GroupPermissionResolver groupPermissionResolver;
     private AccountGrantedAuthorityResolver accountGrantedAuthorityResolver;
@@ -150,7 +152,16 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
     private Application application; //acquired via the client at runtime, not configurable by the StormpathAuthenticationProvider user
 
-    public StormpathAuthenticationProvider() {
+    public StormpathAuthenticationProvider(Client client, String applicationRestUrl) {
+        Assert.notNull(client, "Stormpath SDK Client instance must be configured.");
+        Assert.hasText(applicationRestUrl, "\n\nThis application's Stormpath REST URL must be configured.\n\n  " +
+                "You may get your application's Stormpath REST URL as shown here:\n\n " +
+                "http://www.stormpath.com/docs/application-rest-url\n\n" +
+                "Copy and paste the 'REST URL' value as the 'applicationRestUrl' property of this class.");
+
+        this.client = client;
+        this.applicationRestUrl = applicationRestUrl;
+
         setGroupGrantedAuthorityResolver(new DefaultGroupGrantedAuthorityResolver());
         setGroupPermissionResolver(new GroupCustomDataPermissionResolver());
         setAccountPermissionResolver(new AccountCustomDataPermissionResolver());
@@ -171,9 +182,9 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      *
      * @param client the {@code Client} instance used to communicate with Stormpath's REST API.
      */
-    public void setClient(Client client) {
-        this.client = client;
-    }
+    //public void setClient(Client client) {
+    //    this.client = client;
+    //}///
 
     /**
      * Returns the Stormpath REST URL of the specific application communicating with Stormpath.
@@ -199,9 +210,9 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      *
      * @param applicationRestUrl the Stormpath REST URL of the specific application communicating with Stormpath.
      */
-    public void setApplicationRestUrl(String applicationRestUrl) {
-        this.applicationRestUrl = applicationRestUrl;
-    }
+    //public void setApplicationRestUrl(String applicationRestUrl) {
+     //   this.applicationRestUrl = applicationRestUrl;
+    //}
 
     /**
      * Returns the {@link GroupGrantedAuthorityResolver} used to translate Stormpath Groups into Spring Security granted authorities.
@@ -296,7 +307,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     *
      * Returns the {@link AccountGrantedAuthorityResolver} used to discover a Stormpath Account's assigned permissions. Unless
      * overridden, the default instance is a {@link UsernamePasswordAuthenticationTokenFactory}.
      *
@@ -321,33 +331,16 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         this.authenticationTokenFactory = authenticationTokenFactory;
     }
 
-    private void assertState() {
-        if (this.client == null) {
-            throw new IllegalStateException("Stormpath SDK Client instance must be configured.");
-        }
-        if (this.applicationRestUrl == null) {
-            throw new IllegalStateException("\n\nThis application's Stormpath REST URL must be configured.\n\n  " +
-                    "You may get your application's Stormpath REST URL as shown here:\n\n " +
-                    "http://www.stormpath.com/docs/application-rest-url\n\n" +
-                    "Copy and paste the 'REST URL' value as the 'applicationRestUrl' property of this class.");
-        }
-    }
-
     /**
      * Performs actual authentication for the received authentication credentials using
      * <a href="http://www.stormpath.com">Stormpath</a> Cloud Identity Management service for a single application.
      *
      * @param authentication the authentication request object.
-     *
      * @return a fully authenticated object including credentials.
-     *
      * @throws AuthenticationException if authentication fails.
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
-        assertState();
-
         Account account;
 
         try {
@@ -368,7 +361,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         }
 
         Authentication authToken = this.authenticationTokenFactory.createAuthenticationToken(
-            authentication.getPrincipal(), null, getGrantedAuthorities(account), account
+                authentication.getPrincipal(), null, getGrantedAuthorities(account), account
         );
 
         return authToken;
@@ -399,7 +392,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      * <Code>Authentication</code> object.
      *
      * @param authentication the class to validate this <Code>AuthenticationProvider</code> supports
-     *
      * @return <code>true</code> if the given class is supported
      */
     @Override
@@ -431,11 +423,13 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         GroupList groups = account.getGroups();
 
         for (Group group : groups) {
+            if (GroupStatus.ENABLED.equals(group.getStatus())) {
                 Set<GrantedAuthority> groupGrantedAuthorities = resolveGrantedAuthorities(group);
                 grantedAuthorities.addAll(groupGrantedAuthorities);
 
                 Set<Permission> groupPermissions = resolvePermissions(group);
                 grantedAuthorities.addAll(groupPermissions);
+            }
         }
 
         Set<GrantedAuthority> accountGrantedAuthorities = resolveGrantedAuthorities(account);
