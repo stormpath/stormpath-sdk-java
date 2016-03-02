@@ -46,7 +46,7 @@ import java.util.Set;
  * <p/>
  * The Stormpath-registered
  * <a href="https://www.stormpath.com/docs/libraries/application-rest-url">Application's Stormpath REST URL</a>
- * must be configured as the {@code applicationRestUrl} property.
+ * must be configured.
  * <h3>Authentication</h3>
  * Once your application's REST URL is configured, this provider implementation automatically executes authentication
  * attempts without any need of further configuration by interacting with the Application's
@@ -143,24 +143,21 @@ import java.util.Set;
 public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
     private final Client client;
-    private final String applicationRestUrl;
+    private final Application application;
+
     private GroupGrantedAuthorityResolver groupGrantedAuthorityResolver;
     private GroupPermissionResolver groupPermissionResolver;
     private AccountGrantedAuthorityResolver accountGrantedAuthorityResolver;
     private AccountPermissionResolver accountPermissionResolver;
     private AuthenticationTokenFactory authenticationTokenFactory;
 
-    private Application application; //acquired via the client at runtime, not configurable by the StormpathAuthenticationProvider user
 
-    public StormpathAuthenticationProvider(Client client, String applicationRestUrl) {
-        Assert.notNull(client, "Stormpath SDK Client instance must be configured.");
-        Assert.hasText(applicationRestUrl, "\n\nThis application's Stormpath REST URL must be configured.\n\n  " +
-                "You may get your application's Stormpath REST URL as shown here:\n\n " +
-                "http://www.stormpath.com/docs/application-rest-url\n\n" +
-                "Copy and paste the 'REST URL' value as the 'applicationRestUrl' property of this class.");
+    public StormpathAuthenticationProvider(Client client, Application application) {
+        Assert.notNull(client, "client can't be null");
+        Assert.notNull(application, "application can't be null");
 
         this.client = client;
-        this.applicationRestUrl = applicationRestUrl;
+        this.application = application;
 
         setGroupGrantedAuthorityResolver(new DefaultGroupGrantedAuthorityResolver());
         setGroupPermissionResolver(new GroupCustomDataPermissionResolver());
@@ -177,19 +174,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         return client;
     }
 
-    /**
-     * Returns the Stormpath REST URL of the specific application communicating with Stormpath.
-     * <p/>
-     * Any application supported by Stormpath will have a
-     * <a href="http://www.stormpath.com/docs/quickstart/authenticate-account">dedicated unique REST URL</a>.  The
-     * Stormpath REST URL of the Spring Security-enabled application communicating with Stormpath via this Provider must be
-     * configured by this property.
-     *
-     * @return the Stormpath REST URL of the specific application communicating with Stormpath.
-     */
-    public String getApplicationRestUrl() {
-        return applicationRestUrl;
-    }
 
     /**
      * Returns the {@link GroupGrantedAuthorityResolver} used to translate Stormpath Groups into Spring Security granted authorities.
@@ -346,7 +330,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
     private Account handleUsernamePasswordAuthentication(Authentication authentication) throws AuthenticationException {
         AuthenticationRequest request = createAuthenticationRequest(authentication);
-        Application application = ensureApplicationReference();
 
         Account account;
 
@@ -376,16 +359,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         if (ProviderAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         return false;
-    }
-
-    //This is not thread safe, but the Client is, and this is only executed during initial Application
-    //acquisition, so it is negligible if this executes a few times instead of just once.
-    protected final Application ensureApplicationReference() {
-        if (this.application == null) {
-            String href = getApplicationRestUrl();
-            this.application = client.getDataStore().getResource(href, Application.class);
-        }
-        return this.application;
     }
 
     protected AuthenticationRequest createAuthenticationRequest(Authentication authentication) {
