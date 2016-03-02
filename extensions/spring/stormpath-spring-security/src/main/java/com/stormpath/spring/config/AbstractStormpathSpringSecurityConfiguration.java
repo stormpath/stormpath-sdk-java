@@ -64,7 +64,7 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
 
     public AuthenticationProvider stormpathAuthenticationProvider() {
 
-        StormpathAuthenticationProvider provider = new StormpathAuthenticationProvider(client, application.getHref());
+        StormpathAuthenticationProvider provider = new StormpathAuthenticationProvider(client, application);
         provider.setGroupGrantedAuthorityResolver(stormpathGroupGrantedAuthorityResolver());
         provider.setGroupPermissionResolver(stormpathGroupPermissionResolver());
         provider.setAccountGrantedAuthorityResolver(stormpathAccountGrantedAuthorityResolver());
