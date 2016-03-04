@@ -52,6 +52,8 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
     public static final String STORMPATH_APPLICATION_HREF = "stormpath.application.href";
 
+    public static final String STORMPATH_BASEURL = "stormpath.baseUrl";
+
     private Config config;
     private ServletContext servletContext;
     private ConfigResolver configResolver = ConfigResolver.INSTANCE;
@@ -74,6 +76,8 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
         ClientBuilder builder = Clients.builder();
 
+        applyBaseUrl(builder);
+
         applyApiKey(builder);
 
         applyProxy(builder);
@@ -83,6 +87,14 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
         applyCacheManager(builder);
 
         return builder.build();
+    }
+
+    protected void applyBaseUrl(ClientBuilder builder) {
+
+        String baseUrl = config.get(STORMPATH_BASEURL);
+        if (Strings.hasText(baseUrl)) {
+            builder.setBaseUrl(baseUrl);
+        }
     }
 
     protected void applyCacheManager(ClientBuilder builder) {
