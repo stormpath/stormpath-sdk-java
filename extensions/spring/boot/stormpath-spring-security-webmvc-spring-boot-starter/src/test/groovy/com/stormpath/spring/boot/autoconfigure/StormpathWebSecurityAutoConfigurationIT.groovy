@@ -127,10 +127,8 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     void test() {
 
         assertNotNull stormpathAuthenticationProvider
-        assertNotNull stormpathAuthenticationProvider.applicationRestUrl
-        assertNotNull stormpathAuthenticationProvider.client
+        assertNotNull stormpathAuthenticationProvider.application
 
-        assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager
         assertTrue stormpathAuthenticationProvider.groupGrantedAuthorityResolver instanceof DefaultGroupGrantedAuthorityResolver
         assertTrue stormpathAuthenticationProvider.groupPermissionResolver instanceof GroupCustomDataPermissionResolver
         assertTrue stormpathAuthenticationProvider.accountGrantedAuthorityResolver instanceof EmptyAccountGrantedAuthorityResolver
