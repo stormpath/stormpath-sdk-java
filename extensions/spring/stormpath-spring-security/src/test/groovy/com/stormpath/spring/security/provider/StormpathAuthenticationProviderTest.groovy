@@ -20,13 +20,10 @@ import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.authc.AuthenticationRequest
 import com.stormpath.sdk.authc.AuthenticationResult
-import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.CustomData
-import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupStatus
-import com.stormpath.sdk.oauth.AccessTokenResult
 import com.stormpath.spring.security.token.ProviderAuthenticationToken
 import org.easymock.IAnswer
 import org.springframework.security.authentication.AuthenticationServiceException
@@ -35,17 +32,14 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.testng.annotations.BeforeMethod
-import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.anyObject
 import static org.easymock.EasyMock.createNiceMock
 import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.eq
 import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.getCurrentArguments
 import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.same
 import static org.easymock.EasyMock.verify
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
@@ -53,8 +47,6 @@ import static org.junit.Assert.assertTrue
 class StormpathAuthenticationProviderTest {
 
     StormpathAuthenticationProvider authenticationProvider
-    Client client
-    String applicationUrl = 'https://api.stormpath.com/v1/applications/foo'
 
     //Test account attributes
     def username = 'myUsername'
@@ -67,25 +59,17 @@ class StormpathAuthenticationProviderTest {
     def acctSurname = 'Smith'
     def acctStatus = AccountStatus.ENABLED
 
+    Application application
+
     @BeforeMethod
     void setUp() {
-        client = createStrictMock(Client)
-        authenticationProvider = new StormpathAuthenticationProvider(client, applicationUrl)
+        application = createStrictMock(Application)
+        authenticationProvider = new StormpathAuthenticationProvider(application)
     }
 
     @Test(expectedExceptions = [IllegalArgumentException])
-    void testInitWithNullClient() {
-        new StormpathAuthenticationProvider(null, "https://somthing")
-    }
-
-    @DataProvider(name = "invalidApplicationUrl")
-    public Object[][] createInvalidApplicationUrls() {
-        [[null], [""]];
-    }
-
-    @Test(expectedExceptions = [IllegalArgumentException], dataProvider = "invalidApplicationUrl")
-    void testInitWithNullApplicationUrl(String url) {
-        new StormpathAuthenticationProvider(createStrictMock(Client), url)
+    void testInitWithNullApplication() {
+        new StormpathAuthenticationProvider(null)
     }
 
     void expectAccountBasicAttributes(Account mockAccount) {
@@ -108,8 +92,6 @@ class StormpathAuthenticationProviderTest {
         accountSpringSecurityGrantedAuthorities.add("accountSpringSecurityPermissionsItem");
 
         def authentication = createStrictMock(UsernamePasswordAuthenticationToken)
-        def dataStore = createStrictMock(DataStore)
-        def app = createStrictMock(Application)
         def authenticationResult = createStrictMock(AuthenticationResult)
         def account = createStrictMock(Account)
         def groupList = createStrictMock(GroupList)
@@ -126,9 +108,7 @@ class StormpathAuthenticationProviderTest {
 
         expect(authentication.principal).andReturn username
         expect(authentication.credentials).andReturn password
-        expect(client.dataStore).andStubReturn(dataStore)
-        expect(dataStore.getResource(eq(applicationUrl), same(Application))).andReturn(app)
-        expect(app.authenticateAccount(anyObject() as AuthenticationRequest)).andAnswer(new IAnswer<AuthenticationResult>() {
+        expect(application.authenticateAccount(anyObject() as AuthenticationRequest)).andAnswer(new IAnswer<AuthenticationResult>() {
             AuthenticationResult answer() throws Throwable {
                 def authcRequest = getCurrentArguments()[0] as AuthenticationRequest
 
@@ -151,7 +131,7 @@ class StormpathAuthenticationProviderTest {
         expect(iterator.hasNext()).andReturn false
         expect(accountGrantedAuthorityResolver.resolveGrantedAuthorities(account)).andReturn accountGrantedAuthoritySet
 
-        replay authentication, client, dataStore, app, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
+        replay authentication, application, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
                 accountGrantedAuthorityResolver, groupGrantedAuthorityResolver, accountGrantedAuthority
 
         authenticationProvider.accountGrantedAuthorityResolver = accountGrantedAuthorityResolver
@@ -177,7 +157,7 @@ class StormpathAuthenticationProviderTest {
         assertTrue(((UserDetails) info.principal).accountNonExpired)
         assertTrue(((UserDetails) info.principal).credentialsNonExpired)
 
-        verify authentication, client, dataStore, app, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
+        verify authentication, application, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
                 accountGrantedAuthorityResolver, groupGrantedAuthorityResolver, accountGrantedAuthority
     }
 
@@ -190,8 +170,6 @@ class StormpathAuthenticationProviderTest {
         accountSpringSecurityGrantedAuthorities.add("accountSpringSecurityPermissionsItem");
 
         def authentication = createStrictMock(UsernamePasswordAuthenticationToken)
-        def dataStore = createStrictMock(DataStore)
-        def app = createStrictMock(Application)
         def authenticationResult = createStrictMock(AuthenticationResult)
         def account = createStrictMock(Account)
         def groupList = createStrictMock(GroupList)
@@ -210,9 +188,7 @@ class StormpathAuthenticationProviderTest {
 
         expect(authentication.principal).andReturn username
         expect(authentication.credentials).andReturn password
-        expect(client.dataStore).andStubReturn(dataStore)
-        expect(dataStore.getResource(eq(applicationUrl), same(Application))).andReturn(app)
-        expect(app.authenticateAccount(anyObject() as AuthenticationRequest)).andAnswer(new IAnswer<AuthenticationResult>() {
+        expect(application.authenticateAccount(anyObject() as AuthenticationRequest)).andAnswer(new IAnswer<AuthenticationResult>() {
             AuthenticationResult answer() throws Throwable {
                 def authcRequest = getCurrentArguments()[0] as AuthenticationRequest
 
@@ -238,7 +214,7 @@ class StormpathAuthenticationProviderTest {
         expect(iterator.hasNext()).andReturn false
         expect(accountGrantedAuthorityResolver.resolveGrantedAuthorities(account)).andReturn accountGrantedAuthoritySet
 
-        replay authentication, client, dataStore, app, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
+        replay authentication, application, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
                 accountGrantedAuthorityResolver, groupGrantedAuthorityResolver, groupGrantedAuthority, accountGrantedAuthority
 
         authenticationProvider.accountGrantedAuthorityResolver = accountGrantedAuthorityResolver
@@ -265,36 +241,30 @@ class StormpathAuthenticationProviderTest {
         assertTrue(((UserDetails) info.principal).accountNonExpired)
         assertTrue(((UserDetails) info.principal).credentialsNonExpired)
 
-        verify authentication, client, dataStore, app, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
+        verify authentication, application, authenticationResult, account, accountCustomData, groupList, iterator, group, groupCustomData,
                 accountGrantedAuthorityResolver, groupGrantedAuthorityResolver, groupGrantedAuthority, accountGrantedAuthority
     }
 
     @Test(expectedExceptions = AuthenticationServiceException)
     void testAuthenticateException() {
-        def dataStore = createStrictMock(DataStore)
-        def app = createStrictMock(Application)
-
         int status = 400
         int code = 400
         def msg = 'Invalid username or password.'
         def devMsg = 'Invalid username or password.'
         def moreInfo = 'mailto:support@stormpath.com'
 
-        expect(client.dataStore).andStubReturn(dataStore)
-
         def error = new SimpleError(status: status, code: code, message: msg, developerMessage: devMsg, moreInfo: moreInfo)
 
-        expect(dataStore.getResource(eq(applicationUrl), same(Application))).andReturn app
-        expect(app.authenticateAccount(anyObject() as AuthenticationRequest)).andThrow(new com.stormpath.sdk.resource.ResourceException(error))
+        expect(application.authenticateAccount(anyObject() as AuthenticationRequest)).andThrow(new com.stormpath.sdk.resource.ResourceException(error))
 
-        replay client, dataStore, app
+        replay application
 
         def token = new UsernamePasswordAuthenticationToken('foo', 'bar')
         try {
             authenticationProvider.authenticate(token)
         }
         finally {
-            verify client, dataStore, app
+            verify application
         }
     }
 
