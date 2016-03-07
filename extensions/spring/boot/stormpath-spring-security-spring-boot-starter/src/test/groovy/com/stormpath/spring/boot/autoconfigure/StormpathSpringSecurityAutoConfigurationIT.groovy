@@ -60,8 +60,7 @@ class StormpathSpringSecurityAutoConfigurationIT extends AbstractTestNGSpringCon
     void test() {
 
         assertNotNull authenticationProvider
-        assertEquals authenticationProvider.applicationRestUrl, application.href
-        assertSame authenticationProvider.client, client
+        assertEquals authenticationProvider.application, application
 
         assertTrue groupGrantedAuthorityResolver instanceof DefaultGroupGrantedAuthorityResolver
         assertTrue groupPermissionResolver instanceof GroupCustomDataPermissionResolver
