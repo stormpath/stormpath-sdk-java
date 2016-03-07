@@ -44,11 +44,10 @@ import java.util.Set;
  * A {@code AuthenticationProvider} implementation that uses the <a href="http://www.stormpath.com">Stormpath</a> Cloud Identity
  * Management service for authentication and authorization operations for a single Application.
  * <p/>
- * The Stormpath-registered
- * <a href="https://www.stormpath.com/docs/libraries/application-rest-url">Application's Stormpath REST URL</a>
- * must be configured.
+ * It requires the <a href="https://docs.stormpath.com/java/spring-boot-web/config.html#stormpath-application">Stormpath Application</a> be configured
+ * <p/>
  * <h3>Authentication</h3>
- * Once your application's REST URL is configured, this provider implementation automatically executes authentication
+ * Once your application's is configured, this provider implementation automatically executes authentication
  * attempts without any need of further configuration by interacting with the Application's
  * <a href="http://www.stormpath.com/docs/rest/api#ApplicationLoginAttempts">loginAttempts endpoint</a>.
  * <h3>Authorization</h3>
@@ -142,7 +141,6 @@ import java.util.Set;
  */
 public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
-    private final Client client;
     private final Application application;
 
     private GroupGrantedAuthorityResolver groupGrantedAuthorityResolver;
@@ -152,11 +150,9 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     private AuthenticationTokenFactory authenticationTokenFactory;
 
 
-    public StormpathAuthenticationProvider(Client client, Application application) {
-        Assert.notNull(client, "client can't be null");
+    public StormpathAuthenticationProvider(Application application) {
         Assert.notNull(application, "application can't be null");
 
-        this.client = client;
         this.application = application;
 
         setGroupGrantedAuthorityResolver(new DefaultGroupGrantedAuthorityResolver());
@@ -164,16 +160,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         setAccountPermissionResolver(new AccountCustomDataPermissionResolver());
         setAuthenticationTokenFactory(new UsernamePasswordAuthenticationTokenFactory());
     }
-
-    /**
-     * Returns the {@code Client} instance used to communicate with Stormpath's REST API.
-     *
-     * @return the {@code Client} instance used to communicate with Stormpath's REST API.
-     */
-    public Client getClient() {
-        return client;
-    }
-
 
     /**
      * Returns the {@link GroupGrantedAuthorityResolver} used to translate Stormpath Groups into Spring Security granted authorities.
