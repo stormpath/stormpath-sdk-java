@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2014 Stormpath, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.stormpath.sdk</groupId>
+        <artifactId>stormpath-sdk-root</artifactId>
+        <version>1.0.RC9-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>stormpath-clover</artifactId>
+    <name>Stormpath Java :: CLOVER</name>
+    <description>
+        The purpose of this module is solely for building aggregated clover test coverage reports.
+        It is for internal Stormpath use and requires a license. It is only ever used with the
+        clover-it profile and should not impact the public's ability to build the
+        stormpath-sdk-java project
+    </description>
+
+    <dependencies>
+    </dependencies>
+
+    <!-- This must always be the last thing to be built. As such, we want to do final clover metrics here -->
+    <profiles>
+        <profile>
+            <id>it-clover</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>clover-maven-plugin</artifactId>
+                        <version>${clover.version}</version>
+                        <configuration>
+                            <generateHistorical>true</generateHistorical>
+                            <historyDir>${clover.history.dir}</historyDir>
+                            <cloverMergeDatabase>${clover.database}</cloverMergeDatabase>
+                            <baseDir>${project.basedir}/..</baseDir>
+                            <excludes>
+                                <exclude>**/*Test*</exclude>
+                            </excludes>
+                            <targetPercentage>${clover.coverage.percentage}</targetPercentage>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clover.everything</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>clover</goal>
+                                    <goal>save-history</goal>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

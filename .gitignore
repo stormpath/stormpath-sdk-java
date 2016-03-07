@@ -2,10 +2,11 @@ target
 build
 .gradle
 .idea
+.clover
 *.ipr
 *.iws
 *.iml
-.DS_STORE
+.DS_Store
 .project
 .settings
 .classpath
