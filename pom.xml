@@ -605,7 +605,7 @@
         <profile>
             <id>jdk8</id>
             <activation>
-                <jdk>[1.8,)</jdk>
+                <jdk>[1.7,1.8)</jdk>
             </activation>
             <properties>
                 <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
