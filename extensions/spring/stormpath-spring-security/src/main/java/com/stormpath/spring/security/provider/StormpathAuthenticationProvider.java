@@ -352,7 +352,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         String password = (String) authentication.getCredentials();
 
         if (!Strings.hasText(username)){
-            throw new AuthenticationServiceException("must have username and password");
+            throw new AuthenticationServiceException("Login and password required");
         }
 
         return UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build();
