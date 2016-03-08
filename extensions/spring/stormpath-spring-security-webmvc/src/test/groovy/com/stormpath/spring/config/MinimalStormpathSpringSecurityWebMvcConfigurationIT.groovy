@@ -139,9 +139,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         assertTrue stormpathMethodSecurityExpressionHandler.defaultRolePrefix.equals("")
 
         assertNotNull stormpathAuthenticationProvider
-        assertNotNull stormpathAuthenticationProvider.applicationRestUrl
-        assertNotNull stormpathAuthenticationProvider.client
-        assertNotNull stormpathAuthenticationProvider.client
+        assertNotNull stormpathAuthenticationProvider.application
     }
 
     /**

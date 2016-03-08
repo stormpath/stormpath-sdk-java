@@ -22,6 +22,8 @@ import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupStatus;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.authz.permission.Permission;
@@ -42,11 +44,10 @@ import java.util.Set;
  * A {@code AuthenticationProvider} implementation that uses the <a href="http://www.stormpath.com">Stormpath</a> Cloud Identity
  * Management service for authentication and authorization operations for a single Application.
  * <p/>
- * The Stormpath-registered
- * <a href="https://www.stormpath.com/docs/libraries/application-rest-url">Application's Stormpath REST URL</a>
- * must be configured as the {@code applicationRestUrl} property.
+ * It requires the <a href="https://docs.stormpath.com/java/spring-boot-web/config.html#stormpath-application">Stormpath Application</a> be configured
+ * <p/>
  * <h3>Authentication</h3>
- * Once your application's REST URL is configured, this provider implementation automatically executes authentication
+ * Once your application's is configured, this provider implementation automatically executes authentication
  * attempts without any need of further configuration by interacting with the Application's
  * <a href="http://www.stormpath.com/docs/rest/api#ApplicationLoginAttempts">loginAttempts endpoint</a>.
  * <h3>Authorization</h3>
@@ -140,67 +141,24 @@ import java.util.Set;
  */
 public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
-    private Client client;
-    private String applicationRestUrl;
+    private final Application application;
+
     private GroupGrantedAuthorityResolver groupGrantedAuthorityResolver;
     private GroupPermissionResolver groupPermissionResolver;
     private AccountGrantedAuthorityResolver accountGrantedAuthorityResolver;
     private AccountPermissionResolver accountPermissionResolver;
     private AuthenticationTokenFactory authenticationTokenFactory;
 
-    private Application application; //acquired via the client at runtime, not configurable by the StormpathAuthenticationProvider user
 
-    public StormpathAuthenticationProvider() {
+    public StormpathAuthenticationProvider(Application application) {
+        Assert.notNull(application, "application can't be null");
+
+        this.application = application;
+
         setGroupGrantedAuthorityResolver(new DefaultGroupGrantedAuthorityResolver());
         setGroupPermissionResolver(new GroupCustomDataPermissionResolver());
         setAccountPermissionResolver(new AccountCustomDataPermissionResolver());
         setAuthenticationTokenFactory(new UsernamePasswordAuthenticationTokenFactory());
-    }
-
-    /**
-     * Returns the {@code Client} instance used to communicate with Stormpath's REST API.
-     *
-     * @return the {@code Client} instance used to communicate with Stormpath's REST API.
-     */
-    public Client getClient() {
-        return client;
-    }
-
-    /**
-     * Sets the {@code Client} instance used to communicate with Stormpath's REST API.
-     *
-     * @param client the {@code Client} instance used to communicate with Stormpath's REST API.
-     */
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    /**
-     * Returns the Stormpath REST URL of the specific application communicating with Stormpath.
-     * <p/>
-     * Any application supported by Stormpath will have a
-     * <a href="http://www.stormpath.com/docs/quickstart/authenticate-account">dedicated unique REST URL</a>.  The
-     * Stormpath REST URL of the Spring Security-enabled application communicating with Stormpath via this Provider must be
-     * configured by this property.
-     *
-     * @return the Stormpath REST URL of the specific application communicating with Stormpath.
-     */
-    public String getApplicationRestUrl() {
-        return applicationRestUrl;
-    }
-
-    /**
-     * Sets the Stormpath REST URL of the specific application communicating with Stormpath.
-     * <p/>
-     * Any application supported by Stormpath will have a
-     * <a href="http://www.stormpath.com/docs/quickstart/authenticate-account">dedicated unique REST URL</a>.  The
-     * Stormpath REST URL of the Spring Security-enabled application communicating with Stormpath via this Provider must be
-     * configured by this property.
-     *
-     * @param applicationRestUrl the Stormpath REST URL of the specific application communicating with Stormpath.
-     */
-    public void setApplicationRestUrl(String applicationRestUrl) {
-        this.applicationRestUrl = applicationRestUrl;
     }
 
     /**
@@ -296,7 +254,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     *
      * Returns the {@link AccountGrantedAuthorityResolver} used to discover a Stormpath Account's assigned permissions. Unless
      * overridden, the default instance is a {@link UsernamePasswordAuthenticationTokenFactory}.
      *
@@ -321,33 +278,16 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         this.authenticationTokenFactory = authenticationTokenFactory;
     }
 
-    private void assertState() {
-        if (this.client == null) {
-            throw new IllegalStateException("Stormpath SDK Client instance must be configured.");
-        }
-        if (this.applicationRestUrl == null) {
-            throw new IllegalStateException("\n\nThis application's Stormpath REST URL must be configured.\n\n  " +
-                    "You may get your application's Stormpath REST URL as shown here:\n\n " +
-                    "http://www.stormpath.com/docs/application-rest-url\n\n" +
-                    "Copy and paste the 'REST URL' value as the 'applicationRestUrl' property of this class.");
-        }
-    }
-
     /**
      * Performs actual authentication for the received authentication credentials using
      * <a href="http://www.stormpath.com">Stormpath</a> Cloud Identity Management service for a single application.
      *
      * @param authentication the authentication request object.
-     *
      * @return a fully authenticated object including credentials.
-     *
      * @throws AuthenticationException if authentication fails.
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
-        assertState();
-
         Account account;
 
         try {
@@ -368,7 +308,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         }
 
         Authentication authToken = this.authenticationTokenFactory.createAuthenticationToken(
-            authentication.getPrincipal(), null, getGrantedAuthorities(account), account
+                authentication.getPrincipal(), null, getGrantedAuthorities(account), account
         );
 
         return authToken;
@@ -376,7 +316,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
     private Account handleUsernamePasswordAuthentication(Authentication authentication) throws AuthenticationException {
         AuthenticationRequest request = createAuthenticationRequest(authentication);
-        Application application = ensureApplicationReference();
 
         Account account;
 
@@ -399,7 +338,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
      * <Code>Authentication</code> object.
      *
      * @param authentication the class to validate this <Code>AuthenticationProvider</code> supports
-     *
      * @return <code>true</code> if the given class is supported
      */
     @Override
@@ -407,16 +345,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         if (ProviderAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         return false;
-    }
-
-    //This is not thread safe, but the Client is, and this is only executed during initial Application
-    //acquisition, so it is negligible if this executes a few times instead of just once.
-    protected final Application ensureApplicationReference() {
-        if (this.application == null) {
-            String href = getApplicationRestUrl();
-            this.application = client.getDataStore().getResource(href, Application.class);
-        }
-        return this.application;
     }
 
     protected AuthenticationRequest createAuthenticationRequest(Authentication authentication) {
@@ -431,11 +359,13 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         GroupList groups = account.getGroups();
 
         for (Group group : groups) {
+            if (GroupStatus.ENABLED.equals(group.getStatus())) {
                 Set<GrantedAuthority> groupGrantedAuthorities = resolveGrantedAuthorities(group);
                 grantedAuthorities.addAll(groupGrantedAuthorities);
 
                 Set<Permission> groupPermissions = resolvePermissions(group);
                 grantedAuthorities.addAll(groupPermissions);
+            }
         }
 
         Set<GrantedAuthority> accountGrantedAuthorities = resolveGrantedAuthorities(account);

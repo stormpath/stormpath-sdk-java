@@ -72,10 +72,8 @@ class BeanOverrideStormpathWebSecurityAutoConfigurationIT extends AbstractTestNG
     void test() {
 
         assertNotNull stormpathAuthenticationProvider
-        assertNotNull stormpathAuthenticationProvider.applicationRestUrl
-        assertNotNull stormpathAuthenticationProvider.client
+        assertNotNull stormpathAuthenticationProvider.application
 
-        assertTrue stormpathAuthenticationProvider.client.dataStore.cacheManager instanceof DisabledCacheManager
         assertTrue stormpathGroupPermissionResolver instanceof CustomTestGroupPermissionResolver
         assertTrue stormpathAuthenticationProvider.groupPermissionResolver instanceof CustomTestGroupPermissionResolver
         assertTrue stormpathAuthenticationProvider.accountGrantedAuthorityResolver instanceof EmptyAccountGrantedAuthorityResolver
