@@ -18,9 +18,12 @@ package com.stormpath.sdk.authc;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
- * A Builder to construct {@link com.stormpath.sdk.authc.UsernamePasswordRequest UsernamePasswordRequest}s.
+ * A Builder to construct username/password-based {@link AuthenticationRequest}s.
  *
- * @see com.stormpath.sdk.authc.UsernamePasswordRequest#builder()
+ * It optionally supports {@link #inAccountStore(AccountStore) specifying an specific account store} as well for
+ * targeted authentication behavior.
+ *
+ * @see UsernamePasswordRequests#builder() UsernamePasswordRequests.builder()
  * @since 1.0.RC5
  */
 public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBuilder<UsernamePasswordRequestBuilder> {

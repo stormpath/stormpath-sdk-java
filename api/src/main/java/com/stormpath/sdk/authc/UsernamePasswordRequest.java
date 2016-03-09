@@ -20,25 +20,28 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 
 /**
- * A {@code UsernamePasswordRequest} is an {@code AuthenticationRequest} that represents a username (or email) +
- * password pair.  It optionally supports
- * {@link #setAccountStore(com.stormpath.sdk.directory.AccountStore) targeting an specific account store} as well for
- * customized authentication behavior.
  * <p>
- * NOTE: This class has been deprecated and will be removed in version 1.0. You can now use the new fluent interface
- * to create Username/Password Requests. For example:</p>
+ * NOTE: This class has been deprecated and will be removed in version 1.0. Use the
+ * {@link UsernamePasswordRequests#builder() UsernamePasswordRequests.builder()} instead.  For example:</p>
  * <pre>
- * AuthenticationRequest request = UsernamePasswordRequest.builder()
+ * AuthenticationRequest request = UsernamePasswordRequests.builder()
  *                         .setUsernameOrEmail(username)
  *                         .setPassword(submittedRawPlaintextPassword)
  *                         .build();
  * Account authenticated = application.authenticateAccount(request).getAccount();
  * </pre>
  *
+ * <p>A {@code UsernamePasswordRequest} is an {@code AuthenticationRequest} that represents a username (or email) +
+ * password pair.  It optionally supports
+ * {@link #setAccountStore(com.stormpath.sdk.directory.AccountStore) targeting an specific account store} as well for
+ * customized authentication behavior.</p>
+ *
  * @see UsernamePasswordRequestBuilder
  *
+ * @deprecated since 1.0.RC9. Use {@link UsernamePasswordRequests#builder() UsernamePasswordRequests.builder()} instead.
  * @since 0.2
  */
+@Deprecated
 public class UsernamePasswordRequest implements AuthenticationRequest<String, char[]> {
 
     /**
@@ -46,7 +49,9 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      *
      * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
      * @since 1.0.RC5
+     * @deprecated since 1.0.RC9. Use {@link UsernamePasswordRequests#builder() UsernamePasswordRequests.builder()} instead.
      */
+    @Deprecated
     public static UsernamePasswordRequestBuilder builder() {
         return (UsernamePasswordRequestBuilder) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequestBuilder");
     }
@@ -59,7 +64,9 @@ public class UsernamePasswordRequest implements AuthenticationRequest<String, ch
      * AuthenticationResult} resource that will be obtained after a successful authentication.
      * @see com.stormpath.sdk.authc.UsernamePasswordRequestBuilder#withResponseOptions(BasicAuthenticationOptions)
      * @since 1.0.RC5
+     * @deprecated since 1.0.RC9. Use {@link UsernamePasswordRequests#options() UsernamePasswordRequests.options()} instead.
      */
+    @Deprecated
     public static BasicAuthenticationOptions options() {
         return (BasicAuthenticationOptions) Classes.newInstance("com.stormpath.sdk.impl.authc.DefaultBasicAuthenticationOptions");
     }
