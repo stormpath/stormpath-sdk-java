@@ -1256,7 +1256,7 @@ class ApplicationIT extends ClientIT {
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
 
-        def options = UsernamePasswordRequests.options()
+        def options = UsernamePasswordRequests.options().withAccount()
         def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
 
         def result = app.authenticateAccount(request)
