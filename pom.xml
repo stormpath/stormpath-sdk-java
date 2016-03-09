@@ -121,7 +121,7 @@
         <jstl.version>1.2</jstl.version>
 
         <!-- clover - for internal use -->
-        <clover.coverage.percentage>59%</clover.coverage.percentage>
+        <clover.coverage.percentage>60%</clover.coverage.percentage>
         <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
         <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
         <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
@@ -624,7 +624,7 @@
             </properties>
         </profile>
         <profile>
-            <id>it</id>
+            <id>clover.all</id>
             <activation>
                 <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
                 the REST api unnecessarily. -->
@@ -633,9 +633,10 @@
             <properties>
                 <skipITs>false</skipITs>
             </properties>
-        </profile>
-        <profile>
-            <id>clover.all</id>
+            <!--
+                NOTE: This is an older style of config, but currently, clover is unable
+                to work with deeply nested modules.
+            -->
             <modules>
                 <module>api</module>
                 <module>impl</module>
