@@ -121,7 +121,7 @@
         <jstl.version>1.2</jstl.version>
 
         <!-- clover - for internal use -->
-        <clover.coverage.percentage>30%</clover.coverage.percentage>
+        <clover.coverage.percentage>59%</clover.coverage.percentage>
         <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
         <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
         <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
@@ -635,7 +635,7 @@
             </properties>
         </profile>
         <profile>
-            <id>it-clover</id>
+            <id>clover.all</id>
             <modules>
                 <module>api</module>
                 <module>impl</module>
