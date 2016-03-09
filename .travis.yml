@@ -14,6 +14,9 @@ env:
 before_install:
 - openssl aes-256-cbc -K $encrypted_da634cfd642b_key -iv $encrypted_da634cfd642b_iv
   -in deployKey_stormpath_github_io_id_rsa.enc -out ~/.ssh/id_rsa -d
+- mkdir -p ~/.stormpath/clover
+- openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
+  -in clover_license.enc -out ~/.stormpath/clover/clover.license -d
 - chmod 600 ~/.ssh/id_rsa
 - export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
   -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
