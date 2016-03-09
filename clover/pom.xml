@@ -40,7 +40,7 @@
     <!-- This must always be the last thing to be built. As such, we want to do final clover metrics here -->
     <profiles>
         <profile>
-            <id>it-clover</id>
+            <id>clover.all</id>
             <build>
                 <plugins>
                     <plugin>
