@@ -16,8 +16,8 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
+import com.stormpath.sdk.authc.UsernamePasswordRequests;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -33,7 +33,7 @@ public class DefaultUsernamePasswordRequestFactory implements UsernamePasswordRe
     private AccountStoreResolver accountStoreResolver;
 
     public DefaultUsernamePasswordRequestFactory(
-        AccountStoreResolver accountStoreResolver) {
+            AccountStoreResolver accountStoreResolver) {
         Assert.notNull(accountStoreResolver, "AccountStoreResolver cannot be null.");
         this.accountStoreResolver = accountStoreResolver;
     }
@@ -46,9 +46,9 @@ public class DefaultUsernamePasswordRequestFactory implements UsernamePasswordRe
     public AuthenticationRequest createUsernamePasswordRequest(HttpServletRequest request, HttpServletResponse response,
                                                                String username, String password) {
         AccountStore accountStore =
-            getAccountStoreResolver().getAccountStore(request, response);
+                getAccountStoreResolver().getAccountStore(request, response);
 
-        UsernamePasswordRequestBuilder builder = UsernamePasswordRequest.builder()
+        UsernamePasswordRequestBuilder builder = UsernamePasswordRequests.builder()
                 .setUsernameOrEmail(username)
                 .setPassword(password)
                 .setHost(request.getRemoteHost());

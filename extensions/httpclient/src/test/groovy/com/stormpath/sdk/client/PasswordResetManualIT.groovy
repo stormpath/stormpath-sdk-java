@@ -18,7 +18,7 @@ package com.stormpath.sdk.client
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
-import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
 
@@ -83,7 +83,7 @@ class PasswordResetManualIT extends ClientIT {
         acct.password = newPassword
         acct.save()
 
-        def request = new UsernamePasswordRequest(email, newPassword)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(email).setPassword(newPassword).build()
         Account authenticated = appToTest.authenticateAccount(request).account
 
         assertEquals acct.href, authenticated.href
@@ -112,7 +112,7 @@ class PasswordResetManualIT extends ClientIT {
 
         assertEquals(email, acct.email, "Could not retrieve correct account during password reset.")
 
-        def request = new UsernamePasswordRequest(email, newPassword)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(email).setPassword(newPassword).build()
         Account authenticated = appToTest.authenticateAccount(request).account
 
         assertEquals acct.href, authenticated.href

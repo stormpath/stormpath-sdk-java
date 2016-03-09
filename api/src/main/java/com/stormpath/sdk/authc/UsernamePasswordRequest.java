@@ -45,9 +45,9 @@ import com.stormpath.sdk.lang.Classes;
 public class UsernamePasswordRequest implements AuthenticationRequest<String, char[]> {
 
     /**
-     * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct username/password-based {@link AuthenticationRequest}s.
      *
-     * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct username/password-based {@link AuthenticationRequest}s.
      * @since 1.0.RC5
      * @deprecated since 1.0.RC9. Use {@link UsernamePasswordRequests#builder() UsernamePasswordRequests.builder()} instead.
      */
