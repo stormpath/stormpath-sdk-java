@@ -19,7 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationList
-import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.impl.api.ClientApiKey
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.tenant.Tenant
@@ -83,7 +83,7 @@ class PasswordResetAndAuthenticationManualIT {
 //        println "appToTest = $appToTest"
 //        println "acctToTest = $acctToTest"
 
-        UsernamePasswordRequest request = new UsernamePasswordRequest(acctToTest.username, oldPassword)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(acctToTest.username).setPassword(oldPassword).build()
         println(appToTest.authenticateAccount(request).getAccount())
 
 //     1 - I create a password reset token
@@ -94,7 +94,7 @@ class PasswordResetAndAuthenticationManualIT {
 
 //     3 - I get the Account from the PasswordResetToken
         Account accountFromToken = token.account
-        request = new UsernamePasswordRequest(accountFromToken.username, oldPassword)
+        request = UsernamePasswordRequests.builder().setUsernameOrEmail(accountFromToken.username).setPassword(oldPassword).build()
         appToTest.authenticateAccount(request)
 
 //     4 - I set the new password on the Account
@@ -103,7 +103,7 @@ class PasswordResetAndAuthenticationManualIT {
         accountFromToken.save()
 
 //     6 - I try to authenticate with the new password
-        request = new UsernamePasswordRequest(accountFromToken.username, newPassword)
+        request = UsernamePasswordRequests.builder().setUsernameOrEmail(accountFromToken.username).setPassword(newPassword).build()
         appToTest.authenticateAccount(request)
 
         long stop = System.currentTimeMillis();

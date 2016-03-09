@@ -664,8 +664,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * <p/>
      * NOTE: If you already know the account store where the account resides, you can
      * specify it at the time the authentication request is created (for example,
-     * {@link com.stormpath.sdk.authc.UsernamePasswordRequest#UsernamePasswordRequest(String, char[],
-     * com.stormpath.sdk.directory.AccountStore)}).
+     * {@link UsernamePasswordRequestBuilder#inAccountStore(AccountStore)}).
      * This way you will be avoiding the authentication attempt to cycle through the Application's account stores.
      * <p/>
      * <h4>Example</h4>

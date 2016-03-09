@@ -15,15 +15,14 @@ import com.stormpath.sdk.lang.Classes;
  * </pre>
  *
  * @see UsernamePasswordRequestBuilder
- *
  * @since 1.0.RC9
  */
 public class UsernamePasswordRequests {
 
     /**
-     * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     * Returns a new {@link UsernamePasswordRequestBuilder} instance, used to construct username/password-based {@link AuthenticationRequest}s.
      *
-     * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct {@link UsernamePasswordRequest}s.
+     * @return a new {@link UsernamePasswordRequestBuilder} instance, used to construct username/password-based {@link AuthenticationRequest}s.
      * @since 1.0.RC5
      */
     public static UsernamePasswordRequestBuilder builder() {
@@ -33,7 +32,7 @@ public class UsernamePasswordRequests {
     /**
      * Returns a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
      * AuthenticationResult} resource that will be obtained after a successful authentication.  For example:
-     *  <pre>
+     * <pre>
      * AuthenticationRequest request = UsernamePasswordRequests.builder()
      *                         .setUsernameOrEmail(username)
      *                         .setPassword(submittedRawPlaintextPassword)
@@ -41,7 +40,6 @@ public class UsernamePasswordRequests {
      *                         .build();
      * Account authenticated = application.authenticateAccount(request).getAccount();
      * </pre>
-     *
      *
      * @return a new {@link BasicAuthenticationOptions} instance, that may be used to customize the {@link com.stormpath.sdk.authc.AuthenticationResult
      * AuthenticationResult} resource that will be obtained after a successful authentication.

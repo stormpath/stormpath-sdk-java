@@ -16,11 +16,11 @@
 package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.authc.BasicAuthenticationOptions
-import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.directory.Directory
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.*
+import static org.easymock.EasyMock.createMock
 import static org.testng.Assert.*
 
 /**
@@ -32,7 +32,7 @@ class UsernamePasswordRequestBuilderTest {
     void testAllProperties() {
         def accountStore = createMock(Directory)
         def options = createMock(BasicAuthenticationOptions)
-        def authenticationRequest = UsernamePasswordRequest.builder()
+        def authenticationRequest = UsernamePasswordRequests.builder()
                 .setUsernameOrEmail("usernameOrEmail")
                 .setPassword("myPassword123!")
                 .setHost("http://myHost.com")
@@ -50,30 +50,30 @@ class UsernamePasswordRequestBuilderTest {
     @Test
     void testNullChecks() {
         try {
-            UsernamePasswordRequest.builder().build()
+            UsernamePasswordRequests.builder().build()
             fail("Should have thrown");
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "usernameOrEmail has not been set. It is a required attribute.")
         }
 
         try {
-            UsernamePasswordRequest.builder().setUsernameOrEmail("someFooUsername").setHost(null)
+            UsernamePasswordRequests.builder().setUsernameOrEmail("someFooUsername").setHost(null)
             fail("Should have thrown");
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "host cannot be null.")
         }
 
         try {
-            UsernamePasswordRequest.builder().setUsernameOrEmail("someFooUsername").inAccountStore(null)
+            UsernamePasswordRequests.builder().setUsernameOrEmail("someFooUsername").inAccountStore(null)
             fail("Should have thrown");
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "accountStore cannot be null.")
         }
 
         try {
-            UsernamePasswordRequest.builder().setUsernameOrEmail("someFooUsername").withResponseOptions(null)
+            UsernamePasswordRequests.builder().setUsernameOrEmail("someFooUsername").withResponseOptions(null)
             fail("Should have thrown");
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "options cannot be null.")
         }
     }
