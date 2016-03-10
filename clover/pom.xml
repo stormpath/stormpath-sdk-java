@@ -63,6 +63,7 @@
                             <baseDir>${project.basedir}/..</baseDir>
                             <excludes>
                                 <exclude>**/*Test*</exclude>
+                                <exclude>**/*IT*</exclude>
                             </excludes>
                             <targetPercentage>${clover.coverage.percentage}</targetPercentage>
                         </configuration>

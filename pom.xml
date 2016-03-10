@@ -121,7 +121,7 @@
         <jstl.version>1.2</jstl.version>
 
         <!-- clover - for internal use -->
-        <clover.coverage.percentage>60%</clover.coverage.percentage>
+        <clover.coverage.percentage>52%</clover.coverage.percentage>
         <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
         <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
         <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
@@ -690,6 +690,7 @@
                             <singleCloverDatabase>true</singleCloverDatabase>
                             <excludes>
                                 <exclude>**/*Test*</exclude>
+                                <exclude>**/*IT*</exclude>
                             </excludes>
                             <useCloverClassifier>true</useCloverClassifier>
                             <!--See https://confluence.atlassian.com/display/CLOVERKB/Java+8+code+instrumented+by+Clover+fails+to+compile-->
