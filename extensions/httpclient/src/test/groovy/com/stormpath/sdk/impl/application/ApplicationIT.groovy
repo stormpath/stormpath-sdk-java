@@ -28,6 +28,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
@@ -37,7 +38,6 @@ import com.stormpath.sdk.oauth.JwtAuthenticationRequest
 import com.stormpath.sdk.oauth.OauthPolicy
 import com.stormpath.sdk.oauth.PasswordGrantRequest
 import com.stormpath.sdk.oauth.RefreshGrantRequest
-import com.stormpath.sdk.authc.UsernamePasswordRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
@@ -98,7 +98,7 @@ class ApplicationIT extends ClientIT {
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
 
-        def request = new UsernamePasswordRequest(username, password)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
         def result = app.authenticateAccount(request)
 
         def cachedAccount = result.getAccount()
@@ -116,7 +116,7 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'John'
         account.surname = 'DELETEME'
-        account.email =  email
+        account.email = email
         account.password = 'Changeme1!'
 
         def created = app.createAccount(account)
@@ -312,13 +312,15 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(acct)
 
         //Account belongs to dir1, therefore login must succeed
-        def request = new UsernamePasswordRequest(username, password, accountStoreMapping1.getAccountStore())
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password)
+                .inAccountStore(accountStoreMapping1.getAccountStore()).build()
         def result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
 
         try {
             //Account does not belong to dir2, therefore login must fail
-            request = new UsernamePasswordRequest(username, password, accountStoreMapping2.getAccountStore())
+            request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password)
+                    .inAccountStore(accountStoreMapping2.getAccountStore()).build()
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
@@ -326,7 +328,7 @@ class ApplicationIT extends ClientIT {
         }
 
         //No account store has been defined, therefore login must succeed
-        request = new UsernamePasswordRequest(username, password)
+        request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
         result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
     }
@@ -378,12 +380,12 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(accountStoreMapping)
 
         //Account belongs to org, therefore login must succeed
-        def request = new UsernamePasswordRequest(username, password, org)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).inAccountStore(org).build()
         def result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
 
         //No account store has been defined, therefore login must succeed
-        request = new UsernamePasswordRequest(username, password)
+        request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
         result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
 
@@ -397,7 +399,7 @@ class ApplicationIT extends ClientIT {
 
         //Account does not belong to org2, therefore login must fail
         try {
-            request = new UsernamePasswordRequest(username, password, org2)
+            request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).inAccountStore(org2).build()
             result = app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
@@ -452,7 +454,9 @@ class ApplicationIT extends ClientIT {
 
         for (ApplicationAccountStoreMapping mapping : accountStoreMappings) {
             AccountStore accountStore = mapping.getAccountStore();
-            if (!(accountStore instanceof Organization)) { continue; }
+            if (!(accountStore instanceof Organization)) {
+                continue;
+            }
             Organization organization = (Organization) accountStore;
             assertNotNull organization.href
             assertEquals organization.name, name
@@ -616,7 +620,7 @@ class ApplicationIT extends ClientIT {
      * @since 1.0.RC8
      */
     @Test
-    void testSamlProperties(){
+    void testSamlProperties() {
         def app = createTempApp()
 
         def samlPolicy = app.getSamlPolicy()
@@ -646,10 +650,10 @@ class ApplicationIT extends ClientIT {
         assertEquals callbackUris.iterator().next(), uri
 
         List<String> testUris = new ArrayList<String>()
-            testUris.add("https://myapplication.com/callback1")
-            testUris.add("https://myapplication.com/callback2")
-            testUris.add("https://myapplication.com/callback3")
-            testUris.add("https://myapplication.com/callback4")
+        testUris.add("https://myapplication.com/callback1")
+        testUris.add("https://myapplication.com/callback2")
+        testUris.add("https://myapplication.com/callback3")
+        testUris.add("https://myapplication.com/callback4")
 
         app.setAuthorizedCallbackUris(testUris)
         callbackUris = app.getAuthorizedCallbackUris()
@@ -694,8 +698,10 @@ class ApplicationIT extends ClientIT {
 
         assertNotNull appApiKey
 
-        assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
-        assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion on the object retrieved from the server
+        assertTrue(appApiKey.account.propertyNames.size() > 1)
+        // testing expansion on the object retrieved from the server
+        assertTrue(appApiKey.tenant.propertyNames.size() > 1)
+        // testing expansion on the object retrieved from the server
 
         assertNotNull appApiKey2
 
@@ -833,13 +839,13 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'John'
         account.surname = 'DELETEME'
-        account.email =  email
+        account.email = email
         account.password = 'Changeme1!'
 
         app.createAccount(account)
         deleteOnTeardown(account)
 
-        return  account
+        return account
     }
 
     String decryptSecretFromCacheMap(Map cacheMap) {
@@ -903,7 +909,8 @@ class ApplicationIT extends ClientIT {
     /**
      * @since 1.0.RC
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false)
+    //ignoring because of sporadic Travis failures
     void testGetApplicationsWithMapViaTenantActions() {
         def map = new HashMap<String, Object>()
         def appList = client.getApplications(map)
@@ -914,7 +921,8 @@ class ApplicationIT extends ClientIT {
     /**
      * @since 1.0.RC
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false)
+    //ignoring because of sporadic Travis failures
     void testGetApplicationsWithAppCriteriaViaTenantActions() {
         def appCriteria = Applications.criteria()
         def appList = client.getApplications(appCriteria)
@@ -945,7 +953,8 @@ class ApplicationIT extends ClientIT {
     /**
      * @since 1.0.RC3
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false)
+    //ignoring because of sporadic Travis failures
     void testAddAccountStore_Dirs() {
         def count = 1
         while (count >= 0) { //re-trying once
@@ -1012,7 +1021,8 @@ class ApplicationIT extends ClientIT {
     /**
      * @since 1.0.RC3
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false)
+    //ignoring because of sporadic Travis failures
     void testAddAccountStore_Groups() {
         def count = 1
         while (count >= 0) { //re-trying once
@@ -1081,11 +1091,11 @@ class ApplicationIT extends ClientIT {
         }
     }
 
-
     /**
      * @since 1.0.RC3
      */
-    @Test(enabled = false, expectedExceptions = IllegalArgumentException)  //ignoring because of sporadic Travis failures
+    @Test(enabled = false, expectedExceptions = IllegalArgumentException)
+    //ignoring because of sporadic Travis failures
     void testAddAccountStore_DirAndGroupMatch() {
 
         Directory dir01 = client.instantiate(Directory)
@@ -1136,7 +1146,8 @@ class ApplicationIT extends ClientIT {
     /**
      * @since 1.0.RC3
      */
-    @Test(enabled = false, expectedExceptions = IllegalArgumentException) //ignoring because of sporadic Travis failures
+    @Test(enabled = false, expectedExceptions = IllegalArgumentException)
+    //ignoring because of sporadic Travis failures
     void testAddAccountStore_MultipleGroupCriteria() {
 
         Directory dir01 = client.instantiate(Directory)
@@ -1182,7 +1193,7 @@ class ApplicationIT extends ClientIT {
         try {
             app.getAccounts().single()
             fail("should have thrown")
-        } catch ( IllegalStateException e) {
+        } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "Only a single resource was expected, but this list contains more than one item.")
         }
 
@@ -1191,7 +1202,7 @@ class ApplicationIT extends ClientIT {
         try {
             app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("thisEmailDoesNotBelong@ToAnAccount.com"))).single()
             fail("should have thrown")
-        } catch ( IllegalStateException e) {
+        } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "This list is empty while it was expected to contain one (and only one) element.")
         }
     }
@@ -1245,8 +1256,8 @@ class ApplicationIT extends ClientIT {
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
 
-        def options = UsernamePasswordRequest.options().withAccount()
-        def request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
+        def options = UsernamePasswordRequests.options().withAccount()
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
 
         def result = app.authenticateAccount(request)
 
@@ -1256,7 +1267,7 @@ class ApplicationIT extends ClientIT {
         assertEquals properties.get("account").get("email"), acct.email
 
         //Let's re-authenticate without expansion
-        request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build()
+        request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
         result = app.authenticateAccount(request)
 
         //Let's check that there is no expansion
@@ -1264,9 +1275,10 @@ class ApplicationIT extends ClientIT {
         assertTrue properties.get("account").size() == 1
     }
 
-    private static assertAccountStoreMappingListSize(ApplicationAccountStoreMappingList accountStoreMappings, int expectedSize) {
+    private
+    static assertAccountStoreMappingListSize(ApplicationAccountStoreMappingList accountStoreMappings, int expectedSize) {
         int qty = 0;
-        for(ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappings) {
+        for (ApplicationAccountStoreMapping accountStoreMapping : accountStoreMappings) {
             qty++;
         }
         assertEquals(qty, expectedSize)
@@ -1276,7 +1288,7 @@ class ApplicationIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testSaveWithResponseOptions(){
+    void testSaveWithResponseOptions() {
 
         def app = createTempApp()
         def href = app.getHref()
@@ -1321,7 +1333,8 @@ class ApplicationIT extends ClientIT {
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(acct)
 
-        def account = app.authenticateAccount(new UsernamePasswordRequest(username, password)).getAccount()
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
+        def account = app.authenticateAccount(request).getAccount()
         assertEquals account.getEmail(), email
 
         PasswordResetToken token = app.sendPasswordResetEmail(email)
@@ -1331,14 +1344,16 @@ class ApplicationIT extends ClientIT {
         account = app.resetPassword(token.getValue(), "newPassword123!")
 
         try {
-            account = app.authenticateAccount(new UsernamePasswordRequest(username, password)).getAccount()
+            def upreq = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
+            account = app.authenticateAccount(upreq).getAccount()
             fail("should have thrown due to wrong password")
         } catch (ResourceException e) {
             assertTrue(e.getMessage().contains("Login attempt failed because the specified password is incorrect."))
         }
 
         //login with the new password
-        account = app.authenticateAccount(new UsernamePasswordRequest(username, "newPassword123!")).getAccount()
+        def upreq = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword("newPassword123!").build()
+        account = app.authenticateAccount(upreq).getAccount()
 
         assertEquals account.getEmail(), email
     }
@@ -1361,10 +1376,10 @@ class ApplicationIT extends ClientIT {
         def app = createTempApp()
 
         Account account = client.instantiate(Account)
-            .setGivenName('John')
-            .setSurname('DeleteMe')
-            .setEmail("deletejohn@test.com")
-            .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
+                .setGivenName('John')
+                .setSurname('DeleteMe')
+                .setEmail("deletejohn@test.com")
+                .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
 
         def created = app.createAccount(Accounts.newCreateRequestFor(account)
                 .setRegistrationWorkflowEnabled(false)
@@ -1376,7 +1391,8 @@ class ApplicationIT extends ClientIT {
         def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).single()
         assertEquals(created.href, found.href)
 
-        found = app.authenticateAccount(new UsernamePasswordRequest("deletejohn@test.com", "rasmuslerdorf")).getAccount()
+        def upreq = UsernamePasswordRequests.builder().setUsernameOrEmail("deletejohn@test.com").setPassword("rasmuslerdorf").build()
+        found = app.authenticateAccount(upreq).getAccount()
         assertEquals(created.href, found.href)
     }
 
@@ -1391,19 +1407,20 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'John'
         account.surname = 'DeleteMe'
-        account.email =  "deletejohn@test.com"
+        account.email = "deletejohn@test.com"
         account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
 
         try {
             app.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
             fail("Should have thrown")
-        } catch (ResourceException e){
+        } catch (ResourceException e) {
             assertEquals e.getCode(), 2006
             assertTrue e.getDeveloperMessage().contains("is in an invalid format")
         }
     }
 
     /* @since 1.0.RC7 */
+
     @Test
     void testCreateAndRefreshTokenForAppAccount() {
 
@@ -1414,7 +1431,7 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'John'
         account.surname = 'DELETEME'
-        account.email =  email
+        account.email = email
         account.password = 'Change&45+me1!'
 
         def created = app.createAccount(account)
@@ -1429,9 +1446,9 @@ class ApplicationIT extends ClientIT {
         assertNotNull result.accessTokenHref
         assertEquals result.getAccessToken().getAccount().getEmail(), email
         assertEquals result.getAccessToken().getApplication().getHref(), app.href
-        assertEquals(((Map)result.getAccessToken().getExpandedJwt().get("claims")).get("iss"), app.getHref())
-        assertNotNull(((Map)result.getAccessToken().getExpandedJwt().get("claims")).get("rti"))
-        assertEquals(((Map)result.getAccessToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
+        assertEquals(((Map) result.getAccessToken().getExpandedJwt().get("claims")).get("iss"), app.getHref())
+        assertNotNull(((Map) result.getAccessToken().getExpandedJwt().get("claims")).get("rti"))
+        assertEquals(((Map) result.getAccessToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
         assertNotNull(result.getAccessToken().getExpandedJwt().get("signature"))
 
         RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
@@ -1445,15 +1462,16 @@ class ApplicationIT extends ClientIT {
         assertTrue(result.getRefreshToken().getHref().contains("/refreshTokens/"))
         assertEquals result.getRefreshToken().getAccount().getEmail(), email
         assertEquals result.getRefreshToken().getApplication().getHref(), app.href
-        assertEquals(((Map)result.getRefreshToken().getExpandedJwt().get("claims")).get("sub"), account.getHref())
-        assertNull(((Map)result.getRefreshToken().getExpandedJwt().get("claims")).get("rti"))
-        assertEquals(((Map)result.getRefreshToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
+        assertEquals(((Map) result.getRefreshToken().getExpandedJwt().get("claims")).get("sub"), account.getHref())
+        assertNull(((Map) result.getRefreshToken().getExpandedJwt().get("claims")).get("rti"))
+        assertEquals(((Map) result.getRefreshToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
         assertNotNull(result.getRefreshToken().getExpandedJwt().get("signature"))
     }
 
     /* @since 1.0.RC7 */
+
     @Test
-    void testRetrieveAndUpdateOauthPolicy(){
+    void testRetrieveAndUpdateOauthPolicy() {
         def app = createTempApp()
 
         OauthPolicy oauthPolicy = app.getOauthPolicy()
@@ -1472,6 +1490,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC7 */
+
     @Test
     void testAuthenticateAndDeleteTokenForAppAccount() {
 
@@ -1505,7 +1524,7 @@ class ApplicationIT extends ClientIT {
             //try to authenticate deleted token
             Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
             fail("Should have thrown due to unexistent token")
-        } catch (Exception e){
+        } catch (Exception e) {
             def message = e.getMessage()
             assertTrue message.contains("Token does not exist. This can occur if the token has been manually deleted, or if the token has expired and removed by Stormpath.")
         }
@@ -1515,24 +1534,25 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC8.3 */
+
     @Test
     void testAttemptAuthenticationWithRefreshToken() {
         def app = createTempApp()
         def account = createTestAccount(app)
 
         PasswordGrantRequest grantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
-            .setLogin(account.email)
-            .setPassword("Changeme1!")
-            .build()
+                .setLogin(account.email)
+                .setPassword("Changeme1!")
+                .build()
 
         def grantResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
-            .forApplication(app)
-            .authenticate(grantRequest)
+                .forApplication(app)
+                .authenticate(grantRequest)
 
         // Authenticate token against Stormpath using refresh token <--- INVALID
         JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
-            .setJwt(grantResult.getRefreshTokenString())
-            .build()
+                .setJwt(grantResult.getRefreshTokenString())
+                .build()
 
         try {
             Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest)
@@ -1544,6 +1564,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC8.3 */
+
     @Test
     void testAttemptAuthenticationWithRefreshTokenWithLocalValidation() {
         def app = createTempApp()
@@ -1572,8 +1593,8 @@ class ApplicationIT extends ClientIT {
         }
     }
 
-
     /* @since 1.0.RC7 */
+
     @Test
     void testInvalidTokenViaLocalValidation() {
 
@@ -1593,7 +1614,7 @@ class ApplicationIT extends ClientIT {
             //try to authenticate a tampered token
             Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest)
             fail("Should have thrown")
-        } catch (Exception e){
+        } catch (Exception e) {
             def message = e.getMessage()
             assertTrue message.equals("JWT failed validation; it cannot be trusted.")
         }
@@ -1604,7 +1625,7 @@ class ApplicationIT extends ClientIT {
             //try to use a valid token with another application
             Authenticators.JWT_AUTHENTICATOR.forApplication(app2).withLocalValidation().authenticate(authRequest)
             fail("Should have thrown")
-        } catch (Exception e){
+        } catch (Exception e) {
             def message = e.getMessage()
             assertTrue message.equals("JWT failed validation; it cannot be trusted.")
         }

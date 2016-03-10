@@ -22,23 +22,23 @@ import com.stormpath.sdk.directory.AccountStore;
  *
  * <h4>Usage</h4>
  *
- * <p>While there can be multiple implementations of this interface to reflect different type of authentication
- * attempts, the most common scenario is when a user logs in to your application with username-password
- * authentication:</p>
+ * <p>While there can be multiple implementations of this interface (typically constructed by type-specific builders)
+ * to reflect different type of authentication attempts, the most common scenario is when a user logs in to your
+ * application with username-password authentication.  For example:</p>
  *
  * <pre>
  * String username = getUsername(httpServletRequest); //implement me
  * String password = getPassword(httpServletRequest); //implement me
  *
- * AuthenticationRequest authcRequest = new {@link UsernamePasswordRequest}(username, password);
+ * AuthenticationRequest authcRequest = {@link UsernamePasswordRequests#builder() UsernamePasswordRequests.builder()}.setUsername(username).setPassword(password).build();
  *
  * myApplication.{@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)
  * authenticateAccount}(authcRequest);
  *
  * </pre>
  *
- * @see com.stormpath.sdk.authc.UsernamePasswordRequest
- * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)
+ * @see com.stormpath.sdk.authc.UsernamePasswordRequests
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest) Application.authenticateAccount(authcRequest)
  * @since 0.1
  */
 public interface AuthenticationRequest<P, C> {

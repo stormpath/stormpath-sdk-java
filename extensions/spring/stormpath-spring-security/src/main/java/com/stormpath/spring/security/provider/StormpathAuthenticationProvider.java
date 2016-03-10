@@ -18,8 +18,7 @@ package com.stormpath.spring.security.provider;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
-import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.authc.UsernamePasswordRequests;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupStatus;
@@ -62,51 +61,51 @@ import java.util.Set;
  * <p/>
  * This provider implementation comes pre-configured with the following default implementations, which should suit most
  * Spring Security+Stormpath use cases:
- *
+ * <p/>
  * <table>
- *     <tr>
- *         <th>Property</th>
- *         <th>Pre-configured Implementation</th>
- *         <th>Notes</th>
- *     </tr>
- *     <tr>
- *         <td>{@link #getGroupGrantedAuthorityResolver() groupGrantedAuthorityResolver}</td>
- *         <td>{@link DefaultGroupGrantedAuthorityResolver}</td>
- *         <td>Each Stormpath Group can be represented as up to three possible Spring Security granted authorities (with
- *             1-to-1 being the default).  See the {@link DefaultGroupGrantedAuthorityResolver} JavaDoc for more info.</td>
- *     </tr>
- *     <tr>
- *         <td>{@link #getAccountGrantedAuthorityResolver() accountGrantedAuthorityResolver}</td>
- *         <td>None</td>
- *         <td>Most Spring Security+Stormpath applications should only need the above {@code DefaultGroupGrantedAuthorityResolver}
- *             when using Stormpath Groups as Spring Security granted authorities.  This authentication provider implementation
- *             already acquires the {@link com.stormpath.sdk.account.Account#getGroups() account's assigned groups} and resolves the group
- *             granted authorities via the above {@code groupGrantedAuthorityResolver}.  <b>You only need to configure this property
- *             if you need an additional way to represent an account's assigned granted authorities that cannot already be
- *             represented via Stormpath account &lt;--&gt; group associations.</td>
- *     </tr>
- *     <tr>
- *         <td>{@link #getGroupPermissionResolver() groupPermissionResolver}</td>
- *         <td>{@link GroupCustomDataPermissionResolver}</td>
- *         <td>The {@code GroupCustomDataPermissionResolver} assumes the convention that a Group's assigned permissions
- *         are stored as a nested {@code Set&lt;String&gt;} field in the
- *         {@link com.stormpath.sdk.group.Group#getCustomData() group's CustomData resource}.  See the
- *         {@link GroupCustomDataPermissionResolver} JavaDoc for more information.</td>
- *     </tr>
- *     <tr>
- *         <td>{@link #getAccountPermissionResolver() accountPermissionResolver}</td>
- *         <td>{@link AccountCustomDataPermissionResolver}</td>
- *         <td>The {@code AccountCustomDataPermissionResolver} assumes the convention that an Account's directly
- *         assigned permissions are stored as a nested {@code Set&lt;String&gt;} field in the
- *         {@link com.stormpath.sdk.account.Account#getCustomData() account's CustomData resource}.  See the
- *         {@link AccountCustomDataPermissionResolver} JavaDoc for more information.</td>
- *     </tr>
+ * <tr>
+ * <th>Property</th>
+ * <th>Pre-configured Implementation</th>
+ * <th>Notes</th>
+ * </tr>
+ * <tr>
+ * <td>{@link #getGroupGrantedAuthorityResolver() groupGrantedAuthorityResolver}</td>
+ * <td>{@link DefaultGroupGrantedAuthorityResolver}</td>
+ * <td>Each Stormpath Group can be represented as up to three possible Spring Security granted authorities (with
+ * 1-to-1 being the default).  See the {@link DefaultGroupGrantedAuthorityResolver} JavaDoc for more info.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #getAccountGrantedAuthorityResolver() accountGrantedAuthorityResolver}</td>
+ * <td>None</td>
+ * <td>Most Spring Security+Stormpath applications should only need the above {@code DefaultGroupGrantedAuthorityResolver}
+ * when using Stormpath Groups as Spring Security granted authorities.  This authentication provider implementation
+ * already acquires the {@link com.stormpath.sdk.account.Account#getGroups() account's assigned groups} and resolves the group
+ * granted authorities via the above {@code groupGrantedAuthorityResolver}.  <b>You only need to configure this property
+ * if you need an additional way to represent an account's assigned granted authorities that cannot already be
+ * represented via Stormpath account &lt;--&gt; group associations.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #getGroupPermissionResolver() groupPermissionResolver}</td>
+ * <td>{@link GroupCustomDataPermissionResolver}</td>
+ * <td>The {@code GroupCustomDataPermissionResolver} assumes the convention that a Group's assigned permissions
+ * are stored as a nested {@code Set&lt;String&gt;} field in the
+ * {@link com.stormpath.sdk.group.Group#getCustomData() group's CustomData resource}.  See the
+ * {@link GroupCustomDataPermissionResolver} JavaDoc for more information.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #getAccountPermissionResolver() accountPermissionResolver}</td>
+ * <td>{@link AccountCustomDataPermissionResolver}</td>
+ * <td>The {@code AccountCustomDataPermissionResolver} assumes the convention that an Account's directly
+ * assigned permissions are stored as a nested {@code Set&lt;String&gt;} field in the
+ * {@link com.stormpath.sdk.account.Account#getCustomData() account's CustomData resource}.  See the
+ * {@link AccountCustomDataPermissionResolver} JavaDoc for more information.</td>
+ * </tr>
  * </table>
  * <h4>Transitive Permissions</h4>
  * This implementation represents an Account's granted permissions as all permissions that:
  * <ol>
- *     <li>Are assigned directly to the Account itself</li>
- *     <li>Are assigned to any of the Account's assigned Groups</li>
+ * <li>Are assigned directly to the Account itself</li>
+ * <li>Are assigned to any of the Account's assigned Groups</li>
  * </ol>
  * <h4>Assigning Permissions</h4>
  * A Spring Security Authentication Provider is a read-only component - it typically does not support account/group/permission
@@ -351,11 +350,11 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
 
-        if (!Strings.hasText(username)){
+        if (!Strings.hasText(username)) {
             throw new AuthenticationServiceException("Login and password required");
         }
 
-        return UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).build();
+        return UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build();
     }
 
     protected Collection<GrantedAuthority> getGrantedAuthorities(Account account) {

@@ -24,7 +24,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.ApplicationStatus
 import com.stormpath.sdk.authc.AuthenticationResult
-import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
@@ -185,7 +185,7 @@ class DefaultApplicationTest {
         defaultBasicLoginAttempt.setType("basic")
         defaultBasicLoginAttempt.setValue("dXNlcm5hbWU6cGFzc3dvcmQ=")
 
-        def options = UsernamePasswordRequest.options().withAccount()
+        def options = UsernamePasswordRequests.options().withAccount()
          expect(internalDataStore.create((String) properties.href + "/loginAttempts", defaultBasicLoginAttempt, AuthenticationResult.class, options)).andReturn(authenticationResult02)
 
         replay internalDataStore, groupCriteria, accountCriteria, account
@@ -218,9 +218,9 @@ class DefaultApplicationTest {
 
         assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
-        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "password")), authenticationResult01)
+        assertEquals(defaultApplication.authenticateAccount(UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("password").build()), authenticationResult01)
 
-        def request = UsernamePasswordRequest.builder().setUsernameOrEmail("username").setPassword("password").withResponseOptions(options).build()
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("password").withResponseOptions(options).build()
         assertEquals(defaultApplication.authenticateAccount(request), authenticationResult02)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
@@ -714,7 +714,7 @@ class DefaultApplicationTest {
 
         assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
-        assertEquals(defaultApplication.authenticateAccount(new UsernamePasswordRequest("username", "myNewPassword")), authenticationResult, null)
+        assertEquals(defaultApplication.authenticateAccount(UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("myNewPassword").build()), authenticationResult, null)
 
         verify internalDataStore, account
     }
