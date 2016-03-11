@@ -39,15 +39,15 @@ public class DefaultMessageSource implements MessageSource {
         ResourceBundle bundle = getBundle(locale);
 
         try {
-            //To enable accents and other UTF-8 characters inside properties file we need to read the value in ISO-8858-1
-            //which is the default encoding for properties files according to the Java documentation and re-encode it in UTF-8
+            /* To enable accents and other UTF-8 characters inside properties file we need to read the value in ISO-8858-1
+               which is the default encoding for properties files according to the Java documentation and re-encode it in UTF-8 */
             String msg = new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
             return MessageFormat.format(msg, args);
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         } catch (UnsupportedEncodingException e) {
-            //Should not happen since properties are always encoded in ISO-8850-1 thus is supported and UTF-8 is supported
-            //by the JVM in all platforms
+            /* Should not happen since properties are always encoded in ISO-8850-1 thus is supported and UTF-8 is supported
+               by the JVM in all platforms */
             throw new IllegalStateException("Couldn't load property from resource bundle", e);
         }
     }
