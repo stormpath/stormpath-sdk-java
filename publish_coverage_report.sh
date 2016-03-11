@@ -8,7 +8,7 @@ git clone https://git.heroku.com/afternoon-oasis-83667.git
 echo "Updating Heroku app"
 cd afternoon-oasis-83667
 
-find ../stormpath -type d -name clover -print
+find ../build -type d -name clover -print
 
 cp -p -r ../build/stormpath/stormpath-sdk-java/clover/target/site/clover/* .
 cp index.html home.html
