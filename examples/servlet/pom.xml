@@ -110,11 +110,46 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.4.18</version>
+                <configuration>
+                    <skip>${skipExamplesITs}</skip>
+                    <container>
+                        <containerId>tomcat7x</containerId>
+                    </container>
+                    <deployables>
+                        <deployable>
+                            <groupId>com.stormpath.sdk</groupId>
+                            <artifactId>stormpath-sdk-examples-servlet</artifactId>
+                            <properties>
+                                <context>/</context>
+                            </properties>
+                        </deployable>
+                    </deployables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-server</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.2.2.v20140723</version>
                 <configuration>
-                    <skip>${skipExamplesITs}</skip>
                     <stopPort>11079</stopPort>
                     <stopKey>STOP</stopKey>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
@@ -122,26 +157,6 @@
                         <contextPath>/</contextPath>
                     </webApp>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <daemon>true</daemon>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
