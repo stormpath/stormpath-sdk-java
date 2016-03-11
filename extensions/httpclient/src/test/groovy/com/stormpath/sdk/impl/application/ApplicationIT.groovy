@@ -617,39 +617,29 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * Test created to demonstrate cache problems related to expansions. In this case, the expanded resource is cached
-     * without the expansion data and when requested with an expansion, it will be retrieved from the cache, producing an error.
-     * This tests fails only if the following line added to the WriteCacheFilter class as a workaround is removed or commented out:
+     * @see https://github.com/stormpath/stormpath-sdk-java/issues/164
      *
-     * (!request.getUri().hasQuery() || !request.getUri().getQuery().containsKey("expand") .....
-     *
-     * @since 1.0.RC8.3
+     * @since 1.0.RC9
      */
-    @Test(enabled = false)
+    @Test
     void testExpansionNotWorkingBecauseOfCache(){
 
+        //Setup 1 application with 2 accounts
         def app = createTempApp()
 
-        def count = 2
-        while (count >= 0) {
+        2.times {
             def account = createTestAccount(client, app)
             deleteOnTeardown(account)
-            count --
         }
 
-        def appList = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(app.name)))
-        def retrieved = appList.iterator().next()
+        //Get application without expanding the accounts attribute
+        def appWithoutAccounts = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(app.name))).first()
+        assertNull getValue(AbstractResource, appWithoutAccounts, "properties").get("accounts").get("items"), "Application->Accounts shouldn't be expanded"
 
-        Map properties = getValue(AbstractResource, retrieved, "properties")
-        assertEquals properties.get("accounts").get("items"), null
-
-        retrieved = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(app.name)).withAccounts())
-        retrieved = appList.iterator().next()
-
-        properties = getValue(AbstractResource, retrieved, "properties")
-        def items = properties.get("accounts").get("items")
-        if (items == null){
-            fail("Test fails because the application was retrieved seconds ago and was kept in the cache. When trying to load an expanded collection, the resource from the cache is returned, which is an error.")
+        //Get the application again twice expanding the accounts attribute
+        2.times {
+            def appWithAccounts = client.getApplications(Applications.where(Applications.name().eqIgnoreCase(app.name)).withAccounts()).first()
+            assertNotNull getValue(AbstractResource, appWithAccounts, "properties").get("accounts").get("items"), "Application->Accounts should be expanded"
         }
     }
 

@@ -132,10 +132,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             AbstractResource.isMaterialized(result.getData()) &&
 
             //@since 1.0.RC7: Let's not cache Access Tokens
-            !AccessToken.class.isAssignableFrom(clazz) &&
-
-            //@since 1.0.RC4.6: Fix for https://github.com/stormpath/stormpath-sdk-java/issues/164. Let's not cache expanded resources
-            (!request.getUri().hasQuery() || !request.getUri().getQuery().containsKey("expand") || isApiKeyCollectionQuery(request));
+            !AccessToken.class.isAssignableFrom(clazz);
     }
 
     /**
