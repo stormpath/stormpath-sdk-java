@@ -16,12 +16,13 @@ before_install:
   -in deployKey_stormpath_github_io_id_rsa.enc -out ~/.ssh/id_rsa -d
 - mkdir -p ~/.stormpath/clover
 - openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
-  -in clover_license.enc -out ~/.stormpath/clover/clover.license -d
+  -in clover.license.enc -out ~/.stormpath/clover/clover.license -d
+- openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
+  -in .netrc.enc -out ~/.netrc -d
 - chmod 600 ~/.ssh/id_rsa
 - export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
   -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
-- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH
-  == 'master' ] && echo 'true')"
+- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
 - export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
 - export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk6' ] && echo 'true')"
 install:
@@ -32,6 +33,7 @@ script:
 - test -z "$BUILD_DOCS" || ./build_docs.sh
 after_success:
 - test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
+- test -z "$RUN_ITS" || ./publish_coverage_report.sh
 notifications:
   hipchat:
     on_success: always
