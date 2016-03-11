@@ -16,7 +16,7 @@ before_install:
   -in deployKey_stormpath_github_io_id_rsa.enc -out ~/.ssh/id_rsa -d
 - mkdir -p ~/.stormpath/clover
 - openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
-  -in clover_license.enc -out ~/.stormpath/clover/clover.license -d
+  -in clover.license.enc -out ~/.stormpath/clover/clover.license -d
 - openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
   -in .netrc.enc -out ~/.netrc -d
 - chmod 600 ~/.ssh/id_rsa
