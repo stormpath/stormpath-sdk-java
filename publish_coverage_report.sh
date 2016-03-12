@@ -7,10 +7,7 @@ git clone https://git.heroku.com/afternoon-oasis-83667.git
 
 echo "Updating Heroku app"
 cd afternoon-oasis-83667
-
-find ../build -type d -name clover -print
-
-cp -p -r ../build/stormpath/stormpath-sdk-java/clover/target/site/clover/* .
+cp -p -r ../clover/target/site/clover/* .
 cp index.html home.html
 
 echo "commit and push Heroku app"
