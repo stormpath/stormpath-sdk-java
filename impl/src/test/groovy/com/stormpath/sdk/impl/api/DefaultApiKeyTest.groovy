@@ -1,17 +1,18 @@
 package com.stormpath.sdk.impl.api
 
-import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertNull
+import static org.testng.Assert.*
 import static org.testng.AssertJUnit.assertTrue
 
+/**
+ * Note: Most of DefaultApiKey is covered by other tests. This test fills out the coverage to be 100%
+ *
+ * @since 1.0.RC9
+ */
 class DefaultApiKeyTest {
     def defaultApiKey
 
