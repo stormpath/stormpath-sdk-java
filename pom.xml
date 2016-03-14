@@ -120,6 +120,16 @@
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
 
+        <!-- clover - for internal use -->
+        <clover.coverage.percentage>52%</clover.coverage.percentage>
+        <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
+        <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
+        <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
+        <clover.history.dir>${clover.project.dir}/history</clover.history.dir>
+        <clover.database.dir>${clover.project.dir}/database</clover.database.dir>
+        <clover.database>${clover.database.dir}/clover.db</clover.database>
+        <clover.version>4.1.1</clover.version>
+
     </properties>
 
     <dependencies>
@@ -614,15 +624,92 @@
             </properties>
         </profile>
         <profile>
-            <id>it</id>
-            <activation>
-                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
-                the REST api unnecessarily. -->
-                <jdk>1.6</jdk>
-            </activation>
-            <properties>
-                <skipITs>false</skipITs>
-            </properties>
+            <id>clover.all</id>
+            <!-- NOTE: if you want to use this profile and have ITs run, set -DskipITs=false on the command line -->
+            <!--
+                NOTE: This is an older style of config, but currently, clover is unable
+                to work with deeply nested modules.
+            -->
+            <modules>
+                <module>api</module>
+                <module>impl</module>
+                <module>extensions</module>
+                <module>examples</module>
+                <module>tutorials</module>
+                <!-- clover *must* be the last module referenced here in order to properly aggregate test results -->
+                <module>clover</module>
+            </modules>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <version>${failsafe.plugin.version}</version>
+                            <configuration>
+                                <systemProperties>
+                                    <clover.showUniqueCoverage>true</clover.showUniqueCoverage>
+                                </systemProperties>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>integration-tests</id>
+                                    <goals>
+                                        <goal>integration-test</goal>
+                                    </goals>
+                                    <phase>integration-test</phase>
+                                    <configuration>
+                                        <encoding>${project.build.sourceEncoding}</encoding>
+                                        <includes>
+                                            <include>**/*IT*</include>
+                                        </includes>
+                                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>clover-maven-plugin</artifactId>
+                        <version>${clover.version}</version>
+                        <configuration>
+                            <generateHistorical>true</generateHistorical>
+                            <historyDir>${clover.history.dir}</historyDir>
+                            <!--<cloverMergeDatabase>${clover.database}</cloverMergeDatabase>-->
+                            <cloverDatabase>${clover.database}</cloverDatabase>
+                            <singleCloverDatabase>true</singleCloverDatabase>
+                            <excludes>
+                                <exclude>**/*Test*</exclude>
+                                <exclude>**/*IT*</exclude>
+                            </excludes>
+                            <useCloverClassifier>true</useCloverClassifier>
+                            <!--See https://confluence.atlassian.com/display/CLOVERKB/Java+8+code+instrumented+by+Clover+fails+to+compile-->
+                            <instrumentLambda>none</instrumentLambda>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clover.setup</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>setup</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>clover-maven-plugin</artifactId>
+                        <version>${clover.version}</version>
+                    </plugin>
+                </plugins>
+            </reporting>
         </profile>
         <profile>
             <id>stormpath-signature</id>
