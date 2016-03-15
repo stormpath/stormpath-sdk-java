@@ -109,9 +109,17 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
                     "configuration allows insecure identity cookies (transmission over non-HTTPS connections)!  " +
                     "This should never occur on staging/production machines otherwise your users will be " +
                     "susceptible to man-in-the-middle attacks.  If you see this warning on a development-only " +
-                    "machine, you can likely safely ignore this message.  For more information, please " +
-                    "see the Security Notice here: " +
-                    "https://docs.stormpath.com/java/servlet-plugin/login.html#security-notice";
+                    "machine, you can likely safely ignore this message.  For more information in Servlet-only " +
+                    "environments, please see the Security Notice here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#https-required and the " +
+                    "documentation on authentication state here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#authentication-state and here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#cookie-config (the " +
+                    "callout entitled 'Secure Cookies').  If you are using Spring Boot, Spring Boot-specific " +
+                    "documentation for these concepts are here: " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#security-notice " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#authentication-state and " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#cookie-storage";
             log.warn(msg);
         }
 
