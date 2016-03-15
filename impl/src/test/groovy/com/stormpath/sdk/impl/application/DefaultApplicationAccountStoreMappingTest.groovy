@@ -22,6 +22,7 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ArrayProperty
 import com.stormpath.sdk.impl.resource.IntegerProperty
+import com.stormpath.sdk.impl.resource.Property
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -84,6 +85,23 @@ class DefaultApplicationAccountStoreMappingTest {
 
         verify(internalDataStore, accountStore, application)
 
+    }
+
+    @Test
+    void testGetPropertyDescriptors() {
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        ApplicationAccountStoreMapping accountStoreMapping = new DefaultApplicationAccountStoreMapping(internalDataStore)
+
+        Map<String, Property> props = accountStoreMapping.getPropertyDescriptors()
+
+        assertTrue props.containsKey(DefaultApplicationAccountStoreMapping.LIST_INDEX.name)
+        assertTrue props.containsKey(DefaultApplicationAccountStoreMapping.APPLICATION.name)
+        assertTrue props.containsKey(DefaultApplicationAccountStoreMapping.ACCOUNT_STORE.name)
+        assertTrue props.containsKey(DefaultApplicationAccountStoreMapping.DEFAULT_GROUP_STORE.name)
+        assertTrue props.containsKey(DefaultApplicationAccountStoreMapping.DEFAULT_ACCOUNT_STORE.name)
+
+        assertEquals props.size(), 5
     }
 
 
