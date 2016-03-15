@@ -112,6 +112,7 @@
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
         <logback.version>1.1.2</logback.version>
+        <powermock.version>1.6.4</powermock.version>
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
         <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
@@ -157,7 +158,18 @@
             <version>${easymock.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
