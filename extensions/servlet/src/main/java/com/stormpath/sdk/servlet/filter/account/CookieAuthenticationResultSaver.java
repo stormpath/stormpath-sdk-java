@@ -109,7 +109,9 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
                     "configuration allows insecure identity cookies (transmission over non-HTTPS connections)!  " +
                     "This should never occur on staging/production machines otherwise your users will be " +
                     "susceptible to man-in-the-middle attacks.  If you see this warning on a development-only " +
-                    "machine, you can likely safely ignore this message.";
+                    "machine, you can likely safely ignore this message.  For more information, please " +
+                    "see the Security Notice here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#security-notice";
             log.warn(msg);
         }
 
