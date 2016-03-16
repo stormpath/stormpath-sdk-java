@@ -107,7 +107,7 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
             secureWarned = true;
             String msg = "INSECURE IDENTITY COOKIE CONFIGURATION: Your current Stormpath SDK account cookie " +
                     "configuration allows insecure identity cookies (transmission over non-HTTPS connections)!  " +
-                    "This should typically never occur on hosts other than localhost otherwise your users will be " +
+                    "This should typically never occur otherwise your users will be " +
                     "susceptible to man-in-the-middle attacks.  For more information in Servlet-only " +
                     "environments, please see the Security Notice here: " +
                     "https://docs.stormpath.com/java/servlet-plugin/login.html#https-required and the " +
