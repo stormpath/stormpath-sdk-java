@@ -22,8 +22,8 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.application.DefaultApplication;
-import com.stormpath.sdk.impl.http.ServletHttpRequest;
 import com.stormpath.sdk.lang.Assert;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,18 +53,9 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
 
         Assert.notNull(application, "application argument cannot be null.");
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
+
         this.application = application;
-
-        if (HttpRequest.class.isAssignableFrom(httpRequest.getClass())) {
-            this.httpRequest = httpRequest;
-        } else {
-            Assert.isInstanceOf(com.stormpath.sdk.impl.http.ServletHttpRequest.class, httpRequest,
-                                "The specified httpRequest argument must be an instance of " +
-            HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
-
-
-            this.httpRequest = httpRequest;
-        }
+        this.httpRequest = httpRequest;
     }
 
     /**
@@ -91,15 +82,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
     public ApiAuthenticationResult authenticate(HttpRequest httpRequest) {
 
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
-
-        if (ServletHttpRequest.class.isAssignableFrom(httpRequest.getClass())){
-            this.httpRequest = httpRequest;
-        } else {
-            Assert.isInstanceOf(HttpRequest.class, httpRequest,
-                    "The specified httpRequest argument must be an instance of " +
-                            HttpRequest.class.getName() + " or " + ServletHttpRequest.class.getName());
-            this.httpRequest = httpRequest;
-        }
+        this.httpRequest = httpRequest;
 
         return this.execute();
     }
