@@ -1212,6 +1212,128 @@ class ApplicationIT extends ClientIT {
         app.addAccountStore(Groups.criteria().add(Groups.name().containsIgnoreCase("testAddAccountStore_MultipleGroupCriteria")))
     }
 
+    @Test
+    void testAddAccountStoreByName_Null() {
+
+        def app = createTempApp()
+
+        assertNull app.addAccountStore("does not exist")
+    }
+
+    @Test
+    void testAddAccountStoreByName_Exception() {
+
+        def name = uniquify("Java SDK: ApplicationIT.testAddAccountStore")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = name
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = name
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+
+        try {
+            app.addAccountStore(name)
+            fail("shouldn't get here")
+        } catch (IllegalArgumentException e) {
+            assertEquals e.getMessage(),
+                "There are both a Directory and a Group matching the provided name in the current tenant. " +
+                "Please provide the href of the intended Resource instead of its name in order to univocally identify it."
+        }
+    }
+
+    @Test
+    void testAddAccountStoreByName() {
+
+        def dirName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_dir")
+        def groupName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_group")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = dirName
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = groupName
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+        def accountStoreMappting = app.addAccountStore(dirName)
+
+        assertEquals accountStoreMappting.accountStore.href, dir.href
+
+        app = createTempApp()
+        accountStoreMappting = app.addAccountStore(groupName)
+
+        assertEquals accountStoreMappting.accountStore.href, group.href
+    }
+
+    @Test
+    void testAddAccountStoreByDirectoryCriteria() {
+
+        def dirName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_dir")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = dirName
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        def app = createTempApp()
+        def accountStoreMapping = app.addAccountStore(Directories.where(Directories.name().eqIgnoreCase(dirName)))
+
+        assertEquals accountStoreMapping.accountStore.href, dir.href
+    }
+
+    @Test
+    void testAddAccountStoreByOrganizationCriteria() {
+
+        def orgName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_org")
+
+        Organization org = client.instantiate(Organization)
+        org.nameKey = uniquify("my-org")
+        org.name = orgName
+        org.description = org.name + "-Description"
+        org = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(org)
+
+        def app = createTempApp()
+        def accountStoreMapping = app.addAccountStore(Organizations.where(Organizations.name().eqIgnoreCase(orgName)))
+
+        assertEquals accountStoreMapping.accountStore.href, org.href
+    }
+
+    @Test
+    void testAddAccountStoreByGroupCriteria() {
+
+        def groupName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_group")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_dir")
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = groupName
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+        def accountStoreMapping = app.addAccountStore(Groups.where(Groups.name().eqIgnoreCase(groupName)))
+
+        assertEquals accountStoreMapping.accountStore.href, group.href
+    }
+
+
     /**
      * @since 1.0.RC4.4
      */
