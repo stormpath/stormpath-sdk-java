@@ -29,29 +29,32 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequests
-import com.stormpath.sdk.directory.AccountStore
-import com.stormpath.sdk.oauth.AccessToken
-import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.JwtAuthenticationResult
-import com.stormpath.sdk.oauth.Oauth2Requests
-import com.stormpath.sdk.oauth.JwtAuthenticationRequest
-import com.stormpath.sdk.oauth.OauthPolicy
-import com.stormpath.sdk.oauth.PasswordGrantRequest
-import com.stormpath.sdk.oauth.RefreshGrantRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.idsite.IdSiteClaims
 import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.impl.saml.SamlResultStatus
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
+import com.stormpath.sdk.oauth.AccessToken
+import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest
+import com.stormpath.sdk.oauth.JwtAuthenticationResult
+import com.stormpath.sdk.oauth.Oauth2Requests
+import com.stormpath.sdk.oauth.OauthPolicy
+import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.RefreshGrantRequest
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
@@ -62,13 +65,18 @@ import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
+import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
 
+import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
+import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
@@ -1675,6 +1683,55 @@ class ApplicationIT extends ClientIT {
         assertTrue samlServiceProvider.getSsoInitiationEndpoint().getHref().contains("/saml/sso/idpRedirect")
         assertTrue samlServiceProvider.getCreatedAt().after(testStart)
         assertTrue samlServiceProvider.getModifiedAt().after(testStart)
+    }
+
+    /** since 1.0.RC9 */
+    @Test
+    void testNewSamlIdpUrlBuilder() {
+
+        def app = createTempApp()
+        def samlIdpUrlBuilder = app.newSamlIdpUrlBuilder()
+        def callbackUri = "https://my.awesome.app/saml_callback"
+
+        def urlString = samlIdpUrlBuilder.setCallbackUri(callbackUri).build()
+        def jwtBeg = urlString.indexOf("accessToken=") + "accessToken=".length()
+        def jwt = urlString.substring(jwtBeg)
+
+        Jws<Claims> claims = Jwts.parser().setSigningKey(client.apiKey.secret.bytes).parseClaimsJws(jwt)
+        String jwtCallbackUri = claims.getBody().get("cb_uri")
+
+        assertEquals jwtCallbackUri, callbackUri
+    }
+
+    /** since 1.0.RC9 */
+    // This just tests that the application can create a SamlCallbackHandler
+    // DefaultSamlCallbackHandler should have its own tests
+    @Test
+    void testNewSamlCallbackHandler() {
+
+        // setup result jwt
+        def jwt = Jwts.builder()
+            .setAudience(client.apiKey.id)
+            .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
+            .setIssuer("my issuer")
+            .claim(IdSiteClaims.RESPONSE_ID, "my response id")
+            .claim(IdSiteClaims.STATUS, SamlResultStatus.LOGOUT)
+            .claim(IdSiteClaims.IS_NEW_SUBJECT, false)
+            .signWith(SignatureAlgorithm.HS256, client.apiKey.secret.getBytes("UTF-8"))
+        .compact()
+
+        def req = createMock(HttpServletRequest)
+        expect(req.getMethod()).andReturn(HttpMethod.GET.name()).times(2)
+        expect(req.getParameter(IdSiteClaims.JWT_RESPONSE)).andReturn(jwt)
+
+        replay req
+
+        def app = createTempApp()
+        def samlCallbackHandler = app.newSamlCallbackHandler(req)
+
+        def result = samlCallbackHandler.accountResult
+
+        assertFalse result.newAccount
     }
 
 }
