@@ -29,17 +29,7 @@ import javax.servlet.http.HttpSession;
  */
 public class LogoutController extends AbstractController {
 
-    private String nextUri;
-
     private boolean invalidateHttpSession = true;
-
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
-    }
 
     public boolean isInvalidateHttpSession() {
         return invalidateHttpSession;
@@ -51,6 +41,11 @@ public class LogoutController extends AbstractController {
 
     public void init() {
         Assert.hasText(nextUri, "nextUri property cannot be null or empty.");
+    }
+
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return false;
     }
 
     @Override

@@ -70,6 +70,11 @@ public class SamlController extends AbstractController {
         Assert.notNull(samlOrganizationResolver, "idSiteOrganizationResolver must be configured.");
     }
 
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
+    }
+
     protected Application getApplication(HttpServletRequest request) {
         return ApplicationResolver.INSTANCE.getApplication(request);
     }

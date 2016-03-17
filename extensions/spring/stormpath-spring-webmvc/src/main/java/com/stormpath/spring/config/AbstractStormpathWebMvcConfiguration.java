@@ -33,8 +33,9 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
-import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
+import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -92,10 +93,10 @@ import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
-import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
+import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
@@ -106,7 +107,6 @@ import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
-import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.spring.mvc.SpringController;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -837,7 +837,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setView(forgotView);
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setAccountStoreResolver(stormpathAccountStoreResolver());
-        controller.setNextView(forgotNextUri);
+        controller.setNextUri(forgotNextUri);
         controller.setLoginUri(loginUri);
         controller.init();
 
@@ -1047,7 +1047,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setView(sendVerificationEmailView);
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setAccountStoreResolver(stormpathAccountStoreResolver());
-        controller.setNextView(verifyView);
+        controller.setNextUri(verifyView);
         controller.setLoginUri(loginUri);
         controller.init();
 

@@ -40,7 +40,7 @@ public class ForgotPasswordFilter extends ControllerFilter {
         controller.setView("stormpath/forgot");
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setAccountStoreResolver(accountStoreResolver);
-        controller.setNextView(getConfig().getForgotPasswordNextUrl());
+        controller.setNextUri(getConfig().getForgotPasswordNextUrl());
         controller.setLoginUri(getConfig().getLoginUrl());
         controller.init();
 

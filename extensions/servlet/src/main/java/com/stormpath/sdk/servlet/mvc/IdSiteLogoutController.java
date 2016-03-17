@@ -56,6 +56,11 @@ public class IdSiteLogoutController extends LogoutController {
     }
 
     @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return false;
+    }
+
+    @Override
     public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         //ensure the local application user state is cleared no matter what:

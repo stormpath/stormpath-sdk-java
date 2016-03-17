@@ -40,7 +40,7 @@ public class SendVerificationEmailFilter extends ControllerFilter {
         controller.setView("stormpath/sendVerificationEmail");
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setAccountStoreResolver(accountStoreResolver);
-        controller.setNextView("stormpath/verify");
+        controller.setNextUri("stormpath/verify");
         controller.setLoginUri(getConfig().getLoginUrl());
         controller.init();
 

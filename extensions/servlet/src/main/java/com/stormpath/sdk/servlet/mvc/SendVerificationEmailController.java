@@ -43,13 +43,17 @@ public class SendVerificationEmailController extends FormController {
     private static final Logger log = LoggerFactory.getLogger(SendVerificationEmailController.class);
 
     private String loginUri;
-    private String nextView;
     private AccountStoreResolver accountStoreResolver;
 
     public void init() {
         super.init();
-        Assert.hasText(this.nextView, "nextView cannot be null.");
+        Assert.hasText(this.nextUri, "nextUri cannot be null.");
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
+    }
+
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
     }
 
     protected AccountStoreResolver getAccountStoreResolver() {
@@ -58,15 +62,6 @@ public class SendVerificationEmailController extends FormController {
 
     public void setAccountStoreResolver(AccountStoreResolver accountStoreResolver) {
         this.accountStoreResolver = accountStoreResolver;
-    }
-
-    public String getNextView() {
-        return nextView;
-    }
-
-    public void setNextView(String nextView) {
-        Assert.hasText(nextView, "nextView cannot be null or empty.");
-        this.nextView = nextView;
     }
 
     public String getLoginUri() {
@@ -147,7 +142,7 @@ public class SendVerificationEmailController extends FormController {
         String next = form.getNext();
 
         if (!Strings.hasText(next)) {
-            next = getNextView();
+            next = getNextUri();
         }
 
         return new DefaultViewModel(next);

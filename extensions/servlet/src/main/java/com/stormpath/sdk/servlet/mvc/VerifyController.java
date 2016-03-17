@@ -34,7 +34,6 @@ import java.io.IOException;
  */
 public class VerifyController extends AbstractController {
 
-    private String nextUri;
     private String logoutUri;
     private String sendVerificationEmailUri;
     private Client client;
@@ -48,12 +47,9 @@ public class VerifyController extends AbstractController {
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
 
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
     }
 
     public String getLogoutUri() {

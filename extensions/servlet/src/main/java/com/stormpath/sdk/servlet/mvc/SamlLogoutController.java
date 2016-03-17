@@ -53,6 +53,11 @@ public class SamlLogoutController extends LogoutController {
     }
 
     @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return false;
+    }
+
+    @Override
     public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         //ensure the local application user state is cleared no matter what:
         ViewModel vm = super.handleRequest(request, response);

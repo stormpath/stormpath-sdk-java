@@ -66,6 +66,11 @@ public class IdSiteController extends AbstractController {
         Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
     }
 
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
+    }
+
     protected Application getApplication(HttpServletRequest request) {
         return ApplicationResolver.INSTANCE.getApplication(request);
     }

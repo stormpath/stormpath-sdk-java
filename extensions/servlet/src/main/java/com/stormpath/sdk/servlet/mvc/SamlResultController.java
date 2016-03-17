@@ -16,13 +16,9 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
-import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
-import com.stormpath.sdk.idsite.RegistrationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlResultListener;
@@ -86,6 +82,11 @@ public class SamlResultController extends AbstractController {
         Assert.notNull(logoutController, "logoutController must be configured.");
         Assert.notNull(authenticationResultSaver, "authenticationResultSaver must be configured.");
         Assert.notNull(eventPublisher, "request event publisher must be configured.");
+    }
+
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
     }
 
     protected Application getApplication(HttpServletRequest request) {

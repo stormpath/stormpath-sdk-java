@@ -89,6 +89,11 @@ public class IdSiteResultController extends AbstractController {
         Assert.notNull(eventPublisher, "request event publisher must be configured.");
     }
 
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
+    }
+
     protected Application getApplication(HttpServletRequest request) {
         return ApplicationResolver.INSTANCE.getApplication(request);
     }

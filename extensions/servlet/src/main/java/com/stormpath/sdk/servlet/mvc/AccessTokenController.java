@@ -144,6 +144,11 @@ public class AccessTokenController extends AbstractController {
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
 
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
+    }
+
     protected void publish(RequestEvent e) {
         getEventPublisher().publish(e);
     }

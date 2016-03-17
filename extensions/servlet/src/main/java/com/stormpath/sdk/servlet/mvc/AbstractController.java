@@ -16,6 +16,8 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.http.HttpMethod;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +30,30 @@ import java.util.Map;
  */
 public abstract class AbstractController implements Controller {
 
-    private static final HttpServlet DEFAULT_HANDLER = new HttpServlet(){};
+    private static final HttpServlet DEFAULT_HANDLER = new HttpServlet() {
+    };
 
-    protected Map<String,Object> newModel() {
-        return new HashMap<String,Object>();
+    protected String nextUri;
+
+    protected Map<String, Object> newModel() {
+        return new HashMap<String, Object>();
+    }
+
+    /**
+     * Method returns true if the controller doesn't allow requests if there is a user already authenticated,
+     * this is true for most controllers.
+     *
+     * @return True if controller doesn't allow request when user is authenticated, false otherwise
+     */
+    public abstract boolean isNotAllowIfAuthenticated();
+
+    public String getNextUri() {
+        return nextUri;
+    }
+
+    public void setNextUri(String nextUri) {
+        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
+        this.nextUri = nextUri;
     }
 
     @Override
@@ -39,9 +61,18 @@ public abstract class AbstractController implements Controller {
 
         String method = request.getMethod();
 
+        boolean hasAccount = AccountResolver.INSTANCE.hasAccount(request);
+
         if (HttpMethod.GET.name().equalsIgnoreCase(method)) {
+            if (isNotAllowIfAuthenticated() && hasAccount) {
+                return new DefaultViewModel(getNextUri()).setRedirect(true);
+            }
             return doGet(request, response);
         } else if (HttpMethod.POST.name().equalsIgnoreCase(method)) {
+            if (isNotAllowIfAuthenticated() && hasAccount) {
+                response.sendError(403);
+                return null;
+            }
             return doPost(request, response);
         } else {
             return service(request, response);

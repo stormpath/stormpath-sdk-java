@@ -37,8 +37,6 @@ import java.util.Map;
  * @since 1.0.RC4
  */
 public class LoginController extends FormController {
-
-    private String nextUri;
     private String forgotLoginUri;
     private String verifyUri;
     private String registerUri;
@@ -59,12 +57,9 @@ public class LoginController extends FormController {
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
     }
 
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
     }
 
     public String getForgotLoginUri() {
@@ -126,26 +121,6 @@ public class LoginController extends FormController {
     public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
         Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
         this.authenticationResultSaver = authenticationResultSaver;
-    }
-
-    @Override
-    protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (AccountResolver.INSTANCE.hasAccount(request)) {
-            //already logged in:
-            return new DefaultViewModel(getNextUri()).setRedirect(true);
-        }
-        //otherwise should be able to visit:
-        return super.doGet(request, response);
-    }
-
-    @Override
-    protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //logged in users should not be trying to login again - could be malicious activity - log out the user:
-        //TODO: should do this logout immediately and not redirect
-        if (AccountResolver.INSTANCE.hasAccount(request)) {
-            return new DefaultViewModel(getLogoutUri()).setRedirect(true);
-        }
-        return super.doPost(request, response);
     }
 
     @Override

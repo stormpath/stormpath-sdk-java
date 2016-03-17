@@ -60,7 +60,6 @@ public class RegisterController extends FormController {
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
 
-    private String nextUri;
     private String loginUri;
     private String verifyViewName;
 
@@ -76,6 +75,11 @@ public class RegisterController extends FormController {
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(verifyViewName, "verifyViewName cannot be null or empty.");
+    }
+
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return true;
     }
 
     public Client getClient() {
@@ -124,14 +128,6 @@ public class RegisterController extends FormController {
 
     public void setMessageSource(MessageSource i18n) {
         this.messageSource = i18n;
-    }
-
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
     }
 
     public String getLoginUri() {

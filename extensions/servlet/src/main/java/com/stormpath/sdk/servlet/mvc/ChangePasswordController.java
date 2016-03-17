@@ -45,7 +45,6 @@ public class ChangePasswordController extends FormController {
 
     private String forgotPasswordUri;
     private String loginUri;
-    private String nextUri;
     private Resolver<Locale> localeResolver;
     private MessageSource messageSource;
 
@@ -57,6 +56,11 @@ public class ChangePasswordController extends FormController {
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.notNull(localeResolver, "localeResolver cannot be null.");
         Assert.notNull(messageSource, "messageSource cannot be null.");
+    }
+
+    @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return false;
     }
 
     public String getForgotPasswordUri() {
@@ -73,14 +77,6 @@ public class ChangePasswordController extends FormController {
 
     public void setLoginUri(String loginUri) {
         this.loginUri = loginUri;
-    }
-
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
     }
 
     public Resolver<Locale> getLocaleResolver() {
