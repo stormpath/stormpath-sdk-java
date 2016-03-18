@@ -57,6 +57,11 @@ public class ResourceException extends RuntimeException implements Error {
         return error.getStatus();
     }
 
+    /**
+     * Get the Stormpath Error Code
+     * Check http://docs.stormpath.com/errors/ for the list of Stormpath Error Codes
+     * @return the code of the error
+     */
     @Override
     public int getCode() {
         return error.getCode();
@@ -67,6 +72,11 @@ public class ResourceException extends RuntimeException implements Error {
         return error.getDeveloperMessage();
     }
 
+    /**
+     * More information about the error is described in the Stormpath Error Codes documentation
+     * Check http://docs.stormpath.com/errors/ for the list of Stormpath Error Codes
+     * @return the URI to the error documentation
+     */
     @Override
     public String getMoreInfo() {
         return error.getMoreInfo();
