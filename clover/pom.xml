@@ -40,7 +40,12 @@
     <!-- This must always be the last thing to be built. As such, we want to do final clover metrics here -->
     <profiles>
         <profile>
-            <id>it-clover</id>
+            <id>clover.all</id>
+            <activation>
+                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
+                the REST api unnecessarily. -->
+                <jdk>1.6</jdk>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -58,6 +63,7 @@
                             <baseDir>${project.basedir}/..</baseDir>
                             <excludes>
                                 <exclude>**/*Test*</exclude>
+                                <exclude>**/*IT*</exclude>
                             </excludes>
                             <targetPercentage>${clover.coverage.percentage}</targetPercentage>
                         </configuration>

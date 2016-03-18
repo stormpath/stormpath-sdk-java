@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.AuthenticationRequest
 import com.stormpath.sdk.authc.AuthenticationResult
-import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import org.testng.annotations.Test
@@ -45,7 +45,7 @@ class ResourceExceptionIT extends ClientIT {
         deleteOnTeardown(directory)
 
         // login+password authentication request
-        AuthenticationRequest request = new UsernamePasswordRequest("admin", "bar");
+        AuthenticationRequest request = UsernamePasswordRequests.builder().setUsernameOrEmail("admin").setPassword("bar").build()
         try {
             AuthenticationResult result = application.authenticateAccount(request);
         } catch (com.stormpath.sdk.resource.ResourceException e) {
@@ -56,7 +56,7 @@ class ResourceExceptionIT extends ClientIT {
         }
 
         // authentication request for specific account store
-        request = new UsernamePasswordRequest("admin", "bar", directory);
+        request =request = UsernamePasswordRequests.builder().setUsernameOrEmail("admin").setPassword("bar").inAccountStore(directory).build()
         try {
             AuthenticationResult result = application.authenticateAccount(request);
         } catch (com.stormpath.sdk.resource.ResourceException e) {

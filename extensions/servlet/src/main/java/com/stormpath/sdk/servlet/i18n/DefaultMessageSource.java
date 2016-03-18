@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.i18n;
 
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -24,7 +25,7 @@ import java.util.ResourceBundle;
  * @since 1.0.RC3
  */
 public class DefaultMessageSource implements MessageSource {
-    
+
     public static final String BUNDLE_BASE_NAME = "com.stormpath.sdk.servlet.i18n";
 
     @Override
@@ -36,12 +37,18 @@ public class DefaultMessageSource implements MessageSource {
     @Override
     public String getMessage(String key, Locale locale, Object... args) {
         ResourceBundle bundle = getBundle(locale);
-        String msg = bundle.getString(key);
 
         try {
+            /* To enable accents and other UTF-8 characters inside properties file we need to read the value in ISO-8858-1
+               which is the default encoding for properties files according to the Java documentation and re-encode it in UTF-8 */
+            String msg = new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
             return MessageFormat.format(msg, args);
         } catch (MissingResourceException e) {
             return '!' + key + '!';
+        } catch (UnsupportedEncodingException e) {
+            /* Should not happen since properties are always encoded in ISO-8850-1 thus is supported and UTF-8 is supported
+               by the JVM in all platforms */
+            throw new IllegalStateException("Couldn't load property from resource bundle", e);
         }
     }
 

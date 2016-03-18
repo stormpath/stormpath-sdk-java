@@ -112,6 +112,7 @@
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>1.8.8</groovy.version>
         <logback.version>1.1.2</logback.version>
+        <powermock.version>1.6.4</powermock.version>
         <easymock.version>3.1</easymock.version>
         <testng.version>6.8</testng.version>
         <!-- false in JDK 6 profile (i.e. JDK 6 build has ITs turned on): -->
@@ -121,7 +122,7 @@
         <jstl.version>1.2</jstl.version>
 
         <!-- clover - for internal use -->
-        <clover.coverage.percentage>30%</clover.coverage.percentage>
+        <clover.coverage.percentage>52%</clover.coverage.percentage>
         <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
         <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
         <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
@@ -157,7 +158,18 @@
             <version>${easymock.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -624,18 +636,12 @@
             </properties>
         </profile>
         <profile>
-            <id>it</id>
-            <activation>
-                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
-                the REST api unnecessarily. -->
-                <jdk>1.6</jdk>
-            </activation>
-            <properties>
-                <skipITs>false</skipITs>
-            </properties>
-        </profile>
-        <profile>
-            <id>it-clover</id>
+            <id>clover.all</id>
+            <!-- NOTE: if you want to use this profile and have ITs run, set -DskipITs=false on the command line -->
+            <!--
+                NOTE: This is an older style of config, but currently, clover is unable
+                to work with deeply nested modules.
+            -->
             <modules>
                 <module>api</module>
                 <module>impl</module>
@@ -689,6 +695,7 @@
                             <singleCloverDatabase>true</singleCloverDatabase>
                             <excludes>
                                 <exclude>**/*Test*</exclude>
+                                <exclude>**/*IT*</exclude>
                             </excludes>
                             <useCloverClassifier>true</useCloverClassifier>
                             <!--See https://confluence.atlassian.com/display/CLOVERKB/Java+8+code+instrumented+by+Clover+fails+to+compile-->

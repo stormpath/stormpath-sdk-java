@@ -15,19 +15,26 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_da634cfd642b_key -iv $encrypted_da634cfd642b_iv
   -in deployKey_stormpath_github_io_id_rsa.enc -out ~/.ssh/id_rsa -d
 - chmod 600 ~/.ssh/id_rsa
+- openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
+- mkdir -p ~/.stormpath/clover
+- cp clover.license ~/.stormpath/clover
+- cp .netrc ~/
 - export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
   -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
-- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH
-  == 'master' ] && echo 'true')"
+- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
 - export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
+- export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk6' ] && echo 'true')"
 install:
 - test -z "$BUILD_DOCS" || pip -q install --user sphinx
-- echo "No need to run mvn install -DskipTests then mvn install.  Running mvn install."
 script:
-- mvn -q install
+- test -z "$RUN_ITS" || mvn -Pclover.all -DskipITs=false -q install
+- test -n "$RUN_ITS" || mvn -q install
 - test -z "$BUILD_DOCS" || ./build_docs.sh
 after_success:
 - test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
+- test -z "$RUN_ITS" || ./publish_coverage_report.sh
 notifications:
   hipchat:
     on_success: always

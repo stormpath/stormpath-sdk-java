@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.authc.AuthenticationRequest
 import com.stormpath.sdk.authc.AuthenticationResult
-import com.stormpath.sdk.authc.UsernamePasswordRequest
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
@@ -33,7 +33,7 @@ class BasicAuthenticatorTest {
     @Test
     void testNullHref() {
         def internalDataStore = createMock(InternalDataStore)
-        def request = new UsernamePasswordRequest("foo", "bar")
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail("foo").setPassword("bar").build()
 
         try {
             BasicAuthenticator basicAuthenticator = new BasicAuthenticator(internalDataStore)
@@ -70,7 +70,7 @@ class BasicAuthenticatorTest {
         def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
         def authenticationResult = createStrictMock(AuthenticationResult)
 
-        def request = new UsernamePasswordRequest(username, password)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
 
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
@@ -97,7 +97,7 @@ class BasicAuthenticatorTest {
         def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
         def authenticationResult = createStrictMock(AuthenticationResult)
 
-        def request = new UsernamePasswordRequest(username, password, (AccountStore) null)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
 
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
@@ -125,7 +125,7 @@ class BasicAuthenticatorTest {
         def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
         def authenticationResult = createStrictMock(AuthenticationResult)
 
-        def request = new UsernamePasswordRequest(username, password, accountStore)
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).inAccountStore(accountStore).build()
 
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))
@@ -154,8 +154,8 @@ class BasicAuthenticatorTest {
         def basicLoginAttempt = createStrictMock(BasicLoginAttempt)
         def authenticationResult = createStrictMock(AuthenticationResult)
 
-        def options = UsernamePasswordRequest.options().withAccount()
-        def request = UsernamePasswordRequest.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
+        def options = UsernamePasswordRequests.options().withAccount()
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).withResponseOptions(options).build()
 
         expect(internalDataStore.instantiate(BasicLoginAttempt.class)).andReturn(basicLoginAttempt);
         expect(basicLoginAttempt.setType("basic"))

@@ -22,7 +22,7 @@ import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
+import com.stormpath.sdk.authc.UsernamePasswordRequests;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
@@ -61,7 +61,7 @@ public class Quickstart {
 
         // Retrieve your application
         ApplicationList applications = tenant.getApplications(
-            Applications.where(Applications.name().eqIgnoreCase(APPLICATION_NAME))
+                Applications.where(Applications.name().eqIgnoreCase(APPLICATION_NAME))
         );
 
         Application application = applications.iterator().next();
@@ -104,10 +104,10 @@ public class Quickstart {
         String rawPassword = "Changeme1";
 
         // Create an authentication request using the credentials
-        AuthenticationRequest request = UsernamePasswordRequest.builder()
-            .setUsernameOrEmail(usernameOrEmail)
-            .setPassword(rawPassword)
-            .build();
+        AuthenticationRequest request = UsernamePasswordRequests.builder()
+                .setUsernameOrEmail(usernameOrEmail)
+                .setPassword(rawPassword)
+                .build();
 
         //Now let's authenticate the account with the application:
         try {

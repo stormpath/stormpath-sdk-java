@@ -23,6 +23,9 @@ import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,14 +35,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CookieAuthenticationResultSaver extends AccountCookieHandler implements Saver<AuthenticationResult> {
 
+    private static final Logger log = LoggerFactory.getLogger(CookieAuthenticationResultSaver.class);
+
     private AuthenticationJwtFactory authenticationJwtFactory;
     private Resolver<Boolean> secureCookieRequired;
+
+    private boolean secureWarned = false;
 
     public CookieAuthenticationResultSaver(CookieConfig accountCookieConfig,
                                            Resolver<Boolean> secureCookieRequired,
                                            AuthenticationJwtFactory authenticationJwtFactory) {
         super(accountCookieConfig);
-        Assert.notNull(secureCookieRequired, "secureCookieRequired RequestRCondition cannot be null.");
+        Assert.notNull(secureCookieRequired, "secureCookieRequired Resolver cannot be null.");
         Assert.notNull(authenticationJwtFactory, "AuthenticationJwtFactory cannot be null.");
         this.secureCookieRequired = secureCookieRequired;
         this.authenticationJwtFactory = authenticationJwtFactory;
@@ -84,8 +91,38 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
         return new CookieSaver(cfg);
     }
 
-    protected boolean isSecureCookieRequired(HttpServletRequest request) {
-        return getSecureCookieRequired().get(request, null);
+    protected boolean isCookieSecure(final HttpServletRequest request, CookieConfig config) {
+
+        boolean configSecure = config.isSecure();
+
+        Resolver<Boolean> resolver = getSecureCookieRequired();
+
+        boolean resolverSecure = resolver.get(request, null);
+
+        boolean likelyLocalhost = resolver instanceof SecureRequiredExceptForLocalhostResolver;
+
+        boolean warnable = !configSecure || (!resolverSecure && !likelyLocalhost);
+
+        if (!secureWarned && warnable) {
+            secureWarned = true;
+            String msg = "INSECURE IDENTITY COOKIE CONFIGURATION: Your current Stormpath SDK account cookie " +
+                    "configuration allows insecure identity cookies (transmission over non-HTTPS connections)!  " +
+                    "This should typically never occur otherwise your users will be " +
+                    "susceptible to man-in-the-middle attacks.  For more information in Servlet-only " +
+                    "environments, please see the Security Notice here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#https-required and the " +
+                    "documentation on authentication state here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#authentication-state and here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#cookie-config (the " +
+                    "callout entitled 'Secure Cookies').  If you are using Spring Boot, Spring Boot-specific " +
+                    "documentation for these concepts are here: " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#security-notice " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#authentication-state and " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#cookie-storage";
+            log.warn(msg);
+        }
+
+        return configSecure && resolverSecure;
     }
 
     @Override
@@ -93,8 +130,7 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
 
         final CookieConfig config = super.getAccountCookieConfig(request);
 
-        //should always be true in prod, but allow for localhost development testing:
-        final boolean secure = config.isSecure() && isSecureCookieRequired(request);
+        final boolean secure = isCookieSecure(request, config);
 
         String path = Strings.clean(config.getPath());
         if (!Strings.hasText(path)) {
