@@ -201,7 +201,7 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
     @Override
     public OrganizationList getOrganizations(Map<String, Object> queryParams) {
         //This is just a proxy - does not execute a query until iteration occurs
-        DirectoryList proxy = getDirectories();
+        OrganizationList proxy = getOrganizations();
         return getDataStore().getResource(proxy.getHref(), OrganizationList.class, queryParams);
     }
 
