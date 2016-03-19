@@ -113,7 +113,7 @@
 
     <profiles>
         <profile>
-            <id>it-clover</id>
+            <id>clover.all</id>
             <properties>
                 <clover.version>4.1.1</clover.version>
 
