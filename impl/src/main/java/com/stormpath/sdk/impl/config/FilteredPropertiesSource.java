@@ -44,7 +44,7 @@ public class FilteredPropertiesSource implements PropertiesSource {
         return retained;
     }
 
-    public static interface Filter {
+    public interface Filter {
         String[] map(String key, String value);
     }
 }
