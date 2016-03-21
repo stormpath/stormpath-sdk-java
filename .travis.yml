@@ -25,7 +25,7 @@ before_install:
   -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
 - export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
 - export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
-- export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk6' ] && echo 'true')"
+- export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
 install:
 - test -z "$BUILD_DOCS" || pip -q install --user sphinx
 script:
