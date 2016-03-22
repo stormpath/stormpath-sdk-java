@@ -37,7 +37,7 @@ import org.testng.annotations.Test
 import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_RESPONSE
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.assertEquals
-import static IdSiteResultListenerType.*
+import static TestIdSiteResultListenerType.*
 
 /**
  * @since 1.0.RC3
@@ -51,7 +51,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
                 "oiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCIsImlydCI6IjFkMDJkMzM1LWZiZmMtNGVhOC1iODM2LTg1YjllMmE2ZjJhMCIsImlzTmV3" +
                 "U3ViIjpmYWxzZSwic3RhdHVzIjoiUkVHSVNURVJFRCJ9.0n-Sp5zDtiOIJ_Zq6IYdrDHoU3i95XPKhlH-2n9ALdg"
-        testListener(jwtResponse, IdSiteResultStatus.REGISTERED, IdSiteResultListenerType.SINGLE)
+        testListener(jwtResponse, IdSiteResultStatus.REGISTERED, TestIdSiteResultListenerType.SINGLE)
     }
 
     @Test
@@ -61,7 +61,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
                 "oiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCIsImlydCI6IjFkMDJkMzM1LWZiZmMtNGVhOC1iODM2LTg1YjllMmE2ZjJhMCIsImlzTmV3" +
                 "U3ViIjpmYWxzZSwic3RhdHVzIjoiQVVUSEVOVElDQVRFRCJ9.jR_T2G0obYuVIf-Gxer5pCieglfzwdWfNoMn505-hEw"
-        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED, IdSiteResultListenerType.SINGLE)
+        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED, TestIdSiteResultListenerType.SINGLE)
     }
 
     @Test
@@ -71,7 +71,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
                 "oiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCIsImlydCI6IjFkMDJkMzM1LWZiZmMtNGVhOC1iODM2LTg1YjllMmE2ZjJhMCIsImlzTmV3" +
                 "U3ViIjpmYWxzZSwic3RhdHVzIjoiTE9HT1VUIn0.eQJAg2ils97GdtokcaK4T98CwfizM7ZCmuTqew9gf2Y"
-        testListener(jwtResponse, IdSiteResultStatus.LOGOUT, IdSiteResultListenerType.SINGLE)
+        testListener(jwtResponse, IdSiteResultStatus.LOGOUT, TestIdSiteResultListenerType.SINGLE)
     }
 
     /* @since 1.0.RC7.3 */
@@ -82,7 +82,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
                 "oiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCIsImlydCI6IjFkMDJkMzM1LWZiZmMtNGVhOC1iODM2LTg1YjllMmE2ZjJhMCIsImlzTmV3" +
                 "U3ViIjpmYWxzZSwic3RhdHVzIjoiUkVHSVNURVJFRCJ9.0n-Sp5zDtiOIJ_Zq6IYdrDHoU3i95XPKhlH-2n9ALdg"
-        testListener(jwtResponse, IdSiteResultStatus.REGISTERED, IdSiteResultListenerType.MULTI)
+        testListener(jwtResponse, IdSiteResultStatus.REGISTERED, TestIdSiteResultListenerType.MULTI)
     }
 
     /* @since 1.0.RC7.3 */
@@ -93,7 +93,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
                 "oiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCIsImlydCI6IjFkMDJkMzM1LWZiZmMtNGVhOC1iODM2LTg1YjllMmE2ZjJhMCIsImlzTmV3" +
                 "U3ViIjpmYWxzZSwic3RhdHVzIjoiQVVUSEVOVElDQVRFRCJ9.jR_T2G0obYuVIf-Gxer5pCieglfzwdWfNoMn505-hEw"
-        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED, IdSiteResultListenerType.MULTI)
+        testListener(jwtResponse, IdSiteResultStatus.AUTHENTICATED, TestIdSiteResultListenerType.MULTI)
     }
 
     /* @since 1.0.RC7.3 */
@@ -104,7 +104,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
                 "oiNDM2dmtrSGdrMXgzMDU3cENQcVRhaCIsImlydCI6IjFkMDJkMzM1LWZiZmMtNGVhOC1iODM2LTg1YjllMmE2ZjJhMCIsImlzTmV3" +
                 "U3ViIjpmYWxzZSwic3RhdHVzIjoiTE9HT1VUIn0.eQJAg2ils97GdtokcaK4T98CwfizM7ZCmuTqew9gf2Y"
-        testListener(jwtResponse, IdSiteResultStatus.LOGOUT, IdSiteResultListenerType.MULTI)
+        testListener(jwtResponse, IdSiteResultStatus.LOGOUT, TestIdSiteResultListenerType.MULTI)
     }
 
     /* @since 1.0.RC5 */
@@ -166,20 +166,20 @@ class DefaultIdSiteCallbackHandlerTest {
 
     @Test
     public void testNoIdSiteResultListenerSet() {
-        testNoListener(IdSiteResultListenerType.NONE)
+        testNoListener(TestIdSiteResultListenerType.NONE)
     }
 
     @Test
     public void testNullIdSiteResultListenerSet() {
-        testNoListener(IdSiteResultListenerType.SET)
+        testNoListener(TestIdSiteResultListenerType.SET)
     }
 
     @Test
     public void testNullIdSiteResultListenerAdd() {
-        testNoListener(IdSiteResultListenerType.ADD)
+        testNoListener(TestIdSiteResultListenerType.ADD)
     }
 
-    private void testNoListener(IdSiteResultListenerType idSiteResultListenerType) {
+    private void testNoListener(TestIdSiteResultListenerType TestIdSiteResultListenerType) {
         String jwtResponse = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6IjJFVjcwQUhSVFlGMEpPQTdPRUZPM1NNMjkifQ.eyJpc3" +
                 "MiOiJodHRwczovL3N0dXJkeS1zaGllbGQuaWQuc3Rvcm1wYXRoLmlvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92" +
                 "MS9hY2NvdW50cy83T3JhOEtmVkRFSVFQMzhLenJZZEFzIiwiZXhwIjoyNTAyNDY2NjUwMDAsImlhdCI6MTQwNzE5ODU1MCwianRpIj" +
@@ -200,7 +200,7 @@ class DefaultIdSiteCallbackHandlerTest {
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
 
-        switch(idSiteResultListenerType) {
+        switch(TestIdSiteResultListenerType) {
             case SET:     callbackHandler.setResultListener(null)
                           break
 
@@ -218,7 +218,7 @@ class DefaultIdSiteCallbackHandlerTest {
     }
 
     private void testListener(
-        String jwtResponse, IdSiteResultStatus expectedListenerMethod, IdSiteResultListenerType idSiteResultListenerType
+            String jwtResponse, IdSiteResultStatus expectedListenerMethod, TestIdSiteResultListenerType TestIdSiteResultListenerType
     ) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def requestExecutor = createStrictMock(RequestExecutor)
@@ -252,7 +252,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 }
             }
             expect(listener.onRegistered(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
-            if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+            if (TestIdSiteResultListenerType == TestIdSiteResultListenerType.MULTI) {
                 expect(listener2.onRegistered(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
             }
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.AUTHENTICATED)) {
@@ -271,7 +271,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 }
             }
             expect(listener.onAuthenticated(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
-            if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+            if (TestIdSiteResultListenerType == TestIdSiteResultListenerType.MULTI) {
                 expect(listener2.onAuthenticated(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
             }
         } else if (expectedListenerMethod.equals(IdSiteResultStatus.LOGOUT)) {
@@ -290,7 +290,7 @@ class DefaultIdSiteCallbackHandlerTest {
                 }
             }
             expect(listener.onLogout(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
-            if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+            if (TestIdSiteResultListenerType == TestIdSiteResultListenerType.MULTI) {
                 expect(listener2.onLogout(anyObject(AccountResult))).andDelegateTo(listenerDelegate)
             }
         }
@@ -299,7 +299,7 @@ class DefaultIdSiteCallbackHandlerTest {
 
         DefaultIdSiteCallbackHandler callbackHandler = new DefaultIdSiteCallbackHandler(dataStore, application, request)
         callbackHandler.setResultListener(listener)
-        if (idSiteResultListenerType == IdSiteResultListenerType.MULTI) {
+        if (TestIdSiteResultListenerType == TestIdSiteResultListenerType.MULTI) {
             callbackHandler.addResultListener(listener2)
         }
 

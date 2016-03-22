@@ -33,7 +33,7 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.RC5
  */
-@ContextConfiguration(classes = [MinimalAppConfig.class, TwoAppTenantStormpathConfiguration.class])
+@ContextConfiguration(classes = [MinimalTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

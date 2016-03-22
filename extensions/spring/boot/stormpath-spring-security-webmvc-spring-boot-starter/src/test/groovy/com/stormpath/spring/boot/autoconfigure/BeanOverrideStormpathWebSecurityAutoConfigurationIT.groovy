@@ -15,15 +15,14 @@
  */
 package com.stormpath.spring.boot.autoconfigure
 
-import autoconfigure.BeanOverrideStormpathWebSecurityAutoConfigurationApplication
-import com.stormpath.sdk.impl.cache.DisabledCacheManager
+import autoconfigure.BeanOverrideStormpathWebSecurityAutoConfigurationTestApplication
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator
 import com.stormpath.sdk.servlet.mvc.Controller
-import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
+import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
@@ -38,7 +37,7 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = [BeanOverrideStormpathWebSecurityAutoConfigurationApplication.class, TwoAppTenantStormpathConfiguration.class])
+@SpringApplicationConfiguration(classes = [BeanOverrideStormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
 class BeanOverrideStormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 

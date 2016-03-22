@@ -21,5 +21,5 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.0.RC4
  */
 @Configuration
-@EnableStormpathWebMvc
-public class MinimalWebMvcAppConfig {}
+@EnableStormpath
+public class MinimalTestAppConfig {}

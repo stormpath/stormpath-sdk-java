@@ -35,8 +35,8 @@ import org.springframework.context.annotation.Configuration;
  */
 
 @Configuration
-public class TwoAppTenantStormpathConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(TwoAppTenantStormpathConfiguration.class);
+public class TwoAppTenantStormpathTestConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(TwoAppTenantStormpathTestConfiguration.class);
 
     @Value("#{ @environment['stormpath.twoApp.apiKey.id.envName'] ?: 'STORMPATH_API_KEY_ID_TWO_APP' }")
     protected String twoAppApiKeyIdEnvName;

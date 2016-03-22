@@ -21,7 +21,7 @@ import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.lang.Duration
-import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
+import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
@@ -34,7 +34,7 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = [StormpathAutoConfigurationApplication.class, TwoAppTenantStormpathConfiguration.class])
+@SpringApplicationConfiguration(classes = [StormpathAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 class StormpathAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

@@ -18,7 +18,7 @@ class DefaultPropertiesParserTest {
     void testKeyValueNoWhitespace() {
 
         def testStr = "stormpath.web.verify.nextUri=/login?status=verified"
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
             assertEquals(result.size(), 1)
             assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
@@ -29,7 +29,7 @@ class DefaultPropertiesParserTest {
     void testKeyValueLotsOfWhitespace() {
 
         def testStr = "stormpath.web.verify.nextUri                                                     =                                         /login?status=verified"
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
             assertEquals(result.size(), 1)
             assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
@@ -40,7 +40,7 @@ class DefaultPropertiesParserTest {
     void testKeyNoValue() {
 
         def testStr = "stormpath.web.verify.nextUri = "
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
 
             assertEquals(result.size(), 1)
@@ -52,7 +52,7 @@ class DefaultPropertiesParserTest {
     void testValueNoKey() {
 
         def testStr = " = /login?status=verified"
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             try {
                 parser.parse(it)
                 fail()
@@ -68,7 +68,7 @@ class DefaultPropertiesParserTest {
         def testStr =
             "stormpath.web.verify.nextUri=/login?status=verified\n" +
             "stormpath.web.login.nextUri=/"
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
 
             assertEquals(result.size(), 2)
@@ -84,7 +84,7 @@ class DefaultPropertiesParserTest {
             "# this is a comment\n" +
             "; this is also a comment\n" +
             "stormpath.web.login.nextUri=/"
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
 
             assertEquals(result.size(), 2)
@@ -100,7 +100,7 @@ class DefaultPropertiesParserTest {
                     "/login?status=verified\n" +
                 "stormpath.web.login.nextUri = \\\n" +
                     "/"
-        [testStr, new StringResource(testStr)].each {
+        [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
 
             assertEquals(result.size(), 2)

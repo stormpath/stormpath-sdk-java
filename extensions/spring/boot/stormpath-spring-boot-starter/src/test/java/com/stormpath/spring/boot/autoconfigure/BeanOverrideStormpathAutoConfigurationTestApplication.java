@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableAutoConfiguration
-public class BeanOverrideStormpathAutoConfigurationApplication {
+public class BeanOverrideStormpathAutoConfigurationTestApplication {
 
     @Autowired
     private Client client;
@@ -49,7 +49,7 @@ public class BeanOverrideStormpathAutoConfigurationApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(StormpathAutoConfigurationApplication.class, args);
+        SpringApplication.run(StormpathAutoConfigurationTestApplication.class, args);
     }
 
 }

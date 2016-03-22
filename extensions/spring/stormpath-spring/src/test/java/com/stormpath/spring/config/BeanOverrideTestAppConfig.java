@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableStormpath
-public class BeanOverrideAppConfig {
+public class BeanOverrideTestAppConfig {
 
     @Autowired
     private Client client;

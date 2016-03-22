@@ -30,7 +30,7 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.RC4
  */
-@ContextConfiguration(classes = PropertyOverrideAppConfig.class)
+@ContextConfiguration(classes = PropertyOverrideTestAppConfig.class)
 class PropertyOverrideStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

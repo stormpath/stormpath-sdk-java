@@ -15,12 +15,11 @@
  */
 package com.stormpath.spring.boot.autoconfigure
 
-import autoconfigure.StormpathWebSecurityAutoConfigurationApplication
+import autoconfigure.StormpathWebSecurityAutoConfigurationTestApplication
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.impl.cache.DisabledCacheManager
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.Oauth2Requests
@@ -39,12 +38,11 @@ import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
-import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
+import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.*
-import org.junit.AfterClass
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.security.access.PermissionEvaluator
@@ -76,7 +74,7 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = [StormpathWebSecurityAutoConfigurationApplication.class, TwoAppTenantStormpathConfiguration.class])
+@SpringApplicationConfiguration(classes = [StormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
 class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 

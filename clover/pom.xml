@@ -41,11 +41,6 @@
     <profiles>
         <profile>
             <id>clover.all</id>
-            <activation>
-                <!-- only run the IT tests on one of the JVM builds in Travis CI.  This ensures that we don't hammer
-                the REST api unnecessarily. -->
-                <jdk>1.6</jdk>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -64,6 +59,8 @@
                             <excludes>
                                 <exclude>**/*Test*</exclude>
                                 <exclude>**/*IT*</exclude>
+                                <!-- leaving out lang as it mostly comes from other sources -->
+                                <exclude>com/stormpath/sdk/lang/*</exclude>
                             </excludes>
                             <targetPercentage>${clover.coverage.percentage}</targetPercentage>
                         </configuration>
