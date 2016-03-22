@@ -76,8 +76,16 @@ import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import static org.easymock.EasyMock.*
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 class ApplicationIT extends ClientIT {
 

@@ -41,7 +41,6 @@ class DefaultCacheKeyTest {
         def cacheKey = new DefaultCacheKey("https://mysite.com", qs)
 
         assertEquals cacheKey.hashCode(), "https://mysite.com?key_one=value_one".hashCode()
-
     }
 
     @Test
