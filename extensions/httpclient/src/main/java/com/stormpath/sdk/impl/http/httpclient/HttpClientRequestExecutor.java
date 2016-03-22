@@ -238,7 +238,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 );
             }
 
-            if (retryCount > 0) {
+            if (retryCount > 0 || redirectUri != null) {
                 request.setQueryString(originalQuery);
                 request.setHeaders(originalHeaders);
             }
@@ -268,7 +268,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 }
 
                 exception = null;
-                retryCount++;
 
                 //long start = System.currentTimeMillis();
                 httpResponse = httpClient.execute(httpRequest);
@@ -282,6 +281,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                     redirectUri = URI.create(location);
                     httpRequest.setURI(redirectUri);
                 } else {
+                    retryCount++;
 
                     Response response = toSdkResponse(httpResponse);
 
