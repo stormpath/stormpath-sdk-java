@@ -61,6 +61,8 @@
                                 <exclude>**/*IT*</exclude>
                                 <!-- leaving out lang as it mostly comes from other sources -->
                                 <exclude>com/stormpath/sdk/lang/*</exclude>
+                                <!-- leaving out MediaType as it's borrowed from Spring -->
+                                <exclude>com/stormpath/sdk/impl/http/MediaType*</exclude>
                             </excludes>
                             <targetPercentage>${clover.coverage.percentage}</targetPercentage>
                         </configuration>
