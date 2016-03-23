@@ -22,8 +22,8 @@ import static org.testng.Assert.assertNotNull
 
 class HttpClientRequestExecutorIT extends ClientIT {
 
-    @Test
-    void test() throws Exception {
+    @Test //asserts https://github.com/stormpath/stormpath-sdk-java/issues/539
+    void testNoWaitOnRedirect() throws Exception {
 
         // create an temp application
         def app = createTempApp()
@@ -61,7 +61,7 @@ class HttpClientRequestExecutorIT extends ClientIT {
                 return httpClientRequestExecutor.executeRequest(new DefaultRequest(HttpMethod.GET, verifyUri))
             }
         }
-        
+
         ExecutorService executorService = Executors.newCachedThreadPool()
         Future<Response> task = executorService.submit(callable)
 
