@@ -238,7 +238,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 );
             }
 
-            if (retryCount > 0 || redirectUri != null) {
+            if (retryCount > 0) {
                 request.setQueryString(originalQuery);
                 request.setHeaders(originalHeaders);
             }
@@ -257,7 +257,10 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
             HttpResponse httpResponse = null;
             try {
-                if (retryCount > 0) {
+                // We don't want to treat a redirect like a retry,
+                // so if redirectUri is not null, we won't pause
+                // before executing the request below.
+                if (retryCount > 0 && redirectUri == null) {
                     pauseExponentially(retryCount, exception);
                     if (entity != null) {
                         InputStream content = entity.getContent();
@@ -268,6 +271,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 }
 
                 exception = null;
+                retryCount++;
 
                 //long start = System.currentTimeMillis();
                 httpResponse = httpClient.execute(httpRequest);
@@ -281,7 +285,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                     redirectUri = URI.create(location);
                     httpRequest.setURI(redirectUri);
                 } else {
-                    retryCount++;
 
                     Response response = toSdkResponse(httpResponse);
 
