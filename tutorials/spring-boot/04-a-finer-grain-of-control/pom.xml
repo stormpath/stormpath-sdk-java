@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-tutorials-spring-boot-default-a-finer-grain-of-control</artifactId>
-    <version>1.0.RC8.6</version>
+    <version>1.0.RC9-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Tutorials :: Spring Boot Default :: A Finer Grain of Control</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
