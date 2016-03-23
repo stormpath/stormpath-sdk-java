@@ -20,7 +20,7 @@
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-security-spring-boot-webmvc</artifactId>
-    <version>1.0.RC8.6</version>
+    <version>1.0.RC9-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Security :: Spring Boot Webapp</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
