@@ -208,10 +208,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         Assert.notNull(request, "Request argument cannot be null.");
 
-        /*if (requestLog.isDebugEnabled()) {
-            requestLog.debug("Sending Request: " + request.toString());
-        }*/
-
         int retryCount = 0;
         URI redirectUri = null;
         HttpEntity entity = null;
@@ -270,13 +266,12 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                     }
                 }
 
+                // reset redirectUri so that if there is an exception, we will pause on retry
+                redirectUri = null;
                 exception = null;
                 retryCount++;
 
-                //long start = System.currentTimeMillis();
                 httpResponse = httpClient.execute(httpRequest);
-                //long end = System.currentTimeMillis();
-                //executionContext.getTimingInfo().addSubMeasurement(HTTP_REQUEST_TIME, new TimingInfo(start, end));
 
                 if (isRedirect(httpResponse)) {
                     Header[] locationHeaders = httpResponse.getHeaders("Location");
@@ -327,11 +322,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 response.getHeaders("Location") != null &&
                 response.getHeaders("Location").length > 0;
     }
-
-    /*private boolean isRequestSuccessful(org.apache.http.HttpResponse response) {
-        int status = response.getStatusLine().getStatusCode();
-        return status >= 200 && status < 300;
-    }*/
 
     /**
      * Exponential sleep on failed request to avoid flooding a service with
