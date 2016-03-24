@@ -1015,6 +1015,21 @@ class AccountIT extends ClientIT {
         }
     }
 
+    /**
+     * Asserts https://github.com/stormpath/stormpath-sdk-java/issues/520
+     * @since 1.0.RC9
+     */
+    @Test
+    public void testSaveWithResponseOptionsIsCachedProperly() {
+        def app = createTempApp()
+        Account account = createTestAccount(app)
+        account = account.setGivenName("newFooGivenName");
+        account = account.saveWithResponseOptions(Accounts.options().withCustomData())
+        assertEquals account.getGivenName(), "newFooGivenName"
+        account = client.getResource(account.getHref(), Account.class)
+        assertEquals account.getGivenName(), "newFooGivenName"
+    }
+
     //@since 1.0.RC3
     private Object getValue(Class clazz, Object object, String fieldName) {
         Field field = clazz.getDeclaredField(fieldName)
