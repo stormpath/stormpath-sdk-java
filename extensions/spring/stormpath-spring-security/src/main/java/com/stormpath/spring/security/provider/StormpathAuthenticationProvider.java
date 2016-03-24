@@ -282,6 +282,12 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         this.authenticationTokenFactory = authenticationTokenFactory;
     }
 
+    /**
+     * Sets the {@link AccountStore} URI used to fetch an {@link AccountStore}. Not used unless a 'stormpath.web.accountStore'
+     * property is set in Spring's configuration.
+     *
+     * @param accountStoreHref the {@link AccountStore} URI.
+     */
     public void setAccountStoreHref(String accountStoreHref) {
         if (accountStoreHref == null) {
             throw new IllegalArgumentException("accountStoreHref cannot be null.");
@@ -290,6 +296,12 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         this.accountStoreHref = accountStoreHref;
     }
 
+    /**
+     * Sets the {@link Client} URL used to fetch an {@link AccountStore}. Not used unless a 'stormpath.web.accountStore'
+     * property is set in Spring's configuration.
+     *
+     * @param client the {@link Client} used to fetch the {@link AccountStore}.
+     */
     public void setClient(Client client) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null.");
