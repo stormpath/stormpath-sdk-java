@@ -29,6 +29,7 @@ class HttpHeadersTest {
     @Test
     void testReadOnly() {
 
+        httpHeaders.add("GOOD", "GOOD")
         httpHeaders = HttpHeaders.readOnlyHttpHeaders(httpHeaders)
 
         try {
@@ -49,6 +50,13 @@ class HttpHeadersTest {
         assertEquals acceptMediaTypes.size(), 2
         assertTrue acceptMediaTypes.contains(MediaType.APPLICATION_JSON)
         assertTrue acceptMediaTypes.contains(MediaType.APPLICATION_FORM_URLENCODED)
+    }
+
+    @Test
+    void testAcceptCharsetEmpty() {
+
+        def acceptCharSets = httpHeaders.getAcceptCharset()
+        assertEquals acceptCharSets.size(), 0
     }
 
     @Test
@@ -100,6 +108,14 @@ class HttpHeadersTest {
     }
 
     @Test
+    void testContentDispositionFormDataNullFile() {
+
+        httpHeaders.setContentDispositionFormData("CONTROL_NAME", null)
+
+        assertEquals httpHeaders.get("Content-Disposition"), ['form-data; name="CONTROL_NAME"']
+    }
+
+    @Test
     void testContentLength() {
 
         httpHeaders.setContentLength(10) // sets it
@@ -124,6 +140,8 @@ class HttpHeadersTest {
     @Test
     void testDate() {
 
+        assertEquals httpHeaders.getDate(), -1
+
         def dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -146,6 +164,10 @@ class HttpHeadersTest {
         httpHeaders.setETag('W/"123456789"')
         assertEquals httpHeaders.get("ETag"), ['W/"123456789"']
         assertEquals httpHeaders.getETag(), 'W/"123456789"'
+
+        httpHeaders.setETag(null)
+        assertEquals httpHeaders.get("ETag"), [null]
+        assertEquals httpHeaders.getETag(), null
     }
 
     @Test
@@ -181,6 +203,9 @@ class HttpHeadersTest {
     @Test
     void testIfNoneMatch() {
 
+        assertEquals httpHeaders.get("If-None-Match"), null
+        assertEquals httpHeaders.getIfNoneMatch(), []
+
         httpHeaders.setIfNoneMatch("blarg")
         assertEquals httpHeaders.get("If-None-Match"), ["blarg"]
         assertEquals httpHeaders.getIfNoneMatch(), ["blarg"]
@@ -206,12 +231,16 @@ class HttpHeadersTest {
     }
 
     @Test
-    void testLocation() {
+        void testLocation() {
 
-        def uri = new URI("https://mylocation.com")
+        assertEquals httpHeaders.get("Location"), null
+        assertEquals httpHeaders.getLocation(), null
+
+        def location = "https://mylocation.com"
+        def uri = new URI(location)
 
         httpHeaders.setLocation(uri)
-        assertEquals httpHeaders.get("Location"), ["https://mylocation.com"]
+        assertEquals httpHeaders.get("Location"), [location]
         assertEquals httpHeaders.getLocation(), uri
     }
 
@@ -332,5 +361,34 @@ class HttpHeadersTest {
             "ETag":["123456789"]
         ])
         assertEquals httpHeaders.toString(), "{Pragma=[no-cache], ETag=[123456789]}"
+    }
+
+    @Test
+    void testEquals() {
+
+        assertTrue httpHeaders.equals(httpHeaders)
+
+        def notHeaders = "NOT_HEADERS"
+        assertFalse httpHeaders.equals(notHeaders)
+
+        def other = new HttpHeaders()
+        other.setExpires(3600)
+        httpHeaders.setExpires(3600)
+        assertTrue other.equals(httpHeaders)
+    }
+
+    @Test
+    void testHashCode() {
+
+        def location = "https://mylocation.com"
+
+        def other = new HttpHeaders()
+        other.setExpires(3600)
+        other.setLocation(new URI(location))
+
+        httpHeaders.setExpires(3600)
+        httpHeaders.setLocation(new URI(location))
+
+        assertEquals httpHeaders.hashCode(), other.hashCode()
     }
 }
