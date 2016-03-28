@@ -38,7 +38,7 @@
         <logback.version>1.1.2</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <servlet.version>3.0.1</servlet.version>
-        <skipExamplesITs>true</skipExamplesITs>
+        <skipITs>true</skipITs>
     </properties>
 
     <dependencies>
@@ -115,7 +115,7 @@
                 <artifactId>cargo-maven2-plugin</artifactId>
                 <version>1.4.18</version>
                 <configuration>
-                    <skip>${skipExamplesITs}</skip>
+                    <skip>${skipITs}</skip>
                     <container>
                         <containerId>tomcat7x</containerId>
                     </container>
