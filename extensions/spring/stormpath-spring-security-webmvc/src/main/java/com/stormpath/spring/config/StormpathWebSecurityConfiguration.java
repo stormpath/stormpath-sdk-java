@@ -18,10 +18,16 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.spring.filter.StormpathSpringSecurityUsernamePasswordAuthenticationFilter;
 import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.security.StormpathWebAuthenticationDetailsFactory;
+import com.stormpath.spring.security.WebAuthenticationDetailsFactory;
+import com.stormpath.spring.security.provider.AuthenticationDetailsFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -89,6 +95,19 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     @Override
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return super.springSecurityResolvedAccountFilter();
+    }
+
+    @Bean
+    @Override
+    @Autowired
+    public StormpathSpringSecurityUsernamePasswordAuthenticationFilter stormpathSpringSecurityUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
+        return super.stormpathSpringSecurityUsernamePasswordAuthenticationFilter(authenticationManager);
+    }
+
+    @Bean
+    @Override
+    public WebAuthenticationDetailsFactory stormpathWebAuthenticationDetailsFactory() {
+        return super.stormpathWebAuthenticationDetailsFactory();
     }
 
 }

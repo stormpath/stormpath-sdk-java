@@ -23,7 +23,11 @@ import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.filter.StormpathSpringSecurityUsernamePasswordAuthenticationFilter;
 import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.StormpathWebAuthenticationDetailsFactory;
+import com.stormpath.spring.security.WebAuthenticationDetailsFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -69,24 +74,28 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean(name="stormpathWebSecurityConfigurer")
+    @Override
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return super.stormpathWebSecurityConfigurer();
     }
 
     @Bean
     @ConditionalOnMissingBean(name="stormpathLogoutHandler")
+    @Override
     public LogoutHandler stormpathLogoutHandler() {
         return super.stormpathLogoutHandler();
     }
 
     @Bean
     @ConditionalOnMissingBean
+    @Override
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
         return super.stormpathCsrfTokenRepository();
     }
 
     @Bean
     @ConditionalOnMissingBean
+    @Override
     public CsrfTokenManager stormpathCsrfTokenManager() {
         //Spring Security supports CSRF protection already when Thymeleaf is used (and we do use it in Spring Boot),
         // so we turn off our internal implementation to avoid conflicts
@@ -103,6 +112,7 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @Bean
     @ConditionalOnMissingBean(name="springSecurityIdSiteResultListener")
     @ConditionalOnProperty(name="stormpath.web.idSite.enabled")
+    @Override
     public IdSiteResultListener springSecurityIdSiteResultListener() {
         return super.springSecurityIdSiteResultListener();
     }
@@ -110,19 +120,39 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @Bean
     @ConditionalOnMissingBean(name="springSecuritySamlResultListener")
     @ConditionalOnProperty(name="stormpath.web.saml.enabled")
+    @Override
     public SamlResultListener springSecuritySamlResultListener() {
         return super.springSecuritySamlResultListener();
     }
 
     @Bean
     @ConditionalOnMissingBean(name="oAuth2AuthenticationProcessingFilter")
+    @Override
     public Oauth2AuthenticationSpringSecurityProcessingFilter oAuth2AuthenticationProcessingFilter() {
         return super.oAuth2AuthenticationProcessingFilter();
     }
 
     @Bean
     @ConditionalOnMissingBean(name="springSecurityResolvedAccountFilter")
+    @Override
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return super.springSecurityResolvedAccountFilter();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathSpringSecurityUsernamePasswordAuthenticationFilter")
+    @Override
+    @Autowired
+    public StormpathSpringSecurityUsernamePasswordAuthenticationFilter stormpathSpringSecurityUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
+        return super.stormpathSpringSecurityUsernamePasswordAuthenticationFilter(authenticationManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="stormpathWebAuthenticationDetailsFactory")
+    @Override
+    @Autowired
+    public WebAuthenticationDetailsFactory stormpathWebAuthenticationDetailsFactory() {
+        return super.stormpathWebAuthenticationDetailsFactory();
     }
 }

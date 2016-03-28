@@ -20,9 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
 import com.stormpath.sdk.authc.UsernamePasswordRequests;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupStatus;
@@ -41,6 +39,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -151,8 +150,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     private AccountGrantedAuthorityResolver accountGrantedAuthorityResolver;
     private AccountPermissionResolver accountPermissionResolver;
     private AuthenticationTokenFactory authenticationTokenFactory;
-    private String accountStoreHref;
-    private Client client;
+
 
     public StormpathAuthenticationProvider(Application application) {
         Assert.notNull(application, "application can't be null");
@@ -283,34 +281,6 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * Sets the {@link AccountStore} URI used to fetch an {@link AccountStore}. Not used unless a 'stormpath.web.accountStore'
-     * property is set in Spring's configuration.
-     *
-     * @param accountStoreHref the {@link AccountStore} URI.
-     */
-    public void setAccountStoreHref(String accountStoreHref) {
-        if (accountStoreHref == null) {
-            throw new IllegalArgumentException("accountStoreHref cannot be null.");
-        }
-
-        this.accountStoreHref = accountStoreHref;
-    }
-
-    /**
-     * Sets the {@link Client} URL used to fetch an {@link AccountStore}. Not used unless a 'stormpath.web.accountStore'
-     * property is set in Spring's configuration.
-     *
-     * @param client the {@link Client} used to fetch the {@link AccountStore}.
-     */
-    public void setClient(Client client) {
-        if (client == null) {
-            throw new IllegalArgumentException("client cannot be null.");
-        }
-
-        this.client = client;
-    }
-
-    /**
      * Performs actual authentication for the received authentication credentials using
      * <a href="http://www.stormpath.com">Stormpath</a> Cloud Identity Management service for a single application.
      *
@@ -389,8 +359,8 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
         UsernamePasswordRequestBuilder requestBuilder = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password);
 
-        if (Strings.hasText(accountStoreHref)) {
-            AccountStore accountStore = client.getResource(accountStoreHref, Directory.class);
+        AccountStore accountStore = (AccountStore) ((Map)authentication.getDetails()).get("accountStore");
+        if (accountStore != null) {
             requestBuilder.inAccountStore(accountStore);
         }
 

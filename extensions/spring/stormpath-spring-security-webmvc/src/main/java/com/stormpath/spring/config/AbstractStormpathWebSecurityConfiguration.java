@@ -25,13 +25,18 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.filter.StormpathSpringSecurityUsernamePasswordAuthenticationFilter;
 import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.StormpathWebAuthenticationDetailsFactory;
+import com.stormpath.spring.security.WebAuthenticationDetailsFactory;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -130,6 +135,16 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return new SpringSecurityResolvedAccountFilter();
+    }
+
+    public StormpathSpringSecurityUsernamePasswordAuthenticationFilter stormpathSpringSecurityUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
+        StormpathSpringSecurityUsernamePasswordAuthenticationFilter filter = new StormpathSpringSecurityUsernamePasswordAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
+    }
+
+    public WebAuthenticationDetailsFactory stormpathWebAuthenticationDetailsFactory() {
+        return new StormpathWebAuthenticationDetailsFactory();
     }
 
 }
