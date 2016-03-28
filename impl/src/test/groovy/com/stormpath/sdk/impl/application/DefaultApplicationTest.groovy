@@ -935,6 +935,7 @@ class DefaultApplicationTest {
         testAddAccountStoreByHref("organizations", Organization)
     }
 
+    /** @since 1.0.RC9 */
     private void testAddAccountStoreByHref(String accountStoreType, Class accountStoreClass) {
 
         def hrefprefix = "https://api.stormpath.com/v1"

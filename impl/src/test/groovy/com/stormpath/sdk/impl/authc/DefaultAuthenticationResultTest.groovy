@@ -11,6 +11,9 @@ import org.testng.annotations.Test
 import static junit.framework.TestCase.assertNotNull
 import static org.easymock.EasyMock.createStrictMock
 
+/**
+ * @since 1.0.RC9
+ */
 class DefaultAuthenticationResultTest {
 
     @Test

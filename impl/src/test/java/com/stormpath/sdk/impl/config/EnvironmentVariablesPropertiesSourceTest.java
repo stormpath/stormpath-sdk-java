@@ -12,7 +12,9 @@ import static org.powermock.api.easymock.PowerMock.mockStaticPartial;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.testng.Assert.assertEquals;
 
-/*
+/**
+ * @since 1.0.RC9
+ *
  * NOTE: This *exact* same test was not working in groovy, which is why it's implemented in Java
  */
 @PrepareForTest(EnvironmentVariablesPropertiesSource.class)

@@ -7,6 +7,9 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 import static org.testng.AssertJUnit.assertTrue
 
+/**
+ * @since 1.0.RC9
+ */
 class ResourcePropertiesSourceTest {
 
     @Test

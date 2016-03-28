@@ -1220,6 +1220,9 @@ class ApplicationIT extends ClientIT {
         app.addAccountStore(Groups.criteria().add(Groups.name().containsIgnoreCase("testAddAccountStore_MultipleGroupCriteria")))
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAddAccountStoreByName_Null() {
 
@@ -1228,6 +1231,9 @@ class ApplicationIT extends ClientIT {
         assertNull app.addAccountStore("does not exist")
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAddAccountStoreByName_Exception() {
 
@@ -1256,6 +1262,9 @@ class ApplicationIT extends ClientIT {
         }
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAddAccountStoreByName() {
 
@@ -1284,6 +1293,9 @@ class ApplicationIT extends ClientIT {
         assertEquals accountStoreMappting.accountStore.href, group.href
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAddAccountStoreByDirectoryCriteria() {
 
@@ -1301,6 +1313,9 @@ class ApplicationIT extends ClientIT {
         assertEquals accountStoreMapping.accountStore.href, dir.href
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAddAccountStoreByOrganizationCriteria() {
 
@@ -1319,6 +1334,9 @@ class ApplicationIT extends ClientIT {
         assertEquals accountStoreMapping.accountStore.href, org.href
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAddAccountStoreByGroupCriteria() {
 

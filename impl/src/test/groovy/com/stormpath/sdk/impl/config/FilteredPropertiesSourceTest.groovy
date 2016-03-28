@@ -5,6 +5,9 @@ import org.testng.annotations.Test
 import static junit.framework.Assert.assertNull
 import static org.testng.Assert.assertEquals
 
+/**
+ * @since 1.0.RC9
+ */
 class FilteredPropertiesSourceTest {
 
     @Test

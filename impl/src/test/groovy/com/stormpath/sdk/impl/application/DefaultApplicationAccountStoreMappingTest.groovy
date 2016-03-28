@@ -87,6 +87,9 @@ class DefaultApplicationAccountStoreMappingTest {
 
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testGetPropertyDescriptors() {
 

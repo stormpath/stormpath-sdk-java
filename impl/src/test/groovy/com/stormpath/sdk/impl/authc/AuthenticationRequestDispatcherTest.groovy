@@ -19,6 +19,9 @@ import static org.powermock.api.easymock.PowerMock.verifyAll
 import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
 
+/**
+ * @since 1.0.RC9
+ */
 @PrepareForTest(AuthenticationRequestDispatcher)
 class AuthenticationRequestDispatcherTest extends PowerMockTestCase {
 

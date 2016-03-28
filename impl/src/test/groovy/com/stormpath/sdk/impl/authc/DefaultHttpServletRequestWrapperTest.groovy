@@ -10,6 +10,9 @@ import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.replay
 import static org.testng.Assert.assertEquals
 
+/**
+ * @aince 1.0.RC9
+ */
 class DefaultHttpServletRequestWrapperTest {
 
     def httpServletRequest

@@ -15,6 +15,9 @@ import static org.powermock.api.easymock.PowerMock.replayAll
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
+/**
+ * @since 1.0.RC9
+ */
 @PrepareForTest(Classes)
 class DefaultClientTest extends PowerMockTestCase {
 

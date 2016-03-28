@@ -13,6 +13,9 @@ import static org.powermock.api.easymock.PowerMock.replayAll
 import static org.powermock.api.easymock.PowerMock.verifyAll
 import static org.testng.Assert.assertEquals
 
+/**
+ * @since 1.0.RC9
+ */
 class DefaultApiRequestAuthenticatorTest {
 
     @Test

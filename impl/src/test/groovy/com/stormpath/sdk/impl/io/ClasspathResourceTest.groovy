@@ -4,6 +4,9 @@ import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.assertNotNull
 
+/**
+ * @since 1.0.RC9
+ */
 class ClasspathResourceTest {
 
     @Test

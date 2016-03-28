@@ -16,6 +16,9 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 import static org.testng.Assert.fail
 
+/**
+ * @since 1.0.RC9
+ */
 class JacksonMapMarshallerTest {
 
     def mapMarshaller

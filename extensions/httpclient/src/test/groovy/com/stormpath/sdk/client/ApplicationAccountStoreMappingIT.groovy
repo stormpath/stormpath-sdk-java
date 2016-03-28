@@ -182,6 +182,9 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
         assertNull(defaultAccountStore)
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     void testAccountStoreMappingsWithQuery() {
 

@@ -6,6 +6,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @since 1.0.RC9
+ */
 public class TestStringResource implements Resource {
 
     private String string;

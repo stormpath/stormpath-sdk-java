@@ -7,6 +7,9 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertTrue
 
+/**
+ * @since 1.0.RC9
+ */
 class DefaultCacheKeyTest {
 
     @Test

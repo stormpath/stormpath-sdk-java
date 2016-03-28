@@ -185,7 +185,9 @@ class DefaultIdSiteCallbackHandlerTest {
         testNoListener(TestIdSiteResultListenerType.ADD)
     }
 
-    /* @since 1.0.RC9 */
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     public void testSetNonceStore() {
         def dataStore = createStrictMock(InternalDataStore)
@@ -219,6 +221,9 @@ class DefaultIdSiteCallbackHandlerTest {
         }
     }
 
+    /**
+     * @since 1.0.RC9
+     */
     @Test
     public void testGetAccountResultNullHref() {
         def apiKey = ApiKeys.builder()

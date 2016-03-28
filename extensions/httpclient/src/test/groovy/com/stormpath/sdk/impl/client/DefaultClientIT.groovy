@@ -12,6 +12,9 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 
+/**
+ * @since 1.0.RC9
+ */
 class DefaultClientIT extends ClientIT {
 
     @Test
