@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -105,7 +106,7 @@ public class AccountResolverFilter extends HttpFilter {
                 return;
             }
 
-            if (account != null) {
+            if (account != null && AccountStatus.ENABLED.equals(account.getStatus())) {
 
                 //store under both names - can be convenient depending on how it is accessed:
                 request.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
