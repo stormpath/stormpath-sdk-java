@@ -43,7 +43,7 @@
         <restassured.version>2.9.0</restassured.version>
         <slf4j.version>1.7.18</slf4j.version>
         <gmavenplus.version>1.5</gmavenplus.version>
-        <skipExamplesITs>true</skipExamplesITs>
+        <skipITs>true</skipITs>
     </properties>
 
     <profiles>
@@ -54,7 +54,7 @@
                 <jdk>1.8</jdk>
             </activation>
             <properties>
-                <skipExamplesITs>false</skipExamplesITs>
+                <skipITs>false</skipITs>
             </properties>
         </profile>
     </profiles>
@@ -123,7 +123,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
-                        <skipITs>${skipExamplesITs}</skipITs>
+                        <skipITs>${skipITs}</skipITs>
                         <includes>
                             <include>**/*IT.*</include>
                         </includes>
