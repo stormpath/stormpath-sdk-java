@@ -63,6 +63,8 @@
                                 <exclude>com/stormpath/sdk/lang/*</exclude>
                                 <!-- leaving out MediaType as it's borrowed from Spring -->
                                 <exclude>com/stormpath/sdk/impl/http/MediaType*</exclude>
+                                <!-- leaving out JwtHeaderParameters - it's only used for static fields -->
+                                <exclude>com/stormpath/sdk/impl/jwt/JwtHeaderParameters*</exclude>
                             </excludes>
                             <targetPercentage>${clover.coverage.percentage}</targetPercentage>
                         </configuration>
