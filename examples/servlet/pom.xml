@@ -38,6 +38,7 @@
         <logback.version>1.1.2</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <servlet.version>3.0.1</servlet.version>
+        <skipExamplesITs>true</skipExamplesITs>
     </properties>
 
     <dependencies>
@@ -127,6 +128,11 @@
                             </properties>
                         </deployable>
                     </deployables>
+                    <configuration>
+                        <properties>
+                            <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
+                        </properties>
+                    </configuration>
                 </configuration>
                 <executions>
                     <execution>
