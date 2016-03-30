@@ -98,6 +98,8 @@ import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.provider.FacebookResultController;
+import com.stormpath.sdk.servlet.mvc.provider.GoogleResultController;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
@@ -405,6 +407,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.saml.enabled'] ?: false }")
     protected boolean samlEnabled;
 
+    @Value("#{ @environment['stormpath.web.social.enabled'] ?: false }")
+    protected boolean socialEnabled;
+
     @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
 
@@ -472,9 +477,17 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (idSiteEnabled) {
             mappings.put(idSiteResultUri, stormpathIdSiteResultController());
-        }
-        if (samlEnabled) {
-            mappings.put(samlResultUri, stormpathSamlResultController());
+        } else {
+            if (samlEnabled) { //we enable saml and social only if idSite is not enabled
+                mappings.put("/saml", createSamlController("/saml")); //TODO: externalize this property
+                mappings.put(samlResultUri, stormpathSamlResultController());
+            }
+            if (socialEnabled) {
+                String googleResultUri = "/googleOauthCallback"; //TODO: externalize this property
+                String facebookResultUri = "/facebookOauthCallback"; //TODO: externalize this property
+                mappings.put(googleResultUri, stormpathGoogleResultController());
+                mappings.put(facebookResultUri, stormpathFacebookResultController());
+            }
         }
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
@@ -800,10 +813,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             return createIdSiteController(idSiteLoginUri);
         }
 
-        if (samlEnabled) {
-            return createSamlController("/");
-        }
-
         //otherwise standard login controller:
         LoginController controller = new LoginController();
         controller.setUri(loginUri);
@@ -816,6 +825,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutUri(logoutUri);
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+        controller.setSamlEnabled(samlEnabled);
+        controller.setSocialEnabled(socialEnabled);
 
         if (loginErrorModelFactory != null) {
             controller.setErrorModelFactory(loginErrorModelFactory);
@@ -1112,6 +1123,32 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (springSecuritySamlResultListener != null) {
             controller.addSamlResultListener(springSecuritySamlResultListener);
         }
+        controller.init();
+        return createSpringController(controller);
+    }
+
+    public Controller stormpathGoogleResultController() {
+        GoogleResultController controller = new GoogleResultController();
+        controller.setLoginNextUri(loginNextUri);
+        controller.setLogoutController(stormpathMvcLogoutController());
+        controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setEventPublisher(stormpathRequestEventPublisher());
+//        if (springSecuritySamlResultListener != null) {
+//            controller.addSamlResultListener(springSecuritySamlResultListener);
+//        }
+        controller.init();
+        return createSpringController(controller);
+    }
+
+    public Controller stormpathFacebookResultController() {
+        FacebookResultController controller = new FacebookResultController();
+        controller.setLoginNextUri(loginNextUri);
+        controller.setLogoutController(stormpathMvcLogoutController());
+        controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setEventPublisher(stormpathRequestEventPublisher());
+//        if (springSecuritySamlResultListener != null) {
+//            controller.addSamlResultListener(springSecuritySamlResultListener);
+//        }
         controller.init();
         return createSpringController(controller);
     }

@@ -20,21 +20,7 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.beta
  */
-public interface GoogleProvider extends Provider {
-
-    /**
-     * Getter for the App ID of the Google application.
-     *
-     * @return the App ID for of Google application.
-     */
-    String getClientId();
-
-    /**
-     * Getter for the App Secret of the Google application.
-     *
-     * @return the App Secret of the Google application.
-     */
-    String getClientSecret();
+public interface GoogleProvider extends OauthProvider {
 
     /**
      * Getter for the Redirect Uri of the Google application.

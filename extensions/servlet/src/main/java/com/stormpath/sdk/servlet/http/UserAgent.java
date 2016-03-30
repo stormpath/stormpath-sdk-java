@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.http;
 
+import java.util.List;
+
 /**
  * Extraordinarily simple representation of an HTTP User agent that supplies only the features needed by the
  * default filter implementations.
@@ -32,6 +34,9 @@ public interface UserAgent {
      */
     boolean isBrowser();
 
+
+    List<MediaType> getAcceptedMediaTypes();
+
     /**
      * Returns {@code true} if the user agent prefers HTML (or XHTML) content, {@code false} otherwise.  HTML preference
      * in this context is determined by looking at the {@code Accept} header and seeing if
@@ -41,4 +46,14 @@ public interface UserAgent {
      * @return {@code true} if the user agent prefers HTML (or XHTML) content, {@code false} otherwise.
      */
     boolean isHtmlPreferred();
+
+    /**
+     * Returns {@code true} if the user agent prefers JSON content, {@code false} otherwise.  JSON preference
+     * in this context is determined by looking at the {@code Accept} header and seeing if
+     * {@code application/json} is listed first before {@code application/html} or {@code application/xhtml+xml}.
+     *
+     * @return {@code true} if the user agent prefers JSON, {@code false} otherwise.
+     */
+    boolean isJsonPreferred();
+
 }

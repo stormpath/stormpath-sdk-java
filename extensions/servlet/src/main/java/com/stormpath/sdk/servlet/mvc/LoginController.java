@@ -26,6 +26,9 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +47,10 @@ public class LoginController extends FormController {
     private Boolean verifyEnabled;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private ErrorModelFactory errorModelFactory = new LoginErrorModelFactory();
+    private AccountStoreModelFactory accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+    private AccountStoreModelFactory providerModelFactory = new DefaultProviderModelFactory();
+    private boolean samlEnabled = false;
+    private boolean socialEnabled = false;
 
     public void init() {
         super.init();
@@ -54,12 +61,29 @@ public class LoginController extends FormController {
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
         Assert.notNull(this.verifyEnabled, "verifyEnabled property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
+        Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
     }
 
     @Override
     public boolean isNotAllowIfAuthenticated() {
         return true;
+    }
+
+    public boolean isSamlEnabled() {
+        return this.samlEnabled;
+    }
+
+    public void setSamlEnabled(boolean samlEnabled) {
+        this.samlEnabled = samlEnabled;
+    }
+
+    public boolean isSocialEnabled() {
+        return this.socialEnabled;
+    }
+
+    public void setSocialEnabled(boolean socialEnabled) {
+        this.socialEnabled = socialEnabled;
     }
 
     public String getForgotLoginUri() {
@@ -95,6 +119,22 @@ public class LoginController extends FormController {
 
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
+    }
+
+    public AccountStoreModelFactory getAccountStoreModelFactory() {
+        return accountStoreModelFactory;
+    }
+
+    public void setAccountStoreModelFactory(AccountStoreModelFactory accountStoreModelFactory) {
+        this.accountStoreModelFactory = accountStoreModelFactory;
+    }
+
+    public AccountStoreModelFactory getProviderModelFactory() {
+        return providerModelFactory;
+    }
+
+    public void setProviderModelFactory(AccountStoreModelFactory providerModelFactory) {
+        this.providerModelFactory = providerModelFactory;
     }
 
     /* @since 1.0.RC8.3 */
@@ -133,6 +173,12 @@ public class LoginController extends FormController {
                 model.put("errors", errors);
             }
         }
+        if (isSamlEnabled()) {
+            model.put("providers", getProviderModelFactory().getAccountStores(request));
+        }
+        if (isSocialEnabled()) {
+            model.put("accountStores", getAccountStoreModelFactory().getAccountStores(request));
+        }
         model.put("forgotLoginUri", getForgotLoginUri());
         model.put("verifyUri", getVerifyUri());
         model.put("verifyEnabled", isVerifyEnabled());
@@ -154,8 +200,11 @@ public class LoginController extends FormController {
             field.setPlaceholder("stormpath.web.login.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
-            String param = request.getParameter(fieldName);
-            field.setValue(param != null ? param : "");
+//            String param = request.getParameter(fieldName);
+//            field.setValue(param != null ? param : "");
+
+            String val = getFieldValueResolver().getValue(request, fieldName);
+            field.setValue(val != null ? val : "");
 
             if ("password".equals(fieldName)) {
                 field.setType("password");
@@ -172,7 +221,8 @@ public class LoginController extends FormController {
 
     @Override
     protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
-        return errorModelFactory.toErrors(request, form, e);
+        //return errorModelFactory.toErrors(request, form, e);
+        return getErrorModelFactory().toErrors(request, form, e);
     }
 
     @Override
@@ -187,7 +237,7 @@ public class LoginController extends FormController {
         final Account account = getAccount(req);
 
         //simulate a result for the benefit of the 'saveResult' method signature:
-        AuthenticationResult result = new TransientAuthenticationResult(account);
+        final AuthenticationResult result = new TransientAuthenticationResult(account);
         saveResult(req, resp, result);
 
         String next = form.getNext();

@@ -25,7 +25,8 @@
 
                 <div class="box row">
 
-                    <div th:class="'email-password-area col-xs-12 ' + ${social? 'small col-sm-8' : 'large col-sm-12'}">
+                    <!--<div th:class="'email-password-area col-xs-12 ' + ${social? 'small col-sm-8' : 'large col-sm-12'}">-->
+                    <div th:class="'email-password-area col-xs-12 ' + ${#lists.isEmpty(accountStores) ? 'large col-sm-12' : 'small col-sm-8'}">
 
                         <div class="header" th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
                                 <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Login|</span>
@@ -49,9 +50,14 @@
                             <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
 
                             <div th:each="field : ${form.visibleFields}" form-group="true" th:class="'form-group group-' + ${field.name}">
-                                <label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>
+                                <!--<label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>-->
 
-                                <div class="col-sm-8">
+                                <!--<div class="col-sm-8">-->
+
+                                <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}" th:text="#{${field.label}}">|Field label|</label>
+
+                                <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
+
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
                                            th:placeholder="#{${field.placeholder}}"
                                            th:autofocus="${field.autofocus}"
@@ -67,6 +73,26 @@
 
                     </div>
 
+                    <!-- div class="provider-area  col-xs-12 col-sm-4" ng-show="social" -->
+                    <div th:if="${(not #lists.isEmpty(accountStores)) or (not #lists.isEmpty(providers))}" class="social-area col-xs-12 col-sm-4" >
+                        <div class="header">&nbsp;</div>
+                        <label>Easy 1-click login:</label>
+                        <!--<button th:each="accountStore : ${accountStores}" class="btn btn-social btn-{{accountStore.providerId}}" onclick="'providerLogin(\'${accountstore}\');'"><p th:inline="text">[[${accountStore.provider.providerId}]]</p></button>-->
+                        <button th:each="accountStore : ${accountStores}" th:classappend="'btn btn-social btn-' + ${accountStore.provider.providerId}" th:onclick="'javascript:providerLogin' + ${accountStore.provider.providerId} + '(\'' + ${accountStore.provider.clientId} + '\')'"><p th:inline="text">[[${accountStore.provider.providerId}]]</p></button>
+
+
+                        <!-- button th:each="accountStore : ${accountStores}" class="btn btn-social btn-{{accountStore.providerId}}" th:onclick="providerLogin(provider)">#{provider.accountStore} ? #{provider.accountStore.name} : #{provider.providerId}</button -->
+                        <button th:if="${not #lists.isEmpty(providers)}" class="btn btn-social" th:onclick="'javascript:providerLoginSAML()'"><p th:inline="text">SAML</p></button>
+                    </div>
+
+                    <!--<div th:if="${not #lists.isEmpty(providers)}" class="social-area col-xs-12 col-sm-4" >-->
+                        <!--<div class="header">&nbsp;</div>-->
+                        <!--<label>Easy 1-click login:</label>-->
+                        <!--&lt;!&ndash;<button th:each="accountStore : ${accountStores}" class="btn btn-social btn-{{accountStore.providerId}}" onclick="'providerLogin(\'${accountstore}\');'"><p th:inline="text">[[${accountStore.provider.providerId}]]</p></button>&ndash;&gt;-->
+                        <!--<button th:each="accountStore : ${accountStores}" class="btn btn-social btn-{{accountStore.provider.providerId}}" th:onclick="'javascript:providerLogin' + ${accountStore.provider.providerId} + '(\'' + ${accountStore.provider.clientId} + '\')'"><p th:inline="text">[[${accountStore.provider.providerId}]]</p></button>-->
+                        <!--&lt;!&ndash; button th:each="accountStore : ${accountStores}" class="btn btn-social btn-{{accountStore.providerId}}" th:onclick="providerLogin(provider)">#{provider.accountStore} ? #{provider.accountStore.name} : #{provider.providerId}</button &ndash;&gt;-->
+                    <!--</div>-->
+
                 </div>
 
                 <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify" th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
@@ -74,6 +100,79 @@
 
             </div>
         </div>
+
+
+
+        <!--<div th:if="${not #lists.isEmpty(providers)}" class="social-area col-xs-12 col-sm-4" >-->
+            <!--<div class="header">&nbsp;</div>-->
+            <!--<label>Easy 1-click login:</label>-->
+            <!--<button th:each="provider : ${providers}" class="btn btn-social btn-{{provider.providerId}}">#{provider.accountStore} ? #{provider.accountStore.name} : #{provider.providerId}</button>-->
+            <!--&lt;!&ndash; button th:each="accountStore : ${accountStores}" class="btn btn-social btn-{{accountStore.providerId}}" th:onclick="providerLogin(provider)">#{provider.accountStore} ? #{provider.accountStore.name} : #{provider.providerId}</button &ndash;&gt;-->
+        <!--</div>-->
+
+        <!-- TODO:
+                    <div th:if="${not #lists.isEmpty(accountStores)}" class="social-area col-xs-12 col-sm-4">
+
+                        <div class="header">
+                            <label>Easy 1-click login:</label>
+                        </div>
+
+                    </div>
+                    -->
+
     </div>
+
+
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        function providerLogingoogle(accountStore) {
+            window.location.replace("https://accounts.google.com/o/oauth2/auth?response_type=code" +
+            "&client_id=" + accountStore + "&scope=email" +
+            "&redirect_uri=http://localhost:8080/googleOauthCallback");
+        }
+        function providerLoginSAML() {
+            window.location.replace("http://localhost:8080/saml");
+        }
+        function providerLoginfacebook(accountStore) {
+            var FB = window.FB;
+            FB.init({
+                appId      : accountStore,
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v2.4'
+            });
+
+            FB.login(function(response) {
+                if (response.status === 'connected') {
+                    var queryStr = window.location.search.replace('?', '');
+                    if (queryStr) {
+                        window.location.replace("/facebookOauthCallback?queryStr&code=" + FB.getAuthResponse()['accessToken']);
+                    } else {
+                        window.location.replace("/facebookOauthCallback?code=" + FB.getAuthResponse()['accessToken']);
+                    }
+                }
+            }, {scope: 'email' });
+        }
+
+//        window.fbAsyncInit = function() {
+//            FB.init({
+//                //appId      : accountStore,
+//                cookie     : true,
+//                xfbml      : true,
+//                version    : 'v2.4'
+//            });
+//        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        /* ]]> */
+    </script>
+
+    <!--</div>-->
 </body>
 </html>

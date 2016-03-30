@@ -79,6 +79,10 @@ p {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient (GradientType=0, startColorstr=#2ec700, endColorstr=#43cd1a)";
 }
 
+.btn-saml {
+    .flatTwoColorGradient(#458AC5,#3b7db5,#458AC5,#3b7db5);
+}
+
 .btn-social {
     height: 37px;
     line-height: 18.5px;

@@ -28,25 +28,29 @@ public class LoginErrorModelFactory implements ErrorModelFactory {
         if (e != null) {
             log.debug("Unable to login user.", e);
             List<String> errors = new ArrayList<String>(1);
-            errors.add(getInvalidLoginMessage(request));
+            //errors.add(getInvalidLoginMessage(request));
+            errors.add("Invalid username or password.");
             return errors;
         }
         return null;
     }
-
-    private String getInvalidLoginMessage(HttpServletRequest request) {
-        Config config = getConfig(request);
-        MessageSource messageSource = null;
-        try {
-            messageSource = config.getInstance(MESSAGE_SOURCE);
-        }
-        catch (ServletException se){
-            messageSource = new DefaultMessageSource();
-        }
-        return messageSource.getMessage(INVALID_LOGIN_MESSAGE, request.getLocale());
-    }
-
-    private Config getConfig(HttpServletRequest request){
-        return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
-    }
+      //TODO: if this is added, we get an Error during failed login with Spring Boot: "There is no Config instance
+      //TODO: accessible via the ServletContext attribute key [com.stormpath.sdk.servlet.config.Config]
+      //TODO: To fix this we might need add something like sce.getServletContext().setAttribute(ConfigLoader.CONFIG_ATTRIBUTE_NAME, cli); to
+      //TODO: StormpathWebMvcAutoConfiguration#stormpathServletContextListener
+//    private String getInvalidLoginMessage(HttpServletRequest request) {
+//        Config config = getConfig(request);
+//        MessageSource messageSource = null;
+//        try {
+//            messageSource = config.getInstance(MESSAGE_SOURCE);
+//        }
+//        catch (ServletException se){
+//            messageSource = new DefaultMessageSource();
+//        }
+//        return messageSource.getMessage(INVALID_LOGIN_MESSAGE, request.getLocale());
+//    }
+//
+//    private Config getConfig(HttpServletRequest request){
+//        return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
+//    }
 }
