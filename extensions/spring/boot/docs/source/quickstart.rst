@@ -124,7 +124,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
           <parent>
               <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-starter-parent</artifactId>
-              <version>1.3.2.RELEASE</version>
+              <version>1.3.3.RELEASE</version>
               <relativePath/> <!-- lookup parent from repository -->
           </parent>
 
