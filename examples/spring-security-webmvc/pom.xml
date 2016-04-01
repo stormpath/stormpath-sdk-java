@@ -93,19 +93,17 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <!-- Using an old Jetty version to allow the example to run with Java 6 -->
-                <!-- https://github.com/stormpath/stormpath-sdk-java/issues/270 -->
-                <!-- When dropping Java 1.6 support, we can switch to jetty-maven-plugin 9.3.7.v20160115 -->
-                <version>8.1.16.v20140903</version>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
-                    <stopPort>8081</stopPort>
-                    <stopKey>stop</stopKey>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <webApp>
-                        <contextPath>/</contextPath>
-                    </webApp>
+                    <path>/</path>
+                    <server>
+                        <port>8081</port>
+                        <shutdown>stop</shutdown>
+                        <autoDeploy>true</autoDeploy>
+                        <backgroundProcessorDelay>10</backgroundProcessorDelay>
+                    </server>
                 </configuration>
             </plugin>
         </plugins>
