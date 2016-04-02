@@ -29,24 +29,22 @@ public class DefaultJwtSigner implements JwtSigner {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private static final String BASE64_URL_JWT_SIGN_HEADER;
+    private final String BASE64_URL_JWT_SIGN_HEADER;
 
-    public static final String JWT_SIGN_HEADER;
+    public final String JWT_SIGN_HEADER;
 
     private static final char JWT_TOKEN_SEPARATOR = '.';
 
     private static final String SHA256_ALGORITHM = "HmacSHA256";
 
-    static {
-        JWT_SIGN_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
-        BASE64_URL_JWT_SIGN_HEADER = Base64.encodeBase64URLSafeString(JWT_SIGN_HEADER.getBytes(UTF_8));
-    }
-
     private final HmacGenerator sha256HmacGenerator;
 
     private final byte[] signingKey;
+    
+    public DefaultJwtSigner(String kid, String signingKey) {
+        JWT_SIGN_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\",\"kid\":\"" + kid + "\"}";
 
-    public DefaultJwtSigner(String signingKey) {
+        BASE64_URL_JWT_SIGN_HEADER = Base64.encodeBase64URLSafeString(JWT_SIGN_HEADER.getBytes(UTF_8));
 
         this.signingKey = signingKey.getBytes(UTF_8);
 
@@ -61,9 +59,12 @@ public class DefaultJwtSigner implements JwtSigner {
 
         String signature = calculateSignature(BASE64_URL_JWT_SIGN_HEADER, base64UrlJsonPayload);
 
-        return new StringBuilder(BASE64_URL_JWT_SIGN_HEADER).append(JWT_TOKEN_SEPARATOR)
-                                                            .append(base64UrlJsonPayload).append(JWT_TOKEN_SEPARATOR)
-                                                            .append(signature).toString();
+        return new StringBuilder(BASE64_URL_JWT_SIGN_HEADER)
+            .append(JWT_TOKEN_SEPARATOR)
+            .append(base64UrlJsonPayload)
+            .append(JWT_TOKEN_SEPARATOR)
+            .append(signature)
+            .toString();
     }
 
     @Override

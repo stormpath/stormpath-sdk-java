@@ -26,6 +26,7 @@ import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.idsite.AccountResult
 import com.stormpath.sdk.impl.http.QueryString
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner
+import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.lang.Strings
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -181,16 +182,14 @@ class IdSiteReplyIT extends ClientIT {
     }
 
     String buildSsoResponse(String apiKeyId, String apiKeySecret, String issuer, int ttl, String state, IdSiteResultStatus status) {
+        Assert.hasText(apiKeyId)
+        Assert.hasText(apiKeySecret)
 
         def expired = (System.currentTimeMillis() / 1000) + ttl
 
         def nonce = UUID.randomUUID().toString()
 
         def map = [sub: account.href, isNewSub: false, exp: expired, irt: nonce, status: status]
-
-        if (Strings.hasText(apiKeyId)) {
-            map.aud = apiKeyId
-        }
 
         if (Strings.hasText(issuer)) {
             map.iss = issuer
@@ -200,7 +199,7 @@ class IdSiteReplyIT extends ClientIT {
             map.state = state
         }
 
-        DefaultJwtSigner signer = new DefaultJwtSigner(apiKeySecret)
+        DefaultJwtSigner signer = new DefaultJwtSigner(apiKeyId, apiKeySecret)
 
         signer.sign(objectMapper.writeValueAsString(map))
     }
