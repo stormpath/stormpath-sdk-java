@@ -62,7 +62,7 @@ class IdSiteClaimsTest {
         try {
             idSiteClaims.setValue(IdSiteClaims.USE_SUBDOMAIN, "blarg")
             idSiteClaims.getUseSubdomain()
-            fail()
+            fail "shouldn't be here"
         } catch (IllegalStateException e) {
             assertEquals e.getMessage(), "Cannot convert 'usd' value [blarg] to Boolean instance."
         }

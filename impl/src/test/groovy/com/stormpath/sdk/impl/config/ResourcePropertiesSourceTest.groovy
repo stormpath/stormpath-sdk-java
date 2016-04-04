@@ -24,7 +24,6 @@ class ResourcePropertiesSourceTest {
     @Test
     void testInvalidProperties() {
 
-
         try {
             new ResourcePropertiesSource(new BadResource()).properties
             fail("should not be here")
