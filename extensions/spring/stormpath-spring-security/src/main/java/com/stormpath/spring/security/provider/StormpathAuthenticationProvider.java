@@ -358,10 +358,12 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         }
 
         UsernamePasswordRequestBuilder requestBuilder = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password);
-
-        AccountStore accountStore = (AccountStore) ((Map)authentication.getDetails()).get("accountStore");
-        if (accountStore != null) {
-            requestBuilder.inAccountStore(accountStore);
+        Object authDetails = authentication.getDetails();
+        if (authDetails != null) {
+            AccountStore accountStore = (AccountStore) ((Map) authDetails).get("accountStore");
+            if (accountStore != null) {
+                requestBuilder.inAccountStore(accountStore);
+            }
         }
 
         return requestBuilder.build();
