@@ -19,7 +19,7 @@ thoughts! support@stormpath.com
 
 ## Documentation
 
-Stormpath offers deep documentation and support for Java. 
+Stormpath offers deep documentation and support for Java.
 
 - [Official Stormpath Docs](http://docs.stormpath.com/)
 - [API Docs for Java](https://docs.stormpath.com/java/apidocs/)
@@ -27,13 +27,13 @@ Stormpath offers deep documentation and support for Java.
 - [Stormpath Servlet Plugin for Java Webapps](https://docs.stormpath.com/java/servlet-plugin/)
 - [Spring Boot Stormpath Web Starter](https://docs.stormpath.com/java/spring-boot-web/)
 
-Please email support@stormpath.com with any errors or issues with the documentation. 
+Please email support@stormpath.com with any errors or issues with the documentation.
 
 ## Links
 
 Below are some resources you might find useful!
 
-- [Java Quickstart](http://docs.stormpath.com/java/quickstart/) to get started. 
+- [Java Quickstart](http://docs.stormpath.com/java/quickstart/) to get started.
 - [Java WebApp Quickstart](https://docs.stormpath.com/java/servlet-plugin/quickstart.html)
 - [Spring Boot Webapp Quickstart](https://docs.stormpath.com/java/spring-boot-web/quickstart.html)
 - [Stormpath Java SDK](https://github.com/stormpath/stormpath-sdk-java)
@@ -48,8 +48,8 @@ Below are some resources you might find useful!
 - [Example Stormpath Spring Boot Web App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-boot-webmvc)
 
 **Spring Security Support**
-- [Stormpath Spring Security Plugin](https://github.com/stormpath/stormpath-spring-security)
-- [Stormpath Spring Security Sample App](https://github.com/stormpath/stormpath-spring-security-example)
+- [Stormpath Spring Security Plugin](https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security)
+- [Stormpath Spring Security Sample App](https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/spring-security-webmvc)
 
 **Apache Shiro Support**
 - [Stormpath-Shiro Plugin](https://github.com/stormpath/stormpath-shiro)
@@ -61,7 +61,7 @@ Below are some resources you might find useful!
 
 ## Quickstart
 
-Any Java application can use our general [Stormpath Java API Quickstart](http://docs.stormpath.com/java/quickstart/) to get started. 
+Any Java application can use our general [Stormpath Java API Quickstart](http://docs.stormpath.com/java/quickstart/) to get started.
 
 We also have a [Java WebApp Quickstart](https://docs.stormpath.com/java/servlet-plugin/quickstart.html) for the Stormpath Servlet Plugin - a drop-in plugin for web applications deployed to a Servlet container, like Tomcat or Jetty.  
 
