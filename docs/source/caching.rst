@@ -38,7 +38,7 @@ You can specify the default TTI value for all cache regions by setting the ``sto
 .. code-block:: properties
 
    # 3,600,000 milliseconds = 1 hour
-   stormpath.cache.ttl = 3600000
+   stormpath.cache.tti = 3600000
 
 Cache Regions
 ^^^^^^^^^^^^^
