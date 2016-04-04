@@ -16,7 +16,6 @@
 package com.stormpath.spring.boot.autoconfigure
 
 import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.client.Client
 import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,9 +33,6 @@ class StormpathSpringSecurityAutoConfigurationIT extends AbstractTestNGSpringCon
 
     @Autowired
     Application application
-
-    @Autowired
-    Client client
 
     @Autowired
     StormpathAuthenticationProvider authenticationProvider;
@@ -61,8 +57,6 @@ class StormpathSpringSecurityAutoConfigurationIT extends AbstractTestNGSpringCon
 
         assertNotNull authenticationProvider
         assertEquals authenticationProvider.application, application
-        assertNotNull authenticationProvider.accountStoreHref
-        assertEquals authenticationProvider.client, client
 
         assertTrue groupGrantedAuthorityResolver instanceof DefaultGroupGrantedAuthorityResolver
         assertTrue groupPermissionResolver instanceof GroupCustomDataPermissionResolver
