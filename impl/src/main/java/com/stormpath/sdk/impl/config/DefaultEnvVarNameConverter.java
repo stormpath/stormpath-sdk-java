@@ -41,6 +41,9 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         if ("STORMPATH_API_KEY_FILE".equals(envVarName)) {
             return "stormpath.apiKey.file";
         }
+        if ("STORMPATH_BASEURL".equals(envVarName)) {
+            return "stormpath.baseUrl";
+        }
 
         //default cases:
         StringBuilder sb = new StringBuilder();
