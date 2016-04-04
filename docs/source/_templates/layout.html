@@ -33,4 +33,9 @@
     _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
   </script>
   <script src="//cdn.optimizely.com/js/225847041.js"></script>
+  <script type="text/javascript" >
+    $(document).ready(function() {
+      $("a[href^='http']").attr('target','_blank');
+    });
+  </script>
 {% endblock %}

@@ -22,9 +22,9 @@ All communication with Stormpath must be authenticated with an API Key.
 
 #. Click the link in the verification email.
 
-#. Log in to the `Stormpath Admin Console`_ using the email address and password you used during registration.
+#. Log in to the `Stormpath Admin Console`_ using the email address and password you used during registration and the assigned tenant id.
 
-#. Click the **Create API** Key or **Manage Existing Keys** button in the middle of the page.
+#. Click the **Create API** Key or **Manage Existing Keys** button.
 
 #. Under **Security Credentials**, click **Create API Key**.
 
