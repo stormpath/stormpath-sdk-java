@@ -18,8 +18,8 @@ package com.stormpath.spring.config;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC4
  */
 @Configuration
-@EnableStormpathWebSecurity
-public class MinimalStormpathSpringSecurityWebMvcAppConfig {}
+@EnableStormpathWebMvc
+public class MinimalWebMvcTestAppConfig {}

@@ -13,7 +13,7 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC5
  */
-@ContextConfiguration(classes = [MinimalSpringSecurityAppConfig.class, TwoAppTenantStormpathConfiguration.class])
+@ContextConfiguration(classes = [MinimalSpringSecurityTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 class MinimalStormpathSpringSecurityConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

@@ -121,16 +121,6 @@
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
 
-        <!-- clover - for internal use -->
-        <clover.coverage.percentage>52%</clover.coverage.percentage>
-        <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
-        <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
-        <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
-        <clover.history.dir>${clover.project.dir}/history</clover.history.dir>
-        <clover.database.dir>${clover.project.dir}/database</clover.database.dir>
-        <clover.database>${clover.database.dir}/clover.db</clover.database>
-        <clover.version>4.1.1</clover.version>
-
     </properties>
 
     <dependencies>
@@ -642,6 +632,18 @@
                 NOTE: This is an older style of config, but currently, clover is unable
                 to work with deeply nested modules.
             -->
+            <!-- clover - for internal use -->
+            <properties>
+                <clover.coverage.percentage>52%</clover.coverage.percentage>
+                <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
+                <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
+                <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
+                <clover.history.dir>${clover.project.dir}/history</clover.history.dir>
+                <clover.database.dir>${clover.project.dir}/database</clover.database.dir>
+                <clover.database>${clover.database.dir}/clover.db</clover.database>
+                <clover.version>4.1.1</clover.version>
+            </properties>
+
             <modules>
                 <module>api</module>
                 <module>impl</module>
@@ -696,6 +698,12 @@
                             <excludes>
                                 <exclude>**/*Test*</exclude>
                                 <exclude>**/*IT*</exclude>
+                                <!-- leaving out lang as it mostly comes from other sources -->
+                                <exclude>com/stormpath/sdk/lang/*</exclude>
+                                <!-- leaving out MediaType as it's borrowed from Spring -->
+                                <exclude>com/stormpath/sdk/impl/http/MediaType*</exclude>
+                                <!-- leaving out JwtHeaderParameters - it's only used for static fields -->
+                                <exclude>com/stormpath/sdk/impl/jwt/JwtHeaderParameters*</exclude>
                             </excludes>
                             <useCloverClassifier>true</useCloverClassifier>
                             <!--See https://confluence.atlassian.com/display/CLOVERKB/Java+8+code+instrumented+by+Clover+fails+to+compile-->

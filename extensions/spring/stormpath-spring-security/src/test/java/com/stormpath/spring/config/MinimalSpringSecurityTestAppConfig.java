@@ -7,5 +7,5 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableStormpathSecurity
-public class MinimalSpringSecurityAppConfig {
+public class MinimalSpringSecurityTestAppConfig {
 }

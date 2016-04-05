@@ -71,7 +71,7 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC5
  */
-@ContextConfiguration(classes = [MinimalStormpathSpringSecurityWebMvcAppConfig.class, TwoAppTenantStormpathConfiguration.class])
+@ContextConfiguration(classes = [MinimalStormpathSpringSecurityWebMvcTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
 class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
 

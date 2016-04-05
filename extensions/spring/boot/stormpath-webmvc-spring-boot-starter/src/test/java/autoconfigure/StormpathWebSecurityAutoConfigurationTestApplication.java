@@ -15,33 +15,35 @@
  */
 package autoconfigure;
 
-import com.stormpath.spring.boot.autoconfigure.CustomTestGroupPermissionResolver;
-import com.stormpath.spring.security.provider.GroupPermissionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC5.2
  */
 @Configuration
 @EnableAutoConfiguration
-public class BeanOverrideStormpathWebSecurityAutoConfigurationApplication {
+public class StormpathWebSecurityAutoConfigurationTestApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(BeanOverrideStormpathWebSecurityAutoConfigurationApplication.class);
-
-    @Bean
-    public GroupPermissionResolver stormpathGroupPermissionResolver() {
-        //Let's try that the Bean definition order in AbstractStormpathSpringSecurityConfiguration#stormpathAuthenticationProvider actually works
-        return new CustomTestGroupPermissionResolver();
-    }
+    private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityAutoConfigurationTestApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(BeanOverrideStormpathWebSecurityAutoConfigurationApplication.class, args);
+
+        ApplicationContext ctx = SpringApplication.run(StormpathWebSecurityAutoConfigurationTestApplication.class, args);
+
+        log.info("Beans provided by Spring Boot:");
+
+        String[] beanNames = ctx.getBeanDefinitionNames();
+        Arrays.sort(beanNames);
+        for (String beanName : beanNames) {
+            log.info(beanName);
+        }
     }
 
 }

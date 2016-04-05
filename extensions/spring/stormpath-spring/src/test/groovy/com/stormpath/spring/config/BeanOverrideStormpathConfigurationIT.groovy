@@ -27,7 +27,7 @@ import static org.testng.Assert.assertNotNull
 /**
  * @since 1.0.RC4
  */
-@ContextConfiguration(classes = [BeanOverrideAppConfig.class, TwoAppTenantStormpathConfiguration.class])
+@ContextConfiguration(classes = [BeanOverrideTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 class BeanOverrideStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

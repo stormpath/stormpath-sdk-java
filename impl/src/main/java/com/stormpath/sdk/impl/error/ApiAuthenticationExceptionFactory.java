@@ -70,10 +70,8 @@ public class ApiAuthenticationExceptionFactory {
 
     public static ResourceException newOauthException(Class<? extends OauthAuthenticationException> clazz, String oauthError) {
 
-        String oauthClientError = "error: " + oauthError;
-
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
-                .developerMessage(DEFAULT_DEVELOPER_MESSAGE).message(oauthClientError).build();
+                .developerMessage(oauthError).message(DEFAULT_CLIENT_MESSAGE).build();
 
         Constructor<? extends ResourceException> constructor = getConstructorFromClass(clazz);
 

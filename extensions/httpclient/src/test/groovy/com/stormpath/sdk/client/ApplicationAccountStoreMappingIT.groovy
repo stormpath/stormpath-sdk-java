@@ -110,9 +110,8 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
 
         ApplicationAccountStoreMappingList mappings2 = appRefresh.getAccountStoreMappings()
         counter = 0;
-        for(ApplicationAccountStoreMapping mapping : mappings2) {
+        for (ApplicationAccountStoreMapping mapping : mappings2) {
             counter++;
-            //println(mapping)
         }
         assertEquals(counter, 0) //making sure the previous mappings were deleted.
 
@@ -181,6 +180,33 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
         assertNull(defaultGroupStore)
         defaultAccountStore = appRefresh.getDefaultAccountStore()
         assertNull(defaultAccountStore)
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAccountStoreMappingsWithQuery() {
+
+        def counter = 2
+        // this will end up being the last entry, which we will retrieve first
+        // proving that our query worked
+        def href
+        3.times {
+            Directory dir = createDirectory()
+            href = dir.href
+            def accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
+            accountStoreMapping.setAccountStore(dir)
+            accountStoreMapping.setApplication(app)
+            accountStoreMapping.setDefaultAccountStore(true)
+            accountStoreMapping.setDefaultGroupStore(true)
+            accountStoreMapping.setListIndex(counter--)
+            app.createAccountStoreMapping(accountStoreMapping) //testing ApplicationAccountStoreMapping Create.
+        }
+
+        def mappings = app.getAccountStoreMappings(["orderBy":"listIndex"])
+
+        assertEquals mappings.iterator().next().accountStore.href, href
     }
 
     @Test

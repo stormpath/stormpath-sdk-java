@@ -1,8 +1,8 @@
 package com.stormpath.sdk.impl.config
 
-import com.stormpath.sdk.impl.io.Resource
 import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
+
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
@@ -16,53 +16,104 @@ class DefaultPropertiesParserTest {
 
     @Test
     void testKeyValueNoWhitespace() {
-        def resource = new StringResource("stormpath.web.verify.nextUri=/login?status=verified")
-        def result = parser.parse(resource)
 
-        assertEquals(result.size(), 1)
-        assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
+        def testStr = "stormpath.web.verify.nextUri=/login?status=verified"
+        [testStr, new TestStringResource(testStr)].each {
+            def result = parser.parse(it)
+            assertEquals(result.size(), 1)
+            assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
+        }
     }
 
     @Test
     void testKeyValueLotsOfWhitespace() {
-        def resource = new StringResource("stormpath.web.verify.nextUri                                                     =                                         /login?status=verified")
-        def result = parser.parse(resource)
 
-        assertEquals(result.size(), 1)
-        assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
+        def testStr = "stormpath.web.verify.nextUri                                                     =                                         /login?status=verified"
+        [testStr, new TestStringResource(testStr)].each {
+            def result = parser.parse(it)
+            assertEquals(result.size(), 1)
+            assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
+        }
     }
 
     @Test
     void testKeyNoValue() {
-        def resource = new StringResource("stormpath.web.verify.nextUri = ")
-        def result = parser.parse(resource)
 
-        assertEquals(result.size(), 1)
-        assertEquals(result.get("stormpath.web.verify.nextUri"), null)
+        def testStr = "stormpath.web.verify.nextUri = "
+        [testStr, new TestStringResource(testStr)].each {
+            def result = parser.parse(it)
+
+            assertEquals(result.size(), 1)
+            assertEquals(result.get("stormpath.web.verify.nextUri"), null)
+        }
     }
 
     @Test
     void testValueNoKey() {
-        def resource = new StringResource(" = /login?status=verified")
 
-        try {
-            parser.parse(resource)
-            fail()
-        } catch (IllegalArgumentException iae) {
-            assertEquals(iae.message, "Line argument must contain a key. None was found.")
+        def testStr = " = /login?status=verified"
+        [testStr, new TestStringResource(testStr)].each {
+            try {
+                parser.parse(it)
+                fail()
+            } catch (IllegalArgumentException iae) {
+                assertEquals(iae.message, "Line argument must contain a key. None was found.")
+            }
         }
     }
-}
 
-class StringResource implements Resource {
-    private String string
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testMultiLine() {
 
-    StringResource(String string) {
-        this.string = string
+        def testStr =
+            "stormpath.web.verify.nextUri=/login?status=verified\n" +
+            "stormpath.web.login.nextUri=/"
+        [testStr, new TestStringResource(testStr)].each {
+            def result = parser.parse(it)
+
+            assertEquals(result.size(), 2)
+            assertEquals(result.get("stormpath.web.login.nextUri"), "/")
+        }
     }
 
-    @Override
-    InputStream getInputStream() throws IOException {
-        new ByteArrayInputStream(string.bytes)
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testComments() {
+
+        def testStr =
+            "stormpath.web.verify.nextUri=/login?status=verified\n" +
+            "# this is a comment\n" +
+            "; this is also a comment\n" +
+            "stormpath.web.login.nextUri=/"
+        [testStr, new TestStringResource(testStr)].each {
+            def result = parser.parse(it)
+
+            assertEquals(result.size(), 2)
+            assertEquals(result.get("stormpath.web.login.nextUri"), "/")
+        }
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testContinuation() {
+
+        def testStr =
+                "stormpath.web.verify.nextUri = \\\n" +
+                    "/login?status=verified\n" +
+                "stormpath.web.login.nextUri = \\\n" +
+                    "/"
+        [testStr, new TestStringResource(testStr)].each {
+            def result = parser.parse(it)
+
+            assertEquals(result.size(), 2)
+            assertEquals(result.get("stormpath.web.login.nextUri"), "/")
+        }
     }
 }

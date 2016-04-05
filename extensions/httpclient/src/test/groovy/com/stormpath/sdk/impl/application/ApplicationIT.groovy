@@ -29,29 +29,32 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequests
-import com.stormpath.sdk.directory.AccountStore
-import com.stormpath.sdk.oauth.AccessToken
-import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.JwtAuthenticationResult
-import com.stormpath.sdk.oauth.Oauth2Requests
-import com.stormpath.sdk.oauth.JwtAuthenticationRequest
-import com.stormpath.sdk.oauth.OauthPolicy
-import com.stormpath.sdk.oauth.PasswordGrantRequest
-import com.stormpath.sdk.oauth.RefreshGrantRequest
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
+import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
+import com.stormpath.sdk.impl.idsite.IdSiteClaims
 import com.stormpath.sdk.impl.resource.AbstractResource
+import com.stormpath.sdk.impl.saml.SamlResultStatus
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
+import com.stormpath.sdk.oauth.AccessToken
+import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.JwtAuthenticationRequest
+import com.stormpath.sdk.oauth.JwtAuthenticationResult
+import com.stormpath.sdk.oauth.Oauth2Requests
+import com.stormpath.sdk.oauth.OauthPolicy
+import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.RefreshGrantRequest
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
@@ -62,14 +65,27 @@ import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
+import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
 
+import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 class ApplicationIT extends ClientIT {
 
@@ -1205,6 +1221,146 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAddAccountStoreByName_Null() {
+
+        def app = createTempApp()
+
+        assertNull app.addAccountStore("does not exist")
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAddAccountStoreByName_Exception() {
+
+        def name = uniquify("Java SDK: ApplicationIT.testAddAccountStore")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = name
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = name
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+
+        try {
+            app.addAccountStore(name)
+            fail("shouldn't get here")
+        } catch (IllegalArgumentException e) {
+            assertEquals e.getMessage(),
+                "There are both a Directory and a Group matching the provided name in the current tenant. " +
+                "Please provide the href of the intended Resource instead of its name in order to univocally identify it."
+        }
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAddAccountStoreByName() {
+
+        def dirName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_dir")
+        def groupName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_group")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = dirName
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = groupName
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+        def accountStoreMappting = app.addAccountStore(dirName)
+
+        assertEquals accountStoreMappting.accountStore.href, dir.href
+
+        app = createTempApp()
+        accountStoreMappting = app.addAccountStore(groupName)
+
+        assertEquals accountStoreMappting.accountStore.href, group.href
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAddAccountStoreByDirectoryCriteria() {
+
+        def dirName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_dir")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = dirName
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        def app = createTempApp()
+        def accountStoreMapping = app.addAccountStore(Directories.where(Directories.name().eqIgnoreCase(dirName)))
+
+        assertEquals accountStoreMapping.accountStore.href, dir.href
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAddAccountStoreByOrganizationCriteria() {
+
+        def orgName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_org")
+
+        Organization org = client.instantiate(Organization)
+        org.nameKey = uniquify("my-org")
+        org.name = orgName
+        org.description = org.name + "-Description"
+        org = client.currentTenant.createOrganization(org)
+        deleteOnTeardown(org)
+
+        def app = createTempApp()
+        def accountStoreMapping = app.addAccountStore(Organizations.where(Organizations.name().eqIgnoreCase(orgName)))
+
+        assertEquals accountStoreMapping.accountStore.href, org.href
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testAddAccountStoreByGroupCriteria() {
+
+        def groupName = uniquify("Java SDK: ApplicationIT.testAddAccountStore_group")
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testAddAccountStore_dir")
+        dir.description = dir.name + "-Description"
+        dir = client.currentTenant.createDirectory(dir)
+        deleteOnTeardown(dir)
+
+        Group group = client.instantiate(Group)
+        group.name = groupName
+        group.description = group.name + "-Description"
+        dir.createGroup(group)
+
+        def app = createTempApp()
+        def accountStoreMapping = app.addAccountStore(Groups.where(Groups.name().eqIgnoreCase(groupName)))
+
+        assertEquals accountStoreMapping.accountStore.href, group.href
+    }
+
+
+    /**
      * @since 1.0.RC4.4
      */
     @Test
@@ -1675,6 +1831,55 @@ class ApplicationIT extends ClientIT {
         assertTrue samlServiceProvider.getSsoInitiationEndpoint().getHref().contains("/saml/sso/idpRedirect")
         assertTrue samlServiceProvider.getCreatedAt().after(testStart)
         assertTrue samlServiceProvider.getModifiedAt().after(testStart)
+    }
+
+    /** since 1.0.RC9 */
+    @Test
+    void testNewSamlIdpUrlBuilder() {
+
+        def app = createTempApp()
+        def samlIdpUrlBuilder = app.newSamlIdpUrlBuilder()
+        def callbackUri = "https://my.awesome.app/saml_callback"
+
+        def urlString = samlIdpUrlBuilder.setCallbackUri(callbackUri).build()
+        def jwtBeg = urlString.indexOf("accessToken=") + "accessToken=".length()
+        def jwt = urlString.substring(jwtBeg)
+
+        Jws<Claims> claims = Jwts.parser().setSigningKey(client.apiKey.secret.bytes).parseClaimsJws(jwt)
+        String jwtCallbackUri = claims.getBody().get("cb_uri")
+
+        assertEquals jwtCallbackUri, callbackUri
+    }
+
+    /** since 1.0.RC9 */
+    // This just tests that the application can create a SamlCallbackHandler
+    // DefaultSamlCallbackHandler should have its own tests
+    @Test
+    void testNewSamlCallbackHandler() {
+
+        // setup result jwt
+        def jwt = Jwts.builder()
+            .setAudience(client.apiKey.id)
+            .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
+            .setIssuer("my issuer")
+            .claim(IdSiteClaims.RESPONSE_ID, "my response id")
+            .claim(IdSiteClaims.STATUS, SamlResultStatus.LOGOUT)
+            .claim(IdSiteClaims.IS_NEW_SUBJECT, false)
+            .signWith(SignatureAlgorithm.HS256, client.apiKey.secret.getBytes("UTF-8"))
+        .compact()
+
+        def req = createMock(HttpServletRequest)
+        expect(req.getMethod()).andReturn(HttpMethod.GET.name()).times(2)
+        expect(req.getParameter(IdSiteClaims.JWT_RESPONSE)).andReturn(jwt)
+
+        replay req
+
+        def app = createTempApp()
+        def samlCallbackHandler = app.newSamlCallbackHandler(req)
+
+        def result = samlCallbackHandler.accountResult
+
+        assertFalse result.newAccount
     }
 
 }

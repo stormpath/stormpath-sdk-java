@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package autoconfigure;
+package com.stormpath.spring.boot.autoconfigure;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +25,17 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 
 /**
- * @since 1.0.RC5
+ * @since 1.0.RC4
  */
 @Configuration
 @EnableAutoConfiguration
-public class StormpathWebSecurityAutoConfigurationApplication {
+public class StormpathAutoConfigurationTestApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityAutoConfigurationApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(StormpathAutoConfigurationTestApplication.class);
 
     public static void main(String[] args) {
 
-        ApplicationContext ctx = SpringApplication.run(StormpathWebSecurityAutoConfigurationApplication.class, args);
+        ApplicationContext ctx = SpringApplication.run(StormpathAutoConfigurationTestApplication.class, args);
 
         log.info("Beans provided by Spring Boot:");
 

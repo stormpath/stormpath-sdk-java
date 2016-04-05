@@ -16,7 +16,12 @@
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
-import com.stormpath.sdk.account.*
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountCriteria
+import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.CreateAccountRequest
+import com.stormpath.sdk.account.PasswordResetToken
+import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
@@ -29,7 +34,11 @@ import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryCriteria
-import com.stormpath.sdk.group.*
+import com.stormpath.sdk.group.CreateGroupRequest
+import com.stormpath.sdk.group.Group
+import com.stormpath.sdk.group.GroupCriteria
+import com.stormpath.sdk.group.GroupList
+import com.stormpath.sdk.group.GroupOptions
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
@@ -59,7 +68,12 @@ import com.stormpath.sdk.impl.saml.DefaultSamlPolicy
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.oauth.OauthPolicy
-import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.organization.Organization
+import com.stormpath.sdk.provider.FacebookProviderData
+import com.stormpath.sdk.provider.GithubProviderData
+import com.stormpath.sdk.provider.ProviderAccountRequest
+import com.stormpath.sdk.provider.ProviderAccountResult
+import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.tenant.Tenant
@@ -70,6 +84,7 @@ import org.testng.annotations.Test
 import java.text.DateFormat
 
 import static org.easymock.EasyMock.*
+import static org.powermock.api.easymock.PowerMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
@@ -897,6 +912,55 @@ class DefaultApplicationTest {
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "criteria cannot be null.")
         }
+    }
+
+    /** @since 1.0.RC9 */
+    @Test
+    void testAddAccountStoreByHrefDirectories() {
+
+        testAddAccountStoreByHref("directories", Directory)
+    }
+
+    /** @since 1.0.RC9 */
+    @Test
+    void testAddAccountStoreByHrefGroups() {
+
+        testAddAccountStoreByHref("groups", Group)
+    }
+
+    /** @since 1.0.RC9 */
+    @Test
+    void testAddAccountStoreByHrefOrganizations() {
+
+        testAddAccountStoreByHref("organizations", Organization)
+    }
+
+    /** @since 1.0.RC9 */
+    private void testAddAccountStoreByHref(String accountStoreType, Class accountStoreClass) {
+
+        def hrefprefix = "https://api.stormpath.com/v1"
+        def hrefSuffix = "3KYfZ61QQXLR5ph34KXjpt"
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def accountStore = createStrictMock(AccountStore)
+        def accountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
+        def application = new DefaultApplication(internalDataStore, ["href":hrefprefix+"/applications/"+hrefSuffix])
+
+        def resourceUrl = hrefprefix + "/" + accountStoreType + "/" + hrefSuffix
+
+        expect(internalDataStore.getResource(resourceUrl, accountStoreClass)).andReturn(accountStore)
+
+        expect(internalDataStore.instantiate(ApplicationAccountStoreMapping)).andReturn(accountStoreMapping)
+        expect(accountStoreMapping.setAccountStore(accountStore)).andReturn(accountStoreMapping);
+        expect(accountStoreMapping.setApplication(application)).andReturn(accountStoreMapping);
+        expect(accountStoreMapping.setListIndex(Integer.MAX_VALUE)).andReturn(accountStoreMapping);
+        expect(internalDataStore.create("/accountStoreMappings", accountStoreMapping)).andReturn(accountStoreMapping)
+
+        replay internalDataStore, accountStore, accountStoreMapping
+
+        application.addAccountStore(resourceUrl)
+
+        verify internalDataStore, accountStore, accountStoreMapping
     }
 
     /**

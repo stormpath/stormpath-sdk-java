@@ -80,13 +80,10 @@ public class QueryString extends TreeMap<String,String> {
 
         QueryString queryString = new QueryString();
 
+        // only returns null if string is null
         String[] tokens = Strings.tokenizeToStringArray(query, "&", false, false);
-        if (tokens != null) {
-            for( String token : tokens) {
-                applyKeyValuePair(queryString, token);
-            }
-        } else {
-            applyKeyValuePair(queryString, query);
+        for( String token : tokens) {
+            applyKeyValuePair(queryString, token);
         }
 
         return queryString;

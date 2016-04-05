@@ -17,7 +17,7 @@ package com.stormpath.spring.boot.autoconfigure
 
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.client.Client
-import com.stormpath.spring.config.TwoAppTenantStormpathConfiguration
+import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
@@ -29,7 +29,7 @@ import static org.testng.Assert.*
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = [SpringSecurityBootTestApplication.class, TwoAppTenantStormpathConfiguration.class])
+@SpringApplicationConfiguration(classes = [SpringSecurityBootTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 class StormpathSpringSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

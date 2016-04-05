@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.http
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNull
 
 /**
  * @since 0.1
@@ -54,4 +55,38 @@ class QueryStringTest {
         assertEquals qs.toString(), "Test=value&foo=bar"
     }
 
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testWithEmptySource() {
+        def qs = new QueryString(new HashMap<String, Object>())
+        assertEquals qs.toString(), ""
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testWithSourceNullValue() {
+        def query = ["foo":null]
+        def qs = new QueryString(query)
+        assertEquals qs.toString(), "foo="
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testCreateWithEmptyQuery() {
+        assertNull QueryString.create("")
+    }
+
+    /**
+     * @since 1.0.RC9
+     */
+    @Test
+    void testCreateWithKeyOnly() {
+        assertEquals QueryString.create("foo").toString(), "foo="
+    }
 }
