@@ -651,8 +651,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Publisher<RequestEvent> stormpathRequestEventPublisher() {
         List<RequestEventListener> listeners = new ArrayList<RequestEventListener>();
-        listeners.add(stormpathRequestEventListener());
         listeners.add(new TokenRevocationRequestEventListener()); //revoke access and refresh tokens after logout
+        listeners.add(stormpathRequestEventListener());
         return new RequestEventPublisher(listeners);
     }
 

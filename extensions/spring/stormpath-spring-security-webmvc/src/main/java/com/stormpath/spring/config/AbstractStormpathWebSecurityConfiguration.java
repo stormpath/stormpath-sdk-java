@@ -21,6 +21,8 @@ import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
@@ -54,9 +56,13 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Qualifier("stormpathAuthenticationProvider")
     protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
 
-    @Autowired(required = false) //required = false when stormpath.web.enabled = false
+    @Autowired
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    @Autowired
+    @Qualifier("stormpathRequestEventPublisher")
+    private Publisher<RequestEvent> stormpathRequestEventPublisher; //provided by stormpath-spring-webmvc
 
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
@@ -87,7 +93,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         String loginFailureUri = loginUri + "?error";
         SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler(loginFailureUri);
         handler.setAllowSessionCreation(false); //not necessary
-        return handler;
+        return new StormpathAuthenticationFailureHandler(handler, stormpathRequestEventPublisher);
     }
 
     public ErrorModelFactory stormpathLoginErrorModelFactory() {
