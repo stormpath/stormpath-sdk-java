@@ -108,12 +108,8 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
         String apiKeyId;
 
-        if (isError(jsonPayload)) {
-            Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
-            apiKeyId = getRequiredValue(jsonHeader, KEY_ID);
-        } else {
-            apiKeyId = getRequiredValue(jsonPayload, Claims.AUDIENCE);
-        }
+        Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
+        apiKeyId = getRequiredValue(jsonHeader, KEY_ID);
 
         getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
 

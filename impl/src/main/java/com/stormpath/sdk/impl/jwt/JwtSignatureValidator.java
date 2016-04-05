@@ -32,7 +32,7 @@ public class JwtSignatureValidator {
 
         Assert.notNull(apiKey, "apiKey cannot be null.");
 
-        jwtSigner = new DefaultJwtSigner(apiKey.getSecret());
+        jwtSigner = new DefaultJwtSigner(apiKey.getId(), apiKey.getSecret());
     }
 
     /**
