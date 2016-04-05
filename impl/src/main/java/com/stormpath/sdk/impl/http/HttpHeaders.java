@@ -74,6 +74,8 @@ public class HttpHeaders implements MultiValueMap<String, String> {
 
     private static final String PRAGMA = "Pragma";
 
+    private static final String STORMPATH_REQUEST_ID = "Stormpath-Request-Id";
+
     private static final String[] DATE_FORMATS = new String[]{
             "EEE, dd MMM yyyy HH:mm:ss zzz",
             "EEE, dd-MMM-yy HH:mm:ss zzz",
@@ -480,6 +482,26 @@ public class HttpHeaders implements MultiValueMap<String, String> {
      */
     public String getPragma() {
         return getFirst(PRAGMA);
+    }
+
+    /**
+     * Returns the value of the {@code Stormpath-Request-Id} header.
+     *
+     * @return the value of the header
+     * @since 1.0.RC9
+     */
+    public String getStormpathRequestId() {
+        return getFirst(STORMPATH_REQUEST_ID);
+    }
+
+    /**
+     * Sets the (new) value of the {@code Stormpath-Request-Id} header.
+     *
+     * @param stormpathRequestId - The value of the header.
+     * @since 1.0.RC9
+     */
+    public void setStormpathRequestId(String stormpathRequestId) {
+        set(STORMPATH_REQUEST_ID, stormpathRequestId);
     }
 
     // Utility methods

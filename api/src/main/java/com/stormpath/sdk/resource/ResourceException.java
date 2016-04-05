@@ -19,6 +19,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,7 +50,13 @@ public class ResourceException extends RuntimeException implements Error {
         sb.append("HTTP ").append(error.getStatus());
 
         if (!Collections.isEmpty(headers) && headers.containsKey(STORMPATH_REQUEST_ID)) {
-            sb.append(", ").append(STORMPATH_REQUEST_ID).append(" ").append(headers.get(STORMPATH_REQUEST_ID));
+            sb.append(", ").append(STORMPATH_REQUEST_ID).append(" ");
+            Object requestId = headers.get(STORMPATH_REQUEST_ID);
+
+            if (requestId instanceof List && !Collections.isEmpty((List) requestId)) {
+                requestId = ((List) requestId).get(0);
+            }
+            sb.append(requestId);
         }
 
         sb.append(", Stormpath ").append(error.getCode())
