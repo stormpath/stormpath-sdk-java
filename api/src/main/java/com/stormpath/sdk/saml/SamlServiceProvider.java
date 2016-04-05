@@ -31,7 +31,7 @@ public interface SamlServiceProvider extends Resource, Auditable {
      * Returns the endpoint to where end-users (web browsers) should be redirected when they need to login to a SAML
      * Identity Provider.  This is an application-specific URL in Stormpath.  Once the browser is redirected there,
      * they will transparently be redirected to the appropriate SAML Identity Provider based on the Application's
-     * {@link com.stormpath.sdk.application.Application#getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria) accountStoreMappings}.
+     * {@link com.stormpath.sdk.application.Application#getAccountStoreMappings(ApplicationAccountStoreMappingCriteria) accountStoreMappings}.
      * This transparent redirect is what allows Stormpath to handle all SAML protocol specifics so you don't have to
      * worry about SAML concepts at all.
      *
