@@ -572,7 +572,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * </pre>
      * or, if using static imports:
      * <pre>
-     * import static com.stormpath.sdk.account.ApplicationAccountStoreMappings.*;
+     * import static com.stormpath.sdk.application.ApplicationAccountStoreMappings.*;
      *
      * ...
      *
@@ -599,7 +599,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * </pre>
      * or, if using static imports:
      * <pre>
-     * import static com.stormpath.sdk.account.ApplicationAccountStoreMappings.*;
+     * import static com.stormpath.sdk.application.ApplicationAccountStoreMappings.*;
      *
      * ...
      *
