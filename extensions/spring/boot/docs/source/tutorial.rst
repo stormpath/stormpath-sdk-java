@@ -47,19 +47,12 @@ Let's fire up a basic Spring Boot Web application. The code for this section can
 
 Note: This assumes you have your ``apiKey.properties`` file in the standard location: ``~/.stormpath/apiKey.properties``.
 
-For a maven build and run, do this:
+To build and run, do this:
 
 .. code-block:: bash
 
     mvn clean package
     mvn spring-boot:run
-
-For a gradle build and run, do this:
-
-.. code-block:: bash
-
-    gradle clean build
-    java -jar build/libs/00-the-basics-0.1.0.jar
 
 You should now be able to browse to `<http://localhost:8080>`_ and see a welcome message with your Stormpath application's name.
 
