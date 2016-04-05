@@ -17,11 +17,16 @@ package com.stormpath.sdk.resource;
 
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
+
+import java.util.Map;
 
 /**
  * @since 0.2
  */
 public class ResourceException extends RuntimeException implements Error {
+
+    private static final String STORMPATH_REQUEST_ID = "Stormpath-Request-Id";
 
     private final Error error;
 
@@ -37,18 +42,29 @@ public class ResourceException extends RuntimeException implements Error {
      * @return {@code error.getDeveloperMessage()}
      * @since 0.9.2
      */
-    private static String buildExceptionMessage(Error error) {
+    private static String buildExceptionMessage(Error error, Map headers) {
         Assert.notNull(error, "Error argument cannot be null.");
         StringBuilder sb = new StringBuilder();
-        sb.append("HTTP ").append(error.getStatus())
-                .append(", Stormpath ").append(error.getCode())
+
+        sb.append("HTTP ").append(error.getStatus());
+
+        if (!Collections.isEmpty(headers) && headers.containsKey(STORMPATH_REQUEST_ID)) {
+            sb.append(", ").append(STORMPATH_REQUEST_ID).append(" ").append(headers.get(STORMPATH_REQUEST_ID));
+        }
+
+        sb.append(", Stormpath ").append(error.getCode())
                 .append(" (").append(error.getMoreInfo()).append("): ")
                 .append(error.getDeveloperMessage());
         return sb.toString();
     }
 
     public ResourceException(Error error) {
-        super(buildExceptionMessage(error));
+        super(buildExceptionMessage(error, null));
+        this.error = error;
+    }
+
+    public ResourceException(Error error, Map headers) {
+        super(buildExceptionMessage(error, headers));
         this.error = error;
     }
 

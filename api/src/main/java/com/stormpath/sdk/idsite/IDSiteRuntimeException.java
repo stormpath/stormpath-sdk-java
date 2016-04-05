@@ -18,6 +18,8 @@ package com.stormpath.sdk.idsite;
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
+import java.util.Map;
+
 /**
  * A sub-class of {@link ResourceException} representing an IDSite error.
  * <p>
@@ -35,8 +37,8 @@ import com.stormpath.sdk.resource.ResourceException;
  */
 public class IDSiteRuntimeException extends ResourceException {
 
-    public IDSiteRuntimeException(Error error) {
-        super(error);
+    public IDSiteRuntimeException(Error error, Map headers) {
+        super(error, headers);
     }
 
     /**

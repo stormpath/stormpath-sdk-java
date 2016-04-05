@@ -122,7 +122,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         //JSDK-261: Enable Java SDK to handle new ID Site error callbacks
         //We are processing the error after the token has been properly validated
         if (isError(jsonPayload)) {
-            throw new IDSiteRuntimeException(constructError(jsonPayload));
+            throw new IDSiteRuntimeException(constructError(jsonPayload), jsonHeader);
         }
 
         String responseNonce = getRequiredValue(jsonPayload, RESPONSE_ID);

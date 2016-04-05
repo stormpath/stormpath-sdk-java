@@ -530,7 +530,7 @@ public class DefaultDataStore implements InternalDataStore {
         if (response.isError()) {
             Map<String, Object> body = getBody(response);
             DefaultError error = new DefaultError(body);
-            throw new ResourceException(error);
+            throw new ResourceException(error, response.getHeaders());
         }
 
         return response;
