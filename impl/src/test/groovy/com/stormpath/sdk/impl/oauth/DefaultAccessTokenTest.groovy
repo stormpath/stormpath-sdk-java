@@ -67,9 +67,6 @@ class DefaultAccessTokenTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
-        expect(apiKey.getSecret()).andReturn(secret)
-
         replay internalDataStore, apiKey
 
         def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
@@ -116,9 +113,6 @@ class DefaultAccessTokenTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(apiKey.getSecret()).andReturn(secret)
-
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
         expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
         expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
@@ -139,40 +133,6 @@ class DefaultAccessTokenTest {
 
         def application = defaultAccessToken.getApplication()
         assertTrue(application instanceof Application && application.getHref().equals(properties.application.href))
-    }
-
-    /* @since 1.0.RC8.3 */
-    @Test
-    void testInvalidAccessToken() {
-        def secret = "a_very_secret_key"
-        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
-
-        // no rti claim means it's not a valid access token
-        String jwt = Jwts.builder()
-            .setSubject(href)
-            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
-            .compact();
-
-        def properties = [
-            href: href,
-            jwt: jwt
-        ]
-
-        def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
-
-        expect(apiKey.getSecret()).andReturn(secret)
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
-
-        replay internalDataStore, apiKey
-
-        try {
-            new DefaultAccessToken(internalDataStore, properties)
-            fail("should have thrown")
-        } catch (Exception e) {
-            def message = e.getMessage()
-            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
-        }
     }
 
     /* @since 1.0.RC8.3 */

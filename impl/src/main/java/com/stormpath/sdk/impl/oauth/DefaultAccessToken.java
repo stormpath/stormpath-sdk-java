@@ -17,11 +17,7 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessToken;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 
 import java.util.Map;
 
@@ -44,23 +40,9 @@ public class DefaultAccessToken extends AbstractBaseOauth2Token implements Acces
      * @since 1.0.RC8.3
      */
     private void ensureAccessToken() {
-        if(isMaterialized()) {
-            try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
-                        .parseClaimsJws(getString(JWT)).getBody();
-
-                // token *must* have an rti claim to be an access_token
-                // otherwise, it may be a refresh_token trying to be passed off as an access_token
-                Assert.isTrue(Strings.hasText((String) claims.get("rti")));
-            } catch (Exception e) {
-                throw new JwtException("JWT failed validation; it cannot be trusted.");
-            }
-        } else {
             String href = getStringProperty(HREF_PROP_NAME);
             if (href != null) {
                 Assert.isTrue(href.contains("/accessTokens/"), "href does not belong to an access token.");
-            }
         }
     }
 }

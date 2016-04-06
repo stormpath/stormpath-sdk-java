@@ -1652,7 +1652,6 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC7 */
-
     @Test
     void testRetrieveAndUpdateOauthPolicy() {
         def app = createTempApp()
@@ -1717,7 +1716,6 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC8.3 */
-
     @Test
     void testAttemptAuthenticationWithRefreshToken() {
         def app = createTempApp()
@@ -1747,7 +1745,6 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC8.3 */
-
     @Test
     void testAttemptAuthenticationWithRefreshTokenWithLocalValidation() {
         def app = createTempApp()
@@ -1777,7 +1774,6 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.RC7 */
-
     @Test
     void testInvalidTokenViaLocalValidation() {
 
@@ -1812,6 +1808,26 @@ class ApplicationIT extends ClientIT {
             def message = e.getMessage()
             assertTrue message.equals("JWT failed validation; it cannot be trusted.")
         }
+    }
+
+    /* @since 1.0.RC9 */
+    //Asserts https://github.com/stormpath/stormpath-sdk-java/issues/547
+    @Test
+    void testAccessTokenCanBeCreatedWhenRefreshTokensAreDisabled() {
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        OauthPolicy oauthPolicy = app.getOauthPolicy();
+        oauthPolicy.setRefreshTokenTtl("P0D").save() //let's disable refresh token by setting TTL to 0 days
+
+        PasswordGrantRequest grantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(account.email).setPassword("Changeme1!").build();
+        def grantResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        AccessToken accessToken = grantResult.getAccessToken()
+        Map<String, Object> expandedJwt = accessToken.getExpandedJwt()
+        assertNull(((Map) expandedJwt.get("claims")).get("rti")) //since refresh tokens are disabled the jwt of the access token must not contain an rti claim
+
+        assertEquals(account.getRefreshTokens().getSize(), 0)
     }
 
     /** @since 1.0.RC8 **/

@@ -83,22 +83,22 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             Key signingKey = jwtTokenSigningKeyResolver.getSigningKey(event.getRequest(), event.getResponse(), null, SignatureAlgorithm.HS256);
             Claims claims = Jwts.parser().setSigningKey(signingKey.getEncoded()).parseClaimsJws(jwt).getBody();
 
-            //Let's be sure this jwt is actually an access token otherwise we will have an error when trying to retrieve
-            //a resource (in order to delete it) that actually is not what we expect
-            if (isAccessToken(claims)) {
-                gracefullyDeleteRefreshToken((String) claims.get("rti"));
-                gracefullyDeleteAccessToken(claims.getId());
-            }
             //There should never be a refresh token here. Therefore we will not even try to identify if the received JWT is
             //a refresh token. That would be a bug in the filter chain as a refresh token should never be used to anything other than
-            //obtaining a new access token
+            //obtaining a new access token.
+            //Let's check if this access token as an associated refresh token: if they are disabled in the oauth policy then
+            // the rti claim will not be present in the access token
+            if (containsRefreshToken(claims)) {
+                gracefullyDeleteRefreshToken((String) claims.get("rti"));
+            }
+            gracefullyDeleteAccessToken(claims.getId());
         }
         if (log.isDebugEnabled()) {
             log.debug("The current access and refresh tokens for {} have been revoked.", event.getAccount().getEmail());
         }
     }
 
-    private boolean isAccessToken(Claims claims) {
+    private boolean containsRefreshToken(Claims claims) {
         return claims.containsKey("rti");
     }
 
