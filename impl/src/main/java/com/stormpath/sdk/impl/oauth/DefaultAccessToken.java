@@ -26,6 +26,8 @@ import java.util.Map;
  */
 public class DefaultAccessToken extends AbstractBaseOauth2Token implements AccessToken {
 
+    protected final static String ACCESS_TOKEN_PATH = "/accessTokens/";
+
     public DefaultAccessToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
         ensureAccessToken();
@@ -42,7 +44,7 @@ public class DefaultAccessToken extends AbstractBaseOauth2Token implements Acces
     private void ensureAccessToken() {
             String href = getStringProperty(HREF_PROP_NAME);
             if (href != null) {
-                Assert.isTrue(href.contains("/accessTokens/"), "href does not belong to an access token.");
+                Assert.isTrue(href.contains(ACCESS_TOKEN_PATH), "href does not belong to an access token.");
         }
     }
 }
