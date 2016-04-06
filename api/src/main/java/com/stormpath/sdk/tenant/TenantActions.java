@@ -15,23 +15,26 @@
  */
 package com.stormpath.sdk.tenant;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationCriteria;
-import com.stormpath.sdk.application.ApplicationList;
-import com.stormpath.sdk.application.CreateApplicationRequest;
-import com.stormpath.sdk.directory.CreateDirectoryRequest;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.DirectoryCriteria;
-import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.organization.*;
-import com.stormpath.sdk.resource.ResourceException;
+ import com.stormpath.sdk.account.Account;
+ import com.stormpath.sdk.account.AccountCriteria;
+ import com.stormpath.sdk.account.AccountList;
+ import com.stormpath.sdk.application.Application;
+ import com.stormpath.sdk.application.ApplicationCriteria;
+ import com.stormpath.sdk.application.ApplicationList;
+ import com.stormpath.sdk.application.CreateApplicationRequest;
+ import com.stormpath.sdk.directory.CreateDirectoryRequest;
+ import com.stormpath.sdk.directory.Directory;
+ import com.stormpath.sdk.directory.DirectoryCriteria;
+ import com.stormpath.sdk.directory.DirectoryList;
+ import com.stormpath.sdk.group.GroupCriteria;
+ import com.stormpath.sdk.group.GroupList;
+ import com.stormpath.sdk.organization.CreateOrganizationRequest;
+ import com.stormpath.sdk.organization.Organization;
+ import com.stormpath.sdk.organization.OrganizationCriteria;
+ import com.stormpath.sdk.organization.OrganizationList;
+ import com.stormpath.sdk.resource.ResourceException;
 
-import java.util.Map;
+ import java.util.Map;
 
 /**
  * The {@code TenantActions} interface represents common tenant actions (behaviors) that can be executed
@@ -227,20 +230,19 @@ public interface TenantActions {
 
     /**
      * Returns a paginated list of the current tenant's organizations that match the specified query criteria.  The
-     * {@link com.stormpath.sdk.directory.Directories Directories} utility class is available to help construct
+     * {@link com.stormpath.sdk.organization.Organizations Organizations} utility class is available to help construct
      * the criteria DSL.  For example:
      * <pre>
-     * client.getDirectories(Directories
-     *     .where(Directories.description().containsIgnoreCase("foo"))
-     *     .and(Directories.name().startsWithIgnoreCase("bar"))
-     *     .orderByName().descending()
-     *     .withAccounts(10, 10)
-     *     .offsetBy(20)
-     *     .limitTo(25));
+     * client.getOrganizations(Organizations
+     *  .where(Organizations.description().containsIgnoreCase("foo"))
+     *  .and(Organizations.name().startsWithIgnoreCase("bar"))
+     *  .orderByName().descending()
+     *  .offsetBy(20)
+     *  .limitTo(25));
      * </pre>
      *
      * @param criteria the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the Tenant's directories that match the specified query criteria.
+     * @return a paginated list of the Tenant's organizations that match the specified query criteria.
      *
      * @since 1.0.RC7
      */
