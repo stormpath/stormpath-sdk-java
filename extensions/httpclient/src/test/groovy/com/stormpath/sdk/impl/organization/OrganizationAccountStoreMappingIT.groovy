@@ -113,7 +113,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             orgAccountStoreMapping.setDefaultAccountStore(true)
             orgAccountStoreMapping.setDefaultGroupStore(true)
             orgAccountStoreMapping.setListIndex(Integer.MAX_VALUE)
-            orgRefresh.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            orgRefresh.createAccountStoreMapping(orgAccountStoreMapping)
             deleteOnTeardown(orgAccountStoreMapping)
         }
 
@@ -184,7 +184,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             orgAccountStoreMapping.setOrganization(org)
             orgAccountStoreMapping.setDefaultAccountStore(true)   //Should make last one in loop the defaultAccountStore
             orgAccountStoreMapping.setDefaultGroupStore(true)     //Should make last one in loop the defaultGroupStore
-            org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            org.createAccountStoreMapping(orgAccountStoreMapping)
         }
 
         def accStrMaps = org.getAccountStoreMappings(OrganizationAccountStoreMappings.where(OrganizationAccountStoreMappings.listIndex().eq(1)))
@@ -227,7 +227,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping.setDefaultGroupStore(true)
         orgAccountStoreMapping.setListIndex(-43)
         try {
-            org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            org.createAccountStoreMapping(orgAccountStoreMapping)
         } catch (com.stormpath.sdk.resource.ResourceException re) {
             assertTrue(re.message.contains("listIndex minimum value"))
         }
@@ -251,7 +251,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             orgAccountStoreMapping.setOrganization(org)
             orgAccountStoreMapping.setDefaultAccountStore(true)   //Should make last one in loop the defaultAccountStore
             orgAccountStoreMapping.setDefaultGroupStore(true)     //Should make last one in loop the defaultGroupStore
-            orgAccountStoreMapping = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            orgAccountStoreMapping = org.createAccountStoreMapping(orgAccountStoreMapping)
             deleteOnTeardown(orgAccountStoreMapping)
         }
 
@@ -280,7 +280,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             def orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
             orgAccountStoreMapping.setAccountStore(dir)
             orgAccountStoreMapping.setOrganization(org)
-            orgAccountStoreMapping = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            orgAccountStoreMapping = org.createAccountStoreMapping(orgAccountStoreMapping)
             deleteOnTeardown(orgAccountStoreMapping)
         }
 
@@ -288,7 +288,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         def orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
         orgAccountStoreMapping.setAccountStore(dir)
         orgAccountStoreMapping.setOrganization(org)
-        orgAccountStoreMapping = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        orgAccountStoreMapping = org.createAccountStoreMapping(orgAccountStoreMapping)
         deleteOnTeardown(orgAccountStoreMapping)
     }
 
@@ -323,7 +323,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             orgAccountStoreMapping.setOrganization(org)
             orgAccountStoreMapping.setDefaultAccountStore(true)   //Should make last one in loop the defaultAccountStore
             orgAccountStoreMapping.setDefaultGroupStore(true)     //Should make last one in loop the defaultGroupStore
-            orgAccountStoreMapping = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            orgAccountStoreMapping = org.createAccountStoreMapping(orgAccountStoreMapping)
             deleteOnTeardown(orgAccountStoreMapping)
         }
         OrganizationAccountStoreMappingList mappings = org.getAccountStoreMappings(OrganizationAccountStoreMappings.criteria().withAccountStore())
@@ -560,7 +560,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(org)
         try {
-            org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+            org.createAccountStoreMapping(orgAccountStoreMapping)
             fail("Should have thrown due to organization cannot be account store error.");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "HTTP 400, Stormpath 4614 (http://docs.stormpath.com/errors/4614), RequestId "+ e.getRequestId() + ": An organization can not an account store for another organization.")
@@ -578,7 +578,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(dir)
-        def retrieved = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        def retrieved = org.createAccountStoreMapping(orgAccountStoreMapping)
         deleteOnTeardown(retrieved)
 
         assertNotNull retrieved
@@ -595,7 +595,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         orgAccountStoreMapping = client.instantiate(OrganizationAccountStoreMapping)
         orgAccountStoreMapping.setOrganization(org)
         orgAccountStoreMapping.setAccountStore(group)
-        def mapping = org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
+        def mapping = org.createAccountStoreMapping(orgAccountStoreMapping)
         deleteOnTeardown(mapping)
 
         assertNotNull mapping

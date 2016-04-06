@@ -214,8 +214,18 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
         }
     }
 
+    /**
+     * @deprecated in 1.0.RC10 and will be removed before 1.0 final. Use {@link #createAccountStoreMapping(OrganizationAccountStoreMapping)} instead.
+     */
     @Override
+    @Deprecated
     public OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
+        return getDataStore().create("/organizationAccountStoreMappings", mapping);
+    }
+
+    /** @since 1.0.RC10 */
+    @Override
+    public OrganizationAccountStoreMapping createAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException {
         return getDataStore().create("/organizationAccountStoreMappings", mapping);
     }
 
@@ -226,7 +236,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
         accountStoreMapping.setAccountStore(accountStore);
         accountStoreMapping.setOrganization(this);
         accountStoreMapping.setListIndex(Integer.MAX_VALUE);
-        accountStoreMapping = createOrganizationAccountStoreMapping(accountStoreMapping);
+        accountStoreMapping = createAccountStoreMapping(accountStoreMapping);
         return accountStoreMapping;
     }
 
