@@ -137,6 +137,35 @@ class DefaultAccessTokenTest {
 
     /* @since 1.0.RC8.3 */
     @Test
+    void testInvalidAccessToken() {
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/refreshTokens/5hFj6FUwNb28OQrp93phPP"
+
+        String jwt = Jwts.builder()
+            .setSubject(href)
+            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+            .compact();
+
+        def properties = [
+            href: href,
+            jwt: jwt
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        replay internalDataStore
+
+        try {
+            new DefaultAccessToken(internalDataStore, properties)
+            fail("should have thrown")
+        } catch (Exception e) {
+            def message = e.getMessage()
+            assertTrue message.equals("href does not belong to an access token.")
+        }
+    }
+
+    /* @since 1.0.RC8.3 */
+    @Test
     void testValidAccessToken() {
         def secret = "a_very_secret_key"
         def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
