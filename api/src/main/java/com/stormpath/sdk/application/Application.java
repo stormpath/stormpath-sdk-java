@@ -583,36 +583,16 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the application's mapped account stores that match the specified query criteria.
-     * @since 1.0.RC10
+     * @since 1.0.RC9
      */
     ApplicationAccountStoreMappingList getAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria);
 
     /**
-     * Returns a paginated list of the application's mapped Account stores that also match the specified query
-     * criteria.
-     * The {@link ApplicationAccountStoreMappings ApplicationAccountStoreMappings} utility class is available to help construct
-     * the criteria DSL.  For example:
-     * <pre>
-     * application.getApplicationAccountStoreMappings(ApplicationAccountStoreMappings.criteria()
-     *     .withAccountStore()
-     *     .orderByListIndex();
-     * </pre>
-     * or, if using static imports:
-     * <pre>
-     * import static com.stormpath.sdk.application.ApplicationAccountStoreMappings.*;
-     *
-     * ...
-     *
-     * application.getApplicationAccountStoreMappings(criteria()
-     *     .withAccountStore()
-     *     .orderByListIndex();
-     * </pre>
-     *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the application's mapped account stores that match the specified query criteria.
      * @since 0.9
      *
-     * @deprecated in 1.0.RC10 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria)} instead.
+     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria)} instead.
      */
     @Deprecated
     ApplicationAccountStoreMappingList getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria);
