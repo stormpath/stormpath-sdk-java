@@ -549,7 +549,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * </pre>
      * <p/>
      * This is a type-unsafe alternative to the
-     * {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria) getApplicationAccountStoreMappings(accountStoreMappingCriteria)}
+     * {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria) getAccountStoreMappings(accountStoreMappingCriteria)}
      * method, and might be useful when using dynamic languages like Groovy or JRuby.  Users of compiled languages,
      * or those that like IDE-completion, might favor the type-safe method instead.
      *
