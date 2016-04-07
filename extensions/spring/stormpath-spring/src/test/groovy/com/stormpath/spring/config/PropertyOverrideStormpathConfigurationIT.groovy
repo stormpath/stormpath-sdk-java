@@ -63,7 +63,7 @@ class PropertyOverrideStormpathConfigurationIT extends AbstractTestNGSpringConte
         //assert app href override worked as expected:
         def expected =
             System.getenv("STORMPATH_TEST_APPLICATION_HREF") ?:
-            'https://api.stormpath.com/v1/applications/2RbTfV9wx59glWwChd9NQC'
+            'https://api.stormpath.com/v1/applications/TAuH8ZMkA20STGvXf8iB3'
         assertEquals application.href, expected
     }
 }
