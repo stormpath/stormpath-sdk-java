@@ -463,7 +463,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return getDataStore().getResource(accountStoreMappings.getHref(), ApplicationAccountStoreMappingList.class, queryParams);
     }
 
-    /** @since 1.0.RC10 */
+    /** @since 1.0.RC9 */
     @Override
     public ApplicationAccountStoreMappingList getAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria) {
         ApplicationAccountStoreMappingList accountStoreMappings =
@@ -473,7 +473,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     /**
      *  @since 0.9
-     *  @deprecated in 1.0.RC10 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria)} instead.
+     *  @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria)} instead.
      */
     @Override
     @Deprecated
@@ -884,5 +884,5 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     /* @since 1.0.RC8.2 */
     public IdSiteAuthenticator createIdSiteAuthenticator(){
         return new DefaultIdSiteAuthenticator(this, getDataStore());
-    }    
+    }
 }

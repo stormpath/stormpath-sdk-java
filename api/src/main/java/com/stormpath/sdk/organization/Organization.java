@@ -289,7 +289,7 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @param mapping the new OrganizationAccountStoreMapping resource to add to the Organization's OrganizationAccountStoreMapping list.
      * @return the newly created OrganizationAccountStoreMapping instance.
      * @throws com.stormpath.sdk.resource.ResourceException
-     * @since 1.0.RC10
+     * @since 1.0.RC9
      */
     OrganizationAccountStoreMapping createAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
 
@@ -298,7 +298,7 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @return the newly created OrganizationAccountStoreMapping instance.
      * @throws com.stormpath.sdk.resource.ResourceException
      *
-     * @deprecated in 1.0.RC10 and will be removed before 1.0 final. Use {@link #createAccountStoreMapping(OrganizationAccountStoreMapping)} instead.
+     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #createAccountStoreMapping(OrganizationAccountStoreMapping)} instead.
      */
     @Deprecated
     OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
