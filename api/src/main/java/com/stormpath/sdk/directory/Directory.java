@@ -400,12 +400,12 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * {@link com.stormpath.sdk.organization.Organization} and this Directory, you would do that through the
      * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}. This would preserve both this Directory
      * and the {@link com.stormpath.sdk.organization.Organization}. Only the mapping between the two would be deleted.
-     * See {@link #getOrganizationAccountStoreMappings()}.
+     * See {@link #getAccountStoreMappings()}.
      *
      * @return a paginated list of all {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
      * an {@link com.stormpath.sdk.directory.AccountStore}.
      * @see #getOrganizations(java.util.Map)
-     * @see #getOrganizationAccountStoreMappings()
+     * @see #getAccountStoreMappings()
      *
      * @since 1.0.RC7.7
      */
@@ -427,7 +427,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
      * an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria.
-     * @see #getOrganizationAccountStoreMappings(java.util.Map)
+     * @see #getAccountStoreMappings(java.util.Map)
      *
      * @since 1.0.RC7.7
      */
@@ -468,7 +468,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the {@link com.stormpath.sdk.organization.Organization}s that have this Directory as
      * an {@link com.stormpath.sdk.directory.AccountStore} that match the specified query criteria
-     * @see #getOrganizationAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria).
+     * @see #getAccountStoreMappings(com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria).
      *
      * @since 1.0.RC7.7
      */
@@ -484,7 +484,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * Tip: Instead of iterating over all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s, it
      * might be more convenient (and practical) to execute a search for one or more
      * {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s using the
-     * {@link #getOrganizationAccountStoreMappings(java.util.Map)} method instead of this one.
+     * {@link #getAccountStoreMappings(java.util.Map)} method instead of this one.
      * <p/>
      * If you don't need the mapping information between this Directory and its
      * {@link com.stormpath.sdk.organization.Organization}s, you may want to just work directly with the Organization
@@ -492,11 +492,23 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      *
      * @return a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
      * this Directory as an {@link com.stormpath.sdk.directory.AccountStore}.
-     * @see #getOrganizationAccountStoreMappings(java.util.Map)
+     * @see #getAccountStoreMappings(java.util.Map)
+     * @see #getOrganizations()
+     *
+     * @since 1.0.RC9
+     */
+    OrganizationAccountStoreMappingList getAccountStoreMappings();
+
+    /**
+     * @return a paginated list of all {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
+     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore}.
+     * @see #getAccountStoreMappings(java.util.Map)
      * @see #getOrganizations()
      *
      * @since 1.0.RC7.7
+     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings()} instead.
      */
+    @Deprecated
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings();
 
     /**
@@ -519,6 +531,18 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      *
      * @since 1.0.RC7.7
      */
+    OrganizationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams);
+
+    /**
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the {@link com.stormpath.sdk.organization.OrganizationAccountStoreMapping}s that have
+     * this Directory as an {@link com.stormpath.sdk.directory.AccountStore}.
+     * @see #getOrganizations(java.util.Map)
+     *
+     * @since 1.0.RC7.7
+     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(Map)} instead.
+     */
+    @Deprecated
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams);
 
     /**
@@ -532,7 +556,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      * utility class is available to help construct the criteria DSL - most modern IDEs can auto-suggest and
      * auto-complete as you type, allowing for an easy query-building experience.  For example:
      * <pre>
-     * directory.getOrganizationAccountStoreMappings(
+     * directory.getAccountStoreMappings(
      *     OrganizationAccountStoreMappings.where(OrganizationAccountStoreMappings.listIndex().eq(4))
      *     .withAccountStore()
      * );
@@ -543,7 +567,7 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      *
      * ...
      *
-     * directory.getOrganizationAccountStoreMappings(
+     * directory.getAccountStoreMappings(
      *     where(listIndex().eq(4))
      *     .withAccountStore()
      * );
@@ -555,5 +579,16 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      *
      * @since 1.0.RC7.7
      */
+    OrganizationAccountStoreMappingList getAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
+
+    /**
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the directory's organizations that match the specified query criteria.
+     * @see #getOrganizations(com.stormpath.sdk.organization.OrganizationCriteria)
+     *
+     * @since 1.0.RC7.7
+     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(OrganizationAccountStoreMappingCriteria)} instead.
+     */
+    @Deprecated
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 }
