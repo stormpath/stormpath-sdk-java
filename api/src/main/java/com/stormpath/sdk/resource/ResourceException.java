@@ -41,18 +41,17 @@ public class ResourceException extends RuntimeException implements Error {
     private static String buildExceptionMessage(Error error) {
         Assert.notNull(error, "Error argument cannot be null.");
         StringBuilder sb = new StringBuilder();
-        sb.append("HTTP ").append(error.getStatus());
+        sb.append("HTTP ").append(error.getStatus())
+                .append(", Stormpath ").append(error.getCode())
+                .append(" (").append(error.getMoreInfo()).append(")");
 
         String requestId = error.getRequestId();
 
         if (Strings.hasText(requestId)) {
-            sb.append(", RequestId: ").append(error.getRequestId());
+            sb.append(", RequestId ").append(error.getRequestId());
         }
 
-        sb.append(", Stormpath ").append(error.getCode())
-                .append(" (").append(error.getMoreInfo()).append("): ")
-                .append(error.getDeveloperMessage());
-        return sb.toString();
+        return sb.append(": ").append(error.getDeveloperMessage()).toString();
     }
 
     public ResourceException(Error error) {
