@@ -16,7 +16,6 @@
 package com.stormpath.sdk.idsite;
 
 import com.stormpath.sdk.error.Error;
-import com.stormpath.sdk.resource.ResourceException;
 
 /**
  * A sub-class of {@link IDSiteException} representing a specific IDSite error.
@@ -35,7 +34,7 @@ import com.stormpath.sdk.resource.ResourceException;
  *
  * @since 1.0.RC5
  */
-public class InvalidIDSiteTokenException extends ResourceException {
+public class InvalidIDSiteTokenException extends IDSiteException {
 
     public InvalidIDSiteTokenException(Error error)  {
         super(error);

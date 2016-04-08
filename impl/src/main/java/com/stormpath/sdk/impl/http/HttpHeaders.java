@@ -494,16 +494,6 @@ public class HttpHeaders implements MultiValueMap<String, String> {
         return getFirst(STORMPATH_REQUEST_ID);
     }
 
-    /**
-     * Sets the (new) value of the {@code Stormpath-Request-Id} header.
-     *
-     * @param stormpathRequestId - The value of the header.
-     * @since 1.0.RC9
-     */
-    public void setStormpathRequestId(String stormpathRequestId) {
-        set(STORMPATH_REQUEST_ID, stormpathRequestId);
-    }
-
     // Utility methods
 
     private long getFirstDate(String headerName) {

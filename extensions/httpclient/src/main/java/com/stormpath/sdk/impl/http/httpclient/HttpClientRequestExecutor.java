@@ -441,7 +441,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         Response response = new DefaultResponse(httpStatus, mediaType, body, contentLength);
 
-        response.getHeaders().setStormpathRequestId(headers.getStormpathRequestId());
+        response.getHeaders().add(HttpHeaders.STORMPATH_REQUEST_ID, headers.getStormpathRequestId());
 
         return response;
     }
