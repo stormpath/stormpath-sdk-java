@@ -92,7 +92,7 @@
 
     <properties>
 
-        <jdk.version>1.6</jdk.version>
+        <jdk.version>1.7</jdk.version>
 
         <slf4j.version>1.7.8</slf4j.version>
         <hazelcast.version>3.6.1</hazelcast.version>
@@ -101,6 +101,7 @@
         <jjwt.version>0.5.1</jjwt.version>
         <oltu.version>1.0.0</oltu.version>
         <joda-time.version>2.1</joda-time.version>
+        <snakeyaml.version>1.16</snakeyaml.version>
 
         <!-- We cannot use servlet-api 3.1 without breaking JDK 6 compatibility because servlet-api 3.1 requires JDK7.
              See: http://stackoverflow.com/questions/22314453/unsupported-major-minor-version-51-0-error-when-using-1-6-in-pom-and-openjdk6-fo -->
@@ -461,6 +462,11 @@
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>${joda-time.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
 
         </dependencies>
