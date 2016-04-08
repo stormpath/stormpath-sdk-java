@@ -34,6 +34,7 @@ import com.stormpath.sdk.impl.account.DefaultLogoutResult;
 import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
@@ -300,21 +301,13 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
 
     /* @since 1.0.RC5 */
     private Error constructError(Map jsonMap, Map jsonHeader) {
-        Assert.isTrue(isError(jsonMap));
-
         Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR);
 
-        DefaultErrorBuilder builder = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS))
-                .code((Integer) getRequiredValue(errorMap, "code"))
-                .developerMessage((String) getRequiredValue(errorMap, "developerMessage"))
-                .message((String) getRequiredValue(errorMap, "message"))
-                .moreInfo((String) getRequiredValue(errorMap, "moreInfo"));
-
         if (jsonHeader.containsKey(HttpHeaders.STORMPATH_REQUEST_ID)) {
-            builder.requestId((String) jsonHeader.get(HttpHeaders.STORMPATH_REQUEST_ID));
+            errorMap.put(HttpHeaders.STORMPATH_REQUEST_ID, jsonHeader.get(HttpHeaders.STORMPATH_REQUEST_ID));
         }
 
-        return builder.build();
+        return new DefaultError(errorMap);
     }
 
     /* @since 1.0.RC5 */
