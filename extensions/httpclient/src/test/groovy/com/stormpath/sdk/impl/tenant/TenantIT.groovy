@@ -680,7 +680,6 @@ class TenantIT extends ClientIT {
                     Directories.where(Directories.modifiedAt().matches("wrong match expression")))
             fail("should have thrown")
         } catch (Exception e){
-            println e.getMessage()
             assertEquals(e.getMessage(), "HTTP 400, Stormpath 2103 (http://docs.stormpath.com/errors/2103), RequestId "+ e.getRequestId() + ": modifiedAt query criteria parameter value is invalid or an unexpected type.")
         }
     }
