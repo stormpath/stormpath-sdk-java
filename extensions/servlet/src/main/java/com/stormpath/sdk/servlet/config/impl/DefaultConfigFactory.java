@@ -52,9 +52,6 @@ public class DefaultConfigFactory implements ConfigFactory {
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
 
-    public static final String STORMPATH_YAML        = "stormpath.yml";
-    public static final String STORMPATH_YAML_SOURCES = STORMPATH_YAML + ".sources";
-
     public static final  String ENVVARS_TOKEN       = "envvars";
     public static final  String SYSPROPS_TOKEN      = "sysprops";
     public static final  String CONTEXT_PARAM_TOKEN = "contextParam";
