@@ -118,7 +118,11 @@
                     <skip>${skipITs}</skip>
                     <container>
                         <containerId>tomcat7x</containerId>
-                        <containerUrl>http://apache.claz.org/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.zip</containerUrl>
+                        <zipUrlInstaller>
+                            <url>
+                                http://apache.claz.org/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.zip
+                            </url>
+                        </zipUrlInstaller>
                     </container>
                     <deployables>
                         <deployable>
