@@ -19,7 +19,6 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- *
  * @since 1.0.RC8
  */
 public abstract class SamlException extends ResourceException {
