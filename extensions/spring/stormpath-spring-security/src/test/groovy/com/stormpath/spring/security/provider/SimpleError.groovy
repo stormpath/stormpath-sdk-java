@@ -24,4 +24,5 @@ class SimpleError implements com.stormpath.sdk.error.Error {
     String message
     String developerMessage
     String moreInfo
+    String requestId
 }

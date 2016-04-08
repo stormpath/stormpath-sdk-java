@@ -16,12 +16,13 @@
 package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
  *
  * @since 1.0.RC8
  */
-public class InvalidSamlTokenException extends SamlException {
+public class InvalidSamlTokenException extends ResourceException {
 
     public InvalidSamlTokenException(Error error)  {
         super(error);

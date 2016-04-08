@@ -58,6 +58,11 @@ public class DefaultErrorBuilder {
         return this;
     }
 
+    public DefaultErrorBuilder requestId(String requestId) {
+        this.errorProperties.put(DefaultError.REQUEST_ID.getName(), requestId);
+        return this;
+    }
+
     public Error build() {
         for (Object value : errorProperties.values()) {
             Assert.notNull(value);

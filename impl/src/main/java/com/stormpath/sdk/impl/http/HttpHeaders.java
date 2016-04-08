@@ -74,7 +74,7 @@ public class HttpHeaders implements MultiValueMap<String, String> {
 
     private static final String PRAGMA = "Pragma";
 
-    private static final String STORMPATH_REQUEST_ID = "Stormpath-Request-Id";
+    public static final String STORMPATH_REQUEST_ID = "Stormpath-Request-Id";
 
     private static final String[] DATE_FORMATS = new String[]{
             "EEE, dd MMM yyyy HH:mm:ss zzz",

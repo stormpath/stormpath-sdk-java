@@ -37,8 +37,8 @@ import java.util.Map;
  */
 public class IDSiteRuntimeException extends ResourceException {
 
-    public IDSiteRuntimeException(Error error, Map headers) {
-        super(error, headers);
+    public IDSiteRuntimeException(Error error) {
+        super(error);
     }
 
     /**

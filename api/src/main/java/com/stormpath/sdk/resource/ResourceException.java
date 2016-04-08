@@ -17,17 +17,12 @@ package com.stormpath.sdk.resource;
 
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
-
-import java.util.List;
-import java.util.Map;
+import com.stormpath.sdk.lang.Strings;
 
 /**
  * @since 0.2
  */
 public class ResourceException extends RuntimeException implements Error {
-
-    private static final String STORMPATH_REQUEST_ID = "Stormpath-Request-Id";
 
     private final Error error;
 
@@ -43,20 +38,15 @@ public class ResourceException extends RuntimeException implements Error {
      * @return {@code error.getDeveloperMessage()}
      * @since 0.9.2
      */
-    private static String buildExceptionMessage(Error error, Map headers) {
+    private static String buildExceptionMessage(Error error) {
         Assert.notNull(error, "Error argument cannot be null.");
         StringBuilder sb = new StringBuilder();
-
         sb.append("HTTP ").append(error.getStatus());
 
-        if (!Collections.isEmpty(headers) && headers.containsKey(STORMPATH_REQUEST_ID)) {
-            sb.append(", ").append(STORMPATH_REQUEST_ID).append(" ");
-            Object requestId = headers.get(STORMPATH_REQUEST_ID);
+        String requestId = error.getRequestId();
 
-            if (requestId instanceof List && !Collections.isEmpty((List) requestId)) {
-                requestId = ((List) requestId).get(0);
-            }
-            sb.append(requestId);
+        if (Strings.hasText(requestId)) {
+            sb.append(", RequestId: ").append(error.getRequestId());
         }
 
         sb.append(", Stormpath ").append(error.getCode())
@@ -66,12 +56,7 @@ public class ResourceException extends RuntimeException implements Error {
     }
 
     public ResourceException(Error error) {
-        super(buildExceptionMessage(error, null));
-        this.error = error;
-    }
-
-    public ResourceException(Error error, Map headers) {
-        super(buildExceptionMessage(error, headers));
+        super(buildExceptionMessage(error));
         this.error = error;
     }
 
@@ -103,6 +88,11 @@ public class ResourceException extends RuntimeException implements Error {
     @Override
     public String getMoreInfo() {
         return error.getMoreInfo();
+    }
+
+    @Override
+    public String getRequestId() {
+        return error.getRequestId();
     }
 
     public Error getStormpathError() {

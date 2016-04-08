@@ -16,6 +16,7 @@
 package com.stormpath.sdk.idsite;
 
 import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.resource.ResourceException;
 
 /**
  * A sub-class of {@link IDSiteException} representing a specific IDSite error.
@@ -28,7 +29,7 @@ import com.stormpath.sdk.error.Error;
  *
  * @since 1.0.RC5
  */
-public class IDSiteSessionTimeoutException extends IDSiteException {
+public class IDSiteSessionTimeoutException extends ResourceException {
 
     public IDSiteSessionTimeoutException(Error error)  {
         super(error);

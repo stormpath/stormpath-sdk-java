@@ -36,7 +36,7 @@ public abstract class IDSiteException extends Exception implements com.stormpath
     /**
      * Ensures the message used for the exception (i.e. exception.getMessage()) reports the {@code developerMessage}
      * returned by the Stormpath API Server.  The regular Stormpath response body {@code message} field is targeted
-     * at applicadtion end-users that could very likely be non-technical.  Since an exception should be helpful to
+     * at application end-users that could very likely be non-technical.  Since an exception should be helpful to
      * developers, it is better to show a more technical message.
      * <p/>
      * Added as a fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/28">Issue #28</a>.
@@ -77,6 +77,11 @@ public abstract class IDSiteException extends Exception implements com.stormpath
     @Override
     public String getMoreInfo() {
         return error.getMoreInfo();
+    }
+
+    @Override
+    public String getRequestId() {
+        return error.getRequestId();
     }
 
     public Error getStormpathError() {

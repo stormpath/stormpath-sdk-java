@@ -35,6 +35,7 @@ import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
@@ -122,7 +123,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         //JSDK-261: Enable Java SDK to handle new ID Site error callbacks
         //We are processing the error after the token has been properly validated
         if (isError(jsonPayload)) {
-            throw new IDSiteRuntimeException(constructError(jsonPayload), jsonHeader);
+            throw new IDSiteRuntimeException(constructError(jsonPayload, jsonHeader));
         }
 
         String responseNonce = getRequiredValue(jsonPayload, RESPONSE_ID);
@@ -298,16 +299,22 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     }
 
     /* @since 1.0.RC5 */
-    private Error constructError(Map jsonMap) {
+    private Error constructError(Map jsonMap, Map jsonHeader) {
         Assert.isTrue(isError(jsonMap));
+
         Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR);
-        Error error = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS))
+
+        DefaultErrorBuilder builder = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS))
                 .code((Integer) getRequiredValue(errorMap, "code"))
                 .developerMessage((String) getRequiredValue(errorMap, "developerMessage"))
                 .message((String) getRequiredValue(errorMap, "message"))
-                .moreInfo((String) getRequiredValue(errorMap, "moreInfo"))
-                .build();
-        return error;
+                .moreInfo((String) getRequiredValue(errorMap, "moreInfo"));
+
+        if (jsonHeader.containsKey(HttpHeaders.STORMPATH_REQUEST_ID)) {
+            builder.requestId((String) jsonHeader.get(HttpHeaders.STORMPATH_REQUEST_ID));
+        }
+
+        return builder.build();
     }
 
     /* @since 1.0.RC5 */

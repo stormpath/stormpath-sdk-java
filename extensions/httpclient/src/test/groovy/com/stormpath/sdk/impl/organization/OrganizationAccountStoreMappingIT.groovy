@@ -563,7 +563,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
             org.createOrganizationAccountStoreMapping(orgAccountStoreMapping)
             fail("Should have thrown due to organization cannot be account store error.");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 4614 (http://docs.stormpath.com/errors/4614): An organization can not an account store for another organization.")
+            assertEquals(e.getMessage(), "HTTP 400, RequestId: "+ e.getRequestId() + ", Stormpath 4614 (http://docs.stormpath.com/errors/4614): An organization can not an account store for another organization.")
         }
 
 //        create a directory

@@ -26,7 +26,14 @@ import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
 import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.http.*;
+import com.stormpath.sdk.impl.http.CanonicalUri;
+import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryStringFactory;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
@@ -51,7 +58,12 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * @since 0.1
@@ -529,8 +541,16 @@ public class DefaultDataStore implements InternalDataStore {
 
         if (response.isError()) {
             Map<String, Object> body = getBody(response);
+
+            String requestId = response.getHeaders().getStormpathRequestId();
+
+            if (Strings.hasText(requestId)) {
+                body.put(DefaultError.REQUEST_ID.getName(), requestId);
+            }
+
             DefaultError error = new DefaultError(body);
-            throw new ResourceException(error, response.getHeaders());
+
+            throw new ResourceException(error);
         }
 
         return response;
