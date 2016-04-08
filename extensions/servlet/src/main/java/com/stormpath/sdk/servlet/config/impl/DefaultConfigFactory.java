@@ -31,10 +31,16 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigFactory;
 import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
+import org.springframework.util.StringUtils;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.servlet.ServletContext;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -46,6 +52,9 @@ public class DefaultConfigFactory implements ConfigFactory {
 
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
+
+    public static final String STORMPATH_YAML        = "stormpath.yml";
+    public static final String STORMPATH_YAML_SOURCES = STORMPATH_YAML + ".sources";
 
     public static final  String ENVVARS_TOKEN       = "envvars";
     public static final  String SYSPROPS_TOKEN      = "sysprops";
@@ -62,6 +71,10 @@ public class DefaultConfigFactory implements ConfigFactory {
         CONTEXT_PARAM_TOKEN + NL +
         ENVVARS_TOKEN + NL +
         SYSPROPS_TOKEN;
+
+    public static final String DEFAULT_STORMPATH_YAML_SOURCES =
+        ClasspathResource.SCHEME_PREFIX + STORMPATH_YAML + NL +
+        "/WEB-INF/stormpath.yml";
 
     private static final EnvVarNameConverter envVarNameConverter = new DefaultEnvVarNameConverter();
 
@@ -142,6 +155,83 @@ public class DefaultConfigFactory implements ConfigFactory {
             props.putAll(srcProps);
         }
 
+        String yamlSourceDefs = servletContext.getInitParameter(STORMPATH_YAML_SOURCES);
+        if (!Strings.hasText(yamlSourceDefs)) {
+            yamlSourceDefs = DEFAULT_STORMPATH_YAML_SOURCES;
+        }
+
+        Yaml yaml = new Yaml();
+
+        // split string on newline by default
+        String[] yamlFiles = yamlSourceDefs.split(NL);
+
+        for (String yamlFile : yamlFiles) {
+            Resource resource = resourceFactory.createResource(yamlFile);
+            // todo: detect if resource exists so catch doesn't have to swallow exception
+            try (InputStream in = resource.getInputStream()) {
+                Map config = yaml.loadAs(in, Map.class);
+                props.putAll(getFlattenedMap(config));
+                //System.out.println(getFlattenedMap(config));
+            } catch (IOException | YAMLException e) {
+                //e.printStackTrace();
+            }
+
+        }
+
         return new DefaultConfig(servletContext, props);
+    }
+
+    /**
+     * Return a flattened version of the given map, recursively following any nested Map
+     * or Collection values. Entries from the resulting map retain the same order as the
+     * source.
+     *
+     * Copied from https://github.com/spring-projects/spring-framework/blob/master/spring-beans/src/main/java/org/springframework/beans/factory/config/YamlProcessor.java
+     *
+     * @param source the source map
+     * @return a flattened map
+     * @since 4.1.3
+     */
+    protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        buildFlattenedMap(result, source, null);
+        return result;
+    }
+
+    private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            String key = entry.getKey();
+            if (StringUtils.hasText(path)) {
+                if (key.startsWith("[")) {
+                    key = path + key;
+                }
+                else {
+                    key = path + "." + key;
+                }
+            }
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                result.put(key, value);
+            }
+            else if (value instanceof Map) {
+                // Need a compound key
+                @SuppressWarnings("unchecked")
+                Map<String, Object> map = (Map<String, Object>) value;
+                buildFlattenedMap(result, map, key);
+            }
+            else if (value instanceof Collection) {
+                // Need a compound key
+                @SuppressWarnings("unchecked")
+                Collection<Object> collection = (Collection<Object>) value;
+                int count = 0;
+                for (Object object : collection) {
+                    buildFlattenedMap(result,
+                            Collections.singletonMap("[" + (count++) + "]", object), key);
+                }
+            }
+            else {
+                result.put(key, value != null ? value : "");
+            }
+        }
     }
 }
