@@ -67,6 +67,7 @@ import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
+import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
@@ -1859,6 +1860,7 @@ class ApplicationIT extends ClientIT {
 
         // setup result jwt
         def jwt = Jwts.builder()
+            .setHeaderParam(JwsHeader.KEY_ID, client.apiKey.id)
             .setAudience(client.apiKey.id)
             .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
             .setIssuer("my issuer")
