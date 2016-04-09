@@ -519,7 +519,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathMessageSource();
     }
 
-    @Bean
+/*    @Bean
     public Controller stormpathRegisterController() {
         return super.stormpathRegisterController();
     }
@@ -543,7 +543,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public Controller stormpathIdSiteResultController() {
         return super.stormpathIdSiteResultController();
     }
-
+*/
     @Bean
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
         return super.stormpathAccessTokenAuthenticationRequestFactory();
@@ -564,7 +564,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathServerUriResolver();
     }
 
-    @Bean
+/*    @Bean
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
         return super.stormpathMvcLogoutController();
     }
@@ -573,7 +573,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
     }
-
+*/
     @Bean
     public FilterChainResolver stormpathFilterChainResolver() {
         return super.stormpathFilterChainResolver();
