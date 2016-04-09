@@ -89,6 +89,11 @@ public abstract class AbstractAuthenticationScheme implements HttpAuthentication
             public String getMoreInfo() {
                 return null;
             }
+
+            @Override
+            public String getRequestId() {
+                return null;
+            }
         };
     }
 }

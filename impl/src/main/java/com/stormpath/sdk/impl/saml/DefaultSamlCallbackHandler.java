@@ -28,7 +28,8 @@ import com.stormpath.sdk.impl.account.DefaultAuthenticationResult;
 import com.stormpath.sdk.impl.account.DefaultLogoutResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
+import com.stormpath.sdk.impl.error.DefaultError;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.idsite.DefaultNonceStore;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
@@ -47,12 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.ERROR;
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.IS_NEW_SUBJECT;
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_RESPONSE;
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.RESPONSE_ID;
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATE;
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATUS;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.*;
 import static com.stormpath.sdk.impl.jwt.JwtHeaderParameters.KEY_ID;
 
 /**
@@ -111,12 +107,8 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
 
         String apiKeyId;
 
-        if (isError(jsonPayload)) {
-            Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
-            apiKeyId = getRequiredValue(jsonHeader, KEY_ID);
-        } else {
-            apiKeyId = getRequiredValue(jsonPayload, Claims.AUDIENCE);
-        }
+        Map jsonHeader = jwtWrapper.getJsonHeaderAsMap();
+        apiKeyId = getRequiredValue(jsonHeader, KEY_ID);
 
         getJwtSignatureValidator(apiKeyId).validate(jwtWrapper);
 
@@ -127,7 +119,7 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
         String issuer = getRequiredValue(jsonPayload, Claims.ISSUER);
 
         if (isError(jsonPayload)) {
-            throw new SamlRuntimeException(constructError(jsonPayload));
+            throw new SamlRuntimeException(constructError(jsonPayload, jsonHeader));
         }
 
         String responseNonce = getRequiredValue(jsonPayload, RESPONSE_ID);
@@ -277,16 +269,14 @@ public class DefaultSamlCallbackHandler implements SamlCallbackHandler {
     }
 
     /* @since 1.0.RC5 */
-    private Error constructError(Map jsonMap) {
-        Assert.isTrue(isError(jsonMap));
+    private Error constructError(Map jsonMap, Map jsonHeader) {
         Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR);
-        Error error = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS))
-                .code((Integer) getRequiredValue(errorMap, "code"))
-                .developerMessage((String) getRequiredValue(errorMap, "developerMessage"))
-                .message((String) getRequiredValue(errorMap, "message"))
-                .moreInfo((String) getRequiredValue(errorMap, "moreInfo"))
-                .build();
-        return error;
+
+        if (jsonHeader.containsKey(HttpHeaders.STORMPATH_REQUEST_ID)) {
+            errorMap.put(HttpHeaders.STORMPATH_REQUEST_ID, jsonHeader.get(HttpHeaders.STORMPATH_REQUEST_ID));
+        }
+
+        return new DefaultError(errorMap);
     }
 
     /* @since 1.0.RC5 */

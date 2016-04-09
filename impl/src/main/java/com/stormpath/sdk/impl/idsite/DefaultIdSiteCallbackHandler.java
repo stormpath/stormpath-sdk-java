@@ -34,7 +34,9 @@ import com.stormpath.sdk.impl.account.DefaultLogoutResult;
 import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
@@ -122,7 +124,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         //JSDK-261: Enable Java SDK to handle new ID Site error callbacks
         //We are processing the error after the token has been properly validated
         if (isError(jsonPayload)) {
-            throw new IDSiteRuntimeException(constructError(jsonPayload));
+            throw new IDSiteRuntimeException(constructError(jsonPayload, jsonHeader));
         }
 
         String responseNonce = getRequiredValue(jsonPayload, RESPONSE_ID);
@@ -298,16 +300,14 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
     }
 
     /* @since 1.0.RC5 */
-    private Error constructError(Map jsonMap) {
-        Assert.isTrue(isError(jsonMap));
+    private Error constructError(Map jsonMap, Map jsonHeader) {
         Map<String, Object> errorMap = getRequiredValue(jsonMap, ERROR);
-        Error error = new DefaultErrorBuilder((Integer) getRequiredValue(errorMap, STATUS))
-                .code((Integer) getRequiredValue(errorMap, "code"))
-                .developerMessage((String) getRequiredValue(errorMap, "developerMessage"))
-                .message((String) getRequiredValue(errorMap, "message"))
-                .moreInfo((String) getRequiredValue(errorMap, "moreInfo"))
-                .build();
-        return error;
+
+        if (jsonHeader.containsKey(HttpHeaders.STORMPATH_REQUEST_ID)) {
+            errorMap.put(HttpHeaders.STORMPATH_REQUEST_ID, jsonHeader.get(HttpHeaders.STORMPATH_REQUEST_ID));
+        }
+
+        return new DefaultError(errorMap);
     }
 
     /* @since 1.0.RC5 */

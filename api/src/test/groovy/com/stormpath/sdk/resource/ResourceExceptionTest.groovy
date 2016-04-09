@@ -49,6 +49,11 @@ class ResourceExceptionTest {
             String getMoreInfo() {
                 return 'someUrl'
             }
+
+            @Override
+            String getRequestId() {
+                return  null
+            }
         }
 
         def ex = new ResourceException(error);
@@ -58,6 +63,7 @@ class ResourceExceptionTest {
         assertEquals ex.message, 'HTTP 400, Stormpath 2000 (someUrl): bar'
         assertEquals ex.developerMessage, 'bar'
         assertEquals ex.moreInfo, 'someUrl'
+        assertEquals ex.requestId, null
         //Re-enable for Issue #32:
         //assertSame ex.error, error
         //assertSame ex.error.message, error.message
