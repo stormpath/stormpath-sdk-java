@@ -31,7 +31,7 @@ class DefaultConfigFactoryTest {
     public void testStormPathPropertiesInClasspathOverridesDefault() {
         Config config = new ConfigLoader().createConfig(mockServletContext)
 
-        assertEquals config.get('stormpath.web.logout.uri'), '/signout'
+        assertEquals config.get('stormpath.web.login.nextUri'), '/foo'
     }
 
     @Test
