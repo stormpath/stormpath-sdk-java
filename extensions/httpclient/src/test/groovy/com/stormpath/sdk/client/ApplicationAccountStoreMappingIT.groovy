@@ -221,7 +221,7 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
             app.createAccountStoreMapping(accountStoreMapping)
         }
 
-        def accStrMaps = app.getApplicationAccountStoreMappings(
+        def accStrMaps = app.getAccountStoreMappings(
                 ApplicationAccountStoreMappings.where(ApplicationAccountStoreMappings.listIndex().eq(1))
         )
         ApplicationAccountStoreMapping accountStoreMapping = accStrMaps.first()
@@ -327,7 +327,7 @@ class ApplicationAccountStoreMappingIT extends ClientIT {
 
             app.createAccountStoreMapping(accountStoreMapping)
         }
-        ApplicationAccountStoreMappingList mappings = app.getApplicationAccountStoreMappings(
+        ApplicationAccountStoreMappingList mappings = app.getAccountStoreMappings(
                 ApplicationAccountStoreMappings.criteria().withAccountStore().withApplication().orderByListIndex()
         )
         String mappingsString = mappings.toString()

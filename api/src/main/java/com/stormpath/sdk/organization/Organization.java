@@ -19,15 +19,15 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.application.AccountStoreHolder;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Auditable;
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Extendable;
+import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -289,7 +289,18 @@ public interface Organization extends AccountStoreHolder<Organization>, Resource
      * @param mapping the new OrganizationAccountStoreMapping resource to add to the Organization's OrganizationAccountStoreMapping list.
      * @return the newly created OrganizationAccountStoreMapping instance.
      * @throws com.stormpath.sdk.resource.ResourceException
+     * @since 1.0.RC9
      */
+    OrganizationAccountStoreMapping createAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
+
+    /**
+     * @param mapping the new OrganizationAccountStoreMapping resource to add to the Organization's OrganizationAccountStoreMapping list.
+     * @return the newly created OrganizationAccountStoreMapping instance.
+     * @throws com.stormpath.sdk.resource.ResourceException
+     *
+     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #createAccountStoreMapping(OrganizationAccountStoreMapping)} instead.
+     */
+    @Deprecated
     OrganizationAccountStoreMapping createOrganizationAccountStoreMapping(OrganizationAccountStoreMapping mapping) throws ResourceException;
 
     /**
