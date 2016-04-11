@@ -318,53 +318,23 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         return getDataStore().getResource(list.getHref(), OrganizationList.class, (Criteria<OrganizationCriteria>) criteria);
     }
 
-    /** @since 1.0.RC9 */
+    /** @since 1.0.RC7.7 */
     @Override
-    public OrganizationAccountStoreMappingList getAccountStoreMappings() {
+    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings() {
         return getResourceProperty(ORGANIZATION_MAPPINGS);
     }
 
-    /**
-     * @since 1.0.RC7.7
-     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings()} instead.
-     */
+    /** @since 1.0.RC7.7 */
     @Override
-    @Deprecated
-    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings() {
-        return getAccountStoreMappings();
-    }
-
-    /** @since 1.0.RC9 */
-    @Override
-    public OrganizationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams) {
-        OrganizationAccountStoreMappingList list = getAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
+    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams) {
+        OrganizationAccountStoreMappingList list = getOrganizationAccountStoreMappings(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), OrganizationAccountStoreMappingList.class, queryParams);
     }
 
-    /**
-     * @since 1.0.RC7.7
-     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(Map)} instead.
-     */
+    /** @since 1.0.RC7.7 */
     @Override
-    @Deprecated
-    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Map<String, Object> queryParams) {
-        return getAccountStoreMappings(queryParams);
-    }
-
-    /** @since 1.0.RC9 */
-    @Override
-    public OrganizationAccountStoreMappingList getAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
+    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
         OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), OrganizationAccountStoreMappingList.class, (Criteria<OrganizationAccountStoreMappingCriteria>) criteria);
-    }
-
-    /**
-     * @since 1.0.RC7.7
-     * @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(OrganizationAccountStoreMappingCriteria)} instead.
-     */
-    @Override
-    @Deprecated
-    public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
-        return getAccountStoreMappings(criteria);
     }
 }
