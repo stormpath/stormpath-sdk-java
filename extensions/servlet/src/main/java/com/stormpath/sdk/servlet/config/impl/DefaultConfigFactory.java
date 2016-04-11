@@ -33,7 +33,6 @@ import com.stormpath.sdk.servlet.config.ConfigFactory;
 import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -71,10 +70,6 @@ public class DefaultConfigFactory implements ConfigFactory {
         CONTEXT_PARAM_TOKEN + NL +
         ENVVARS_TOKEN + NL +
         SYSPROPS_TOKEN;
-
-    public static final String DEFAULT_STORMPATH_YAML_SOURCES =
-        ClasspathResource.SCHEME_PREFIX + STORMPATH_YAML + NL +
-        "/WEB-INF/stormpath.yml";
 
     private static final EnvVarNameConverter envVarNameConverter = new DefaultEnvVarNameConverter();
 
@@ -155,27 +150,35 @@ public class DefaultConfigFactory implements ConfigFactory {
             props.putAll(srcProps);
         }
 
-        String yamlSourceDefs = servletContext.getInitParameter(STORMPATH_YAML_SOURCES);
-        if (!Strings.hasText(yamlSourceDefs)) {
-            yamlSourceDefs = DEFAULT_STORMPATH_YAML_SOURCES;
-        }
-
         Yaml yaml = new Yaml();
 
         // split string on newline by default
-        String[] yamlFiles = yamlSourceDefs.split(NL);
+        String[] configFiles = DEFAULT_STORMPATH_PROPERTIES_SOURCES.split(NL);
 
-        for (String yamlFile : yamlFiles) {
-            Resource resource = resourceFactory.createResource(yamlFile);
-            // todo: detect if resource exists so catch doesn't have to swallow exception
-            try (InputStream in = resource.getInputStream()) {
-                Map config = yaml.loadAs(in, Map.class);
-                props.putAll(getFlattenedMap(config));
-                //System.out.println(getFlattenedMap(config));
-            } catch (IOException | YAMLException e) {
-                //e.printStackTrace();
+        for (String configFile : configFiles) {
+            if (configFile.endsWith(".properties")) {
+                String yamlFile = configFile.replace(".properties", ".yml");
+                InputStream in = null;
+                try {
+                    Resource resource = resourceFactory.createResource(yamlFile);
+                    in = resource.getInputStream();
+                    if (in != null) {
+                        Map config = yaml.loadAs(in, Map.class);
+                        props.putAll(getFlattenedMap(config));
+                    }
+                } catch (IOException io) {
+                    //todo: what's the best way to handle this failure
+                    io.printStackTrace();
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException io) {
+                            // can't close, ignore
+                        }
+                    }
+                }
             }
-
         }
 
         return new DefaultConfig(servletContext, props);
@@ -190,7 +193,7 @@ public class DefaultConfigFactory implements ConfigFactory {
      *
      * @param source the source map
      * @return a flattened map
-     * @since 4.1.3
+     * @since 1.0
      */
     protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
