@@ -248,7 +248,7 @@ class DefaultDirectoryTest {
         resource = defaultDirectory.getOrganizations(organizationCriteriaMap)
         assertTrue(resource instanceof DefaultOrganizationList && resource.getHref().equals(properties.organizations.href))
 
-        resource = defaultDirectory.getAccountStoreMappings()
+        resource = defaultDirectory.getOrganizationAccountStoreMappings()
         assertTrue(resource instanceof DefaultOrganizationAccountStoreMappingList && resource.getHref().equals(properties.organizationMappings.href))
 
         resource = defaultDirectory.getTenant()
