@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -160,7 +159,8 @@ public class DefaultConfigFactory implements ConfigFactory {
                     Resource resource = resourceFactory.createResource(yamlFile);
                     in = resource.getInputStream();
                     if (in != null) {
-                        Map config = yaml.loadAs(in, Map.class);
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> config = yaml.loadAs(in, Map.class);
                         props.putAll(getFlattenedMap(config));
                     }
                 } catch (IOException io) {
@@ -192,13 +192,13 @@ public class DefaultConfigFactory implements ConfigFactory {
      * @return a flattened map
      * @since 1.0
      */
-    protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
+    protected final Map<String, String> getFlattenedMap(Map<String, Object> source) {
+        Map<String, String> result = new LinkedHashMap<String, String>();
         buildFlattenedMap(result, source, null);
         return result;
     }
 
-    private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
+    private void buildFlattenedMap(Map<String, String> result, Map<String, Object> source, String path) {
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             String key = entry.getKey();
             if (StringUtils.hasText(path)) {
@@ -211,7 +211,7 @@ public class DefaultConfigFactory implements ConfigFactory {
             }
             Object value = entry.getValue();
             if (value instanceof String) {
-                result.put(key, value);
+                result.put(key, String.valueOf(value));
             }
             else if (value instanceof Map) {
                 // Need a compound key
@@ -219,18 +219,8 @@ public class DefaultConfigFactory implements ConfigFactory {
                 Map<String, Object> map = (Map<String, Object>) value;
                 buildFlattenedMap(result, map, key);
             }
-            else if (value instanceof Collection) {
-                // Need a compound key
-                @SuppressWarnings("unchecked")
-                Collection<Object> collection = (Collection<Object>) value;
-                int count = 0;
-                for (Object object : collection) {
-                    buildFlattenedMap(result,
-                            Collections.singletonMap("[" + (count++) + "]", object), key);
-                }
-            }
             else {
-                result.put(key, value != null ? value : "");
+                result.put(key, value != null ? String.valueOf(value) : "");
             }
         }
     }
