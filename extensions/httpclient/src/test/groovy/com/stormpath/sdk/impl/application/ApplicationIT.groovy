@@ -67,6 +67,7 @@ import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
+import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
@@ -340,7 +341,7 @@ class ApplicationIT extends ClientIT {
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104): Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104), RequestId "+ e.getRequestId() + ": Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
         }
 
         //No account store has been defined, therefore login must succeed
@@ -419,7 +420,7 @@ class ApplicationIT extends ClientIT {
             result = app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114): The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114), RequestId "+ e.getRequestId() + ": The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
         }
     }
 
@@ -1859,6 +1860,7 @@ class ApplicationIT extends ClientIT {
 
         // setup result jwt
         def jwt = Jwts.builder()
+            .setHeaderParam(JwsHeader.KEY_ID, client.apiKey.id)
             .setAudience(client.apiKey.id)
             .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
             .setIssuer("my issuer")

@@ -33,6 +33,7 @@ public class DefaultError extends AbstractResource implements Error {
     static final StringProperty MESSAGE = new StringProperty("message");
     static final StringProperty DEV_MESSAGE = new StringProperty("developerMessage");
     static final StringProperty MORE_INFO = new StringProperty("moreInfo");
+    public static final StringProperty REQUEST_ID = new StringProperty("requestId");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             STATUS, CODE, MESSAGE, DEV_MESSAGE, MORE_INFO
@@ -71,4 +72,10 @@ public class DefaultError extends AbstractResource implements Error {
     public String getMoreInfo() {
         return getString(MORE_INFO);
     }
+
+    @Override
+    public String getRequestId() {
+       return getString(REQUEST_ID);
+    }
+
 }
