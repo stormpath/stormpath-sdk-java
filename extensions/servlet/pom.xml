@@ -69,10 +69,10 @@
             <artifactId>spring-expression</artifactId>
         </dependency>
         <!-- YAML Support -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

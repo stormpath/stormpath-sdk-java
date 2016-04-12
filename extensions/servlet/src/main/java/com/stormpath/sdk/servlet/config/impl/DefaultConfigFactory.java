@@ -23,6 +23,7 @@ import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
 import com.stormpath.sdk.impl.config.SystemPropertiesSource;
+import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
@@ -31,12 +32,10 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigFactory;
 import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
-import org.springframework.util.StringUtils;
-import org.yaml.snakeyaml.Yaml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -47,6 +46,8 @@ import java.util.Scanner;
  * @since 1.0.RC3
  */
 public class DefaultConfigFactory implements ConfigFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultConfigFactory.class);
 
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
@@ -136,6 +137,22 @@ public class DefaultConfigFactory implements ConfigFactory {
                     propertiesSource = new OptionalPropertiesSource(propertiesSource);
                 }
                 sources.add(propertiesSource);
+
+                // look for YAML file with the same name
+                if (line.contains(".properties")) {
+                    String yamlFile = line.replace(".properties", ".yml");
+                    try {
+                        Class yaml = Class.forName("org.yaml.snakeyaml.Yaml");
+                        resource = resourceFactory.createResource(yamlFile);
+                        propertiesSource = new YAMLPropertiesSource(resource);
+                        if (!required) {
+                            propertiesSource = new OptionalPropertiesSource(propertiesSource);
+                        }
+                        sources.add(propertiesSource);
+                    } catch (ClassNotFoundException e) {
+                        log.debug("YAML not found in classpath, please add 'org.yaml:snakeyaml' to support YAML configuration");
+                    }
+                }
             }
         }
 
@@ -146,82 +163,6 @@ public class DefaultConfigFactory implements ConfigFactory {
             props.putAll(srcProps);
         }
 
-        Yaml yaml = new Yaml();
-
-        // split string on newline by default
-        String[] configFiles = DEFAULT_STORMPATH_PROPERTIES_SOURCES.split(NL);
-
-        for (String configFile : configFiles) {
-            if (configFile.endsWith(".properties")) {
-                String yamlFile = configFile.replace(".properties", ".yml");
-                InputStream in = null;
-                try {
-                    Resource resource = resourceFactory.createResource(yamlFile);
-                    in = resource.getInputStream();
-                    if (in != null) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> config = yaml.loadAs(in, Map.class);
-                        props.putAll(getFlattenedMap(config));
-                    }
-                } catch (IOException io) {
-                    //todo: what's the best way to handle this failure
-                    io.printStackTrace();
-                } finally {
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (IOException io) {
-                            // can't close, ignore
-                        }
-                    }
-                }
-            }
-        }
-
         return new DefaultConfig(servletContext, props);
-    }
-
-    /**
-     * Return a flattened version of the given map, recursively following any nested Map
-     * or Collection values. Entries from the resulting map retain the same order as the
-     * source.
-     *
-     * Copied from https://github.com/spring-projects/spring-framework/blob/master/spring-beans/src/main/java/org/springframework/beans/factory/config/YamlProcessor.java
-     *
-     * @param source the source map
-     * @return a flattened map
-     * @since 1.0
-     */
-    protected final Map<String, String> getFlattenedMap(Map<String, Object> source) {
-        Map<String, String> result = new LinkedHashMap<String, String>();
-        buildFlattenedMap(result, source, null);
-        return result;
-    }
-
-    private void buildFlattenedMap(Map<String, String> result, Map<String, Object> source, String path) {
-        for (Map.Entry<String, Object> entry : source.entrySet()) {
-            String key = entry.getKey();
-            if (StringUtils.hasText(path)) {
-                if (key.startsWith("[")) {
-                    key = path + key;
-                }
-                else {
-                    key = path + "." + key;
-                }
-            }
-            Object value = entry.getValue();
-            if (value instanceof String) {
-                result.put(key, String.valueOf(value));
-            }
-            else if (value instanceof Map) {
-                // Need a compound key
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = (Map<String, Object>) value;
-                buildFlattenedMap(result, map, key);
-            }
-            else {
-                result.put(key, value != null ? String.valueOf(value) : "");
-            }
-        }
     }
 }
