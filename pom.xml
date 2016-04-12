@@ -136,12 +136,14 @@
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
-            <exclusions>
+            <!-- Uncomment this if you want to see com.stormpath.sdk.servlet.config.impl.DefaultConfigFactoryTest
+                 fail because YAML isn't in the classpath -->
+            <!--<exclusions>
                 <exclusion>
                     <groupId>org.yaml</groupId>
                     <artifactId>snakeyaml</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>

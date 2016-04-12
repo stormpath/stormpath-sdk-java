@@ -3,8 +3,9 @@ package com.stormpath.sdk.impl.config;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,23 +16,33 @@ import java.util.Map;
 
 public class YAMLPropertiesSource implements PropertiesSource {
 
+    private static final Logger log = LoggerFactory.getLogger(YAMLPropertiesSource.class);
     private final Resource resource;
-    private final Yaml yaml;
 
     public YAMLPropertiesSource(Resource resource) {
         Assert.notNull(resource, "resource argument cannot be null.");
         this.resource = resource;
-        this.yaml = new Yaml();
     }
 
     @Override
     public Map<String, String> getProperties() {
         try (InputStream in = resource.getInputStream()) {
-            Map config = yaml.loadAs(in, Map.class);
-            return getFlattenedMap(config);
-        } catch (IOException | YAMLException e) {
+            // check to see if file exists
+            if (in != null) {
+                try {
+                    // test to see if Yaml is on the classpath
+                    Class.forName("org.yaml.snakeyaml.Yaml");
+                    Yaml yaml = new Yaml();
+                    Map config = yaml.loadAs(in, Map.class);
+                    return getFlattenedMap(config);
+                } catch (ClassNotFoundException e) {
+                    log.warn("YAML not found in classpath, add 'org.yaml:snakeyaml' to support YAML configuration");
+                }
+            }
+        } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read resource [" + resource + "]: " + e.getMessage(), e);
         }
+        return new LinkedHashMap<>();
     }
 
     /**

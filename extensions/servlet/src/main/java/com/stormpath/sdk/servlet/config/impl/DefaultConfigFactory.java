@@ -32,8 +32,6 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigFactory;
 import com.stormpath.sdk.servlet.io.ServletContainerResourceFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import java.util.ArrayList;
@@ -47,7 +45,6 @@ import java.util.Scanner;
  */
 public class DefaultConfigFactory implements ConfigFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultConfigFactory.class);
 
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
@@ -141,17 +138,12 @@ public class DefaultConfigFactory implements ConfigFactory {
                 // look for YAML file with the same name
                 if (line.contains(".properties")) {
                     String yamlFile = line.replace(".properties", ".yml");
-                    try {
-                        Class yaml = Class.forName("org.yaml.snakeyaml.Yaml");
-                        resource = resourceFactory.createResource(yamlFile);
-                        propertiesSource = new YAMLPropertiesSource(resource);
-                        if (!required) {
-                            propertiesSource = new OptionalPropertiesSource(propertiesSource);
-                        }
-                        sources.add(propertiesSource);
-                    } catch (ClassNotFoundException e) {
-                        log.debug("YAML not found in classpath, please add 'org.yaml:snakeyaml' to support YAML configuration");
+                    resource = resourceFactory.createResource(yamlFile);
+                    propertiesSource = new YAMLPropertiesSource(resource);
+                    if (!required) {
+                        propertiesSource = new OptionalPropertiesSource(propertiesSource);
                     }
+                    sources.add(propertiesSource);
                 }
             }
         }
