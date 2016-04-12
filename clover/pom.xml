@@ -37,6 +37,20 @@
     <dependencies>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
     <!-- This must always be the last thing to be built. As such, we want to do final clover metrics here -->
     <profiles>
         <profile>
