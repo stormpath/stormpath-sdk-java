@@ -25,6 +25,7 @@ public class YAMLPropertiesSource implements PropertiesSource {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, String> getProperties() {
         try (InputStream in = resource.getInputStream()) {
             // check to see if file exists
@@ -56,13 +57,13 @@ public class YAMLPropertiesSource implements PropertiesSource {
      * @return a flattened map
      * @since 1.0
      */
-    protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
+    protected final Map<String, String> getFlattenedMap(Map<String, Object> source) {
+        Map<String, String> result = new LinkedHashMap<>();
         buildFlattenedMap(result, source, null);
         return result;
     }
 
-    private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
+    private void buildFlattenedMap(Map<String, String> result, Map<String, Object> source, String path) {
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             String key = entry.getKey();
             if (Strings.hasText(path)) {
@@ -75,7 +76,7 @@ public class YAMLPropertiesSource implements PropertiesSource {
             }
             Object value = entry.getValue();
             if (value instanceof String) {
-                result.put(key, value);
+                result.put(key, String.valueOf(value));
             }
             else if (value instanceof Map) {
                 // Need a compound key
@@ -94,7 +95,7 @@ public class YAMLPropertiesSource implements PropertiesSource {
                 }
             }
             else {
-                result.put(key, value != null ? value : "");
+                result.put(key, value != null ? String.valueOf(value) : "");
             }
         }
     }
