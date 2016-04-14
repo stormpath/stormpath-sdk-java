@@ -19,6 +19,7 @@ import com.stormpath.sdk.impl.config.DefaultEnvVarNameConverter;
 import com.stormpath.sdk.impl.config.EnvVarNameConverter;
 import com.stormpath.sdk.impl.config.EnvironmentVariablesPropertiesSource;
 import com.stormpath.sdk.impl.config.FilteredPropertiesSource;
+import com.stormpath.sdk.impl.config.JSONPropertiesSource;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
@@ -135,8 +136,16 @@ public class DefaultConfigFactory implements ConfigFactory {
                 }
                 sources.add(propertiesSource);
 
-                // look for YAML file with the same name
+                // look for JSON and YAML files with the same name
                 if (line.contains(".properties")) {
+                    String jsonFile = line.replace(".properties", ".json");
+                    resource = resourceFactory.createResource(jsonFile);
+                    propertiesSource = new JSONPropertiesSource(resource);
+                    if (!required) {
+                        propertiesSource = new OptionalPropertiesSource(propertiesSource);
+                    }
+                    sources.add(propertiesSource);
+
                     String yamlFile = line.replace(".properties", ".yaml");
                     resource = resourceFactory.createResource(yamlFile);
                     propertiesSource = new YAMLPropertiesSource(resource);

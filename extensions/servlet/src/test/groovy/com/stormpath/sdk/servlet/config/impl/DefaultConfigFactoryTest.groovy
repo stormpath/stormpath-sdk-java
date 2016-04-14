@@ -35,9 +35,15 @@ class DefaultConfigFactoryTest {
     }
 
     @Test
-    public void testStormPathYamlInClasspathOverridesDefault() {
+    public void testStormPathYAMLInClasspathOverridesDefault() {
         Config config = new ConfigLoader().createConfig(mockServletContext)
 
         assertEquals config.get('stormpath.web.logout.uri'), '/getout'
+    }
+
+    @Test
+    public void testStormPathJSONInClasspathOverridesDefault() {
+        Config config = new ConfigLoader().createConfig(mockServletContext)
+        assertEquals config.get('stormpath.web.verify.nextUri'), '/home?status=fabulous'
     }
 }
