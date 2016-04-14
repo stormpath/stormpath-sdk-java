@@ -137,7 +137,7 @@ public class DefaultConfigFactory implements ConfigFactory {
 
                 // look for YAML file with the same name
                 if (line.contains(".properties")) {
-                    String yamlFile = line.replace(".properties", ".yml");
+                    String yamlFile = line.replace(".properties", ".yaml");
                     resource = resourceFactory.createResource(yamlFile);
                     propertiesSource = new YAMLPropertiesSource(resource);
                     if (!required) {
