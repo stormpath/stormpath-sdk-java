@@ -19,6 +19,32 @@ class YAMLPropertiesSourceTest {
     }
 
     @Test
+    void testGetMapProperties() {
+        def yamlMap = "a_nested_map:\n" +
+                "    key: value\n" +
+                "    another_key: Another Value\n" +
+                "    another_nested_map:\n" +
+                "        hello: hello"
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlMap)).properties
+
+        assertEquals properties.get("a_nested_map.key"), "value"
+        assertEquals properties.get("a_nested_map.another_nested_map.hello"), "hello"
+    }
+
+    @Test
+    void testGetCollectionProperties() {
+        def yamlCollection = "a_sequence:\n" +
+                "    - Item 1\n" +
+                "    - Item 2\n" +
+                "    - 0.5 # sequences can contain disparate types.\n" +
+                "    - Item 4"
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
+
+        assertEquals properties.get("a_sequence[0]"), "Item 1"
+        assertEquals properties.get("a_sequence[2]"), "0.5"
+    }
+
+    @Test
     void testInvalidProperties() {
         try {
             new YAMLPropertiesSource(new BadResource()).properties
