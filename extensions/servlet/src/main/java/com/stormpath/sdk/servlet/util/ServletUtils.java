@@ -248,10 +248,10 @@ public class ServletUtils {
         try {
             return URLDecoder.decode(source, enc);
         } catch (UnsupportedEncodingException ex) {
-            if (log.isWarnEnabled()) {
-                log.warn("Could not decode request string [" + source + "] with encoding '" + enc +
-                         "': falling back to platform default encoding; exception message: " + ex.getMessage(), ex);
-            }
+            log.warn(
+                "Could not decode request string [{}] with encoding '{}': falling back to platform default encoding; exception message: {}",
+                source, enc, ex.getMessage(), ex
+            );
             try {
                 return URLDecoder.decode(source, "ISO-8859-1");
             } catch (UnsupportedEncodingException e) {

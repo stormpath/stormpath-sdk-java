@@ -104,9 +104,10 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
             Reader reader = createFileReader(DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION);
             props = toProperties(reader);
         } catch (IOException ignored) {
-            log.debug("Unable to find or load default api key properties file [" +
-                      DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION + "].  This can be safely ignored as this is a " +
-                      "fallback location - other more specific locations will be checked.", ignored);
+            log.debug(
+                "Unable to find or load default api key properties file [{}]. This can be safely ignored as this is a fallback location - other more specific locations will be checked.",
+                DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION, ignored
+            );
         }
         return props;
     }
@@ -120,10 +121,10 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
                 Reader reader = createFileReader(location);
                 props = toProperties(reader);
             } catch (IOException ignored) {
-                log.debug("Unable to load api key properties file [" +
-                          location + "] specified by environment variable " +
-                          "STORMPATH_API_KEY_FILE.  This can be safely ignored as this is a " +
-                          "fallback location - other more specific locations will be checked.", ignored);
+                log.debug(
+                    "Unable to load api key properties file [{}] specified by environment variable STORMPATH_API_KEY_FILE. This can be safely ignored as this is a fallback location - other more specific locations will be checked.",
+                    location, ignored
+                );
             }
         }
 
@@ -139,10 +140,10 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
                 Reader reader = createFileReader(location);
                 props = toProperties(reader);
             } catch (IOException ignored) {
-                log.debug("Unable to load api key properties file [" +
-                          location + "] specified by system property " +
-                          "stormpath.apiKey.file.  This can be safely ignored as this is a " +
-                          "fallback location - other more specific locations will be checked.", ignored);
+                log.debug(
+                    "Unable to load api key properties file [{}] specified by system property stormpath.apiKey.file. This can be safely ignored as this is a fallback location - other more specific locations will be checked.",
+                    location, ignored
+                );
             }
         }
 

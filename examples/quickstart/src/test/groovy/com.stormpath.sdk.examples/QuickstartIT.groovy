@@ -84,7 +84,7 @@ class QuickstartIT {
             try {
                 account.delete()
             } catch (Throwable t) {
-                log.error('Unable to delete resource ' + t)
+                log.error('Unable to delete resource {}', t)
             }
         }
 
@@ -92,13 +92,13 @@ class QuickstartIT {
         try {
             (application.getDefaultAccountStore() as Directory).delete()
         } catch (Throwable t) {
-            log.error('Unable to delete resource ' + t)
+            log.error('Unable to delete resource {}', t)
         }
 
         try {
             application.delete()
         } catch (Throwable t) {
-            log.error('Unable to delete resource ' + t)
+            log.error('Unable to delete resource {}', t)
         }
     }
 }

@@ -283,7 +283,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 if (isRedirect(httpResponse)) {
                     Header[] locationHeaders = httpResponse.getHeaders("Location");
                     String location = locationHeaders[0].getValue();
-                    log.debug("Redirecting to: " + location);
+                    log.debug("Redirecting to: {}", location);
                     redirectUri = URI.create(location);
                     httpRequest.setURI(redirectUri);
                 } else {
@@ -303,7 +303,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                     return response;
                 }
             } catch (Throwable t) {
-                log.warn("Unable to execute HTTP request: " + t.getMessage(), t);
+                log.warn("Unable to execute HTTP request: {}", t.getMessage(), t);
 
                 if (t instanceof RestException) {
                     exception = (RestException)t;
@@ -350,9 +350,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         }
 
         delay = Math.min(delay, MAX_BACKOFF_IN_MILLISECONDS);
-        if (log.isDebugEnabled()) {
-            log.debug("Retryable condition detected, will retry in " + delay + "ms, attempt number: " + retries);
-        }
+        log.debug("Retryable condition detected, will retry in {}ms, attempt number: {}", delay, retries);
 
         try {
             Thread.sleep(delay);
@@ -386,10 +384,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 t instanceof SocketException ||
                 t instanceof SocketTimeoutException ||
                 t instanceof ConnectTimeoutException) {
-            if (log.isDebugEnabled()) {
-                log.debug("Retrying on " + t.getClass().getName()
-                        + ": " + t.getMessage());
-            }
+            log.debug("Retrying on {}: {}", t.getClass().getName(), t.getMessage());
             return true;
         }
 
