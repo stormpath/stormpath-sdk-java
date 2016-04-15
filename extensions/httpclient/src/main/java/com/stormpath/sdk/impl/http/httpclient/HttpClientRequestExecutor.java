@@ -83,9 +83,11 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = 10;
     private static final String MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor.connPoolControl.maxPerRoute";
+    private static final String MAX_CONNECTIONS_PER_ROUTE_VALUE;
 
     private static final int DEFAULT_MAX_CONNECTIONS_TOTAL = 20;
     private static final String MAX_CONNECTIONS_TOTAL_PROPERTY_KEY = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor.connPoolControl.maxTotal";
+    private static final String MAX_CONNECTIONS_TOTAL_VALUE;
 
     private int numRetries = DEFAULT_MAX_RETRIES;
 
@@ -103,6 +105,11 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     //doesn't need to be SecureRandom: only used in backoff strategy, not for crypto:
     private final Random random = new Random();
+
+    static {
+        MAX_CONNECTIONS_PER_ROUTE_VALUE = System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY);
+        MAX_CONNECTIONS_TOTAL_VALUE = System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY);
+    }
 
     /**
      * Creates a new {@code HttpClientRequestExecutor} using the specified {@code ApiKey} and optional {@code Proxy}
@@ -123,38 +130,36 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
         int connectionMaxPerRoute = DEFAULT_MAX_CONNECTIONS_PER_ROUTE;
-        try {
-            if (System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY) != null) {
-                connectionMaxPerRoute = Integer.parseInt(System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY));
+        if (MAX_CONNECTIONS_PER_ROUTE_VALUE != null) {
+            try {
+                connectionMaxPerRoute = Integer.parseInt(MAX_CONNECTIONS_PER_ROUTE_VALUE);
+            } catch (NumberFormatException nfe) {
+                log.warn(
+                    "Bad max connection per route value: {}. Using default: {}.",
+                    MAX_CONNECTIONS_PER_ROUTE_VALUE, DEFAULT_MAX_CONNECTIONS_PER_ROUTE, nfe
+                );
             }
-        } catch (NumberFormatException nfe) {
-            log.error(
-                "Bad max connection per route value: " + System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY) +
-                ". Using default: " + DEFAULT_MAX_CONNECTIONS_PER_ROUTE,
-                nfe
-            );
         }
 
         int connectionMaxTotal = DEFAULT_MAX_CONNECTIONS_TOTAL;
-        try {
-            if (System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY) != null) {
-                connectionMaxTotal = Integer.parseInt(System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY));
+        if (MAX_CONNECTIONS_TOTAL_VALUE != null) {
+            try {
+                connectionMaxTotal = Integer.parseInt(MAX_CONNECTIONS_TOTAL_VALUE);
+            } catch (NumberFormatException nfe) {
+                log.warn(
+                    "Bad max connection total value: {}. Using default: {}.",
+                    MAX_CONNECTIONS_TOTAL_VALUE, DEFAULT_MAX_CONNECTIONS_TOTAL, nfe
+                );
             }
-        } catch (NumberFormatException nfe) {
-            log.error(
-                "Bad max connection total value: " + System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY) +
-                ". Using default: " + DEFAULT_MAX_CONNECTIONS_TOTAL,
-                nfe
-            );
         }
 
         if (connectionMaxTotal < connectionMaxPerRoute) {
-            log.error(
-                "connectionMaxTotal (" + connectionMaxTotal + ") is less than connectionMaxPerRoute (" + connectionMaxPerRoute + "). " +
-                "Reverting to defaults: connectionMaxTotal (" + DEFAULT_MAX_CONNECTIONS_TOTAL + ") and connectionMaxPerRoute (" + DEFAULT_MAX_CONNECTIONS_TOTAL + ")."
-            );
             connectionMaxPerRoute = DEFAULT_MAX_CONNECTIONS_PER_ROUTE;
             connectionMaxTotal = DEFAULT_MAX_CONNECTIONS_TOTAL;
+            log.warn(
+                "connectionMaxTotal ({}) is less than connectionMaxPerRoute ({}). Reverting to defaults: connectionMaxTotal ({}) and connectionMaxPerRoute ({}).",
+                connectionMaxTotal, connectionMaxPerRoute, DEFAULT_MAX_CONNECTIONS_TOTAL, DEFAULT_MAX_CONNECTIONS_TOTAL
+            );
         }
 
         PoolingClientConnectionManager connMgr = new PoolingClientConnectionManager();
