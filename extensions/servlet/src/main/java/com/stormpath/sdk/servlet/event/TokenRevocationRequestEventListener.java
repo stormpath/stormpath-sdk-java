@@ -111,7 +111,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             accessToken.delete();
         } catch (ResourceException e) {
             //Let's prevent an error to avoid the flow to continue
-            log.error("There was an error trying to delete access token with ID " + accessTokenId + ". Exception was: " + e.getStackTrace());
+            log.error("There was an error trying to delete access token with ID " + accessTokenId, e);
         }
     }
 
@@ -125,7 +125,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
         } catch (ResourceException e) {
             //Let's prevent an error to avoid the flow to continue, this component is basically a listener that tries to delete
             //the current access and refresh tokens on logout, we will only post this error in the log
-            log.error("There was an error trying to delete refresh token with ID " + refreshTokenId + ". Exception was: " + e.getStackTrace());
+            log.error("There was an error trying to delete refresh token with ID " + refreshTokenId, e);
         }
     }
 }

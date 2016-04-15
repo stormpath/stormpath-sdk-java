@@ -130,7 +130,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         } catch (NumberFormatException nfe) {
             log.error(
                 "Bad max connection per route value: " + System.getProperty(MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY) +
-                ". Using default: " + DEFAULT_MAX_CONNECTIONS_PER_ROUTE
+                ". Using default: " + DEFAULT_MAX_CONNECTIONS_PER_ROUTE,
+                nfe
             );
         }
 
@@ -142,7 +143,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         } catch (NumberFormatException nfe) {
             log.error(
                 "Bad max connection total value: " + System.getProperty(MAX_CONNECTIONS_TOTAL_PROPERTY_KEY) +
-                ". Using default: " + DEFAULT_MAX_CONNECTIONS_TOTAL
+                ". Using default: " + DEFAULT_MAX_CONNECTIONS_TOTAL,
+                nfe
             );
         }
 
@@ -296,7 +298,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                     return response;
                 }
             } catch (Throwable t) {
-                log.warn("Unable to execute HTTP request: " + t.getMessage());
+                log.warn("Unable to execute HTTP request: " + t.getMessage(), t);
 
                 if (t instanceof RestException) {
                     exception = (RestException)t;
