@@ -50,18 +50,18 @@ public interface ResourceRequestAuthenticator {
 
     /**
      * Authenticates the OAuth request using a bearer Access Token and returns a corresponding result.  The result
-     * type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult}.  See
+     * type may be either a {@link OAuthAuthenticationResult} or a {@link AccessTokenResult}.  See
      * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
      * application.authenticateOauthRequest(httpRequest)} for more information.
      *
      * @return the result of the authentication attempt.
      * @deprecated this method will be removed soon. Use {@link ResourceRequestAuthenticator#authenticate(HttpRequest)} instead
      */
-    OauthAuthenticationResult execute();
+    OAuthAuthenticationResult execute();
 
     /**
      * Authenticates an OAuth-based HTTP request using a bearer Access Token and returns the corresponding result.
-     * The result type may be either a {@link OauthAuthenticationResult} or a {@link AccessTokenResult} if the client authenticated
+     * The result type may be either a {@link OAuthAuthenticationResult} or a {@link AccessTokenResult} if the client authenticated
      * with your server-side API specifically for the purpose of obtaining a new OAuth Access Token.
      *
      * For the latter case, you can extract the Oauth response as a JSON expression, like shown in the example below:
@@ -78,7 +78,7 @@ public interface ResourceRequestAuthenticator {
      *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
      * @return the result of the authentication attempt.
      */
-    OauthAuthenticationResult authenticate(HttpRequest httpRequest);
+    OAuthAuthenticationResult authenticate(HttpRequest httpRequest);
 
 }
 

@@ -125,7 +125,7 @@ public interface ServletOauthRequestAuthenticator {
      * import static com.stormpath.sdk.oauth.RequestLocation.*;
      *
      * OAuthAuthenticationResult result = application.authenticateOauthRequest(httpRequest)
-     *     <b>{@link OauthRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
+     *     <b>{@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
      *     .execute();
      * </pre>
      * </p>
@@ -244,5 +244,5 @@ public interface ServletOauthRequestAuthenticator {
      * @see ServletApiRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)
      * @since 1.0.RC4.6
      */
-    OauthAuthenticationResult authenticate(HttpServletRequest httpServletRequest);
+    OAuthAuthenticationResult authenticate(HttpServletRequest httpServletRequest);
 }

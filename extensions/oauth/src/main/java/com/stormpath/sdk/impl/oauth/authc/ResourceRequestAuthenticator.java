@@ -29,7 +29,7 @@ import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
 import java.util.Collections;
@@ -56,7 +56,7 @@ public class ResourceRequestAuthenticator {
         this.jwtSignatureValidator = new JwtSignatureValidator(dataStore.getApiKey());
     }
 
-    public OauthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
+    public OAuthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
 
         JwtWrapper jwtWrapper;
 
@@ -99,7 +99,7 @@ public class ResourceRequestAuthenticator {
             scope = Collections.emptySet();
         }
 
-        return new DefaultOauthAuthenticationResult(dataStore, apiKey, scope);
+        return new DefaultOAuthAuthenticationResult(dataStore, apiKey, scope);
     }
 
     private void assertTokenNotExpired(long expirationTimestampAsSecondsSinceEpoch) {

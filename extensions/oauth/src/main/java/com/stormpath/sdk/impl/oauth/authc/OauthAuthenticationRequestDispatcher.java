@@ -31,7 +31,7 @@ import com.stormpath.sdk.lang.Assert;
  * @since 1.0.RC
  */
 @SuppressWarnings("UnusedDeclaration") //used via reflection in com.stormpath.sdk.impl.application.DefaultApplication
-public class OauthAuthenticationRequestDispatcher extends AuthenticationRequestDispatcher {
+public class OAuthAuthenticationRequestDispatcher extends AuthenticationRequestDispatcher {
 
     @Override
     public AuthenticationResult authenticate(InternalDataStore dataStore, Application application, AuthenticationRequest request) {

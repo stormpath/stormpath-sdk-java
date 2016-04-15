@@ -17,8 +17,8 @@ package com.stormpath.sdk.servlet.filter.oauth;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.Oauth2Requests;
-import com.stormpath.sdk.oauth.RefreshGrantRequest;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,13 +30,13 @@ public class DefaultRefreshTokenAuthenticationRequestFactory implements RefreshT
     protected static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
 
     @Override
-    public RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
+    public OAuthRefreshTokenRequestAuthentication createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
 
         try {
             String refreshToken = Strings.clean(request.getParameter(REFRESH_TOKEN_GRANT_TYPE));
             Assert.hasText(refreshToken, "refreshToken must not be null or empty.");
 
-            return Oauth2Requests.REFRESH_GRANT_REQUEST.builder()
+            return OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder()
                     .setRefreshToken(refreshToken)
                     .build();
 

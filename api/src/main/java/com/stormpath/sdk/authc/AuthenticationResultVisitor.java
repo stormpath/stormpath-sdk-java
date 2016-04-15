@@ -17,7 +17,7 @@ package com.stormpath.sdk.authc;
 
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 
 /**
  * A <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> interface that allows one to
@@ -49,7 +49,7 @@ import com.stormpath.sdk.oauth.OauthAuthenticationResult;
  *
  * @see com.stormpath.sdk.api.ApiKey ApiKey
  * @see com.stormpath.sdk.api.ApiAuthenticationResult
- * @see OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.OAuthAuthenticationResult
  * @see com.stormpath.sdk.oauth.AccessTokenResult
  * @see com.stormpath.sdk.authc.AuthenticationResultVisitorAdapter
  * @since 1.0.RC
@@ -76,10 +76,10 @@ public interface AuthenticationResultVisitor {
     /**
      * Invoked when an API request has been successfully authenticated using the OAuth 2 protocol.
      *
-     * @param result the {@link OauthAuthenticationResult} representing the successful OAuth-based API authentication
+     * @param result the {@link com.stormpath.sdk.oauth.OAuthAuthenticationResult} representing the successful OAuth-based API authentication
      *               attempt.
      */
-    void visit(OauthAuthenticationResult result);
+    void visit(OAuthAuthenticationResult result);
 
     /**
      * Invoked when an API request has been successfully authenticated using the OAuth 2 protocol and the HTTP response

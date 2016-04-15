@@ -95,7 +95,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
 
-        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OAuthAuthenticationResult)
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).queryParameters("grant_type=client_credentials")
 
@@ -103,13 +103,13 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/xml"))
 
-        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OAuthAuthenticationResult)
 
         headers = ["content-type": convertToArray("application/x-www-form-urlencoded; charset=UTF-8")]
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.DELETE).headers(headers).parameters(convertToParametersMap(["access_token":result.tokenResponse.accessToken]))
 
-        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OAuthAuthenticationResult)
 
         testWithScopeFactory(apiKey)
 
@@ -151,7 +151,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         authResult = Applications.oauthRequestAuthenticator(application).inLocation(RequestLocation.QUERY_PARAM).authenticate(httpRequestBuilder.build())
 
-        verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
+        verifySuccessfulAuthentication(authResult, application, account, OAuthAuthenticationResult)
 
         assertEquals authResult.scope.size(), 2
         assertTrue authResult.scope.contains("readResource")
@@ -168,7 +168,7 @@ class ApiAuthenticationIT extends ClientIT {
         assertTrue authResult.scope.contains("readResource")
         assertTrue authResult.scope.contains("createResource")
 
-        verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
+        verifySuccessfulAuthentication(authResult, application, account, OAuthAuthenticationResult)
     }
 
     @Test
@@ -368,7 +368,7 @@ class ApiAuthenticationIT extends ClientIT {
             }
 
             @Override
-            void visit(OauthAuthenticationResult result) {
+            void visit(OAuthAuthenticationResult result) {
                 assertNotNull result.apiKey
             }
 

@@ -21,12 +21,12 @@ package com.stormpath.sdk.servlet.oauth;
 public enum AccessTokenValidationStrategy {
 
     /**
-     * Local validation. See {@link com.stormpath.sdk.oauth.JwtAuthenticator#withLocalValidation() JwtAuthenticator#withLocalValidation()}.
+     * Local validation. See {@link com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator#withLocalValidation() JwtAuthenticator#withLocalValidation()}.
      */
     LOCAL,
 
     /**
-     * Validation against Stormpath's backend. See {@link com.stormpath.sdk.oauth.JwtAuthenticator}.
+     * Validation against Stormpath's backend. See {@link com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator}.
      */
     STORMPATH;
 

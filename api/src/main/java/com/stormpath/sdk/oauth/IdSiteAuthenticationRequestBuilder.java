@@ -20,7 +20,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC8.2
  */
-public interface IdSiteAuthenticationRequestBuilder extends Oauth2AuthenticationRequestBuilder<IdSiteAuthenticationRequest> {
+public interface IdSiteAuthenticationRequestBuilder extends OAuthRequestAuthenticationBuilder<IdSiteAuthenticationRequest> {
 
     /**
      * Specifies the Id Site token that will be used to obtain an Access Token.
@@ -31,9 +31,9 @@ public interface IdSiteAuthenticationRequestBuilder extends Oauth2Authentication
     IdSiteAuthenticationRequestBuilder setToken(String token);
 
     /**
-     * Builds a new {@link RefreshGrantRequest RefreshGrantRequest} instance based on the current builder state.
+     * Builds a new {@link OAuthRefreshTokenRequestAuthentication RefreshGrantRequest} instance based on the current builder state.
      *
-     * @return the {@link RefreshGrantRequest} object used to create a new authentication token
+     * @return the {@link OAuthRefreshTokenRequestAuthentication} object used to create a new authentication token
      */
     IdSiteAuthenticationRequest build();
 }

@@ -24,7 +24,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
  * <h3>Different Results</h3>
  *
  * <p>The actual runtime type of of an {@code ApiAuthenticationResult} might be more specific, for example, an
- * {@link com.stormpath.sdk.oauth.OauthAuthenticationResult OuthAuthenticationResult}.  If you need to react
+ * {@link com.stormpath.sdk.oauth.OAuthAuthenticationResult OuthAuthenticationResult}.  If you need to react
  * to different authentication result types, you can use an {@link com.stormpath.sdk.authc.AuthenticationResultVisitor}
  * to perform type-specific logic.  For example:</p>
  *
@@ -48,7 +48,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
  * </pre>
  *
  * @see com.stormpath.sdk.authc.AuthenticationResultVisitor
- * @see com.stormpath.sdk.oauth.OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.OAuthAuthenticationResult
  * @see com.stormpath.sdk.oauth.AccessTokenResult
  * @since 1.0.RC
  */

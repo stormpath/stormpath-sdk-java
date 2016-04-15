@@ -17,7 +17,7 @@ package com.stormpath.sdk.authc;
 
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 
 /**
  * AuthenticationResultVisitorAdapter is an implementation of the {@link AuthenticationResultVisitor} that throws {@link
@@ -68,7 +68,7 @@ public class AuthenticationResultVisitorAdapter implements AuthenticationResultV
     }
 
     @Override
-    public void visit(OauthAuthenticationResult result) {
+    public void visit(OAuthAuthenticationResult result) {
         throw new UnsupportedOperationException("visit(OauthAuthenticationResult) is not expected.");
     }
 

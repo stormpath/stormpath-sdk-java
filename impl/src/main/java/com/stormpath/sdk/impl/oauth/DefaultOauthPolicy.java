@@ -22,7 +22,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.OauthPolicy;
+import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * @since 1.0.RC7
  */
-public class DefaultOauthPolicy extends AbstractInstanceResource implements OauthPolicy {
+public class DefaultOAuthPolicy extends AbstractInstanceResource implements OAuthPolicy {
 
     // SIMPLE PROPERTIES
     static final StringProperty ACCESS_TOKEN_TTL = new StringProperty("accessTokenTtl");
@@ -50,11 +50,11 @@ public class DefaultOauthPolicy extends AbstractInstanceResource implements Oaut
         return PROPERTY_DESCRIPTORS;
     }
 
-    public DefaultOauthPolicy(InternalDataStore dataStore) {
+    public DefaultOAuthPolicy(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultOauthPolicy(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultOAuthPolicy(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -74,14 +74,14 @@ public class DefaultOauthPolicy extends AbstractInstanceResource implements Oaut
     }
 
     @Override
-    public OauthPolicy setAccessTokenTtl(String accessTokenTtl) {
+    public OAuthPolicy setAccessTokenTtl(String accessTokenTtl) {
         Assert.notNull(accessTokenTtl, "accessTokenTtl cannot be null.");
         setProperty(ACCESS_TOKEN_TTL, accessTokenTtl);
         return this;
     }
 
     @Override
-    public OauthPolicy setRefreshTokenTtl(String refreshTokenTtl) {
+    public OAuthPolicy setRefreshTokenTtl(String refreshTokenTtl) {
         Assert.notNull(refreshTokenTtl, "refreshTokenTtl cannot be null.");
         setProperty(REFRESH_TOKEN_TTL, refreshTokenTtl);
         return this;

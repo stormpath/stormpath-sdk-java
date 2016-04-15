@@ -19,18 +19,18 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.authc.DefaultApiAuthenticationResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 
 import java.util.Set;
 
 /**
  * @since 1.0.RC
  */
-public class DefaultOauthAuthenticationResult extends DefaultApiAuthenticationResult implements OauthAuthenticationResult {
+public class DefaultOAuthAuthenticationResult extends DefaultApiAuthenticationResult implements OAuthAuthenticationResult {
 
     private final Set<String> scope;
 
-    public DefaultOauthAuthenticationResult(InternalDataStore dataStore, ApiKey apiKey, Set<String> scope) {
+    public DefaultOAuthAuthenticationResult(InternalDataStore dataStore, ApiKey apiKey, Set<String> scope) {
         super(dataStore, apiKey);
         this.scope = scope;
     }

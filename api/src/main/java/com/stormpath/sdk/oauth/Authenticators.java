@@ -18,14 +18,14 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.lang.Classes;
 
 /**
- * Static utility/helper class serving {@link com.stormpath.sdk.oauth.Oauth2AuthenticatorFactory Oauth2AuthenticatorFactory}s. For example, to
- * construct a {@link com.stormpath.sdk.oauth.PasswordGrantRequest PasswordGrantRequest}:
+ * Static utility/helper class serving {@link OAuthRequestAuthenticatorFactory Oauth2AuthenticatorFactory}s. For example, to
+ * construct a {@link OAuthPasswordGrantRequestAuthentication PasswordGrantRequest}:
  * <pre>
- *      PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+ *      OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
  *              .setLogin(email)
  *              .setPassword(password)
  *              .build();
- *      Oauth2AuthenticationResult result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(createRequest);
+ *      Oauth2AuthenticationResult result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest);
  * </pre>
  * Once your application receives the result, the first thing to do is to validate that the token is valid. There are different ways you can complete this task.
  * The benefit of using Stormpath to validate the token through the REST API is that Stormpath can validate the token against the state of your application
@@ -58,28 +58,28 @@ import com.stormpath.sdk.lang.Classes;
  * </table>
  * <h2>Using Stormpath to Validate Tokens</h2>
  * <pre>
- * JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(grantResult.getAccessTokenString()).build();
- * JwtAuthenticationResult authResultRemote = Authenticators.JWT_AUTHENTICATOR.forApplication(app).authenticate(authRequest);
+ * JwtAuthenticationRequest authRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(grantResult.getAccessTokenString()).build();
+ * JwtAuthenticationResult authResultRemote = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(authRequest);
  * </pre>
  * <h2>Validating the Token Locally</h2>
  * <pre>
- * JwtAuthenticationRequest authRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(grantResult.getAccessTokenString()).build();
- * JwtAuthenticationResult authResultRemote = Authenticators.JWT_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest);
+ * JwtAuthenticationRequest authRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(grantResult.getAccessTokenString()).build();
+ * JwtAuthenticationResult authResultRemote = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(app).withLocalValidation().authenticate(authRequest);
  * </pre>
  * <h2>Refreshing Access Tokens</h2>
  * <p>
  * Passing access tokens allows access to resources in your application. But what happens when the Access Token expires? You could require the user to authenticate again,
  * or use the Refresh Token to get a new Access Token without requiring credentials.
  * </p>
- * <p>To get a new Access Token to for a Refresh Token, you must first make sure that the application {@link com.stormpath.sdk.oauth.OauthPolicy#setRefreshTokenTtl(String)
+ * <p>To get a new Access Token to for a Refresh Token, you must first make sure that the application {@link OAuthPolicy#setRefreshTokenTtl(String)
  * has been configured to generate a Refresh Token} in the OAuth 2.0 Access Token Response.</p>
  * <p>A refresh token is obtained this way:</p>
  * <pre>
- * RefreshGrantRequest request = Oauth2Requests.REFRESH_GRANT_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
- * OauthGrantAuthenticationResult result = Authenticators.REFRESH_GRANT_AUTHENTICATOR.forApplication(app).authenticate(request);
+ * RefreshGrantRequest request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(result.getRefreshTokenString()).build();
+ * OAuthGrantRequestAuthenticationResult result = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request);
  * </pre>
  *
- * @see com.stormpath.sdk.oauth.OauthPolicy
+ * @see OAuthPolicy
  *
  * @since 1.0.RC7
  */
@@ -89,22 +89,22 @@ public class Authenticators {
     }
 
     /**
-     * Constructs {@link PasswordGrantAuthenticator}s.
+     * Constructs {@link OAuthPasswordGrantRequestAuthenticator}s.
      */
-    public static final PasswordGrantAuthenticatorFactory PASSWORD_GRANT_AUTHENTICATOR =
-            (PasswordGrantAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticatorFactory");
+    public static final OAuthPasswordRequestAuthenticatorFactory OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR =
+            (OAuthPasswordRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordRequestAuthenticator");
 
     /**
-     * Constructs {@link RefreshGrantAuthenticator}s.
+     * Constructs {@link OAuthRefreshTokenRequestAuthenticator}s.
      */
-    public static final RefreshGrantAuthenticatorFactory REFRESH_GRANT_AUTHENTICATOR =
-            (RefreshGrantAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticatorFactory");
+    public static final OAuthRefreshTokenRequestAuthenticatorFactory OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR =
+            (OAuthRefreshTokenRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticatorFactory");
 
     /**
-     * Constructs {@link JwtAuthenticator}s.
+     * Constructs {@link OAuthBearerRequestAuthenticator}s.
      */
-    public static final JwtAuthenticatorFactory JWT_AUTHENTICATOR =
-            (JwtAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticatorFactory");
+    public static final OAuthBearerRequestAuthenticatorFactory OAUTH_BEARER_REQUEST_AUTHENTICATOR =
+            (OAuthBearerRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticatorFactory");
 
     /**
      * Constructs {@link IdSiteAuthenticator}s.

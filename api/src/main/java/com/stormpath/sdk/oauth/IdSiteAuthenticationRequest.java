@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * @since 1.0.RC8.2
  */
-public interface IdSiteAuthenticationRequest extends GrantRequest {
+public interface IdSiteAuthenticationRequest extends OAuthGrantRequestAuthentication {
 
     /**
      * Returns the String denoting the Id Site <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">Json Web Token</a>  used to generate an Oauth 2.0 access token.

@@ -22,6 +22,6 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC7
  */
-public interface RefreshToken extends BaseOauth2Token {
+public interface RefreshToken extends BaseOAuthToken {
 
 }

@@ -53,12 +53,12 @@ public class ApiAuthenticationRequestFactory {
         if (schemeAndValue == null) {
             RequestLocation[] requestLocations = getRequestLocations(httpRequest, false);
             if (requestLocations.length > 0) {
-                return OauthAuthenticationRequestFactory.INSTANCE.createRequest(httpRequest, requestLocations);
+                return OAuthAuthenticationRequestFactory.INSTANCE.createRequest(httpRequest, requestLocations);
             }
         } else {
             if (schemeAndValue[0].equalsIgnoreCase(BEARER_AUTHENTICATION_SCHEME)) {
                 RequestLocation[] requestLocations = getRequestLocations(httpRequest, true);
-                return OauthAuthenticationRequestFactory.INSTANCE.createRequest(httpRequest, requestLocations);
+                return OAuthAuthenticationRequestFactory.INSTANCE.createRequest(httpRequest, requestLocations);
             }
 
             if (schemeAndValue[0].equalsIgnoreCase(BASIC_AUTHENTICATION_SCHEME)) {
@@ -69,7 +69,7 @@ public class ApiAuthenticationRequestFactory {
                     Map<String, String[]> parameterMap = httpRequest.getParameters();
 
                     if (parameterMap != null && parameterMap.containsKey(GRANT_TYPE_PARAMETER)) {
-                        return OauthAuthenticationRequestFactory.INSTANCE.createTokenRequest(httpRequest);
+                        return OAuthAuthenticationRequestFactory.INSTANCE.createTokenRequest(httpRequest);
                     }
                 }
 

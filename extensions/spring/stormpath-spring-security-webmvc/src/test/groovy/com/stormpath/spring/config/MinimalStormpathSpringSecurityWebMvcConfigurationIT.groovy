@@ -23,8 +23,8 @@ import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.Oauth2Requests
-import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
 import com.stormpath.sdk.servlet.client.ClientLoader
@@ -187,8 +187,8 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         def httpServletResponse = createStrictMock(HttpServletResponse.class)
         def servletContext = createStrictMock(ServletContext.class)
 
-        PasswordGrantRequest passwordGrantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(account.getEmail()).setPassword(password).build();
-        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(application).authenticate(passwordGrantRequest)
+        OAuthPasswordGrantRequestAuthentication passwordGrantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(account.getEmail()).setPassword(password).build();
+        def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(application).authenticate(passwordGrantRequest)
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())

@@ -31,7 +31,7 @@ package com.stormpath.sdk.oauth;
  * import static com.stormpath.sdk.oauth.RequestLocation.*;
  * ...
  *
- * application.authenticateOauth(httpRequest).<b>{@link OauthRequestAuthenticator#inLocation(RequestLocation...) inLocation}</b>(HEADER, BODY, QUERY_PARAM).execute();
+ * application.authenticateOauth(httpRequest).<b>{@link OAuthApiRequestAuthenticator#inLocation(RequestLocation...) inLocation}</b>(HEADER, BODY, QUERY_PARAM).execute();
  * </pre>
  *
  * <p>
@@ -41,7 +41,7 @@ package com.stormpath.sdk.oauth;
  * </p>
  *
  * @since 1.0.RC
- * @see OauthRequestAuthenticator#inLocation(RequestLocation...)
+ * @see OAuthApiRequestAuthenticator#inLocation(RequestLocation...)
  * @see ResourceRequestAuthenticator#inLocation(RequestLocation...)
  */
 public enum RequestLocation {

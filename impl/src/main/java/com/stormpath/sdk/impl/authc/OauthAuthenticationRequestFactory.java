@@ -25,9 +25,9 @@ import com.stormpath.sdk.oauth.RequestLocation;
 
 import java.lang.reflect.Constructor;
 
-public class OauthAuthenticationRequestFactory {
+public class OAuthAuthenticationRequestFactory {
 
-    public static final OauthAuthenticationRequestFactory INSTANCE = new OauthAuthenticationRequestFactory();
+    public static final OAuthAuthenticationRequestFactory INSTANCE = new OAuthAuthenticationRequestFactory();
 
     private static final String BASIC_OAUTH_REQUEST_FQCN =
         "com.stormpath.sdk.impl.oauth.authc.AccessTokenAuthenticationRequest";

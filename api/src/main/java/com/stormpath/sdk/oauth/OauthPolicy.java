@@ -26,7 +26,7 @@ import com.stormpath.sdk.tenant.Tenant;
  *
  * @since 1.0.RC7
  */
-public interface OauthPolicy extends Resource, Saveable {
+public interface OAuthPolicy extends Resource, Saveable {
 
     /**
      * Returns the Time To Live for the tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
@@ -54,7 +54,7 @@ public interface OauthPolicy extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    OauthPolicy setAccessTokenTtl(String accessTokenTtl);
+    OAuthPolicy setAccessTokenTtl(String accessTokenTtl);
 
     /**
      * Sets the Time To Live for the refresh tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
@@ -62,19 +62,19 @@ public interface OauthPolicy extends Resource, Saveable {
      *
      * @return this instance for method chaining.
      */
-    OauthPolicy setRefreshTokenTtl(String refreshTokenTtl);
+    OAuthPolicy setRefreshTokenTtl(String refreshTokenTtl);
 
     /**
-     * Returns the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     * Returns the {@link Application Application} associated to this {@link OAuthPolicy OauthPolicy}
      *
-     * @return the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     * @return the {@link Application Application} associated to this {@link OAuthPolicy OauthPolicy}
      */
     Application getApplication();
 
     /**
-     * Returns the parent {@link Tenant Tenant} of the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     * Returns the parent {@link Tenant Tenant} of the {@link Application Application} associated to this {@link OAuthPolicy OauthPolicy}
      *
-     * @return the parent {@link Tenant Tenant} of the {@link Application Application} associated to this {@link OauthPolicy OauthPolicy}
+     * @return the parent {@link Tenant Tenant} of the {@link Application Application} associated to this {@link OAuthPolicy OauthPolicy}
      */
     Tenant getTenant();
 }

@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @since 1.0.RC
  */
-public class DefaultAccessTokenResult extends DefaultOauthAuthenticationResult implements AccessTokenResult {
+public class DefaultAccessTokenResult extends DefaultOAuthAuthenticationResult implements AccessTokenResult {
 
     private final TokenResponse tokenResponse;
 

@@ -23,7 +23,7 @@ import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.oauth.RequestLocation;
 import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 
@@ -59,7 +59,7 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     }
 
     @Override
-    public OauthAuthenticationResult execute() {
+    public OAuthAuthenticationResult execute() {
 
         RequestLocation[] locations = this.locations != null ? this.locations :
                                       new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
@@ -75,13 +75,13 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
 
         AuthenticationResult result = application.authenticateAccount(request);
 
-        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
+        Assert.isInstanceOf(OAuthAuthenticationResult.class, result);
 
-        return (OauthAuthenticationResult) result;
+        return (OAuthAuthenticationResult) result;
     }
 
     @Override
-    public OauthAuthenticationResult authenticate(HttpRequest httpRequest) {
+    public OAuthAuthenticationResult authenticate(HttpRequest httpRequest) {
         RequestLocation[] locations = this.locations != null ? this.locations :
                 new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
 
@@ -104,7 +104,7 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
         }
 
         AuthenticationResult result = application.authenticateAccount(request);
-        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
-        return (OauthAuthenticationResult) result;
+        Assert.isInstanceOf(OAuthAuthenticationResult.class, result);
+        return (OAuthAuthenticationResult) result;
     }
 }

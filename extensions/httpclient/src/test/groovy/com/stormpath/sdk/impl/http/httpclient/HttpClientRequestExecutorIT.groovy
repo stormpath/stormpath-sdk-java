@@ -7,8 +7,8 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.Oauth2Requests
-import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import org.testng.annotations.Test
 
 import java.util.concurrent.Callable
@@ -42,8 +42,8 @@ class HttpClientRequestExecutorIT extends ClientIT {
         deleteOnTeardown(created)
 
         // create an access token
-        PasswordGrantRequest createRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build()
-        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+        OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build()
+        def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
 
 
         // verify the access token in Stormpath

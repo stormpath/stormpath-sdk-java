@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
-import com.stormpath.sdk.oauth.OauthPolicy
+import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -33,11 +33,11 @@ import static org.testng.Assert.*
  *
  * @since 1.0.RC7
  */
-class DefaultOauthPolicyTest {
+class DefaultOAuthPolicyTest {
 
     @Test
     void testGetPropertyDescriptors() {
-        OauthPolicy passwordPolicy = new DefaultOauthPolicy(createStrictMock(InternalDataStore))
+        OAuthPolicy passwordPolicy = new DefaultOAuthPolicy(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = passwordPolicy.getPropertyDescriptors()
         assertEquals(propertyDescriptors.size(), 5)
@@ -62,7 +62,7 @@ class DefaultOauthPolicyTest {
                 tenant: [href: "https://api.stormpath.com/v1/tenants/3Tj2L7gxX6NkXtiiLkh1WF"]
         ]
 
-        DefaultOauthPolicy oauthPolicy = new DefaultOauthPolicy(internalDataStore, properties)
+        DefaultOAuthPolicy oauthPolicy = new DefaultOAuthPolicy(internalDataStore, properties)
 
         expect(internalDataStore.instantiate(Application, properties.application)).
                 andReturn(new DefaultApplication(internalDataStore, properties.application))
@@ -113,7 +113,7 @@ class DefaultOauthPolicyTest {
 
         replay internalDataStore
 
-        DefaultOauthPolicy oauthPolicy = new DefaultOauthPolicy(internalDataStore, properties)
+        DefaultOAuthPolicy oauthPolicy = new DefaultOAuthPolicy(internalDataStore, properties)
 
         try {
             oauthPolicy.setRefreshTokenTtl(null)

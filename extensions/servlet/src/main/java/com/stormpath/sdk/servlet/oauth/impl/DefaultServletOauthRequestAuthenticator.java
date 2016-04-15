@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 import com.stormpath.sdk.oauth.ScopeFactory;
 import com.stormpath.sdk.oauth.RequestLocation;
@@ -41,7 +41,7 @@ public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequ
     }
 
     @Override
-    public OauthAuthenticationResult authenticate(HttpServletRequest httpRequest) {
+    public OAuthAuthenticationResult authenticate(HttpServletRequest httpRequest) {
         Assert.notNull(httpRequest, "httpRequest argument cannot be null.");
         Assert.isInstanceOf(javax.servlet.http.HttpServletRequest.class, httpRequest,
                 "The specified httpRequest argument must be an instance of " + HTTP_SERVLET_REQUEST_FQCN);

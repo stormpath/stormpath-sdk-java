@@ -22,7 +22,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC7
  */
-public interface AccessToken extends BaseOauth2Token {
+public interface AccessToken extends BaseOAuthToken {
 
 }
 

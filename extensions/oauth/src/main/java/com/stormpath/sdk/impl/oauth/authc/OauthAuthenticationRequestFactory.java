@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC
  */
-public class OauthAuthenticationRequestFactory extends ApiAuthenticationRequestFactory {
+public class OAuthAuthenticationRequestFactory extends ApiAuthenticationRequestFactory {
 
     public AuthenticationRequest createFrom(HttpServletRequest httpServletRequest) {
 

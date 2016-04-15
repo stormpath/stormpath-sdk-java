@@ -58,9 +58,9 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
 import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultPasswordGrantAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultRefreshGrantAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
@@ -77,11 +77,11 @@ import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
-import com.stormpath.sdk.oauth.JwtAuthenticator;
-import com.stormpath.sdk.oauth.OauthPolicy;
-import com.stormpath.sdk.oauth.PasswordGrantAuthenticator;
-import com.stormpath.sdk.oauth.OauthRequestAuthenticator;
-import com.stormpath.sdk.oauth.RefreshGrantAuthenticator;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthPolicy;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.OrganizationList;
@@ -120,7 +120,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     private static final String OAUTH_AUTHENTICATION_REQUEST_DISPATCHER_FQCN =
         "com.stormpath.sdk.impl.oauth.authc.OauthAuthenticationRequestDispatcher";
 
-    private static final Class<OauthRequestAuthenticator> OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS;
+    private static final Class<OAuthApiRequestAuthenticator> OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS;
 
     private static final Class<AuthenticationRequestDispatcher> AUTHENTICATION_REQUEST_DISPATCHER_CLASS;
 
@@ -176,8 +176,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         new ResourceReference<ApplicationAccountStoreMapping>("defaultAccountStoreMapping", ApplicationAccountStoreMapping.class);
     static final ResourceReference<ApplicationAccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
         new ResourceReference<ApplicationAccountStoreMapping>("defaultGroupStoreMapping", ApplicationAccountStoreMapping.class);
-    static final ResourceReference<OauthPolicy> OAUTH_POLICY   =
-            new ResourceReference<OauthPolicy>("oAuthPolicy", OauthPolicy.class);
+    static final ResourceReference<OAuthPolicy> OAUTH_POLICY   =
+            new ResourceReference<OAuthPolicy>("oAuthPolicy", OAuthPolicy.class);
     static final ResourceReference<SamlPolicy> SAML_POLICY =
             new ResourceReference<SamlPolicy>("samlPolicy", SamlPolicy.class);
 
@@ -363,7 +363,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /** @since 1.0.RC7 */
-    public OauthPolicy getOauthPolicy() {
+    public OAuthPolicy getOauthPolicy() {
         return getResourceProperty(OAUTH_POLICY);
     }
 
@@ -630,12 +630,12 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     @Deprecated
-    public OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
+    public OAuthApiRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
         if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
             throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
         }
         validateHttpRequest(httpRequest);
-        Constructor<OauthRequestAuthenticator> ctor =
+        Constructor<OAuthApiRequestAuthenticator> ctor =
             Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, Object.class);
         return Classes.instantiate(ctor, this, httpRequest);
     }
@@ -867,18 +867,18 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /* @since 1.0.RC7 */
-    public PasswordGrantAuthenticator createPasswordGrantAuthenticator() {
-        return new DefaultPasswordGrantAuthenticator(this, getDataStore());
+    public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
+        return new DefaultOAuthPasswordGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */
-    public RefreshGrantAuthenticator createRefreshGrantAuthenticator() {
-        return new DefaultRefreshGrantAuthenticator(this, getDataStore());
+    public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
+        return new DefaultOAuthRefreshTokenRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */
-    public JwtAuthenticator createJwtAuthenticator() {
-        return new DefaultJwtAuthenticator(this, getDataStore());
+    public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
+        return new DefaultOAuthBearerRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC8.2 */

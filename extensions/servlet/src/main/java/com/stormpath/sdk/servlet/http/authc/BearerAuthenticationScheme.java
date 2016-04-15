@@ -23,15 +23,13 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.oauth.JwtAuthenticationResultBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.Authenticators;
-import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
-import com.stormpath.sdk.oauth.JwtAuthenticationRequestBuilder;
-import com.stormpath.sdk.oauth.JwtAuthenticationResult;
-import com.stormpath.sdk.oauth.JwtAuthenticator;
-import com.stormpath.sdk.oauth.Oauth2Requests;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
@@ -39,20 +37,13 @@ import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OauthException;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SigningKeyResolver;
-import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Collections;
 import java.util.Set;
 
@@ -134,14 +125,14 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
         try {
 
-            JwtAuthenticationRequest jwtrequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(token).build();
-            JwtAuthenticator jwtAuthenticator = Authenticators.JWT_AUTHENTICATOR.forApplication(getApplication(request));
+            OAuthBearerRequestAuthentication jwtrequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(token).build();
+            OAuthBearerRequestAuthenticator OAuthBearerRequestAuthenticator = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(getApplication(request));
 
             if (withLocalValidation) {
-                jwtAuthenticator.withLocalValidation();
+                OAuthBearerRequestAuthenticator.withLocalValidation();
             }
 
-            JwtAuthenticationResult jwtResult = jwtAuthenticator.authenticate(jwtrequest);
+            OAuthBearerRequestAuthenticationResult jwtResult = OAuthBearerRequestAuthenticator.authenticate(jwtrequest);
 
             return createAuthenticationResult(request, response, jwtResult.getAccount());
 
@@ -170,7 +161,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             String id = accountHref.substring(i + 1);
             final ApiKey apiKey = getTokenApiKey(request, id);
 
-            authcResult = new OauthAuthenticationResult() {
+            authcResult = new OAuthAuthenticationResult() {
                 @Override
                 public Set<String> getScope() {
                     return Collections.emptySet();

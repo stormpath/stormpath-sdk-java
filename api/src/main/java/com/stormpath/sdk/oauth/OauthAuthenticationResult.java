@@ -39,7 +39,7 @@ import java.util.Set;
  * @see AccessTokenResult
  * @since 1.0.RC
  */
-public interface OauthAuthenticationResult extends ApiAuthenticationResult {
+public interface OAuthAuthenticationResult extends ApiAuthenticationResult {
 
     /**
      * Returns the set of scopes granted to the Oauth API caller.
