@@ -168,6 +168,8 @@ public abstract class FormController extends AbstractController {
             form.addField(field);
         }
 
+
+
         form.autofocus();
 
         return form;

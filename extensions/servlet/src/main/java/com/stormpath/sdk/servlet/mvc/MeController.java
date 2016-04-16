@@ -14,6 +14,11 @@ import java.util.Map;
 public class MeController extends AbstractController {
 
     @Override
+    public boolean isNotAllowIfAuthenticated() {
+        return false;
+    }
+
+    @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         Map<String,Object> model = new HashMap<String, Object>();

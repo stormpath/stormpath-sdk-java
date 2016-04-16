@@ -126,6 +126,7 @@ public class ChangePasswordController extends FormController {
     }
 
     @Override
+    //protected List<Field> createFields(HttpServletRequest request, boolean retainPassword, Form form) {
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
 
         List<Field> fields = new ArrayList<Field>(3);
