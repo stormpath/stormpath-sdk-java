@@ -26,6 +26,6 @@ public class DefaultOAuthPasswordGrantRequestAuthenticationFactory implements OA
 
     @Override
     public OAuthPasswordGrantRequestAuthenticationBuilder builder() {
-        return (OAuthPasswordGrantRequestAuthenticationBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultPasswordGrantRequestBuilder");
+        return (OAuthPasswordGrantRequestAuthenticationBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticationBuilder");
     }
 }

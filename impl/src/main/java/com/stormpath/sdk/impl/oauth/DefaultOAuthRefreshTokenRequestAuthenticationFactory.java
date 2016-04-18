@@ -26,6 +26,6 @@ public class DefaultOAuthRefreshTokenRequestAuthenticationFactory implements OAu
 
     @Override
     public OAuthRefreshTokenRequestAuthenticationBuilder builder() {
-        return (OAuthRefreshTokenRequestAuthenticationBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshGrantRequestBuilder");
+        return (OAuthRefreshTokenRequestAuthenticationBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticationBuilder");
     }
 }

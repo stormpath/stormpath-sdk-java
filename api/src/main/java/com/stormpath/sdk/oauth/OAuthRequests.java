@@ -52,7 +52,7 @@ public final class OAuthRequests {
      *
      * @return a new {@link OAuthRefreshTokenRequestAuthenticationFactory} instance, used to construct Refresh Grant Authentication requests.
      */
-    public static final OAuthRefreshTokenRequestAuthenticationFactory OAUTH_REFRESH_TOKEN_REQUEST = (OAuthRefreshTokenRequestAuthenticationFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultRefreshTokenAuthenticationRequestFactory");
+    public static final OAuthRefreshTokenRequestAuthenticationFactory OAUTH_REFRESH_TOKEN_REQUEST = (OAuthRefreshTokenRequestAuthenticationFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticationFactory");
 
     /**
      * Returns a new {@link OAuthBearerRequestAuthenticationFactory} instance, used to authenticate JWT Access Tokens.

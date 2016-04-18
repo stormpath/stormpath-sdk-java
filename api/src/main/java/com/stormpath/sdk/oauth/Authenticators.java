@@ -92,7 +92,7 @@ public class Authenticators {
      * Constructs {@link OAuthPasswordGrantRequestAuthenticator}s.
      */
     public static final OAuthPasswordRequestAuthenticatorFactory OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR =
-            (OAuthPasswordRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordRequestAuthenticator");
+            (OAuthPasswordRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordRequestAuthenticatorFactory");
 
     /**
      * Constructs {@link OAuthRefreshTokenRequestAuthenticator}s.

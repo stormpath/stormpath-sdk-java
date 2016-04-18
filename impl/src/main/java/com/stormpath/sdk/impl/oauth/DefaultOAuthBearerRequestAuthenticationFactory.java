@@ -29,6 +29,6 @@ public class DefaultOAuthBearerRequestAuthenticationFactory implements OAuthBear
 
     @Override
     public OAuthBearerRequestAuthenticationBuilder builder() {
-        return (OAuthBearerRequestAuthenticationBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultJwtAuthenticationRequestBuilder");
+        return (OAuthBearerRequestAuthenticationBuilder) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticationBuilder");
     }
 }

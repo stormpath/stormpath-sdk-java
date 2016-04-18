@@ -118,7 +118,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     private static final String OAUTH_BUILDER_NOT_AVAILABLE_MSG;
 
     private static final String OAUTH_AUTHENTICATION_REQUEST_DISPATCHER_FQCN =
-        "com.stormpath.sdk.impl.oauth.authc.OauthAuthenticationRequestDispatcher";
+        "com.stormpath.sdk.impl.oauth.authc.OAuthAuthenticationRequestDispatcher";
 
     private static final Class<OAuthApiRequestAuthenticator> OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS;
 
