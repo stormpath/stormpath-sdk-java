@@ -105,7 +105,9 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
             props = toProperties(reader);
         } catch (IOException ignored) {
             log.debug(
-                "Unable to find or load default api key properties file [{}]. This can be safely ignored as this is a fallback location - other more specific locations will be checked.",
+                "Unable to find or load default api key properties file [{}]. " +
+                "This can be safely ignored as this is a fallback location - " +
+                "other more specific locations will be checked.",
                 DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION, ignored
             );
         }
