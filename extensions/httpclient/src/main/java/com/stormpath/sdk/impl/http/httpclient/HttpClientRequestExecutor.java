@@ -155,7 +155,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
         PoolingClientConnectionManager connMgr = new PoolingClientConnectionManager();
-        if (MAX_CONNECTIONS_PER_ROUTE >= MAX_CONNECTIONS_TOTAL) {
+        if (MAX_CONNECTIONS_TOTAL >= MAX_CONNECTIONS_PER_ROUTE) {
             connMgr.setDefaultMaxPerRoute(MAX_CONNECTIONS_PER_ROUTE);
             connMgr.setMaxTotal(MAX_CONNECTIONS_TOTAL);
         } else {
@@ -163,8 +163,9 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             connMgr.setMaxTotal(DEFAULT_MAX_CONNECTIONS_TOTAL);
 
             log.warn(
-                "connectionMaxTotal ({}) is less than connectionMaxPerRoute ({}). Reverting to defaults: connectionMaxTotal ({}) and connectionMaxPerRoute ({}).",
-                MAX_CONNECTIONS_TOTAL, MAX_CONNECTIONS_PER_ROUTE, DEFAULT_MAX_CONNECTIONS_TOTAL, DEFAULT_MAX_CONNECTIONS_TOTAL
+                "{} ({}) is less than {} ({}). Reverting to defaults: connectionMaxTotal ({}) and connectionMaxPerRoute ({}).",
+                MAX_CONNECTIONS_TOTAL_PROPERTY_KEY, MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY,
+                MAX_CONNECTIONS_TOTAL, MAX_CONNECTIONS_PER_ROUTE, DEFAULT_MAX_CONNECTIONS_TOTAL, DEFAULT_MAX_CONNECTIONS_PER_ROUTE
             );
         }
 
