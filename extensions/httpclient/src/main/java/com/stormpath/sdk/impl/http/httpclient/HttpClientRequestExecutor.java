@@ -163,9 +163,11 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             connMgr.setMaxTotal(DEFAULT_MAX_CONNECTIONS_TOTAL);
 
             log.warn(
-                "{} ({}) is less than {} ({}). Reverting to defaults: connectionMaxTotal ({}) and connectionMaxPerRoute ({}).",
+                "{} ({}) is less than {} ({}). " +
+                "Reverting to defaults: connectionMaxTotal ({}) and connectionMaxPerRoute ({}).",
                 MAX_CONNECTIONS_TOTAL_PROPERTY_KEY, MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY,
-                MAX_CONNECTIONS_TOTAL, MAX_CONNECTIONS_PER_ROUTE, DEFAULT_MAX_CONNECTIONS_TOTAL, DEFAULT_MAX_CONNECTIONS_PER_ROUTE
+                MAX_CONNECTIONS_TOTAL, MAX_CONNECTIONS_PER_ROUTE,
+                DEFAULT_MAX_CONNECTIONS_TOTAL, DEFAULT_MAX_CONNECTIONS_PER_ROUTE
             );
         }
 

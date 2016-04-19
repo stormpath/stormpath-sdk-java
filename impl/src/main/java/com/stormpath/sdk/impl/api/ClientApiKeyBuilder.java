@@ -141,7 +141,9 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
                 props = toProperties(reader);
             } catch (IOException ignored) {
                 log.debug(
-                    "Unable to load api key properties file [{}] specified by system property stormpath.apiKey.file. This can be safely ignored as this is a fallback location - other more specific locations will be checked.",
+                    "Unable to load api key properties file [{}] specified by system property stormpath.apiKey.file. " +
+                    "This can be safely ignored as this is a fallback location - " +
+                    "other more specific locations will be checked.",
                     location, ignored
                 );
             }

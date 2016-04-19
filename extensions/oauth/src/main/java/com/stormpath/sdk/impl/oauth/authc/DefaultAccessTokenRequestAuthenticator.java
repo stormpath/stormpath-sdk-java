@@ -97,7 +97,10 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
         } else {
-            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+            throw new IllegalArgumentException(String.format(
+                HTTP_REQUEST_NOT_SUPPORTED_MSG,
+                httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()
+            ));
         }
 
         AuthenticationRequest request;
@@ -105,7 +108,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
             request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
             throw ApiAuthenticationExceptionFactory
-                    .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);
