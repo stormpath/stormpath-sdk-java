@@ -21,12 +21,12 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-examples</artifactId>
-        <version>1.0.RC9.1</version>
+        <version>1.0.0.RC-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>stormpath-sdk-examples-servlet</artifactId>
-    <version>1.0.RC9.1</version>
+    <version>1.0.0.RC-SNAPSHOT</version>
     <name>Stormpath Java SDK :: Examples :: Servlet Container-based Webapp</name>
     <description>A simple example webapp deployed in a servlet container.</description>
     <packaging>war</packaging>
