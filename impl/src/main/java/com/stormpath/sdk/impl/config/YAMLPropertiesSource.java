@@ -2,6 +2,7 @@ package com.stormpath.sdk.impl.config;
 
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +30,12 @@ public class YAMLPropertiesSource implements PropertiesSource {
     public Map<String, String> getProperties() {
         try (InputStream in = resource.getInputStream()) {
             // check to see if file exists
-            if (in != null) {
-                try {
-                    // test to see if Yaml is on the classpath
-                    Class.forName("org.yaml.snakeyaml.Yaml");
-                    Yaml yaml = new Yaml();
-                    Map config = yaml.loadAs(in, Map.class);
-                    return getFlattenedMap(config);
-                } catch (ClassNotFoundException e) {
-                    log.warn("YAML not found in classpath, add 'org.yaml:snakeyaml' to support YAML configuration");
-                }
+            if (in != null && Classes.isAvailable("org.yaml.snakeyaml.Yaml")) {
+                Yaml yaml = new Yaml();
+                Map config = yaml.loadAs(in, Map.class);
+                return getFlattenedMap(config);
+            } else {
+                log.warn("YAML not found in classpath, add 'org.yaml.snakeyaml' to support YAML configuration");
             }
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read resource [" + resource + "]: " + e.getMessage(), e);
