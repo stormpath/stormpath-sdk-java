@@ -65,6 +65,9 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
     public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
 
+    public static final String ME_ENABLED = "stormpath.web.me.enabled";
+    public static final String ME_URL = "stormpath.web.me.uri";
+
     public static final String PRODUCED_MEDIA_TYPES = "stormpath.web.produces";
 
     private final ServletContext servletContext;
@@ -182,6 +185,16 @@ public class DefaultConfig implements Config {
     @Override
     public String getUnauthorizedUrl() {
         return CFG.getString(UNAUTHORIZED_URL);
+    }
+
+    @Override
+    public boolean isMeEnabled() {
+        return CFG.getBoolean(ME_ENABLED);
+    }
+
+    @Override
+    public String getMeUrl() {
+        return CFG.getString(ME_URL);
     }
 
     @Override

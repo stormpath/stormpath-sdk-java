@@ -38,7 +38,8 @@ public enum DefaultFilter {
     register(RegisterFilter.class),
     unauthorized(UnauthorizedFilter.class),
     verify(VerifyFilter.class),
-    sendVerificationEmail(SendVerificationEmailFilter.class);
+    sendVerificationEmail(SendVerificationEmailFilter.class),
+    me(MeFilter.class);
 
     private final Class<? extends Filter> filterClass;
 

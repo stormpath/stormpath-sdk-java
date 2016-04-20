@@ -72,6 +72,10 @@ public interface Config extends Map<String, String> {
 
     String getUnauthorizedUrl();
 
+    boolean isMeEnabled();
+
+    String getMeUrl();
+
     CookieConfig getAccountCookieConfig();
 
     long getAccountJwtTtl();
