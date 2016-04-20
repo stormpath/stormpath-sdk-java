@@ -1,6 +1,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountInfo;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class MeController extends AbstractController {
 
         if (AccountResolver.INSTANCE.hasAccount(request)) {
             Account account = AccountResolver.INSTANCE.getAccount(request);
-            model.put("account", account);
+            model.put("account", new AccountInfo(account));
         }
 
         return new DefaultViewModel("stormpathJsonView", model);
