@@ -29,6 +29,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,7 @@ public class LoginController extends FormController {
     private Boolean verifyEnabled;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private AccountStoreModelFactory accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+    private AccountStoreModelFactory providerModelFactory = new DefaultProviderModelFactory();
     private ErrorModelFactory errorModelFactory = new LoginErrorModelFactory();
 
     public void init() {
@@ -59,6 +61,7 @@ public class LoginController extends FormController {
         Assert.notNull(this.verifyEnabled, "verifyEnabled property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
         Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
+        Assert.notNull(this.providerModelFactory, "providerModelFactory cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
     }
 
@@ -119,6 +122,14 @@ public class LoginController extends FormController {
         this.accountStoreModelFactory = accountStoreModelFactory;
     }
 
+    public AccountStoreModelFactory getProviderModelFactory() {
+        return providerModelFactory;
+    }
+
+    public void setProviderModelFactory(AccountStoreModelFactory providerModelFactory) {
+        this.providerModelFactory = providerModelFactory;
+    }
+
     public ErrorModelFactory getErrorModelFactory() {
         return errorModelFactory;
     }
@@ -150,6 +161,7 @@ public class LoginController extends FormController {
 
         //TODO: enable 3rd party login providers:
         model.put("providers", java.util.Collections.emptyList());
+        model.put("providers", getProviderModelFactory().getAccountStores(request));
         model.put("accountStores", getAccountStoreModelFactory().getAccountStores(request));
         model.put("forgotLoginUri", getForgotLoginUri());
         model.put("verifyUri", getVerifyUri());
