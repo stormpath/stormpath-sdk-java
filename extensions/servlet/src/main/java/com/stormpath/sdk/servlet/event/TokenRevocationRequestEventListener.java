@@ -93,9 +93,8 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             //a refresh token. That would be a bug in the filter chain as a refresh token should never be used to anything other than
             //obtaining a new access token
         }
-        if (log.isDebugEnabled()) {
-            log.debug("The current access and refresh tokens for {} have been revoked.", event.getAccount().getEmail());
-        }
+
+        log.debug("The current access and refresh tokens for {} have been revoked.", event.getAccount().getEmail());
     }
 
     private boolean isAccessToken(Claims claims) {
@@ -110,8 +109,8 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             AccessToken accessToken = ((InternalDataStore)client.getDataStore()).instantiate(AccessToken.class, map, true);
             accessToken.delete();
         } catch (ResourceException e) {
-            //Let's prevent an error to avoid the flow to continue
-            log.error("There was an error trying to delete access token with ID " + accessTokenId + ". Exception was: " + e.getStackTrace());
+            //Let's prevent an error to allow the flow to continue
+            log.warn("There was an error trying to delete access token with ID {}", accessTokenId, e);
         }
     }
 
@@ -123,9 +122,9 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             RefreshToken refreshToken = ((InternalDataStore)client.getDataStore()).instantiate(RefreshToken.class, map, true);
             refreshToken.delete();
         } catch (ResourceException e) {
-            //Let's prevent an error to avoid the flow to continue, this component is basically a listener that tries to delete
+            //Let's prevent an error to allow the flow to continue, this component is basically a listener that tries to delete
             //the current access and refresh tokens on logout, we will only post this error in the log
-            log.error("There was an error trying to delete refresh token with ID " + refreshTokenId + ". Exception was: " + e.getStackTrace());
+            log.warn("There was an error trying to delete refresh token with ID {}", refreshTokenId, e);
         }
     }
 }

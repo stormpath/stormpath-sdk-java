@@ -26,6 +26,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.ScopeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +35,8 @@ import javax.servlet.http.HttpServletRequest;
  * @since 1.0.RC
  */
 public class DefaultAccessTokenRequestAuthenticator implements AccessTokenRequestAuthenticator {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultAccessTokenRequestAuthenticator.class);
 
     private static final String HTTP_REQUEST_NOT_SUPPORTED_MSG = "HttpRequest class [%s] is not supported. Supported classes: [%s, %s].";
 
@@ -97,15 +101,20 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
         } else {
-            throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
+            throw new IllegalArgumentException(String.format(
+                HTTP_REQUEST_NOT_SUPPORTED_MSG,
+                httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()
+            ));
         }
 
         AuthenticationRequest request;
         try {
             request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
+            log.warn("Caught Exception: {}. Rethrowing as OauthAuthenticationException", e.getMessage(), e);
+
             throw ApiAuthenticationExceptionFactory
-                    .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

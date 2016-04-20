@@ -133,8 +133,10 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
                 new DefaultFailedAuthenticationRequestEvent(request, response, authcRequest, ex);
             publish(evt);
         } catch (Throwable t) {
-            log.warn("Unable to publish failed authentication request event due to exception: {}.  " +
-                     "Ignoring and propagating original authentication exception {}.", t, ex);
+            log.warn(
+                "Unable to publish failed authentication request event due to exception: {}. Ignoring and propagating original authentication exception {}.",
+                t, ex, t
+            );
         }
 
         throw ex;
