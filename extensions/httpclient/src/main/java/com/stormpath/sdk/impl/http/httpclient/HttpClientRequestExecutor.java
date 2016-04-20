@@ -81,11 +81,11 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private static final int DEFAULT_MAX_RETRIES = 4;
 
-    private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = 10;
+    private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = Integer.MAX_VALUE/2;
     private static final String MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor.connPoolControl.maxPerRoute";
     private static final int MAX_CONNECTIONS_PER_ROUTE;
 
-    private static final int DEFAULT_MAX_CONNECTIONS_TOTAL = 20;
+    private static final int DEFAULT_MAX_CONNECTIONS_TOTAL = Integer.MAX_VALUE;
     private static final String MAX_CONNECTIONS_TOTAL_PROPERTY_KEY = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor.connPoolControl.maxTotal";
     private static final int MAX_CONNECTIONS_TOTAL;
 
@@ -165,8 +165,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             log.warn(
                 "{} ({}) is less than {} ({}). " +
                 "Reverting to defaults: connectionMaxTotal ({}) and connectionMaxPerRoute ({}).",
-                MAX_CONNECTIONS_TOTAL_PROPERTY_KEY, MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY,
-                MAX_CONNECTIONS_TOTAL, MAX_CONNECTIONS_PER_ROUTE,
+                MAX_CONNECTIONS_TOTAL_PROPERTY_KEY, MAX_CONNECTIONS_TOTAL,
+                MAX_CONNECTIONS_PER_ROUTE_PROPERTY_KEY, MAX_CONNECTIONS_PER_ROUTE,
                 DEFAULT_MAX_CONNECTIONS_TOTAL, DEFAULT_MAX_CONNECTIONS_PER_ROUTE
             );
         }
