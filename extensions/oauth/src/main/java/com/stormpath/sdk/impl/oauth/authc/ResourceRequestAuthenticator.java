@@ -31,6 +31,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.OauthAuthenticationResult;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +45,8 @@ import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /** @since 1.0.RC */
 public class ResourceRequestAuthenticator {
+
+    private static final Logger log = LoggerFactory.getLogger(ResourceRequestAuthenticator.class);
 
     public final static String SCOPE_SEPARATOR_CHAR = " ";
 
@@ -60,13 +64,18 @@ public class ResourceRequestAuthenticator {
 
         JwtWrapper jwtWrapper;
 
+        // TODO: When we get rid of Java 6, we can consolidate the two catch blocks below into one
         try {
             jwtWrapper = new JwtWrapper(request.getAccessToken());
             jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
+            log.warn("Caught Exception: {}. Rethrowing as AccessTokenOauthException", e.getMessage(), e);
+
             throw ApiAuthenticationExceptionFactory
                 .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         } catch (InvalidJwtException e) {
+            log.warn("Caught Exception: {}. Rethrowing as AccessTokenOauthException", e.getMessage(), e);
+            
             throw ApiAuthenticationExceptionFactory
                 .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
         }
