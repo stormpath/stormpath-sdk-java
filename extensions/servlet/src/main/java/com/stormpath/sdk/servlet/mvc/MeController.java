@@ -29,6 +29,6 @@ public class MeController extends AbstractController {
             model.put("account", new AccountInfo(account));
         }
 
-        return new DefaultViewModel("stormpathJsonView", model);
+        return new DefaultViewModel("stormpath/me", model).setRedirect(false);
     }
 }
