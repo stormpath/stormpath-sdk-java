@@ -3,6 +3,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountInfo;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +30,11 @@ public class MeController extends AbstractController {
             model.put("account", new AccountInfo(account));
         }
 
-        return new DefaultViewModel("stormpath/me", model).setRedirect(false);
+        if (UserAgents.get(request).isJsonPreferred()) {
+            return new DefaultViewModel("stormpath/me", model).setRedirect(false);
+        }
+
+        //otherwise HTML view:
+        return new DefaultViewModel(getNextUri()).setRedirect(true);
     }
 }
