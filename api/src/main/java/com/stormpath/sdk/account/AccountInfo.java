@@ -1,6 +1,13 @@
 package com.stormpath.sdk.account;
 
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupInfo;
+import com.stormpath.sdk.group.GroupInfoList;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by mzumbado on 4/18/16.
@@ -17,6 +24,7 @@ public class AccountInfo {
     Date createdAt;
     Date modifiedAt;
     String emailVerificationToken;
+    GroupInfoList groups;
 
     public AccountInfo(Account account) {
         this.href = account.getHref();
@@ -29,7 +37,8 @@ public class AccountInfo {
         this.status = account.getStatus().name();
         this.createdAt = account.getCreatedAt();
         this.modifiedAt = account.getModifiedAt();
-        this.emailVerificationToken = null;
+        this.emailVerificationToken = account.getEmailVerificationToken() != null? account.getEmailVerificationToken().getValue(): null;
+        this.groups = new GroupInfoList();
     }
 
     public String getHref() {
@@ -118,5 +127,13 @@ public class AccountInfo {
 
     public void setEmailVerificationToken(String emailVerificationToken) {
         this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public void setGroups(Account account){
+        this.groups.setGroupList(account.getGroups());
+    }
+
+    public GroupInfoList getGroups(){
+        return groups;
     }
 }

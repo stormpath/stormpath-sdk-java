@@ -15,9 +15,7 @@ public class MeFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
 
         MeController controller = new MeController();
-//        controller.setUri(getConfig().getLoginUrl());
-//        controller.setView("stormpath/login");
-//        controller.init();
+        controller.setExpandGroups(getConfig().getMeExpandGroups());
 
         setController(controller);
 

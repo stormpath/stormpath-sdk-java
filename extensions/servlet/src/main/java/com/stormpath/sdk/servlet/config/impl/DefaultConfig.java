@@ -67,6 +67,7 @@ public class DefaultConfig implements Config {
 
     public static final String ME_ENABLED = "stormpath.web.me.enabled";
     public static final String ME_URL = "stormpath.web.me.uri";
+    public static final String ME_EXPAND_GROUPS = "stormpath.web.me.expand.groups";
 
     public static final String PRODUCED_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -195,6 +196,11 @@ public class DefaultConfig implements Config {
     @Override
     public String getMeUrl() {
         return CFG.getString(ME_URL);
+    }
+
+    @Override
+    public boolean getMeExpandGroups() {
+        return CFG.getBoolean(ME_EXPAND_GROUPS);
     }
 
     @Override
