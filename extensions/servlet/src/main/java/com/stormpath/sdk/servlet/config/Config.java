@@ -75,6 +75,8 @@ public interface Config extends Map<String, String> {
 
     String getMeUrl();
 
+    boolean getMeExpandGroups();
+
     CookieConfig getAccountCookieConfig();
 
     long getAccountJwtTtl();

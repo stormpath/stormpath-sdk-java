@@ -15,9 +15,19 @@ import java.util.Map;
  */
 public class MeController extends AbstractController {
 
+    private boolean expandGroups;
+
     @Override
     public boolean isNotAllowIfAuthenticated() {
         return false;
+    }
+
+    public boolean isExpandGroups() {
+        return expandGroups;
+    }
+
+    public void setExpandGroups(boolean expandGroups) {
+        this.expandGroups = expandGroups;
     }
 
     @Override
@@ -27,7 +37,11 @@ public class MeController extends AbstractController {
 
         if (AccountResolver.INSTANCE.hasAccount(request)) {
             Account account = AccountResolver.INSTANCE.getAccount(request);
-            model.put("account", new AccountInfo(account));
+            AccountInfo accountInfo = new AccountInfo(account);
+            if (isExpandGroups()){
+                accountInfo.setGroups(account);
+            }
+            model.put("account", accountInfo);
         }
 
         if (UserAgents.get(request).isJsonPreferred()) {

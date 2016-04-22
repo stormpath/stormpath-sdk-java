@@ -230,6 +230,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public boolean getMeExpandGroups() {
+                return meExpandGroups;
+            }
+
+            @Override
             public CookieConfig getAccountCookieConfig() {
                 return stormpathAccountCookieConfig();
             }
