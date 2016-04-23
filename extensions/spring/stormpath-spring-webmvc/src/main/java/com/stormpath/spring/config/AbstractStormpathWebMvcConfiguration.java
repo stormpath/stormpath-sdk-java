@@ -1275,7 +1275,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         MeController controller = new MeController();
         controller.setNextUri(meNextUri);
         controller.setExpandGroups(meExpandGroups);
-        return createSpringController(controller);
+        return createSpaAwareSpringController(controller);
     }
 
     public Controller stormpathSamlResultController() {
