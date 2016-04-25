@@ -1,0 +1,4 @@
+stormpath:
+  web:
+    logout:
+      uri: "/getout"
