@@ -56,10 +56,10 @@ public class ClientsTest {
         assertTrue client.dataStore.cacheManager instanceof DefaultCacheManager
 
         //ensure these defaults match what is documented in the Clients class-level JavaDoc:
-        assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(1, TimeUnit.HOURS)
-        assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(1, TimeUnit.HOURS)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 20000)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 20000)
+        assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(300, TimeUnit.SECONDS)
+        assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(300, TimeUnit.SECONDS)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 30000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 30000)
     }
 
     @Test

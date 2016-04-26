@@ -207,6 +207,22 @@ import com.stormpath.sdk.cache.CacheManager;
  */
 public interface ClientBuilder {
 
+    String DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME = "client.apiKey.file";
+    String DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME = "client.apiKey.id";
+    String DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME = "client.apiKey.secret";
+    String DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME = "client.cacheManager.defaultTtl";
+    String DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME = "client.cacheManager.defaultTti";
+    String DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME = "client.cacheManager.caches";
+    String DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME = "client.baseUrl";
+    String DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME = "client.connectionTimeout";
+    String DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME = "client.authenticationScheme";
+    String DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME = "client.proxy.port";
+    String DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME = "client.proxy.host";
+    String DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME = "client.proxy.username";
+    String DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME = "client.proxy.password";
+    String DEFAULT_APPLICATION_NAME_PROPERTY_NAME = "application.name";
+    String DEFAULT_APPLICATION_HREF_PROPERTY_NAME = "application.href";
+
     /**
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the
      * default location + override/fallback behavior defined in the {@link ClientBuilder documentation above}.
