@@ -209,6 +209,23 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         verify(httpServletRequest, httpServletResponse, servletContext)
     }
 
+    /**
+     * Asserts https://github.com/stormpath/stormpath-sdk-java/issues/605
+     * @since 1.0.0
+     */
+    @Test
+    void testPreAuthenticationCheckOnCookieRequest() {
+        HttpServletRequest servletRequest = createStrictMock(HttpServletRequest.class)
+        HttpServletResponse servletResponse = createStrictMock(HttpServletResponse.class)
+        javax.servlet.FilterChain filterChain = createStrictMock(javax.servlet.FilterChain.class)
+        Authentication authentication = createStrictMock(Authentication.class)
+
+        SecurityContextHolder.getContext().setAuthentication(authentication)
+
+        ((SpringSecurityResolvedAccountFilter)springSecurityResolvedAccountFilter).filter(servletRequest, servletResponse, filterChain)
+        Assert.isTrue(SecurityContextHolder.getContext().getAuthentication().equals(authentication))
+    }
+
     ///Supporting properties and methods
 
     List<Deletable> resourcesToDelete;
