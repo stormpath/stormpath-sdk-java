@@ -44,7 +44,7 @@ class OrganizationIT extends ClientIT {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
             .setDescription("Organization Description")
-            .setNameKey(uniquify("test").substring(2, 8))
+            .setNameKey(uniquify("test"))
             .setStatus(OrganizationStatus.ENABLED)
 
         org = client.createOrganization(org)
