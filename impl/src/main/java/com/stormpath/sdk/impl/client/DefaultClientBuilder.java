@@ -17,13 +17,16 @@ package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
+import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.config.ClientConfiguration;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
@@ -33,20 +36,15 @@ import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
 import com.stormpath.sdk.lang.Assert;
+import io.jsonwebtoken.lang.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,24 +69,11 @@ public class DefaultClientBuilder implements ClientBuilder {
             USER_HOME + STORMPATH_PROPERTIES
     };
 
-    private String apiKeyFile;
-    private String apiKeyId;
-    private String apiKeySecret;
-    private long cacheManagerTtl;
-    private long cacheManagerTti;
-    private String cacheManagerCaches;
-    private String baseUrl;
-    private int connectionTimeout;
-    private AuthenticationScheme authenticationScheme;
-    private int proxyPort;
-    private String proxyHost;
-    private String proxyUsername;
-    private String proxyPassword;
-    private String applicationName;
-    private String applicationHref;
+    private ClientConfiguration clientConfig = new ClientConfiguration();
 
     public DefaultClientBuilder() {
         Collection<PropertiesSource> sources = new ArrayList<PropertiesSource>();
+        ResourceFactory resourceFactory = new DefaultResourceFactory();
 
         for (String location : DEFAULT_STORMPATH_PROPERTIES_FILE_LOCATIONS) {
             Resource resource = resourceFactory.createResource(location);
@@ -114,63 +99,79 @@ public class DefaultClientBuilder implements ClientBuilder {
         // check to see if property value is null before setting value
         // if != null, allow it to override previously set values
         if (props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME) != null) {
-            apiKeyFile = props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME);
+            clientConfig.setApiKeyFile(props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME) != null) {
-            apiKeyId = props.get(DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME);
+            clientConfig.setApiKeyId(props.get(DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME) != null) {
-            apiKeySecret = props.get(DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME);
+            clientConfig.setApiKeySecret(props.get(DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME) != null) {
-            cacheManagerTtl = Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME));
+            clientConfig.setCacheManagerTtl(Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME)));
         }
 
         if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME) != null) {
-            cacheManagerTti = Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME));
+            clientConfig.setCacheManagerTti(Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME)));
         }
 
-        if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME) != null) {
-            cacheManagerCaches = props.get(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME);
+        for (String prop : props.keySet()) {
+            boolean isPrefix = prop.length() == DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME.length();
+            if (!isPrefix && prop.startsWith(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME)) {
+                // get class from prop name
+                String cacheClass = prop.substring(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME.length() + 1, prop.length() - 4);
+                String cacheTti = props.get(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME + "." + cacheClass + ".tti");
+                String cacheTtl = props.get(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME + "." + cacheClass + ".ttl");
+                CacheConfigurationBuilder cacheBuilder = Caches.forResource(Classes.forName(cacheClass));
+                if (cacheTti != null) {
+                    cacheBuilder.withTimeToIdle(Long.valueOf(cacheTti), TimeUnit.SECONDS);
+                }
+                if (cacheTtl != null) {
+                    cacheBuilder.withTimeToLive(Long.valueOf(cacheTtl), TimeUnit.SECONDS);
+                }
+                if (!clientConfig.getCacheManagerCaches().containsKey(cacheClass)) {
+                    clientConfig.getCacheManagerCaches().put(cacheClass, cacheBuilder);
+                }
+            }
         }
 
         if (props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME) != null) {
-            baseUrl = props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME);
+            clientConfig.setBaseUrl(props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME) != null) {
-            connectionTimeout = Integer.valueOf(props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME)) * 1000;
+            clientConfig.setConnectionTimeout(Integer.valueOf(props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME)) * 1000);
         }
 
         if (props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME) != null) {
-            authenticationScheme = Enum.valueOf(AuthenticationScheme.class, props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME));
+            clientConfig.setAuthenticationScheme(Enum.valueOf(AuthenticationScheme.class, props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME)));
         }
 
         if (props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME) != null) {
-            proxyPort = Integer.valueOf(props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME));
+            clientConfig.setProxyPort(Integer.valueOf(props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME)));
         }
 
         if (props.get(DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME) != null) {
-            proxyHost = props.get(DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME);
+            clientConfig.setProxyHost(props.get(DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME) != null) {
-            proxyUsername = props.get(DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME);
+            clientConfig.setProxyUsername(props.get(DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME) != null) {
-            proxyPassword = props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME);
+            clientConfig.setProxyPassword(props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME) != null) {
-            applicationName = props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME);
+            clientConfig.setApplicationName(props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME));
         }
 
         if (props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME) != null) {
-            applicationHref = props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME);
+            clientConfig.setApplicationHref(props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME));
         }
     }
 
@@ -203,7 +204,7 @@ public class DefaultClientBuilder implements ClientBuilder {
 
     @Override
     public ClientBuilder setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
-        this.authenticationScheme = authenticationScheme;
+        this.clientConfig.setAuthenticationScheme(authenticationScheme);
         return this;
     }
 
@@ -211,7 +212,7 @@ public class DefaultClientBuilder implements ClientBuilder {
     @Override
     public ClientBuilder setConnectionTimeout(int timeout) {
         Assert.isTrue(timeout >= 0, "Timeout cannot be a negative number.");
-        this.connectionTimeout = timeout;
+        this.clientConfig.setConnectionTimeout(timeout);
         return this;
     }
 
@@ -223,16 +224,16 @@ public class DefaultClientBuilder implements ClientBuilder {
         }
 
         // use client.apiKey.file, client.apiKey.id, and client.apiKey.secret if they're set
-        if (this.apiKeyFile != null || this.apiKeyId != null || this.apiKeySecret != null) {
+        if (this.clientConfig.getApiKeyFile() != null || this.clientConfig.getApiKeyId() != null || this.clientConfig.getApiKeySecret() != null) {
             ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
-            if (this.apiKeyFile != null) {
-                apiKeyBuilder.setFileLocation(this.apiKeyFile);
+            if (this.clientConfig.getApiKeyFile() != null) {
+                apiKeyBuilder.setFileLocation(this.clientConfig.getApiKeyFile());
             }
-            if (this.apiKeyId != null) {
-                apiKeyBuilder.setId(this.apiKeyId);
+            if (this.clientConfig.getApiKeyId() != null) {
+                apiKeyBuilder.setId(this.clientConfig.getApiKeyId());
             }
-            if (this.apiKeySecret != null) {
-                apiKeyBuilder.setSecret(this.apiKeySecret);
+            if (this.clientConfig.getApiKeySecret() != null) {
+                apiKeyBuilder.setSecret(this.clientConfig.getApiKeySecret());
             }
             this.apiKey = apiKeyBuilder.build();
         }
@@ -241,24 +242,32 @@ public class DefaultClientBuilder implements ClientBuilder {
                 "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
 
         if (this.cacheManager == null) {
-            log.debug("No CacheManager configured.  Defaulting to in-memory CacheManager with default TTL and TTI of " +
-                    "one hour.");
-            this.cacheManager = Caches.newCacheManager()
-                    .withDefaultTimeToIdle(cacheManagerTti, TimeUnit.SECONDS)
-                    .withDefaultTimeToLive(cacheManagerTtl, TimeUnit.SECONDS)
-                    .build();
+            log.debug("No CacheManager configured.  Defaulting to in-memory CacheManager with default TTL and TTI of five minutes.");
+
+            CacheManagerBuilder cacheManagerBuilder = Caches.newCacheManager()
+                    .withDefaultTimeToIdle(this.clientConfig.getCacheManagerTti(), TimeUnit.SECONDS)
+                    .withDefaultTimeToLive(this.clientConfig.getCacheManagerTtl(), TimeUnit.SECONDS);
+            if (this.clientConfig.getCacheManagerCaches().size() > 0) {
+                for (CacheConfigurationBuilder builder : this.clientConfig.getCacheManagerCaches().values()) {
+                    cacheManagerBuilder.withCache(builder);
+                }
+            }
+
+            this.cacheManager = cacheManagerBuilder.build();
         }
 
         // use proxy overrides if they're set
-        if (this.proxyPort > 0 || this.proxyHost != null && (this.proxyUsername == null || this.proxyPassword == null)) {
-            this.proxy = new Proxy(this.proxyHost, this.proxyPort);
-        } else if (this.proxyUsername != null && this.proxyPassword != null) {
-            this.proxy = new Proxy(this.proxyHost, this.proxyPort, this.proxyUsername, this.proxyPassword);
+        if (this.clientConfig.getProxyPort() > 0 || this.clientConfig.getProxyHost() != null &&
+                (this.clientConfig.getProxyUsername() == null || this.clientConfig.getProxyPassword() == null)) {
+            this.proxy = new Proxy(this.clientConfig.getProxyHost(), this.clientConfig.getProxyPort());
+        } else if (this.clientConfig.getProxyUsername() != null && this.clientConfig.getProxyPassword() != null) {
+            this.proxy = new Proxy(this.clientConfig.getProxyHost(), this.clientConfig.getProxyPort(),
+                    this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
         // todo: allow applicationName and applicationHref to override the default application
 
-        return new DefaultClient(this.apiKey, this.baseUrl, this.proxy, this.cacheManager, this.authenticationScheme, this.connectionTimeout);
+        return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager, this.clientConfig.getAuthenticationScheme(), this.clientConfig.getConnectionTimeout());
     }
 
     @Override
@@ -266,56 +275,12 @@ public class DefaultClientBuilder implements ClientBuilder {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl argument cannot be null.");
         }
-        this.baseUrl = baseUrl;
+        this.clientConfig.setBaseUrl(baseUrl);
         return this;
     }
 
-    private ResourceFactory resourceFactory = new DefaultResourceFactory();
-
-    private Properties getPropertiesFromFile(String fileLocation) {
-        Properties props = new Properties();
-
-        try {
-            log.debug("fileLocation: {}", fileLocation);
-            Reader reader = createFileReader(fileLocation);
-            props = toProperties(reader);
-        } catch (IOException ignored) {
-            log.debug(
-                    "Unable to find or load default configuration file [{}]. " +
-                            "This can be safely ignored as this is a fallback location - " +
-                            "other more specific locations will be checked.",
-                    fileLocation, ignored
-            );
-        }
-        return props;
-    }
-
-    private static Properties toProperties(Reader reader) throws IOException {
-        Properties properties = new Properties();
-        properties.load(reader);
-        return properties;
-    }
-
-    private Reader createFileReader(String fileLocation) throws IOException {
-        InputStream is = this.resourceFactory.createResource(fileLocation).getInputStream();
-        return toReader(is);
-    }
-
-    private static Reader toReader(InputStream is) throws IOException {
-        if (is == null) {
-            throw new FileNotFoundException();
-        }
-        return new InputStreamReader(is, "ISO-8859-1");
-    }
-
-    private static String getPropertyValue(Properties properties, String propName) {
-        String value = properties.getProperty(propName);
-        if (value != null) {
-            value = value.trim();
-            if ("".equals(value)) {
-                value = null;
-            }
-        }
-        return value;
+    // Used for testing, package private
+    ClientConfiguration getClientConfiguration() {
+        return clientConfig;
     }
 }
