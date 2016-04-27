@@ -219,7 +219,6 @@ public class DefaultCacheManager implements CacheManager {
         Duration tti = this.defaultTimeToIdle != null ? this.defaultTimeToIdle.clone() : null;
 
         CacheConfiguration config = this.configs.get(name);
-        System.out.println(config);
         if (config != null) {
             Duration d = config.getTimeToLive();
             if (d != null) {

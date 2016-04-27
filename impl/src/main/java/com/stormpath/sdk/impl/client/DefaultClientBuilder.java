@@ -57,8 +57,8 @@ public class DefaultClientBuilder implements ClientBuilder {
     private static final Logger log = LoggerFactory.getLogger(DefaultClientBuilder.class);
 
     private com.stormpath.sdk.api.ApiKey apiKey;
-    private Proxy proxy;
-    private CacheManager cacheManager;
+    private Proxy                proxy;
+    private CacheManager         cacheManager;
 
     private static final String USER_HOME = System.getProperty("user.home") + File.separatorChar;
     private static final String STORMPATH_PROPERTIES = "stormpath.properties";
@@ -99,7 +99,10 @@ public class DefaultClientBuilder implements ClientBuilder {
         // check to see if property value is null before setting value
         // if != null, allow it to override previously set values
         if (props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME) != null) {
-            clientConfig.setApiKeyFile(props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME));
+            String apiKeyFile = props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME);
+            // remove backslashes that can end up in file when it's written programmatically, e.g. in a test
+            apiKeyFile = apiKeyFile.replace("\\:", ":");
+            clientConfig.setApiKeyFile(apiKeyFile);
         }
 
         if (props.get(DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME) != null) {
@@ -139,7 +142,10 @@ public class DefaultClientBuilder implements ClientBuilder {
         }
 
         if (props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME) != null) {
-            clientConfig.setBaseUrl(props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME));
+            String baseUrl = props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME);
+            // remove backslashes that can end up in file when it's written programmatically, e.g. in a test
+            baseUrl = baseUrl.replace("\\:", ":");
+            clientConfig.setBaseUrl(baseUrl);
         }
 
         if (props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME) != null) {
@@ -221,21 +227,21 @@ public class DefaultClientBuilder implements ClientBuilder {
         if (this.apiKey == null) {
             log.debug("No API Key configured. Attempting to acquire an API Key found from well-known locations ($HOME/.stormpath/apiKey.properties < environment variables < system properties)...");
             this.apiKey = ApiKeys.builder().build();
-        }
 
-        // use client.apiKey.file, client.apiKey.id, and client.apiKey.secret if they're set
-        if (this.clientConfig.getApiKeyFile() != null || this.clientConfig.getApiKeyId() != null || this.clientConfig.getApiKeySecret() != null) {
-            ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
-            if (this.clientConfig.getApiKeyFile() != null) {
-                apiKeyBuilder.setFileLocation(this.clientConfig.getApiKeyFile());
+            // use client.apiKey.file, client.apiKey.id, and client.apiKey.secret if they're set
+            if (this.clientConfig.getApiKeyFile() != null || this.clientConfig.getApiKeyId() != null || this.clientConfig.getApiKeySecret() != null) {
+                ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
+                if (this.clientConfig.getApiKeyFile() != null) {
+                    apiKeyBuilder.setFileLocation(this.clientConfig.getApiKeyFile());
+                }
+                if (this.clientConfig.getApiKeyId() != null) {
+                    apiKeyBuilder.setId(this.clientConfig.getApiKeyId());
+                }
+                if (this.clientConfig.getApiKeySecret() != null) {
+                    apiKeyBuilder.setSecret(this.clientConfig.getApiKeySecret());
+                }
+                this.apiKey = apiKeyBuilder.build();
             }
-            if (this.clientConfig.getApiKeyId() != null) {
-                apiKeyBuilder.setId(this.clientConfig.getApiKeyId());
-            }
-            if (this.clientConfig.getApiKeySecret() != null) {
-                apiKeyBuilder.setSecret(this.clientConfig.getApiKeySecret());
-            }
-            this.apiKey = apiKeyBuilder.build();
         }
 
         Assert.state(this.apiKey != null,
