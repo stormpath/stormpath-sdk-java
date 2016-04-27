@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.client;
 
+import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.Caches;
@@ -23,9 +24,13 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.api.ClientApiKeyBuilder;
+import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
+import com.stormpath.sdk.impl.config.PropertiesSource;
+import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
+import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
+import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
 import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;
@@ -37,6 +42,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -79,73 +88,89 @@ public class DefaultClientBuilder implements ClientBuilder {
     private String applicationHref;
 
     public DefaultClientBuilder() {
+        Collection<PropertiesSource> sources = new ArrayList<PropertiesSource>();
+
         for (String location : DEFAULT_STORMPATH_PROPERTIES_FILE_LOCATIONS) {
-            Properties props = getPropertiesFromFile(location);
-
-            // check to see if property value is null before setting value
-            // if != null, allow it to override previously set values
-            if (getPropertyValue(props, DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME) != null) {
-                apiKeyFile = getPropertyValue(props, DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME);
-            } else {
-                // todo: support json and yaml overrides
-                apiKeyFile = ClientApiKeyBuilder.DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION;
+            Resource resource = resourceFactory.createResource(location);
+            PropertiesSource propertiesSource = new OptionalPropertiesSource(new ResourcePropertiesSource(resource));
+            sources.add(propertiesSource);
+            // if location is a .properties file and it's not the first one, look for JSON and YAML equivalents
+            if (!location.equals(DEFAULT_STORMPATH_PROPERTIES_FILE_LOCATIONS[0]) && location.endsWith(".properties")) {
+                // todo: JSON
+                String yamlFile = location.replace(".properties", ".yaml");
+                resource = resourceFactory.createResource(yamlFile);
+                PropertiesSource yamlSource = new OptionalPropertiesSource(new YAMLPropertiesSource(resource));
+                sources.add(yamlSource);
             }
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME) != null) {
-                apiKeyId = getPropertyValue(props, DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME);
-            }
+        Map<String, String> props = new LinkedHashMap<>();
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME) != null) {
-                apiKeySecret = getPropertyValue(props, DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME);
-            }
+        for (PropertiesSource source : sources) {
+            Map<String, String> srcProps = source.getProperties();
+            props.putAll(srcProps);
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME) != null) {
-                cacheManagerTtl = Long.valueOf(getPropertyValue(props, DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME));
-            }
+        // check to see if property value is null before setting value
+        // if != null, allow it to override previously set values
+        if (props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME) != null) {
+            apiKeyFile = props.get(DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME);
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME) != null) {
-                cacheManagerTti = Long.valueOf(getPropertyValue(props, DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME));
-            }
+        if (props.get(DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME) != null) {
+            apiKeyId = props.get(DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME);
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME) != null) {
-                cacheManagerCaches = getPropertyValue(props, DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME) != null) {
+            apiKeySecret = props.get(DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME);
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME) != null) {
-                baseUrl = getPropertyValue(props, DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME) != null) {
+            cacheManagerTtl = Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME));
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME) != null) {
-                connectionTimeout = Integer.valueOf(getPropertyValue(props, DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME)) * 1000;
-            }
+        if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME) != null) {
+            cacheManagerTti = Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME));
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME) != null) {
-                authenticationScheme = Enum.valueOf(AuthenticationScheme.class, getPropertyValue(props, DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME));
-            }
+        if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME) != null) {
+            cacheManagerCaches = props.get(DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME);
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME) != null) {
-                proxyPort = Integer.valueOf(getPropertyValue(props, DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME));
-            }
+        if (props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME) != null) {
+            baseUrl = props.get(DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME);
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME) != null) {
-                proxyHost = getPropertyValue(props, DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME) != null) {
+            connectionTimeout = Integer.valueOf(props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME)) * 1000;
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME) != null) {
-                proxyUsername = getPropertyValue(props, DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME) != null) {
+            authenticationScheme = Enum.valueOf(AuthenticationScheme.class, props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME));
+        }
 
-            if (getPropertyValue(props, DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME) != null) {
-                proxyPassword = getPropertyValue(props, DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME) != null) {
+            proxyPort = Integer.valueOf(props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME));
+        }
 
-            if (getPropertyValue(props, DEFAULT_APPLICATION_NAME_PROPERTY_NAME) != null) {
-                applicationName = getPropertyValue(props, DEFAULT_APPLICATION_NAME_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME) != null) {
+            proxyHost = props.get(DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME);
+        }
 
-            if (getPropertyValue(props, DEFAULT_APPLICATION_HREF_PROPERTY_NAME) != null) {
-                applicationHref = getPropertyValue(props, DEFAULT_APPLICATION_HREF_PROPERTY_NAME);
-            }
+        if (props.get(DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME) != null) {
+            proxyUsername = props.get(DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME);
+        }
+
+        if (props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME) != null) {
+            proxyPassword = props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME);
+        }
+
+        if (props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME) != null) {
+            applicationName = props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME);
+        }
+
+        if (props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME) != null) {
+            applicationHref = props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME);
         }
     }
 
@@ -197,7 +222,20 @@ public class DefaultClientBuilder implements ClientBuilder {
             this.apiKey = ApiKeys.builder().build();
         }
 
-        // todo: if apiKeyFile, apiKeyId or apiKeySecret is set, use them
+        // use client.apiKey.file, client.apiKey.id, and client.apiKey.secret if they're set
+        if (this.apiKeyFile != null || this.apiKeyId != null || this.apiKeySecret != null) {
+            ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
+            if (this.apiKeyFile != null) {
+                apiKeyBuilder.setFileLocation(this.apiKeyFile);
+            }
+            if (this.apiKeyId != null) {
+                apiKeyBuilder.setId(this.apiKeyId);
+            }
+            if (this.apiKeySecret != null) {
+                apiKeyBuilder.setSecret(this.apiKeySecret);
+            }
+            this.apiKey = apiKeyBuilder.build();
+        }
 
         Assert.state(this.apiKey != null,
                 "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
@@ -211,6 +249,7 @@ public class DefaultClientBuilder implements ClientBuilder {
                     .build();
         }
 
+        // use proxy overrides if they're set
         if (this.proxyPort > 0 || this.proxyHost != null && (this.proxyUsername == null || this.proxyPassword == null)) {
             this.proxy = new Proxy(this.proxyHost, this.proxyPort);
         } else if (this.proxyUsername != null && this.proxyPassword != null) {
