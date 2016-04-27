@@ -136,8 +136,8 @@ import com.stormpath.sdk.cache.CacheManager;
  * ...
  *
  * {@link com.stormpath.sdk.cache.Caches Caches}.{@link com.stormpath.sdk.cache.Caches#newCacheManager() newCacheManager()}
- *     .withDefaultTimeToLive(2, TimeUnit.HOURS) // default
- *     .withDefaultTimeToIdle(1, TimeUnit.HOURS) //general default
+ *     .withDefaultTimeToLive(300, TimeUnit.SECONDS) // default
+ *     .withDefaultTimeToIdle(300, TimeUnit.SECONDS) //general default
  *     .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Account.class) //Account-specific cache settings
  *         .withTimeToLive(1, TimeUnit.HOURS)
  *         .withTimeToIdle(30, TimeUnit.MINUTES))
