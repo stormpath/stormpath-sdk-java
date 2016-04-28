@@ -368,7 +368,7 @@ class ApplicationIT extends ClientIT {
         Organization org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore"))
                 .setDescription("Organization Description")
-                .setNameKey(uniquify("test").substring(2, 8))
+                .setNameKey(uniquify("test"))
                 .setStatus(OrganizationStatus.ENABLED)
         org = client.createOrganization(org)
         deleteOnTeardown(org)
