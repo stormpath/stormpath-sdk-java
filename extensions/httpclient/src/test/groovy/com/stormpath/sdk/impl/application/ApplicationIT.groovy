@@ -458,7 +458,7 @@ class ApplicationIT extends ClientIT {
         Organization org = client.instantiate(Organization)
         org.setName(name)
                 .setDescription("Organization")
-                .setNameKey(uniquify("test").substring(2, 8))
+                .setNameKey(uniquify("test"))
                 .setStatus(OrganizationStatus.ENABLED)
         org = client.currentTenant.createOrganization(org)
         deleteOnTeardown(org)
