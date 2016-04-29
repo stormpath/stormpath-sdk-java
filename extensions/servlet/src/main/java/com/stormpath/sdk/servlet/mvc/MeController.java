@@ -1,14 +1,13 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountInfo;
+import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 1.0.RC8
@@ -16,6 +15,8 @@ import java.util.Map;
 public class MeController extends AbstractController {
 
     private boolean expandGroups;
+    private Set<String> accountProperties = new HashSet<String>(Arrays.asList("href", "username", "email", "givenName",
+            "middleName", "surname", "fullName", "status", "createdAt", "modifiedAt", "emailVerificationToken"));
 
     @Override
     public boolean isNotAllowIfAuthenticated() {
@@ -37,11 +38,11 @@ public class MeController extends AbstractController {
 
         if (AccountResolver.INSTANCE.hasAccount(request)) {
             Account account = AccountResolver.INSTANCE.getAccount(request);
-            AccountInfo accountInfo = new AccountInfo(account);
+            AbstractResource abstractAccount = (AbstractResource)account;
             if (isExpandGroups()){
-                accountInfo.setGroups(account);
+                accountProperties.add("groups");
             }
-            model.put("account", accountInfo);
+            model.put("account", getModel(abstractAccount, accountProperties));
         }
 
         if (UserAgents.get(request).isJsonPreferred()) {
@@ -50,5 +51,14 @@ public class MeController extends AbstractController {
 
         //otherwise HTML view:
         return new DefaultViewModel(getNextUri()).setRedirect(true);
+    }
+
+    private Map<String, Object> getModel(AbstractResource abstractResource, Set<String> resourceProperties) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        for(String propertyName: resourceProperties) {
+            Object value = abstractResource.getProperty(propertyName);
+            result.put(propertyName, value);
+        }
+        return result;
     }
 }
