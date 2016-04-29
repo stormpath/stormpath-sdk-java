@@ -29,7 +29,7 @@ import com.stormpath.sdk.impl.http.RestException
  *
  * {@code RequestExecutor} stub to allow a DefaultClient to be instantiated in a unit test.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 public class HttpClientRequestExecutor implements RequestExecutor {
 
