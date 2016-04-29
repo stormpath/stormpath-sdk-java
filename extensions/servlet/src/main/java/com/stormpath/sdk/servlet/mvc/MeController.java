@@ -1,6 +1,8 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.http.UserAgents;
@@ -15,8 +17,6 @@ import java.util.*;
 public class MeController extends AbstractController {
 
     private boolean expandGroups;
-    private Set<String> accountProperties = new HashSet<String>(Arrays.asList("href", "username", "email", "givenName",
-            "middleName", "surname", "fullName", "status", "createdAt", "modifiedAt", "emailVerificationToken"));
 
     @Override
     public boolean isNotAllowIfAuthenticated() {
@@ -39,10 +39,17 @@ public class MeController extends AbstractController {
         if (AccountResolver.INSTANCE.hasAccount(request)) {
             Account account = AccountResolver.INSTANCE.getAccount(request);
             AbstractResource abstractAccount = (AbstractResource)account;
+            Map<String, Object> accountModel = getModel(abstractAccount);
             if (isExpandGroups()){
-                accountProperties.add("groups");
+                DefaultAccount defaultAccount = (DefaultAccount)account;
+                List<Map<String, Object>> groups = new ArrayList<Map<String, Object>>();
+                for (Group group: defaultAccount.getGroups()) {
+                    Map<String, Object> groupModel = getModel((AbstractResource) group);
+                    groups.add(groupModel);
+                }
+                accountModel.put("groups", groups);
             }
-            model.put("account", getModel(abstractAccount, accountProperties));
+            model.put("account", accountModel);
         }
 
         if (UserAgents.get(request).isJsonPreferred()) {
@@ -53,11 +60,13 @@ public class MeController extends AbstractController {
         return new DefaultViewModel(getNextUri()).setRedirect(true);
     }
 
-    private Map<String, Object> getModel(AbstractResource abstractResource, Set<String> resourceProperties) {
+    private Map<String, Object> getModel(AbstractResource abstractResource) {
         Map<String, Object> result = new HashMap<String, Object>();
-        for(String propertyName: resourceProperties) {
+        for(String propertyName: abstractResource.getPropertyNames()) {
             Object value = abstractResource.getProperty(propertyName);
-            result.put(propertyName, value);
+            if (!(value instanceof Map || value instanceof Set)){
+                result.put(propertyName, value);
+            }
         }
         return result;
     }
