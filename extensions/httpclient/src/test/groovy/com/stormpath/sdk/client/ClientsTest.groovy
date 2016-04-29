@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit
 
 import static org.easymock.EasyMock.createMock
 import static org.testng.Assert.*
+
 /**
  * @since 1.0.alpha
  */
@@ -55,10 +56,10 @@ public class ClientsTest {
         assertTrue client.dataStore.cacheManager instanceof DefaultCacheManager
 
         //match what is set in stormpath.properties since it can't be created/deleted while testing
-        assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(10000, TimeUnit.SECONDS)
-        assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(10000, TimeUnit.SECONDS)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 10000)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 10000)
+        assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(300, TimeUnit.SECONDS)
+        assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(300, TimeUnit.SECONDS)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 30000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 30000)
     }
 
     @Test
@@ -107,7 +108,7 @@ public class ClientsTest {
 
         def requestAuthenticator = client.dataStore.requestExecutor.requestAuthenticator
 
-        assertTrue requestAuthenticator instanceof BasicRequestAuthenticator
+        assertTrue requestAuthenticator instanceof SAuthc1RequestAuthenticator
     }
 
     @Test
