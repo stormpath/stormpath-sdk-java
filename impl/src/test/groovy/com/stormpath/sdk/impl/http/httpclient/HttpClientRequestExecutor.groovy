@@ -24,7 +24,10 @@ import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.RestException
 
 /**
- * {@code RequestExecutor} implementation to allow a DefaultClient to be instantiated in a unit test.
+ *
+ * ### For testing purposes only ###
+ *
+ * {@code RequestExecutor} stub to allow a DefaultClient to be instantiated in a unit test.
  *
  * @since 1.0
  */
