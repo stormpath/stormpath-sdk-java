@@ -220,8 +220,6 @@ public interface ClientBuilder {
     String DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME = "client.proxy.host";
     String DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME = "client.proxy.username";
     String DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME = "client.proxy.password";
-    String DEFAULT_APPLICATION_NAME_PROPERTY_NAME = "application.name";
-    String DEFAULT_APPLICATION_HREF_PROPERTY_NAME = "application.href";
 
     /**
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the

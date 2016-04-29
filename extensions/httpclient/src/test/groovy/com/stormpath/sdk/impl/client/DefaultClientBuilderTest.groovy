@@ -59,11 +59,4 @@ class DefaultClientBuilderTest {
         assertEquals clientBuilder.clientConfiguration.proxyUsername, "foo"
         assertEquals clientBuilder.clientConfiguration.proxyPassword, "bar"
     }
-
-    @Test
-    void testConfigureApplication() {
-        DefaultClientBuilder clientBuilder = (DefaultClientBuilder) builder
-        assertEquals clientBuilder.clientConfiguration.applicationName, "appName"
-        assertEquals clientBuilder.clientConfiguration.applicationHref, "appHref"
-    }
 }

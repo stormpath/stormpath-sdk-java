@@ -25,8 +25,6 @@ public class ClientConfiguration {
     private String proxyHost;
     private String proxyUsername;
     private String proxyPassword;
-    private String applicationName;
-    private String applicationHref;
 
     public String getApiKeyFile() {
         return apiKeyFile;
@@ -50,22 +48,6 @@ public class ClientConfiguration {
 
     public void setApiKeySecret(String apiKeySecret) {
         this.apiKeySecret = apiKeySecret;
-    }
-
-    public String getApplicationHref() {
-        return applicationHref;
-    }
-
-    public void setApplicationHref(String applicationHref) {
-        this.applicationHref = applicationHref;
-    }
-
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
     }
 
     public AuthenticationScheme getAuthenticationScheme() {
@@ -164,8 +146,6 @@ public class ClientConfiguration {
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyUsername='" + proxyUsername + '\'' +
                 ", proxyPassword='" + proxyPassword + '\'' +
-                ", applicationName='" + applicationName + '\'' +
-                ", applicationHref='" + applicationHref + '\'' +
                 '}';
     }
 }

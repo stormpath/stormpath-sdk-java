@@ -171,14 +171,6 @@ public class DefaultClientBuilder implements ClientBuilder {
         if (props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME) != null) {
             clientConfig.setProxyPassword(props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME));
         }
-
-        if (props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME) != null) {
-            clientConfig.setApplicationName(props.get(DEFAULT_APPLICATION_NAME_PROPERTY_NAME));
-        }
-
-        if (props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME) != null) {
-            clientConfig.setApplicationHref(props.get(DEFAULT_APPLICATION_HREF_PROPERTY_NAME));
-        }
     }
 
     @Override
@@ -271,9 +263,8 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        // todo: allow applicationName and applicationHref to override the default application
-
-        return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager, this.clientConfig.getAuthenticationScheme(), this.clientConfig.getConnectionTimeout());
+        return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+                this.clientConfig.getAuthenticationScheme(), this.clientConfig.getConnectionTimeout());
     }
 
     @Override
