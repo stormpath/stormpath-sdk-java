@@ -39,7 +39,7 @@ import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
  *      }
  *
  *      &#64;Override
- *      public void visit(OauthAuthenticationResult result) {
+ *      public void visit(OAuthAuthenticationResult result) {
  *          Account account = result.getAccount();
  *          Set<String> scope = result.getScope();
  *          ...
@@ -69,7 +69,7 @@ public class AuthenticationResultVisitorAdapter implements AuthenticationResultV
 
     @Override
     public void visit(OAuthAuthenticationResult result) {
-        throw new UnsupportedOperationException("visit(OauthAuthenticationResult) is not expected.");
+        throw new UnsupportedOperationException("visit(OAuthAuthenticationResult) is not expected.");
     }
 
     @Override
