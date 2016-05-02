@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.config.impl;
 
+import java.util.List;
+
 /**
  * @since 1.0.RC3
  */
@@ -34,5 +36,8 @@ public interface ConfigReader {
     long getLong(String name);
 
     boolean getBoolean(String name);
+
+    /** @since 1.0.0 */
+    List getList(String name);
 
 }

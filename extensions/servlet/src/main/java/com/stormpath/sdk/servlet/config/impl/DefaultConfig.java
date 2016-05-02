@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,6 +64,8 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_PATH = "stormpath.web.account.cookie.path";
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
     public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
+
+    public static final String PRODUCED_MEDIA_TYPES = "stormpath.web.produces";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -245,6 +248,11 @@ public class DefaultConfig implements Config {
         }
 
         return instances;
+    }
+
+    @Override
+    public List<String> getProducedMediaTypes() {
+        return CFG.getList(PRODUCED_MEDIA_TYPES);
     }
 
     @SuppressWarnings("unchecked")

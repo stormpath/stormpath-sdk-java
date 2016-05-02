@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.config;
 
 import javax.servlet.ServletException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,4 +81,9 @@ public interface Config extends Map<String, String> {
     <T> T getInstance(String classPropertyName) throws ServletException;
 
     <T> Map<String,T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;
+
+    /**
+     * @since 1.0.0
+     */
+    List<String> getProducedMediaTypes();
 }

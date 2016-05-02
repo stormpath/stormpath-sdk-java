@@ -24,6 +24,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -139,6 +141,20 @@ public class ExpressionConfigReader implements ConfigReader {
             return Boolean.parseBoolean(val);
         } catch (Exception e) {
             throw new IllegalArgumentException(name + " value must be a boolean.", e);
+        }
+    }
+
+    @Override
+    public List<String> getList(String name) {
+        String val = PROPS.get(name);
+        try {
+            String[] items = val.split(",");
+            //Let's trim the values
+            List<String> list = new ArrayList<String>(items.length);
+            for( int i = 0; i<items.length; i++) list.add(items[i].trim());
+            return list;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(name + " cannot be empty; one or more values separated by comma are expected.", e);
         }
     }
 

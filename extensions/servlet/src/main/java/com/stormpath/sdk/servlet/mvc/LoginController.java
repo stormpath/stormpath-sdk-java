@@ -126,10 +126,6 @@ public class LoginController extends FormController {
         return providerModelFactory;
     }
 
-    public void setProviderModelFactory(AccountStoreModelFactory providerModelFactory) {
-        this.providerModelFactory = providerModelFactory;
-    }
-
     public ErrorModelFactory getErrorModelFactory() {
         return errorModelFactory;
     }
@@ -159,9 +155,6 @@ public class LoginController extends FormController {
             }
         }
 
-        //TODO: enable 3rd party login providers:
-        model.put("providers", java.util.Collections.emptyList());
-        model.put("providers", getProviderModelFactory().getAccountStores(request));
         model.put("accountStores", getAccountStoreModelFactory().getAccountStores(request));
         model.put("forgotLoginUri", getForgotLoginUri());
         model.put("verifyUri", getVerifyUri());

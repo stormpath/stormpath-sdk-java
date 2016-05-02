@@ -115,7 +115,6 @@ public abstract class FormController extends AbstractController {
 
         Map<String,Object> model = newModel();
 
-        model.put("social", false); //TODO: remove
         model.put("accountStores", java.util.Collections.emptyList()); //overridden by subclasses that support providers
 
         if (!Collections.isEmpty(errors)) {
