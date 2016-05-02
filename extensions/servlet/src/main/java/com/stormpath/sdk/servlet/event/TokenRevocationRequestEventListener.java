@@ -92,9 +92,12 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             //There should never be a refresh token here. Therefore we will not even try to identify if the received JWT is
             //a refresh token. That would be a bug in the filter chain as a refresh token should never be used to anything other than
             //obtaining a new access token
-        }
 
-        log.debug("The current access and refresh tokens for {} have been revoked.", event.getAccount().getEmail());
+            log.debug(
+                "The current access and refresh tokens for '{}' have been revoked.",
+                (event.getAccount() != null) ? event.getAccount().getEmail() : "unknown user"
+            );
+        }
     }
 
     private boolean isAccessToken(Claims claims) {
