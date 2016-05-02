@@ -441,6 +441,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.spa.uri'] ?: '/index.html' }")
     protected String spaUri;
 
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected List<String> produces;
+
     // ================  3rd Party Provider Templates ==================
 
     // ================  'Facebook' view template properties  ===================

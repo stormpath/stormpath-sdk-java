@@ -254,6 +254,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public List<String> getProducedMediaTypes() {
+                return produces;
+            }
+
+            @Override
             public int size() {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
             }
