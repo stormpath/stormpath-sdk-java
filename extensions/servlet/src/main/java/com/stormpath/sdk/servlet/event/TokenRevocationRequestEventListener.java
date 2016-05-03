@@ -93,6 +93,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             //a refresh token. That would be a bug in the filter chain as a refresh token should never be used to anything other than
             //obtaining a new access token
 
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/611
             log.debug(
                 "The current access and refresh tokens for '{}' have been revoked.",
                 (event.getAccount() != null) ? event.getAccount().getEmail() : "unknown user"
