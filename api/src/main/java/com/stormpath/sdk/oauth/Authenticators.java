@@ -25,7 +25,7 @@ import com.stormpath.sdk.lang.Classes;
  *              .setLogin(email)
  *              .setPassword(password)
  *              .build();
- *      Oauth2AuthenticationResult result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest);
+ *      OAuthGrantRequestAuthenticationResult result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest);
  * </pre>
  * Once your application receives the result, the first thing to do is to validate that the token is valid. There are different ways you can complete this task.
  * The benefit of using Stormpath to validate the token through the REST API is that Stormpath can validate the token against the state of your application

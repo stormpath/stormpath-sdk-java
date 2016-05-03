@@ -33,7 +33,7 @@ import com.stormpath.sdk.http.HttpRequest;
  * <pre>
  * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
  *
- * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+ * public void processOAuthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
  *
  *    Application application = client.getResource(myApplicationRestUrl, Application.class);
  *

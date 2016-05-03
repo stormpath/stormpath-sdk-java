@@ -19,7 +19,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * A sub-class of {@link ResourceException} representing an attempt to login via {@code Oauth} using an invalid {@code accessToken}.
+ * A sub-class of {@link ResourceException} representing an attempt to login via {@code OAuth} using an invalid {@code accessToken}.
  *
  * @since 1.0.RC
  */

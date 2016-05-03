@@ -64,7 +64,7 @@ public interface ResourceRequestAuthenticator {
      * The result type may be either a {@link OAuthAuthenticationResult} or a {@link AccessTokenResult} if the client authenticated
      * with your server-side API specifically for the purpose of obtaining a new OAuth Access Token.
      *
-     * For the latter case, you can extract the Oauth response as a JSON expression, like shown in the example below:
+     * For the latter case, you can extract the OAuth response as a JSON expression, like shown in the example below:
      * <pre>
      *      AccessTokenResult result = (AccessTokenResult) Applications.oauthRequestAuthenticator(application).authenticate(HTTP_REQUEST_TO_AUNTHENTICATE)
      *      String oauthAuthenticationResult = result.getTokenResponse().toJson()

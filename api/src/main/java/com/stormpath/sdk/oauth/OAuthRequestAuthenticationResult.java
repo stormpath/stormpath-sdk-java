@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Interface denoting <a href="https://docs.stormpath.com/guides/token-management/">Oauth2 Authentication Response</a> obtained
+ * Interface denoting <a href="https://docs.stormpath.com/guides/token-management/">OAuth2 Authentication Response</a> obtained
  * as a consequence of a {@link OAuthRequestAuthentication}.
  *
  * @see OAuthRequestAuthenticationResult

@@ -23,9 +23,9 @@ package com.stormpath.sdk.oauth;
 public interface OAuthGrantRequestAuthentication extends OAuthRequestAuthentication {
 
     /**
-     * Returns the Oauth 2.0 method used for the token refresh request.
+     * Returns the OAuth 2.0 method used for the token refresh request.
      *
-     * @return the Oauth 2.0 method used for the token refresh request.
+     * @return the OAuth 2.0 method used for the token refresh request.
      */
     String getGrantType();
 }

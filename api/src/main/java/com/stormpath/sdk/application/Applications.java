@@ -284,7 +284,7 @@ public final class Applications {
     }
 
     /**
-     * Creates a new {@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator OauthRequestAuthenticator} instance for authenticating Oauth-based API requests
+     * Creates a new {@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator OAuthApiRequestAuthenticator} instance for authenticating Oauth-based API requests
      * for the given {@link Application application}
      *
      * @param application The {@link Application} for which Oauth-based API requests will be authenticated

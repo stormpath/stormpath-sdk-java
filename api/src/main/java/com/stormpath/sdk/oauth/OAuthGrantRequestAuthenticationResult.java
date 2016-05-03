@@ -26,8 +26,8 @@ package com.stormpath.sdk.oauth;
 public interface OAuthGrantRequestAuthenticationResult extends OAuthRequestAuthenticationResult {
 
     /**
-     * Returns the String that corresponds to the Oauth Access Token created during the Create Grant Authentication operation.
-     * @return the String representation of the Oauth Access Token
+     * Returns the String that corresponds to the OAuth Access Token created during the Create Grant Authentication operation.
+     * @return the String representation of the OAuth Access Token
      */
     String getAccessTokenString();
 
@@ -51,7 +51,7 @@ public interface OAuthGrantRequestAuthenticationResult extends OAuthRequestAuthe
 
     /**
      * Returns the href of the token created during the Create Grant Authentication operation.
-     * @return the href Oauth Access Token
+     * @return the href OAuth Access Token
      */
     String getAccessTokenHref();
 

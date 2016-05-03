@@ -111,7 +111,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         try {
             request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
-            log.warn("Caught Exception: {}. Rethrowing as OauthAuthenticationException", e.getMessage(), e);
+            log.warn("Caught Exception: {}. Rethrowing as OAuthAuthenticationException", e.getMessage(), e);
 
             throw ApiAuthenticationExceptionFactory
                 .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_REQUEST);

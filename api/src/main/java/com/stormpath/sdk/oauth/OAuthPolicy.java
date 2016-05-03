@@ -21,7 +21,7 @@ import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * An OauthPolicy resource is used to configure different aspects of the OAuth tokens associated
+ * An OAuthPolicy resource is used to configure different aspects of the OAuth tokens associated
  * with an {@link Application Application}
  *
  * @since 1.0.RC7
@@ -65,9 +65,9 @@ public interface OAuthPolicy extends Resource, Saveable {
     OAuthPolicy setRefreshTokenTtl(String refreshTokenTtl);
 
     /**
-     * Returns the {@link Application Application} associated to this {@link OAuthPolicy OauthPolicy}
+     * Returns the {@link Application Application} associated to this {@link OAuthPolicy OAuthPolicy}
      *
-     * @return the {@link Application Application} associated to this {@link OAuthPolicy OauthPolicy}
+     * @return the {@link Application Application} associated to this {@link OAuthPolicy OAuthPolicy}
      */
     Application getApplication();
 

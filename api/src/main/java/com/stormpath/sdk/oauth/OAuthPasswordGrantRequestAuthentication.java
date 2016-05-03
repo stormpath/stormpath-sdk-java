@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
- * This class represents a request for Stormpath to authenticate an Account and exchange its credentials for a valid Oauth 2.0 access token.
+ * This class represents a request for Stormpath to authenticate an Account and exchange its credentials for a valid OAuth 2.0 access token.
  *
  * @since 1.0.RC7
  */

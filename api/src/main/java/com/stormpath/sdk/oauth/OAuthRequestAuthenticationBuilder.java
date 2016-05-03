@@ -27,7 +27,7 @@ package com.stormpath.sdk.oauth;
 public interface OAuthRequestAuthenticationBuilder<T extends OAuthRequestAuthentication> {
 
     /**
-     * Builds a {@link OAuthRequestAuthentication Oauth2AuthenticationRequest} instance based on the current state of the builder.
+     * Builds a {@link OAuthRequestAuthentication OAuthRequestAuthentication} instance based on the current state of the builder.
      *
      * @return a {@link OAuthRequestAuthentication} instance.
      */

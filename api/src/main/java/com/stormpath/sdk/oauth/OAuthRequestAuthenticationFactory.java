@@ -19,7 +19,7 @@ package com.stormpath.sdk.oauth;
  *
  * This interface defines the method to create a {@link OAuthRequestAuthenticationBuilder}s.
  *
- * @param <T> a subclass of {@link OAuthRequestAuthenticationBuilder} specifying the kind of Oauth2 authentication request
+ * @param <T> a subclass of {@link OAuthRequestAuthenticationBuilder} specifying the kind of OAuth2 authentication request
  *           builder that this factory will create.
  *
  * @since 1.0.RC7

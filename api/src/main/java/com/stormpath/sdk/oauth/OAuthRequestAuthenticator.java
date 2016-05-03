@@ -16,9 +16,9 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Interface defining the operations that every Oauth2 Authenticator must support.
+ * Interface defining the operations that every OAuth2 Authenticator must support.
  *
- * @param <T> the kind of {@link OAuthRequestAuthenticationResult} that this Oauth2 Authenticator will return after successful authentication.
+ * @param <T> the kind of {@link OAuthRequestAuthenticationResult} that this OAuth2 Authenticator will return after successful authentication.
  *
  * @see OAuthPasswordGrantRequestAuthenticator
  * @see OAuthRefreshTokenRequestAuthenticator
@@ -29,7 +29,7 @@ package com.stormpath.sdk.oauth;
 public interface OAuthRequestAuthenticator<T extends OAuthRequestAuthenticationResult> {
 
     /**
-     * An attempt to perform any kind of Oauth2 Authentication: {@link OAuthPasswordGrantRequestAuthenticator Password Grant},
+     * An attempt to perform any kind of OAuth2 Authentication: {@link OAuthPasswordGrantRequestAuthenticator Password Grant},
      * {@link OAuthRefreshTokenRequestAuthenticator Refresh Grant} and {@link OAuthBearerRequestAuthenticator JWT}.
      *
      * @param authenticationRequest the {@link OAuthRequestAuthentication} that this authenticator will attempt.

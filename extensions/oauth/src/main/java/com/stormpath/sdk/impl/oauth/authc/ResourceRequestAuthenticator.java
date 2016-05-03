@@ -70,7 +70,7 @@ public class ResourceRequestAuthenticator {
             jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
             log.warn(
-                "Caught Exception while validating JWT signature: {}. Rethrowing as AccessTokenOauthException",
+                "Caught Exception while validating JWT signature: {}. Rethrowing as AccessTokenOAuthException",
                 e.getMessage(), e
             );
 
@@ -78,7 +78,7 @@ public class ResourceRequestAuthenticator {
                 .newOAuthException(AccessTokenOAuthException.class, INVALID_ACCESS_TOKEN);
         } catch (InvalidJwtException e) {
             log.warn(
-                "Caught Exception while validating JWT signature: {}. Rethrowing as AccessTokenOauthException",
+                "Caught Exception while validating JWT signature: {}. Rethrowing as AccessTokenOAuthException",
                 e.getMessage(), e
             );
             
