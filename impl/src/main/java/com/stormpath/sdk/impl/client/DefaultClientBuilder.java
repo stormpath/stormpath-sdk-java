@@ -93,8 +93,7 @@ public class DefaultClientBuilder implements ClientBuilder {
     @Override
     public Client build() {
         if (this.apiKey == null) {
-            log.debug("No API Key configured.  Attempting to acquire an API Key found from well-known " +
-                     "locations ($HOME/.stormpath/apiKey.properties < environment variables < system properties)...");
+            log.debug("No API Key configured. Attempting to acquire an API Key found from well-known locations ($HOME/.stormpath/apiKey.properties < environment variables < system properties)...");
             this.apiKey = ApiKeys.builder().build();
         }
 

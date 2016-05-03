@@ -100,7 +100,7 @@ public class SpringController extends AbstractController {
 
         if (log.isDebugEnabled()) {
             String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
-            log.debug("Returning view name '" + viewName + "' for lookup path [" + lookupPath + "]");
+            log.debug("Returning view name '{}' for lookup path [{}]", viewName, lookupPath);
         }
 
         Map<String, ?> model = vm.getModel();

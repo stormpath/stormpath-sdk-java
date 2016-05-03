@@ -29,13 +29,17 @@ public class SpringSecurityResolvedAccountFilter extends HttpFilter implements I
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws Exception {
 
-        Account account = AccountResolver.INSTANCE.getAccount(request);
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/605
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        if (account != null) {
-            Authentication authentication = new ProviderAuthenticationToken(account);
-            authentication = authenticationProvider.authenticate(authentication);
-            SecurityContextHolder.clearContext();
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Account account = AccountResolver.INSTANCE.getAccount(request);
+
+            if (account != null) {
+                Authentication authentication = new ProviderAuthenticationToken(account);
+                authentication = authenticationProvider.authenticate(authentication);
+                SecurityContextHolder.clearContext();
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         chain.doFilter(request, response);

@@ -122,10 +122,10 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
             // otherwise don't give a potentially-malicious client any information as to why the request failed
             // but we will log the message:
-            log.debug("Unauthorized {} header value: {}.  If this is unexpected, you might want to specify " +
-                      "one or more comma-delimited URLs via the {} property.",
-                      new Object[]{ (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin,
-                          ORIGIN_URIS_CONFIG_PROPERTY_NAME });
+            log.debug(
+                "Unauthorized {} header value: {}.  If this is unexpected, you might want to specify one or more comma-delimited URLs via the {} property.",
+                (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin, ORIGIN_URIS_CONFIG_PROPERTY_NAME
+            );
 
             throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
         }

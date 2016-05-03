@@ -174,7 +174,7 @@ public class AccessTokenController extends AbstractController {
                     .forApplication(app)
                     .authenticate(passwordGrantRequest);
         } catch (ResourceException e) {
-            log.debug("Unable to authenticate access token request: " + e.getMessage(), e);
+            log.debug("Unable to authenticate access token request: {}", e.getMessage(), e);
             throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate access token request: ", e.getDeveloperMessage());
         }
 
@@ -196,7 +196,7 @@ public class AccessTokenController extends AbstractController {
                     .forApplication(app)
                     .authenticate(refreshGrantRequest);
         } catch (ResourceException e) {
-            log.debug("Unable to authenticate refresh token request: " + e.getMessage(), e);
+            log.debug("Unable to authenticate refresh token request: {}", e.getMessage(), e);
             throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate refresh token request: ", e.getDeveloperMessage());
         }
 
@@ -253,8 +253,10 @@ public class AccessTokenController extends AbstractController {
                         new DefaultFailedAuthenticationRequestEvent(request, response, authcRequest, e);
                 publish(evt);
             } catch (Throwable t) {
-                log.warn("Unable to publish failed authentication request event due to exception: {}.  " +
-                        "Ignoring and handling original authentication exception {}.", t, e);
+                log.warn(
+                    "Unable to publish failed authentication request event due to exception: {}. Ignoring and handling original authentication exception {}.",
+                    t, e, t
+                );
             }
         }
 

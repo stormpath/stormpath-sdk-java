@@ -23,6 +23,7 @@ import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
 import com.stormpath.sdk.impl.config.SystemPropertiesSource;
+import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
@@ -43,6 +44,7 @@ import java.util.Scanner;
  * @since 1.0.RC3
  */
 public class DefaultConfigFactory implements ConfigFactory {
+
 
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
@@ -132,6 +134,17 @@ public class DefaultConfigFactory implements ConfigFactory {
                     propertiesSource = new OptionalPropertiesSource(propertiesSource);
                 }
                 sources.add(propertiesSource);
+
+                // look for YAML file with the same name
+                if (line.contains(".properties")) {
+                    String yamlFile = line.replace(".properties", ".yaml");
+                    resource = resourceFactory.createResource(yamlFile);
+                    propertiesSource = new YAMLPropertiesSource(resource);
+                    if (!required) {
+                        propertiesSource = new OptionalPropertiesSource(propertiesSource);
+                    }
+                    sources.add(propertiesSource);
+                }
             }
         }
 
