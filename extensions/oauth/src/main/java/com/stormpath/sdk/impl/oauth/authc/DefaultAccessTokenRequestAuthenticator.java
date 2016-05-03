@@ -18,10 +18,10 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
+import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
 import com.stormpath.sdk.oauth.AccessTokenResult;
@@ -79,7 +79,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
             request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+                .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);
@@ -99,7 +99,7 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+            this.httpServletRequest = new OAuthHttpServletRequest((HttpRequest) httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(
                 HTTP_REQUEST_NOT_SUPPORTED_MSG,
@@ -111,10 +111,10 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
         try {
             request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
         } catch (Exception e) {
-            log.warn("Caught Exception: {}. Rethrowing as OauthAuthenticationException", e.getMessage(), e);
+            log.warn("Caught Exception: {}. Rethrowing as OAuthAuthenticationException", e.getMessage(), e);
 
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+                .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult authenticationResult = application.authenticateAccount(request);

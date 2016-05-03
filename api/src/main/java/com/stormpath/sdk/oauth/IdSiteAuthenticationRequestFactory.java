@@ -20,5 +20,5 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC8.2
  */
-public interface IdSiteAuthenticationRequestFactory extends AuthenticationRequestFactory<IdSiteAuthenticationRequestBuilder>{
+public interface IdSiteAuthenticationRequestFactory extends OAuthRequestAuthenticationFactory<IdSiteAuthenticationRequestBuilder> {
 }

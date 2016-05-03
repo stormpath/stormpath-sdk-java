@@ -30,7 +30,7 @@ import java.util.Set;
  * ScopeFactory <b>myScopeFactory</b> = new MyScopeFactory();
  *
  * OauthAuthenticationResult result = application.authenticateOauth(httpRequest)
- *     .<b>{@link com.stormpath.sdk.oauth.OauthRequestAuthenticator#using(ScopeFactory) using}(myScopeFactory)</b>
+ *     .<b>{@link OAuthApiRequestAuthenticator#using(ScopeFactory) using}(myScopeFactory)</b>
  *     ...
  *     .execute();
  * </pre>

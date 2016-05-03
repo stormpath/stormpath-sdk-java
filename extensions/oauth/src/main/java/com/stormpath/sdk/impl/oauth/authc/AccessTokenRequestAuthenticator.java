@@ -17,14 +17,14 @@ package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException;
 import com.stormpath.sdk.impl.authc.BasicApiAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
 import com.stormpath.sdk.impl.oauth.authz.DefaultTokenResponse;
-import com.stormpath.sdk.impl.oauth.issuer.JwtOauthIssuer;
+import com.stormpath.sdk.impl.oauth.issuer.JwtOAuthIssuer;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
@@ -94,7 +94,7 @@ public class AccessTokenRequestAuthenticator {
                 .authenticate(application, request.getClientId(), request.getClientSecret());
         } catch (ResourceException e) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_CLIENT);
+                .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_CLIENT);
         }
 
         Set<String> grantedScopes;
@@ -137,7 +137,7 @@ public class AccessTokenRequestAuthenticator {
             }
         }
         throw ApiAuthenticationExceptionFactory
-            .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE);
+            .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.UNSUPPORTED_GRANT_TYPE);
     }
 
     /**
@@ -165,7 +165,7 @@ public class AccessTokenRequestAuthenticator {
             jsonMap.put(OAUTH_SCOPE, scope);
         }
 
-        OAuthIssuer jwtIssuer = new JwtOauthIssuer(jwtSigner, jsonMap);
+        OAuthIssuer jwtIssuer = new JwtOAuthIssuer(jwtSigner, jsonMap);
 
         try {
             return jwtIssuer.accessToken();

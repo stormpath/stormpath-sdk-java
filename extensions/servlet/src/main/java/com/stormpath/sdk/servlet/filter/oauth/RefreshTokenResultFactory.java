@@ -16,7 +16,7 @@
 package com.stormpath.sdk.servlet.filter.oauth;
 
 import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,5 +28,5 @@ public interface RefreshTokenResultFactory {
 
     AccessTokenResult createRefreshTokenResult(HttpServletRequest request,
                                                HttpServletResponse response,
-                                               OauthGrantAuthenticationResult result);
+                                               OAuthGrantRequestAuthenticationResult result);
 }

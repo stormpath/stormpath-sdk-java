@@ -71,7 +71,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     }
 
     @Override
-    public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException {
+    public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OAuthException {
 
         boolean localhostClient = isLocalhostClient(request, response);
 
@@ -107,7 +107,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
                 "Request client (remoteAddr={}) did not specify an Origin or Referer header. Access Token request is denied",
                 request.getRemoteAddr());
 
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
 
         if (!isAuthorizedOrigin(request, response, origin)) {
@@ -127,7 +127,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
                 (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin, ORIGIN_URIS_CONFIG_PROPERTY_NAME
             );
 
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
     }
 

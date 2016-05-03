@@ -67,7 +67,7 @@ import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.saml.DefaultSamlPolicy
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.lang.Objects
-import com.stormpath.sdk.oauth.OauthPolicy
+import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.provider.FacebookProviderData
 import com.stormpath.sdk.provider.GithubProviderData
@@ -114,7 +114,7 @@ class DefaultApplicationTest {
         //since 1.0.0
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         //since 1.0.RC7
-        assertTrue(propertyDescriptors.get("oAuthPolicy") instanceof ResourceReference && propertyDescriptors.get("oAuthPolicy").getType().equals(OauthPolicy))
+        assertTrue(propertyDescriptors.get("oAuthPolicy") instanceof ResourceReference && propertyDescriptors.get("oAuthPolicy").getType().equals(OAuthPolicy))
         //since 1.0.RC8
         assertTrue(propertyDescriptors.get("samlPolicy") instanceof ResourceReference && propertyDescriptors.get("samlPolicy").getType().equals(SamlPolicy))
         assertTrue(propertyDescriptors.get("authorizedCallbackUris") instanceof ListProperty)

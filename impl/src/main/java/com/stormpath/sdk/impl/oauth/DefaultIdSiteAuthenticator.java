@@ -21,15 +21,15 @@ import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
-import com.stormpath.sdk.oauth.Oauth2AuthenticationRequest;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 
 /**
  * @since 1.0.RC8.2
  */
-public class DefaultIdSiteAuthenticator extends AbstractOauth2Authenticator implements IdSiteAuthenticator {
+public class DefaultIdSiteAuthenticator extends AbstractOAuthRequestAuthenticator implements IdSiteAuthenticator {
 
     final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
@@ -38,7 +38,7 @@ public class DefaultIdSiteAuthenticator extends AbstractOauth2Authenticator impl
     }
 
     @Override
-    public OauthGrantAuthenticationResult authenticate(Oauth2AuthenticationRequest authenticationRequest) {
+    public OAuthGrantRequestAuthenticationResult authenticate(OAuthRequestAuthentication authenticationRequest) {
         Assert.notNull(this.application, "application cannot be null or empty");
         Assert.isInstanceOf(IdSiteAuthenticationRequest.class, authenticationRequest, "authenticationRequest must be an instance of IdSiteAuthenticationRequest.");
 
@@ -52,7 +52,7 @@ public class DefaultIdSiteAuthenticator extends AbstractOauth2Authenticator impl
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, attempt, GrantAuthenticationToken.class, httpHeaders);
 
-        OauthGrantAuthenticationResultBuilder builder = new DefaultOauthGrantAuthenticationResultBuilder(grantResult);
+        OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
         return builder.build();
     }
 }

@@ -18,9 +18,9 @@ package com.stormpath.sdk.servlet.filter.oauth;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.Oauth2Requests;
-import com.stormpath.sdk.oauth.PasswordGrantRequest;
-import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticationBuilder;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,8 +42,8 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
     }
 
     @Override
-    public PasswordGrantRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
-            throws OauthException {
+    public OAuthPasswordGrantRequestAuthentication createAccessTokenAuthenticationRequest(HttpServletRequest request)
+            throws OAuthException {
 
         try {
             String username = Strings.clean(request.getParameter(USERNAME_PARAM_NAME));
@@ -54,7 +54,7 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
             AccountStore accountStore = accountStoreResolver.getAccountStore(request, null);
 
-            PasswordGrantRequestBuilder requestBuilder = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+            OAuthPasswordGrantRequestAuthenticationBuilder requestBuilder = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
                     .setPassword(password)
                     .setLogin(username);
             if (accountStore != null){
@@ -63,7 +63,7 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
             return requestBuilder.build();
         } catch (Exception e){
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST);
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
         }
     }
 }

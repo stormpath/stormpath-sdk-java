@@ -35,7 +35,7 @@ import static org.testng.Assert.*;
  * @since 1.0.RC9
  */
 @WebAppConfiguration
-@ContextConfiguration(classes = [CustomRequestEventListenerConfig.class])
+@ContextConfiguration(classes = [CustomRequestEventListenerConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 class CustomRequestEventListenerIT extends AbstractTestNGSpringContextTests {
 
     @Autowired

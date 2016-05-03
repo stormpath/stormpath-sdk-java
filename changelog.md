@@ -286,7 +286,7 @@ via OAuth as you wish.  This includes both OAuth 2 access token requests (e.g. t
 resource requests (e.g. `/movies/1234`).  **At no point do you ever need to see, touch, or write OAuth code!**
 The Stormpath SDK does it for you.
 
-See the `Application` interface's `authenticateApiRequest` and `authenticateOauthRequest` methods for lots of detailed
+See the `Application` interface's `authenticateApiRequest` and `authenticateOAuthRequest` methods for lots of detailed
 information.
 
 ##### Resource method chaining #####

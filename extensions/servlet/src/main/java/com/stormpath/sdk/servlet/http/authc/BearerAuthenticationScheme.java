@@ -23,36 +23,27 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.oauth.JwtAuthenticationResultBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.Authenticators;
-import com.stormpath.sdk.oauth.JwtAuthenticationRequest;
-import com.stormpath.sdk.oauth.JwtAuthenticationRequestBuilder;
-import com.stormpath.sdk.oauth.JwtAuthenticationResult;
-import com.stormpath.sdk.oauth.JwtAuthenticator;
-import com.stormpath.sdk.oauth.Oauth2Requests;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
-import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
-import com.stormpath.sdk.servlet.filter.oauth.OauthException;
+import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
+import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SigningKeyResolver;
-import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Collections;
 import java.util.Set;
 
@@ -111,7 +102,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
             return result;
 
-        } catch (OauthException e) {
+        } catch (OAuthException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.setContentType("application/json;charset=UTF-8");
             response.setHeader("Cache-Control", "no-store");
@@ -134,31 +125,31 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
         try {
 
-            JwtAuthenticationRequest jwtrequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder().setJwt(token).build();
-            JwtAuthenticator jwtAuthenticator = Authenticators.JWT_AUTHENTICATOR.forApplication(getApplication(request));
+            OAuthBearerRequestAuthentication jwtrequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(token).build();
+            OAuthBearerRequestAuthenticator OAuthBearerRequestAuthenticator = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(getApplication(request));
 
             if (withLocalValidation) {
-                jwtAuthenticator.withLocalValidation();
+                OAuthBearerRequestAuthenticator.withLocalValidation();
             }
 
-            JwtAuthenticationResult jwtResult = jwtAuthenticator.authenticate(jwtrequest);
+            OAuthBearerRequestAuthenticationResult jwtResult = OAuthBearerRequestAuthenticator.authenticate(jwtrequest);
 
             return createAuthenticationResult(request, response, jwtResult.getAccount());
 
         } catch (ExpiredJwtException e) {
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
-        } catch (OauthException e) {
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
+        } catch (OAuthException e) {
             throw e;
         } catch (Exception e) {
             log.debug("JWT verification failed.", e);
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, "access_token is invalid.", null, e);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is invalid.", null, e);
         }
     }
 
 
     protected HttpAuthenticationResult createAuthenticationResult(HttpServletRequest request,
                                                                   HttpServletResponse response, Account account)
-        throws OauthException {
+        throws OAuthException {
 
         AuthenticationResult authcResult;
 
@@ -170,7 +161,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             String id = accountHref.substring(i + 1);
             final ApiKey apiKey = getTokenApiKey(request, id);
 
-            authcResult = new OauthAuthenticationResult() {
+            authcResult = new OAuthAuthenticationResult() {
                 @Override
                 public Set<String> getScope() {
                     return Collections.emptySet();
@@ -201,7 +192,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
         } else {
 
             if (account.getStatus() != AccountStatus.ENABLED) {
-                throw new OauthException(OauthErrorCode.INVALID_CLIENT, "account is disabled.", null);
+                throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "account is disabled.", null);
             }
 
             authcResult = new TransientAuthenticationResult(account);
@@ -222,13 +213,13 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
      *
      * @param apiKeyId - The id of the {@link ApiKey} embedded in the access token.
      */
-    protected ApiKey getTokenApiKey(HttpServletRequest request, String apiKeyId) throws OauthException {
+    protected ApiKey getTokenApiKey(HttpServletRequest request, String apiKeyId) throws OAuthException {
         try {
             return getEnabledApiKey(request, apiKeyId);
         } catch (ResourceException e) {
-            OauthErrorCode err = OauthErrorCode.INVALID_CLIENT;
+            OAuthErrorCode err = OAuthErrorCode.INVALID_CLIENT;
             String msg = e.getStormpathError().getDeveloperMessage();
-            throw new OauthException(err, msg, null, e);
+            throw new OAuthException(err, msg, null, e);
         }
     }
 }
