@@ -220,6 +220,21 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public boolean isMeEnabled() {
+                return meEnabled;
+            }
+
+            @Override
+            public String getMeUrl() {
+                return meUri;
+            }
+
+            @Override
+            public boolean getMeExpandGroups() {
+                return meExpandGroups;
+            }
+
+            @Override
             public CookieConfig getAccountCookieConfig() {
                 return stormpathAccountCookieConfig();
             }
