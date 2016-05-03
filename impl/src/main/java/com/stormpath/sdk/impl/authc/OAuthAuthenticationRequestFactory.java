@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
-import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
@@ -35,7 +35,7 @@ public class OAuthAuthenticationRequestFactory {
     private static final String BEARER_OAUTH_REQUEST_FQCN =
         "com.stormpath.sdk.impl.oauth.authc.ResourceAuthenticationRequest";
 
-    private static final String OAUTH_REQUEST_NOT_AVAILABLE_MSG = "Unable to find the OauthRequest implementation on " +
+    private static final String OAUTH_REQUEST_NOT_AVAILABLE_MSG = "Unable to find the OAuthRequest implementation on " +
                                                                   "the classpath. Please ensure you have added the " +
                                                                   "stormpath-sdk-oauth-{version}.jar file to your " +
                                                                   "runtime classpath.";
@@ -70,7 +70,7 @@ public class OAuthAuthenticationRequestFactory {
             return Classes.instantiate(ctor, args);
         } catch (Exception e) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+                .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_REQUEST);
         }
     }
 }

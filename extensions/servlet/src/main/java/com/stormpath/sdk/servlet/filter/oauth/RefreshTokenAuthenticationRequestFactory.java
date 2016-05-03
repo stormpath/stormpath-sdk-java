@@ -25,5 +25,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface RefreshTokenAuthenticationRequestFactory {
 
     OAuthRefreshTokenRequestAuthentication createRefreshTokenAuthenticationRequest(HttpServletRequest request)
-            throws OauthException;
+            throws OAuthException;
 }

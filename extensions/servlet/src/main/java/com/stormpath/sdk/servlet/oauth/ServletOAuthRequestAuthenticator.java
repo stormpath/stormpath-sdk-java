@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC4.6
  */
-public interface ServletOauthRequestAuthenticator {
+public interface ServletOAuthRequestAuthenticator {
 
     /**
      * Specifies the {@link com.stormpath.sdk.oauth.ScopeFactory} to be used when generating a new Access Token as a result of authenticating
@@ -72,7 +72,7 @@ public interface ServletOauthRequestAuthenticator {
      * reflects the successfully authenticated {@link com.stormpath.sdk.account.Account} that made the request and the {@link com.stormpath.sdk.api.ApiKey} used to
      * authenticate the request.  Throws a {@link com.stormpath.sdk.resource.ResourceException} if the request cannot be authenticated.
      *
-     * <p>This method is only useful if you know for sure the HTTP request is an Oauth-based request, and:
+     * <p>This method is only useful if you know for sure the HTTP request is an OAuth-based request, and:
      *
      * <ul>
      *     <li>
@@ -124,7 +124,7 @@ public interface ServletOauthRequestAuthenticator {
      * <pre>
      * import static com.stormpath.sdk.oauth.RequestLocation.*;
      *
-     * OAuthAuthenticationResult result = application.authenticateOauthRequest(httpRequest)
+     * OAuthAuthenticationResult result = application.authenticateOAuthRequest(httpRequest)
      *     <b>{@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
      *     .execute();
      * </pre>
@@ -142,11 +142,11 @@ public interface ServletOauthRequestAuthenticator {
      * <pre>
      * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
      *
-     * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+     * public void processOAuthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
      *
      *    Application application = client.getResource(myApplicationRestUrl, Application.class);
      *
-     *    AccessTokenResult result = (AccessTokenResult) application.authenticateOauthRequest(request).execute();
+     *    AccessTokenResult result = (AccessTokenResult) application.authenticateOAuthRequest(request).execute();
      *
      *    <b>TokenResponse token = result.getTokenResponse();
      *
@@ -173,12 +173,12 @@ public interface ServletOauthRequestAuthenticator {
      * <pre>
      * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
      *
-     * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+     * public void processOAuthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
      *
      *    <b>int desiredTimeoutSeconds = 3600; //change to your preferred value</b>
      *
      *    AccessTokenResult result =
-     *        (AccessTokenResult) Servlets.servletOauthRequestAuthenticator(application)
+     *        (AccessTokenResult) Servlets.servletOAuthRequestAuthenticator(application)
      *        <b>.withTtl(desiredTimeoutSeconds)</b>
      *        .authenticate(request);
      *
@@ -206,14 +206,14 @@ public interface ServletOauthRequestAuthenticator {
      * <pre>
      * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
      *
-     * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+     * public void processOAuthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
      *
      *    int desiredTimeoutSeconds = 3600; //change to your preferred value
      *
      *    <b>ScopeFactory scopeFactory = getScopeFactory(); //get your ScopeFactory implementation from your app config</b>
      *
      *    AccessTokenResult result =
-     *        (AccessTokenResult) Servlets.servletOauthRequestAuthenticator(application)
+     *        (AccessTokenResult) Servlets.servletOAuthRequestAuthenticator(application)
      *        .withTtl(desiredTimeoutSeconds)
      *        <b>.withScopeFactory(scopeFactory)</b>
      *        .authenticate(request);
@@ -235,7 +235,7 @@ public interface ServletOauthRequestAuthenticator {
      * be different than the requested scope based on your requirements).</p>
      *
      * @param httpServletRequest an {@code javax.servlet.http.HttpServletRequest} instance.
-     * @return a OauthAuthenticationResult if the API request was authenticated successfully.
+     * @return a OAuthAuthenticationResult if the API request was authenticated successfully.
      *
      * @throws IllegalArgumentException if the method argument is null or is not a
      * <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">

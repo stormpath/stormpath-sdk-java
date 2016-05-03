@@ -29,7 +29,7 @@ import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
 
 /**
- * Test for DefaultOauthPolicy class
+ * Test for DefaultOAuthPolicy class
  *
  * @since 1.0.RC7
  */

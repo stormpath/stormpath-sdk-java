@@ -26,7 +26,7 @@ import com.stormpath.sdk.resource.Resource;
  * <h3>Different Results</h3>
  * <p>A simple account username/password request will result in an {@code AuthenticationResult}, but so will
  * authentication attempts by ApiKey ({@link com.stormpath.sdk.api.ApiAuthenticationResult}), OAuth Bearer Token,
- * ({@link com.stormpath.sdk.oauth.OAuthAuthenticationResult OauthAuthenticationResult}, or OAuth
+ * ({@link com.stormpath.sdk.oauth.OAuthAuthenticationResult OAuthAuthenticationResult}, or OAuth
  * via ApiKey as a <a href="http://tools.ietf.org/html/rfc6749#section-2.3.1">Client Credentials Grant Type</a> request
  * ({@link com.stormpath.sdk.oauth.AccessTokenResult AccessTokenResult}).</p>
  *
@@ -59,7 +59,7 @@ import com.stormpath.sdk.resource.Resource;
  * will be missed at compile time.</p>
  *
  * @see com.stormpath.sdk.api.ApiAuthenticationResult
- * @see com.stormpath.sdk.oauth.OAuthAuthenticationResult OauthAuthenticationResult
+ * @see com.stormpath.sdk.oauth.OAuthAuthenticationResult OAuthAuthenticationResult
  * @see com.stormpath.sdk.oauth.AccessTokenResult AccessTokenResult
  * @since 0.1
  */

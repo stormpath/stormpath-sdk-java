@@ -25,5 +25,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface AccessTokenAuthenticationRequestFactory {
 
     OAuthPasswordGrantRequestAuthentication createAccessTokenAuthenticationRequest(HttpServletRequest request)
-        throws OauthException;
+        throws OAuthException;
 }

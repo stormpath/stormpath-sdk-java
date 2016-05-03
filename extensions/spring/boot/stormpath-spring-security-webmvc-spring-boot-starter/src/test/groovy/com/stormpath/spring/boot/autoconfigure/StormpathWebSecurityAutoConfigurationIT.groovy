@@ -40,7 +40,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter
+import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -85,7 +85,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     Application application;
 
     @Autowired
-    Oauth2AuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter;
+    OAuthAuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter;
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;

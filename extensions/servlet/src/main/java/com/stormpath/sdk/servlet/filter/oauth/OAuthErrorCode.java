@@ -20,18 +20,18 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.0.RC3
  */
-public class OauthErrorCode {
+public class OAuthErrorCode {
 
-    public static final OauthErrorCode INVALID_REQUEST = new OauthErrorCode("invalid_request");
-    public static final OauthErrorCode INVALID_CLIENT = new OauthErrorCode("invalid_client");
-    public static final OauthErrorCode INVALID_GRANT = new OauthErrorCode("invalid_grant");
-    public static final OauthErrorCode UNAUTHORIZED_CLIENT = new OauthErrorCode("unauthorized_client");
-    public static final OauthErrorCode UNSUPPORTED_GRANT_TYPE = new OauthErrorCode("unsupported_grant_type");
-    public static final OauthErrorCode INVALID_SCOPE = new OauthErrorCode("invalid_scope");
+    public static final OAuthErrorCode INVALID_REQUEST = new OAuthErrorCode("invalid_request");
+    public static final OAuthErrorCode INVALID_CLIENT = new OAuthErrorCode("invalid_client");
+    public static final OAuthErrorCode INVALID_GRANT = new OAuthErrorCode("invalid_grant");
+    public static final OAuthErrorCode UNAUTHORIZED_CLIENT = new OAuthErrorCode("unauthorized_client");
+    public static final OAuthErrorCode UNSUPPORTED_GRANT_TYPE = new OAuthErrorCode("unsupported_grant_type");
+    public static final OAuthErrorCode INVALID_SCOPE = new OAuthErrorCode("invalid_scope");
 
     public final String value;
 
-    public OauthErrorCode(String value) {
+    public OAuthErrorCode(String value) {
         Assert.hasText(value, "value cannot be null or empty.");
         this.value = value;
     }

@@ -23,20 +23,20 @@ import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 import com.stormpath.sdk.oauth.ScopeFactory;
 import com.stormpath.sdk.oauth.RequestLocation;
-import com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator;
+import com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC4.6
  */
-public class DefaultServletOauthRequestAuthenticator implements ServletOauthRequestAuthenticator {
+public class DefaultServletOAuthRequestAuthenticator implements ServletOAuthRequestAuthenticator {
 
     private final Application application;
 
     private static final String HTTP_SERVLET_REQUEST_FQCN = "javax.servlet.http.HttpServletRequest";
 
-    public DefaultServletOauthRequestAuthenticator(Application application) {
+    public DefaultServletOAuthRequestAuthenticator(Application application) {
         this.application = application;
     }
 

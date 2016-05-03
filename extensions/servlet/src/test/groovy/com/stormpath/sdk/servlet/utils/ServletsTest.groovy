@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.servlet.api.ServletApiRequestAuthenticator
-import com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator
+import com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator
 import com.stormpath.sdk.servlet.util.Servlets
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -48,7 +48,7 @@ class ServletsTest {
 
         assertTrue(Servlets.servletApiRequestAuthenticator(application) instanceof ServletApiRequestAuthenticator)
 
-        assertTrue(Servlets.servletOauthRequestAuthenticator(application) instanceof ServletOauthRequestAuthenticator)
+        assertTrue(Servlets.servletOAuthRequestAuthenticator(application) instanceof ServletOAuthRequestAuthenticator)
 
     }
 
@@ -63,7 +63,7 @@ class ServletsTest {
         }
 
         try {
-            Servlets.servletOauthRequestAuthenticator(null)
+            Servlets.servletOAuthRequestAuthenticator(null)
             fail('application argument cannot be null.')
         } catch (IllegalArgumentException iae) {
             assertEquals iae.message, 'application argument cannot be null.'

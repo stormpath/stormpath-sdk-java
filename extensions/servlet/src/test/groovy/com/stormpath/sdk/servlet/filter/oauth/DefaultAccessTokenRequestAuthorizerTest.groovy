@@ -43,7 +43,7 @@ class DefaultAccessTokenRequestAuthorizerTest extends PowerMockTestCase {
 
         try {
             authorizer.assertSecure(request, response)
-        } catch (OauthException expected) {
+        } catch (OAuthException expected) {
         } finally {
             verify request, response, reqAuthz, resolver
         }

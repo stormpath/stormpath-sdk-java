@@ -23,13 +23,13 @@ import com.stormpath.sdk.resource.ResourceException;
  *
  * @since 1.0.RC
  */
-public class AccessTokenOauthException extends OauthAuthenticationException {
+public class AccessTokenOAuthException extends OAuthAuthenticationException {
 
     public static final String INVALID_ACCESS_TOKEN = "access_token is invalid.";
 
     public static final String EXPIRED_ACCESS_TOKEN = "access_token is expired.";
 
-    public AccessTokenOauthException(Error error, String oauthError) {
+    public AccessTokenOAuthException(Error error, String oauthError) {
         super(error, oauthError);
     }
 }

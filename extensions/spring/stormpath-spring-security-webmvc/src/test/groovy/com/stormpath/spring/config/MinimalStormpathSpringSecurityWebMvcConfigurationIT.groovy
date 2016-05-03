@@ -34,7 +34,7 @@ import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter
+import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.StormpathUserDetails
@@ -96,7 +96,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     Filter stormpathFilter
 
     @Autowired
-    Oauth2AuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter
+    OAuthAuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter

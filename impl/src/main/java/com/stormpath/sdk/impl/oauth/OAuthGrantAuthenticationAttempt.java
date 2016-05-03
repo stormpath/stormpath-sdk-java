@@ -19,7 +19,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.resource.Resource;
 
 /**
- * This class is used to wrap the information required to build a Grant Authentication request, required to exchange the user's credentials for an Oauth Token.
+ * This class is used to wrap the information required to build a Grant Authentication request, required to exchange the user's credentials for an OAuth Token.
  *
  * @since 1.0.RC7
  */

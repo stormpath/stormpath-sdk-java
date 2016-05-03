@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @since 1.0.RC
  */
-public class JwtOauthIssuer implements OAuthIssuer {
+public class JwtOAuthIssuer implements OAuthIssuer {
 
     private final MapMarshaller mapMarshaller;
 
@@ -37,7 +37,7 @@ public class JwtOauthIssuer implements OAuthIssuer {
 
     private final JwtSigner jwtSigner;
 
-    public JwtOauthIssuer(JwtSigner jwtSigner, Map<String, Object> payload) {
+    public JwtOAuthIssuer(JwtSigner jwtSigner, Map<String, Object> payload) {
         Assert.notNull(jwtSigner, "jwtSigner cannot be null.");
         Assert.notEmpty(payload, "payload cannot be null or empty.");
         this.jwtSigner = jwtSigner;

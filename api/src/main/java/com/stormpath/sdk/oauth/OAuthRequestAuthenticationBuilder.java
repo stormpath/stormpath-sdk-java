@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Utility class used to build {@link OAuthRequestAuthentication Oauth2AuthenticationRequest} instances.
+ * Utility class used to build {@link OAuthRequestAuthentication OAuthRequestAuthentication} instances.
  *
  * @see OAuthPasswordGrantRequestAuthenticationBuilder
  * @see OAuthRefreshTokenRequestAuthenticationBuilder

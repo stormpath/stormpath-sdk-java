@@ -20,7 +20,7 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.application.DefaultApplication;
-import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
+import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
@@ -52,7 +52,7 @@ public class DefaultOAuthApiRequestAuthenticator implements OAuthApiRequestAuthe
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OauthHttpServletRequest((HttpRequest) httpRequest);
+            this.httpServletRequest = new OAuthHttpServletRequest((HttpRequest) httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }
@@ -106,7 +106,7 @@ public class DefaultOAuthApiRequestAuthenticator implements OAuthApiRequestAuthe
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OauthHttpServletRequest(httpRequest);
+            this.httpServletRequest = new OAuthHttpServletRequest(httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }

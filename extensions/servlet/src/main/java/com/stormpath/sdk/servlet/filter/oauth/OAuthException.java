@@ -21,33 +21,33 @@ import com.stormpath.sdk.lang.Strings;
 /**
  * @since 1.0.RC3
  */
-public class OauthException extends RuntimeException {
+public class OAuthException extends RuntimeException {
 
-    private final OauthErrorCode errorCode;
+    private final OAuthErrorCode errorCode;
     private final String description;
     private final String uri;
 
-    public OauthException(OauthErrorCode code) {
+    public OAuthException(OAuthErrorCode code) {
         this(code, null, null);
     }
 
-    public OauthException(OauthErrorCode code, String description, String uri) {
+    public OAuthException(OAuthErrorCode code, String description, String uri) {
         super(description != null ? description : (code != null ? code.getValue() : ""));
-        Assert.notNull(code, "OauthErrorCode cannot be null.");
+        Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
         this.description = description;
         this.uri = uri;
     }
 
-    public OauthException(OauthErrorCode code, String description, String uri, Exception cause) {
+    public OAuthException(OAuthErrorCode code, String description, String uri, Exception cause) {
         super(description != null ? description : (code != null ? code.getValue() : ""), cause);
-        Assert.notNull(code, "OauthErrorCode cannot be null.");
+        Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
         this.description = description;
         this.uri = uri;
     }
 
-    public OauthErrorCode getErrorCode() {
+    public OAuthErrorCode getErrorCode() {
         return errorCode;
     }
 

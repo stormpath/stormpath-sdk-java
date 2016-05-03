@@ -30,7 +30,7 @@ public class DefaultRefreshTokenAuthenticationRequestFactory implements RefreshT
     protected static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
 
     @Override
-    public OAuthRefreshTokenRequestAuthentication createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
+    public OAuthRefreshTokenRequestAuthentication createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OAuthException {
 
         try {
             String refreshToken = Strings.clean(request.getParameter(REFRESH_TOKEN_GRANT_TYPE));
@@ -41,7 +41,7 @@ public class DefaultRefreshTokenAuthenticationRequestFactory implements RefreshT
                     .build();
 
         } catch (Exception e){
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST);
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
         }
     }
 }

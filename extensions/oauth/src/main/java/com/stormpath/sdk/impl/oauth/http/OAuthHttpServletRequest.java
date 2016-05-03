@@ -44,18 +44,18 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * OauthHttpServletRequest is a custom implementation of the {@link HttpServletRequest} that implements the
+ * OAuthHttpServletRequest is a custom implementation of the {@link HttpServletRequest} that implements the
  * bare minimum methods to handle OAuth 2.0 requests.
  * <p/>
  * The methods supported are delegated to the wrapped {@link HttpRequest} instance.
  *
  * @since 1.0.RC
  */
-public class OauthHttpServletRequest implements HttpServletRequest {
+public class OAuthHttpServletRequest implements HttpServletRequest {
 
     private final HttpRequest httpRequest;
 
-    public OauthHttpServletRequest(HttpRequest httpRequest) {
+    public OAuthHttpServletRequest(HttpRequest httpRequest) {
         this.httpRequest = httpRequest;
     }
 

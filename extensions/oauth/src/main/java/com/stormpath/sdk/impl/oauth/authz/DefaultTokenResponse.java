@@ -43,7 +43,7 @@ public class DefaultTokenResponse implements TokenResponse {
         try {
             oAuthResponse = builder.tokenResponseBuilder.buildJSONMessage();
         } catch (OAuthSystemException e) {
-            throw new IllegalStateException("Unexpected error when building Json Oauth response.", e);
+            throw new IllegalStateException("Unexpected error when building Json OAuth response.", e);
         }
     }
 

@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.error.authc.AccessTokenOauthException;
+import com.stormpath.sdk.error.authc.AccessTokenOAuthException;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import static com.stormpath.sdk.error.authc.AccessTokenOauthException.*;
+import static com.stormpath.sdk.error.authc.AccessTokenOAuthException.*;
 import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /** @since 1.0.RC */
@@ -65,10 +65,10 @@ public class ResourceRequestAuthenticator {
             jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+                .newOAuthException(AccessTokenOAuthException.class, INVALID_ACCESS_TOKEN);
         } catch (InvalidJwtException e) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+                .newOAuthException(AccessTokenOAuthException.class, INVALID_ACCESS_TOKEN);
         }
 
         Map jsonMap = jwtWrapper.getJsonPayloadAsMap();
@@ -108,7 +108,7 @@ public class ResourceRequestAuthenticator {
 
         if (nowAsSecondsSinceEpoch >= expirationTimestampAsSecondsSinceEpoch) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
+                .newOAuthException(AccessTokenOAuthException.class, EXPIRED_ACCESS_TOKEN);
         }
     }
 
@@ -129,13 +129,13 @@ public class ResourceRequestAuthenticator {
         ApiKey apiKey = application.getApiKey(apiKeyId, new DefaultApiKeyOptions().withAccount());
 
         if (apiKey == null || apiKey.getStatus() == ApiKeyStatus.DISABLED) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(AccessTokenOAuthException.class, INVALID_CLIENT);
         }
 
         Account account = apiKey.getAccount();
 
         if (account.getStatus() != AccountStatus.ENABLED) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(AccessTokenOAuthException.class, INVALID_CLIENT);
         }
 
         return apiKey;

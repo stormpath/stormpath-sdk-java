@@ -1495,7 +1495,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      *
      * @since 1.0.RC7
      */
-    OAuthPolicy getOauthPolicy();
+    OAuthPolicy getOAuthPolicy();
 
     /**
      * Returns the {@link SamlPolicy} associated with this application.

@@ -31,9 +31,9 @@ public interface ServletApiRequestAuthenticator {
      * <p>
      * This method will automatically authenticate <em>both</em> HTTP Basic and OAuth 2 requests.  However, if you
      * require more specific or customized OAuth request processing, use the
-     * {@link com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)} method instead; that method allows you to customize how an OAuth request
+     * {@link com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)} method instead; that method allows you to customize how an OAuth request
      * is processed.
-     * For example, you will likely want to call {@link com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator#authenticate(HttpServletRequest)} for requests
+     * For example, you will likely want to call {@link com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator#authenticate(HttpServletRequest)} for requests
      * directed to your application's specific OAuth 2 token and authorization urls (often referenced as
      * {@code /oauth2/token} and {@code /oauth2/authorize} in OAuth 2 documentation).
      *
@@ -87,7 +87,7 @@ public interface ServletApiRequestAuthenticator {
      *        }
      *
      *        &#64;Override
-     *        public void visit(OauthAuthenticationResult result) {
+     *        public void visit(OAuthAuthenticationResult result) {
      *            //the request was authenticated using OAuth
      *            //ensure we can use the scopes for access control checks after this visitor returns:
      *            scope.addAll(result.getScope());
@@ -114,7 +114,7 @@ public interface ServletApiRequestAuthenticator {
      * <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
      * {@code javax.servlet.http.HttpServletRequest}</a> instance.
      *
-     * @see com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)
+     * @see com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator#authenticate(javax.servlet.http.HttpServletRequest)
      * @since 1.0.RC4.6
      */
      public ApiAuthenticationResult authenticate(HttpServletRequest httpServletRequest);

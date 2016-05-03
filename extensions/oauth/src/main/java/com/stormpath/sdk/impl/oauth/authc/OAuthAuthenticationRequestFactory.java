@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.oauth.authc;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.error.authc.InvalidAuthenticationException;
-import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.authc.ApiAuthenticationRequestFactory;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
@@ -54,7 +54,7 @@ public class OAuthAuthenticationRequestFactory extends ApiAuthenticationRequestF
             }
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(InvalidAuthenticationException.class);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class, OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_REQUEST);
         }
     }
 }

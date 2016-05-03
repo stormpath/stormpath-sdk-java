@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * Users not depending on the Servlet API will need to construct {@link HttpRequestBuilder HttpRequest objects} to be
- * able to use this SDK's {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object) Oauth
+ * able to use this SDK's {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object) OAuth
  * authentication mechanism}.
  *
  * @see HttpRequestBuilder

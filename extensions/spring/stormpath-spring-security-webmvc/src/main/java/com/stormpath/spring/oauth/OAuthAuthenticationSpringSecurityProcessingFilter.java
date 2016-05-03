@@ -44,9 +44,9 @@ import java.io.IOException;
  *
  * @since 1.0.RC8.3
  */
-public class Oauth2AuthenticationSpringSecurityProcessingFilter extends HttpFilter implements InitializingBean {
+public class OAuthAuthenticationSpringSecurityProcessingFilter extends HttpFilter implements InitializingBean {
 
-    private final static Logger logger = LoggerFactory.getLogger(Oauth2AuthenticationSpringSecurityProcessingFilter.class);
+    private final static Logger logger = LoggerFactory.getLogger(OAuthAuthenticationSpringSecurityProcessingFilter.class);
 
     @Autowired
     private AuthenticationProvider authenticationProvider;

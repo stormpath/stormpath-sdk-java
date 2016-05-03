@@ -113,7 +113,7 @@ import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
 
     private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
-        "com.stormpath.sdk.impl.oauth.authc.DefaultOauthRequestAuthenticator";
+        "com.stormpath.sdk.impl.oauth.authc.DefaultOAuthRequestAuthenticator";
 
     private static final String OAUTH_BUILDER_NOT_AVAILABLE_MSG;
 
@@ -363,7 +363,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /** @since 1.0.RC7 */
-    public OAuthPolicy getOauthPolicy() {
+    public OAuthPolicy getOAuthPolicy() {
         return getResourceProperty(OAUTH_POLICY);
     }
 

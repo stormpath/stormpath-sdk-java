@@ -43,12 +43,12 @@ class AuthenticationResultVisitorAdapterTest {
     }
 
     @Test
-    public void visitOauthAuthenticationResult() {
+    public void visitOAuthAuthenticationResult() {
         try {
             authenticationResultVisitorAdapter.visit(createMock(OAuthAuthenticationResult.class))
             fail("shouldn't be here")
         } catch (UnsupportedOperationException e) {
-            assertEquals e.getMessage(), "visit(OauthAuthenticationResult) is not expected."
+            assertEquals e.getMessage(), "visit(OAuthAuthenticationResult) is not expected."
         }
     }
 

@@ -17,11 +17,10 @@ package com.stormpath.sdk.servlet.util;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.servlet.api.ServletApiRequestAuthenticator;
 import com.stormpath.sdk.servlet.api.impl.DefaultServletApiRequestAuthenticator;
-import com.stormpath.sdk.servlet.oauth.ServletOauthRequestAuthenticator;
-import com.stormpath.sdk.servlet.oauth.impl.DefaultServletOauthRequestAuthenticator;
+import com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator;
+import com.stormpath.sdk.servlet.oauth.impl.DefaultServletOAuthRequestAuthenticator;
 
 /**
  * Static utility/helper methods for working with API Request Authenticators for Servlet environments.
@@ -35,9 +34,9 @@ public final class Servlets {
         return new DefaultServletApiRequestAuthenticator(application);
     }
 
-    public static ServletOauthRequestAuthenticator servletOauthRequestAuthenticator(Application application){
+    public static ServletOAuthRequestAuthenticator servletOAuthRequestAuthenticator(Application application){
         Assert.notNull(application, "application argument cannot be null.");
-        return new DefaultServletOauthRequestAuthenticator(application);
+        return new DefaultServletOAuthRequestAuthenticator(application);
     }
 
 }

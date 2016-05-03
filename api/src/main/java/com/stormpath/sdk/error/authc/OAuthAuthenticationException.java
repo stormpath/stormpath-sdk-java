@@ -23,7 +23,7 @@ import com.stormpath.sdk.resource.ResourceException;
  *
  * @since 1.0.RC
  */
-public class OauthAuthenticationException extends ResourceException {
+public class OAuthAuthenticationException extends ResourceException {
 
     public static final String INVALID_REQUEST = "invalid_request";
 
@@ -37,12 +37,12 @@ public class OauthAuthenticationException extends ResourceException {
 
     private final String oauthError;
 
-    public OauthAuthenticationException(Error error, String oauthError) {
+    public OAuthAuthenticationException(Error error, String oauthError) {
         super(error);
         this.oauthError = oauthError;
     }
 
-    public String getOauthError() {
+    public String getOAuthError() {
         return oauthError;
     }
 }

@@ -43,7 +43,7 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
     @Override
     public OAuthPasswordGrantRequestAuthentication createAccessTokenAuthenticationRequest(HttpServletRequest request)
-            throws OauthException {
+            throws OAuthException {
 
         try {
             String username = Strings.clean(request.getParameter(USERNAME_PARAM_NAME));
@@ -63,7 +63,7 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
             return requestBuilder.build();
         } catch (Exception e){
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST);
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
         }
     }
 }

@@ -1655,10 +1655,10 @@ class ApplicationIT extends ClientIT {
     /* @since 1.0.RC7 */
 
     @Test
-    void testRetrieveAndUpdateOauthPolicy() {
+    void testRetrieveAndUpdateOAuthPolicy() {
         def app = createTempApp()
 
-        OAuthPolicy oauthPolicy = app.getOauthPolicy()
+        OAuthPolicy oauthPolicy = app.getOAuthPolicy()
         assertNotNull oauthPolicy
         assertEquals oauthPolicy.getApplication().getHref(), app.href
         assertNotNull oauthPolicy.getTokenEndpoint()
@@ -1667,7 +1667,7 @@ class ApplicationIT extends ClientIT {
         oauthPolicy.setRefreshTokenTtl("P2D")
         oauthPolicy.save()
 
-        oauthPolicy = app.getOauthPolicy()
+        oauthPolicy = app.getOAuthPolicy()
         assertEquals oauthPolicy.getAccessTokenTtl(), "P8D"
         assertEquals oauthPolicy.getRefreshTokenTtl(), "P2D"
         assertEquals oauthPolicy.getApplication().getHref(), app.href
