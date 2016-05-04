@@ -20,7 +20,7 @@
 <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
 
 <t:page>
-    <jsp:attribute name="title"><sp:message key="stormpath.web.verify.title"/></jsp:attribute>
+    <jsp:attribute name="title"><sp:message key="stormpath.web.verifyEmail.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -34,9 +34,9 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span><sp:message key="stormpath.web.verify.body.title"/></span>
-                                <p><sp:message key="stormpath.web.verify.body.instructions"/>
-                                <p><sp:message key="stormpath.web.verify.body.instructions2"/></p>
+                                <span><sp:message key="stormpath.web.verifyEmail.body.title"/></span>
+                                <p><sp:message key="stormpath.web.verifyEmail.body.instructions"/>
+                                <p><sp:message key="stormpath.web.verifyEmail.body.instructions2"/></p>
                             </div>
 
                         </div>

@@ -12,6 +12,8 @@ import static org.testng.Assert.*
 /**
  * A test that downloads the default config from the spec and compares
  * it with com/stormpath/sdk/config/stormpath.properties
+ *
+ * @since 1.0.0
  */
 class SpecConfigVersusCorePropertiesTest {
     def SPEC_CONFIG_LOCATION = "https://raw.githubusercontent.com/stormpath/stormpath-sdk-spec/master/specifications/config.md"

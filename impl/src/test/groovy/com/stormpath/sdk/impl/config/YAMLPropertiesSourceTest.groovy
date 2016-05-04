@@ -15,7 +15,7 @@ class YAMLPropertiesSourceTest {
         def testStr = "stormpath:\n  web:\n    verify:\n      nextUri: /register?status=verified"
         def properties = new YAMLPropertiesSource(new TestStringResource(testStr)).properties
 
-        assertEquals properties.get("stormpath.web.verify.nextUri"), "/register?status=verified"
+        assertEquals properties.get("stormpath.web.verifyEmail.nextUri"), "/register?status=verified"
     }
 
     @Test

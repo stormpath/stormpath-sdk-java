@@ -19,7 +19,7 @@
 <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
 
 <t:page>
-    <jsp:attribute name="title"><sp:message key="stormpath.web.change.title"/></jsp:attribute>
+    <jsp:attribute name="title"><sp:message key="stormpath.web.changePassword.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -33,8 +33,8 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span><sp:message key="stormpath.web.change.form.title"/></span>
-                                <p><sp:message key="stormpath.web.change.form.instructions"/></p>
+                                <span><sp:message key="stormpath.web.changePassword.form.title"/></span>
+                                <p><sp:message key="stormpath.web.changePassword.form.instructions"/></p>
                             </div>
 
                             <c:if test="${!empty errors}">
@@ -76,7 +76,7 @@
                                 </c:forEach>
 
                                 <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.change.form.button.value"/></button>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.changePassword.form.button.value"/></button>
                                 </div>
                             </form>
 
@@ -84,7 +84,7 @@
 
                     </div>
 
-                    <a href="${pageContext.request.contextPath}${loginUri}" class="to-login"><sp:message key="stormpath.web.change.form.loginLink.text"/></a>
+                    <a href="${pageContext.request.contextPath}${loginUri}" class="to-login"><sp:message key="stormpath.web.changePassword.form.loginLink.text"/></a>
 
                 </div>
 

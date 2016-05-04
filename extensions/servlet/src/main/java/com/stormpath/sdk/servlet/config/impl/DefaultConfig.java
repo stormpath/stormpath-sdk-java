@@ -41,21 +41,21 @@ public class DefaultConfig implements Config {
     public static final String LOGOUT_URL = "stormpath.web.logout.uri";
     public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
-    public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.uri";
-    public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUri";
-    public static final String CHANGE_PASSWORD_URL = "stormpath.web.change.uri";
-    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUri";
+    public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgotPassword.uri";
+    public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgotPassword.nextUri";
+    public static final String CHANGE_PASSWORD_URL = "stormpath.web.changePassword.uri";
+    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.changePassword.nextUri";
     public static final String REGISTER_URL = "stormpath.web.register.uri";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
-    public static final String VERIFY_URL = "stormpath.web.verify.uri";
-    public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUri";
+    public static final String VERIFY_URL = "stormpath.web.verifyEmail.uri";
+    public static final String VERIFY_NEXT_URL = "stormpath.web.verifyEmail.nextUri";
     public static final String SEND_VERIFICATION_EMAIL_URL = "stormpath.web.sendVerificationEmail.uri";
-    public static final String VERIFY_ENABLED = "stormpath.web.verify.enabled";
+    public static final String VERIFY_ENABLED = "stormpath.web.verifyEmail.enabled";
 
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
-    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.uri";
-    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.accessToken.validationStrategy";
+    public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
+    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.validationStrategy";
     public static final String ACCOUNT_COOKIE_NAME = "stormpath.web.account.cookie.name";
     public static final String ACCOUNT_COOKIE_COMMENT = "stormpath.web.account.cookie.comment";
     public static final String ACCOUNT_COOKIE_DOMAIN = "stormpath.web.account.cookie.domain";

@@ -32,12 +32,12 @@ import javax.servlet.ServletException;
 public class AccessTokenFilter extends ControllerFilter {
 
     protected static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-        "stormpath.web.accessToken.authenticationRequestFactory";
-    protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.accessToken.resultFactory";
+        "stormpath.web.oauth2.authenticationRequestFactory";
+    protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.oauth2.resultFactory";
     protected static final String REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
             "stormpath.web.refreshToken.authenticationRequestFactory";
     protected static final String REFRESH_TOKEN_RESULT_FACTORY = "stormpath.web.refreshToken.resultFactory";
-    protected static final String REQUEST_AUTHORIZER = "stormpath.web.accessToken.authorizer";
+    protected static final String REQUEST_AUTHORIZER = "stormpath.web.oauth2.authorizer";
     protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
     protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 

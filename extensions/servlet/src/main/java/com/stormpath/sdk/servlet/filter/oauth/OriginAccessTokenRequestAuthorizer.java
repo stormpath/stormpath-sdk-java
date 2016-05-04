@@ -39,7 +39,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     //yes, 'Referer' is supposed to be spelled incorrectly: https://tools.ietf.org/html/rfc7231#section-5.5.2 :
     public static final String REFERER_HEADER_NAME = "Referer";
     public static final String ORIGIN_URIS_CONFIG_PROPERTY_NAME =
-        "stormpath.web.accessToken.origin.authorizer.originUris";
+        "stormpath.web.oauth2.origin.authorizer.originUris";
 
     private final ServerUriResolver serverUriResolver;
     private final Resolver<Boolean> localhost;

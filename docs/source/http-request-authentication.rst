@@ -206,7 +206,7 @@ This is enabled via the following configuration property:
 
 .. code-block:: properties
 
-   stormpath.web.accessToken.authorizer.secure.resolver = com.stormpath.sdk.servlet.config.SecureResolverFactory
+   stormpath.web.oauth2.authorizer.secure.resolver = com.stormpath.sdk.servlet.config.SecureResolverFactory
 
 The ``com.stormpath.sdk.servlet.config.SecureResolverFactory`` returns a ``Resolver<Boolean>`` instance that will return true or false based on the inbound request.
 

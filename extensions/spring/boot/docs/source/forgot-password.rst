@@ -81,21 +81,21 @@ Forgot URI
 
 Users can initiate the password reset workflow by visiting ``/forgot``
 
-If you want to change this path, set the ``stormpath.web.forgot.uri`` configuration property:
+If you want to change this path, set the ``stormpath.web.forgotPassword.uri`` configuration property:
 
 .. code-block:: properties
 
     # The context-relative path to the 'forgot password' view:
-    stormpath.web.forgot.uri = /forgot
+    stormpath.web.forgotPassword.uri = /forgot
 
 Forgot Next URI
 ---------------
 
-After the user submits their email address to send a 'reset password' email, they will automatically be redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.forgot.nextUri`` configuration property:
+After the user submits their email address to send a 'reset password' email, they will automatically be redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.forgotPassword.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.forgot.nextUri = /login?status=forgot
+    stormpath.web.forgotPassword.nextUri = /login?status=forgot
 
 As you can see, this URI has a ``status=forgot`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that they should check their email inbox to look for the password reset email with instructions:
 
@@ -104,11 +104,11 @@ As you can see, this URI has a ``status=forgot`` query parameter.  The default l
 Forgot View
 -----------
 
-When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgot.view`` property:
+When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgotPassword.view`` property:
 
 .. code-block:: properties
 
-    stormpath.web.forgot.view = stormpath/forgot
+    stormpath.web.forgotPassword.view = stormpath/forgot
 
 Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
@@ -117,25 +117,25 @@ Change Password URI
 
 The Password Reset 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the password reset email.  For example, during development, this is often something like ``http://localhost:8080/change`` and in production, something like ``https://myapp.com/change``.
 
-When a user clicks the link in the email, the |project| will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.change.uri`` configuration property:
+When a user clicks the link in the email, the |project| will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.changePassword.uri`` configuration property:
 
 .. code-block:: properties
 
-   stormpath.web.change.uri = /change
+   stormpath.web.changePassword.uri = /change
 
 You can change the value to reflect a different path if you wish.
 
 .. caution::
-   The fully qualified Password Reset Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.change.uri``.  If you change one, you must change the other.
+   The fully qualified Password Reset Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.changePassword.uri``.  If you change one, you must change the other.
 
 Change Password Next URI
 ------------------------
 
-After the user successfully specifies their new password, they will be redirected to a `next` URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.change.nextUri`` configuration property:
+After the user successfully specifies their new password, they will be redirected to a `next` URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.changePassword.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.change.nextUri = /login?status=changed
+    stormpath.web.changePassword.nextUri = /login?status=changed
 
 As you can see, this URI has a ``status=changed`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 
@@ -153,18 +153,18 @@ If you want to change this path, set the ``stormpath.web.login.uri`` configurati
 Change Password View
 --------------------
 
-When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.change.view`` property:
+When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.changePassword.view`` property:
 
 .. code-block:: properties
 
-    stormpath.web.change.view = stormpath/change
+    stormpath.web.changePassword.view = stormpath/change
 
 Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 i18n
 ----
 
-The :ref:`i18n` message keys used in the forgot password view have names prefixed with ``stormpath.web.forgot.``:
+The :ref:`i18n` message keys used in the forgot password view have names prefixed with ``stormpath.web.forgotPassword.``:
 
 .. literalinclude:: ../../../../servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties

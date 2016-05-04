@@ -109,7 +109,7 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean(name="springSecuritySamlResultListener")
-    @ConditionalOnProperty(name="stormpath.web.saml.enabled")
+    @ConditionalOnProperty(name="stormpath.web.callback.enabled")
     public SamlResultListener springSecuritySamlResultListener() {
         return super.springSecuritySamlResultListener();
     }

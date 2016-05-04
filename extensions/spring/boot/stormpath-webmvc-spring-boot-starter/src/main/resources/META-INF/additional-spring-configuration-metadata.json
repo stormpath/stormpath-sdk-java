@@ -34,7 +34,7 @@
       "name": "stormpath.web.accessToken"
     },
     {
-      "name": "stormpath.web.accessToken.origin.authorizer"
+      "name": "stormpath.web.oauth2.origin.authorizer"
     },
     {
       "name": "stormpath.web.idSite"
@@ -298,27 +298,27 @@
       "defaultValue": "stormpath/login"
     },
     {
-      "name": "stormpath.web.forgot.enabled",
+      "name": "stormpath.web.forgotPassword.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether or not the Stormpath 'forgot password' view is enabled.",
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.forgot.uri",
+      "name": "stormpath.web.forgotPassword.uri",
       "type": "java.lang.String",
       "description": "The context-relative path to the 'forgot password' view.",
       "defaultValue": "/forgot"
     },
     {
-      "name": "stormpath.web.forgot.nextUri",
+      "name": "stormpath.web.forgotPassword.nextUri",
       "type": "java.lang.String",
       "description": "The context-relative path where the user will be redirected after initiating the 'forgot password' flow if a 'next' request parameter is missing.  This value is '/login?status=fort', indicating the login view will be rendered by default, with a status that indicates why the user is on the login page.  This status can be interpreted by the view controller to customize the view if desired..",
       "defaultValue": "/login?status=forgot"
     },
     {
-      "name": "stormpath.web.forgot.view",
+      "name": "stormpath.web.forgotPassword.view",
       "type": "java.lang.String",
-      "description": "The name of the Spring MVC view that should be rendered when visiting the stormpath.web.forgot.uri.  This is the name provided to the Spring MVC view resolver.  The default value is 'stormpath/forgot' which will render a convenient default view provided by the Stormpath starter. If you want to render your own template instead of the default, set the name of your custom view here.",
+      "description": "The name of the Spring MVC view that should be rendered when visiting the stormpath.web.forgotPassword.uri.  This is the name provided to the Spring MVC view resolver.  The default value is 'stormpath/forgot' which will render a convenient default view provided by the Stormpath starter. If you want to render your own template instead of the default, set the name of your custom view here.",
       "defaultValue": "stormpath/forgot"
     },
     {
@@ -352,25 +352,25 @@
       "defaultValue": "givenName, surname, email(required), password(required,password)"
     },
     {
-      "name": "stormpath.web.verify.enabled",
+      "name": "stormpath.web.verifyEmail.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether or not the Stormpath verification view is enabled.",
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.verify.uri",
+      "name": "stormpath.web.verifyEmail.uri",
       "type": "java.lang.String",
       "description": "The context-relative path to the email verification view. When a user clicks the link in the 'verify your email' email, the Stormpath starter will automatically process the resulting request. Caution: The fully qualified Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via this property. If you change one, you must change the other.",
       "defaultValue": "/verify"
     },
     {
-      "name": "stormpath.web.verify.nextUri",
+      "name": "stormpath.web.verifyEmail.nextUri",
       "type": "java.lang.String",
       "description": "The context-relative path where the user will be redirected after verifying their email address.  The default value is '/login?status=verified', indicating the user will see the login view with a status indicating the user has verified their email.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in now.",
       "defaultValue": "/login?status=verified"
     },
     {
-      "name": "stormpath.web.verify.view",
+      "name": "stormpath.web.verifyEmail.view",
       "type": "java.lang.String",
       "description": "The name of the Spring MVC view that should be rendered to explain to the user that a verification email has just been sent out and that they need to click the received link in order to active the account. The default value is 'stormpath/verify' which will render a convenient default view provided by the Stormpath starter, but you may specify your own value to provide a custom view.",
       "defaultValue": "stormpath/verify"
@@ -400,43 +400,43 @@
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.change.enabled",
+      "name": "stormpath.web.changePassword.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether or not the Stormpath 'change password' view is enabled.",
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.change.uri",
+      "name": "stormpath.web.changePassword.uri",
       "type": "java.lang.String",
       "description": "The context-relative path to the 'change password' view, where a user can change their password.",
       "defaultValue": "/change"
     },
     {
-      "name": "stormpath.web.change.nextUri",
+      "name": "stormpath.web.changePassword.nextUri",
       "type": "java.lang.String",
       "description": "The context-relative path where the user will be redirected after initiating a 'change password' flow.  The default value is '/login?status=changed'.  The default login view will recognize the query parameter and show the user a nice message explaining that their password has been successfully changed and that they can login now..",
       "defaultValue": "/login?status=changed"
     },
     {
-      "name": "stormpath.web.change.view",
+      "name": "stormpath.web.changePassword.view",
       "type": "java.lang.String",
       "description": "The name of the Spring MVC view that should be rendered when a user changes their password. The default value is 'stormpath/change' which will render a convenient default view provided by the Stormpath starter, but you may specify your own value to provide a custom view.",
       "defaultValue": "stormpath/change"
     },
     {
-      "name": "stormpath.web.accessToken.enabled",
+      "name": "stormpath.web.oauth2.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether token authentication should be enabled or not. Token authentication, also called ‘Bearer Token Authentication’, is a convenient authentication mechanism for user interfaces that are not based on traditional server-side rendered pages, for example, Javascript clients or Single Page Applications (SPAs). Under the hood, the Stormpath starter implements this behavior according to the OAuth 2 specification. It implements the entire OAuth 2 ‘password grant’ flow for you.",
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.accessToken.uri",
+      "name": "stormpath.web.oauth2.uri",
       "type": "java.lang.String",
       "description": "The context-relative path an HTTP client may POST to obtain an access token. The access token can be used by the client to authenticate subsequent HTTP requests.",
       "defaultValue": "/oauth/token"
     },
     {
-      "name": "stormpath.web.accessToken.origin.authorizer.originUris",
+      "name": "stormpath.web.oauth2.origin.authorizer.originUris",
       "type": "java.lang.String",
       "description": "This is only used for additional origin URIs that don't already match the server URI."
     },
@@ -447,24 +447,24 @@
       "defaultValue": false
     },
     {
-      "name": "stormpath.web.idSite.login.uri",
+      "name": "stormpath.web.idSite.loginUri",
       "type": "java.lang.String",
       "description": "The context-relative path to ID Site's login page. Null by default as it is assumed the ID Site root is the same as the login page (usually).  Only used when stormpath.web.idSite.enabled is true."
     },
     {
-      "name": "stormpath.web.idSite.register.uri",
+      "name": "stormpath.web.idSite.registerUri",
       "type": "java.lang.String",
       "description": "The context-relative path to ID Site's registration page. Only used when stormpath.web.idSite.enabled is true.",
       "defaultValue": "/#/register"
     },
     {
-      "name": "stormpath.web.idSite.forgot.uri",
+      "name": "stormpath.web.idSite.forgotUri",
       "type": "java.lang.String",
       "description": "The context-relative path to ID Site's 'forgot password' page. Only used when stormpath.web.idSite.enabled is true.",
       "defaultValue": "/#/forgot"
     },
     {
-      "name": "stormpath.web.idSite.result.uri",
+      "name": "stormpath.web.idSite.resultUri",
       "type": "java.lang.String",
       "description": "The context-relative path where ID Site will call back into your application in order to inform about the outcome of the Id Site invocation.  Only used when stormpath.web.idSite.enabled is true.",
       "defaultValue": "/idSiteResult"
@@ -482,15 +482,15 @@
       "defaultValue": "Uses ID Site defaults."
     },
     {
-      "name": "stormpath.web.saml.enabled",
+      "name": "stormpath.web.callback.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether login via a SAML provider will be enabled or not. This setting tells your project to use a 3rd party SAML login page to authenticate users instead of the built-in local functionality.",
       "defaultValue": false
     },
     {
-      "name": "stormpath.web.saml.result.uri",
+      "name": "stormpath.web.callback.uri",
       "type": "java.lang.String",
-      "description": "The context-relative path where the SAML provider will call back into your application to inform about the outcome of the authentication attempt. Only relevant when 'stormpath.web.saml.enabled' is true.",
+      "description": "The context-relative path where the SAML provider will call back into your application to inform about the outcome of the authentication attempt. Only relevant when 'stormpath.web.callback.enabled' is true.",
       "defaultValue": "/samlResult"
     },
     {

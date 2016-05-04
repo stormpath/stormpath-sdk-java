@@ -17,34 +17,34 @@ class DefaultPropertiesParserTest {
     @Test
     void testKeyValueNoWhitespace() {
 
-        def testStr = "stormpath.web.verify.nextUri=/login?status=verified"
+        def testStr = "stormpath.web.verifyEmail.nextUri=/login?status=verified"
         [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
             assertEquals(result.size(), 1)
-            assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
+            assertEquals(result.get("stormpath.web.verifyEmail.nextUri"), "/login?status=verified")
         }
     }
 
     @Test
     void testKeyValueLotsOfWhitespace() {
 
-        def testStr = "stormpath.web.verify.nextUri                                                     =                                         /login?status=verified"
+        def testStr = "stormpath.web.verifyEmail.nextUri                                                     =                                         /login?status=verified"
         [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
             assertEquals(result.size(), 1)
-            assertEquals(result.get("stormpath.web.verify.nextUri"), "/login?status=verified")
+            assertEquals(result.get("stormpath.web.verifyEmail.nextUri"), "/login?status=verified")
         }
     }
 
     @Test
     void testKeyNoValue() {
 
-        def testStr = "stormpath.web.verify.nextUri = "
+        def testStr = "stormpath.web.verifyEmail.nextUri = "
         [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
 
             assertEquals(result.size(), 1)
-            assertEquals(result.get("stormpath.web.verify.nextUri"), null)
+            assertEquals(result.get("stormpath.web.verifyEmail.nextUri"), null)
         }
     }
 
@@ -69,7 +69,7 @@ class DefaultPropertiesParserTest {
     void testMultiLine() {
 
         def testStr =
-            "stormpath.web.verify.nextUri=/login?status=verified\n" +
+            "stormpath.web.verifyEmail.nextUri=/login?status=verified\n" +
             "stormpath.web.login.nextUri=/"
         [testStr, new TestStringResource(testStr)].each {
             def result = parser.parse(it)
@@ -86,7 +86,7 @@ class DefaultPropertiesParserTest {
     void testComments() {
 
         def testStr =
-            "stormpath.web.verify.nextUri=/login?status=verified\n" +
+            "stormpath.web.verifyEmail.nextUri=/login?status=verified\n" +
             "# this is a comment\n" +
             "; this is also a comment\n" +
             "stormpath.web.login.nextUri=/"
@@ -105,7 +105,7 @@ class DefaultPropertiesParserTest {
     void testContinuation() {
 
         def testStr =
-                "stormpath.web.verify.nextUri = \\\n" +
+                "stormpath.web.verifyEmail.nextUri = \\\n" +
                     "/login?status=verified\n" +
                 "stormpath.web.login.nextUri = \\\n" +
                     "/"

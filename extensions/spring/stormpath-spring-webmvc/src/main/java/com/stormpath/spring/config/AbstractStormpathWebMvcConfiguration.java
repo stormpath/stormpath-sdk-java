@@ -287,16 +287,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     // ================  Forgot Password Controller properties  ===================
 
-    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
     protected boolean forgotEnabled;
 
-    @Value("#{ @environment['stormpath.web.forgot.uri'] ?: '/forgot' }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.uri'] ?: '/forgot' }")
     protected String forgotUri;
 
-    @Value("#{ @environment['stormpath.web.forgot.nextUri'] ?: '/login?status=forgot' }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.nextUri'] ?: '/login?status=forgot' }")
     protected String forgotNextUri;
 
-    @Value("#{ @environment['stormpath.web.forgot.view'] ?: 'stormpath/forgot' }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgot' }")
     protected String forgotView;
 
     // ================  Register Controller properties  ===================
@@ -319,16 +319,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     // ================  Verify Email Controller properties  ===================
 
-    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
     protected boolean verifyEnabled;
 
-    @Value("#{ @environment['stormpath.web.verify.uri'] ?: '/verify' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
     protected String verifyUri;
 
-    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/login?status=verified' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.nextUri'] ?: '/login?status=verified' }")
     protected String verifyNextUri;
 
-    @Value("#{ @environment['stormpath.web.verify.view'] ?: 'stormpath/verify' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
     @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
@@ -353,30 +353,30 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     // ================  Change Password Controller properties  ===================
 
-    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changePasswordEnabled;
 
-    @Value("#{ @environment['stormpath.web.change.uri'] ?: '/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.uri'] ?: '/change' }")
     protected String changePasswordUri;
 
-    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/login?status=changed' }")
+    @Value("#{ @environment['stormpath.web.changePassword.nextUri'] ?: '/login?status=changed' }")
     protected String changePasswordNextUri;
 
-    @Value("#{ @environment['stormpath.web.change.view'] ?: 'stormpath/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'stormpath/change' }")
     protected String changePasswordView;
 
     // ================  Access Token Controller properties  ===================
 
-    @Value("#{ @environment['stormpath.web.accessToken.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
-    @Value("#{ @environment['stormpath.web.accessToken.uri'] ?: '/oauth/token' }")
+    @Value("#{ @environment['stormpath.web.oauth2.uri'] ?: '/oauth/token' }")
     protected String accessTokenUri;
 
-    @Value("#{ @environment['stormpath.web.accessToken.origin.authorizer.originUris'] }")
+    @Value("#{ @environment['stormpath.web.oauth2.origin.authorizer.originUris'] }")
     protected String accessTokenAuthorizedOriginUris;
 
-    @Value("#{ @environment['stormpath.web.accessToken.validationStrategy'] ?: 'stormpath'}")
+    @Value("#{ @environment['stormpath.web.oauth2.validationStrategy'] ?: 'stormpath'}")
     protected String accessTokenValidationStrategy;
 
     // ================  ID Site properties  ===================
@@ -384,16 +384,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
 
-    @Value("#{ @environment['stormpath.web.idSite.login.uri'] }")
+    @Value("#{ @environment['stormpath.web.idSite.loginUri'] }")
     protected String idSiteLoginUri; //null by default as it is assumed the id site root is the same as the login page (usually)
 
-    @Value("#{ @environment['stormpath.web.idSite.register.uri'] ?: '/#/register' }")
+    @Value("#{ @environment['stormpath.web.idSite.registerUri'] ?: '/#/register' }")
     protected String idSiteRegisterUri;
 
-    @Value("#{ @environment['stormpath.web.idSite.forgot.uri'] ?: '/#/forgot' }")
+    @Value("#{ @environment['stormpath.web.idSite.forgotUri'] ?: '/#/forgot' }")
     protected String idSiteForgotUri;
 
-    @Value("#{ @environment['stormpath.web.idSite.result.uri'] ?: '/idSiteResult' }")
+    @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
 
     @Value("#{ @environment['stormpath.web.idSite.useSubdomain'] }")
@@ -402,10 +402,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
     protected Boolean idSiteShowOrganizationField;
 
-    @Value("#{ @environment['stormpath.web.saml.enabled'] ?: false }")
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
     protected boolean samlEnabled;
 
-    @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
+    @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
 
     @Value("#{ @environment['stormpath.web.application.domain'] }")
