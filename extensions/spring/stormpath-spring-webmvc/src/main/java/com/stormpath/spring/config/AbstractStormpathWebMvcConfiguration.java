@@ -333,16 +333,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     // ================  Verify Email Controller properties  ===================
 
-    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
     protected boolean verifyEnabled;
 
-    @Value("#{ @environment['stormpath.web.verify.uri'] ?: '/verify' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
     protected String verifyUri;
 
-    @Value("#{ @environment['stormpath.web.verify.nextUri'] ?: '/login?status=verified' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.nextUri'] ?: '/login?status=verified' }")
     protected String verifyNextUri;
 
-    @Value("#{ @environment['stormpath.web.verify.view'] ?: 'stormpath/verify' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
     @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")

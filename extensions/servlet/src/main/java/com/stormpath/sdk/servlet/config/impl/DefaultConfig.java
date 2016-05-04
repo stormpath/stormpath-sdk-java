@@ -48,10 +48,10 @@ public class DefaultConfig implements Config {
     public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUri";
     public static final String REGISTER_URL = "stormpath.web.register.uri";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
-    public static final String VERIFY_URL = "stormpath.web.verify.uri";
-    public static final String VERIFY_NEXT_URL = "stormpath.web.verify.nextUri";
+    public static final String VERIFY_URL = "stormpath.web.verifyEmail.uri";
+    public static final String VERIFY_NEXT_URL = "stormpath.web.verifyEmail.nextUri";
     public static final String SEND_VERIFICATION_EMAIL_URL = "stormpath.web.sendVerificationEmail.uri";
-    public static final String VERIFY_ENABLED = "stormpath.web.verify.enabled";
+    public static final String VERIFY_ENABLED = "stormpath.web.verifyEmail.enabled";
 
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
