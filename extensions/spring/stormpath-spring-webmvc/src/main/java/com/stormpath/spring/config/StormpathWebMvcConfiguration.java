@@ -44,6 +44,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -134,43 +135,43 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
         return new Config() {
             @Override
-            public String getLoginUrl() {
-                return loginUri;
+            public ControllerConfigResolver getLoginControllerConfig() {
+                return stormpathLoginControllerConfigResolver();
             }
 
             @Override
-            public String getLoginNextUrl() {
-                return loginNextUri;
+            public ControllerConfigResolver getLogoutControllerConfig() {
+                return stormpathLogoutControllerConfigResolver();
             }
 
             @Override
-            public String getLogoutUrl() {
-                return logoutUri;
+            public ControllerConfigResolver getRegisterControllerConfig() {
+                return stormpathRegisterControllerConfigResolver();
             }
 
             @Override
-            public String getForgotPasswordUrl() {
-                return forgotUri;
+            public ControllerConfigResolver getForgotPasswordControllerConfig() {
+                return stormpathForgotPasswordControllerConfigResolver();
             }
 
             @Override
-            public String getForgotPasswordNextUrl() {
-                return forgotNextUri;
+            public ControllerConfigResolver getVerifyControllerConfig() {
+                return stormpathVerifyControllerConfigResolver();
             }
 
             @Override
-            public String getChangePasswordUrl() {
-                return changePasswordUri;
+            public ControllerConfigResolver getSendVerificationEmailControllerConfig() {
+                return stormpathSendVerificationEmailControllerConfigResolver();
             }
 
             @Override
-            public String getChangePasswordNextUrl() {
-                return changePasswordNextUri;
+            public ControllerConfigResolver getChangePasswordControllerConfig() {
+                return stormpathChangePasswordControllerConfigResolver();
             }
 
             @Override
-            public String getLogoutNextUrl() {
-                return logoutNextUri;
+            public Saver<AuthenticationResult> getAuthenticationResultSaver() throws ServletException {
+                return stormpathAuthenticationResultSaver();
             }
 
             @Override
@@ -181,37 +182,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             @Override
             public String getAccessTokenUrl() {
                 return accessTokenUri;
-            }
-
-            @Override
-            public String getRegisterUrl() {
-                return registerUri;
-            }
-
-            @Override
-            public String getRegisterNextUrl() {
-                return registerNextUri;
-            }
-
-            @Override
-            public String getVerifyUrl() {
-                return verifyUri;
-            }
-
-            @Override
-            public String getVerifyNextUrl() {
-                return verifyNextUri;
-            }
-
-            /* @since 1.0.RC8.3 */
-            @Override
-            public String getSendVerificationEmailUrl() {
-                return sendVerificationEmailUri;
-            }
-
-            @Override
-            public boolean isVerifyEnabled() {
-                return verifyEnabled;
             }
 
             @Override
@@ -487,6 +457,26 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    public Controller stormpathGoogleCallbackController() {
+        return super.stormpathGoogleCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathGithubCallbackController() {
+        return super.stormpathGithubCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathFacebookCallbackController() {
+        return super.stormpathFacebookCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathLinkedinCallbackController() {
+        return super.stormpathLinkedinCallbackController();
+    }
+
+    @Bean
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
     }
@@ -632,4 +622,38 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathAccountResolverFilter();
     }
 
+    @Bean
+    public ControllerConfigResolver stormpathForgotPasswordControllerConfigResolver() {
+        return super.stormpathForgotPasswordControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
+        return super.stormpathLoginControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathRegisterControllerConfigResolver() {
+        return super.stormpathRegisterControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
+        return super.stormpathVerifyControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
+        return super.stormpathSendVerificationEmailControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
+        return super.stormpathChangePasswordControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathLogoutControllerConfigResolver() {
+        return super.stormpathLogoutControllerConfigResolver();
+    }
 }

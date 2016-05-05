@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
@@ -45,7 +46,6 @@ public class IdSiteLogoutController extends LogoutController {
     }
 
     public void init() {
-        super.init();
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
         IdSiteController controller = new LogoutIdSiteController();
         controller.setServerUriResolver(serverUriResolver);

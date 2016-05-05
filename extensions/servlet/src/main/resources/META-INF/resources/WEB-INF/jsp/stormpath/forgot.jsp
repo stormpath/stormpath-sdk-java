@@ -43,33 +43,30 @@
                                 <div class="alert alert-dismissable alert-danger bad-login">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                                     <c:forEach items="${errors}" var="error">
-                                        <p>${error}</p>
+                                        <p>${error.message}</p>
                                     </c:forEach>
                                 </div>
                             </c:if>
 
                             <form method="post" role="form" class="login-form form-horizontal">
-                                <c:if test="${!empty form.next}">
-                                    <input name="next" type="hidden" value="${form.next}">
-                                </c:if>
-
-                                <c:forEach items="${form.hiddenFields}" var="field">
-                                    <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                <c:forEach items="${form.fields}" var="field">
+                                    <c:choose>
+                                        <c:when test="${field.type == 'hidden'}">
+                                            <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div form-group="true" class="form-group group-${field.name}">
+                                                <label class="col-sm-4"><sp:message key="${field.label}"/></label>
+                                                <div class="col-sm-8">
+                                                    <input name="${field.name}" value="${field.value}" type="${field.type}"
+                                                           placeholder="<sp:message key="${field.placeholder}"/>"
+                                                           <c:if test="${field.required}">required="required" </c:if>
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:forEach>
-
-                                <c:forEach items="${form.visibleFields}" var="field">
-                                    <div form-group="true" class="form-group group-${field.name}">
-                                        <label class="col-sm-4"><sp:message key="${field.label}"/></label>
-                                        <div class="col-sm-8">
-                                            <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                   placeholder="<sp:message key="${field.placeholder}"/>"
-                                                   <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
-                                                   <c:if test="${field.required}">required="required" </c:if>
-                                                   class="form-control">
-                                        </div>
-                                    </div>
-                                </c:forEach>
-
                                 <div>
                                     <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.forgot.form.button.value"/></button>
                                 </div>

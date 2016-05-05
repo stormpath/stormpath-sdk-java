@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.UserAgents;
 
@@ -39,7 +40,13 @@ public class LogoutController extends AbstractController {
         this.invalidateHttpSession = invalidateHttpSession;
     }
 
-    public void init() {
+    public LogoutController() {
+    }
+
+    public LogoutController(ControllerConfigResolver controllerConfigResolver, boolean invalidateHttpSession) {
+        this.nextUri = controllerConfigResolver.getNextUri();
+        this.invalidateHttpSession = invalidateHttpSession;
+
         Assert.hasText(nextUri, "nextUri property cannot be null or empty.");
     }
 

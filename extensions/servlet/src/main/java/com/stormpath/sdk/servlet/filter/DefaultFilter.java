@@ -38,7 +38,11 @@ public enum DefaultFilter {
     register(RegisterFilter.class),
     unauthorized(UnauthorizedFilter.class),
     verify(VerifyFilter.class),
-    sendVerificationEmail(SendVerificationEmailFilter.class);
+    sendVerificationEmail(SendVerificationEmailFilter.class),
+    googleCallback(GoogleCallbackFilter.class),
+    githubCallback(GithubCallbackFilter.class),
+    facebookCallback(FacebookCallbackFilter.class),
+    linkedinCallback(LinkedinCallbackFilter.class);
 
     private final Class<? extends Filter> filterClass;
 

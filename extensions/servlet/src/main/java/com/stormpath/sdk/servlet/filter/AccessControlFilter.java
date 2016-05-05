@@ -38,7 +38,7 @@ public abstract class AccessControlFilter extends HttpFilter {
     @Override
     protected void onInit() throws ServletException {
         super.onInit();
-        this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginUrl());
+        this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginControllerConfig().getUri());
         this.accessTokenUrl = UriCleaner.INSTANCE.clean(getConfig().getAccessTokenUrl());
         this.unauthenticatedHandler = getConfig().getInstance(UNAUTHENTICATED_HANDLER);
         this.unauthorizedHandler = getConfig().getInstance(UNAUTHORIZED_HANDLER);

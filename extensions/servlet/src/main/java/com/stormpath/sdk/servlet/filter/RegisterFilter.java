@@ -18,70 +18,54 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
-import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 
 import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @since 1.0.RC3
  */
 public class RegisterFilter extends ControllerFilter {
 
-    public static final String FIELDS = "stormpath.web.register.form.fields";
-    public static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
-    public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
-    public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
-    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
+    private static final String FIELDS = "stormpath.web.register.form.fields";
+    private static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
+    private static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 
     @Override
     protected void onInit() throws ServletException {
-
         Client client = getClient();
         Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance(ACCOUNT_SAVER_PROP);
-        CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
-        Resolver<Locale> localeResolver = getConfig().getInstance(LOCALE_RESOLVER);
-        MessageSource i18n = getConfig().getInstance(MESSAGE_SOURCE);
 
-        RegisterController controller = new RegisterController();
-        controller.setCsrfTokenManager(csrfTokenManager);
-        controller.setClient(client);
-        controller.setEventPublisher(eventPublisher);
-        controller.setFormFields(toDefaultFields(createFields()));
-        controller.setLocaleResolver(localeResolver);
-        controller.setMessageSource(i18n);
-        controller.setAuthenticationResultSaver(authenticationResultSaver);
-        controller.setUri(getConfig().getRegisterUrl());
-        controller.setView("stormpath/register");
-        controller.setVerifyViewName("stormpath/verify");
-        controller.setNextUri(getConfig().getRegisterNextUrl());
-        controller.setLoginUri(getConfig().getLoginUrl());
-        controller.init();
+        RegisterController controller = new RegisterController(
+                getConfig().getRegisterControllerConfig(),
+                client,
+                eventPublisher,
+                toDefaultFields(createFields()),
+                authenticationResultSaver,
+                getConfig().getLoginControllerConfig().getUri(),
+                getConfig().getVerifyControllerConfig().getView()
+        );
 
         setController(controller);
 
         super.onInit();
     }
 
-    protected List<DefaultField> toDefaultFields(List<Field> fields) {
-        List<DefaultField> defaultFields = new ArrayList<DefaultField>(fields.size());
+    protected List<Field> toDefaultFields(List<Field> fields) {
+        List<Field> defaultFields = new ArrayList<Field>(fields.size());
         for (Field field : fields) {
             Assert.isInstanceOf(DefaultField.class, field);
-            defaultFields.add((DefaultField) field);
+            defaultFields.add(field);
         }
 
         return defaultFields;

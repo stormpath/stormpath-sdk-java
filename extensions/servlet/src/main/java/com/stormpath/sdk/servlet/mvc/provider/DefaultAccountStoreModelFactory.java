@@ -77,15 +77,13 @@ public class DefaultAccountStoreModelFactory implements AccountStoreModelFactory
             Provider provider = directory.getProvider();
 
             if (provider instanceof OauthProvider) {
-                OauthProvider oauthProvider = (OauthProvider) provider;
-                ProviderModel providerModel = new DefaultOauthProviderModel(oauthProvider);
+                ProviderModel providerModel = new DefaultOauthProviderModel((OauthProvider) provider);
                 AccountStoreModel acctStoreModel = new DefaultAccountStoreModel(directory, providerModel);
                 accountStores.add(acctStoreModel);
             } else if (provider instanceof SamlProvider) {
-                    SamlProvider samlProvider = (SamlProvider) provider;
-                    ProviderModel providerModel = new DefaultSamlProviderModel(samlProvider);
-                    AccountStoreModel acctStoreModel = new DefaultAccountStoreModel(directory, providerModel);
-                    accountStores.add(acctStoreModel);
+                ProviderModel providerModel = new DefaultSamlProviderModel((SamlProvider) provider);
+                AccountStoreModel accountStoreModel = new DefaultAccountStoreModel(directory, providerModel);
+                accountStores.add(accountStoreModel);
             }
         }
 

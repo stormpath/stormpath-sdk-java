@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
@@ -27,22 +26,17 @@ import javax.servlet.ServletException;
  */
 public class SendVerificationEmailFilter extends ControllerFilter {
 
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
-    public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
+    private static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
 
     @Override
     protected void onInit() throws ServletException {
-        CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
         AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
 
-        SendVerificationEmailController controller = new SendVerificationEmailController();
-        controller.setUri(getConfig().getSendVerificationEmailUrl());
-        controller.setView("stormpath/sendVerificationEmail");
-        controller.setCsrfTokenManager(csrfTokenManager);
-        controller.setAccountStoreResolver(accountStoreResolver);
-        controller.setNextUri("stormpath/verify");
-        controller.setLoginUri(getConfig().getLoginUrl());
-        controller.init();
+        SendVerificationEmailController controller = new SendVerificationEmailController(
+                getConfig().getSendVerificationEmailControllerConfig(),
+                getConfig().getLoginControllerConfig().getUri(),
+                accountStoreResolver
+        );
 
         setController(controller);
 

@@ -16,10 +16,11 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
 
 import javax.servlet.ServletException;
 
@@ -29,30 +30,25 @@ import javax.servlet.ServletException;
 public class LoginFilter extends ControllerFilter {
 
     public static final String AUTHENTICATION_RESULT_SAVER = "stormpath.web.authc.saver";
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
+    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
 
     @Override
     protected void onInit() throws ServletException {
-
         Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance(AUTHENTICATION_RESULT_SAVER);
-        CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
+        MessageSource messageSource = getConfig().getInstance(MESSAGE_SOURCE);
 
-        LoginController controller = new LoginController();
-        controller.setUri(getConfig().getLoginUrl());
-        controller.setView("stormpath/login");
-        controller.setNextUri(getConfig().getLoginNextUrl());
-        controller.setForgotLoginUri(getConfig().getForgotPasswordUrl());
-        controller.setRegisterUri(getConfig().getRegisterUrl());
-        controller.setLogoutUri(getConfig().getLogoutUrl());
-        controller.setVerifyUri(getConfig().getVerifyUrl());
-        controller.setVerifyEnabled(getConfig().isVerifyEnabled());
-        controller.setAuthenticationResultSaver(authenticationResultSaver);
-        controller.setCsrfTokenManager(csrfTokenManager);
-        controller.init();
+        LoginController controller = new LoginController(
+                getConfig().getLoginControllerConfig(),
+                getConfig().getForgotPasswordControllerConfig().getUri(),
+                getConfig().getVerifyControllerConfig().getUri(),
+                getConfig().getRegisterControllerConfig().getUri(),
+                getConfig().getLogoutControllerConfig().getUri(),
+                getConfig().getVerifyControllerConfig().isEnable(),
+                authenticationResultSaver,
+                new LoginErrorModelFactory(messageSource));
 
         setController(controller);
 
         super.onInit();
     }
-
 }

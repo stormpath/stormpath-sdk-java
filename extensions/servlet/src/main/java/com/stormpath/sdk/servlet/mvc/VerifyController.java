@@ -23,6 +23,7 @@ import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultVerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,10 +40,24 @@ public class VerifyController extends AbstractController {
     private Client client;
     private Publisher<RequestEvent> eventPublisher;
 
-    public void init() {
-        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
+    public VerifyController(ControllerConfigResolver controllerConfigResolver,
+                            String logoutUri,
+                            String sendVerificationEmailUri,
+                            Client client,
+                            Publisher<RequestEvent> eventPublisher) {
+        super(controllerConfigResolver.getNextUri(),
+                controllerConfigResolver.getView(),
+                controllerConfigResolver.getUri(),
+                controllerConfigResolver.getMessageSource(),
+                controllerConfigResolver.getLocaleResolver());
+
+        this.logoutUri = logoutUri;
+        this.client = client;
+        this.eventPublisher = eventPublisher;
+        this.sendVerificationEmailUri = sendVerificationEmailUri;
+
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
-        Assert.hasText(sendVerificationEmailUri, "sendVerificationEmailUri cannot be null or empty.");
+        Assert.hasLength(sendVerificationEmailUri, "sendVerificationEmailUri cannot be null or empty.");
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
@@ -58,16 +73,6 @@ public class VerifyController extends AbstractController {
 
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
-    }
-
-    /* @since 1.0.RC8.3 */
-    public String getSendVerificationEmailUri() {
-        return sendVerificationEmailUri;
-    }
-
-    /* @since 1.0.RC8.3 */
-    public void setSendVerificationEmailUri(String sendVerificationEmailUri) {
-        this.sendVerificationEmailUri = sendVerificationEmailUri;
     }
 
     public Client getClient() {
@@ -87,13 +92,12 @@ public class VerifyController extends AbstractController {
     }
 
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
 
         String sptoken = Strings.clean(request.getParameter("sptoken"));
 
         if (sptoken == null) {
             //redirect to send verification email form
-            String sendVerificationEmailUri = getSendVerificationEmailUri();
             return new DefaultViewModel(sendVerificationEmailUri).setRedirect(true);
         }
 
@@ -107,7 +111,7 @@ public class VerifyController extends AbstractController {
     }
 
     protected ViewModel verify(HttpServletRequest request, HttpServletResponse response, String sptoken)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         Client client = getClient();
 
@@ -138,5 +142,4 @@ public class VerifyController extends AbstractController {
             throw new ServletException(msg, ex);
         }
     }
-
 }

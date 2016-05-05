@@ -1,37 +1,44 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
-import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.AbstractErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.ErrorModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @since 1.0.RC7
  */
-public class SpringSecurityLoginErrorModelFactory implements ErrorModelFactory {
+public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFactory {
 
-    private static final String  INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
+    private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
     @Autowired
-    MessageSource messageSource;
+    private org.springframework.context.MessageSource messageSource;
 
     @Override
-    public List<String> toErrors(HttpServletRequest request, Form form, Exception exception) {
-
-        String query = Strings.clean(request.getQueryString());
-        if (query != null && query.contains("error")) {
-            return Collections.singletonList(getInvalidLoginMessage(request));
-        }
-
-        return null;
+    protected String getDefaultMessageKey() {
+        return INVALID_LOGIN_MESSAGE;
     }
 
-    private String getInvalidLoginMessage(HttpServletRequest request) {
-        return messageSource.getMessage(INVALID_LOGIN_MESSAGE, request.getLocale());
+    @Override
+    protected Object[] getMessageParams() {
+        return new Object[0];
+    }
+
+    @Override
+    protected boolean hasError(HttpServletRequest request, Exception e) {
+        String query = Strings.clean(request.getQueryString());
+        return query != null && query.contains("error");
+    }
+
+    @Override
+    protected String getErrorMessage(HttpServletRequest request, String key) {
+        String defaultMessage = messageSource.getMessage(getDefaultMessageKey(), new Object[]{}, request.getLocale());
+
+        return messageSource.getMessage(key, getMessageParams(), defaultMessage, request.getLocale());
     }
 }

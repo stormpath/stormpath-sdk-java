@@ -18,11 +18,14 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -34,6 +37,27 @@ public abstract class AbstractController implements Controller {
     };
 
     protected String nextUri;
+    protected String view;
+    protected String uri;
+    protected MessageSource messageSource;
+    protected Resolver<Locale> localeResolver;
+
+    public AbstractController(String nextUri, String view, String uri, MessageSource messageSource, Resolver<Locale> localeResolver) {
+        this.nextUri = nextUri;
+        this.messageSource = messageSource;
+        this.localeResolver = localeResolver;
+        this.view = view;
+        this.uri = uri;
+
+        Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
+        Assert.hasText(this.view, "view cannot be null or empty.");
+        Assert.hasText(this.uri, "uri cannot be null or empty.");
+        Assert.notNull(this.messageSource, "messageSource cannot be null.");
+        Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
+    }
+
+    protected AbstractController() {
+    }
 
     protected Map<String, Object> newModel() {
         return new HashMap<String, Object>();
@@ -47,6 +71,24 @@ public abstract class AbstractController implements Controller {
      */
     public abstract boolean isNotAllowIfAuthenticated();
 
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        Assert.hasText(this.view, "view cannot be null or empty.");
+        this.view = view;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        Assert.hasText(this.uri, "uri cannot be null or empty.");
+        this.uri = uri;
+    }
+
     public String getNextUri() {
         return nextUri;
     }
@@ -54,6 +96,35 @@ public abstract class AbstractController implements Controller {
     public void setNextUri(String nextUri) {
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         this.nextUri = nextUri;
+    }
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        Assert.notNull(messageSource, "messageSource cannot be null.");
+        this.messageSource = messageSource;
+    }
+
+
+    public Resolver<Locale> getLocaleResolver() {
+        return localeResolver;
+    }
+
+    public void setLocaleResolver(Resolver<Locale> localeResolver) {
+        Assert.notNull(localeResolver, "localeResolver cannot be null.");
+        this.localeResolver = localeResolver;
+    }
+
+    protected String i18n(HttpServletRequest request, String key) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale);
+    }
+
+    protected String i18n(HttpServletRequest request, String key, Object... args) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale, args);
     }
 
     @Override

@@ -18,11 +18,9 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.form.DefaultField;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -34,26 +32,54 @@ import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @since 1.0.RC4
  */
 public class LoginController extends FormController {
+
     private String forgotLoginUri;
     private String verifyUri;
     private String registerUri;
     private String logoutUri;
     private Boolean verifyEnabled;
     private Saver<AuthenticationResult> authenticationResultSaver;
-    private AccountStoreModelFactory accountStoreModelFactory = new DefaultAccountStoreModelFactory();
-    private AccountStoreModelFactory providerModelFactory = new DefaultProviderModelFactory();
-    private ErrorModelFactory errorModelFactory = new LoginErrorModelFactory();
+    private ErrorModelFactory errorModelFactory;
+    private LoginFormStatusResolver loginFormStatusResolver;
+    private AccountStoreModelFactory accountStoreModelFactory;
+    private AccountModelFactory accountModelFactory;
 
-    public void init() {
-        super.init();
-        Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
+    public LoginController(ControllerConfigResolver controllerConfigResolver,
+                           String forgotLoginUri,
+                           String verifyUri,
+                           String registerUri,
+                           String logoutUri,
+                           boolean verifyEnabled,
+                           Saver<AuthenticationResult> authenticationResultSaver,
+                           ErrorModelFactory errorModelFactory) {
+        super(controllerConfigResolver);
+
+        this.forgotLoginUri = forgotLoginUri;
+        this.verifyUri = verifyUri;
+        this.registerUri = registerUri;
+        this.logoutUri = logoutUri;
+        this.verifyEnabled = verifyEnabled;
+        this.authenticationResultSaver = authenticationResultSaver;
+        this.errorModelFactory = errorModelFactory;
+        this.formFields = controllerConfigResolver.getFormFields();
+
+        this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
+        this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+        this.accountModelFactory = new DefaultAccountModelFactory();
+
+        if (this.errorModelFactory == null) {
+            this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
+        }
+
         Assert.hasText(this.forgotLoginUri, "forgotLoginUri property cannot be null or empty.");
         Assert.hasText(this.verifyUri, "verifyUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
@@ -61,8 +87,10 @@ public class LoginController extends FormController {
         Assert.notNull(this.verifyEnabled, "verifyEnabled property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
         Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
-        Assert.notNull(this.providerModelFactory, "providerModelFactory cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
+        Assert.notNull(this.formFields, "loginFormFields cannot be null.");
+        Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
+        Assert.notNull(this.loginFormStatusResolver, "loginFormStatusResolver cannot be null.");
     }
 
     @Override
@@ -122,10 +150,6 @@ public class LoginController extends FormController {
         this.accountStoreModelFactory = accountStoreModelFactory;
     }
 
-    public AccountStoreModelFactory getProviderModelFactory() {
-        return providerModelFactory;
-    }
-
     public ErrorModelFactory getErrorModelFactory() {
         return errorModelFactory;
     }
@@ -143,60 +167,52 @@ public class LoginController extends FormController {
         this.authenticationResultSaver = authenticationResultSaver;
     }
 
-    @Override
-    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<String> errors,
-                               Map<String, Object> model) {
+    public void setLoginFormStatusResolver(LoginFormStatusResolver loginFormStatusResolver) {
+        this.loginFormStatusResolver = loginFormStatusResolver;
+    }
 
-        if (Collections.isEmpty(errors)) {
-            //allow factory to populate if necessary:
-            errors = toErrors(request, form, null);
-            if (!Collections.isEmpty(errors)) {
-                model.put("errors", errors);
+    @Override
+    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
+                               Map<String, Object> model) {
+        model.put("accountStores", getAccountStoreModelFactory().getAccountStores(request));
+
+        if (UserAgents.get(request).isHtmlPreferred()) {
+            model.put("forgotLoginUri", getForgotLoginUri());
+            model.put("verifyUri", getVerifyUri());
+            model.put("verifyEnabled", isVerifyEnabled());
+            model.put("registerUri", getRegisterUri());
+            model.put("oauthStateToken", UUID.randomUUID().toString());
+            String status = request.getParameter("status");
+            if (status != null) {
+                model.put("status", loginFormStatusResolver.getStatusMessage(request, status));
             }
         }
-
-        model.put("accountStores", getAccountStoreModelFactory().getAccountStores(request));
-        model.put("forgotLoginUri", getForgotLoginUri());
-        model.put("verifyUri", getVerifyUri());
-        model.put("verifyEnabled", isVerifyEnabled());
-        model.put("registerUri", getRegisterUri());
     }
 
     @Override
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
+        List<Field> fields = new ArrayList<Field>();
 
-        List<Field> fields = new ArrayList<Field>(2);
+        for (Field templateField : formFields) {
+            Field clone = templateField.copy();
 
-        String[] fieldNames = new String[]{"login", "password"};
+            String val = getFieldValueResolver().getValue(request, clone.getName());
 
-        for (String fieldName : fieldNames) {
-
-            DefaultField field = new DefaultField();
-            field.setName(fieldName);
-            field.setLabel("stormpath.web.login.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.login.form.fields." + fieldName + ".placeholder");
-            field.setRequired(true);
-            field.setType("text");
-
-            String val = getFieldValueResolver().getValue(request, fieldName);
-            field.setValue(val != null ? val : "");
-
-            if ("password".equals(fieldName)) {
-                field.setType("password");
-                if (!retainPassword) {
-                    field.setValue("");
-                }
+            if (clone.getName() == "password" && retainPassword) {
+                clone.setValue(val);
+            } else {
+                clone.setValue(val);
             }
 
-            fields.add(field);
+            fields.add(clone);
         }
 
         return fields;
     }
 
     @Override
-    protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
-        return getErrorModelFactory().toErrors(request, form, e);
+    protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
+        return Arrays.asList(errorModelFactory.toError(request, e));
     }
 
     @Override
@@ -214,18 +230,12 @@ public class LoginController extends FormController {
         final AuthenticationResult result = new TransientAuthenticationResult(account);
         saveResult(req, resp, result);
 
-        String next = form.getNext();
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
         if (UserAgents.get(req).isJsonPreferred()) {
-            return new DefaultViewModel(getView(), java.util.Collections.singletonMap("authenticationResult", result));
+            return new DefaultViewModel(getView(), java.util.Collections.singletonMap("account", accountModelFactory.toMap(account)));
         }
 
         //otherwise HTML view:
-        return new DefaultViewModel(next).setRedirect(true);
+        return new DefaultViewModel(getNextUri()).setRedirect(true);
     }
 
     protected Account getAccount(HttpServletRequest req) {

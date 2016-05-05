@@ -28,21 +28,20 @@ import javax.servlet.ServletException;
  */
 public class VerifyFilter extends ControllerFilter {
 
-    public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+    private static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 
     @Override
     protected void onInit() throws ServletException {
-
         Client client = getClient();
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
 
-        VerifyController controller = new VerifyController();
-        controller.setNextUri(getConfig().getVerifyNextUrl());
-        controller.setLogoutUri(getConfig().getLogoutUrl());
-        controller.setSendVerificationEmailUri(getConfig().getSendVerificationEmailUrl());
-        controller.setClient(client);
-        controller.setEventPublisher(eventPublisher);
-        controller.init();
+        VerifyController controller = new VerifyController(
+                getConfig().getVerifyControllerConfig(),
+                getConfig().getLogoutControllerConfig().getUri(),
+                getConfig().getSendVerificationEmailControllerConfig().getUri(),
+                client,
+                eventPublisher
+        );
 
         setController(controller);
 

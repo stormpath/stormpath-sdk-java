@@ -19,14 +19,11 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.filter.ForgotPasswordFilter;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,22 +37,19 @@ import java.util.Map;
  * @since 1.0.RC4
  */
 public class ChangePasswordController extends FormController {
-
-    private static final Logger log = LoggerFactory.getLogger(ForgotPasswordFilter.class);
-
     private String forgotPasswordUri;
     private String loginUri;
-    private Resolver<Locale> localeResolver;
-    private MessageSource messageSource;
 
-    @Override
-    public void init() {
-        super.init();
+    public ChangePasswordController(ControllerConfigResolver controllerConfigResolver,
+                                    String forgotPasswordUri,
+                                    String loginUri) {
+        super(controllerConfigResolver);
+        this.forgotPasswordUri = forgotPasswordUri;
+        this.loginUri = loginUri;
+
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.notNull(localeResolver, "localeResolver cannot be null.");
-        Assert.notNull(messageSource, "messageSource cannot be null.");
     }
 
     @Override
@@ -87,24 +81,6 @@ public class ChangePasswordController extends FormController {
         this.localeResolver = localeResolver;
     }
 
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
-    protected String i18n(HttpServletRequest request, String key) {
-        Locale locale = localeResolver.get(request, null);
-        return messageSource.getMessage(key, locale);
-    }
-
-    protected String i18n(HttpServletRequest request, String key, Object... args) {
-        Locale locale = localeResolver.get(request, null);
-        return messageSource.getMessage(key, locale, args);
-    }
-
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -120,13 +96,12 @@ public class ChangePasswordController extends FormController {
     }
 
     @Override
-    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<String> errors,
+    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
         model.put("loginUri", getLoginUri());
     }
 
     @Override
-    //protected List<Field> createFields(HttpServletRequest request, boolean retainPassword, Form form) {
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
 
         List<Field> fields = new ArrayList<Field>(3);
@@ -141,7 +116,7 @@ public class ChangePasswordController extends FormController {
             fields.add(field);
         }
 
-        String[] fieldNames = new String[]{ "password", "confirmPassword" };
+        String[] fieldNames = new String[]{"password", "confirmPassword"};
 
         for (String fieldName : fieldNames) {
 
@@ -162,37 +137,30 @@ public class ChangePasswordController extends FormController {
     }
 
     @Override
-    protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
-
-        List<String> errors = new ArrayList<String>(1);
+    protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
+        List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
+        String errorMsg = i18n(request, "stormpath.web.change.form.errors.default");
+        int status = 400;
 
         if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException) {
-            errors.add(e.getMessage());
+            errorMsg = e.getMessage();
         } else if (e instanceof ResourceException && ((ResourceException) e).getStatus() == 400) {
             //TODO: update this with a specific message that tells the exact password requirements.
             //This can only be done when this functionality is available via the Stormpath REST API
             //(currently being implemented in the Stormpath server-side REST API, not yet complete)
-            String key = "stormpath.web.change.form.errors.strength";
-            String msg = i18n(request, key);
-            errors.add(msg);
-        } else if (e instanceof ResourceException && ((ResourceException) e).getCode() == 404) {
+            errorMsg = i18n(request, "stormpath.web.change.form.errors.strength");
+        } else if (e instanceof ResourceException && ((ResourceException) e).getStatus() == 404) {
             String url = request.getContextPath() + getForgotPasswordUri();
-            String key = "stormpath.web.change.form.errors.invalid";
-            String msg = i18n(request, key, url);
-            errors.add(msg);
-        } else {
-            log.warn("Potentially unexpected change password problem.", e);
-            String key = "stormpath.web.change.form.errors.default";
-            String msg = i18n(request, key);
-            errors.add(msg);
+            errorMsg = i18n(request, "stormpath.web.change.form.errors.invalid", url);
         }
 
+        errors.add(new ErrorModel.Builder().setMessage(errorMsg).setStatus(status).build());
         return errors;
     }
 
     @Override
     protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form)
-        throws Exception {
+            throws Exception {
 
         String password = form.getFieldValue("password");
 
@@ -200,13 +168,7 @@ public class ChangePasswordController extends FormController {
         String sptoken = form.getFieldValue("sptoken");
         application.resetPassword(sptoken, password);
 
-        String next = form.getNext();
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
-        return new DefaultViewModel(next).setRedirect(true);
+        return new DefaultViewModel(getNextUri()).setRedirect(true);
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {

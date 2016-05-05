@@ -18,8 +18,8 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -43,10 +43,16 @@ public class ForgotPasswordController extends FormController {
     private String loginUri;
     private AccountStoreResolver accountStoreResolver;
 
-    public void init() {
-        super.init();
-        Assert.hasText(this.nextUri, "nextView cannot be null.");
+    public ForgotPasswordController(ControllerConfigResolver controllerConfigResolver,
+                                    String loginUri,
+                                    AccountStoreResolver accountStoreResolver) {
+        super(controllerConfigResolver);
+
+        this.loginUri = loginUri;
+        this.accountStoreResolver = accountStoreResolver;
+
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
+        Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
     }
 
     @Override
@@ -72,7 +78,7 @@ public class ForgotPasswordController extends FormController {
     }
 
     @Override
-    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<String> errors,
+    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
         model.put("loginUri", getLoginUri());
     }
@@ -102,11 +108,11 @@ public class ForgotPasswordController extends FormController {
     }
 
     @Override
-    protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
+    protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
         log.debug("Unable to send reset password email.", e);
 
-        List<String> errors = new ArrayList<String>(1);
-        errors.add("Invalid email address.");
+        List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
+        errors.add(new ErrorModel.Builder().setMessage("Invalid email address.").build());
 
         return errors;
     }
@@ -135,12 +141,6 @@ public class ForgotPasswordController extends FormController {
             //otherwise don't do anything
         }
 
-        String next = form.getNext();
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
-        return new DefaultViewModel(next).setRedirect(true);
+        return new DefaultViewModel(getNextUri()).setRedirect(true);
     }
 }

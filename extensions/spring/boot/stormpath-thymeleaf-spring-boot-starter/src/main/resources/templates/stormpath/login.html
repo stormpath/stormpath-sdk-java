@@ -16,73 +16,167 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{stormpath.web.login.title}">|Login|</title>
+    <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
 <body class="login">
-    <div class="container custom-container">
-        <div class="va-wrapper">
-            <div class="view login-view container">
+<div class="container custom-container">
+    <div class="va-wrapper">
+        <div class="view login-view container">
 
-                <div class="box row">
+            <div class="box row">
 
-                    <div th:class="'email-password-area col-xs-12 ' + ${#lists.isEmpty(accountStores) ? 'large col-sm-12' : 'small col-sm-8'}">
+                <div th:class="'email-password-area col-xs-12 ' + ${#lists.isEmpty(accountStores) ? 'large col-sm-12' : 'small col-sm-8'}">
 
-                        <div class="header" th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
-                                <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Register|</span>
-                        </div>
+                    <div class="header"
+                         th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
+                        <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Register|</span>
+                    </div>
 
-                        <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <p th:text="#{'stormpath.web.login.status.' + ${status}}">|Login Status|</p>
-                        </div>
+                    <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <p th:text="${status}">|Login Status|</p>
+                    </div>
 
-                        <div class="alert alert-dismissable alert-danger bad-login" th:if="${errors != null and not #lists.isEmpty(errors)}">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <!--/*/ <th-block data-th-each="error : ${errors}"> /*/-->
-                            <p th:text="${error}">|Error message here.|</p>
-                            <!--/*/ </th-block> /*/-->
-                        </div>
+                    <div class="alert alert-dismissable alert-danger bad-login"
+                         th:if="${errors != null and not #lists.isEmpty(errors)}">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <!--/*/ <th:block data-th-each="error : ${errors}"> /*/-->
+                        <p th:text="${error.message}">|Error message here.|</p>
+                        <!--/*/ </th:block> /*/-->
+                    </div>
 
-                        <form method="post" th:action="@{${form.action}}" role="form" class="login-form form-horizontal">
-                            <input name="next" type="hidden" th:value="${form.next}" th:if="${not #strings.isEmpty(form.next)}"/>
-
-                            <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
-
-                            <div th:each="field : ${form.visibleFields}" form-group="true" th:class="'form-group group-' + ${field.name}">
-                                <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}" th:text="#{${field.label}}">|Field label|</label>
+                    <form method="post" role="form" class="login-form form-horizontal">
+                        <div th:each="field : ${form.fields}" form-group="true"
+                             th:class="'form-group group-' + ${field.name}">
+                            <th:block th:if="${field.type == 'hidden'}">
+                                <input th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
+                            </th:block>
+                            <th:block th:if="${field.type != 'hidden'}">
+                                <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}"
+                                       th:text="#{${field.label}}">|Field label|</label>
 
                                 <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
                                            th:placeholder="#{${field.placeholder}}"
-                                           th:autofocus="${field.autofocus}"
                                            th:required="${field.required}" class="form-control"/>
                                 </div>
-                            </div>
-
-                            <div>
-                                <button type="submit" class="login btn btn-login btn-sp-green"
-                                        th:text="#{stormpath.web.login.form.button.value}">|Login|</button>
-                            </div>
-                        </form>
-
-                    </div>
-
-                    <!-- TODO:
-                    <div th:if="${not #lists.isEmpty(accountStores)}" class="social-area col-xs-12 col-sm-4">
-
-                        <div class="header">
-                            <label>Easy 1-click login:</label>
+                            </th:block>
                         </div>
 
-                    </div>
-                    -->
+                        <div>
+                            <button type="submit" class="login btn btn-login btn-sp-green"
+                                    th:text="#{stormpath.web.login.form.button.value}">|Login|
+                            </button>
+                        </div>
+                    </form>
 
                 </div>
 
-                <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify" th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
-                <a th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot Password?|</a>
-
+                <div th:if="${not #lists.isEmpty(accountStores)}" class="provider-area  col-xs-12 col-sm-4">
+                    <div class="header">&nbsp;</div>
+                    <label>Easy 1-click login:</label>
+                    <button th:each="accountStore : ${accountStores}" class="btn btn-social"
+                            th:classappend="${'btn-'+accountStore.provider.providerId}"
+                            th:text="${accountStore.provider.providerId}"
+                            th:id="${accountStore.provider.clientId}">|Provider|
+                    </button>
+                </div>
             </div>
+
+            <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify"
+               th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
+            <a th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot
+                Password?|</a>
+
         </div>
+        <input type="hidden" id="baseUrl"
+               th:value="${#httpServletRequest.scheme + '://' + #httpServletRequest.serverName + ':'+#httpServletRequest.serverPort+#httpServletRequest.contextPath}"/>
     </div>
+</div>
+
+<script type="text/javascript">
+    /* <![CDATA[ */
+
+    $('.btn-google').click(function (event) {
+        event.preventDefault();
+        googleLogin($('.btn-google').attr('id'));
+    });
+
+    $('.btn-facebook').click(function (event) {
+        event.preventDefault();
+        facebookLogin($('.btn-facebook').attr('id'));
+    });
+
+    $('.btn-github').click(function (event) {
+        event.preventDefault();
+        githubLogin($('.btn-github').attr('id'));
+    });
+
+    $('.btn-linkedin').click(function (event) {
+        event.preventDefault();
+        linkedinLogin($('.btn-linkedin').attr('id'));
+    });
+
+    function baseUrl() {
+        return $('#baseUrl').val();
+    }
+
+    function linkedinLogin(clientId) {
+        window.location.replace('https://www.linkedin.com/uas/oauth2/authorization' +
+                '?client_id=' + clientId +
+                '&response_type=code' +
+                '&scope=' + encodeURIComponent('r_emailaddress r_basicprofile') +
+                '&redirect_uri=' + encodeURIComponent(baseUrl() + '/callbacks/linkedin') +
+                '&state=${oauthStateToken}');
+    }
+
+    function googleLogin(clientId) {
+        window.location.replace('https://accounts.google.com/o/oauth2/auth?response_type=code' +
+                '&client_id=' + clientId + '&scope=email' +
+                '&redirect_uri=' + encodeURIComponent(baseUrl() + '/callbacks/google'));
+    }
+
+    function githubLogin(clientId) {
+        window.location.replace('https://github.com/login/oauth/authorize?client_id=' + clientId);
+    }
+
+    function samlLogin() {
+        window.location.replace(baseUrl() + '/saml');
+    }
+
+    function facebookLogin(appId) {
+        var FB = window.FB;
+        FB.init({
+            appId: appId,
+            cookie: true,
+            xfbml: true,
+            version: 'v2.4'
+        });
+        FB.login(function (response) {
+            if (response.status === 'connected') {
+                var queryStr = window.location.search.replace('?', '');
+                if (queryStr) {
+                    window.location.replace('/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
+                } else {
+                    window.location.replace('/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
+                }
+            }
+        }, {scope: 'email'});
+    }
+
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = '//connect.facebook.net/en_US/sdk.js';
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    /* ]]> */
+</script>
+
+
 </body>
 </html>

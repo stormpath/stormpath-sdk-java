@@ -45,7 +45,6 @@ public class SamlLogoutController extends LogoutController {
     */
 
     public void init() {
-        super.init();
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
 
         //not implemented yet
