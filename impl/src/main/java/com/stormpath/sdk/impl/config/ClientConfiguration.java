@@ -15,6 +15,7 @@ public class ClientConfiguration {
     private String apiKeyFile;
     private String apiKeyId;
     private String apiKeySecret;
+    private boolean cacheManagerEnabled;
     private long cacheManagerTtl;
     private long cacheManagerTti;
     private Map<String, CacheConfigurationBuilder> cacheManagerCaches = new LinkedHashMap<>();
@@ -64,6 +65,14 @@ public class ClientConfiguration {
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+    public boolean isCacheManagerEnabled() {
+        return cacheManagerEnabled;
+    }
+
+    public void setCacheManagerEnabled(boolean cacheManagerEnabled) {
+        this.cacheManagerEnabled = cacheManagerEnabled;
     }
 
     public Map<String, CacheConfigurationBuilder> getCacheManagerCaches() {

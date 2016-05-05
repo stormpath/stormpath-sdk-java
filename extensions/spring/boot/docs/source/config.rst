@@ -41,7 +41,7 @@ Simply just re-define the relevant ``stormpath.``\* property in one of your Spri
 Security Considerations: Passwords and secret values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is **strongly** recommended that you do not specify the ``stormpath.apiKey.secret`` property - or any other password or secret property - in shared properties files. These files are usually committed to version control (like git) and shared with other developers.
+It is **strongly** recommended that you do not specify the ``stormpath.client.apiKey.secret`` property - or any other password or secret property - in shared properties files. These files are usually committed to version control (like git) and shared with other developers.
 
 Because Stormpath API Keys are always assigned to an individual person, they should never be shared with or visible to anyone else, not even other co-workers or even Stormpath employees.  Anyone that has your API Key id and secret can alter the data in your Stormpath tenant.
 
@@ -80,20 +80,20 @@ API Key
 The API Key used by the SDK Client will be acquired from the following locations.  Locations inspected later override previously discovered values.
 
 * ``$HOME/.stormpath/apiKey.properties`` file
-* Any ``stormpath.apiKey.id`` value discovered from Spring property placeholder locations
-* Any ``stormpath.apiKey.secret`` value discovered from Spring property placeholder locations **\***
+* Any ``stormpath.client.apiKey.id`` value discovered from Spring property placeholder locations
+* Any ``stormpath.client.apiKey.secret`` value discovered from Spring property placeholder locations **\***
 
-**\*** While ``stormpath.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <property security considerations>` of files shared with other people.
+**\*** While ``stormpath.client.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <property security considerations>` of files shared with other people.
 
 HTTP Proxy
 ~~~~~~~~~~
 
 If your application requires communication to Stormpath go through an HTTP Proxy, you can set the following configuration properties as needed:
 
-* ``stormpath.proxy.host``: Proxy server hostname or IP address, e.g. ``proxy.mycompany.com`` or ``10.0.2.88``.
-* ``stormpath.proxy.port``: Proxy server port, for example ``8888``.
-* ``stormpath.proxy.username``: Username to use when connecting to the proxy server.  Only configure this property if proxy server username/password authentication is required.
-* ``stormpath.proxy.password``: Password to use when connecting to the proxy server.  Only configure this property if proxy server username/password authentication is required, but **note**: it is strongly recommended that you don't embed passwords in text files.
+* ``stormpath.client.proxy.host``: Proxy server hostname or IP address, e.g. ``proxy.mycompany.com`` or ``10.0.2.88``.
+* ``stormpath.client.proxy.port``: Proxy server port, for example ``8888``.
+* ``stormpath.client.proxy.username``: Username to use when connecting to the proxy server.  Only configure this property if proxy server username/password authentication is required.
+* ``stormpath.client.proxy.password``: Password to use when connecting to the proxy server.  Only configure this property if proxy server username/password authentication is required, but **note**: it is strongly recommended that you don't embed passwords in text files.
 
 Authentication Scheme
 ~~~~~~~~~~~~~~~~~~~~~
@@ -104,7 +104,7 @@ If you deploy your app on Google App Engine however, you might experience some p
 
 .. code-block:: properties
 
-   stormpath.authentication.scheme = basic
+   stormpath.client.authenticationScheme = basic
 
 If your application is not deployed on Google App Engine, we recommend that you *do not* set this property.
 

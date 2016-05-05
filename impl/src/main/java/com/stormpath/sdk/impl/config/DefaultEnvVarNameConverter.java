@@ -10,6 +10,20 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         Assert.hasText(dottedPropertyName, "dottedPropertyName argument cannot be null or empty.");
         dottedPropertyName = Strings.trimWhitespace(dottedPropertyName);
 
+        //special cases (camel case):
+        if ("stormpath.client.apiKey.id".equals(dottedPropertyName)) {
+            return "STORMPATH_API_KEY_ID";
+        }
+        if ("stormpath.client.apiKey.secret".equals(dottedPropertyName)) {
+            return "STORMPATH_API_KEY_SECRET";
+        }
+        if ("stormpath.client.apiKey.file".equals(dottedPropertyName)) {
+            return "STORMPATH_API_KEY_FILE";
+        }
+        if ("stormpath.client.authenticationScheme".equals(dottedPropertyName)) {
+            return "STORMPATH_AUTHENTICATION_SCHEME";
+        }
+
         StringBuilder sb = new StringBuilder();
 
         for(char c : dottedPropertyName.toCharArray()) {
@@ -33,13 +47,16 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
 
         //special cases (camel case):
         if ("STORMPATH_API_KEY_ID".equals(envVarName)) {
-            return "stormpath.apiKey.id";
+            return "stormpath.client.apiKey.id";
         }
         if ("STORMPATH_API_KEY_SECRET".equals(envVarName)) {
-            return "stormpath.apiKey.secret";
+            return "stormpath.client.apiKey.secret";
         }
         if ("STORMPATH_API_KEY_FILE".equals(envVarName)) {
-            return "stormpath.apiKey.file";
+            return "stormpath.client.apiKey.file";
+        }
+        if ("STORMPATH_AUTHENTICATION_SCHEME".equals(envVarName)) {
+            return "stormpath.client.authenticationScheme";
         }
 
         //default cases:

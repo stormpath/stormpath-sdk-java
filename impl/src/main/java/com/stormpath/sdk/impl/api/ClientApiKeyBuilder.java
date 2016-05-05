@@ -136,14 +136,14 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     protected Properties getSystemPropertyFileProperties() {
         Properties props = new Properties();
 
-        String location = System.getProperty("stormpath.apiKey.file");
+        String location = System.getProperty("stormpath.client.apiKey.file");
         if (Strings.hasText(location)) {
             try {
                 Reader reader = createFileReader(location);
                 props = toProperties(reader);
             } catch (IOException ignored) {
                 log.debug(
-                    "Unable to load api key properties file [{}] specified by system property stormpath.apiKey.file. " +
+                    "Unable to load api key properties file [{}] specified by system property stormpath.client.apiKey.file. " +
                     "This can be safely ignored as this is a fallback location - " +
                     "other more specific locations will be checked.",
                     location, ignored
@@ -173,12 +173,12 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
     protected Properties getSystemProperties() {
         Properties props = new Properties();
 
-        String value = System.getProperty("stormpath.apiKey.id");
+        String value = System.getProperty("stormpath.client.apiKey.id");
         if (Strings.hasText(value)) {
             props.put(this.apiKeyIdPropertyName, value);
         }
 
-        value = System.getProperty("stormpath.apiKey.secret");
+        value = System.getProperty("stormpath.client.apiKey.secret");
         if (Strings.hasText(value)) {
             props.put(this.apiKeySecretPropertyName, value);
         }
@@ -269,8 +269,8 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         if (!Strings.hasText(id)) {
             String msg = "Unable to find an API Key 'id', either from explicit configuration (for example, " +
                          ApiKeyBuilder.class.getSimpleName() + ".setApiKeyId) or from fallback locations:\n\n" +
-                         "1) system property stormpath.apiKey.id\n" +
-                         "2) resource file path or URL specified by system property stormpath.apiKey.file\n" +
+                         "1) system property stormpath.client.apiKey.id\n" +
+                         "2) resource file path or URL specified by system property stormpath.client.apiKey.file\n" +
                          "3) resource file path or URL specified by environment variable STORMPATH_API_KEY_FILE\n" +
                          "4) environment variable STORMPATH_API_KEY_ID\n" +
                          "5) default apiKey.properties file location " + DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION +
@@ -283,8 +283,8 @@ public class ClientApiKeyBuilder implements ApiKeyBuilder {
         if (!Strings.hasText(secret)) {
             String msg = "Unable to find an API Key 'secret', either from explicit configuration (for example, " +
                          ApiKeyBuilder.class.getSimpleName() + ".setApiKeySecret) or from fallback locations:\n\n" +
-                         "1) system property stormpath.apiKey.secret\n" +
-                         "2) resource file path or URL specified by system property stormpath.apiKey.file\n" +
+                         "1) system property stormpath.client.apiKey.secret\n" +
+                         "2) resource file path or URL specified by system property stormpath.client.apiKey.file\n" +
                          "3) resource file path or URL specified by environment variable STORMPATH_API_KEY_FILE\n" +
                          "4) environment variable STORMPATH_API_KEY_SECRET\n" +
                          "5) default apiKey.properties file location " + DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION +

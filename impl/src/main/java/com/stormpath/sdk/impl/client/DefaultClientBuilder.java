@@ -113,6 +113,10 @@ public class DefaultClientBuilder implements ClientBuilder {
             clientConfig.setApiKeySecret(props.get(DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME));
         }
 
+        if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_ENABLED_PROPERTY_NAME) != null) {
+            clientConfig.setCacheManagerEnabled(Boolean.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_ENABLED_PROPERTY_NAME)));
+        }
+
         if (props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME) != null) {
             clientConfig.setCacheManagerTtl(Long.valueOf(props.get(DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME)));
         }
@@ -239,8 +243,11 @@ public class DefaultClientBuilder implements ClientBuilder {
         Assert.state(this.apiKey != null,
                 "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
 
-        if (this.cacheManager == null) {
-            log.debug("No CacheManager configured.  Defaulting to in-memory CacheManager with default TTL and TTI of five minutes.");
+        if (!this.clientConfig.isCacheManagerEnabled()) {
+            log.debug("CacheManager disabled. Defaulting to DisabledCacheManager");
+            this.cacheManager = Caches.newDisabledCacheManager();
+        } else if (this.cacheManager == null) {
+            log.debug("No CacheManager configured. Defaulting to in-memory CacheManager with default TTL and TTI of five minutes.");
 
             CacheManagerBuilder cacheManagerBuilder = Caches.newCacheManager()
                     .withDefaultTimeToIdle(this.clientConfig.getCacheManagerTti(), TimeUnit.SECONDS)

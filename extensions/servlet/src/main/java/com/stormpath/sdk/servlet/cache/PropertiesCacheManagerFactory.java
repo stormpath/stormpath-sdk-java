@@ -32,13 +32,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class PropertiesCacheManagerFactory implements CacheManagerFactory {
 
-    public static final String STORMPATH_CACHE_CONFIG_PREFIX = "stormpath.cache.";
-    public static final String STORMPATH_CACHE_MANAGER       = STORMPATH_CACHE_CONFIG_PREFIX + "manager";
-    public static final String STORMPATH_CACHE_ENABLED       = STORMPATH_CACHE_CONFIG_PREFIX + "enabled";
+    public static final String STORMPATH_CACHE_CONFIG_PREFIX = "stormpath.client.cacheManager.caches.";
+    public static final String STORMPATH_CACHE_MANAGER       = "stormpath.client.cacheManager";
+    public static final String STORMPATH_CACHE_ENABLED       = STORMPATH_CACHE_MANAGER + ".enabled";
     public static final String STORMPATH_CACHE_TTI_SUFFIX    = ".tti";
     public static final String STORMPATH_CACHE_TTL_SUFFIX    = ".ttl";
-    public static final String STORMPATH_CACHE_TTI           = STORMPATH_CACHE_CONFIG_PREFIX + "tti";
-    public static final String STORMPATH_CACHE_TTL           = STORMPATH_CACHE_CONFIG_PREFIX + "ttl";
+    public static final String STORMPATH_CACHE_TTI           = STORMPATH_CACHE_MANAGER + ".defaultTti";
+    public static final String STORMPATH_CACHE_TTL           = STORMPATH_CACHE_MANAGER + ".defaultTtl";
 
     @Override
     public CacheManager createCacheManager(Map<String,String> config) {
@@ -98,7 +98,6 @@ public class PropertiesCacheManagerFactory implements CacheManagerFactory {
 
                 String value = config.get(sKey);
                 String suffix = sKey.substring(STORMPATH_CACHE_CONFIG_PREFIX.length());
-
                 String regionName;
                 long ttl = -1;
                 long tti = -1;
@@ -129,7 +128,7 @@ public class PropertiesCacheManagerFactory implements CacheManagerFactory {
                     ccb.withTimeToIdle(tti, TimeUnit.MILLISECONDS);
                 }
             }
-            //else not a stormpath.cache property - ignore it for CacheManager building purposes
+            //else not a stormpath.client.cache property - ignore it for CacheManager building purposes
         }
 
         for (CacheConfigurationBuilder ccb : regionConfigs.values()) {

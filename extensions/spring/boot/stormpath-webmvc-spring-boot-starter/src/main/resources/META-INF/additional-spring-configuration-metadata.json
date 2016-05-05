@@ -91,10 +91,10 @@
       "name": "stormpath.web.authc.savers.session"
     },
     {
-      "name": "stormpath.authentication"
+      "name": "stormpath.client"
     },
     {
-      "name": "stormpath.proxy"
+      "name": "stormpath.client.proxy"
     }
   ],
   "properties": [
