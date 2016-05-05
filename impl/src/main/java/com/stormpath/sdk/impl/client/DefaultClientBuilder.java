@@ -27,6 +27,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.impl.config.ClientConfiguration;
+import com.stormpath.sdk.impl.config.JSONPropertiesSource;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
@@ -81,7 +82,11 @@ public class DefaultClientBuilder implements ClientBuilder {
             sources.add(propertiesSource);
             // if location is a .properties file and it's not the first one, look for JSON and YAML equivalents
             if (!location.equals(DEFAULT_STORMPATH_PROPERTIES_FILE_LOCATIONS[0]) && location.endsWith(".properties")) {
-                // todo: JSON
+                String jsonFile = location.replace(".properties", ".json");
+                resource = resourceFactory.createResource(jsonFile);
+                PropertiesSource jsonSource = new OptionalPropertiesSource(new JSONPropertiesSource(resource));
+                sources.add(jsonSource);
+
                 String yamlFile = location.replace(".properties", ".yaml");
                 resource = resourceFactory.createResource(yamlFile);
                 PropertiesSource yamlSource = new OptionalPropertiesSource(new YAMLPropertiesSource(resource));
