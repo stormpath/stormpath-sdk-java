@@ -48,12 +48,11 @@ class SpringMetadataVersusWebPropertiesTest {
         }
 
         assertEquals diff.size(), 16, "Missing keys in default config: ${diff}"
-        assertEquals diff.toString(), "[stormpath.web.stormpathFilter.matchAfter, stormpath.web.stormpathFilter.enabled, " +
-                "stormpath.web.oauth2.origin.authorizer.originUris, stormpath.web.head.cssUris, stormpath.web.stormpathFilter.urlPatterns, " +
-                "stormpath.web.handlerMapping.order, stormpath.web.head.fragmentSelector, stormpath.web.stormpathFilter.dispatcherTypes, " +
-                "stormpath.web.stormpathFilter.order, stormpath.web.stormpathFilter.servletNames, stormpath.web.authc.savers.session.enabled, " +
-                "stormpath.web.head.view, stormpath.web.head.extraCssUris, stormpath.web.account.cookie.secure, stormpath.application, " +
-                "stormpath.web.authc.savers.cookie.enabled]"
+        assertEquals diff.sort().toString(), "[stormpath.application, stormpath.web.account.cookie.secure, stormpath.web.authc.savers.cookie.enabled, " +
+                "stormpath.web.authc.savers.session.enabled, stormpath.web.handlerMapping.order, stormpath.web.head.cssUris, stormpath.web.head.extraCssUris, " +
+                "stormpath.web.head.fragmentSelector, stormpath.web.head.view, stormpath.web.oauth2.origin.authorizer.originUris, " +
+                "stormpath.web.stormpathFilter.dispatcherTypes, stormpath.web.stormpathFilter.enabled, stormpath.web.stormpathFilter.matchAfter, " +
+                "stormpath.web.stormpathFilter.order, stormpath.web.stormpathFilter.servletNames, stormpath.web.stormpathFilter.urlPatterns]"
         /*println "Keys in metadata that aren't in web.stormpath.properties: " + diff.size()
         diff.each {
             println it
