@@ -43,9 +43,8 @@ class SpringMetadataVersusCorePropertiesTest {
         }
 
         assertEquals diff.size(), 7, "Missing keys in default config: ${diff}"
-        assertEquals diff.toString(), "[stormpath.application, stormpath.client.apiKey.fileIdPropertyName, " +
-                "stormpath.client.apiKey.fileSecretPropertyName, stormpath.enabled, stormpath.application.href, " +
-                "stormpath, stormpath.client]"
+        assertEquals diff.sort().toString(), "[stormpath, stormpath.application, stormpath.application.href, stormpath.client, " +
+                "stormpath.client.apiKey.fileIdPropertyName, stormpath.client.apiKey.fileSecretPropertyName, stormpath.enabled]"
     }
 
     @Test
