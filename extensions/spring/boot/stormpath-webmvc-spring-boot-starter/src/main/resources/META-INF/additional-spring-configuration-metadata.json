@@ -1,6 +1,9 @@
 {
   "groups": [
     {
+      "name": "stormpath.application"
+    },
+    {
       "name": "stormpath.web"
     },
     {
@@ -13,7 +16,7 @@
       "name": "stormpath.web.login"
     },
     {
-      "name": "stormpath.web.forgot"
+      "name": "stormpath.web.forgotPassword"
     },
     {
       "name": "stormpath.web.register"
@@ -22,34 +25,28 @@
       "name": "stormpath.web.register.form"
     },
     {
-      "name": "stormpath.web.verify"
+      "name": "stormpath.web.verifyEmail"
     },
     {
       "name": "stormpath.web.logout"
     },
     {
-      "name": "stormpath.web.change"
+      "name": "stormpath.web.changePassword"
     },
     {
-      "name": "stormpath.web.accessToken"
+      "name": "stormpath.web.oauth2"
+    },
+    {
+      "name": "stormpath.web.oauth2.client_credentials"
+    },
+    {
+      "name": "stormpath.web.oauth2.password"
     },
     {
       "name": "stormpath.web.oauth2.origin.authorizer"
     },
     {
       "name": "stormpath.web.idSite"
-    },
-    {
-      "name": "stormpath.web.idSite.login"
-    },
-    {
-      "name": "stormpath.web.idSite.register"
-    },
-    {
-      "name": "stormpath.web.idSite.forgot"
-    },
-    {
-      "name": "stormpath.web.idSite.result"
     },
     {
       "name": "stormpath.web.stormpathFilter"
@@ -498,6 +495,755 @@
       "type": "java.lang.String",
       "description": "The base domain of your application. For example if your app resides in 'myapp.mycompany.com', your base domain will be 'mycompany.com'.",
       "defaultValue": "Inferred based on heuristics by default. However if your application is not deployed to an apex domain, like myapp.com, you *must* specify your application's base domain, e.g. 'myapp.mycompany.com'."
+    },
+    {
+      "name": "stormpath.application.href",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.application.name",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.basePath",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.client_credentials.enabled",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.web.oauth2.client_credentials.accessToken.ttl",
+      "type": "java.lang.Integer",
+      "description": "",
+      "defaultValue": 3600
+    },
+    {
+      "name": "stormpath.web.oauth2.password.enabled",
+      "type": "java.lang.Boolean",
+      "description": true
+    },
+    {
+      "name": "stormpath.web.oauth2.password.validationStrategy",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.accessTokenCookie.name",
+      "type": "java.lang.String",
+      "description": "",
+      "defaultValue": "access_token"
+    },
+    {
+      "name": "stormpath.web.accessTokenCookie.httpOnly",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.web.accessTokenCookie.secure",
+      "type": "java.lang.Boolean",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.accessTokenCookie.path",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.accessTokenCookie.domain",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.name",
+      "type": "java.lang.String",
+      "description": "",
+      "defaultValue": "refresh_token"
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.httpOnly",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.secure",
+      "type": "java.lang.Boolean",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.path",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.domain",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.produces[0]",
+      "type": "java.lang.String",
+      "description": "",
+      "defaultValue": "application/json"
+    },
+    {
+      "name": "stormpath.web.produces[1]",
+      "type": "java.lang.String",
+      "description": "",
+      "defaultValue": "text/html"
+    },
+    {
+      "name": "stormpath.web.register.autoLogin",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.register.form.fields.givenName.enabled",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.web.register.form.fields.givenName.visible",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.web.register.form.fields.givenName.label",
+      "type": "java.lang.String",
+      "description": "",
+      "defaultValue": "First Name"
+    },
+    {
+      "name": "stormpath.web.register.form.fields.givenName.placeholder",
+      "type": "java.lang.String",
+      "description": "",
+      "defaultValue": "First Name"
+    },
+    {
+      "name": "stormpath.web.register.form.fields.givenName.required",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.web.register.form.fields.givenName.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.middleName.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.middleName.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.middleName.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.middleName.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.middleName.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.middleName.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.surname.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.surname.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.surname.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.surname.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.surname.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.surname.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.username.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.username.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.username.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.username.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.username.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.username.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.email.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.email.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.email.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.email.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.email.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.email.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.password.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.password.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.password.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.password.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.password.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.password.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.confirmPassword.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.confirmPassword.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.confirmPassword.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.confirmPassword.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.confirmPassword.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fields.confirmPassword.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[0]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[1]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[2]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[3]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[4]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[5]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.register.form.fieldOrder[6]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.login.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.login.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.login.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.login.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.login.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.login.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.password.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.password.visible",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.password.label",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.password.placeholder",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.password.required",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fields.password.type",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fieldOrder[0]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.login.form.fieldOrder[1]",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.changePassword.autoLogin",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.changePassword.errorUri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.facebook.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.facebook.scope",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.github.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.github.scope",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.google.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.google.scope",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.linkedin.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.social.linkedin.scope",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.enabled",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.apiKeys",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.applications",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.customData",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.directory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.groupMemberships",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.groups",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.providerData",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.me.expand.tenant",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.client.cacheManager",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.sendVerificationEmail.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.unauthorized.uri",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.validationStrategy",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.request.event.publisher",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.request.event.listener",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.cookie.secure.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.session.attribute.names",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.jwt.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.jwt.factory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.jwt.signingKey.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.csrf.token.manager",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.client.cacheManager.caches.com.stormpath.sdk.servlet.nonces.ttl",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.request.factory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.message.source",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.locale.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.resolvers",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.resolvers.header",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.resolvers.cookie",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.account.resolvers.session",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.localhost.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.authorizer",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.authorizer.secure.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.origin.authorizer",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.origin.authorizer.serverUriResolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.authenticationRequestFactory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.oauth2.resultFactory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshToken.authenticationRequestFactory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshToken.resultFactory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.accountStoreResolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authc.saver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authc.savers",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authc.savers.cookie",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authc.unauthenticatedHandler",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authc.usernamePasswordRequestFactory",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authc.savers.session",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.http.authc",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.http.authc.schemes",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.http.authc.schemes.basic",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.http.authc.schemes.bearer",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.authz.unauthorizedHandler",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.filter.chain.resolver",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.uris./assets/css/stormpath.css",
+      "type": "java.lang.String",
+      "description": ""
+    },
+    {
+      "name": "stormpath.web.uris./assets/css/custom.stormpath.css",
+      "type": "java.lang.String",
+      "description": ""
     }
   ]
 }
