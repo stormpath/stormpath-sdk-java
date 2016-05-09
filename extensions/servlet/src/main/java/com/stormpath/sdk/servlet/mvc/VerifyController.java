@@ -50,7 +50,7 @@ import java.util.Map;
  */
 public class VerifyController extends FormController {
 
-    private static final Logger log = LoggerFactory.getLogger(SendVerificationEmailController.class);
+    private static final Logger log = LoggerFactory.getLogger(VerifyController.class);
 
     private String loginUri;
     private String logoutUri;

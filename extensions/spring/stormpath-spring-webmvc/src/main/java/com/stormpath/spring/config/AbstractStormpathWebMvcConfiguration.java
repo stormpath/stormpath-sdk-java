@@ -100,7 +100,6 @@ import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
-import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
