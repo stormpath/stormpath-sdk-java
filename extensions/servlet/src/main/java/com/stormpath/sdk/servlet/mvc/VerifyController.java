@@ -16,33 +16,53 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultVerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.form.DefaultField;
+import com.stormpath.sdk.servlet.form.Field;
+import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.UserAgents;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @since 1.0.RC4
  */
-public class VerifyController extends AbstractController {
+public class VerifyController extends FormController {
 
+    private static final Logger log = LoggerFactory.getLogger(SendVerificationEmailController.class);
+
+    private String loginUri;
     private String logoutUri;
-    private String sendVerificationEmailUri;
     private Client client;
     private Publisher<RequestEvent> eventPublisher;
+    private AccountStoreResolver accountStoreResolver;
+    private boolean autoLogin;
 
     public void init() {
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
-        Assert.hasText(sendVerificationEmailUri, "sendVerificationEmailUri cannot be null or empty.");
+        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
@@ -50,6 +70,14 @@ public class VerifyController extends AbstractController {
     @Override
     public boolean isNotAllowIfAuthenticated() {
         return true;
+    }
+
+    protected AccountStoreResolver getAccountStoreResolver() {
+        return accountStoreResolver;
+    }
+
+    public void setAccountStoreResolver(AccountStoreResolver accountStoreResolver) {
+        this.accountStoreResolver = accountStoreResolver;
     }
 
     public String getLogoutUri() {
@@ -60,14 +88,21 @@ public class VerifyController extends AbstractController {
         this.logoutUri = logoutUri;
     }
 
-    /* @since 1.0.RC8.3 */
-    public String getSendVerificationEmailUri() {
-        return sendVerificationEmailUri;
+    public String getLoginUri() {
+        return loginUri;
     }
 
-    /* @since 1.0.RC8.3 */
-    public void setSendVerificationEmailUri(String sendVerificationEmailUri) {
-        this.sendVerificationEmailUri = sendVerificationEmailUri;
+    public void setLoginUri(String loginUri) {
+        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
+        this.loginUri = loginUri;
+    }
+
+    public boolean isAutoLogin() {
+        return autoLogin;
+    }
+
+    public void setAutoLogin(boolean autoLogin) {
+        this.autoLogin = autoLogin;
     }
 
     public Client getClient() {
@@ -92,14 +127,43 @@ public class VerifyController extends AbstractController {
         String sptoken = Strings.clean(request.getParameter("sptoken"));
 
         if (sptoken == null) {
+            if (UserAgents.get(request).isJsonPreferred()) {
+                Map<String,Object> model = new HashMap<String, Object>();
+                model.put("status", 400);
+                model.put("message", "sptoken parameter not provided.");
+                return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+            }
             //redirect to send verification email form
-            String sendVerificationEmailUri = getSendVerificationEmailUri();
-            return new DefaultViewModel(sendVerificationEmailUri).setRedirect(true);
+            this.setView("stormpath/sendVerificationEmail");
+            String view = getView();
+            Map<String,?> model = createModel(request, response);
+            return new DefaultViewModel(view, model);
         }
 
         try {
             return verify(request, response, sptoken);
-        } catch (Exception e) {
+        }
+        catch (ResourceException re) {
+            if (UserAgents.get(request).isJsonPreferred()) {
+                Map<String,Object> model = new HashMap<String, Object>();
+                model.put("status", re.getStatus());
+                model.put("message", re.getMessage());
+                model.put("code", re.getCode());
+                model.put("developerMessage", re.getDeveloperMessage());
+                model.put("moreInfo", re.getMoreInfo());
+                return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+            }
+            //safest thing to do if token is invalid or if there is an error (could be illegal access)
+            String logoutUri = getLogoutUri();
+            return new DefaultViewModel(logoutUri).setRedirect(true);
+        }
+        catch (Exception e) {
+            if (UserAgents.get(request).isJsonPreferred()) {
+                Map<String,Object> model = new HashMap<String, Object>();
+                model.put("status", 400);
+                model.put("message", "Invalid username or password.");
+                return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+            }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
             String logoutUri = getLogoutUri();
             return new DefaultViewModel(logoutUri).setRedirect(true);
@@ -115,6 +179,13 @@ public class VerifyController extends AbstractController {
 
         RequestEvent e = createVerifiedEvent(request, response, account);
         publish(e);
+
+        if (UserAgents.get(request).isJsonPreferred()) {
+            Map<String,Object> model = new HashMap<String, Object>();
+            model.put("status", 200);
+            model.put("message", "OK");
+            return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+        }
 
         String next = Strings.clean(request.getParameter("next"));
 
@@ -139,4 +210,85 @@ public class VerifyController extends AbstractController {
         }
     }
 
+    @Override
+    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<String> errors,
+                               Map<String, Object> model) {
+        model.put("loginUri", getLoginUri());
+    }
+
+    @Override
+    protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
+
+        List<Field> fields = new ArrayList<Field>(1);
+
+        String[] fieldNames = new String[]{ "email" };
+
+        for (String fieldName : fieldNames) {
+
+            DefaultField field = new DefaultField();
+            field.setName(fieldName);
+            field.setLabel("stormpath.web.sendVerificationEmail.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.sendVerificationEmail.form.fields." + fieldName + ".placeholder");
+            field.setRequired(true);
+            field.setType("text");
+            String param = request.getParameter(fieldName);
+            field.setValue(param != null ? param : "");
+
+            fields.add(field);
+        }
+
+        return fields;
+    }
+
+    @Override
+    protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
+        log.debug("Unable to send account verification email.", e);
+
+        List<String> errors = new ArrayList<String>(1);
+        errors.add("Invalid email address.");
+
+        return errors;
+    }
+
+    protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) {
+
+        Application application = (Application) request.getAttribute(Application.class.getName());
+
+        String email = form.getFieldValue("email");
+
+        try {
+            //set the form on the request in case the AccountStoreResolver needs to inspect it:
+            request.setAttribute("form", form);
+            AccountStore accountStore = getAccountStoreResolver().getAccountStore(request, response);
+
+            VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
+                    .setLogin(email)
+                    .setAccountStore(accountStore)
+                    .build();
+
+            application.sendVerificationEmail(verificationEmailRequest);
+        } catch (ResourceException e) {
+            //404 == resource does not exist.  Do not let the user know that the account does not
+            //exist, otherwise we open up to phishing attacks
+            if (e.getCode() != 404) {
+                throw e;
+            }
+            //otherwise don't do anything
+        }
+
+        if (UserAgents.get(request).isJsonPreferred()) {
+            Map<String,Object> model = new HashMap<String, Object>();
+            model.put("status", 200);
+            model.put("message", "OK");
+            return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+        }
+
+        String next = form.getNext();
+
+        if (!Strings.hasText(next)) {
+            next = getNextUri();
+        }
+
+        return new DefaultViewModel(next);
+    }
 }

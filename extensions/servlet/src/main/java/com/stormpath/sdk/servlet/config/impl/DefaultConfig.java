@@ -48,9 +48,9 @@ public class DefaultConfig implements Config {
     public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUri";
     public static final String REGISTER_URL = "stormpath.web.register.uri";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
+    public static final String REGISTER_AUTOLOGIN = "stormpath.web.register.autoLogin";
     public static final String VERIFY_URL = "stormpath.web.verifyEmail.uri";
     public static final String VERIFY_NEXT_URL = "stormpath.web.verifyEmail.nextUri";
-    public static final String SEND_VERIFICATION_EMAIL_URL = "stormpath.web.sendVerificationEmail.uri";
     public static final String VERIFY_ENABLED = "stormpath.web.verifyEmail.enabled";
 
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
@@ -155,6 +155,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public boolean getRegisterAutoLogin() {
+        return CFG.getBoolean(REGISTER_AUTOLOGIN);
+    }
+
+    @Override
     public String getVerifyUrl() {
         return CFG.getString(VERIFY_URL);
     }
@@ -162,11 +167,6 @@ public class DefaultConfig implements Config {
     @Override
     public String getVerifyNextUrl() {
         return CFG.getString(VERIFY_NEXT_URL);
-    }
-
-    @Override
-    public String getSendVerificationEmailUrl() {
-        return CFG.getString(SEND_VERIFICATION_EMAIL_URL);
     }
 
     @Override

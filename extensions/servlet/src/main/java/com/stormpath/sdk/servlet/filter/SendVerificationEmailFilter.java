@@ -36,7 +36,6 @@ public class SendVerificationEmailFilter extends ControllerFilter {
         AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
 
         SendVerificationEmailController controller = new SendVerificationEmailController();
-        controller.setUri(getConfig().getSendVerificationEmailUrl());
         controller.setView("stormpath/sendVerificationEmail");
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setAccountStoreResolver(accountStoreResolver);

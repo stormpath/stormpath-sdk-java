@@ -194,6 +194,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public boolean getRegisterAutoLogin() {
+                return registerAutoLogin;
+            }
+
+            @Override
             public String getVerifyUrl() {
                 return verifyUri;
             }
@@ -204,11 +209,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             /* @since 1.0.RC8.3 */
-            @Override
-            public String getSendVerificationEmailUrl() {
-                return sendVerificationEmailUri;
-            }
-
             @Override
             public boolean isVerifyEnabled() {
                 return verifyEnabled;

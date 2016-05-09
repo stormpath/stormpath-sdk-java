@@ -331,6 +331,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password), confirmPassword(required,password)' }")
     protected String registerFormFields;
 
+    @Value("#{ @environment['stormpath.web.register.autoLogin'] ?: false }")
+    protected boolean registerAutoLogin;
+
     // ================  Verify Email Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
@@ -344,12 +347,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
-
-    @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
-    protected String sendVerificationEmailUri;
-
-    @Value("#{ @environment['stormpath.web.sendVerificationEmail.view'] ?: 'stormpath/sendVerificationEmail' }")
-    protected String sendVerificationEmailView;
 
     // ================  Logout Controller properties  ===================
 
@@ -552,7 +549,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (verifyEnabled) {
             mappings.put(verifyUri, stormpathVerifyController());
-            mappings.put(sendVerificationEmailUri, stormpathSendVerificationEmailController());
         }
         if (forgotEnabled) {
             mappings.put(forgotUri, stormpathForgotPasswordController());
@@ -1197,29 +1193,15 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         VerifyController controller = new VerifyController();
         controller.setNextUri(verifyNextUri);
         controller.setLogoutUri(logoutUri);
-        controller.setSendVerificationEmailUri(sendVerificationEmailUri);
+        controller.setView("stormpath/sendVerificationEmail");
+        controller.setAccountStoreResolver(stormpathAccountStoreResolver());
+        controller.setLoginUri(loginUri);
+        controller.setAutoLogin(registerAutoLogin);
         controller.setClient(client);
         controller.setEventPublisher(stormpathRequestEventPublisher());
         controller.init();
 
-        return createSpringController(controller);
-    }
-
-    public Controller stormpathSendVerificationEmailController() {
-        if (idSiteEnabled) {
-            return createIdSiteController(null);
-        }
-
-        SendVerificationEmailController controller = new SendVerificationEmailController();
-        controller.setUri(sendVerificationEmailUri);
-        controller.setView(sendVerificationEmailView);
-        controller.setCsrfTokenManager(stormpathCsrfTokenManager());
-        controller.setAccountStoreResolver(stormpathAccountStoreResolver());
-        controller.setNextUri(verifyView);
-        controller.setLoginUri(loginUri);
-        controller.init();
-
-        return createSpringController(controller);
+        return createSpaAwareSpringController(controller);
     }
 
     public Controller stormpathChangePasswordController() {

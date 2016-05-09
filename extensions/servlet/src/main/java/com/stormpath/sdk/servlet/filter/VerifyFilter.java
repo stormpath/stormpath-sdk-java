@@ -19,6 +19,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 
 import javax.servlet.ServletException;
@@ -29,6 +30,7 @@ import javax.servlet.ServletException;
 public class VerifyFilter extends ControllerFilter {
 
     public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+    public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
 
     @Override
     protected void onInit() throws ServletException {
@@ -36,10 +38,16 @@ public class VerifyFilter extends ControllerFilter {
         Client client = getClient();
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
 
+        AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
+
         VerifyController controller = new VerifyController();
         controller.setNextUri(getConfig().getVerifyNextUrl());
         controller.setLogoutUri(getConfig().getLogoutUrl());
-        controller.setSendVerificationEmailUri(getConfig().getSendVerificationEmailUrl());
+        controller.setLoginUri(getConfig().getLoginUrl());
+        controller.setAccountStoreResolver(accountStoreResolver);
+        controller.setView("stormpath/sendVerificationEmail");
+        controller.setNextUri("stormpath/verify");
+        controller.setAutoLogin(getConfig().getRegisterAutoLogin());
         controller.setClient(client);
         controller.setEventPublisher(eventPublisher);
         controller.init();
