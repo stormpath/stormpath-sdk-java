@@ -207,12 +207,6 @@
       "defaultValue": "com.stormpath.sdk.servlet.nonces"
     },
     {
-      "name": "stormpath.web.http.authc.challenge",
-      "type": "java.lang.Boolean",
-      "description": "Whether or not a failed HTTP Authentication attempt (via the Authorization header) should result in a HTTP 401 authentication challenge response, setting the WWW-Authenticate header.  This is expected behavior for HTTP Authentication, so the default value is true, but may be set to false you desire an exception be thrown instead.  This is mostly useful in certain testing scenarios, and it is strongly recommended to keep this value set to true to retain HTTP-compliant behavior.",
-      "defaultValue": true
-    },
-    {
       "name": "stormpath.web.stormpathFilter.enabled",
       "type": "java.lang.Boolean",
       "description": "Defines if the StormpathFilter should enabled or not. This filter is responsible for providing all the Stormpath-related functionality in a Web environment. The StormpathFilter will ignore all filtered requests that do not match recognized URL rules, allowing other frameworks to filter requests as necessary.  Disabling this filter will prevent Stormpath web support from working correctly, but this property is provided as an option in case you wish to temporarily disable the filter for debugging or request tracing reasons.",
@@ -638,612 +632,740 @@
     {
       "name": "stormpath.web.register.form.fields.givenName.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "text"
     },
     {
       "name": "stormpath.web.register.form.fields.middleName.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.register.form.fields.middleName.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.middleName.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Middle Name"
     },
     {
       "name": "stormpath.web.register.form.fields.middleName.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Middle Name"
     },
     {
       "name": "stormpath.web.register.form.fields.middleName.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.middleName.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "text"
     },
     {
       "name": "stormpath.web.register.form.fields.surname.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.surname.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.surname.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Last Name"
     },
     {
       "name": "stormpath.web.register.form.fields.surname.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Last Name"
     },
     {
       "name": "stormpath.web.register.form.fields.surname.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.surname.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "text"
     },
     {
       "name": "stormpath.web.register.form.fields.username.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.register.form.fields.username.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.username.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Username"
     },
     {
       "name": "stormpath.web.register.form.fields.username.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Username"
     },
     {
       "name": "stormpath.web.register.form.fields.username.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.username.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "text"
     },
     {
       "name": "stormpath.web.register.form.fields.email.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.email.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.email.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Email"
     },
     {
       "name": "stormpath.web.register.form.fields.email.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Email"
     },
     {
       "name": "stormpath.web.register.form.fields.email.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.email.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "email"
     },
     {
       "name": "stormpath.web.register.form.fields.password.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.password.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.password.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Password"
     },
     {
       "name": "stormpath.web.register.form.fields.password.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Password"
     },
     {
       "name": "stormpath.web.register.form.fields.password.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.password.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "password"
     },
     {
       "name": "stormpath.web.register.form.fields.confirmPassword.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.register.form.fields.confirmPassword.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.confirmPassword.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Confirm Password"
     },
     {
       "name": "stormpath.web.register.form.fields.confirmPassword.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Confirm Password"
     },
     {
       "name": "stormpath.web.register.form.fields.confirmPassword.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.register.form.fields.confirmPassword.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "password"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[0]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "username"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[1]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "givenName"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[2]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "middleName"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[3]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "surname"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[4]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "email"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[5]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "password"
     },
     {
       "name": "stormpath.web.register.form.fieldOrder[6]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "confirmPassword"
     },
     {
       "name": "stormpath.web.login.form.fields.login.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.login.form.fields.login.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.login.form.fields.login.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Username or Email"
     },
     {
       "name": "stormpath.web.login.form.fields.login.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Username or Email"
     },
     {
       "name": "stormpath.web.login.form.fields.login.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.login.form.fields.login.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "text"
     },
     {
       "name": "stormpath.web.login.form.fields.password.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.login.form.fields.password.visible",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.login.form.fields.password.label",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Password"
     },
     {
       "name": "stormpath.web.login.form.fields.password.placeholder",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "Password"
     },
     {
       "name": "stormpath.web.login.form.fields.password.required",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.login.form.fields.password.type",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "password"
     },
     {
       "name": "stormpath.web.login.form.fieldOrder[0]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "login"
     },
     {
       "name": "stormpath.web.login.form.fieldOrder[1]",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "password"
     },
     {
       "name": "stormpath.web.changePassword.autoLogin",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.changePassword.errorUri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "/forgot?status=invalid_sptoken"
     },
     {
       "name": "stormpath.web.social.facebook.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "/callbacks/facebook"
     },
     {
       "name": "stormpath.web.social.facebook.scope",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "email"
     },
     {
       "name": "stormpath.web.social.github.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "/callbacks/github"
     },
     {
       "name": "stormpath.web.social.github.scope",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "user:email"
     },
     {
       "name": "stormpath.web.social.google.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "/callbacks/google"
     },
     {
       "name": "stormpath.web.social.google.scope",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "email profile"
     },
     {
       "name": "stormpath.web.social.linkedin.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "/callbacks/linkedin"
     },
     {
       "name": "stormpath.web.social.linkedin.scope",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "r_basicprofile r_emailaddress"
     },
     {
       "name": "stormpath.web.me.enabled",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.me.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "/me"
     },
     {
       "name": "stormpath.web.me.expand.apiKeys",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.applications",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.customData",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.directory",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.groupMemberships",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.groups",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.providerData",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.web.me.expand.tenant",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
     },
     {
       "name": "stormpath.client.cacheManager",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.cache.config.DefaultCacheManagerFactory"
     },
     {
       "name": "stormpath.web.sendVerificationEmail.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "This shows the view where a user can enter their email address to have a verification email re-sent to them.",
+      "defaultValue": "/sendVerificationEmail"
     },
     {
       "name": "stormpath.web.unauthorized.uri",
       "type": "java.lang.String",
-      "description": ""
+      "description": "The context-relative path where an authenticated (already logged in) user will be redirected when attempting to access a url they are not allowed to access.",
+      "defaultValue": "/unauthorized"
     },
     {
       "name": "stormpath.web.oauth2.validationStrategy",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "stormpath"
     },
     {
       "name": "stormpath.web.request.event.publisher",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.event.impl.EventPublisherFactory"
     },
     {
       "name": "stormpath.web.request.event.listener",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.event.RequestEventListenerAdapter"
     },
     {
       "name": "stormpath.web.account.cookie.secure.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "THE FOLLOWING SECURE RESOLVER SHOULD *ALWAYS* RETURN TRUE IN PRODUCTION, EVEN IN INTRANET/PRIVATE COMPANY APPS. A 'false' value *will* make your application vulnerable to identity hijacking attacks. The default implementation however allows localhost clients to use non-TLS connections for development convenience. TLS is required for all other clients in order for the cookie to be set.",
+      "defaultValue": "com.stormpath.sdk.servlet.config.SecureResolverFactory"
     },
     {
       "name": "stormpath.web.account.session.attribute.names",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.account.Account, account"
     },
     {
       "name": "stormpath.web.account.jwt.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "om.stormpath.sdk.servlet.filter.account.config.JwtAccountResolverFactory"
     },
     {
       "name": "stormpath.web.account.jwt.factory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.AuthenticationJwtFactoryFactory"
     },
     {
       "name": "stormpath.web.account.jwt.signingKey.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.DefaultJwtSigningKeyResolver"
     },
     {
       "name": "stormpath.web.csrf.token.manager",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.csrf.config.CsrfTokenManagerFactory"
     },
     {
       "name": "stormpath.client.cacheManager.caches.com.stormpath.sdk.servlet.nonces.ttl",
-      "type": "java.lang.String",
-      "description": ""
+      "type": "java.lang.Long",
+      "description": "",
+      "defaultValue": 3600000
     },
     {
       "name": "stormpath.web.request.factory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.config.StormpathServletRequestFactoryFactory"
     },
     {
       "name": "stormpath.web.message.source",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.i18n.DefaultMessageSource"
     },
     {
       "name": "stormpath.web.locale.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver"
     },
     {
       "name": "stormpath.web.account.resolvers",
       "type": "java.lang.String",
-      "description": ""
+      "description": "When a Resolver returns an Account instance, all remaining Resolvers are ignored.  Resolvers are invoked in the order that they are specified in this comma-delimited list. Be sure to specify resolver names in the order that you prefer request locations to be checked.",
+      "defaultValue": "header, cookie, session"
     },
     {
       "name": "stormpath.web.account.resolvers.header",
       "type": "java.lang.String",
-      "description": ""
+      "description": "Authorization Header Account Resolver: inspects the HTTP 'Authorization' header using all available HTTP Authentication Schemes. Available schemes are defined by the following property name/value convention: stormpath.web.http.authc.schemes.SCHEME_NAME = SCHEME_IMPLEMENTATION_FULLY_QUALIFIED_CLASS_NAME",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.AuthorizationHeaderAccountResolverFactory"
     },
     {
       "name": "stormpath.web.account.resolvers.cookie",
       "type": "java.lang.String",
-      "description": ""
+      "description": "Cookie Account Resolver: looks for a secure digitally signed cookie that contains the account's information. The cookie itself is created and set by the stormpath.web.authc.saver.cookie implementation.",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.CookieAccountResolverFactory"
     },
     {
       "name": "stormpath.web.account.resolvers.session",
       "type": "java.lang.String",
-      "description": ""
+      "description": "Session Account Resolver: looks in an available HTTP session for the account. This implementation does not create sessions - it will only look in the request's session if the session already exists.",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.SessionAccountResolver"
     },
     {
       "name": "stormpath.web.localhost.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.util.IsLocalhostResolver"
     },
     {
       "name": "stormpath.web.oauth2.authorizer",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.AccessTokenRequestAuthorizerFactory"
     },
     {
       "name": "stormpath.web.oauth2.authorizer.secure.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "THE SECURE RESOLVER MUST *ALWAYS* RETURN TRUE IN PRODUCTION, EVEN IN INTRANET/PRIVATE COMPANY APPS. This is required by the OAuth 2 specification: https://tools.ietf.org/html/rfc6749#section-3.2 A 'false' value *will* make your application vulnerable to identity hijacking attacks. The default implementation however allows localhost clients to use non-TLS connections for development convenience.  TLS is required for all other clients in order for the request to be processed.",
+      "defaultValue": "com.stormpath.sdk.servlet.config.SecureResolverFactory"
     },
     {
       "name": "stormpath.web.oauth2.origin.authorizer",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.OriginAccessTokenRequestAuthorizerFactory"
     },
     {
       "name": "stormpath.web.oauth2.origin.authorizer.serverUriResolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.DefaultServerUriResolver"
     },
     {
       "name": "stormpath.web.oauth2.authenticationRequestFactory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.AccessTokenAuthenticationRequestFactoryFactory"
     },
     {
       "name": "stormpath.web.oauth2.resultFactory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.AccessTokenResultFactoryFactory"
     },
     {
       "name": "stormpath.web.refreshToken.authenticationRequestFactory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.RefreshTokenAuthenticationRequestFactoryFactory"
     },
     {
       "name": "stormpath.web.refreshToken.resultFactory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.RefreshTokenResultFactoryFactory"
     },
     {
       "name": "stormpath.web.accountStoreResolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver"
     },
     {
       "name": "stormpath.web.authc.saver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.AuthenticationResultSaverFactory"
     },
     {
       "name": "stormpath.web.authc.savers",
       "type": "java.lang.String",
-      "description": ""
+      "description": "The storage locations that should be used to save account state after successful authentication. The value is a comma-delimited list of one or more of cookie, session, or disabled.",
+      "defaultValue": "cookie"
     },
     {
       "name": "stormpath.web.authc.savers.cookie",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.CookieAuthenticationResultSaverFactory"
     },
     {
       "name": "stormpath.web.authc.unauthenticatedHandler",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.config.UnauthenticatedHandlerFactory"
     },
     {
       "name": "stormpath.web.authc.usernamePasswordRequestFactory",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.config.UsernamePasswordRequestFactoryFactory"
     },
     {
       "name": "stormpath.web.authc.savers.session",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.SessionAuthenticationResultSaverFactory"
     },
     {
       "name": "stormpath.web.http.authc",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.http.authc.config.HttpAuthenticatorFactory"
+    },
+    {
+      "name": "stormpath.web.http.authc.challenge",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not a failed HTTP Authentication attempt (via the Authorization header) should result in a HTTP 401 authentication challenge response, setting the WWW-Authenticate header.  This is expected behavior for HTTP Authentication, so the default value is true, but may be set to false you desire an exception be thrown instead.  This is mostly useful in certain testing scenarios, and it is strongly recommended to keep this value set to true to retain HTTP-compliant behavior.",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.http.authc.schemes",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "basic, bearer"
     },
     {
       "name": "stormpath.web.http.authc.schemes.basic",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.http.authc.config.BasicAuthenticationSchemeFactory"
     },
     {
       "name": "stormpath.web.http.authc.schemes.bearer",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.http.authc.config.BearerAuthenticationSchemeFactory"
     },
     {
       "name": "stormpath.web.authz.unauthorizedHandler",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.filter.config.UnauthorizedHandlerFactory"
     },
     {
       "name": "stormpath.web.filter.chain.resolver",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "com.stormpath.sdk.servlet.config.DefaultFilterChainResolverFactory"
     },
     {
       "name": "stormpath.web.uris./assets/css/stormpath.css",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "anon"
     },
     {
       "name": "stormpath.web.uris./assets/css/custom.stormpath.css",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "anon"
     }
   ]
 }
