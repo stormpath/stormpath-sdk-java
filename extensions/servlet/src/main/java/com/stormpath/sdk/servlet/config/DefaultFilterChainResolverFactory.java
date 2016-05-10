@@ -129,6 +129,10 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
 
+        String meUrl = config.getMeUrl();
+        String meUrlPattern = cleanUri(meUrl);
+        boolean meChainSpecified = false;
+
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
         boolean googleCallbackChangeSpecified = false;
@@ -255,6 +259,13 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+                } else if (uriPattern.startsWith(meUrlPattern)) {
+                    meChainSpecified = true;
+
+                    String filterName = DefaultFilter.me.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
                 }
 
                 patternChains.put(uriPattern, chainDefinition);
@@ -290,6 +301,9 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         }
         if (!accessTokenChainSpecified) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
+        }
+        if (!meChainSpecified) {
+            fcManager.createChain(meUrlPattern, DefaultFilter.me.name());
         }
         if (!googleCallbackChangeSpecified) {
             fcManager.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());

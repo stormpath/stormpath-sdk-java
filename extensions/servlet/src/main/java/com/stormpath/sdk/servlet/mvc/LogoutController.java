@@ -56,7 +56,13 @@ public class LogoutController extends AbstractController {
     }
 
     @Override
-    public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        return null;
+    }
+
+    @Override
+    public ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         //clear out any authentication/account state:
         request.logout();

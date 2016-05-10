@@ -360,8 +360,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
-    @Value("#{ @environment['stormpath.web.me.view'] ?: 'me' }")
-    protected String meView;
+    @Value("#{ @environment['stormpath.web.me.nextUri'] ?: '/' }")
+    protected String meNextUri;
+
+    @Value("#{ @environment['stormpath.web.me.expand.groups'] ?: true }")
+    protected boolean meExpandGroups;
 
     // ================  SPA Support properties  ===================
 
@@ -1219,7 +1222,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathMeController() {
         MeController controller = new MeController();
-        return createSpringController(controller);
+        controller.setNextUri(meNextUri);
+        controller.setExpandGroups(meExpandGroups);
+        return createSpaAwareSpringController(controller);
     }
 
     public Controller stormpathSamlResultController() {

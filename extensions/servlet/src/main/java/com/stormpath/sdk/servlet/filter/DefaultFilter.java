@@ -39,6 +39,7 @@ public enum DefaultFilter {
     unauthorized(UnauthorizedFilter.class),
     verify(VerifyFilter.class),
     sendVerificationEmail(SendVerificationEmailFilter.class),
+    me(MeFilter.class),
     googleCallback(GoogleCallbackFilter.class),
     githubCallback(GithubCallbackFilter.class),
     facebookCallback(FacebookCallbackFilter.class),
