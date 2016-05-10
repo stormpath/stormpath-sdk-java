@@ -49,7 +49,20 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The default {@link ClientBuilder} implementation.
+ * <p>The default {@link ClientBuilder} implementation. This looks for configuration files
+ * in the following locations and order of precedence (last one wins).</p>
+ * <ul>
+ *     <li>classpath:com/stormpath/sdk/config/stormpath.properties</li>
+ *     <li>classpath:stormpath.properties</li>
+ *     <li>classpath:stormpath.json</li>
+ *     <li>classpath:stormpath.yaml</li>
+ *     <li>~/.stormpath/stormpath.properties</li>
+ *     <li>~/.stormpath/stormpath.json</li>
+ *     <li>~/.stormpath/stormpath.yaml</li>
+ *     <li>~/stormpath.properties</li>
+ *     <li>~/stormpath.json</li>
+ *     <li>~/stormpath.yaml</li>
+ * </ul>
  *
  * @since 1.0.alpha
  */

@@ -10,8 +10,11 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 
 /**
- * A test that downloads the default config from the spec and compares
- * it with com/stormpath/sdk/config/stormpath.properties
+ * A test that downloads the <a href="https://github.com/stormpath/stormpath-sdk-spec/blob/master/specifications/config.md">default
+ * config from the stormpath-sdk-spec</a> and compares it with <code>com/stormpath/sdk/config/stormpath.properties</code>.
+ *
+ * This test will fail when a new property is added to the the spec's default config but
+ * it does not exist in <code>stormpath.properties</code>.
  *
  * @since 1.0.0
  */
@@ -44,6 +47,16 @@ class SpecConfigVersusCorePropertiesTest {
             defaultProperties.containsKey(k) ? null : k
         }
 
+        if (diff.size > 0) {
+            println "It looks like a new property was added to the SDK Spec and the Java SDK is missing it."
+            println "Missing keys in stormpath.properties:"
+            diff.each {
+                println "${it}"
+            }
+            println "You must add this new property to the Java SDK in order for this test to pass."
+            println "Or you could adjust the assertEquals statement in this method to allow for this missing key as a temporary solution."
+        }
+
         assertEquals diff.size(), 0, "Missing keys in default config: ${diff}"
     }
 
@@ -51,6 +64,16 @@ class SpecConfigVersusCorePropertiesTest {
     void verifyPropertiesInDefaultAreInSpec() {
         def diff = defaultProperties.findResults { k,v ->
             specProperties.containsKey(k) ? null : k
+        }
+
+        if (diff.size > 0) {
+            println "It looks like a new property was added to stormpath.properties, but the SDK Spec is missing it."
+            println "Missing keys in SDK Spec:"
+            diff.each {
+                println "${it}"
+            }
+            println "You must add this new property to the SDK Spec in order for this test to pass."
+            println "Or you could adjust the assertEquals statement in this method to allow for this missing key as a temporary solution."
         }
 
         assertEquals diff.size(), 0, "Missing keys in spec config: ${diff}"

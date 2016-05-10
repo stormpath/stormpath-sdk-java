@@ -7,11 +7,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * This class holds the default configuration properties
+ * This class holds the default configuration properties.
  *
- * @since 1.0
+ * During application initialization all the properties found in the pre-defined locations that are
+ * defined by the user will be added here in the order defined in {@link com.stormpath.sdk.impl.client.DefaultClientBuilder}.
+ * Unset values will use default values from {@link com/stormpath/sdk/config/stormpath.properties}.
+ *
+ * @since 1.0.0
  */
 public class ClientConfiguration {
+
     private String apiKeyFile;
     private String apiKeyId;
     private String apiKeySecret;

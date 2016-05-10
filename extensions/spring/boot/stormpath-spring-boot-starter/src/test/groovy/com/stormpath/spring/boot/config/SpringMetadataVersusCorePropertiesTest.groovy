@@ -10,13 +10,18 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+
 /**
  * A test that compares the properties in com/stormpath/sdk/config/stormpath.properties
  * with the ones defined in additional-spring-configuration-metadata.json.
  *
+ * This test will fail when a new property is added to the the Core SDK's stormpath.properties but
+ * it does not exist in additional-spring-configuration-metadata.json.
+ *
  * @since 1.0.0
  */
 class SpringMetadataVersusCorePropertiesTest {
+
     def METADATA_CONFIG_LOCATION = ClasspathResource.SCHEME_PREFIX + "META-INF/additional-spring-configuration-metadata.json"
     def DEFAULT_CONFIG_LOCATION = ClasspathResource.SCHEME_PREFIX + "com/stormpath/sdk/config/stormpath.properties"
     def metadataProperties, defaultProperties

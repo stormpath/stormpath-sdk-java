@@ -12,12 +12,16 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 
 /**
- * A test that downloads the web config from the spec and compares
- * it with com/stormpath/sdk/servlet/config/web.stormpath.properties
+ * A test that downloads the <a href="https://github.com/stormpath/stormpath-framework-spec/blob/master/example-config.yaml">web config
+ * from the stormpath-framework-spec</a> and compares it with <code>com/stormpath/sdk/servlet/config/web.stormpath.properties</code>.
+ *
+ * This test will fail when a new property is added to the the spec's example-config.yaml but
+ * it does not exist in <code>web.stormpath.properties</code>.
  *
  * @since 1.0.0
  */
 class SpecConfigVersusWebPropertiesTest {
+
     def SPEC_CONFIG_LOCATION = "https://raw.githubusercontent.com/stormpath/stormpath-framework-spec/master/example-config.yaml"
     def DEFAULT_CONFIG_LOCATION = ClasspathResource.SCHEME_PREFIX + "com/stormpath/sdk/servlet/config/web.stormpath.properties"
     def specProperties, defaultProperties
@@ -41,10 +45,13 @@ class SpecConfigVersusWebPropertiesTest {
         }
 
         if (diff.size > 0) {
-            println "Missing keys in default config:"
+            println "It looks like a new property was added to the Framework Spec and the Java SDK is missing it."
+            println "Missing keys in web.stormpath.properties:"
             diff.each {
                 println "${it}"
             }
+            println "You must add this new property to the Java SDK in order for this test to pass."
+            println "Or you could adjust the assertEquals statement in this method to allow for this missing key as a temporary solution."
         }
 
         assertEquals diff.size(), 0, "Missing keys in default config: ${diff}"
@@ -54,6 +61,11 @@ class SpecConfigVersusWebPropertiesTest {
     void verifyPropertiesInDefaultAreInSpec() {
         def diff = defaultProperties.findResults { k,v ->
             specProperties.containsKey(k) ? null : k
+        }
+
+        if (diff.size != 66) {
+            println "It looks like a new property was added to the Framework Spec or to web.stormpath.properties."
+            println "Please examine this method to see the mismatch and commented code for debugging what's changed."
         }
 
         assertEquals diff.size(), 66, "Missing keys in spec config: ${diff}"
