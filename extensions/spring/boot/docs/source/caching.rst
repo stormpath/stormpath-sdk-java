@@ -10,11 +10,11 @@ This behavior is relevant for applications that are deployed to a single JVM onl
 Disable Caching
 ---------------
 
-If you want to disable caching for the Stormpath SDK ``Client`` entirely, you can set the ``stormpath.cache.enabled`` property to ``false``:
+If you want to disable caching for the Stormpath SDK ``Client`` entirely, you can set the ``stormpath.client.cacheManager.enabled`` property to ``false``:
 
 .. code-block:: properties
 
-    stormpath.cache.enabled = false
+    stormpath.client.cacheManager.enabled = false
 
 It is generally not recommended to disable caching, but it might be useful in certain testing scenarios or when multiple applications can frequently modify the same Stormpath data.
 

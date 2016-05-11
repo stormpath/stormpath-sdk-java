@@ -57,4 +57,13 @@ public class DefaultCacheConfiguration implements CacheConfiguration {
     public Duration getTimeToIdle() {
         return this.timeToIdle;
     }
+
+    @Override
+    public String toString() {
+        return "DefaultCacheConfiguration{" +
+                "name='" + name + '\'' +
+                ", timeToLive=" + timeToLive +
+                ", timeToIdle=" + timeToIdle +
+                '}';
+    }
 }

@@ -1,0 +1,5 @@
+stormpath:
+  client:
+    proxy:
+      host: "proxyyaml"
+      username: "fooyaml"

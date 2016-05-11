@@ -31,7 +31,7 @@ import javax.servlet.ServletContext;
 public class AuthorizationHeaderAccountResolverFactory extends ConfigSingletonFactory<Resolver<Account>> {
 
     public static final String HTTP_AUTHENTICATOR = "stormpath.web.http.authc";
-    public static final String ID_SITE_RESULT_URI = "stormpath.web.idSite.result.uri";
+    public static final String ID_SITE_RESULT_URI = "stormpath.web.idSite.resultUri";
 
     @Override
     protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {

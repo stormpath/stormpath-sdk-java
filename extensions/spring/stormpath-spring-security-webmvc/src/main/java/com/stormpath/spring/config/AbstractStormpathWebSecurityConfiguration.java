@@ -76,7 +76,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
     protected boolean csrfTokenEnabled;
 
-    @Value("#{ @environment['stormpath.web.accessToken.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {

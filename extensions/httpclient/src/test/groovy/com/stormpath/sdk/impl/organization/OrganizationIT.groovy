@@ -44,7 +44,7 @@ class OrganizationIT extends ClientIT {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
             .setDescription("Organization Description")
-            .setNameKey(uniquify("test").substring(2, 8))
+            .setNameKey(uniquify("test"))
             .setStatus(OrganizationStatus.ENABLED)
 
         org = client.createOrganization(org)
@@ -73,7 +73,7 @@ class OrganizationIT extends ClientIT {
 
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganizationWithDefaultDirectory"))
-                .setNameKey(uniquify("test").substring(2, 8))
+                .setNameKey(uniquify("test"))
                 .setStatus(OrganizationStatus.ENABLED)
 
         def retrievedOrg = client.createOrganization(Organizations.newCreateRequestFor(org).createDirectory().build())
@@ -107,7 +107,7 @@ class OrganizationIT extends ClientIT {
         def tenant = client.currentTenant
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testGetOrganizationsWithCustomData")
-        organization.setNameKey(uniquify("test").substring(2, 8))
+        organization.setNameKey(uniquify("test"))
         organization.customData.put("someKey", "someValue")
         organization = client.createOrganization(organization);
         assertNotNull organization.href
@@ -127,8 +127,6 @@ class OrganizationIT extends ClientIT {
 
     @Test
     void testAddAccountStoreDirs() {
-        def tenant = client.currentTenant
-
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: OrganizationIT.testAddAccountStoreDirs")
         dir = client.createDirectory(dir);
@@ -136,7 +134,7 @@ class OrganizationIT extends ClientIT {
 
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountStoreDirs")
-        organization.setNameKey(uniquify("test").substring(2, 8))
+        organization.setNameKey(uniquify("test"))
         organization.customData.put("someKey", "someValue")
         organization = client.createOrganization(organization);
         deleteOnTeardown(organization)
@@ -159,7 +157,7 @@ class OrganizationIT extends ClientIT {
     void testAddAccountDirWithInvalidDir(){
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountDirWithInvalidDir")
-        organization.setNameKey(uniquify("test").substring(2, 8))
+        organization.setNameKey(uniquify("test"))
         organization = client.createOrganization(organization);
         deleteOnTeardown(organization)
 

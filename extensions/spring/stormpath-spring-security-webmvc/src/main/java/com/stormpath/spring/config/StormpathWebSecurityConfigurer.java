@@ -93,16 +93,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
     protected String logoutNextUri;
 
-    @Value("#{ @environment['stormpath.web.forgot.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
     protected boolean forgotEnabled;
 
-    @Value("#{ @environment['stormpath.web.forgot.uri'] ?: '/forgot' }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.uri'] ?: '/forgot' }")
     protected String forgotUri;
 
-    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changeEnabled;
 
-    @Value("#{ @environment['stormpath.web.change.uri'] ?: '/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.uri'] ?: '/change' }")
     protected String changeUri;
 
     @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
@@ -111,21 +111,21 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.register.uri'] ?: '/register' }")
     protected String registerUri;
 
-    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
     protected boolean verifyEnabled;
 
-    @Value("#{ @environment['stormpath.web.verify.uri'] ?: '/verify' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
     protected String verifyUri;
 
     @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
     protected String sendVerificationEmailUri;
-    @Value("#{ @environment['stormpath.web.accessToken.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
-    @Value("#{ @environment['stormpath.web.accessToken.uri'] ?: '/oauth/token' }")
+    @Value("#{ @environment['stormpath.web.oauth2.uri'] ?: '/oauth/token' }")
     protected String accessTokenUri;
 
-    @Value("#{ @environment['stormpath.web.accessToken.revokeOnLogout'] ?: true }")
+    @Value("#{ @environment['stormpath.web.oauth2.revokeOnLogout'] ?: true }")
     protected boolean accessTokenRevokeOnLogout;
 
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
@@ -140,13 +140,13 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
 
-    @Value("#{ @environment['stormpath.web.saml.enabled'] ?: false }")
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
     protected boolean samlEnabled;
 
-    @Value("#{ @environment['stormpath.web.idSite.result.uri'] ?: '/idSiteResult' }")
+    @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
 
-    @Value("#{ @environment['stormpath.web.saml.result.uri'] ?: '/samlResult' }")
+    @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
 
     /**

@@ -57,7 +57,7 @@ class PropertiesCacheManagerFactoryTest {
     @Test
     void testEnabledConfig() {
         def factory = new PropertiesCacheManagerFactory()
-        def mgr = factory.createCacheManager(['stormpath.cache.enabled': 'true']);
+        def mgr = factory.createCacheManager(['stormpath.client.cacheManager.enabled': 'true']);
         assertNotNull mgr
         assertTrue mgr instanceof DefaultCacheManager
     }
@@ -65,7 +65,7 @@ class PropertiesCacheManagerFactoryTest {
     @Test
     void testDisabledConfig() {
         def factory = new PropertiesCacheManagerFactory()
-        def mgr = factory.createCacheManager(['stormpath.cache.enabled': 'false']);
+        def mgr = factory.createCacheManager(['stormpath.client.cacheManager.enabled': 'false']);
         assertNotNull mgr
         assertTrue mgr instanceof DisabledCacheManager
     }
@@ -74,17 +74,17 @@ class PropertiesCacheManagerFactoryTest {
     void testEnabledConfigWithInvalidValue() {
         def factory = new PropertiesCacheManagerFactory()
         try {
-            factory.createCacheManager(['stormpath.cache.enabled': 'whatever']);
+            factory.createCacheManager(['stormpath.client.cacheManager.enabled': 'whatever']);
             fail('expected IllegalArgumentException')
         } catch (IllegalArgumentException iae) {
-            assertEquals iae.message, 'stormpath.cache.enabled value must equal true or false'
+            assertEquals iae.message, 'stormpath.client.cacheManager.enabled value must equal true or false'
         }
     }
 
     @Test
     void testWithDefaultTti() {
         def factory = new PropertiesCacheManagerFactory()
-        def mgr = factory.createCacheManager(['stormpath.cache.tti': '1001']);
+        def mgr = factory.createCacheManager(['stormpath.client.cacheManager.defaultTti': '1001']);
         assertNotNull mgr
         assertEquals mgr.defaultTimeToIdle.value, 1001
     }
@@ -92,7 +92,7 @@ class PropertiesCacheManagerFactoryTest {
     @Test
     void testWithDefaultTtl() {
         def factory = new PropertiesCacheManagerFactory()
-        def mgr = factory.createCacheManager(['stormpath.cache.ttl': '2002']);
+        def mgr = factory.createCacheManager(['stormpath.client.cacheManager.defaultTtl': '2002']);
         assertNotNull mgr
         assertEquals mgr.defaultTimeToLive.value, 2002
     }
@@ -100,7 +100,7 @@ class PropertiesCacheManagerFactoryTest {
     @Test
     void testCacheRegionTtl() {
         def factory = new PropertiesCacheManagerFactory()
-        def mgr = factory.createCacheManager(['stormpath.cache.foo.ttl': '3003']);
+        def mgr = factory.createCacheManager(['stormpath.client.cacheManager.caches.foo.ttl': '3003']);
         assertNotNull mgr
         def cache = mgr.getCache('foo');
         assertNotNull cache
@@ -111,17 +111,17 @@ class PropertiesCacheManagerFactoryTest {
     void testCacheRegionTtlWithNonLongValue() {
         def factory = new PropertiesCacheManagerFactory()
         try {
-            factory.createCacheManager(['stormpath.cache.foo.ttl': 'whatever']);
+            factory.createCacheManager(['stormpath.client.cacheManager.caches.foo.ttl': 'whatever']);
             fail('expected IllegalArgumentException')
         } catch (IllegalArgumentException iae) {
-            assertEquals iae.message, 'Unable to parse stormpath.cache.foo.ttl value to a long (milliseconds).'
+            assertEquals iae.message, 'Unable to parse stormpath.client.cacheManager.caches.foo.ttl value to a long (milliseconds).'
         }
     }
 
     @Test
     void testCacheRegionTti() {
         def factory = new PropertiesCacheManagerFactory()
-        def mgr = factory.createCacheManager(['stormpath.cache.foo.tti': '4004']);
+        def mgr = factory.createCacheManager(['stormpath.client.cacheManager.caches.foo.tti': '4004']);
         assertNotNull mgr
         def cache = mgr.getCache('foo');
         assertNotNull cache
@@ -131,12 +131,12 @@ class PropertiesCacheManagerFactoryTest {
     @Test(expectedExceptions = IllegalArgumentException)
     void testCacheRegionWithNoSuffix() {
         def factory = new PropertiesCacheManagerFactory()
-        factory.createCacheManager(['stormpath.cache.foo': '4004']);
+        factory.createCacheManager(['stormpath.client.cacheManager.caches.foo': '4004']);
     }
 
     @Test(expectedExceptions = IllegalArgumentException)
     void testCacheRegionWithUnrecognizedSuffix() {
         def factory = new PropertiesCacheManagerFactory()
-        factory.createCacheManager(['stormpath.cache.foo.whatever': '4004']);
+        factory.createCacheManager(['stormpath.client.cacheManager.caches.foo.whatever': '4004']);
     }
 }

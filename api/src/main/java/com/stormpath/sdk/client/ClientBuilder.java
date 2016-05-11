@@ -54,16 +54,16 @@ import com.stormpath.sdk.cache.CacheManager;
  *         {@code classpath:} prefixes respectively.</li>
  *     <li>The environment variables {@code STORMPATH_API_KEY_ID} and {@code STORMPATH_API_KEY_SECRET}.  If either of
  *         these values are present, they override any previously discovered value.</li>
- *     <li>A properties file that exists at the file path or URL specified by the {@code stormpath.apiKey.file}
+ *     <li>A properties file that exists at the file path or URL specified by the {@code stormpath.client.apiKey.file}
  *         system property.  If this file exists and any values are present, the values override any
- *         previously discovered value.  The {@code stormpath.apiKey.file} system property String can be an
+ *         previously discovered value.  The {@code stormpath.client.apiKey.file} system property String can be an
  *         absolute file path, or it can be a URL or a classpath value by using the {@code url:} or
  *         {@code classpath:} prefixes respectively.</li>
- *     <li>The system properties {@code stormpath.apiKey.id} and {@code stormpath.apiKey.secret}.  If either of
+ *     <li>The system properties {@code stormpath.client.apiKey.id} and {@code stormpath.client.apiKey.secret}.  If either of
  *         these values are present, they override any previously discovered values.</li>
  * </ol>
  *
- * <p><b>SECURITY NOTICE:</b> While the {@code stormpath.apiKey.secret} system property may be used to represent your
+ * <p><b>SECURITY NOTICE:</b> While the {@code stormpath.client.apiKey.secret} system property may be used to represent your
  * API Key Secret as mentioned above, this is not recommended: process listings on a machine will expose process
  * arguments (like system properties) and expose the secret value to anyone that can read process listings.  As
  * always, secret values should never be exposed to anyone other than the person that owns the API Key.</p>
@@ -136,8 +136,8 @@ import com.stormpath.sdk.cache.CacheManager;
  * ...
  *
  * {@link com.stormpath.sdk.cache.Caches Caches}.{@link com.stormpath.sdk.cache.Caches#newCacheManager() newCacheManager()}
- *     .withDefaultTimeToLive(2, TimeUnit.HOURS) // default
- *     .withDefaultTimeToIdle(1, TimeUnit.HOURS) //general default
+ *     .withDefaultTimeToLive(300, TimeUnit.SECONDS) // default
+ *     .withDefaultTimeToIdle(300, TimeUnit.SECONDS) //general default
  *     .withCache({@link com.stormpath.sdk.cache.Caches#forResource(Class) forResource}(Account.class) //Account-specific cache settings
  *         .withTimeToLive(1, TimeUnit.HOURS)
  *         .withTimeToIdle(30, TimeUnit.MINUTES))
@@ -206,6 +206,21 @@ import com.stormpath.sdk.cache.CacheManager;
  * @since 1.0.beta
  */
 public interface ClientBuilder {
+
+    String DEFAULT_CLIENT_API_KEY_FILE_PROPERTY_NAME = "stormpath.client.apiKey.file";
+    String DEFAULT_CLIENT_API_KEY_ID_PROPERTY_NAME = "stormpath.client.apiKey.id";
+    String DEFAULT_CLIENT_API_KEY_SECRET_PROPERTY_NAME = "stormpath.client.apiKey.secret";
+    String DEFAULT_CLIENT_CACHE_MANAGER_ENABLED_PROPERTY_NAME = "stormpath.client.cacheManager.enabled";
+    String DEFAULT_CLIENT_CACHE_MANAGER_TTL_PROPERTY_NAME = "stormpath.client.cacheManager.defaultTtl";
+    String DEFAULT_CLIENT_CACHE_MANAGER_TTI_PROPERTY_NAME = "stormpath.client.cacheManager.defaultTti";
+    String DEFAULT_CLIENT_CACHE_MANAGER_CACHES_PROPERTY_NAME = "stormpath.client.cacheManager.caches";
+    String DEFAULT_CLIENT_BASE_URL_PROPERTY_NAME = "stormpath.client.baseUrl";
+    String DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME = "stormpath.client.connectionTimeout";
+    String DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME = "stormpath.client.authenticationScheme";
+    String DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME = "stormpath.client.proxy.port";
+    String DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME = "stormpath.client.proxy.host";
+    String DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME = "stormpath.client.proxy.username";
+    String DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME = "stormpath.client.proxy.password";
 
     /**
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the
