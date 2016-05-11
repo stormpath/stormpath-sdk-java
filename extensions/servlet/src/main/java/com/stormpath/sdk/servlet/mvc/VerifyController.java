@@ -58,8 +58,10 @@ public class VerifyController extends FormController {
     private Publisher<RequestEvent> eventPublisher;
     private AccountStoreResolver accountStoreResolver;
     private boolean autoLogin;
+    private AccountModelFactory accountModelFactory;
 
     public void init() {
+        this.accountModelFactory = new DefaultAccountModelFactory();
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
@@ -134,7 +136,6 @@ public class VerifyController extends FormController {
                 return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
             }
             //redirect to send verification email form
-            this.setView("stormpath/sendVerificationEmail");
             String view = getView();
             Map<String,?> model = createModel(request, response);
             return new DefaultViewModel(view, model);
@@ -176,14 +177,21 @@ public class VerifyController extends FormController {
         Client client = getClient();
 
         Account account = client.verifyAccountEmail(sptoken);
+        //The sptoken is valid
 
         RequestEvent e = createVerifiedEvent(request, response, account);
         publish(e);
 
         if (UserAgents.get(request).isJsonPreferred()) {
             Map<String,Object> model = new HashMap<String, Object>();
-            model.put("status", 200);
-            model.put("message", "OK");
+            if (isAutoLogin()){
+                model.put("status", 200);
+                model.put("account", accountModelFactory.toMap(account));
+            }
+            else {
+                model.put("status", 200);
+                model.put("message", "OK");
+            }
             return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
         }
 

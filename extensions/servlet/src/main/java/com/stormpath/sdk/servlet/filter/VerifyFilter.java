@@ -45,8 +45,8 @@ public class VerifyFilter extends ControllerFilter {
         controller.setLogoutUri(getConfig().getLogoutUrl());
         controller.setLoginUri(getConfig().getLoginUrl());
         controller.setAccountStoreResolver(accountStoreResolver);
-        controller.setView("stormpath/sendVerificationEmail");
-        controller.setNextUri("stormpath/verify");
+        controller.setView("stormpath/verify");
+        controller.setNextUri("stormpath/verifyComplete");
         controller.setAutoLogin(getConfig().getRegisterAutoLogin());
         controller.setClient(client);
         controller.setEventPublisher(eventPublisher);

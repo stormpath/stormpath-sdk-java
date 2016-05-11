@@ -313,7 +313,7 @@ public class RegisterController extends FormController {
             // the authentication state will be saved appropriately via the login filter.
             //
             // We set the account as a request attribute here only for the remainder of the request in case the
-            // verify.jsp view wants to use it to render a user-specific message, for example,
+            // verifyComplete.jsp view wants to use it to render a user-specific message, for example,
             //
             // 'Thanks for registering Joe!  Almost done - please verify your email...'
             //

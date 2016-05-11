@@ -20,7 +20,8 @@
 <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
 
 <t:page>
-    <jsp:attribute name="title"><sp:message key="stormpath.web.verify.title"/></jsp:attribute>
+    <jsp:attribute name="title"><sp:message key="stormpath.web.sendVerificationEmail.title"/></jsp:attribute>
+    <jsp:attribute name="description"><sp:message key="stormpath.web.sendVerificationEmail.title"/></jsp:attribute>
     <jsp:attribute name="bodyCssClass">login</jsp:attribute>
     <jsp:body>
         <div class="container custom-container">
@@ -34,22 +35,58 @@
                         <div class="email-password-area col-xs-12 large col-sm-12">
 
                             <div class="header">
-                                <span><sp:message key="stormpath.web.verify.body.title"/></span>
-                                <p><sp:message key="stormpath.web.verify.body.instructions"/>
-                                <p><sp:message key="stormpath.web.verify.body.instructions2"/></p>
+                                <span><sp:message key="stormpath.web.sendVerificationEmail.form.title"/></span>
+                                <p><sp:message key="stormpath.web.sendVerificationEmail.form.instructions"/></p>
                             </div>
+
+                            <c:if test="${!empty errors}">
+                                <div class="alert alert-dismissable alert-danger bad-login">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <c:forEach items="${errors}" var="error">
+                                        <p>${error}</p>
+                                    </c:forEach>
+                                </div>
+                            </c:if>
+
+                            <form method="post" role="form" class="login-form form-horizontal">
+                                <c:if test="${!empty form.next}">
+                                    <input name="next" type="hidden" value="${form.next}">
+                                </c:if>
+
+                                <c:forEach items="${form.hiddenFields}" var="field">
+                                    <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                </c:forEach>
+
+                                <c:forEach items="${form.visibleFields}" var="field">
+                                    <div form-group="true" class="form-group group-${field.name}">
+                                        <label class="col-sm-4"><sp:message key="${field.label}"/></label>
+                                        <div class="col-sm-8">
+                                            <input name="${field.name}" value="${field.value}" type="${field.type}"
+                                                   placeholder="<sp:message key="${field.placeholder}"/>"
+                                                   <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
+                                                   <c:if test="${field.required}">required="required" </c:if>
+                                                   class="form-control">
+                                        </div>
+                                    </div>
+                                </c:forEach>
+
+                                <div>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.sendVerificationEmail.form.button.value"/></button>
+                                </div>
+                            </form>
 
                         </div>
 
                     </div>
+
+                    <a href="${pageContext.request.contextPath}${loginUri}" class="to-login"><sp:message key="stormpath.web.sendVerificationEmail.form.loginLink.text"/></a>
 
                 </div>
 
             </div>
 
         </div>
+
     </jsp:body>
+
 </t:page>
-
-
-
