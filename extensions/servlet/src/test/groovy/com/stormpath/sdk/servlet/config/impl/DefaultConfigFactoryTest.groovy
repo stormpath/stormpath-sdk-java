@@ -55,6 +55,7 @@ class DefaultConfigFactoryTest {
         assertEquals config.get('stormpath.baseUrl'), baseUrl
     }
 
+    // From http://stackoverflow.com/a/496849
     private static void setEnv(Map<String, String> newenv) throws Exception {
         Class[] classes = Collections.class.getDeclaredClasses();
         Map<String, String> env = System.getenv();
