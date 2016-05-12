@@ -86,7 +86,7 @@ class OrganizationIT extends ClientIT {
         // test using directory name
         org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganizationWithDefaultDirectory2"))
-                .setNameKey(uniquify("test").substring(2, 8))
+                .setNameKey(uniquify("test"))
                 .setStatus(OrganizationStatus.ENABLED)
 
         def dirName = uniquify("JSDK_test_org_creation_with_dir")
