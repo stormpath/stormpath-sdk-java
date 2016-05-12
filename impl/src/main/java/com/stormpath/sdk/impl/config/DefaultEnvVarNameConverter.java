@@ -58,6 +58,9 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         if ("STORMPATH_AUTHENTICATION_SCHEME".equals(envVarName)) {
             return "stormpath.client.authenticationScheme";
         }
+        if ("STORMPATH_BASEURL".equals(envVarName)) {
+            return "stormpath.baseUrl";
+        }
 
         //default cases:
         StringBuilder sb = new StringBuilder();
