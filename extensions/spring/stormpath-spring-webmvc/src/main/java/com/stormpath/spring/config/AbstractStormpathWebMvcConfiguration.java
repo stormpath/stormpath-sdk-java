@@ -138,7 +138,6 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -433,13 +432,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.me.view'] ?: 'me' }")
     protected String meView;
 
-    // ================  SPA Support properties  ===================
-
-    @Value("#{ @environment['stormpath.web.spa.enabled'] ?: false }")
-    protected boolean spaEnabled;
-
-    @Value("#{ @environment['stormpath.web.spa.uri'] ?: '/index.html' }")
-    protected String spaUri;
+    // ================  Content negotiation support properties  ===================
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;
@@ -926,22 +919,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.init();
         return createSpringController(controller);
     }
-
-//    protected String createForwardView(String uri) {
-//        Assert.hasText("uri cannot be null or empty.");
-//        assert uri != null;
-//        if (!uri.startsWith("forward:")) {
-//            uri = "forward:" + uri;
-//        }
-//        return uri;
-//    }
-
-//    public Controller stormpathSpaController() {
-//        final String view = createForwardView(spaUri);
-//        ParameterizableViewController controller = new ParameterizableViewController();
-//        controller.setViewName(view);
-//        return controller;
-//    }
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
         return new DefaultAccountStoreModelFactory();

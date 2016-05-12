@@ -492,12 +492,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathLoginController();
     }
 
-//    @Bean
-//    @Override
-//    public Controller stormpathSpaController() {
-//        return super.stormpathSpaController();
-//    }
-
     @Bean
     @Override
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
