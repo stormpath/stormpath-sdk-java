@@ -15,17 +15,17 @@
  */
 package com.stormpath.spring.cache
 
-import org.junit.Assert
-import org.junit.Test
 import org.springframework.cache.concurrent.ConcurrentMapCache
 import org.springframework.cache.support.SimpleCacheManager
+import org.testng.Assert
+import org.testng.annotations.Test
 
 /**
  * @since 0.2.0
  */
 class SpringCacheManagerTest {
 
-    @Test(expected = IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testNullCacheManager() {
         new SpringCacheManager(null)
     }

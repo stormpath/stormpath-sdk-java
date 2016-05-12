@@ -15,31 +15,31 @@
  */
 package com.stormpath.spring.security.authz.permission
 
-import org.junit.Test
+import org.testng.annotations.Test
 
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.2.0
  */
 class WildcardPermissionTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testNull() {
         new WildcardPermission(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testEmpty() {
         new WildcardPermission("");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testBlank() {
         new WildcardPermission("   ");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testOnlyDelimiters() {
         new WildcardPermission("::,,::,:");
     }

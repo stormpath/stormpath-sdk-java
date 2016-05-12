@@ -18,20 +18,21 @@
 package com.stormpath.spring.security.provider
 
 import com.stormpath.sdk.group.Group
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.testng.Assert
+import org.testng.annotations.BeforeMethod
+import org.testng.annotations.Test
 import org.springframework.security.core.GrantedAuthority
 
 import static org.easymock.EasyMock.*
+import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.core.IsInstanceOf.instanceOf
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 class DefaultGroupGrantedAuthorityResolverTest {
 
     DefaultGroupGrantedAuthorityResolver resolver
 
-    @Before
+    @BeforeMethod
     void setUp() {
         resolver = new DefaultGroupGrantedAuthorityResolver()
     }
@@ -49,12 +50,12 @@ class DefaultGroupGrantedAuthorityResolverTest {
         Assert.assertSame DefaultGroupGrantedAuthorityResolver.Mode.ID, resolver.modes.iterator().next()
     }
 
-    @Test(expected=IllegalArgumentException)
+    @Test(expectedExceptions=IllegalArgumentException)
     void testSetNullModes() {
         resolver.setModes(null)
     }
 
-    @Test(expected=IllegalArgumentException)
+    @Test(expectedExceptions=IllegalArgumentException)
     void testSetEmptyModes() {
         resolver.setModes(Collections.emptySet())
     }
@@ -80,7 +81,7 @@ class DefaultGroupGrantedAuthorityResolverTest {
         verify group
     }
 
-    @Test(expected=IllegalStateException)
+    @Test(expectedExceptions=IllegalStateException)
     void testResolveGrantedAuthorityWithMissingHref() {
 
         def group = createStrictMock(Group)
@@ -161,17 +162,17 @@ class DefaultGroupGrantedAuthorityResolverTest {
         verify group
     }
 
-    @Test(expected = IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testResolveGrantedAuthorityFromEmptyString() {
         DefaultGroupGrantedAuthorityResolver.Mode.fromString("")
     }
 
-    @Test(expected = IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testResolveGrantedAuthorityFromNull() {
         DefaultGroupGrantedAuthorityResolver.Mode.fromString(null)
     }
 
-    @Test(expected = IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testResolveGrantedAuthorityFromUnknownName() {
         DefaultGroupGrantedAuthorityResolver.Mode.fromString("foo")
     }

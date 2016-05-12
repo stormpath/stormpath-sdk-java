@@ -38,9 +38,9 @@
 
     <properties>
         <groovy.version>2.4.6</groovy.version>
-        <testng.version>6.8</testng.version>
+        <testng.version>6.9.10</testng.version>
         <restassured.version>2.9.0</restassured.version>
-        <slf4j.version>1.7.18</slf4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
         <gmavenplus.version>1.5</gmavenplus.version>
         <skipITs>true</skipITs>
     </properties>

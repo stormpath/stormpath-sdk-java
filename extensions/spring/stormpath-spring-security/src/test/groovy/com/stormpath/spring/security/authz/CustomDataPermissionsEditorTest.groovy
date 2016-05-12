@@ -16,19 +16,19 @@
 package com.stormpath.spring.security.authz
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.Assert
-import org.junit.Test
+import org.testng.Assert
+import org.testng.annotations.Test
 
 class CustomDataPermissionsEditorTest {
 
     @Test
     void testConstantValue() {
         //This ensures we don't change the constant value - doing so would not be runtime backwards compatible.
-        //If the value is changed in code, this test will fail, as expected (DO NOT change the value!)
+        //If the value is changed in code, this test will fail, as expectedExceptions (DO NOT change the value!)
         Assert.assertEquals "springSecurityPermissions", CustomDataPermissionsEditor.DEFAULT_CUSTOM_DATA_FIELD_NAME
     }
 
-    @Test(expected = IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testNewInstanceWithNullArg() {
         new CustomDataPermissionsEditor(null)
     }
@@ -191,7 +191,7 @@ class CustomDataPermissionsEditorTest {
         Assert.assertTrue result.isEmpty()
     }
 
-    @Test(expected=UnsupportedOperationException)
+    @Test(expectedExceptions=UnsupportedOperationException)
     void testGetPermissionStringsReturnsImmutableSet() {
 
         def customData = new MockCustomData()
@@ -248,9 +248,9 @@ class CustomDataPermissionsEditorTest {
         try {
             editor.getPermissionStrings();
         } catch (IllegalArgumentException iae) {
-            String expectedMsg = "CustomData field 'springSecurityPermissions' contains an element that is not a String as " +
+            String expectedExceptionsMsg = "CustomData field 'springSecurityPermissions' contains an element that is not a String as " +
                     "required. Element type: " + nonString.getClass().getName() + ", element value: " + nonString
-            Assert.assertEquals expectedMsg, iae.getMessage()
+            Assert.assertEquals expectedExceptionsMsg, iae.getMessage()
         }
     }
 
@@ -292,9 +292,9 @@ class CustomDataPermissionsEditorTest {
         try {
             editor.getPermissionStrings();
         } catch (IllegalArgumentException iae) {
-            String expectedMsg = "Unable to recognize CustomData field 'springSecurityPermissions' value of type " +
+            String expectedExceptionsMsg = "Unable to recognize CustomData field 'springSecurityPermissions' value of type " +
                     value.getClass().getName() + ".  Expected type: Set<String> or List<String>."
-            Assert.assertEquals expectedMsg, iae.getMessage();
+            Assert.assertEquals expectedExceptionsMsg, iae.getMessage();
         }
     }
 

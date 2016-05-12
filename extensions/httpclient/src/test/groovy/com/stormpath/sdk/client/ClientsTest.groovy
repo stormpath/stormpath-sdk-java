@@ -162,7 +162,7 @@ public class ClientsTest {
     @Test
     void testApiKeyNull() {
         try {
-            Clients.builder().setApiKey(null)
+            Clients.builder().setApiKey((com.stormpath.sdk.api.ApiKey) null)
             fail("Should have thrown because of null ApiKey.")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "apiKey cannot be null.")

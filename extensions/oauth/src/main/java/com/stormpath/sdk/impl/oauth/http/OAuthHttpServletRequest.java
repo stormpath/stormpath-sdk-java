@@ -30,6 +30,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -169,6 +170,10 @@ public class OAuthHttpServletRequest implements HttpServletRequest {
         throw new UnsupportedOperationException("getSession() method hasn't been implemented.");
     }
 
+    @Override
+    public String changeSessionId() {
+        throw new UnsupportedOperationException("changeSessionId() method hasn't been implemented.");
+    }
 
     @Override
     public boolean isRequestedSessionIdValid() {
@@ -216,6 +221,11 @@ public class OAuthHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass) throws IOException, ServletException {
+        throw new UnsupportedOperationException("upgrade() method hasn't been implemented.");
+    }
+
+    @Override
     public Object getAttribute(String name) {
         throw new UnsupportedOperationException("getAttribute() method hasn't been implemented.");
     }
@@ -238,6 +248,11 @@ public class OAuthHttpServletRequest implements HttpServletRequest {
     @Override
     public int getContentLength() {
         throw new UnsupportedOperationException("getContentLength() method hasn't been implemented.");
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        throw new UnsupportedOperationException("getContentLengthLong() method hasn't been implemented.");
     }
 
     @Override
