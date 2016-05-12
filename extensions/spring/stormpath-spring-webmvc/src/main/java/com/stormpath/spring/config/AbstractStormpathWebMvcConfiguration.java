@@ -442,7 +442,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected String spaUri;
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
-    protected List<String> produces;
+    protected String produces;
 
     // ================  3rd Party Provider Templates ==================
 
@@ -497,9 +497,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     //JSON view resolver has a slightly higher precedence to ensure that JSON is rendered and not a Thymeleaf template.
     @Value("#{ @environment['stormpath.web.json.view.resolver.order'] ?: T(org.springframework.core.Ordered).LOWEST_PRECEDENCE - 10 }")
     protected int jsonViewResolverOrder;
-
-    @Value("#{ @environment['stormpath.web.produces'] ?: 'text/html, application/json' }")
-    protected String producedMediaTypeNames;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -618,10 +615,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return interceptor;
     }
 
+    /** @since 1.0.0 */
+    public List<MediaType> stormpathProducesMediaTypes() {
 
-    public List<MediaType> stormpathProducedMediaTypes() {
-
-        String mediaTypes = Strings.clean(producedMediaTypeNames);
+        String mediaTypes = Strings.clean(produces);
         Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
 
         try {
@@ -930,21 +927,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
-    protected String createForwardView(String uri) {
-        Assert.hasText("uri cannot be null or empty.");
-        assert uri != null;
-        if (!uri.startsWith("forward:")) {
-            uri = "forward:" + uri;
-        }
-        return uri;
-    }
+//    protected String createForwardView(String uri) {
+//        Assert.hasText("uri cannot be null or empty.");
+//        assert uri != null;
+//        if (!uri.startsWith("forward:")) {
+//            uri = "forward:" + uri;
+//        }
+//        return uri;
+//    }
 
-    public Controller stormpathSpaController() {
-        final String view = createForwardView(spaUri);
-        ParameterizableViewController controller = new ParameterizableViewController();
-        controller.setViewName(view);
-        return controller;
-    }
+//    public Controller stormpathSpaController() {
+//        final String view = createForwardView(spaUri);
+//        ParameterizableViewController controller = new ParameterizableViewController();
+//        controller.setViewName(view);
+//        return controller;
+//    }
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
         return new DefaultAccountStoreModelFactory();
@@ -1005,8 +1002,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         Controller c = createSpringController(controller);
 
-        if (spaEnabled) { //wrap it in a controller that will serve the spa root as necessary:
-            c = new SpringSpaController(c, stormpathSpaController(), jsonView, stormpathProducedMediaTypes());
+        if (produces.contains(MediaType.APPLICATION_JSON.toString())) {
+            c = new SpringSpaController(c, jsonView, stormpathProducesMediaTypes());
         }
 
         return c;
