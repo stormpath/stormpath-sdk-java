@@ -16,15 +16,10 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Interface denoting <a href="https://docs.stormpath.com/guides/token-management/">OAuth2 Authentication Requests</a>.
+ * A Client Credentials Grant-specific Authenticator Factory.
  *
- * @see OAuthPasswordGrantRequestAuthentication
- * @see OAuthRefreshTokenRequestAuthentication
- * @see OAuthBearerRequestAuthentication
- * @see OAuthClientCredentialsGrantRequestAuthentication
- *
- * @since 1.0.RC7
+ * @since 1.0.0
  */
-public interface OAuthRequestAuthentication {
+public interface OAuthClientCredentialsRequestAuthenticatorFactory extends OAuthRequestAuthenticatorFactory<OAuthClientCredentialsGrantRequestAuthenticator> {
 
 }

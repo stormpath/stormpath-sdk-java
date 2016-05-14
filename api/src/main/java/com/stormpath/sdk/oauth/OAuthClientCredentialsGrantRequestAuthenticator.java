@@ -19,18 +19,16 @@ package com.stormpath.sdk.oauth;
  * This class is used to refresh an OAuth 2.0 token created in Stormpath. For example:
  * <pre>
  * Application app = obtainApplication();
- * RefreshGrantRequest request = <b>OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder()</b>
- *      .setRefreshToken(refreshToken)
+ * OAuthClientCredentialsGrantRequestAuthentication request = <b>OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()</b>
+ *      .setApiKey(apiKey)
  *      .build();
- * OAuthGrantRequestAuthenticationResult result = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request);
+ * OAuthGrantRequestAuthenticationResult result = Authenticators.OAUTH_CLIENT_CREDENTIALS_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request);
  * </pre>
  *
  * @see OAuthPasswordGrantRequestAuthenticator
  * @see OAuthBearerRequestAuthenticator
- * @see OAuthClientCredentialsGrantRequestAuthenticator
  *
- * @since 1.0.RC7
+ * @since 1.0.0
  */
-public interface OAuthRefreshTokenRequestAuthenticator extends OAuthRequestAuthenticator<OAuthGrantRequestAuthenticationResult> {
-
+public interface OAuthClientCredentialsGrantRequestAuthenticator extends OAuthRequestAuthenticator<OAuthGrantRequestAuthenticationResult> {
 }

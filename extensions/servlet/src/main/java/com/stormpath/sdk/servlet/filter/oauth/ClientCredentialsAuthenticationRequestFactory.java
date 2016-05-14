@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.oauth;
+package com.stormpath.sdk.servlet.filter.oauth;
+
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * Interface denoting <a href="https://docs.stormpath.com/guides/token-management/">OAuth2 Authentication Requests</a>.
- *
- * @see OAuthPasswordGrantRequestAuthentication
- * @see OAuthRefreshTokenRequestAuthentication
- * @see OAuthBearerRequestAuthentication
- * @see OAuthClientCredentialsGrantRequestAuthentication
- *
- * @since 1.0.RC7
+ * @since 1.0.0
  */
-public interface OAuthRequestAuthentication {
+public interface ClientCredentialsAuthenticationRequestFactory {
 
+    OAuthClientCredentialsGrantRequestAuthentication createClientCredentialsAuthenticationRequest(HttpServletRequest request)
+        throws OAuthException;
 }
