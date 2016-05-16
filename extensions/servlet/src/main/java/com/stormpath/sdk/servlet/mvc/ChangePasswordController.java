@@ -36,6 +36,10 @@ public class ChangePasswordController extends FormController {
     private String forgotPasswordUri;
     private String loginUri;
 
+    public ChangePasswordController() {
+        super();
+    }
+
     public ChangePasswordController(ControllerConfigResolver controllerConfigResolver,
                                     String forgotPasswordUri,
                                     String loginUri) {

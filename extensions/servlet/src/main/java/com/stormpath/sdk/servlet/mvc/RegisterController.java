@@ -57,6 +57,10 @@ public class RegisterController extends FormController {
     private String loginUri;
     private String verifyViewName;
 
+    public RegisterController() {
+        super();
+    }
+
     public RegisterController(ControllerConfigResolver controllerConfigResolver,
                               Client client,
                               Publisher<RequestEvent> eventPublisher,

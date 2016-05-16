@@ -43,6 +43,10 @@ public class ForgotPasswordController extends FormController {
     private String loginUri;
     private AccountStoreResolver accountStoreResolver;
 
+    public ForgotPasswordController() {
+        super();
+    }
+
     public ForgotPasswordController(ControllerConfigResolver controllerConfigResolver,
                                     String loginUri,
                                     AccountStoreResolver accountStoreResolver) {

@@ -48,6 +48,10 @@ public class LoginController extends FormController {
     private AccountStoreModelFactory accountStoreModelFactory;
     private AccountModelFactory accountModelFactory;
 
+    public LoginController() {
+        super();
+    }
+
     public LoginController(ControllerConfigResolver controllerConfigResolver,
                            String forgotLoginUri,
                            String verifyUri,

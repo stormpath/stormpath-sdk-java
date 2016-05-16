@@ -42,6 +42,10 @@ public abstract class FormController extends AbstractController {
     protected RequestFieldValueResolver fieldValueResolver;
     protected List<Field> formFields;
 
+    public FormController() {
+
+    }
+
     public FormController(ControllerConfigResolver configResolver) {
         super(configResolver.getNextUri(),
                 configResolver.getView(),

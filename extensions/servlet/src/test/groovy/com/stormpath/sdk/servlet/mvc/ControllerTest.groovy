@@ -139,7 +139,7 @@ class ControllerTest {
         verify request, response
     }
 
-    @Test(enabled = false)
+    @Test
     void testControllersThatShouldAllowIfAuthenticated() {
         [
                 new LogoutController(),
@@ -151,7 +151,7 @@ class ControllerTest {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     void testControllersThatShouldNotAllowIfAuthenticated() {
         [
                 new AccessTokenController(),

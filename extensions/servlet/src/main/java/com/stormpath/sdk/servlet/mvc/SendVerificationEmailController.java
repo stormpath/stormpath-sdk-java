@@ -45,6 +45,10 @@ public class SendVerificationEmailController extends FormController {
     private String loginUri;
     private AccountStoreResolver accountStoreResolver;
 
+    public SendVerificationEmailController() {
+        super();
+    }
+
     public SendVerificationEmailController(ControllerConfigResolver controllerConfigResolver,
                                            String loginUri,
                                            AccountStoreResolver accountStoreResolver) {

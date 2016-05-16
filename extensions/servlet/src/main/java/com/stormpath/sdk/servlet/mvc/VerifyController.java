@@ -40,6 +40,10 @@ public class VerifyController extends AbstractController {
     private Client client;
     private Publisher<RequestEvent> eventPublisher;
 
+    public VerifyController() {
+        super();
+    }
+
     public VerifyController(ControllerConfigResolver controllerConfigResolver,
                             String logoutUri,
                             String sendVerificationEmailUri,
