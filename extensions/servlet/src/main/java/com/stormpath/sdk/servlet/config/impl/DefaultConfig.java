@@ -22,23 +22,14 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @since 1.0.RC3
@@ -129,8 +120,8 @@ public class DefaultConfig implements Config {
             }
 
             @Override
-            public boolean isEnable() {
-                return getVerifyControllerConfig().isEnable();
+            public boolean isEnabled() {
+                return getVerifyControllerConfig().isEnabled();
             }
         };
     }

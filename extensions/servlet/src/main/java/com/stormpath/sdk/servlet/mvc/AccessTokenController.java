@@ -19,11 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.Authenticators;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
-import com.stormpath.sdk.oauth.PasswordGrantRequest;
-import com.stormpath.sdk.oauth.RefreshGrantRequest;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
@@ -32,12 +28,7 @@ import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationReque
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
-import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
-import com.stormpath.sdk.servlet.filter.oauth.OauthException;
-import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
-import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.*;
 import com.stormpath.sdk.servlet.http.Saver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +136,7 @@ public class AccessTokenController extends AbstractController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 

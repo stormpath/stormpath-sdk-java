@@ -43,7 +43,7 @@ public class LoginFilter extends ControllerFilter {
                 getConfig().getVerifyControllerConfig().getUri(),
                 getConfig().getRegisterControllerConfig().getUri(),
                 getConfig().getLogoutControllerConfig().getUri(),
-                getConfig().getVerifyControllerConfig().isEnable(),
+                getConfig().getVerifyControllerConfig().isEnabled(),
                 authenticationResultSaver,
                 new LoginErrorModelFactory(messageSource));
 

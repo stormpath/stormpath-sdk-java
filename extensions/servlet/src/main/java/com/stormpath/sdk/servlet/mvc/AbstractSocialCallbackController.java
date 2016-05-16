@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class AbstractSocialCallbackController extends AbstractController {
     protected Saver<AuthenticationResult> authenticationResultSaver;
@@ -28,7 +28,7 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 

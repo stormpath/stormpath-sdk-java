@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class ServletControllerConfigResolver implements ControllerConfigResolver {
     private static final Logger log = LoggerFactory.getLogger(ServletControllerConfigResolver.class);
@@ -54,7 +54,7 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
     }
 
     @Override
-    public boolean isEnable() {
+    public boolean isEnabled() {
         String val = config.get("stormpath.web." + controllerKey + ".enabled");
         if(val == null) {
             return true;
@@ -99,7 +99,7 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
 
         for (String fieldName : fieldNames) {
             String trimmedFieldName = Strings.trimAllWhitespace(fieldName);
-            DefaultField field = new DefaultField.Builder()
+            DefaultField field = DefaultField.builder()
                     .setName(trimmedFieldName)
                     .setType(config.get("stormpath.web." + controllerKey + ".form.fields." + trimmedFieldName + ".type"))
                     .setLabel(config.get("stormpath.web." + controllerKey + ".form.fields." + trimmedFieldName + ".label"))

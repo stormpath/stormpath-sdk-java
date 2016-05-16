@@ -69,7 +69,7 @@ public abstract class AbstractController implements Controller {
      *
      * @return True if controller doesn't allow request when user is authenticated, false otherwise
      */
-    public abstract boolean isNotAllowIfAuthenticated();
+    public abstract boolean isNotAllowedIfAuthenticated();
 
     public String getView() {
         return view;
@@ -135,12 +135,12 @@ public abstract class AbstractController implements Controller {
         boolean hasAccount = AccountResolver.INSTANCE.hasAccount(request);
 
         if (HttpMethod.GET.name().equalsIgnoreCase(method)) {
-            if (isNotAllowIfAuthenticated() && hasAccount) {
+            if (isNotAllowedIfAuthenticated() && hasAccount) {
                 return new DefaultViewModel(getNextUri()).setRedirect(true);
             }
             return doGet(request, response);
         } else if (HttpMethod.POST.name().equalsIgnoreCase(method)) {
-            if (isNotAllowIfAuthenticated() && hasAccount) {
+            if (isNotAllowedIfAuthenticated() && hasAccount) {
                 response.sendError(403);
                 return null;
             }

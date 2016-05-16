@@ -56,7 +56,7 @@ public class ForgotPasswordController extends FormController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 
@@ -112,7 +112,7 @@ public class ForgotPasswordController extends FormController {
         log.debug("Unable to send reset password email.", e);
 
         List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
-        errors.add(new ErrorModel.Builder().setMessage("Invalid email address.").build());
+        errors.add(ErrorModel.builder().setMessage("Invalid email address.").build());
 
         return errors;
     }

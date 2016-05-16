@@ -11,14 +11,10 @@ import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 abstract class AbstractSpringControllerConfigResolver implements ControllerConfigResolver, FormFieldsFactory {
 
@@ -66,13 +62,13 @@ abstract class AbstractSpringControllerConfigResolver implements ControllerConfi
             //Could be null if no default field is defined for that name
             Field defaultField = getDefaultFields().get(trimmedFieldName);
 
-            DefaultField field = new DefaultField.Builder()
+            DefaultField field = DefaultField.builder()
                     .setName(trimmedFieldName)
                     .setType(env.getProperty(getFieldPropertyKey(trimmedFieldName, "type"), defaultField != null ? defaultField.getType() : null))
                     .setLabel(env.getProperty(getFieldPropertyKey(trimmedFieldName, "label"), defaultField != null ? defaultField.getLabel() : null))
                     .setPlaceholder(env.getProperty(getFieldPropertyKey(trimmedFieldName, "placeholder"), defaultField != null ? defaultField.getPlaceholder() : null))
                     .setRequired(env.getProperty(getFieldPropertyKey(trimmedFieldName, "required"), Boolean.class, defaultField != null ? defaultField.isRequired() : null))
-                    .setEnable(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enable"), Boolean.class, defaultField != null ? defaultField.isEnable() : null))
+                    .setEnable(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enable"), Boolean.class, defaultField != null ? defaultField.isEnabled() : null))
                     .setVisible(env.getProperty(getFieldPropertyKey(trimmedFieldName, "visible"), Boolean.class, defaultField != null ? defaultField.isVisible() : null))
                     .build();
             fields.add(field);

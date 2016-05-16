@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class ChangePasswordControllerConfigResolver extends  AbstractSpringControllerConfigResolver {
     @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
@@ -37,7 +37,7 @@ public class ChangePasswordControllerConfigResolver extends  AbstractSpringContr
     }
 
     @Override
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return changePasswordEnabled;
     }
 

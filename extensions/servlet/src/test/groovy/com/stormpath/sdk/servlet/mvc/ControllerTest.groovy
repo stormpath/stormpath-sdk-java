@@ -1,27 +1,14 @@
 package com.stormpath.sdk.servlet.mvc
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver
-import com.stormpath.sdk.servlet.event.impl.Publisher
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver
-import com.stormpath.sdk.servlet.http.Saver
-import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static org.easymock.EasyMock.createMock
-import static org.easymock.EasyMock.createNiceMock
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.assertTrue
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 /**
  *
@@ -38,7 +25,7 @@ class ControllerTest {
             }
 
             @Override
-            boolean isNotAllowIfAuthenticated() {
+            boolean isNotAllowedIfAuthenticated() {
                 return false
             }
         }
@@ -65,7 +52,7 @@ class ControllerTest {
     void testReturn403OnPostIfNotAllowIfAuthenticated() {
         Controller controller = new AbstractController() {
             @Override
-            boolean isNotAllowIfAuthenticated() {
+            boolean isNotAllowedIfAuthenticated() {
                 return true
             }
         }
@@ -101,7 +88,7 @@ class ControllerTest {
             }
 
             @Override
-            boolean isNotAllowIfAuthenticated() {
+            boolean isNotAllowedIfAuthenticated() {
                 return true
             }
         }
@@ -129,7 +116,7 @@ class ControllerTest {
     void testRedirectGetRequestIfNotAllowIfAuthenticated() {
         Controller controller = new AbstractController() {
             @Override
-            boolean isNotAllowIfAuthenticated() {
+            boolean isNotAllowedIfAuthenticated() {
                 return true
             }
         }
@@ -160,7 +147,7 @@ class ControllerTest {
                 new IdSiteLogoutController(),
                 new ChangePasswordController()
         ].each {
-            assertFalse it.isNotAllowIfAuthenticated()
+            assertFalse it.isNotAllowedIfAuthenticated()
         }
     }
 
@@ -178,7 +165,7 @@ class ControllerTest {
                 new SendVerificationEmailController(),
                 new VerifyController()
         ].each {
-            assertTrue it.isNotAllowIfAuthenticated()
+            assertTrue it.isNotAllowedIfAuthenticated()
         }
     }
 }

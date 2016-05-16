@@ -41,7 +41,6 @@ import java.util.List;
 public class SamlResultController extends AbstractController {
 
     private String loginNextUri;
-
     private Controller logoutController;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private Publisher<RequestEvent> eventPublisher;
@@ -85,7 +84,7 @@ public class SamlResultController extends AbstractController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 

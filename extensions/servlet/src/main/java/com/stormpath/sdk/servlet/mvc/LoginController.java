@@ -27,15 +27,10 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModelFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @since 1.0.RC4
@@ -94,7 +89,7 @@ public class LoginController extends FormController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 

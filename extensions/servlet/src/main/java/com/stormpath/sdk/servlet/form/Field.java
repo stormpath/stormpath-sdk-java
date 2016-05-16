@@ -74,7 +74,7 @@ public interface Field {
 
     boolean isVisible();
 
-    boolean isEnable();
+    boolean isEnabled();
 
     Field copy();
 }

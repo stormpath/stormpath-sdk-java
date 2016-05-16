@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class DefaultErrorMapModelFactory implements ErrorMapModelFactory{
     @Override

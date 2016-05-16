@@ -58,7 +58,7 @@ public class SendVerificationEmailController extends FormController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 
@@ -115,7 +115,7 @@ public class SendVerificationEmailController extends FormController {
         log.debug("Unable to send account verification email.", e);
 
         List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
-        errors.add(new ErrorModel.Builder().setMessage("Invalid email address.").build());
+        errors.add(ErrorModel.builder().setMessage("Invalid email address.").build());
 
         return errors;
     }

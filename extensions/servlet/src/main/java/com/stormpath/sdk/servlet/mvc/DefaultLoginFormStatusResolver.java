@@ -5,7 +5,7 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class DefaultLoginFormStatusResolver implements LoginFormStatusResolver {
 

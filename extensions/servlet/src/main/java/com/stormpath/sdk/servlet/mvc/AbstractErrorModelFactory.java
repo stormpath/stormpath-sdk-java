@@ -7,7 +7,7 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
     protected MessageSource messageSource;
@@ -32,7 +32,7 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
             status = stormpathError.getStatus();
             errorMsg = getErrorMessage(request, getErrorMessageKey(stormpathError.getCode()));
         }
-        return new ErrorModel.Builder()
+        return ErrorModel.builder()
                 .setStatus(status)
                 .setMessage(errorMsg).build();
     }

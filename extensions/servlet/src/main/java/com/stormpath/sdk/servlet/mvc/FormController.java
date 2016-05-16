@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -86,7 +87,7 @@ public abstract class FormController extends AbstractController {
     }
 
     protected Field createCsrfTokenField(String value) {
-        return new DefaultField.Builder()
+        return DefaultField.builder()
                 .setName(getCsrfTokenManager().getTokenName())
                 .setValue(value)
                 .setType("hidden")
@@ -97,10 +98,10 @@ public abstract class FormController extends AbstractController {
         Assert.isInstanceOf(DefaultForm.class, form, "Form implementation class must equal or extend DefaultForm");
 
         String val = getFieldValueResolver().getValue(request, getCsrfTokenManager().getTokenName());
-        if (val != null) {
+        if (HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
             //This is a POST so we need to set the submitted CSRF token in the form
             form.addField(createCsrfTokenField(val));
-        } else {
+        } else if (HttpMethod.GET.name().equalsIgnoreCase(request.getMethod())) {
             //This is a GET so we need to generate a new CSRF token for the form
             form.addField(createCsrfTokenField(getCsrfTokenManager().createCsrfToken(request, response)));
         }
@@ -217,8 +218,7 @@ public abstract class FormController extends AbstractController {
 
     protected abstract List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e);
 
-    protected abstract ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form)
-            throws Exception;
+    protected abstract ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) throws Exception;
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
 

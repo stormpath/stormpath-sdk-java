@@ -8,13 +8,14 @@ import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
 import java.util.Locale;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public interface ControllerConfigResolver extends FormFieldsFactory {
     String getView();
     String getUri();
     String getNextUri();
-    boolean isEnable();
+
+    boolean isEnabled();
     MessageSource getMessageSource();
     Resolver<Locale> getLocaleResolver();
     CsrfTokenManager getCsrfTokenManager();

@@ -4,11 +4,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class ErrorModel {
     private final int status;
     private final String message;
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public ErrorModel(Builder builder) {
         this.status = builder.status;

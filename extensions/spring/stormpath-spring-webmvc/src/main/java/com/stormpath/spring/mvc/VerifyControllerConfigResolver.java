@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class VerifyControllerConfigResolver extends AbstractSpringControllerConfigResolver {
     @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
@@ -37,7 +37,7 @@ public class VerifyControllerConfigResolver extends AbstractSpringControllerConf
     }
 
     @Override
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return verifyEnabled;
     }
 

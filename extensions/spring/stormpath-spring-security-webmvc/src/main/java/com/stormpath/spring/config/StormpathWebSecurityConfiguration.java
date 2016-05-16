@@ -35,6 +35,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
+
     @Bean
     @Override
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {

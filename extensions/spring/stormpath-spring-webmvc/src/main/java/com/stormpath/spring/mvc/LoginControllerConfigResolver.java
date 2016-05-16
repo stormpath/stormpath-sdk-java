@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class LoginControllerConfigResolver extends AbstractSpringControllerConfigResolver implements FormFieldsFactory {
     @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
@@ -34,7 +34,7 @@ public class LoginControllerConfigResolver extends AbstractSpringControllerConfi
     static {
         DEFAULT_FIELDS.put(
                 "login",
-                new DefaultField.Builder()
+                DefaultField.builder()
                         .setName("login")
                         .setLabel("stormpath.web.login.form.fields.login.label")
                         .setPlaceholder("stormpath.web.login.form.fields.login.placeholder")
@@ -46,7 +46,7 @@ public class LoginControllerConfigResolver extends AbstractSpringControllerConfi
         );
         DEFAULT_FIELDS.put(
                 "password",
-                new DefaultField.Builder()
+                DefaultField.builder()
                         .setName("password")
                         .setLabel("stormpath.web.login.form.fields.password.label")
                         .setPlaceholder("stormpath.web.login.form.fields.password.placeholder")
@@ -74,7 +74,7 @@ public class LoginControllerConfigResolver extends AbstractSpringControllerConfi
     }
 
     @Override
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return loginEnabled;
     }
 

@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  * ?status=reset - the user has finished the password reset workflow and has set a new password for their account. They may now login with their new password. Message to show:
  * Password Reset Successfully. You can now login with your new password.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 public interface LoginFormStatusResolver {
     String getStatusMessage(HttpServletRequest request, String status);

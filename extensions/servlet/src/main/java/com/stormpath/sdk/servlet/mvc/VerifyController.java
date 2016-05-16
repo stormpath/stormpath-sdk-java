@@ -57,13 +57,13 @@ public class VerifyController extends AbstractController {
         this.sendVerificationEmailUri = sendVerificationEmailUri;
 
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
-        Assert.hasLength(sendVerificationEmailUri, "sendVerificationEmailUri cannot be null or empty.");
+        Assert.hasText(sendVerificationEmailUri, "sendVerificationEmailUri cannot be null or empty.");
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 

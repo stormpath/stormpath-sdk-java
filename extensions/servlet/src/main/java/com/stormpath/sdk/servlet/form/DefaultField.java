@@ -28,6 +28,10 @@ public class DefaultField implements Field {
     private boolean enable;
     private boolean visible;
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public DefaultField(Builder builder) {
         this.name = builder.name;
         this.value = builder.value;
@@ -96,7 +100,7 @@ public class DefaultField implements Field {
         this.type = type;
     }
 
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return enable;
     }
 
@@ -113,7 +117,7 @@ public class DefaultField implements Field {
     }
 
     public Field copy() {
-        return new Builder()
+        return builder()
                 .setName(this.name)
                 .setValue(this.value)
                 .setLabel(this.label)

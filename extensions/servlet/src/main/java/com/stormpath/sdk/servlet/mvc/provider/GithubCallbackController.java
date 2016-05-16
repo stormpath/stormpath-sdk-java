@@ -9,7 +9,6 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.impl.provider.DefaultGithubProvider;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
@@ -38,6 +37,9 @@ import java.util.Map;
 public class GithubCallbackController extends AbstractSocialCallbackController {
 
     private static final Logger log = LoggerFactory.getLogger(GithubCallbackController.class);
+
+    private static final String GITHUB_ACCES_TOKEN_URL = "https://github.com/login/oauth/access_token";
+    private static final String ACCESS_TOKEN_FIELD = "access_token";
 
     private AccountStoreModelFactory accountStoreModelFactory;
 
@@ -86,7 +88,7 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
         HttpClient client = HttpClientBuilder.create().build();
 
         try {
-            HttpPost httpPost = new HttpPost("https://github.com/login/oauth/access_token");
+            HttpPost httpPost = new HttpPost(GITHUB_ACCES_TOKEN_URL);
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
             nvps.add(new BasicNameValuePair("code", code));
             nvps.add(new BasicNameValuePair("client_id", githubProvider[0].getClientId()));
@@ -98,8 +100,9 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
             HttpResponse response = client.execute(httpPost);
             ObjectMapper objectMapper = new ObjectMapper();
 
-            @SuppressWarnings("unchecked") Map<String, String> result = objectMapper.readValue(response.getEntity().getContent(), Map.class);
-            return result.get("access_token");
+            //noinspection unchecked
+            Map<String, String> result = objectMapper.readValue(response.getEntity().getContent(), Map.class);
+            return result.get(ACCESS_TOKEN_FIELD);
         } catch (Exception e) {
             log.error("Couldn't exchange GitHub oAuth code for an access token", e);
             throw new RuntimeException(e);

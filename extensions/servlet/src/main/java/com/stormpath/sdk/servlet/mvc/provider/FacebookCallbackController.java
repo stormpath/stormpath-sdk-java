@@ -10,7 +10,7 @@ import com.stormpath.sdk.servlet.util.ServletUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class FacebookCallbackController extends AbstractSocialCallbackController {
     public FacebookCallbackController(String loginNextUri, Saver<AuthenticationResult> authenticationResultSaver) {

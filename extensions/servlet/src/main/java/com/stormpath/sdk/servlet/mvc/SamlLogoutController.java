@@ -52,7 +52,7 @@ public class SamlLogoutController extends LogoutController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 

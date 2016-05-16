@@ -43,7 +43,9 @@ public enum DefaultFilter {
     googleCallback(GoogleCallbackFilter.class),
     githubCallback(GithubCallbackFilter.class),
     facebookCallback(FacebookCallbackFilter.class),
-    linkedinCallback(LinkedinCallbackFilter.class);
+    linkedinCallback(LinkedinCallbackFilter.class),
+    saml(SamlFilter.class),
+    samlResult(SamlResultFilter.class);
 
     private final Class<? extends Filter> filterClass;
 

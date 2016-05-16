@@ -82,7 +82,7 @@ public class RegisterController extends FormController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 
@@ -162,14 +162,14 @@ public class RegisterController extends FormController {
         List<ErrorModel> errors = new ArrayList<ErrorModel>();
 
         if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException) {
-            errors.add(new ErrorModel.Builder().setMessage(e.getMessage()).build());
+            errors.add(ErrorModel.builder().setMessage(e.getMessage()).build());
         } else if (e instanceof ResourceException) {
             Error stormpathError = ((ResourceException) e).getStormpathError();
 
-            errors.add(new ErrorModel.Builder().setMessage(stormpathError.getMessage()).setStatus(stormpathError.getStatus()).build());
+            errors.add(ErrorModel.builder().setMessage(stormpathError.getMessage()).setStatus(stormpathError.getStatus()).build());
         } else {
             String msg = i18n(request, "stormpath.web.register.form.errors.default");
-            errors.add(new ErrorModel.Builder().setMessage(msg).build());
+            errors.add(ErrorModel.builder().setMessage(msg).build());
             log.warn("Unable to resister user account: " + e.getMessage(), e);
         }
 

@@ -16,12 +16,7 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.DefaultFilter;
-import com.stormpath.sdk.servlet.filter.FilterChainManager;
-import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.Filters;
-import com.stormpath.sdk.servlet.filter.PathMatchingFilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
+import com.stormpath.sdk.servlet.filter.*;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
@@ -135,19 +130,19 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
 
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
-        boolean googleCallbackChangeSpecified = false;
+        boolean googleCallbackChainSpecified = false;
 
         String githubCallbackUrl = config.get("stormpath.web.social.github.uri");
         String githubCallbackUrlPattern = cleanUri(githubCallbackUrl);
-        boolean githubCallbackChangeSpecified = false;
+        boolean githubCallbackChainSpecified = false;
 
         String facebookCallbackUrl = config.get("stormpath.web.social.facebook.uri");
         String facebookCallbackUrlPattern = cleanUri(facebookCallbackUrl);
-        boolean facebookCallbackChangeSpecified = false;
+        boolean facebookCallbackChainSpecified = false;
 
         String linkedinCallbackUrl = config.get("stormpath.web.social.linkedin.uri");
         String linkedinCallbackUrlPattern = cleanUri(linkedinCallbackUrl);
-        boolean linkedinCallbackChangeSpecified = false;
+        boolean linkedinCallbackChainSpecified = false;
 
         //uriPattern-to-chainDefinition:
         Map<String, String> patternChains = new LinkedHashMap<String, String>();
@@ -160,28 +155,28 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                 String chainDefinition = config.get(key);
 
                 if (uriPattern.startsWith(linkedinCallbackUrl)) {
-                    linkedinCallbackChangeSpecified = true;
+                    linkedinCallbackChainSpecified = true;
 
                     String filterName = DefaultFilter.linkedinCallback.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
                 } else if (uriPattern.startsWith(facebookCallbackUrl)) {
-                    facebookCallbackChangeSpecified = true;
+                    facebookCallbackChainSpecified = true;
 
                     String filterName = DefaultFilter.facebookCallback.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
                 } else if (uriPattern.startsWith(githubCallbackUrl)) {
-                    githubCallbackChangeSpecified = true;
+                    githubCallbackChainSpecified = true;
 
                     String filterName = DefaultFilter.githubCallback.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
                 } else if (uriPattern.startsWith(googleCallbackUrl)) {
-                    googleCallbackChangeSpecified = true;
+                    googleCallbackChainSpecified = true;
 
                     String filterName = DefaultFilter.googleCallback.name();
                     if (!chainDefinition.contains(filterName)) {
@@ -305,16 +300,16 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         if (!meChainSpecified) {
             fcManager.createChain(meUrlPattern, DefaultFilter.me.name());
         }
-        if (!googleCallbackChangeSpecified) {
+        if (!googleCallbackChainSpecified) {
             fcManager.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());
         }
-        if (!githubCallbackChangeSpecified) {
+        if (!githubCallbackChainSpecified) {
             fcManager.createChain(githubCallbackUrlPattern, DefaultFilter.githubCallback.name());
         }
-        if (!facebookCallbackChangeSpecified) {
+        if (!facebookCallbackChainSpecified) {
             fcManager.createChain(facebookCallbackUrlPattern, DefaultFilter.facebookCallback.name());
         }
-        if (!linkedinCallbackChangeSpecified) {
+        if (!linkedinCallbackChainSpecified) {
             fcManager.createChain(linkedinCallbackUrlPattern, DefaultFilter.linkedinCallback.name());
         }
 

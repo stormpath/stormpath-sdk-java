@@ -19,7 +19,7 @@ public class MeController extends AbstractController {
     private boolean expandGroups;
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 

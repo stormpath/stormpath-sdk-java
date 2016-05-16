@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * TODO this should be a single configuration and a single controller according to the spec but to I'm keeping as it is for now.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 public class SendVerificationEmailControllerConfigResolver extends AbstractSpringControllerConfigResolver {
     @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
@@ -39,7 +39,7 @@ public class SendVerificationEmailControllerConfigResolver extends AbstractSprin
     }
 
     @Override
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return verifyEnabled;
     }
 

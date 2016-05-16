@@ -27,11 +27,7 @@ import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC4
@@ -53,7 +49,7 @@ public class ChangePasswordController extends FormController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 
@@ -154,13 +150,12 @@ public class ChangePasswordController extends FormController {
             errorMsg = i18n(request, "stormpath.web.change.form.errors.invalid", url);
         }
 
-        errors.add(new ErrorModel.Builder().setMessage(errorMsg).setStatus(status).build());
+        errors.add(ErrorModel.builder().setMessage(errorMsg).setStatus(status).build());
         return errors;
     }
 
     @Override
-    protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form)
-            throws Exception {
+    protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) throws Exception {
 
         String password = form.getFieldValue("password");
 

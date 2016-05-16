@@ -51,7 +51,7 @@ public class LogoutController extends AbstractController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 
