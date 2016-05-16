@@ -16,8 +16,6 @@
 package com.stormpath.sdk.impl.resource
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplate
-import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
 import org.testng.annotations.Test
 
 import java.lang.reflect.Method

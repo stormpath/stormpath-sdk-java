@@ -15,7 +15,6 @@
 */
 package com.stormpath.sdk.oauth;
 
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
@@ -26,12 +25,19 @@ import com.stormpath.sdk.directory.AccountStore;
 public interface OAuthClientCredentialsGrantRequestAuthentication extends OAuthGrantRequestAuthentication {
 
     /**
-     * Returns the apiKey specified for the authentication and token creation.
+     * Returns the apiKeyId specified for the authentication and token creation.
      *
-     * @return the apiKey corresponding to the apiKey specified to authenticate the account and create the access token.
+     * @return the apiKeyId corresponding to the apiKeyId specified to authenticate the account and create the access token.
      */
-    ApiKey getApiKey();
-
+    String getApiKeyId();
+    
+    /**
+     * Returns the apiKeySecret specified for the authentication and token creation.
+     *
+     * @return the apiKeySecret corresponding to the apiKeySecret specified to authenticate the account and create the access token.
+     */
+    String getApiKeySecret();
+    
     /**
      * Returns the specific {@link AccountStore accountStore} where the provided credentials will be sought in order to authenticate a request.
      *

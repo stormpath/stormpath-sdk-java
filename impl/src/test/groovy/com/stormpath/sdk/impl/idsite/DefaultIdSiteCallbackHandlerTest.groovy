@@ -26,7 +26,6 @@ import com.stormpath.sdk.idsite.AuthenticationResult
 import com.stormpath.sdk.idsite.IDSiteException
 import com.stormpath.sdk.idsite.IDSiteRuntimeException
 import com.stormpath.sdk.idsite.IDSiteSessionTimeoutException
-import com.stormpath.sdk.idsite.IdSiteCallbackHandler
 import com.stormpath.sdk.idsite.IdSiteResultListener
 import com.stormpath.sdk.idsite.InvalidIDSiteTokenException
 import com.stormpath.sdk.idsite.LogoutResult
@@ -40,7 +39,6 @@ import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.idsite.IdSiteClaims.JWT_RESPONSE
 import static org.easymock.EasyMock.*
-import static org.powermock.api.easymock.PowerMock.replayAll
 import static org.testng.Assert.assertEquals
 import static TestIdSiteResultListenerType.*
 import static org.testng.Assert.fail

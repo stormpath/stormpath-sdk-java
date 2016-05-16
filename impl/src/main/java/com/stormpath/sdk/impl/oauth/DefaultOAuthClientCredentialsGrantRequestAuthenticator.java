@@ -44,8 +44,8 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticator extends Abst
         OAuthClientCredentialsGrantRequestAuthentication oauthClientCredentialsGrantRequestAuthentication = (OAuthClientCredentialsGrantRequestAuthentication) authenticationRequest;
 
         OAuthClientCredentialsAuthenticationAttempt authAttempt = new DefaultOAuthClientCredentialsGrantAuthenticationAttempt(dataStore);
-        authAttempt.setApiKeyId(oauthClientCredentialsGrantRequestAuthentication.getApiKey().getId());
-        authAttempt.setApiKeySecret(oauthClientCredentialsGrantRequestAuthentication.getApiKey().getSecret());
+        authAttempt.setApiKeyId(oauthClientCredentialsGrantRequestAuthentication.getApiKeyId());
+        authAttempt.setApiKeySecret(oauthClientCredentialsGrantRequestAuthentication.getApiKeySecret());
         authAttempt.setGrantType(oauthClientCredentialsGrantRequestAuthentication.getGrantType());
         if (oauthClientCredentialsGrantRequestAuthentication.getAccountStore() != null){
             authAttempt.setAccountStore(oauthClientCredentialsGrantRequestAuthentication.getAccountStore());
