@@ -45,7 +45,6 @@ class HttpClientRequestExecutorIT extends ClientIT {
         OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build()
         def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
 
-
         // verify the access token in Stormpath
         // fail if it takes longer than 500ms
         // this proves that we are *not* waiting on redirects
