@@ -67,6 +67,10 @@ public class DefaultConfig implements Config {
 
     public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
 
+    public static final String ME_ENABLED = "stormpath.web.me.enabled";
+    public static final String ME_URL = "stormpath.web.me.uri";
+    public static final String ME_EXPAND_GROUPS = "stormpath.web.me.expand.groups";
+
     private final ServletContext servletContext;
     private final ConfigReader CFG;
     private final Map<String, String> props;
@@ -182,6 +186,21 @@ public class DefaultConfig implements Config {
     @Override
     public String getUnauthorizedUrl() {
         return CFG.getString(UNAUTHORIZED_URL);
+    }
+
+    @Override
+    public boolean isMeEnabled() {
+        return CFG.getBoolean(ME_ENABLED);
+    }
+
+    @Override
+    public String getMeUrl() {
+        return CFG.getString(ME_URL);
+    }
+
+    @Override
+    public boolean getMeExpandGroups() {
+        return CFG.getBoolean(ME_EXPAND_GROUPS);
     }
 
     @Override
