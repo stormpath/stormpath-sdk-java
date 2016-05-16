@@ -29,7 +29,15 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC3
@@ -49,7 +57,6 @@ public class DefaultConfig implements Config {
 
     public static final String ME_ENABLED = "stormpath.web.me.enabled";
     public static final String ME_URL = "stormpath.web.me.uri";
-    public static final String ME_EXPAND_GROUPS = "stormpath.web.me.expand.groups";
 
     public static final String PRODUCED_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -137,6 +144,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public boolean isRegisterAutoLoginEnabled() {
+        return CFG.getBoolean("stormpath.web.register.autoLogin");
+    }
+
+    @Override
     public boolean isLogoutInvalidateHttpSession() {
         return CFG.getBoolean(LOGOUT_INVALIDATE_HTTP_SESSION);
     }
@@ -162,8 +174,20 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public boolean getMeExpandGroups() {
-        return CFG.getBoolean(ME_EXPAND_GROUPS);
+    public List<String> getMeExpandedProperties() {
+        List<String> results = new ArrayList<String>();
+
+        Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
+
+        for (String key : keySet()) {
+            Matcher matcher = pattern.matcher(key);
+            if (matcher.find()) {
+                if (CFG.getBoolean(key)) {
+                    results.add(matcher.group(1));
+                }
+            }
+        }
+        return results;
     }
 
     @Override
@@ -205,7 +229,7 @@ public class DefaultConfig implements Config {
 
         if (!expectedType.isInstance(instance)) {
             String msg = "Configured " + classPropertyName + " class name must be an instance of " +
-                         expectedType.getName();
+                    expectedType.getName();
             throw new ServletException(msg);
         }
 
@@ -214,12 +238,12 @@ public class DefaultConfig implements Config {
 
     @Override
     public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException {
-        Map<String,Class<T>> classes =
-            new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
+        Map<String, Class<T>> classes =
+                new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
-        Map<String,T> instances = new LinkedHashMap<String, T>(classes.size());
+        Map<String, T> instances = new LinkedHashMap<String, T>(classes.size());
 
-        for(Map.Entry<String,Class<T>> entry : classes.entrySet()) {
+        for (Map.Entry<String, Class<T>> entry : classes.entrySet()) {
 
             String name = entry.getKey();
 
@@ -254,7 +278,7 @@ public class DefaultConfig implements Config {
             instance = Classes.newInstance(val);
         } catch (Exception e) {
             String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                         val + ": " + e.getMessage();
+                    val + ": " + e.getMessage();
             throw new ServletException(msg, e);
         }
 
@@ -263,14 +287,14 @@ public class DefaultConfig implements Config {
                 ((ServletContextInitializable) instance).init(this.servletContext);
             } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                             val + ": " + e.getMessage();
+                        val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }
 
         try {
             if (instance instanceof Factory) {
-                instance = ((Factory<T>)instance).getInstance();
+                instance = ((Factory<T>) instance).getInstance();
             }
         } catch (Exception e) {
             String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();

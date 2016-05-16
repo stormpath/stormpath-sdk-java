@@ -240,7 +240,8 @@ p {
 }
 
 .view input[type="text"],
-.view input[type="password"] {
+.view input[type="password"],
+.view input[type="email"] {
     background-color: #f6f6f6;
     height: 45px;
 }
@@ -283,7 +284,8 @@ p {
 }
 
 .sp-form .has-error input[type="text"],
-.sp-form .has-error input[type="password"] {
+.sp-form .has-error input[type="password"]
+.sp-form .has-error input[type="email"] {
     border-color: #ec3e3e;
 }
 

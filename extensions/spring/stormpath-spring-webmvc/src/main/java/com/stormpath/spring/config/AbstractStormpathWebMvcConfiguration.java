@@ -37,20 +37,79 @@ import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
-import com.stormpath.sdk.servlet.filter.*;
-import com.stormpath.sdk.servlet.filter.account.*;
-import com.stormpath.sdk.servlet.filter.oauth.*;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
+import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.CookieAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.account.DefaultAuthenticationJwtFactory;
+import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.DefaultJwtSigningKeyResolver;
+import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
+import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
+import com.stormpath.sdk.servlet.filter.account.SessionAuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenRequestAuthorizer;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.authc.*;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderAuthenticator;
+import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
+import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
+import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.*;
-import com.stormpath.sdk.servlet.mvc.provider.*;
+import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
+import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
+import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
+import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.LogoutController;
+import com.stormpath.sdk.servlet.mvc.MeController;
+import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
+import com.stormpath.sdk.servlet.mvc.SamlResultController;
+import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
+import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.LinkedinCallbackController;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
@@ -60,7 +119,16 @@ import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
-import com.stormpath.spring.mvc.*;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
+import com.stormpath.spring.mvc.ForgotPasswordControllerConfigResolver;
+import com.stormpath.spring.mvc.LoginControllerConfigResolver;
+import com.stormpath.spring.mvc.LogoutControllerConfigResolver;
+import com.stormpath.spring.mvc.RegisterControllerConfigResolver;
+import com.stormpath.spring.mvc.SendVerificationEmailControllerConfigResolver;
+import com.stormpath.spring.mvc.SpringController;
+import com.stormpath.spring.mvc.SpringSpaController;
+import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
+import com.stormpath.spring.mvc.VerifyControllerConfigResolver;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +140,16 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.*;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
@@ -90,7 +165,18 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC4
@@ -226,6 +312,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password), confirmPassword(required,password)' }")
     protected String registerFormFields;
 
+    @Value("${stormpath.web.register.autoLogin:false}")
+    protected boolean registerAutoLogin;
+
     // ================  Logout Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.logout.invalidateHttpSession'] ?: true }")
@@ -360,6 +449,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired(required = false)
     protected ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    protected Environment environment;
 
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
@@ -837,11 +929,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         //otherwise standard login controller:
         LoginController controller = new LoginController(
                 stormpathLoginControllerConfigResolver(),
+                stormpathVerifyControllerConfigResolver(),
                 stormpathForgotPasswordControllerConfigResolver().getUri(),
-                stormpathVerifyControllerConfigResolver().getUri(),
                 stormpathRegisterControllerConfigResolver().getUri(),
                 stormpathLogoutControllerConfigResolver().getUri(),
-                stormpathVerifyControllerConfigResolver().isEnabled(),
                 stormpathAuthenticationResultSaver(),
                 loginErrorModelFactory
         );
@@ -1010,12 +1101,17 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             @Override
             public String getMessage(String key, Locale locale) {
-                return springMessageSource.getMessage(key, null, locale);
+                return getMessage(key, locale, new Object[0]);
             }
 
             @Override
             public String getMessage(String key, Locale locale, Object... args) {
-                return springMessageSource.getMessage(key, args, locale);
+                try {
+                    return springMessageSource.getMessage(key, args, locale);
+                } catch (NoSuchMessageException e) {
+                    //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    return '!' + key + '!';
+                }
             }
         };
     }
@@ -1044,12 +1140,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         RegisterController controller = new RegisterController(
                 stormpathRegisterControllerConfigResolver(),
                 client,
-                stormpathRequestEventPublisher(),
-                toDefaultFields(stormpathRegisterFormFields()),
                 stormpathAuthenticationResultSaver(),
                 stormpathLoginControllerConfigResolver().getUri(),
-                stormpathVerifyControllerConfigResolver().getView()
-
+                stormpathVerifyControllerConfigResolver().getView(),
+                registerAutoLogin
         );
 
         return createSpaAwareSpringController(controller);
@@ -1069,8 +1163,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                 stormpathVerifyControllerConfigResolver(),
                 stormpathLogoutControllerConfigResolver().getUri(),
                 stormpathSendVerificationEmailControllerConfigResolver().getUri(),
-                client,
-                stormpathRequestEventPublisher()
+                client
         );
 
         return createSpringController(controller);
@@ -1143,9 +1236,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathMeController() {
-        MeController controller = new MeController();
-        controller.setNextUri(meNextUri);
-        controller.setExpandGroups(meExpandGroups);
+        List<String> results = new ArrayList<String>();
+
+        getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand");
+
+        Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
+
+        for (String key : getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand").keySet()) {
+            Matcher matcher = pattern.matcher(key);
+            if (matcher.find()) {
+                if (environment.getProperty(key, Boolean.class, false)) {
+                    results.add(matcher.group(1));
+                }
+            }
+        }
+
+        MeController controller = new MeController(results);
+
         return createSpaAwareSpringController(controller);
     }
 
@@ -1199,7 +1306,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
-        LogoutController controller = new LogoutController();
+        LogoutController controller = new LogoutController(stormpathLogoutControllerConfigResolver(), logoutInvalidateHttpSession);
 
         if (idSiteEnabled) {
             IdSiteLogoutController c = new IdSiteLogoutController();
@@ -1215,9 +1322,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             c.setSamlResultUri(samlResultUri);
             controller = c;
         }
-
-        controller.setNextUri(stormpathLoginControllerConfigResolver().getNextUri());
-        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
 
         return controller;
     }
@@ -1277,5 +1381,62 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
     }
 
+    //The code bellow is taken out of http://stackoverflow.com/questions/23506471/spring-access-all-environment-properties-as-a-map-or-properties-object
+    public static Map<String, Object> getPropertiesStartingWith(ConfigurableEnvironment aEnv, String aKeyPrefix) {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        Map<String, Object> map = getAllProperties(aEnv);
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+
+            if (key.startsWith(aKeyPrefix)) {
+                result.put(key, entry.getValue());
+            }
+        }
+
+        return result;
+    }
+
+    protected static Map<String, Object> getAllProperties(ConfigurableEnvironment aEnv) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        for (PropertySource propertySource : aEnv.getPropertySources()) {
+            addAll(result, getAllProperties(propertySource));
+        }
+        return result;
+    }
+
+    protected static Map<String, Object> getAllProperties(PropertySource<?> aPropSource) {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        if (aPropSource instanceof CompositePropertySource) {
+            CompositePropertySource cps = (CompositePropertySource) aPropSource;
+            for (PropertySource<?> propertySource : cps.getPropertySources()) {
+                addAll(result, getAllProperties(propertySource));
+            }
+            return result;
+        }
+
+        if (aPropSource instanceof EnumerablePropertySource<?>) {
+            EnumerablePropertySource<?> ps = (EnumerablePropertySource<?>) aPropSource;
+            for (String propertyName : ps.getPropertyNames()) {
+                result.put(propertyName, ps.getProperty(propertyName));
+            }
+
+            return result;
+        }
+
+        return result;
+    }
+
+    private static void addAll(Map<String, Object> aBase, Map<String, Object> aToBeAdded) {
+        for (Map.Entry<String, Object> entry : aToBeAdded.entrySet()) {
+            if (aBase.containsKey(entry.getKey())) {
+                continue;
+            }
+
+            aBase.put(entry.getKey(), entry.getValue());
+        }
+    }
 }
 

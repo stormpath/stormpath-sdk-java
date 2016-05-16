@@ -39,11 +39,10 @@ public class LoginFilter extends ControllerFilter {
 
         LoginController controller = new LoginController(
                 getConfig().getLoginControllerConfig(),
+                getConfig().getVerifyControllerConfig(),
                 getConfig().getForgotPasswordControllerConfig().getUri(),
-                getConfig().getVerifyControllerConfig().getUri(),
                 getConfig().getRegisterControllerConfig().getUri(),
                 getConfig().getLogoutControllerConfig().getUri(),
-                getConfig().getVerifyControllerConfig().isEnabled(),
                 authenticationResultSaver,
                 new LoginErrorModelFactory(messageSource));
 

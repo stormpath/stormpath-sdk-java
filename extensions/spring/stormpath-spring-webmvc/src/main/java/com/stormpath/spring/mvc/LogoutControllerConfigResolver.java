@@ -1,9 +1,6 @@
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.servlet.form.Field;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.util.Map;
 
 /**
  * @since 1.0.0
@@ -39,17 +36,12 @@ public class LogoutControllerConfigResolver extends AbstractSpringControllerConf
     }
 
     @Override
-    protected Map<String, Field> getDefaultFields() {
-        return null;
+    public String getControllerKey() {
+        return "logout";
     }
 
     @Override
-    protected String getFormKey() {
-        return null;
-    }
-
-    @Override
-    protected String getDefaultFieldOrder() {
-        return null;
+    protected String[] getDefaultFieldOrder() {
+        return new String[0];
     }
 }

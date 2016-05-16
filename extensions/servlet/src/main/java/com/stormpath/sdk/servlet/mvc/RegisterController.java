@@ -20,25 +20,24 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,9 +49,13 @@ public class RegisterController extends FormController {
     private static final Logger log = LoggerFactory.getLogger(RegisterController.class);
 
     private Client client;
-    private Publisher<RequestEvent> eventPublisher;
     //only used if account does not need email verification:
     private Saver<AuthenticationResult> authenticationResultSaver;
+    private AccountModelFactory accountModelFactory;
+    private AccountStoreModelFactory accountStoreModelFactory;
+    private ErrorModelFactory errorModelFactory;
+
+    private boolean autoLogin;
 
     private String loginUri;
     private String verifyViewName;
@@ -63,26 +66,27 @@ public class RegisterController extends FormController {
 
     public RegisterController(ControllerConfigResolver controllerConfigResolver,
                               Client client,
-                              Publisher<RequestEvent> eventPublisher,
-                              List<Field> formFields,
                               Saver<AuthenticationResult> authenticationResultSaver,
                               String loginUri,
-                              String verifyViewName) {
+                              String verifyViewName,
+                              boolean autoLogin) {
         super(controllerConfigResolver);
 
         this.client = client;
-        this.eventPublisher = eventPublisher;
-        this.formFields = formFields;
         this.authenticationResultSaver = authenticationResultSaver;
         this.loginUri = loginUri;
         this.verifyViewName = verifyViewName;
+        this.autoLogin = autoLogin;
 
-        Assert.notNull(client, "client cannot be null.");
-        Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
-        Assert.notEmpty(formFields, "formFields cannot be null or empty.");
-        Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
-        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        Assert.hasText(verifyViewName, "verifyViewName cannot be null or empty.");
+        this.accountModelFactory = new DefaultAccountModelFactory();
+        this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+        this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
+
+        Assert.notEmpty(this.formFields, "formFields cannot be null or empty.");
+        Assert.notNull(this.client, "client cannot be null.");
+        Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver cannot be null.");
+        Assert.hasText(this.loginUri, "loginUri cannot be null or empty.");
+        Assert.hasText(this.verifyViewName, "verifyViewName cannot be null or empty.");
     }
 
     @Override
@@ -90,133 +94,38 @@ public class RegisterController extends FormController {
         return true;
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public Publisher<RequestEvent> getEventPublisher() {
-        return eventPublisher;
-    }
-
-    public void setEventPublisher(Publisher<RequestEvent> eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
-
-    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
-        return authenticationResultSaver;
-    }
-
-    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
-        this.authenticationResultSaver = authenticationResultSaver;
-    }
-
-    public String getLoginUri() {
-        return loginUri;
-    }
-
-    public void setLoginUri(String loginUri) {
-        this.loginUri = loginUri;
-    }
-
-    public String getVerifyViewName() {
-        return verifyViewName;
-    }
-
-    public void setVerifyViewName(String verifyViewName) {
-        this.verifyViewName = verifyViewName;
-    }
-
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("loginUri", getLoginUri());
-    }
-
-    @Override
-    protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
-
-        List<Field> fields = new ArrayList<Field>(this.formFields.size());
-
-        for (Field template : this.formFields) {
-            Field field = template.copy();
-            String fieldName = field.getName();
-
-            String val = fieldValueResolver.getValue(request, fieldName);
-            field.setValue(val != null ? val : "");
-
-            if ("password".equals(fieldName) && !retainPassword) {
-                field.setValue("");
-            }
-
-            fields.add(field);
+        if (!isJsonPreferred(request)) {
+            model.put("loginUri", loginUri);
+        } else {
+            model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
         }
-
-        return fields;
     }
 
     @Override
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
-
         log.debug("Unable to register account.", e);
 
-        List<ErrorModel> errors = new ArrayList<ErrorModel>();
-
-        if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException) {
-            errors.add(ErrorModel.builder().setMessage(e.getMessage()).build());
-        } else if (e instanceof ResourceException) {
-            Error stormpathError = ((ResourceException) e).getStormpathError();
-
-            errors.add(ErrorModel.builder().setMessage(stormpathError.getMessage()).setStatus(stormpathError.getStatus()).build());
-        } else {
-            String msg = i18n(request, "stormpath.web.register.form.errors.default");
-            errors.add(ErrorModel.builder().setMessage(msg).build());
-            log.warn("Unable to resister user account: " + e.getMessage(), e);
-        }
-
-        return errors;
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    protected Account newAccount(HttpServletRequest request) {
-        Client client = getClient();
-        return client.instantiate(Account.class);
+        return Arrays.asList(errorModelFactory.toError(request, e));
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
+        super.validate(request, response, form);
 
-        validateCsrfToken(request, response, form);
+        Field confirmPasswordField = form.getField("confirmPassword");
 
-        //ensure required fields are present:
-        List<Field> fields = form.getFields();
-        for (Field field : fields) {
-            if (field.isRequired()) {
-                String value = form.getFieldValue(field.getName());
-                if (value == null) {
-                    String key = "stormpath.web.login.form.fields." + field.getName() + ".required";
-                    String msg = i18n(request, key);
-                    throw new IllegalArgumentException(msg);
-                }
+        if (confirmPasswordField != null && confirmPasswordField.isEnabled()) {
+            //ensure passwords match:
+            String password = form.getFieldValue("password");
+            String confirmPassword = form.getFieldValue("confirmPassword");
+
+            if (!password.equals(confirmPassword) && confirmPasswordField.isRequired()) {
+                String key = "stormpath.web.register.form.errors.passwordMismatch";
+                String msg = i18n(request, key);
+                throw new MismatchedPasswordException(msg);
             }
-        }
-
-        //ensure passwords match:
-        String password = form.getFieldValue("password");
-        String confirmPassword = form.getFieldValue("confirmPassword");
-
-        if (!password.equals(confirmPassword)) {
-            String key = "stormpath.web.register.form.errors.passwordMismatch";
-            String msg = i18n(request, key);
-            throw new MismatchedPasswordException(msg);
-        }
-    }
-
-    protected static class MismatchedPasswordException extends RuntimeException {
-        public MismatchedPasswordException(String msg) {
-            super(msg);
         }
     }
 
@@ -224,7 +133,7 @@ public class RegisterController extends FormController {
     protected ViewModel onValidSubmit(HttpServletRequest req, HttpServletResponse resp, Form form) throws Exception {
 
         //Create a new Account instance that will represent the submitted user information:
-        Account account = newAccount(req);
+        Account account = client.instantiate(Account.class);
 
         String value = form.getFieldValue("email");
         if (value != null) {
@@ -242,7 +151,7 @@ public class RegisterController extends FormController {
         }
 
         value = form.getFieldValue("givenName");
-        account.setGivenName(value != null ? value : "UNSPECIFIED");
+        account.setGivenName(value != null ? value : "UNKNOWN");
 
         value = form.getFieldValue("middleName");
         if (value != null) {
@@ -250,7 +159,9 @@ public class RegisterController extends FormController {
         }
 
         value = form.getFieldValue("surname");
-        account.setSurname(value != null ? value : "UNSPECIFIED");
+        account.setSurname(value != null ? value : "UNKNOWN");
+
+        account.getCustomData().putAll(getCustomData(req, form));
 
         //Get the Stormpath Application instance corresponding to this web app:
         Application app = (Application) req.getAttribute(Application.class.getName());
@@ -260,51 +171,45 @@ public class RegisterController extends FormController {
 
         AccountStatus status = account.getStatus();
 
-        RequestEvent e = createRegisteredEvent(req, resp, account);
-        publish(e);
+        publishRequestEvent(new DefaultRegisteredAccountRequestEvent(req, resp, account));
+
+        if (isJsonPreferred(req)) {
+            //noinspection unchecked
+            return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST)));
+        }
 
         if (status == AccountStatus.ENABLED) {
-
-            //the user does not need to verify their email address, so just assume they are authenticated
-            //(since they specified their password during registration):
-            final AuthenticationResult result = new TransientAuthenticationResult(account);
-            this.authenticationResultSaver.set(req, resp, result);
-
+            if (autoLogin) {
+                //the user does not need to verify their email address, so just assume they are authenticated
+                //(since they specified their password during registration):
+                final AuthenticationResult result = new TransientAuthenticationResult(account);
+                this.authenticationResultSaver.set(req, resp, result);
+            } else {
+                return new DefaultViewModel(loginUri + "?status=created").setRedirect(true);
+            }
         } else if (status == AccountStatus.UNVERIFIED) {
-
-            // The user must verify their email address:
-            //
-            // NOTE: we don't use the authenticationResultSaver here because we don't want the identity
-            // to be retained after this request.  To avoid security attack vectors, the end-user must
-            // verify their email address and then explicitly authenticate after doing so.  At that time,
-            // the authentication state will be saved appropriately via the login filter.
-            //
-            // We set the account as a request attribute here only for the remainder of the request in case the
-            // verify.jsp view wants to use it to render a user-specific message, for example,
-            //
-            // 'Thanks for registering Joe!  Almost done - please verify your email...'
-            //
-            Map<String, Object> model = newModel();
-            model.put(Account.class.getName(), account);
-            model.put("account", account);
-            return new DefaultViewModel(getVerifyViewName(), model);
+            return new DefaultViewModel(loginUri + "?status=unverified").setRedirect(true);
         }
-
-        return new DefaultViewModel(getNextUri()).setRedirect(true);
+        return new DefaultViewModel(nextUri).setRedirect(true);
     }
 
-    protected RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
-                                                                  HttpServletResponse response,
-                                                                  Account account) {
-        return new DefaultRegisteredAccountRequestEvent(request, response, account);
-    }
+    private Map<String, Object> getCustomData(HttpServletRequest request, Form form) {
+        //Custom fields are either declared as form fields which shouldn't not be account fields or through a customField attribute
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
 
-    protected void publish(RequestEvent e) throws ServletException {
-        try {
-            getEventPublisher().publish(e);
-        } catch (Exception ex) {
-            String msg = "Unable to publish registered account request event: " + ex.getMessage();
-            throw new ServletException(msg, ex);
+        for (Field field : form.getFields()) {
+            //Field is not part of the default account properties then is a custom field
+            if (DefaultAccount.PROPERTY_DESCRIPTORS.get(field.getName()) == null && !field.getName().equals(csrfTokenManager.getTokenName())) {
+                result.put(field.getName(), field.getValue());
+            }
         }
+
+        Object customData = fieldValueResolver.getAllFields(request).get("customData");
+        if (customData instanceof Map) {
+            //noinspection unchecked
+            result.putAll((Map<? extends String, ?>) customData);
+        } //If not a map ignore, the spec doesn't cover this case
+
+        return result;
     }
 }

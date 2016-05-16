@@ -18,9 +18,14 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,20 +45,26 @@ public abstract class AbstractController implements Controller {
     protected String view;
     protected String uri;
     protected MessageSource messageSource;
-    protected Resolver<Locale> localeResolver;
+    protected Publisher<RequestEvent> eventPublisher;
 
-    public AbstractController(String nextUri, String view, String uri, MessageSource messageSource, Resolver<Locale> localeResolver) {
-        this.nextUri = nextUri;
-        this.messageSource = messageSource;
-        this.localeResolver = localeResolver;
-        this.view = view;
-        this.uri = uri;
+    protected String controllerKey;
+    private Resolver<Locale> localeResolver;
+
+    public AbstractController(ControllerConfigResolver controllerConfigResolver) {
+        this.nextUri = controllerConfigResolver.getNextUri();
+        this.messageSource = controllerConfigResolver.getMessageSource();
+        this.localeResolver = controllerConfigResolver.getLocaleResolver();
+        this.view = controllerConfigResolver.getView();
+        this.uri = controllerConfigResolver.getUri();
+        this.controllerKey = controllerConfigResolver.getControllerKey();
+        this.eventPublisher = controllerConfigResolver.getRequestEventPublisher();
 
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
         Assert.hasText(this.view, "view cannot be null or empty.");
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.messageSource, "messageSource cannot be null.");
         Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
+        Assert.hasText(this.controllerKey, "controllerKey cannot be null.");
     }
 
     protected AbstractController() {
@@ -71,52 +82,6 @@ public abstract class AbstractController implements Controller {
      */
     public abstract boolean isNotAllowedIfAuthenticated();
 
-    public String getView() {
-        return view;
-    }
-
-    public void setView(String view) {
-        Assert.hasText(this.view, "view cannot be null or empty.");
-        this.view = view;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        Assert.hasText(this.uri, "uri cannot be null or empty.");
-        this.uri = uri;
-    }
-
-    public String getNextUri() {
-        return nextUri;
-    }
-
-    public void setNextUri(String nextUri) {
-        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
-        this.nextUri = nextUri;
-    }
-
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    public void setMessageSource(MessageSource messageSource) {
-        Assert.notNull(messageSource, "messageSource cannot be null.");
-        this.messageSource = messageSource;
-    }
-
-
-    public Resolver<Locale> getLocaleResolver() {
-        return localeResolver;
-    }
-
-    public void setLocaleResolver(Resolver<Locale> localeResolver) {
-        Assert.notNull(localeResolver, "localeResolver cannot be null.");
-        this.localeResolver = localeResolver;
-    }
-
     protected String i18n(HttpServletRequest request, String key) {
         Locale locale = localeResolver.get(request, null);
         return messageSource.getMessage(key, locale);
@@ -125,6 +90,10 @@ public abstract class AbstractController implements Controller {
     protected String i18n(HttpServletRequest request, String key, Object... args) {
         Locale locale = localeResolver.get(request, null);
         return messageSource.getMessage(key, locale, args);
+    }
+
+    protected boolean isJsonPreferred(HttpServletRequest request) {
+        return UserAgents.get(request).isJsonPreferred();
     }
 
     @Override
@@ -136,7 +105,7 @@ public abstract class AbstractController implements Controller {
 
         if (HttpMethod.GET.name().equalsIgnoreCase(method)) {
             if (isNotAllowedIfAuthenticated() && hasAccount) {
-                return new DefaultViewModel(getNextUri()).setRedirect(true);
+                return new DefaultViewModel(nextUri).setRedirect(true);
             }
             return doGet(request, response);
         } else if (HttpMethod.POST.name().equalsIgnoreCase(method)) {
@@ -163,4 +132,14 @@ public abstract class AbstractController implements Controller {
         return service(request, response);
     }
 
+    protected void publishRequestEvent(RequestEvent e) throws ServletException {
+        if (e != null) {
+            try {
+                eventPublisher.publish(e);
+            } catch (Exception ex) {
+                String msg = "Unable to publish registered account request event: " + ex.getMessage();
+                throw new ServletException(msg, ex);
+            }
+        }
+    }
 }

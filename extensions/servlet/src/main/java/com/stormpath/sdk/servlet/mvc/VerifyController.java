@@ -19,10 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultVerifiedAccountRequestEvent;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 
 import javax.servlet.ServletException;
@@ -38,7 +35,6 @@ public class VerifyController extends AbstractController {
     private String logoutUri;
     private String sendVerificationEmailUri;
     private Client client;
-    private Publisher<RequestEvent> eventPublisher;
 
     public VerifyController() {
         super();
@@ -47,17 +43,11 @@ public class VerifyController extends AbstractController {
     public VerifyController(ControllerConfigResolver controllerConfigResolver,
                             String logoutUri,
                             String sendVerificationEmailUri,
-                            Client client,
-                            Publisher<RequestEvent> eventPublisher) {
-        super(controllerConfigResolver.getNextUri(),
-                controllerConfigResolver.getView(),
-                controllerConfigResolver.getUri(),
-                controllerConfigResolver.getMessageSource(),
-                controllerConfigResolver.getLocaleResolver());
+                            Client client) {
+        super(controllerConfigResolver);
 
         this.logoutUri = logoutUri;
         this.client = client;
-        this.eventPublisher = eventPublisher;
         this.sendVerificationEmailUri = sendVerificationEmailUri;
 
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
@@ -69,30 +59,6 @@ public class VerifyController extends AbstractController {
     @Override
     public boolean isNotAllowedIfAuthenticated() {
         return true;
-    }
-
-    public String getLogoutUri() {
-        return logoutUri;
-    }
-
-    public void setLogoutUri(String logoutUri) {
-        this.logoutUri = logoutUri;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public Publisher<RequestEvent> getEventPublisher() {
-        return this.eventPublisher;
-    }
-
-    public void setEventPublisher(Publisher<RequestEvent> eventPublisher) {
-        this.eventPublisher = eventPublisher;
     }
 
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response)
@@ -109,7 +75,6 @@ public class VerifyController extends AbstractController {
             return verify(request, response, sptoken);
         } catch (Exception e) {
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
-            String logoutUri = getLogoutUri();
             return new DefaultViewModel(logoutUri).setRedirect(true);
         }
     }
@@ -117,33 +82,10 @@ public class VerifyController extends AbstractController {
     protected ViewModel verify(HttpServletRequest request, HttpServletResponse response, String sptoken)
             throws ServletException, IOException {
 
-        Client client = getClient();
-
         Account account = client.verifyAccountEmail(sptoken);
 
-        RequestEvent e = createVerifiedEvent(request, response, account);
-        publish(e);
+        publishRequestEvent(new DefaultVerifiedAccountRequestEvent(request, response, account));
 
-        String next = Strings.clean(request.getParameter("next"));
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
-        return new DefaultViewModel(next).setRedirect(true);
-    }
-
-    protected VerifiedAccountRequestEvent createVerifiedEvent(HttpServletRequest request, HttpServletResponse response,
-                                                              Account account) {
-        return new DefaultVerifiedAccountRequestEvent(request, response, account);
-    }
-
-    protected void publish(RequestEvent e) throws ServletException {
-        try {
-            getEventPublisher().publish(e);
-        } catch (Exception ex) {
-            String msg = "Unable to publish verified account request event: " + ex.getMessage();
-            throw new ServletException(msg, ex);
-        }
+        return new DefaultViewModel(nextUri).setRedirect(true);
     }
 }

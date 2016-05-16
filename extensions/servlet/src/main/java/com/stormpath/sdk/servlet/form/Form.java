@@ -24,10 +24,9 @@ import java.util.List;
  */
 public interface Form {
     /**
-     * Returns all fields in the form, both {@link #getVisibleFields() visible} and {@link #getHiddenFields() hidden}
-     * fields.
+     * Returns all fields in the form
      *
-     * @return all fields in the form, both {@link #getVisibleFields() visible} and {@link #getHiddenFields() hidden}
+     * @return all fields in the form
      * fields.
      */
     List<Field> getFields();

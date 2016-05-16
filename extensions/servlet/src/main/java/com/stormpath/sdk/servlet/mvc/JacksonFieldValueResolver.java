@@ -32,6 +32,11 @@ public class JacksonFieldValueResolver implements RequestFieldValueResolver {
         return value != null ? Strings.clean(value.toString()) : null;
     }
 
+    @Override
+    public Map<String, Object> getAllFields(HttpServletRequest request) {
+        return ensureBodyMap(request);
+    }
+
     @SuppressWarnings("unchecked")
     private Map<String, Object> ensureBodyMap(HttpServletRequest request) {
         Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);

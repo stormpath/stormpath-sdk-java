@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.servlet.form;
 
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import java.util.ArrayList;
@@ -28,6 +27,10 @@ import java.util.Map;
  */
 public class DefaultForm implements Form {
     private final Map<String, Field> fields = new LinkedHashMap<String, Field>();
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public DefaultForm(Builder builder) {
         for (Field field : builder.fields) {

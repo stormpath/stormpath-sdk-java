@@ -1,9 +1,6 @@
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.servlet.form.Field;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.util.Map;
 
 /**
  * TODO this should be a single configuration and a single controller according to the spec but to I'm keeping as it is for now.
@@ -11,10 +8,10 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class SendVerificationEmailControllerConfigResolver extends AbstractSpringControllerConfigResolver {
-    @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
     protected boolean verifyEnabled;
 
-    @Value("#{ @environment['stormpath.web.verify.view'] ?: 'stormpath/verify' }")
+    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
     @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
@@ -44,17 +41,12 @@ public class SendVerificationEmailControllerConfigResolver extends AbstractSprin
     }
 
     @Override
-    protected Map<String, Field> getDefaultFields() {
-        return null;
+    public String getControllerKey() {
+        return "sendVerificationEmail";
     }
 
     @Override
-    protected String getFormKey() {
-        return null;
-    }
-
-    @Override
-    protected String getDefaultFieldOrder() {
-        return null;
+    protected String[] getDefaultFieldOrder() {
+        return new String[0];
     }
 }

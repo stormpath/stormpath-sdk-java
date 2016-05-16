@@ -1,10 +1,11 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.impl.ConfigReader;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -14,9 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.0
@@ -56,10 +58,15 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
     @Override
     public boolean isEnabled() {
         String val = config.get("stormpath.web." + controllerKey + ".enabled");
-        if(val == null) {
+        if (val == null) {
             return true;
         }
         return new Boolean(val);
+    }
+
+    @Override
+    public String getControllerKey() {
+        return controllerKey;
     }
 
     @Override
@@ -93,22 +100,58 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
     }
 
     @Override
+    public Publisher<RequestEvent> getRequestEventPublisher() {
+        try {
+            return config.getInstance("stormpath.web.request.event.publisher");
+        } catch (ServletException e) {
+            log.error("Couldn't instantiate the default CsrfTokenManager instance", e);
+            return null;
+        }
+    }
+
+    @Override
     public List<Field> getFormFields() {
-        List<String> fieldNames = Arrays.asList(config.get("stormpath.web." + controllerKey + ".form.fields.fieldOrder").split(","));
         List<Field> fields = new ArrayList<Field>();
 
-        for (String fieldName : fieldNames) {
-            String trimmedFieldName = Strings.trimAllWhitespace(fieldName);
-            DefaultField field = DefaultField.builder()
-                    .setName(trimmedFieldName)
-                    .setType(config.get("stormpath.web." + controllerKey + ".form.fields." + trimmedFieldName + ".type"))
-                    .setLabel(config.get("stormpath.web." + controllerKey + ".form.fields." + trimmedFieldName + ".label"))
-                    .setPlaceholder(config.get("stormpath.web." + controllerKey + ".form.fields." + trimmedFieldName + ".placeholder"))
-                    .setRequired(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + trimmedFieldName + ".required")))
+        for (String fieldName : getFormFieldNames()) {
+            DefaultField field = new DefaultField.Builder()
+                    .setName(fieldName)
+                    .setType(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".type"))
+                    .setLabel(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".label"))
+                    .setPlaceholder(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".placeholder"))
+                    .setRequired(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".required")))
+                    .setEnable(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".enabled")))
+                    .setVisible(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".visible")))
                     .build();
+
             fields.add(field);
         }
 
         return fields;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getFormFieldNames() {
+        List<String> fieldsOrder = configReader.getList("stormpath.web." + controllerKey + ".form.fields.fieldOrder");
+        List<String> fieldNames = new ArrayList<String>();
+
+        if (fieldsOrder != null) {
+            fieldNames.addAll(fieldsOrder);
+        }
+
+        Pattern pattern = Pattern.compile("^stormpath.web." + controllerKey + ".form.fields." + "(\\w+)");
+
+        //Find any other fields that are not in the fieldOrder prop and add them to the end of the list as define in the spec
+        for (String key : config.keySet()) {
+            Matcher matcher = pattern.matcher(key);
+            if (matcher.find()) {
+                String fieldName = matcher.group(1);
+                if (!"fieldOrder".equals(fieldName) && !fieldNames.contains(fieldName)) {
+                    fieldNames.add(fieldName);
+                }
+            }
+        }
+
+        return fieldNames;
     }
 }

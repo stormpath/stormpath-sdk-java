@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.UserAgents;
@@ -73,14 +72,8 @@ public class LogoutController extends AbstractController {
             session.invalidate();
         }
 
-        String next = request.getParameter("next");
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
         if (isHtmlPreferred(request)) {
-            return new DefaultViewModel(next).setRedirect(true);
+            return new DefaultViewModel(nextUri).setRedirect(true);
         } else {
             //probably an ajax or non-browser client - return 200 ok:
             response.setStatus(HttpServletResponse.SC_OK);

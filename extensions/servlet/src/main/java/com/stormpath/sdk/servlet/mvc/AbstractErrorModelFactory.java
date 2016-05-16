@@ -1,6 +1,5 @@
 package com.stormpath.sdk.servlet.mvc;
 
-import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
@@ -27,24 +26,22 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
         int status = 400;
 
         if (e.getCause() instanceof ResourceException) {
-            Error stormpathError = ((ResourceException) e.getCause()).getStormpathError();
-
-            status = stormpathError.getStatus();
-            errorMsg = getErrorMessage(request, getErrorMessageKey(stormpathError.getCode()));
+            return translateResourceException(request, (ResourceException) e.getCause());
+        } else if (e instanceof ResourceException) {
+            return translateResourceException(request, (ResourceException) e);
+        } else if (e instanceof ValidationException) {
+            errorMsg = e.getMessage();
         }
         return ErrorModel.builder()
                 .setStatus(status)
                 .setMessage(errorMsg).build();
     }
 
-    /**
-     * Returns an i18n property key based on the actual Stormpath API error code
-     *
-     * @param code A Stormpath error code
-     * @return A i18n property key
-     */
-    private String getErrorMessageKey(int code) {
-        return "stormpath.web.errors." + code;
+    private ErrorModel translateResourceException(HttpServletRequest request, ResourceException e) {
+        return new ErrorModel.Builder()
+                .setStatus(e.getStormpathError().getStatus())
+                .setMessage(getErrorMessage(request, "stormpath.web.errors." + e.getStormpathError().getCode()))
+                .build();
     }
 
     protected String getErrorMessage(HttpServletRequest request, String key) {

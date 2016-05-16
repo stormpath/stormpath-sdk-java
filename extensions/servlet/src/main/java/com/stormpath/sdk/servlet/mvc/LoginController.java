@@ -21,7 +21,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
-import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UserAgents;
@@ -30,7 +29,11 @@ import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @since 1.0.RC4
@@ -53,20 +56,19 @@ public class LoginController extends FormController {
     }
 
     public LoginController(ControllerConfigResolver controllerConfigResolver,
+                           ControllerConfigResolver verifyControllerConfigResolver,
                            String forgotLoginUri,
-                           String verifyUri,
                            String registerUri,
                            String logoutUri,
-                           boolean verifyEnabled,
                            Saver<AuthenticationResult> authenticationResultSaver,
                            ErrorModelFactory errorModelFactory) {
         super(controllerConfigResolver);
 
         this.forgotLoginUri = forgotLoginUri;
-        this.verifyUri = verifyUri;
+        this.verifyUri = verifyControllerConfigResolver.getUri();
+        this.verifyEnabled = verifyControllerConfigResolver.isEnabled();
         this.registerUri = registerUri;
         this.logoutUri = logoutUri;
-        this.verifyEnabled = verifyEnabled;
         this.authenticationResultSaver = authenticationResultSaver;
         this.errorModelFactory = errorModelFactory;
         this.formFields = controllerConfigResolver.getFormFields();
@@ -97,116 +99,22 @@ public class LoginController extends FormController {
         return true;
     }
 
-    public String getForgotLoginUri() {
-        return forgotLoginUri;
-    }
-
-    public void setForgotLoginUri(String forgotLoginUri) {
-        this.forgotLoginUri = forgotLoginUri;
-    }
-
-    /* @since 1.0.RC8.3 */
-    public String getVerifyUri() {
-        return verifyUri;
-    }
-
-    /* @since 1.0.RC8.3 */
-    public void setVerifyUri(String verifyUri) {
-        this.verifyUri = verifyUri;
-    }
-
-    public String getRegisterUri() {
-        return registerUri;
-    }
-
-    public void setRegisterUri(String registerUri) {
-        Assert.hasText(registerUri, "registerUri property cannot be null or empty.");
-        this.registerUri = registerUri;
-    }
-
-    public String getLogoutUri() {
-        return logoutUri;
-    }
-
-    public void setLogoutUri(String logoutUri) {
-        this.logoutUri = logoutUri;
-    }
-
-    /* @since 1.0.RC8.3 */
-    public Boolean isVerifyEnabled() {
-        return verifyEnabled;
-    }
-
-    public void setVerifyEnabled(Boolean verifyEnabled) {
-        this.verifyEnabled = verifyEnabled;
-    }
-
-    public AccountStoreModelFactory getAccountStoreModelFactory() {
-        return accountStoreModelFactory;
-    }
-
-    public void setAccountStoreModelFactory(AccountStoreModelFactory accountStoreModelFactory) {
-        this.accountStoreModelFactory = accountStoreModelFactory;
-    }
-
-    public ErrorModelFactory getErrorModelFactory() {
-        return errorModelFactory;
-    }
-
-    public void setErrorModelFactory(ErrorModelFactory errorModelFactory) {
-        this.errorModelFactory = errorModelFactory;
-    }
-
-    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
-        return this.authenticationResultSaver;
-    }
-
-    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
-        Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
-        this.authenticationResultSaver = authenticationResultSaver;
-    }
-
-    public void setLoginFormStatusResolver(LoginFormStatusResolver loginFormStatusResolver) {
-        this.loginFormStatusResolver = loginFormStatusResolver;
-    }
-
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("accountStores", getAccountStoreModelFactory().getAccountStores(request));
+        model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
 
         if (UserAgents.get(request).isHtmlPreferred()) {
-            model.put("forgotLoginUri", getForgotLoginUri());
-            model.put("verifyUri", getVerifyUri());
-            model.put("verifyEnabled", isVerifyEnabled());
-            model.put("registerUri", getRegisterUri());
+            model.put("forgotLoginUri", forgotLoginUri);
+            model.put("verifyUri", verifyUri);
+            model.put("verifyEnabled", verifyEnabled);
+            model.put("registerUri", registerUri);
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
             if (status != null) {
                 model.put("status", loginFormStatusResolver.getStatusMessage(request, status));
             }
         }
-    }
-
-    @Override
-    protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
-        List<Field> fields = new ArrayList<Field>();
-
-        for (Field templateField : formFields) {
-            Field clone = templateField.copy();
-
-            String val = getFieldValueResolver().getValue(request, clone.getName());
-
-            if (clone.getName() == "password" && retainPassword) {
-                clone.setValue(val);
-            } else {
-                clone.setValue(val);
-            }
-
-            fields.add(clone);
-        }
-
-        return fields;
     }
 
     @Override
@@ -227,21 +135,18 @@ public class LoginController extends FormController {
 
         //simulate a result for the benefit of the 'saveResult' method signature:
         final AuthenticationResult result = new TransientAuthenticationResult(account);
-        saveResult(req, resp, result);
+        authenticationResultSaver.set(req, resp, result);
 
         if (UserAgents.get(req).isJsonPreferred()) {
-            return new DefaultViewModel(getView(), java.util.Collections.singletonMap("account", accountModelFactory.toMap(account)));
+            //noinspection unchecked
+            return new DefaultViewModel(view, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST)));
         }
 
         //otherwise HTML view:
-        return new DefaultViewModel(getNextUri()).setRedirect(true);
+        return new DefaultViewModel(nextUri).setRedirect(true);
     }
 
     protected Account getAccount(HttpServletRequest req) {
         return AccountResolver.INSTANCE.getRequiredAccount(req);
-    }
-
-    protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
-        getAuthenticationResultSaver().set(request, response, result);
     }
 }

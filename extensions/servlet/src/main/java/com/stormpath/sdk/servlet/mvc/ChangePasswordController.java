@@ -23,11 +23,13 @@ import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
-import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @since 1.0.RC4
@@ -49,36 +51,11 @@ public class ChangePasswordController extends FormController {
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        Assert.notNull(localeResolver, "localeResolver cannot be null.");
     }
 
     @Override
     public boolean isNotAllowedIfAuthenticated() {
         return false;
-    }
-
-    public String getForgotPasswordUri() {
-        return forgotPasswordUri;
-    }
-
-    public void setForgotPasswordUri(String forgotPasswordUri) {
-        this.forgotPasswordUri = forgotPasswordUri;
-    }
-
-    public String getLoginUri() {
-        return loginUri;
-    }
-
-    public void setLoginUri(String loginUri) {
-        this.loginUri = loginUri;
-    }
-
-    public Resolver<Locale> getLocaleResolver() {
-        return localeResolver;
-    }
-
-    public void setLocaleResolver(Resolver<Locale> localeResolver) {
-        this.localeResolver = localeResolver;
     }
 
     @Override
@@ -89,7 +66,7 @@ public class ChangePasswordController extends FormController {
         if (sptoken == null) {
             Map<String, String> queryParams = new HashMap<String, String>(1);
             queryParams.put("error", "sptokenInvalid");
-            return new DefaultViewModel(getLoginUri(), queryParams).setRedirect(true);
+            return new DefaultViewModel(loginUri, queryParams).setRedirect(true);
         }
 
         return super.doGet(request, response);
@@ -98,7 +75,7 @@ public class ChangePasswordController extends FormController {
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("loginUri", getLoginUri());
+        model.put("loginUri", loginUri);
     }
 
     @Override
@@ -150,7 +127,7 @@ public class ChangePasswordController extends FormController {
             //(currently being implemented in the Stormpath server-side REST API, not yet complete)
             errorMsg = i18n(request, "stormpath.web.change.form.errors.strength");
         } else if (e instanceof ResourceException && ((ResourceException) e).getStatus() == 404) {
-            String url = request.getContextPath() + getForgotPasswordUri();
+            String url = request.getContextPath() + forgotPasswordUri;
             errorMsg = i18n(request, "stormpath.web.change.form.errors.invalid", url);
         }
 
@@ -167,26 +144,11 @@ public class ChangePasswordController extends FormController {
         String sptoken = form.getFieldValue("sptoken");
         application.resetPassword(sptoken, password);
 
-        return new DefaultViewModel(getNextUri()).setRedirect(true);
+        return new DefaultViewModel(nextUri).setRedirect(true);
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
-
-        //validate CSRF
-        validateCsrfToken(request, response, form);
-
-        //ensure required fields are present:
-        List<Field> fields = form.getFields();
-        for (Field field : fields) {
-            if (field.isRequired()) {
-                String value = Strings.clean(field.getValue());
-                if (value == null) {
-                    String key = "stormpath.web.change.form.fields." + field.getName() + ".required";
-                    String msg = i18n(request, key);
-                    throw new IllegalArgumentException(msg);
-                }
-            }
-        }
+        super.validate(request, response, form);
 
         //ensure fields match:
         String password = form.getFieldValue("password");
@@ -196,12 +158,6 @@ public class ChangePasswordController extends FormController {
             String key = "stormpath.web.change.form.errors.mismatch";
             String msg = i18n(request, key);
             throw new MismatchedPasswordException(msg);
-        }
-    }
-
-    protected static class MismatchedPasswordException extends RuntimeException {
-        public MismatchedPasswordException(String msg) {
-            super(msg);
         }
     }
 }

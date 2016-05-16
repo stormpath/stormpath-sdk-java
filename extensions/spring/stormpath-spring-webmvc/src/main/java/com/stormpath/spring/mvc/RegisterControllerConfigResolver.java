@@ -1,14 +1,17 @@
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.servlet.form.Field;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @since 1.0.0
  */
 public class RegisterControllerConfigResolver extends AbstractSpringControllerConfigResolver {
+
+    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"username", "givenName", "middleName", "surname", "email", "password", "confirmPassword"};
+
     @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
     protected boolean registerEnabled;
 
@@ -42,17 +45,17 @@ public class RegisterControllerConfigResolver extends AbstractSpringControllerCo
     }
 
     @Override
-    protected Map<String, Field> getDefaultFields() {
-        return null;
+    public String getControllerKey() {
+        return "register";
     }
 
     @Override
-    protected String getFormKey() {
-        return null;
+    protected String[] getDefaultFieldOrder() {
+        return DEFAULT_FIELD_NAMES;
     }
 
     @Override
-    protected String getDefaultFieldOrder() {
-        return null;
+    protected List<String> getDefaultDisableFields() {
+        return Arrays.asList("username", "middleName", "confirmPassword");
     }
 }
