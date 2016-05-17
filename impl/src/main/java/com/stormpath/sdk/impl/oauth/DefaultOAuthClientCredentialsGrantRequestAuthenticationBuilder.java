@@ -28,6 +28,7 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticationBuilder impl
     private String apiKeyId;
     private String apiKeySecret;
     private AccountStore accountStore;
+    private String jwt;
 
     @Override
     public OAuthClientCredentialsGrantRequestAuthenticationBuilder setApiKeyId(String apiKeyId) {
@@ -51,14 +52,27 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticationBuilder impl
     }
 
     @Override
+    public OAuthClientCredentialsGrantRequestAuthenticationBuilder setJwt(String jwt) {
+        Assert.notNull(jwt, "jwt cannot be null or empty.");
+        this.jwt = jwt;
+        return this;
+    }
+
+    @Override
     public OAuthClientCredentialsGrantRequestAuthentication build() {
-        Assert.state(this.apiKeyId != null, "apiKeyId has not been set. It is a required attribute.");
-        Assert.state(this.apiKeySecret != null, "apiKeySecret has not been set. It is a required attribute.");
+        DefaultOAuthClientCredentialsGrantRequestAuthentication request;
 
-        DefaultOAuthClientCredentialsGrantRequestAuthentication request = new DefaultOAuthClientCredentialsGrantRequestAuthentication(apiKeyId, apiKeySecret);
+        if (jwt == null) {
+            Assert.state(this.apiKeyId != null, "apiKeyId has not been set. It is a required attribute.");
+            Assert.state(this.apiKeySecret != null, "apiKeySecret has not been set. It is a required attribute.");
 
-        if (this.accountStore != null) {
-            request.setAccountStore(this.accountStore);
+            request = new DefaultOAuthClientCredentialsGrantRequestAuthentication(apiKeyId, apiKeySecret);
+
+            if (this.accountStore != null) {
+                request.setAccountStore(this.accountStore);
+            }
+        } else {
+            request = new DefaultOAuthClientCredentialsGrantRequestAuthentication(jwt);
         }
 
         return request;

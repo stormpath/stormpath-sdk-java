@@ -63,14 +63,13 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
         if (this.isLocalValidation) {
             String apiKeySecret = dataStore.getApiKey().getSecret();
             try {
-
                 // During parsing, the JWT is validated for expiration, signature and tampering
                 Claims claims = Jwts.parser()
                         .setSigningKey(apiKeySecret.getBytes("UTF-8"))
                         .parseClaimsJws(bearerRequest.getJwt()).getBody();
                 Assert.isTrue(claims.getIssuer().equals(application.getHref()));
 
-                Map<String, Object> properties = new HashMap<String, Object>();
+                Map<String, Object> properties = new HashMap<>();
 
                 Account account = dataStore.getResource(claims.getSubject(), Account.class);
 

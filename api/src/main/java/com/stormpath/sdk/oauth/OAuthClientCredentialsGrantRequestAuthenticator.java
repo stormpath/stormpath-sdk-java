@@ -16,7 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * This class is used to refresh an OAuth 2.0 token created in Stormpath. For example:
+ * This class is used to obtain an OAuth 2.0 token created in Stormpath using client credentials. For example:
  * <pre>
  * Application app = obtainApplication();
  * OAuthClientCredentialsGrantRequestAuthentication request = <b>OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()</b>
@@ -31,4 +31,6 @@ package com.stormpath.sdk.oauth;
  * @since 1.0.0
  */
 public interface OAuthClientCredentialsGrantRequestAuthenticator extends OAuthRequestAuthenticator<OAuthGrantRequestAuthenticationResult> {
+
+    OAuthClientCredentialsGrantRequestAuthenticator withLocalValidation();
 }

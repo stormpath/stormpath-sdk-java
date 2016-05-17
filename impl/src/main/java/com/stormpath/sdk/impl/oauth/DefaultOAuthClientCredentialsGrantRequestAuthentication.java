@@ -24,8 +24,9 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
  */
 public class DefaultOAuthClientCredentialsGrantRequestAuthentication implements OAuthClientCredentialsGrantRequestAuthentication {
 
-    private final String apiKeyId;
-    private final String apiKeySecret;
+    private String apiKeyId;
+    private String apiKeySecret;
+    private String jwt;
     private AccountStore accountStore;
     private final static String grantType = "client_credentials";
 
@@ -35,6 +36,12 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthentication implements 
 
         this.apiKeyId = apiKeyId;
         this.apiKeySecret = apiKeySecret;
+    }
+
+    public DefaultOAuthClientCredentialsGrantRequestAuthentication(String jwt) {
+        Assert.notNull(jwt, "jwt argument cannot be null.");
+
+        this.jwt = jwt;
     }
 
     public OAuthClientCredentialsGrantRequestAuthentication setAccountStore(AccountStore accountStore) {
@@ -53,6 +60,11 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthentication implements 
     @Override
     public AccountStore getAccountStore() {
         return accountStore;
+    }
+
+    @Override
+    public String getJwt() {
+        return jwt;
     }
 
     @Override

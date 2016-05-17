@@ -16,12 +16,7 @@
 package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.account.PasswordFormat
-import com.stormpath.sdk.account.PasswordResetToken
-import com.stormpath.sdk.account.VerificationEmailRequest
-import com.stormpath.sdk.account.VerificationEmailRequestBuilder
+import com.stormpath.sdk.account.*
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
@@ -38,23 +33,19 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.http.HttpRequest
+import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.http.MediaType
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.idsite.IdSiteClaims
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.saml.SamlResultStatus
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.mail.EmailStatus
-import com.stormpath.sdk.oauth.AccessToken
-import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
-import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult
-import com.stormpath.sdk.oauth.OAuthRequests
-import com.stormpath.sdk.oauth.OAuthPolicy
-import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
-import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication
+import com.stormpath.sdk.oauth.*
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
@@ -65,11 +56,7 @@ import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.JwsHeader
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.*
 import org.apache.commons.codec.binary.Base64
 import org.testng.annotations.Test
 
@@ -77,16 +64,8 @@ import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import static org.easymock.EasyMock.createMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertNotEquals
-import static org.testng.Assert.assertNotNull
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.fail
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
 
@@ -341,7 +320,7 @@ class ApplicationIT extends ClientIT {
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104), RequestId "+ e.getRequestId() + ": Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104), RequestId " + e.getRequestId() + ": Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
         }
 
         //No account store has been defined, therefore login must succeed
@@ -420,7 +399,7 @@ class ApplicationIT extends ClientIT {
             result = app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114), RequestId "+ e.getRequestId() + ": The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114), RequestId " + e.getRequestId() + ": The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
         }
     }
 
@@ -639,7 +618,7 @@ class ApplicationIT extends ClientIT {
      * @since 1.0.RC9
      */
     @Test
-    void testExpansionNotWorkingBecauseOfCache(){
+    void testExpansionNotWorkingBecauseOfCache() {
 
         //Setup 1 application with 2 accounts
         def app = createTempApp()
@@ -1258,8 +1237,8 @@ class ApplicationIT extends ClientIT {
             fail("shouldn't get here")
         } catch (IllegalArgumentException e) {
             assertEquals e.getMessage(),
-                "There are both a Directory and a Group matching the provided name in the current tenant. " +
-                "Please provide the href of the intended Resource instead of its name in order to univocally identify it."
+                    "There are both a Directory and a Group matching the provided name in the current tenant. " +
+                            "Please provide the href of the intended Resource instead of its name in order to univocally identify it."
         }
     }
 
@@ -1359,7 +1338,6 @@ class ApplicationIT extends ClientIT {
 
         assertEquals accountStoreMapping.accountStore.href, group.href
     }
-
 
     /**
      * @since 1.0.RC4.4
@@ -1860,15 +1838,15 @@ class ApplicationIT extends ClientIT {
 
         // setup result jwt
         def jwt = Jwts.builder()
-            .setHeaderParam(JwsHeader.KEY_ID, client.apiKey.id)
-            .setAudience(client.apiKey.id)
-            .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
-            .setIssuer("my issuer")
-            .claim(IdSiteClaims.RESPONSE_ID, "my response id")
-            .claim(IdSiteClaims.STATUS, SamlResultStatus.LOGOUT)
-            .claim(IdSiteClaims.IS_NEW_SUBJECT, false)
-            .signWith(SignatureAlgorithm.HS256, client.apiKey.secret.getBytes("UTF-8"))
-        .compact()
+                .setHeaderParam(JwsHeader.KEY_ID, client.apiKey.id)
+                .setAudience(client.apiKey.id)
+                .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
+                .setIssuer("my issuer")
+                .claim(IdSiteClaims.RESPONSE_ID, "my response id")
+                .claim(IdSiteClaims.STATUS, SamlResultStatus.LOGOUT)
+                .claim(IdSiteClaims.IS_NEW_SUBJECT, false)
+                .signWith(SignatureAlgorithm.HS256, client.apiKey.secret.getBytes("UTF-8"))
+                .compact()
 
         def req = createMock(HttpServletRequest)
         expect(req.getMethod()).andReturn(HttpMethod.GET.name()).times(2)
@@ -1884,4 +1862,30 @@ class ApplicationIT extends ClientIT {
         assertFalse result.newAccount
     }
 
+    /* @since 1.0.0 */
+    @Test
+    void testAttemptAuthenticationWithClientCredentials() {
+        def app = createTempApp()
+        def account = createTestAccount(app)
+        def apiKey = account.createApiKey()
+        String apiKeyId = apiKey.id
+        String apiKeySecret = apiKey.secret
+
+        OAuthClientCredentialsGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
+                .setApiKeyId(apiKeyId)
+                .setApiKeySecret(apiKeySecret)
+                .build()
+
+        def grantResult = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
+                .forApplication(app)
+                .authenticate(grantRequest)
+
+        // Authenticate token against Stormpath using client credentials token <--- VALID
+        grantRequest = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
+                .setJwt(grantResult.getAccessTokenString())
+                .build()
+
+        assertNotNull Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
+                .forApplication(app).withLocalValidation().authenticate(grantRequest)
+    }
 }

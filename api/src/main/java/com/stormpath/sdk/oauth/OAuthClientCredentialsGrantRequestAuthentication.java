@@ -45,4 +45,10 @@ public interface OAuthClientCredentialsGrantRequestAuthentication extends OAuthG
      */
     AccountStore getAccountStore();
 
+    /**
+     * Returns the value corresponding to the String representation of the Json Web Token
+     *
+     * @return the String representation of the JWT
+     */
+    String getJwt();
 }

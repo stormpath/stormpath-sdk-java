@@ -47,4 +47,12 @@ public interface OAuthClientCredentialsGrantRequestAuthenticationBuilder extends
      * @return this instance for method chaining.
      */
     OAuthClientCredentialsGrantRequestAuthenticationBuilder setAccountStore(AccountStore accountStore);
+
+    /**
+     * Specifies the jwt token that will be used to validate the authentication token.
+     *
+     * @param jwt the jwt token that will be used to validate the authentication token.
+     * @return this instance for method chaining.
+     */
+    OAuthClientCredentialsGrantRequestAuthenticationBuilder setJwt(String jwt);
 }
