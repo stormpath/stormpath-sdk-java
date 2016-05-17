@@ -11,7 +11,11 @@ import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @since 1.0.0
@@ -68,7 +72,7 @@ abstract class AbstractSpringControllerConfigResolver implements ControllerConfi
                     .setLabel(env.getProperty(getFieldPropertyKey(trimmedFieldName, "label"), defaultField != null ? defaultField.getLabel() : null))
                     .setPlaceholder(env.getProperty(getFieldPropertyKey(trimmedFieldName, "placeholder"), defaultField != null ? defaultField.getPlaceholder() : null))
                     .setRequired(env.getProperty(getFieldPropertyKey(trimmedFieldName, "required"), Boolean.class, defaultField != null ? defaultField.isRequired() : null))
-                    .setEnable(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enable"), Boolean.class, defaultField != null ? defaultField.isEnabled() : null))
+                    .setEnabled(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enabled"), Boolean.class, defaultField != null ? defaultField.isEnabled() : null))
                     .setVisible(env.getProperty(getFieldPropertyKey(trimmedFieldName, "visible"), Boolean.class, defaultField != null ? defaultField.isVisible() : null))
                     .build();
             fields.add(field);

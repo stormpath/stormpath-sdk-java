@@ -25,7 +25,7 @@ public class DefaultField implements Field {
     private String placeholder;
     private boolean required;
     private String type;
-    private boolean enable;
+    private boolean enabled;
     private boolean visible;
 
     public static Builder builder() {
@@ -39,7 +39,7 @@ public class DefaultField implements Field {
         this.placeholder = builder.placeholder;
         this.required = builder.required;
         this.type = builder.type;
-        this.enable = builder.enable;
+        this.enabled = builder.enabled;
         this.visible = builder.visible;
     }
 
@@ -101,11 +101,11 @@ public class DefaultField implements Field {
     }
 
     public boolean isEnabled() {
-        return enable;
+        return enabled;
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public boolean isVisible() {
@@ -125,7 +125,7 @@ public class DefaultField implements Field {
                 .setRequired(this.required)
                 .setType(this.type)
                 .setVisible(this.visible)
-                .setEnable(this.enable)
+                .setEnabled(this.enabled)
                 .build();
     }
 
@@ -136,7 +136,7 @@ public class DefaultField implements Field {
         private String placeholder;
         private boolean required;
         private String type;
-        private boolean enable;
+        private boolean enabled;
         private boolean visible;
 
         public Builder setName(String name) {
@@ -169,8 +169,8 @@ public class DefaultField implements Field {
             return this;
         }
 
-        public Builder setEnable(boolean enable) {
-            this.enable = enable;
+        public Builder setEnabled(boolean enabled) {
+            this.enabled = enabled;
             return this;
         }
 

@@ -40,7 +40,7 @@ public class LoginControllerConfigResolver extends AbstractSpringControllerConfi
                         .setPlaceholder("stormpath.web.login.form.fields.login.placeholder")
                         .setRequired(true)
                         .setType("text")
-                        .setEnable(true)
+                        .setEnabled(true)
                         .setVisible(true)
                         .build()
         );
@@ -52,7 +52,7 @@ public class LoginControllerConfigResolver extends AbstractSpringControllerConfi
                         .setPlaceholder("stormpath.web.login.form.fields.password.placeholder")
                         .setRequired(true)
                         .setType("password")
-                        .setEnable(true)
+                        .setEnabled(true)
                         .setVisible(true)
                         .build()
         );
