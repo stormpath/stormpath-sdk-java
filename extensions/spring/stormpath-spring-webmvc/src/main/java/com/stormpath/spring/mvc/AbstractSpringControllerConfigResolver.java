@@ -77,7 +77,7 @@ abstract class AbstractSpringControllerConfigResolver implements ControllerConfi
                             .setRequired(true)
                             .setPlaceholder("stormpath.web." + getControllerKey() + ".form.fields." + fieldName + ".placeholder")
                             .setLabel("stormpath.web." + getControllerKey() + ".form.fields." + fieldName + ".label")
-                            .setEnable(!getDefaultDisableFields().contains(fieldName))
+                            .setEnabled(!getDefaultDisableFields().contains(fieldName))
                             .setVisible(true)
                             .setType(getFieldType(fieldName))
                             .build());
@@ -102,7 +102,7 @@ abstract class AbstractSpringControllerConfigResolver implements ControllerConfi
                     .setLabel(env.getProperty(getFieldPropertyKey(trimmedFieldName, "label"), defaultField != null ? defaultField.getLabel() : null))
                     .setPlaceholder(env.getProperty(getFieldPropertyKey(trimmedFieldName, "placeholder"), defaultField != null ? defaultField.getPlaceholder() : null))
                     .setRequired(env.getProperty(getFieldPropertyKey(trimmedFieldName, "required"), Boolean.class, defaultField != null ? defaultField.isRequired() : null))
-                    .setEnable(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enabled"), Boolean.class, defaultField != null ? defaultField.isEnabled() : null))
+                    .setEnabled(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enabled"), Boolean.class, defaultField != null ? defaultField.isEnabled() : null))
                     .setVisible(env.getProperty(getFieldPropertyKey(trimmedFieldName, "visible"), Boolean.class, defaultField != null ? defaultField.isVisible() : null))
                     .build();
             fields.add(field);
