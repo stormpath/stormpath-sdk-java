@@ -19,8 +19,4 @@ public class MismatchedPasswordException extends ValidationException {
     public MismatchedPasswordException(Throwable throwable) {
         super(throwable);
     }
-
-    protected MismatchedPasswordException(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
-    }
 }
