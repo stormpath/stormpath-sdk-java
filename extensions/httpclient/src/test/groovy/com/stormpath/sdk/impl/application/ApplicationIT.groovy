@@ -1789,8 +1789,9 @@ class ApplicationIT extends ClientIT {
         def grantResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
 
         String jwt = grantResult.getAccessTokenString();
-        def charToChange = jwt.charAt(jwt.indexOf(".") + 5)
-        String tamperedJwt = jwt.replace(charToChange, (Character) charToChange.equals('X') ? 'Z' : 'X')
+        Character charToChange = jwt.charAt(jwt.indexOf(".") + 5)
+        Character replaceWith = charToChange.equals('X') ? 'Z' : 'X'
+        String tamperedJwt = jwt.replace(charToChange, replaceWith)
 
         OAuthBearerRequestAuthentication authRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(tamperedJwt).build()
 

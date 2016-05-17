@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.organization
 
 import com.stormpath.sdk.organization.Organizations
-import org.junit.Test
+import org.testng.annotations.Test
 
 import static org.testng.Assert.*
 

@@ -368,8 +368,7 @@ class DefaultApplicationTest {
     void testCreateGroupWithNullArgument() {
         def app = new DefaultApplication(createStrictMock(InternalDataStore))
 
-        Group group = null
-        app.createGroup(group)
+        app.createGroup((Group) null)
     }
 
     @Test

@@ -20,10 +20,7 @@ import com.stormpath.sdk.http.HttpRequestBuilder
 import com.stormpath.sdk.http.HttpRequests
 import org.testng.annotations.Test
 
-import static junit.framework.Assert.assertEquals
-import static junit.framework.Assert.assertNotNull
-import static junit.framework.Assert.assertTrue
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
  * Test for the {@link HttpRequestBuilder} class that uses utility methods in {@link HttpRequests} class

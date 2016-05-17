@@ -15,7 +15,9 @@
  */
 package com.stormpath.sdk.lang
 
-import org.junit.Test
+import org.testng.annotations.Test
+
+import static org.testng.Assert.assertTrue
 
 class CollectionsTest {
 
@@ -23,12 +25,12 @@ class CollectionsTest {
     public void testEmptyList() {
 
         def list1 = Collections.toList(null)
-        org.junit.Assert.assertTrue(list1 instanceof List);
-        org.junit.Assert.assertTrue(list1.size() == 0);
+        assertTrue(list1 instanceof List);
+        assertTrue(list1.size() == 0);
 
         def list2 = Collections.toList()
-        org.junit.Assert.assertTrue(list2 instanceof List);
-        org.junit.Assert.assertTrue(list2.size() == 0);
+        assertTrue(list2 instanceof List);
+        assertTrue(list2.size() == 0);
 
     }
 }
