@@ -312,7 +312,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password), confirmPassword(required,password)' }")
     protected String registerFormFields;
 
-    @Value("${stormpath.web.register.autoLogin:false}")
+    @Value("#{ @environment['stormpath.web.register.autoLogin'] ?: false }")
     protected boolean registerAutoLogin;
 
     // ================  Logout Controller properties  ===================
