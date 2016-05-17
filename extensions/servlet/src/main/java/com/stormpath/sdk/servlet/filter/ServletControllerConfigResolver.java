@@ -84,7 +84,7 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
         try {
             return config.getInstance("stormpath.web.locale.resolver");
         } catch (ServletException e) {
-            log.error("Couldn't instantiate the default CsrfTokenManager instance", e);
+            log.error("Couldn't instantiate the default LocaleResolver instance", e);
             return null;
         }
     }
@@ -104,7 +104,7 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
         try {
             return config.getInstance("stormpath.web.request.event.publisher");
         } catch (ServletException e) {
-            log.error("Couldn't instantiate the default CsrfTokenManager instance", e);
+            log.error("Couldn't instantiate the default RequestEventPublisher instance", e);
             return null;
         }
     }
