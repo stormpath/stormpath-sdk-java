@@ -54,8 +54,8 @@ public class DefaultConfig implements Config {
 
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
 
-    public static final String ACCESS_TOKEN_URL = "stormpath.web.accessToken.uri";
-    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.accessToken.validationStrategy";
+    public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
+    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.validationStrategy";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;

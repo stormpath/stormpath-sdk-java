@@ -27,9 +27,9 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
-import com.stormpath.sdk.oauth.Oauth2Requests;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
-import com.stormpath.sdk.oauth.PasswordGrantRequestBuilder;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticationBuilder;
+import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.AccountResolver;
@@ -371,7 +371,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
         AccessTokenResult result;
         try {
-            PasswordGrantRequestBuilder requestBuilder = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+            OAuthPasswordGrantRequestAuthenticationBuilder requestBuilder = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
                     .setPassword(password)
                     .setLogin(username);
 
@@ -381,7 +381,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
                 requestBuilder.setAccountStore(accountStore);
             }
 
-            OauthGrantAuthenticationResult authenticationResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+            OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR
                     .forApplication(getApplication())
                     .authenticate(requestBuilder.build());
 
@@ -408,7 +408,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         publish(e);
     }
 
-    protected AccessTokenResult createAccessTokenResult(final OauthGrantAuthenticationResult result) {
+    protected AccessTokenResult createAccessTokenResult(final OAuthGrantRequestAuthenticationResult result) {
         final TokenResponse tokenResponse =
                 DefaultTokenResponse.tokenType(TokenType.BEARER)
                         .accessToken(result.getAccessTokenString())

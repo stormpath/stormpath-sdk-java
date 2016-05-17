@@ -20,7 +20,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.OauthPolicy;
+import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
 import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
@@ -180,7 +180,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
     }
 
     private int getCookieMaxAge(CookieConfig cookieConfig) {
-        OauthPolicy oauthPolicy = application.getOauthPolicy();
+        OAuthPolicy oauthPolicy = application.getOAuthPolicy();
 
         if (cookieConfig instanceof AccessTokenCookieConfig) {
             return Period.parse(oauthPolicy.getAccessTokenTtl()).toStandardSeconds().getSeconds();
