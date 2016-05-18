@@ -25,8 +25,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -195,7 +193,7 @@ public class RegisterController extends FormController {
 
         for (Field field : form.getFields()) {
             //Field is not part of the default account properties then is a custom field
-            if (DefaultAccount.PROPERTY_DESCRIPTORS.get(field.getName()) == null && !field.getName().equals(csrfTokenManager.getTokenName())) {
+            if (((DefaultAccount) client.instantiate(Account.class)).getPropertyDescriptors().get(field.getName()) == null && !field.getName().equals(csrfTokenManager.getTokenName())) {
                 result.put(field.getName(), field.getValue());
             }
         }

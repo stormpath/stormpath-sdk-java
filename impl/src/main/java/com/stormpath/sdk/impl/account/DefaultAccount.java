@@ -65,7 +65,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
     static final StringProperty USERNAME = new StringProperty("username");
-    public static final StringProperty PASSWORD = new StringProperty("password");
+    static final StringProperty PASSWORD = new StringProperty("password");
     static final StringProperty GIVEN_NAME = new StringProperty("givenName");
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
     static final StringProperty SURNAME = new StringProperty("surname");
@@ -97,7 +97,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<RefreshTokenList, RefreshToken> REFRESH_TOKENS =
             new CollectionReference<RefreshTokenList, RefreshToken>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
 
-    public static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
             PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS);
