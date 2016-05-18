@@ -42,7 +42,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         this.path = configReader.getString(configKeyFor(PATH));
         this.secure = configReader.getBoolean(configKeyFor(SECURE));
         this.httpOnly = configReader.getBoolean(configKeyFor(HTTP_ONLY));
-        this.maxAge = configReader.getInt(configKeyFor(MAX_AGE));
+        this.maxAge = 1;
     }
 
     public AbstractCookieConfig(String name,
