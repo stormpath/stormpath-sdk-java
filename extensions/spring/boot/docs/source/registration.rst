@@ -204,11 +204,11 @@ You can change the value to reflect a different path if you wish.
 Verify Next URI
 ^^^^^^^^^^^^^^^
 
-When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verify.uri`` path, the user will be immediately redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verify.nextUri`` configuration property:
+When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verify.uri`` path, the user will be immediately redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verifyEmail.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.verify.nextUri = /login?status=verified
+    stormpath.web.verifyEmail.nextUri = /login?status=verified
 
 As you can see, this URI has a ``status=verified`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 

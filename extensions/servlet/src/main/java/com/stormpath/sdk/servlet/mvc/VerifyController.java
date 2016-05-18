@@ -59,9 +59,11 @@ public class VerifyController extends FormController {
     private AccountStoreResolver accountStoreResolver;
     private boolean autoLogin;
     private AccountModelFactory accountModelFactory;
+    private ErrorMapModelFactory errorMap;
 
     public void init() {
         this.accountModelFactory = new DefaultAccountModelFactory();
+        this.errorMap = new DefaultErrorMapModelFactory();
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
@@ -146,12 +148,7 @@ public class VerifyController extends FormController {
         }
         catch (ResourceException re) {
             if (UserAgents.get(request).isJsonPreferred()) {
-                Map<String,Object> model = new HashMap<String, Object>();
-                model.put("status", re.getStatus());
-                model.put("message", re.getMessage());
-                model.put("code", re.getCode());
-                model.put("developerMessage", re.getDeveloperMessage());
-                model.put("moreInfo", re.getMoreInfo());
+                Map<String,Object> model = errorMap.toErrorMap(re.getStormpathError());
                 return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
             }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
@@ -279,6 +276,10 @@ public class VerifyController extends FormController {
             //404 == resource does not exist.  Do not let the user know that the account does not
             //exist, otherwise we open up to phishing attacks
             if (e.getCode() != 404) {
+                if (UserAgents.get(request).isJsonPreferred()) {
+                    Map<String,Object> model = errorMap.toErrorMap(e.getStormpathError());
+                    return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+                }
                 throw e;
             }
             //otherwise don't do anything

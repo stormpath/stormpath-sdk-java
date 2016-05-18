@@ -15,10 +15,10 @@ class ResourcePropertiesSourceTest {
     @Test
     void testGetProperties() {
 
-        def testStr = "stormpath.web.verify.nextUri=/login?status=verified"
+        def testStr = "stormpath.web.verifyEmail.nextUri=/login?status=verified"
         def properties = new ResourcePropertiesSource(new TestStringResource(testStr)).properties
 
-        assertEquals properties.get("stormpath.web.verify.nextUri"), "/login?status=verified"
+        assertEquals properties.get("stormpath.web.verifyEmail.nextUri"), "/login?status=verified"
     }
 
     @Test

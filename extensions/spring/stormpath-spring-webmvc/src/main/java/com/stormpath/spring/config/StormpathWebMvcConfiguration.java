@@ -193,6 +193,9 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
                 return registerNextUri;
             }
 
+            /**
+             * @since 1.0.0
+             */
             @Override
             public boolean getRegisterAutoLogin() {
                 return registerAutoLogin;
