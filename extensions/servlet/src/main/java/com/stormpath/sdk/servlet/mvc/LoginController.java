@@ -20,7 +20,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -30,7 +30,11 @@ import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @since 1.0.RC4
@@ -52,24 +56,17 @@ public class LoginController extends FormController {
         super();
     }
 
-    public LoginController(ControllerConfigResolver controllerConfigResolver,
-                           String forgotLoginUri,
-                           String verifyUri,
-                           String registerUri,
-                           String logoutUri,
-                           boolean verifyEnabled,
-                           Saver<AuthenticationResult> authenticationResultSaver,
-                           ErrorModelFactory errorModelFactory) {
-        super(controllerConfigResolver);
+    public LoginController(Config config, ErrorModelFactory errorModelFactory) {
+        super(config.getLoginControllerConfig());
 
-        this.forgotLoginUri = forgotLoginUri;
-        this.verifyUri = verifyUri;
-        this.registerUri = registerUri;
-        this.logoutUri = logoutUri;
-        this.verifyEnabled = verifyEnabled;
-        this.authenticationResultSaver = authenticationResultSaver;
+        this.forgotLoginUri = config.getForgotPasswordControllerConfig().getUri();
+        this.verifyUri = config.getVerifyControllerConfig().getUri();
+        this.registerUri = config.getRegisterControllerConfig().getUri();
+        this.logoutUri = config.getLogoutControllerConfig().getUri();
+        this.verifyEnabled = config.getVerifyControllerConfig().isEnabled();
+        this.authenticationResultSaver = config.getAuthenticationResultSaver();
         this.errorModelFactory = errorModelFactory;
-        this.formFields = controllerConfigResolver.getFormFields();
+        this.formFields = config.getLoginControllerConfig().getFormFields();
 
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
@@ -85,11 +82,6 @@ public class LoginController extends FormController {
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
         Assert.notNull(this.verifyEnabled, "verifyEnabled property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
-        Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
-        Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
-        Assert.notNull(this.formFields, "loginFormFields cannot be null.");
-        Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
-        Assert.notNull(this.loginFormStatusResolver, "loginFormStatusResolver cannot be null.");
     }
 
     @Override

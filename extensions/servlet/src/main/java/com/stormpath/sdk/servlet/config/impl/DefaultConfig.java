@@ -25,11 +25,17 @@ import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 1.0.RC3
@@ -132,8 +138,21 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public Saver<AuthenticationResult> getAuthenticationResultSaver() throws ServletException {
-        return getInstance("stormpath.web.authc.saver");
+    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+        try {
+            return getInstance("stormpath.web.authc.saver");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default authentication result saver", e);
+        }
+    }
+
+    @Override
+    public AccountStoreResolver getAccountStoreResolver() {
+        try {
+            return getInstance("stormpath.web.accountStoreResolver");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate " + AccountStoreResolver.class.getName(), e);
+        }
     }
 
     @Override
@@ -205,7 +224,7 @@ public class DefaultConfig implements Config {
 
         if (!expectedType.isInstance(instance)) {
             String msg = "Configured " + classPropertyName + " class name must be an instance of " +
-                         expectedType.getName();
+                    expectedType.getName();
             throw new ServletException(msg);
         }
 
@@ -214,12 +233,12 @@ public class DefaultConfig implements Config {
 
     @Override
     public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException {
-        Map<String,Class<T>> classes =
-            new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
+        Map<String, Class<T>> classes =
+                new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
-        Map<String,T> instances = new LinkedHashMap<String, T>(classes.size());
+        Map<String, T> instances = new LinkedHashMap<String, T>(classes.size());
 
-        for(Map.Entry<String,Class<T>> entry : classes.entrySet()) {
+        for (Map.Entry<String, Class<T>> entry : classes.entrySet()) {
 
             String name = entry.getKey();
 
@@ -254,7 +273,7 @@ public class DefaultConfig implements Config {
             instance = Classes.newInstance(val);
         } catch (Exception e) {
             String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                         val + ": " + e.getMessage();
+                    val + ": " + e.getMessage();
             throw new ServletException(msg, e);
         }
 
@@ -263,14 +282,14 @@ public class DefaultConfig implements Config {
                 ((ServletContextInitializable) instance).init(this.servletContext);
             } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                             val + ": " + e.getMessage();
+                        val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }
 
         try {
             if (instance instanceof Factory) {
-                instance = ((Factory<T>)instance).getInstance();
+                instance = ((Factory<T>) instance).getInstance();
             }
         } catch (Exception e) {
             String msg = "Unable to obtain factory instance from factory " + instance + ": " + e.getMessage();

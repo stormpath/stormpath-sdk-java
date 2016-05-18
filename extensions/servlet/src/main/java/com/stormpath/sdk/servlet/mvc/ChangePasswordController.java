@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -27,7 +27,11 @@ import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @since 1.0.RC4
@@ -40,16 +44,13 @@ public class ChangePasswordController extends FormController {
         super();
     }
 
-    public ChangePasswordController(ControllerConfigResolver controllerConfigResolver,
-                                    String forgotPasswordUri,
-                                    String loginUri) {
-        super(controllerConfigResolver);
-        this.forgotPasswordUri = forgotPasswordUri;
-        this.loginUri = loginUri;
+    public ChangePasswordController(Config config) {
+        super(config.getChangePasswordControllerConfig());
+        this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
+        this.loginUri = config.getLoginControllerConfig().getUri();
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        Assert.notNull(localeResolver, "localeResolver cannot be null.");
     }
 
     @Override

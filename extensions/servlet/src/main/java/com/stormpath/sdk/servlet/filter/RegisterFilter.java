@@ -15,15 +15,12 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
-import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 
@@ -37,24 +34,13 @@ import java.util.List;
 public class RegisterFilter extends ControllerFilter {
 
     private static final String FIELDS = "stormpath.web.register.form.fields";
-    private static final String ACCOUNT_SAVER_PROP = "stormpath.web.authc.saver";
     private static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 
     @Override
     protected void onInit() throws ServletException {
-        Client client = getClient();
-        Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance(ACCOUNT_SAVER_PROP);
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
 
-        RegisterController controller = new RegisterController(
-                getConfig().getRegisterControllerConfig(),
-                client,
-                eventPublisher,
-                toDefaultFields(createFields()),
-                authenticationResultSaver,
-                getConfig().getLoginControllerConfig().getUri(),
-                getConfig().getVerifyControllerConfig().getView()
-        );
+        RegisterController controller = new RegisterController(getConfig(), getClient(), eventPublisher, toDefaultFields(createFields()));
 
         setController(controller);
 

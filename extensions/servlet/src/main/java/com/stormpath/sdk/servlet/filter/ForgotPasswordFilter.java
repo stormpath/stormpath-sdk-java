@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 
 import javax.servlet.ServletException;
@@ -26,17 +25,9 @@ import javax.servlet.ServletException;
  */
 public class ForgotPasswordFilter extends ControllerFilter {
 
-    private static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
-
     @Override
     protected void onInit() throws ServletException {
-        AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
-
-        ForgotPasswordController controller = new ForgotPasswordController(
-                getConfig().getForgotPasswordControllerConfig(),
-                getConfig().getLoginControllerConfig().getUri(),
-                accountStoreResolver
-        );
+        ForgotPasswordController controller = new ForgotPasswordController(getConfig());
 
         setController(controller);
 
