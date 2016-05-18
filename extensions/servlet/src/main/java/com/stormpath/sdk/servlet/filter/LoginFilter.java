@@ -15,9 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
@@ -29,22 +27,13 @@ import javax.servlet.ServletException;
  */
 public class LoginFilter extends ControllerFilter {
 
-    public static final String AUTHENTICATION_RESULT_SAVER = "stormpath.web.authc.saver";
     public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
 
     @Override
     protected void onInit() throws ServletException {
-        Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance(AUTHENTICATION_RESULT_SAVER);
         MessageSource messageSource = getConfig().getInstance(MESSAGE_SOURCE);
 
-        LoginController controller = new LoginController(
-                getConfig().getLoginControllerConfig(),
-                getConfig().getVerifyControllerConfig(),
-                getConfig().getForgotPasswordControllerConfig().getUri(),
-                getConfig().getRegisterControllerConfig().getUri(),
-                getConfig().getLogoutControllerConfig().getUri(),
-                authenticationResultSaver,
-                new LoginErrorModelFactory(messageSource));
+        LoginController controller = new LoginController(getConfig(), new LoginErrorModelFactory(messageSource));
 
         setController(controller);
 

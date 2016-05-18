@@ -25,6 +25,7 @@ import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -139,8 +140,21 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public Saver<AuthenticationResult> getAuthenticationResultSaver() throws ServletException {
-        return getInstance("stormpath.web.authc.saver");
+    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+        try {
+            return getInstance("stormpath.web.authc.saver");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default authentication result saver", e);
+        }
+    }
+
+    @Override
+    public AccountStoreResolver getAccountStoreResolver() {
+        try {
+            return getInstance("stormpath.web.accountStoreResolver");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate " + AccountStoreResolver.class.getName(), e);
+        }
     }
 
     @Override

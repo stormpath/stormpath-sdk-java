@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -42,12 +42,10 @@ public class ChangePasswordController extends FormController {
         super();
     }
 
-    public ChangePasswordController(ControllerConfigResolver controllerConfigResolver,
-                                    String forgotPasswordUri,
-                                    String loginUri) {
-        super(controllerConfigResolver);
-        this.forgotPasswordUri = forgotPasswordUri;
-        this.loginUri = loginUri;
+    public ChangePasswordController(Config config) {
+        super(config.getChangePasswordControllerConfig());
+        this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
+        this.loginUri = config.getLoginControllerConfig().getUri();
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");

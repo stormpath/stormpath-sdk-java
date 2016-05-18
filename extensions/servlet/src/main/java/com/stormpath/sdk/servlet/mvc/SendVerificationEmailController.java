@@ -21,7 +21,7 @@ import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -49,13 +49,11 @@ public class SendVerificationEmailController extends FormController {
         super();
     }
 
-    public SendVerificationEmailController(ControllerConfigResolver controllerConfigResolver,
-                                           String loginUri,
-                                           AccountStoreResolver accountStoreResolver) {
-        super(controllerConfigResolver);
+    public SendVerificationEmailController(Config confing) {
+        super(confing.getSendVerificationEmailControllerConfig());
 
-        this.loginUri = loginUri;
-        this.accountStoreResolver = accountStoreResolver;
+        this.loginUri = confing.getLoginControllerConfig().getUri();
+        this.accountStoreResolver = confing.getAccountStoreResolver();
 
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");

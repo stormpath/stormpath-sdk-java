@@ -23,6 +23,7 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
@@ -48,7 +49,6 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
@@ -70,7 +70,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.*;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -469,6 +474,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathLogoutController")
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathInternalConfig")
+    public Config stormpathInternalConfig() {
+        return super.stormpathInternalConfig();
     }
 
     @Bean

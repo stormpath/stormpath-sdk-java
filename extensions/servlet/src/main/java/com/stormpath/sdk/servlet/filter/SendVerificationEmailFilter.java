@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 
 import javax.servlet.ServletException;
@@ -26,17 +25,9 @@ import javax.servlet.ServletException;
  */
 public class SendVerificationEmailFilter extends ControllerFilter {
 
-    private static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
-
     @Override
     protected void onInit() throws ServletException {
-        AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
-
-        SendVerificationEmailController controller = new SendVerificationEmailController(
-                getConfig().getSendVerificationEmailControllerConfig(),
-                getConfig().getLoginControllerConfig().getUri(),
-                accountStoreResolver
-        );
+        SendVerificationEmailController controller = new SendVerificationEmailController(getConfig());
 
         setController(controller);
 

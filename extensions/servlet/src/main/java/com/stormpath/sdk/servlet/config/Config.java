@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -42,7 +43,9 @@ public interface Config extends Map<String, String> {
 
     ControllerConfigResolver getChangePasswordControllerConfig();
 
-    Saver<AuthenticationResult> getAuthenticationResultSaver() throws ServletException;
+    Saver<AuthenticationResult> getAuthenticationResultSaver();
+
+    AccountStoreResolver getAccountStoreResolver();
 
     boolean isRegisterAutoLoginEnabled();
 

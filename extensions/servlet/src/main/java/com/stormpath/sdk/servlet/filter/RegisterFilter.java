@@ -15,7 +15,13 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.form.DefaultField;
+import com.stormpath.sdk.servlet.form.Field;
+import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 
 import javax.servlet.ServletException;
@@ -25,16 +31,12 @@ import javax.servlet.ServletException;
  */
 public class RegisterFilter extends ControllerFilter {
 
+
+
     @Override
     protected void onInit() throws ServletException {
-        RegisterController controller = new RegisterController(
-                getConfig().getRegisterControllerConfig(),
-                getClient(),
-                getConfig().getAuthenticationResultSaver(),
-                getConfig().getLoginControllerConfig().getUri(),
-                getConfig().getVerifyControllerConfig().getView(),
-                getConfig().isRegisterAutoLoginEnabled()
-        );
+
+        RegisterController controller = new RegisterController(getConfig(), getClient());
 
         setController(controller);
 

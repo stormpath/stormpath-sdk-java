@@ -27,11 +27,7 @@ public class ChangePasswordFilter extends ControllerFilter {
 
     @Override
     protected void onInit() throws ServletException {
-        ChangePasswordController controller = new ChangePasswordController(
-                getConfig().getChangePasswordControllerConfig(),
-                getConfig().getForgotPasswordControllerConfig().getUri(),
-                getConfig().getLoginControllerConfig().getUri()
-        );
+        ChangePasswordController controller = new ChangePasswordController(getConfig());
 
         setController(controller);
 

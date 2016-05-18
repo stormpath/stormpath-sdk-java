@@ -24,7 +24,9 @@ import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -64,25 +66,19 @@ public class RegisterController extends FormController {
         super();
     }
 
-    public RegisterController(ControllerConfigResolver controllerConfigResolver,
-                              Client client,
-                              Saver<AuthenticationResult> authenticationResultSaver,
-                              String loginUri,
-                              String verifyViewName,
-                              boolean autoLogin) {
-        super(controllerConfigResolver);
+    public RegisterController(Config config, Client client) {
+        super(config.getRegisterControllerConfig());
 
         this.client = client;
-        this.authenticationResultSaver = authenticationResultSaver;
-        this.loginUri = loginUri;
-        this.verifyViewName = verifyViewName;
-        this.autoLogin = autoLogin;
+        this.authenticationResultSaver = config.getAuthenticationResultSaver();
+        this.loginUri = config.getLoginControllerConfig().getUri();
+        this.verifyViewName = config.getVerifyControllerConfig().getView();
+        this.autoLogin = config.isRegisterAutoLoginEnabled();
 
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
         this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
 
-        Assert.notEmpty(this.formFields, "formFields cannot be null or empty.");
         Assert.notNull(this.client, "client cannot be null.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver cannot be null.");
         Assert.hasText(this.loginUri, "loginUri cannot be null or empty.");

@@ -120,7 +120,7 @@ public class ServletControllerConfigResolver implements ControllerConfigResolver
                     .setLabel(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".label"))
                     .setPlaceholder(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".placeholder"))
                     .setRequired(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".required")))
-                    .setEnable(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".enabled")))
+                    .setEnabled(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".enabled")))
                     .setVisible(Boolean.parseBoolean(config.get("stormpath.web." + controllerKey + ".form.fields." + fieldName + ".visible")))
                     .build();
 

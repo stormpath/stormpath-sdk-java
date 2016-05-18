@@ -19,7 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -47,13 +47,11 @@ public class ForgotPasswordController extends FormController {
         super();
     }
 
-    public ForgotPasswordController(ControllerConfigResolver controllerConfigResolver,
-                                    String loginUri,
-                                    AccountStoreResolver accountStoreResolver) {
-        super(controllerConfigResolver);
+    public ForgotPasswordController(Config config) {
+        super(config.getForgotPasswordControllerConfig());
 
-        this.loginUri = loginUri;
-        this.accountStoreResolver = accountStoreResolver;
+        this.loginUri = config.getLoginControllerConfig().getUri();
+        this.accountStoreResolver = config.getAccountStoreResolver();
 
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");

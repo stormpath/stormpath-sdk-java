@@ -6,7 +6,7 @@ import com.stormpath.sdk.servlet.mvc.MeController;
 import javax.servlet.ServletException;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class MeFilter extends ControllerFilter {
 
