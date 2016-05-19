@@ -189,6 +189,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         // autowire this bean
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
+        http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
         if (loginEnabled) {
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
