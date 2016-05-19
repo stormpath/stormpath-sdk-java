@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.ServletException;
+import java.util.List;
 import java.util.Map;
 
 /**

@@ -1382,6 +1382,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
+            public String getProducesMediaTypes() {
+                return produces;
+            }
+
+            @Override
             public <T> T getInstance(String classPropertyName) throws ServletException {
                 if (MessageTag.LOCALE_RESOLVER_CONFIG_KEY.equals(classPropertyName)) {
                     return (T) localeResolver;
@@ -1398,11 +1403,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType)
                     throws ServletException {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public List<String> getProducedMediaTypes() {
-                return produces;
             }
 
             @Override
