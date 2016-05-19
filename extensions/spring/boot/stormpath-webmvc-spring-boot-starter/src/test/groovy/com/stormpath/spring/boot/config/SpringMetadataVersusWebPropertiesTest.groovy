@@ -8,7 +8,8 @@ import com.stormpath.sdk.impl.io.Resource
 import com.stormpath.sdk.impl.io.ResourceFactory
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import static org.testng.Assert.*
+
+import static org.testng.Assert.assertEquals
 
 /**
  * A test that compares the properties in web.stormpath.properties
@@ -47,16 +48,14 @@ class SpringMetadataVersusWebPropertiesTest {
             defaultProperties.containsKey(it) ? null : it
         }
 
-        assertEquals diff.size(), 16, "Missing keys in default config: ${diff}"
-        assertEquals diff.sort().toString(), "[stormpath.application, stormpath.web.account.cookie.secure, stormpath.web.authc.savers.cookie.enabled, " +
+        assertEquals diff.size(), 15, "Missing keys in default config: ${diff}"
+        assertEquals diff.sort().toString(), "[stormpath.application, stormpath.web.authc.savers.cookie.enabled, " +
                 "stormpath.web.authc.savers.session.enabled, stormpath.web.handlerMapping.order, stormpath.web.head.cssUris, stormpath.web.head.extraCssUris, " +
                 "stormpath.web.head.fragmentSelector, stormpath.web.head.view, stormpath.web.oauth2.origin.authorizer.originUris, " +
                 "stormpath.web.stormpathFilter.dispatcherTypes, stormpath.web.stormpathFilter.enabled, stormpath.web.stormpathFilter.matchAfter, " +
                 "stormpath.web.stormpathFilter.order, stormpath.web.stormpathFilter.servletNames, stormpath.web.stormpathFilter.urlPatterns]"
         /*println "Keys in metadata that aren't in web.stormpath.properties: " + diff.size()
-        diff.each {
-            println it
-        }*/
+        */
     }
 
     @Test
