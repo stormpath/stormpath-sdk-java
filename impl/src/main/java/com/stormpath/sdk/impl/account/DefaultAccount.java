@@ -65,7 +65,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
     static final StringProperty USERNAME = new StringProperty("username");
-    static final StringProperty PASSWORD = new StringProperty("password");
+    public static final StringProperty PASSWORD = new StringProperty("password");
     static final StringProperty GIVEN_NAME = new StringProperty("givenName");
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
     static final StringProperty SURNAME = new StringProperty("surname");
