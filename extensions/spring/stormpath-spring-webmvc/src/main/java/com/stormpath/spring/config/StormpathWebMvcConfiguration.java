@@ -121,10 +121,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return bean;
     }
 
+    /** @since 1.0.0 */
     @Bean
     @Override
-    public List<MediaType> stormpathProducedMediaTypes() {
-        return super.stormpathProducedMediaTypes();
+    public List<MediaType> stormpathProducesMediaTypes() {
+        return super.stormpathProducesMediaTypes();
     }
 
     @Bean
@@ -334,12 +335,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
-    }
-
-    @Bean
-    @Override
-    public Controller stormpathSpaController() {
-        return super.stormpathSpaController();
     }
 
     @Bean

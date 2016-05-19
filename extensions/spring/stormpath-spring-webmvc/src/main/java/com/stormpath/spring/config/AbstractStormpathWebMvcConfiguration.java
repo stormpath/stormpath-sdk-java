@@ -158,7 +158,6 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -380,16 +379,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.me.expand.groups'] ?: true }")
     protected boolean meExpandGroups;
 
-    // ================  SPA Support properties  ===================
-
-    @Value("#{ @environment['stormpath.web.spa.enabled'] ?: false }")
-    protected boolean spaEnabled;
-
-    @Value("#{ @environment['stormpath.web.spa.uri'] ?: '/index.html' }")
-    protected String spaUri;
+    // ================  Content negotiation support properties  ===================
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
-    protected List<String> produces;
+    protected String produces;
 
     @Value("${stormpath.web.social.google.uri:/callbacks/google}")
     protected String googleCallbackUri;
@@ -413,9 +406,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     //JSON view resolver has a slightly higher precedence to ensure that JSON is rendered and not a Thymeleaf template.
     @Value("#{ @environment['stormpath.web.json.view.resolver.order'] ?: T(org.springframework.core.Ordered).LOWEST_PRECEDENCE - 10 }")
     protected int jsonViewResolverOrder;
-
-    @Value("#{ @environment['stormpath.web.produces'] ?: 'text/html, application/json' }")
-    protected String producedMediaTypeNames;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -577,10 +567,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return interceptor;
     }
 
+    /** @since 1.0.0 */
+    public List<MediaType> stormpathProducesMediaTypes() {
 
-    public List<MediaType> stormpathProducedMediaTypes() {
-
-        String mediaTypes = Strings.clean(producedMediaTypeNames);
+        String mediaTypes = Strings.clean(produces);
         Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
 
         try {
@@ -891,22 +881,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
-    protected String createForwardView(String uri) {
-        Assert.hasText("uri cannot be null or empty.");
-        assert uri != null;
-        if (!uri.startsWith("forward:")) {
-            uri = "forward:" + uri;
-        }
-        return uri;
-    }
-
-    public Controller stormpathSpaController() {
-        final String view = createForwardView(spaUri);
-        ParameterizableViewController controller = new ParameterizableViewController();
-        controller.setViewName(view);
-        return controller;
-    }
-
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
         return new DefaultAccountStoreModelFactory();
     }
@@ -954,8 +928,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         Controller c = createSpringController(controller);
 
-        if (spaEnabled) { //wrap it in a controller that will serve the spa root as necessary:
-            c = new SpringSpaController(c, stormpathSpaController(), jsonView, stormpathProducedMediaTypes());
+        if (produces.contains(MediaType.APPLICATION_JSON.toString())) {
+            c = new SpringSpaController(c, jsonView, stormpathProducesMediaTypes());
         }
 
         return c;

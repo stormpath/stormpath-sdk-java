@@ -117,11 +117,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathLayoutInterceptor();
     }
 
+    /** @since 1.0.0 */
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathProducedMediaTypes")
+    @ConditionalOnMissingBean(name="stormpathProducesMediaTypes")
     @Override
-    public List<MediaType> stormpathProducedMediaTypes() {
-        return super.stormpathProducedMediaTypes();
+    public List<MediaType> stormpathProducesMediaTypes() {
+        return super.stormpathProducesMediaTypes();
     }
 
     @Bean
@@ -354,12 +355,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathLoginController();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathSpaController")
-    @Override
-    public Controller stormpathSpaController() {
-        return super.stormpathSpaController();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean(name="stormpathSpaController")
+//    @Override
+//    public Controller stormpathSpaController() {
+//        return super.stormpathSpaController();
+//    }
 
     @Bean
     @ConditionalOnMissingBean
