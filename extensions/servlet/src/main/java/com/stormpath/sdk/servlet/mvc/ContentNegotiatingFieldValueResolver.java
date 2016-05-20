@@ -12,6 +12,9 @@ public class ContentNegotiatingFieldValueResolver implements RequestFieldValueRe
     private final RequestFieldValueResolver JSON_BODY_RESOLVER = new JacksonFieldValueResolver();
     private final RequestFieldValueResolver REQ_PARAM_RESOLVER = new RequestParameterFieldValueResolver();
 
+    // ToDO: Les' architecture session
+    // binder implementation will use this
+
     @Override
     public String getValue(HttpServletRequest request, String fieldName) {
 

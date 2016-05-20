@@ -45,6 +45,21 @@ public abstract class FormController extends AbstractController {
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.csrfTokenManager, "csrfTokenManager cannot be null.");
         Assert.notNull(this.fieldValueResolver, "fieldValueResolver cannot be null.");
+
+        // ToDO: Les' architecture session
+        // make sure to keep config agnostic
+        // 0) inject a properties object (that can come from servlet or spring)
+        // 1) instantiate a new form factory,
+        //      pass in the properties object + view name and spits our a Form object
+        //      FormFactory interface
+        //          Form createForm(String view, Properties props)
+        // 2) given a constructed form object and a given request, we need to apply the
+        // request data to the form
+        //      FormBinder interface
+        //          Form bind(Form form, HttpServletRequest req)
+        // 3) take the fully constructed form with the applied values, hand it off to child
+        // controller to process populated form
+        //
     }
 
     public String getView() {
@@ -231,7 +246,18 @@ public abstract class FormController extends AbstractController {
                 if (value == null) {
                     //TODO: i18n
                     throw new IllegalArgumentException(Strings.capitalize(field.getName()) + " is required.");
+
+                    // parent should call child.doValidate (parent validate is final so it can't be overriden)
+                    // add to Field interface: getQualifiedName to return property name
+                    // then key is: field.getQualifiedName() + ".required"
+
+//                    String key = "stormpath.web.change.form.fields." + field.getName() + ".required";
+//                    String msg = i18n(request, key);
+//                    throw new IllegalArgumentException(msg);
+
                 }
+
+
             }
         }
     }

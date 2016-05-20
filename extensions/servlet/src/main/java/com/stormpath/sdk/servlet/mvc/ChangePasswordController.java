@@ -211,6 +211,10 @@ public class ChangePasswordController extends FormController {
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
 
+        // ToDO: Les' architecture session
+        // rename to doValidate (called from parent)
+        // below goes away ...
+
         //validate CSRF
         validateCsrfToken(request, response, form);
 
@@ -226,6 +230,8 @@ public class ChangePasswordController extends FormController {
                 }
             }
         }
+
+        /// ... to here
 
         //ensure fields match:
         String password = form.getFieldValue("password");
