@@ -1201,6 +1201,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setAutoLogin(registerAutoLogin);
         controller.setClient(client);
         controller.setEventPublisher(stormpathRequestEventPublisher());
+        controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        controller.setLocaleResolver(stormpathLocaleResolver());
+        controller.setMessageSource(stormpathMessageSource());
         controller.init();
 
         return createSpaAwareSpringController(controller);
