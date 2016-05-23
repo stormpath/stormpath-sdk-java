@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.config.impl;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -56,10 +56,10 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_COOKIE_HTTP_ONLY = "stormpath.web.account.cookie.httpOnly";
     public static final String ACCOUNT_JWT_TTL = "stormpath.web.account.jwt.ttl";
 
+    public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
+
     public static final String ME_ENABLED = "stormpath.web.me.enabled";
     public static final String ME_URL = "stormpath.web.me.uri";
-
-    public static final String PRODUCED_MEDIA_TYPES = "stormpath.web.produces";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -270,9 +270,10 @@ public class DefaultConfig implements Config {
         return instances;
     }
 
+    /** @since 1.0.0 */
     @Override
-    public List<String> getProducedMediaTypes() {
-        return CFG.getList(PRODUCED_MEDIA_TYPES);
+    public String getProducesMediaTypes() {
+        return Strings.clean(CFG.getString(PRODUCES_MEDIA_TYPES));
     }
 
     @SuppressWarnings("unchecked")
