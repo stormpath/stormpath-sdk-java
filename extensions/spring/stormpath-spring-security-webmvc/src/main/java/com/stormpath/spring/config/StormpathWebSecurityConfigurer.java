@@ -99,10 +99,10 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.forgot.uri'] ?: '/forgot' }")
     protected String forgotUri;
 
-    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changeEnabled;
 
-    @Value("#{ @environment['stormpath.web.change.uri'] ?: '/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.uri'] ?: '/change' }")
     protected String changeUri;
 
     @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")

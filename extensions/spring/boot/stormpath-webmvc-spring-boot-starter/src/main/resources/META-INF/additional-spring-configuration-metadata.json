@@ -28,7 +28,7 @@
       "name": "stormpath.web.logout"
     },
     {
-      "name": "stormpath.web.change"
+      "name": "stormpath.web.changePassword"
     },
     {
       "name": "stormpath.web.accessToken"
@@ -400,25 +400,25 @@
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.change.enabled",
+      "name": "stormpath.web.changePassword.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether or not the Stormpath 'change password' view is enabled.",
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.change.uri",
+      "name": "stormpath.web.changePassword.uri",
       "type": "java.lang.String",
       "description": "The context-relative path to the 'change password' view, where a user can change their password.",
       "defaultValue": "/change"
     },
     {
-      "name": "stormpath.web.change.nextUri",
+      "name": "stormpath.web.changePassword.nextUri",
       "type": "java.lang.String",
       "description": "The context-relative path where the user will be redirected after initiating a 'change password' flow.  The default value is '/login?status=changed'.  The default login view will recognize the query parameter and show the user a nice message explaining that their password has been successfully changed and that they can login now..",
       "defaultValue": "/login?status=changed"
     },
     {
-      "name": "stormpath.web.change.view",
+      "name": "stormpath.web.changePassword.view",
       "type": "java.lang.String",
       "description": "The name of the Spring MVC view that should be rendered when a user changes their password. The default value is 'stormpath/change' which will render a convenient default view provided by the Stormpath starter, but you may specify your own value to provide a custom view.",
       "defaultValue": "stormpath/change"

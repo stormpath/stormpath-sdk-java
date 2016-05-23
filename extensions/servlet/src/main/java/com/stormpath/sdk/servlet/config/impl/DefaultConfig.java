@@ -44,8 +44,8 @@ public class DefaultConfig implements Config {
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgot.uri";
     public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUri";
-    public static final String CHANGE_PASSWORD_URL = "stormpath.web.change.uri";
-    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.change.nextUri";
+    public static final String CHANGE_PASSWORD_URL = "stormpath.web.changePassword.uri";
+    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.changePassword.nextUri";
     public static final String REGISTER_URL = "stormpath.web.register.uri";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
     public static final String VERIFY_URL = "stormpath.web.verify.uri";

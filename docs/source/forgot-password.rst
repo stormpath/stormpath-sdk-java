@@ -106,25 +106,25 @@ Change Password URI
 
 The Password Reset 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the password reset email.  For example, during development, this is often something like ``http://localhost:8080/change`` and in production, something like ``https://myapp.com/change``.
 
-When a user clicks the link in the email, the Stormpath Java Servlet Plugin will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.change.uri`` configuration property:
+When a user clicks the link in the email, the Stormpath Java Servlet Plugin will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.changePassword.uri`` configuration property:
 
 .. code-block:: properties
 
-   stormpath.web.change.uri = /change
+   stormpath.web.changePassword.uri = /change
 
 You can change the value to reflect a different path if you wish.
 
 .. caution::
-   The fully qualified Password Reset Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.change.uri``.  If you change one, you must change the other.
+   The fully qualified Password Reset Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.changePassword.uri``.  If you change one, you must change the other.
 
 Change Password Next URI
 ------------------------
 
-After the user successfully specifies their new password, they will be redirected to a `next` URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.change.nextUri`` configuration property:
+After the user successfully specifies their new password, they will be redirected to a `next` URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.changePassword.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.change.nextUri = /login?status=changed
+    stormpath.web.changePassword.nextUri = /login?status=changed
 
 As you can see, this URI has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their password has been successfully changed and that they can log in:
 

@@ -366,16 +366,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     // ================  Change Password Controller properties  ===================
 
-    @Value("#{ @environment['stormpath.web.change.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changePasswordEnabled;
 
-    @Value("#{ @environment['stormpath.web.change.uri'] ?: '/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.uri'] ?: '/change' }")
     protected String changePasswordUri;
 
-    @Value("#{ @environment['stormpath.web.change.nextUri'] ?: '/login?status=changed' }")
+    @Value("#{ @environment['stormpath.web.changePassword.nextUri'] ?: '/login?status=changed' }")
     protected String changePasswordNextUri;
 
-    @Value("#{ @environment['stormpath.web.change.view'] ?: 'stormpath/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'stormpath/change' }")
     protected String changePasswordView;
 
     // ================  Access Token Controller properties  ===================
