@@ -883,11 +883,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                 Assert.hasText(value, "i18n message key " + I18N_TEST_KEY + " must resolve to a non-empty value.");
                 stormpathI18nAlreadyConfigured = true;
             } catch (NoSuchMessageException e) {
-                log.debug(
-                        "Stormpath i18n properties have not been specified during message source configuration.  " +
-                                "Adding these property values as a fallback. Exception for reference (this and the " +
-                                "stack trace can safely be ignored): " + e.getMessage(), e
-                );
+                log.debug("Stormpath i18n properties have not been specified during message source configuration.  " +
+                          "Adding these property values as a fallback. Exception for reference (this and the " +
+                          "stack trace can safely be ignored): " + e.getMessage(), e);
             }
 
             if (!stormpathI18nAlreadyConfigured) {

@@ -1,9 +1,10 @@
 package com.stormpath.sdk.servlet.config;
 
 /**
- * @since 1.0.RC10
+ * @since 1.0.0
  */
 public interface CookieProperties {
+
     String getCookieName();
 
     String getCookieComment();

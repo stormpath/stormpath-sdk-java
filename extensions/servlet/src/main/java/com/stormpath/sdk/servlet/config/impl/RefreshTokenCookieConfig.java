@@ -3,9 +3,10 @@ package com.stormpath.sdk.servlet.config.impl;
 import com.stormpath.sdk.servlet.config.CookieProperties;
 
 /**
- * @since 1.0.RC10
+ * @since 1.0.0
  */
 public class RefreshTokenCookieConfig extends AbstractCookieConfig {
+
     private static final String CONFIG_PREFIX = "stormpath.web.refreshTokenCookie";
 
     @Override

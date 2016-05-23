@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
- * @since 1.0.RC10
+ * @since 1.0.0
  */
 public abstract class AbstractOAuthTokenResolver implements OAuthTokenResolver {
 

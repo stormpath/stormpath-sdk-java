@@ -9,9 +9,10 @@ import javax.servlet.ServletRequest;
  * an Access Token or Refresh Token that may be associated with the request due to a previous
  * authentication.
  *
- * @since 1.0.RC10
+ * @since 1.0.0
  */
 public interface OAuthTokenResolver {
+
     String REQUEST_ATTR_NAME = AccessTokenResolver.class.getName();
 
     /**

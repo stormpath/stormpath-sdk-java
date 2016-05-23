@@ -5,13 +5,13 @@ import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.CookieProperties;
 
 /**
- * @since 1.0.RC10
+ * @since 1.0.0
  */
 public abstract class AbstractCookieConfig implements CookieConfig {
+
     protected static final String NAME = "name";
     protected static final String COMMENT = "comment";
     protected static final String DOMAIN = "domain";
-    protected static final String MAX_AGE = "maxAge";
     protected static final String PATH = "path";
     protected static final String SECURE = "secure";
     protected static final String HTTP_ONLY = "httpOnly";
@@ -19,7 +19,6 @@ public abstract class AbstractCookieConfig implements CookieConfig {
     protected final String name;
     protected final String comment;
     protected final String domain;
-    protected final int maxAge;
     protected final String path;
     protected final boolean secure;
     protected final boolean httpOnly;
@@ -42,13 +41,11 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         this.path = configReader.getString(configKeyFor(PATH));
         this.secure = configReader.getBoolean(configKeyFor(SECURE));
         this.httpOnly = configReader.getBoolean(configKeyFor(HTTP_ONLY));
-        this.maxAge = 1;
     }
 
     public AbstractCookieConfig(String name,
                                 String comment,
                                 String domain,
-                                int maxAge,
                                 String path,
                                 boolean secure,
                                 boolean httpOnly) {
@@ -56,7 +53,6 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         Assert.hasText(this.name, NAME + " cannot be null or empty.");
         this.comment = comment;
         this.domain = domain;
-        this.maxAge = Math.max(-1, maxAge);
         this.path = path;
         this.secure = secure;
         this.httpOnly = httpOnly;
@@ -66,7 +62,6 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         this(cookieProperties.getCookieName(),
                 cookieProperties.getCookieComment(),
                 cookieProperties.getCookieDomain(),
-                cookieProperties.getCookieMaxAge(),
                 cookieProperties.getCookiePath(),
                 cookieProperties.isCookieSecure(),
                 cookieProperties.isCookieHttpOnly());
@@ -93,7 +88,8 @@ public abstract class AbstractCookieConfig implements CookieConfig {
 
     @Override
     public int getMaxAge() {
-        return maxAge;
+        //This is actually override in CookieAuthenticationResultSaver since the value actually comes from the Application OAuthPolicy
+        return -1;
     }
 
     @Override

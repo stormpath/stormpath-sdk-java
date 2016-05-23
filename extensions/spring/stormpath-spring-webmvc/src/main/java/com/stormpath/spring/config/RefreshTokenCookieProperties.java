@@ -4,9 +4,10 @@ import com.stormpath.sdk.servlet.config.CookieProperties;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * @since 1.0.RC10
+ * @since 1.0.0
  */
 public class RefreshTokenCookieProperties implements CookieProperties {
+
     @Value("#{ @environment['stormpath.web.refreshTokenCookie.name'] ?: 'refresh_token' }")
     protected String cookieName;
 

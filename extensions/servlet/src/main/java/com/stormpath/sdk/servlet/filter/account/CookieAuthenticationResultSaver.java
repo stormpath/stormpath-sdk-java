@@ -42,6 +42,8 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
     private static final Logger log = LoggerFactory.getLogger(CookieAuthenticationResultSaver.class);
 
+    private static final int DEFAULT_COOKIE_MAX_AGE = 259200;
+
     private Resolver<Boolean> secureCookieRequired;
 
     private boolean secureWarned = false;
@@ -188,6 +190,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             return Period.parse(oauthPolicy.getRefreshTokenTtl()).toStandardSeconds().getSeconds();
         }
 
-        return 259200;
+        //We currently only have those 2 cookies but just in case we add a new one we default to the max value a cookie max age supports
+        return DEFAULT_COOKIE_MAX_AGE;
     }
 }

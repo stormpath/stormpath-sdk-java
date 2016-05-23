@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  */
 public class SpringLoginErrorModelFactory implements ErrorModelFactory {
 
