@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
@@ -26,13 +27,19 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultVerifiedAccountRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.DefaultMessageSource;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +47,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC4
@@ -60,6 +64,10 @@ public class VerifyController extends FormController {
     private boolean autoLogin;
     private AccountModelFactory accountModelFactory;
     private ErrorMapModelFactory errorMap;
+    private Saver<AuthenticationResult> authenticationResultSaver;
+    private MessageSource messageSource;
+    private Resolver<Locale> localeResolver;
+
 
     public void init() {
         this.accountModelFactory = new DefaultAccountModelFactory();
@@ -69,6 +77,9 @@ public class VerifyController extends FormController {
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
+        Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
+        Assert.notNull(messageSource, "messageSource cannot be null.");
+        Assert.notNull(localeResolver, "localeResolver cannot be null.");
     }
 
     @Override
@@ -125,6 +136,35 @@ public class VerifyController extends FormController {
         this.eventPublisher = eventPublisher;
     }
 
+    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+        return authenticationResultSaver;
+    }
+
+    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
+        this.authenticationResultSaver = authenticationResultSaver;
+    }
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public Resolver<Locale> getLocaleResolver() {
+        return localeResolver;
+    }
+
+    public void setLocaleResolver(Resolver<Locale> localeResolver) {
+        this.localeResolver = localeResolver;
+    }
+
+    protected String i18n(HttpServletRequest request, String key) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale);
+    }
+
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
 
@@ -134,13 +174,13 @@ public class VerifyController extends FormController {
             if (UserAgents.get(request).isJsonPreferred()) {
                 Map<String,Object> model = new HashMap<String, Object>();
                 model.put("status", 400);
-                model.put("message", "sptoken parameter not provided.");
-                return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+                model.put("message", i18n(request, "stormpath.web.verify.emptyToken.error"));
+                return new DefaultViewModel("stormpathJsonView", model);
             }
             //redirect to send verification email form
             String view = getView();
             Map<String,?> model = createModel(request, response);
-            return new DefaultViewModel(view, model);
+            return new DefaultViewModel(view, model).setRedirect(false);
         }
 
         try {
@@ -149,22 +189,29 @@ public class VerifyController extends FormController {
         catch (ResourceException re) {
             if (UserAgents.get(request).isJsonPreferred()) {
                 Map<String,Object> model = errorMap.toErrorMap(re.getStormpathError());
-                return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+                return new DefaultViewModel("stormpathJsonView", model);
             }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
-            String logoutUri = getLogoutUri();
-            return new DefaultViewModel(logoutUri).setRedirect(true);
+            Map<String,Object> model = newModel();
+            List<String> errors = new ArrayList<String>();
+            errors.add(i18n(request, "stormpath.web.verify.invalidLink.error"));
+            model.put("errors", errors);
+            return new DefaultViewModel(getView(), model).setRedirect(false);
+
         }
         catch (Exception e) {
             if (UserAgents.get(request).isJsonPreferred()) {
                 Map<String,Object> model = new HashMap<String, Object>();
                 model.put("status", 400);
-                model.put("message", "Invalid username or password.");
-                return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+                model.put("message", i18n(request, "stormpath.web.login.form.errors.invalidLogin"));
+                return new DefaultViewModel("stormpathJsonView", model);
             }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
-            String logoutUri = getLogoutUri();
-            return new DefaultViewModel(logoutUri).setRedirect(true);
+            Map<String,Object> model = newModel();
+            List<String> errors = new ArrayList<String>();
+            errors.add(i18n(request, "stormpath.web.verify.invalidLink.error"));
+            model.put("errors", errors);
+            return new DefaultViewModel(getView(), model);
         }
     }
 
@@ -189,16 +236,26 @@ public class VerifyController extends FormController {
                 model.put("status", 200);
                 model.put("message", "OK");
             }
-            return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+            return new DefaultViewModel("stormpathJsonView", model);
         }
+        else {
+            String next = Strings.clean(request.getParameter("next"));
 
-        String next = Strings.clean(request.getParameter("next"));
+            if (!Strings.hasText(next)) {
+                next = getNextUri();
+            }
 
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
+            if (isAutoLogin()) {
+                final AuthenticationResult result = new TransientAuthenticationResult(account);
+                this.authenticationResultSaver.set(request, response, result);
+
+                return new DefaultViewModel(next.concat("?status=verified")).setRedirect(true);
+            }
+            else {
+
+                return new DefaultViewModel(next).setRedirect(true);
+            }
         }
-
-        return new DefaultViewModel(next).setRedirect(true);
     }
 
     protected VerifiedAccountRequestEvent createVerifiedEvent(HttpServletRequest request, HttpServletResponse response,
@@ -278,7 +335,7 @@ public class VerifyController extends FormController {
             if (e.getCode() != 404) {
                 if (UserAgents.get(request).isJsonPreferred()) {
                     Map<String,Object> model = errorMap.toErrorMap(e.getStormpathError());
-                    return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+                    return new DefaultViewModel("stormpathJsonView", model);
                 }
                 throw e;
             }
@@ -289,15 +346,9 @@ public class VerifyController extends FormController {
             Map<String,Object> model = new HashMap<String, Object>();
             model.put("status", 200);
             model.put("message", "OK");
-            return new DefaultViewModel("stormpath/verify", model).setRedirect(false);
+            return new DefaultViewModel("stormpathJsonView", model);
         }
 
-        String next = form.getNext();
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
-        return new DefaultViewModel(next);
+        return new DefaultViewModel("stormpath/verifyComplete");
     }
 }
