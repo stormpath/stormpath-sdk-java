@@ -121,6 +121,9 @@ public class ControllerFilter extends HttpFilter {
         log.debug("Rendering view '{}' for request URI [{}]", vm.getViewName(), request.getRequestURI());
         View view = this.viewResolver.getView(vm, request);
         if (view != null) {
+            if(view instanceof JacksonView) {
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            }
             view.render(request, response, vm);
         }
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);

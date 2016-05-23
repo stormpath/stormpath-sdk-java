@@ -6,16 +6,14 @@ import com.stormpath.sdk.servlet.mvc.MeController;
 import javax.servlet.ServletException;
 
 /**
- * Created by mzumbado on 4/18/16.
+ * @since 1.0.0
  */
 public class MeFilter extends ControllerFilter {
-
 
     @Override
     protected void onInit() throws ServletException {
 
-        MeController controller = new MeController();
-        controller.setExpandGroups(getConfig().getMeExpandGroups());
+        MeController controller = new MeController(getConfig().getMeExpandedProperties());
 
         setController(controller);
 

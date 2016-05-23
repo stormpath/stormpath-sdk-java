@@ -84,8 +84,8 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
 
         //ensure the always-on AccountResolverFilter is available:
         Filter accountFilter = Filters.builder().setServletContext(getServletContext())
-                                      .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
-                                      .setFilterClass(AccountResolverFilter.class).build();
+                .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
+                .setFilterClass(AccountResolverFilter.class).build();
 
         final List<Filter> immediateExecutionFilters = Arrays.asList(accountFilter);
 
@@ -93,31 +93,31 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         //TODO: refactor this method to be more generic
 
         //Ensure handlers are registered:
-        String loginUrl = config.getLoginUrl();
+        String loginUrl = config.getLoginControllerConfig().getUri();
         String loginUrlPattern = cleanUri(loginUrl);
         boolean loginChainSpecified = false;
 
-        String logoutUrl = config.getLogoutUrl();
+        String logoutUrl = config.getLogoutControllerConfig().getUri();
         String logoutUrlPattern = cleanUri(logoutUrl);
         boolean logoutChainSpecified = false;
 
-        String forgotUrl = config.getForgotPasswordUrl();
+        String forgotUrl = config.getForgotPasswordControllerConfig().getUri();
         String forgotUrlPattern = cleanUri(forgotUrl);
         boolean forgotChainSpecified = false;
 
-        String changeUrl = config.getChangePasswordUrl();
+        String changeUrl = config.getChangePasswordControllerConfig().getUri();
         String changeUrlPattern = cleanUri(changeUrl);
         boolean changeChainSpecified = false;
 
-        String registerUrl = config.getRegisterUrl();
+        String registerUrl = config.getRegisterControllerConfig().getUri();
         String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
 
-        String verifyUrl = config.getVerifyUrl();
+        String verifyUrl = config.getVerifyControllerConfig().getUri();
         String verifyUrlPattern = cleanUri(verifyUrl);
         boolean verifyChainSpecified = false;
 
-        String sendVerificationUrl = config.getSendVerificationEmailUrl();
+        String sendVerificationUrl = config.getSendVerificationEmailControllerConfig().getUri();
         String sendVerificationUrlPattern = cleanUri(sendVerificationUrl);
         boolean sendVerificationEmailChainSpecified = false;
 
@@ -133,6 +133,22 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String meUrlPattern = cleanUri(meUrl);
         boolean meChainSpecified = false;
 
+        String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
+        String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
+        boolean googleCallbackChainSpecified = false;
+
+        String githubCallbackUrl = config.get("stormpath.web.social.github.uri");
+        String githubCallbackUrlPattern = cleanUri(githubCallbackUrl);
+        boolean githubCallbackChainSpecified = false;
+
+        String facebookCallbackUrl = config.get("stormpath.web.social.facebook.uri");
+        String facebookCallbackUrlPattern = cleanUri(facebookCallbackUrl);
+        boolean facebookCallbackChainSpecified = false;
+
+        String linkedinCallbackUrl = config.get("stormpath.web.social.linkedin.uri");
+        String linkedinCallbackUrlPattern = cleanUri(linkedinCallbackUrl);
+        boolean linkedinCallbackChainSpecified = false;
+
         //uriPattern-to-chainDefinition:
         Map<String, String> patternChains = new LinkedHashMap<String, String>();
 
@@ -143,7 +159,35 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                 String uriPattern = key.substring(ROUTE_CONFIG_NAME_PREFIX.length());
                 String chainDefinition = config.get(key);
 
-                if (uriPattern.startsWith(loginUrlPattern)) {
+                if (uriPattern.startsWith(linkedinCallbackUrl)) {
+                    linkedinCallbackChainSpecified = true;
+
+                    String filterName = DefaultFilter.linkedinCallback.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(facebookCallbackUrl)) {
+                    facebookCallbackChainSpecified = true;
+
+                    String filterName = DefaultFilter.facebookCallback.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(githubCallbackUrl)) {
+                    githubCallbackChainSpecified = true;
+
+                    String filterName = DefaultFilter.githubCallback.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(googleCallbackUrl)) {
+                    googleCallbackChainSpecified = true;
+
+                    String filterName = DefaultFilter.googleCallback.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(loginUrlPattern)) {
                     loginChainSpecified = true;
 
                     //did they specify the filter as a handler in the chain?  If not, append it:
@@ -151,7 +195,6 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
-
                 } else if (uriPattern.startsWith(logoutUrlPattern)) {
                     logoutChainSpecified = true;
 
@@ -192,12 +235,12 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
-                } else if(uriPattern.startsWith(sendVerificationUrlPattern)) {
+                } else if (uriPattern.startsWith(sendVerificationUrlPattern)) {
                     sendVerificationEmailChainSpecified = true;
 
                     //did they specify the filter as a handler in the chain?  If not, append it:
                     String filterName = DefaultFilter.sendVerificationEmail.name();
-                    if (!chainDefinition.contains(filterName))  {
+                    if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
                 } else if (uriPattern.startsWith(accessTokenUrlPattern)) {
@@ -260,8 +303,21 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
         if (!meChainSpecified) {
-            fcManager.createChain(meUrlPattern, DefaultFilter.me.name());
+            fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
         }
+        if (!googleCallbackChainSpecified) {
+            fcManager.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());
+        }
+        if (!githubCallbackChainSpecified) {
+            fcManager.createChain(githubCallbackUrlPattern, DefaultFilter.githubCallback.name());
+        }
+        if (!facebookCallbackChainSpecified) {
+            fcManager.createChain(facebookCallbackUrlPattern, DefaultFilter.facebookCallback.name());
+        }
+        if (!linkedinCallbackChainSpecified) {
+            fcManager.createChain(linkedinCallbackUrlPattern, DefaultFilter.linkedinCallback.name());
+        }
+
         //register all specified chains:
         for (String pattern : patternChains.keySet()) {
             String chainDefinition = patternChains.get(pattern);

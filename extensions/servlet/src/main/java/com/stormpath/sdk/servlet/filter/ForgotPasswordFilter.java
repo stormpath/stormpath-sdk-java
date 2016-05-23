@@ -15,9 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 
 import javax.servlet.ServletException;
@@ -27,22 +25,9 @@ import javax.servlet.ServletException;
  */
 public class ForgotPasswordFilter extends ControllerFilter {
 
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
-    public static final String ACCOUNT_STORE_RESOLVER = "stormpath.web.accountStoreResolver";
-
     @Override
     protected void onInit() throws ServletException {
-        CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
-        AccountStoreResolver accountStoreResolver = getConfig().getInstance(ACCOUNT_STORE_RESOLVER);
-
-        ForgotPasswordController controller = new ForgotPasswordController();
-        controller.setUri(getConfig().getForgotPasswordUrl());
-        controller.setView("stormpath/forgot");
-        controller.setCsrfTokenManager(csrfTokenManager);
-        controller.setAccountStoreResolver(accountStoreResolver);
-        controller.setNextUri(getConfig().getForgotPasswordNextUrl());
-        controller.setLoginUri(getConfig().getLoginUrl());
-        controller.init();
+        ForgotPasswordController controller = new ForgotPasswordController(getConfig());
 
         setController(controller);
 
