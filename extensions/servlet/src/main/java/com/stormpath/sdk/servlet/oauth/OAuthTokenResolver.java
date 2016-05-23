@@ -5,7 +5,7 @@ import com.stormpath.sdk.servlet.oauth.impl.AccessTokenResolver;
 import javax.servlet.ServletRequest;
 
 /**
- * An OAuthTokenResolver can inspect a {@link javax.servlet.ServletRequest ServletRequest} and return either
+ * An OAuthTokenResolver can inspect a {@link javax.servlet.ServletRequest ServletRequest} attributes and return either
  * an Access Token or Refresh Token that may be associated with the request due to a previous
  * authentication.
  *
