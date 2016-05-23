@@ -25,41 +25,21 @@ import com.stormpath.sdk.servlet.mvc.DefaultFormFieldsParser;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 
 import javax.servlet.ServletException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 1.0.RC3
  */
 public class RegisterFilter extends ControllerFilter {
 
-    private static final String FIELDS = "stormpath.web.register.form.fields";
-    private static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+
 
     @Override
     protected void onInit() throws ServletException {
-        Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
 
-        RegisterController controller = new RegisterController(getConfig(), getClient(), eventPublisher, toDefaultFields(createFields()));
+        RegisterController controller = new RegisterController(getConfig(), getClient());
 
         setController(controller);
 
         super.onInit();
-    }
-
-    protected List<Field> toDefaultFields(List<Field> fields) {
-        List<Field> defaultFields = new ArrayList<Field>(fields.size());
-        for (Field field : fields) {
-            Assert.isInstanceOf(DefaultField.class, field);
-            defaultFields.add(field);
-        }
-
-        return defaultFields;
-    }
-
-    protected List<Field> createFields() {
-        DefaultFormFieldsParser parser = new DefaultFormFieldsParser(FIELDS);
-        String val = getConfig().get(FIELDS);
-        return parser.parse(val);
     }
 }

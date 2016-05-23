@@ -30,12 +30,15 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC3
@@ -55,7 +58,6 @@ public class DefaultConfig implements Config {
 
     public static final String ME_ENABLED = "stormpath.web.me.enabled";
     public static final String ME_URL = "stormpath.web.me.uri";
-    public static final String ME_EXPAND_GROUPS = "stormpath.web.me.expand.groups";
 
     public static final String PRODUCED_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -156,6 +158,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public boolean isRegisterAutoLoginEnabled() {
+        return CFG.getBoolean("stormpath.web.register.autoLogin");
+    }
+
+    @Override
     public boolean isLogoutInvalidateHttpSession() {
         return CFG.getBoolean(LOGOUT_INVALIDATE_HTTP_SESSION);
     }
@@ -181,8 +188,20 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public boolean getMeExpandGroups() {
-        return CFG.getBoolean(ME_EXPAND_GROUPS);
+    public List<String> getMeExpandedProperties() {
+        List<String> results = new ArrayList<String>();
+
+        Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
+
+        for (String key : keySet()) {
+            Matcher matcher = pattern.matcher(key);
+            if (matcher.find()) {
+                if (CFG.getBoolean(key)) {
+                    results.add(matcher.group(1));
+                }
+            }
+        }
+        return results;
     }
 
     @Override

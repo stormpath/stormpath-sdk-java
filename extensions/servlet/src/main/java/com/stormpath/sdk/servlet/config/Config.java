@@ -47,6 +47,8 @@ public interface Config extends Map<String, String> {
 
     AccountStoreResolver getAccountStoreResolver();
 
+    boolean isRegisterAutoLoginEnabled();
+
     /**
      * @since 1.0.RC6
      */
@@ -60,7 +62,7 @@ public interface Config extends Map<String, String> {
 
     String getMeUrl();
 
-    boolean getMeExpandGroups();
+    List<String> getMeExpandedProperties();
 
     CookieConfig getAccountCookieConfig();
 

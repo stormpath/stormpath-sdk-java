@@ -16,7 +16,12 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.*;
+import com.stormpath.sdk.servlet.filter.DefaultFilter;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.Filters;
+import com.stormpath.sdk.servlet.filter.PathMatchingFilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
@@ -298,7 +303,7 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
         if (!meChainSpecified) {
-            fcManager.createChain(meUrlPattern, DefaultFilter.me.name());
+            fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
         }
         if (!googleCallbackChainSpecified) {
             fcManager.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());

@@ -142,6 +142,11 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -165,6 +170,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -172,6 +178,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC4
@@ -307,6 +315,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password), confirmPassword(required,password)' }")
     protected String registerFormFields;
 
+    @Value("#{ @environment['stormpath.web.register.autoLogin'] ?: false }")
+    protected boolean registerAutoLogin;
+
     // ================  Logout Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.logout.invalidateHttpSession'] ?: true }")
@@ -441,6 +452,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired(required = false)
     protected ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    protected Environment environment;
 
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
@@ -1078,12 +1092,17 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             @Override
             public String getMessage(String key, Locale locale) {
-                return springMessageSource.getMessage(key, null, locale);
+                return getMessage(key, locale, new Object[0]);
             }
 
             @Override
             public String getMessage(String key, Locale locale, Object... args) {
-                return springMessageSource.getMessage(key, args, locale);
+                try {
+                    return springMessageSource.getMessage(key, args, locale);
+                } catch (NoSuchMessageException e) {
+                    //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    return '!' + key + '!';
+                }
             }
         };
     }
@@ -1109,12 +1128,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         //otherwise standard registration:
-        RegisterController controller = new RegisterController(
-                stormpathInternalConfig(),
-                client,
-                stormpathRequestEventPublisher(),
-                toDefaultFields(stormpathRegisterFormFields())
-        );
+        RegisterController controller = new RegisterController(stormpathInternalConfig(), client);
 
         return createSpaAwareSpringController(controller);
     }
@@ -1133,8 +1147,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                 stormpathVerifyControllerConfigResolver(),
                 stormpathLogoutControllerConfigResolver().getUri(),
                 stormpathSendVerificationEmailControllerConfigResolver().getUri(),
-                client,
-                stormpathRequestEventPublisher()
+                client
         );
 
         return createSpringController(controller);
@@ -1199,9 +1212,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathMeController() {
-        MeController controller = new MeController();
-        controller.setNextUri(meNextUri);
-        controller.setExpandGroups(meExpandGroups);
+        List<String> results = new ArrayList<String>();
+
+        getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand");
+
+        Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
+
+        for (String key : getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand").keySet()) {
+            Matcher matcher = pattern.matcher(key);
+            if (matcher.find()) {
+                if (environment.getProperty(key, Boolean.class, false)) {
+                    results.add(matcher.group(1));
+                }
+            }
+        }
+
+        MeController controller = new MeController(results);
+
         return createSpaAwareSpringController(controller);
     }
 
@@ -1255,7 +1282,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
-        LogoutController controller = new LogoutController();
+        LogoutController controller = new LogoutController(stormpathLogoutControllerConfigResolver(), logoutInvalidateHttpSession);
 
         if (idSiteEnabled) {
             IdSiteLogoutController c = new IdSiteLogoutController();
@@ -1271,9 +1298,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             c.setSamlResultUri(samlResultUri);
             controller = c;
         }
-
-        controller.setNextUri(stormpathLoginControllerConfigResolver().getNextUri());
-        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
 
         return controller;
     }
@@ -1359,8 +1383,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
-            public boolean getMeExpandGroups() {
-                return meExpandGroups;
+            public boolean isRegisterAutoLoginEnabled() {
+                return registerAutoLogin;
+            }
+
+            @Override
+            public List<String> getMeExpandedProperties() {
+                return java.util.Collections.EMPTY_LIST;
             }
 
             @Override
@@ -1516,5 +1545,62 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
     }
 
+    //The code bellow is taken out of http://stackoverflow.com/questions/23506471/spring-access-all-environment-properties-as-a-map-or-properties-object
+    public static Map<String, Object> getPropertiesStartingWith(ConfigurableEnvironment aEnv, String aKeyPrefix) {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        Map<String, Object> map = getAllProperties(aEnv);
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+
+            if (key.startsWith(aKeyPrefix)) {
+                result.put(key, entry.getValue());
+            }
+        }
+
+        return result;
+    }
+
+    protected static Map<String, Object> getAllProperties(ConfigurableEnvironment aEnv) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        for (PropertySource propertySource : aEnv.getPropertySources()) {
+            addAll(result, getAllProperties(propertySource));
+        }
+        return result;
+    }
+
+    protected static Map<String, Object> getAllProperties(PropertySource<?> aPropSource) {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        if (aPropSource instanceof CompositePropertySource) {
+            CompositePropertySource cps = (CompositePropertySource) aPropSource;
+            for (PropertySource<?> propertySource : cps.getPropertySources()) {
+                addAll(result, getAllProperties(propertySource));
+            }
+            return result;
+        }
+
+        if (aPropSource instanceof EnumerablePropertySource<?>) {
+            EnumerablePropertySource<?> ps = (EnumerablePropertySource<?>) aPropSource;
+            for (String propertyName : ps.getPropertyNames()) {
+                result.put(propertyName, ps.getProperty(propertyName));
+            }
+
+            return result;
+        }
+
+        return result;
+    }
+
+    private static void addAll(Map<String, Object> aBase, Map<String, Object> aToBeAdded) {
+        for (Map.Entry<String, Object> entry : aToBeAdded.entrySet()) {
+            if (aBase.containsKey(entry.getKey())) {
+                continue;
+            }
+
+            aBase.put(entry.getKey(), entry.getValue());
+        }
+    }
 }
 

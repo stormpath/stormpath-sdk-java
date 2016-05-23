@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.form;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @since 1.0.RC3
  */
@@ -56,6 +58,7 @@ public class DefaultField implements Field {
     }
 
     @Override
+    @JsonIgnore
     public String getValue() {
         return value;
     }
@@ -100,6 +103,7 @@ public class DefaultField implements Field {
         this.type = type;
     }
 
+    @JsonIgnore
     public boolean isEnabled() {
         return enabled;
     }
@@ -108,6 +112,7 @@ public class DefaultField implements Field {
         this.enabled = enabled;
     }
 
+    @JsonIgnore
     public boolean isVisible() {
         return visible;
     }

@@ -64,28 +64,10 @@ public class SendVerificationEmailController extends FormController {
         return true;
     }
 
-    protected AccountStoreResolver getAccountStoreResolver() {
-        return accountStoreResolver;
-    }
-
-    public void setAccountStoreResolver(AccountStoreResolver accountStoreResolver) {
-        Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
-        this.accountStoreResolver = accountStoreResolver;
-    }
-
-    public String getLoginUri() {
-        return loginUri;
-    }
-
-    public void setLoginUri(String loginUri) {
-        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        this.loginUri = loginUri;
-    }
-
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("loginUri", getLoginUri());
+        model.put("loginUri", loginUri);
     }
 
     @Override
@@ -131,7 +113,7 @@ public class SendVerificationEmailController extends FormController {
         try {
             //set the form on the request in case the AccountStoreResolver needs to inspect it:
             request.setAttribute("form", form);
-            AccountStore accountStore = getAccountStoreResolver().getAccountStore(request, response);
+            AccountStore accountStore = accountStoreResolver.getAccountStore(request, response);
 
             VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
                     .setLogin(email)
@@ -148,6 +130,6 @@ public class SendVerificationEmailController extends FormController {
             //otherwise don't do anything
         }
 
-        return new DefaultViewModel(getNextUri());
+        return new DefaultViewModel(nextUri);
     }
 }
