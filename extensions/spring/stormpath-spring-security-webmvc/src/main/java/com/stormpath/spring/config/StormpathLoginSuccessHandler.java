@@ -85,6 +85,7 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
     protected void saveAccount(HttpServletRequest request, HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
         Account account = getAccount(authentication);
 
+        //Since we only have the authentication we need to exchange it for an OAuth2 token
         String jwt = Jwts.builder()
                              .setHeaderParam(JwsHeader.KEY_ID, client.getApiKey().getId())
                              .setSubject(account.getHref())
