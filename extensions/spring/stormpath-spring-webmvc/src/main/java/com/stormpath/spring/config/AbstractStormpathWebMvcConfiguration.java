@@ -1401,7 +1401,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
-            public List<String> getProducedMediaTypes() {
+            public String getProducesMediaTypes() {
                 return produces;
             }
 
