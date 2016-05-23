@@ -48,46 +48,46 @@ public abstract class AbstractStormpathConfiguration {
     @Autowired(required = false)
     protected CacheManager cacheManager;
 
-    @Value("#{ @environment['stormpath.baseUrl'] }")
+    @Value("#{ @environment['stormpath.client.baseUrl'] }")
     protected String baseUrl;
 
-    @Value("#{ @environment['stormpath.apiKey.id'] }")
+    @Value("#{ @environment['stormpath.client.apiKey.id'] }")
     protected String apiKeyId;
 
-    @Value("#{ @environment['stormpath.apiKey.secret'] }")
+    @Value("#{ @environment['stormpath.client.apiKey.secret'] }")
     protected String apiKeySecret;
 
-    @Value("#{ @environment['stormpath.apiKey.file'] }")
+    @Value("#{ @environment['stormpath.client.apiKey.file'] }")
     protected Resource apiKeyFile;
 
-    @Value("#{ @environment['stormpath.apiKey.fileIdPropertyName'] }")
+    @Value("#{ @environment['stormpath.client.apiKey.fileIdPropertyName'] }")
     protected String apiKeyFileIdPropertyName;
 
-    @Value("#{ @environment['stormpath.apiKey.fileSecretPropertyName'] }")
+    @Value("#{ @environment['stormpath.client.apiKey.fileSecretPropertyName'] }")
     protected String apiKeyFileSecretPropertyName;
 
     @Value("#{ @environment['stormpath.application.href'] }")
     protected String applicationHref;
 
-    @Value("#{ @environment['stormpath.cache.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.client.cacheManager.enabled'] ?: true }")
     protected boolean cachingEnabled;
 
-    @Value("#{ @environment['stormpath.proxy.host'] }")
+    @Value("#{ @environment['stormpath.client.proxy.host'] }")
     protected String proxyHost;
 
-    @Value("#{ @environment['stormpath.proxy.port'] ?: 80 }")
+    @Value("#{ @environment['stormpath.client.proxy.port'] ?: 80 }")
     protected int proxyPort;
 
-    @Value("#{ @environment['stormpath.proxy.username'] }")
+    @Value("#{ @environment['stormpath.client.proxy.username'] }")
     protected String proxyUsername;
 
-    @Value("#{ @environment['stormpath.proxy.password'] }")
+    @Value("#{ @environment['stormpath.client.proxy.password'] }")
     protected String proxyPassword;
 
-    @Value("#{ @environment['stormpath.connectionTimeout'] ?: 0 }")
+    @Value("#{ @environment['stormpath.client.connectionTimeout'] ?: 0 }")
     protected int connectionTimeout;
 
-    @Value("#{ @environment['stormpath.authentication.scheme'] }")
+    @Value("#{ @environment['stormpath.client.authenticationScheme'] }")
     protected AuthenticationScheme authenticationScheme;
 
     public ApiKey stormpathClientApiKey() {

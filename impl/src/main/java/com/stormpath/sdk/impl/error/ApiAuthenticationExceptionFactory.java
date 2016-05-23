@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.error;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.error.authc.DisabledAccountException;
-import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.ResourceException;
 
@@ -68,7 +68,7 @@ public class ApiAuthenticationExceptionFactory {
         return Classes.instantiate(constructor, error);
     }
 
-    public static ResourceException newOauthException(Class<? extends OauthAuthenticationException> clazz, String oauthError) {
+    public static ResourceException newOAuthException(Class<? extends OAuthAuthenticationException> clazz, String oauthError) {
 
         Error error = DefaultErrorBuilder.status(AUTH_EXCEPTION_STATUS).code(AUTH_EXCEPTION_CODE).moreInfo(MORE_INFO)
                 .developerMessage(oauthError).message(DEFAULT_CLIENT_MESSAGE).build();
@@ -79,7 +79,7 @@ public class ApiAuthenticationExceptionFactory {
     }
 
     private static Constructor<? extends ResourceException> getConstructorFromClass(Class<? extends ResourceException> clazz) {
-        if (OauthAuthenticationException.class.isAssignableFrom(clazz)) {
+        if (OAuthAuthenticationException.class.isAssignableFrom(clazz)) {
             return Classes.getConstructor(clazz, Error.class, String.class);
         }
         return Classes.getConstructor(clazz, Error.class);

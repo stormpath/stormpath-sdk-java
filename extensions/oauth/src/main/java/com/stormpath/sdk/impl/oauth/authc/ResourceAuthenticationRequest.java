@@ -20,7 +20,7 @@ import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.http.ServletHttpRequest;
-import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
+import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.RequestLocation;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
@@ -56,7 +56,7 @@ public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest im
         if (httpRequest instanceof ServletHttpRequest) {
             return ((ServletHttpRequest) httpRequest).getHttpServletRequest();
         } else {
-            return new OauthHttpServletRequest(httpRequest);
+            return new OAuthHttpServletRequest(httpRequest);
         }
     }
 

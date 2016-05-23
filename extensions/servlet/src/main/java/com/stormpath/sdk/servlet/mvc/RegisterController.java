@@ -195,7 +195,7 @@ public class RegisterController extends FormController {
             String key = "stormpath.web.register.form.errors.default";
             String msg = i18n(request, key);
             errors.add(msg);
-            log.warn("Unable to resister user account: " + e.getMessage(), e);
+            log.warn("Unable to resister user account: {}", e.getMessage(), e);
         }
 
         return errors;

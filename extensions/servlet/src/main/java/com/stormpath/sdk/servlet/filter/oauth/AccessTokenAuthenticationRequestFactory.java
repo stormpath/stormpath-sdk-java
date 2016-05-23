@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.oauth.PasswordGrantRequest;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +24,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface AccessTokenAuthenticationRequestFactory {
 
-    PasswordGrantRequest createAccessTokenAuthenticationRequest(HttpServletRequest request)
-        throws OauthException;
+    OAuthPasswordGrantRequestAuthentication createAccessTokenAuthenticationRequest(HttpServletRequest request)
+        throws OAuthException;
 }

@@ -62,7 +62,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
     void setUpOrg() {
         org = client.instantiate(Organization)
         org.name = uniquify("JSDK_OrgIT")
-        org.nameKey = (uniquify("test").substring(2, 8))
+        org.nameKey = uniquify("test")
         org.status = OrganizationStatus.ENABLED
         org.description = uniquify("Test Organization Description")
 

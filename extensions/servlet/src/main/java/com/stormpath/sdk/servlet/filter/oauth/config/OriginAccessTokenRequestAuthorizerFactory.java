@@ -33,8 +33,8 @@ import java.util.Collections;
 public class OriginAccessTokenRequestAuthorizerFactory extends ConfigSingletonFactory<RequestAuthorizer> {
 
     public static final String LOCALHOST_RESOLVER = "stormpath.web.localhost.resolver";
-    public static final String SERVER_URI_RESOLVER = "stormpath.web.accessToken.origin.authorizer.serverUriResolver";
-    public static final String ORIGIN_URIS = "stormpath.web.accessToken.origin.authorizer.originUris";
+    public static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
+    public static final String ORIGIN_URIS = "stormpath.web.oauth2.origin.authorizer.originUris";
 
     @Override
     protected RequestAuthorizer createInstance(ServletContext servletContext) throws Exception {

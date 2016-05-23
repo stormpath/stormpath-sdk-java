@@ -58,7 +58,7 @@ abstract class ClientIT {
             try {
                 r.delete()
             } catch (Throwable t) {
-                log.error('Unable to delete resource ' + r, t)
+                log.error('Unable to delete resource {}', r, t)
             }
         }
     }

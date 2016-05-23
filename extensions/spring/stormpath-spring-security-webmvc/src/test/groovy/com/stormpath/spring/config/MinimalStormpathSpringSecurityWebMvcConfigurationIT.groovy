@@ -23,8 +23,8 @@ import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.Oauth2Requests
-import com.stormpath.sdk.oauth.PasswordGrantRequest
+import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
 import com.stormpath.sdk.servlet.client.ClientLoader
@@ -34,7 +34,7 @@ import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter
+import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.StormpathUserDetails
@@ -96,7 +96,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
     Filter stormpathFilter
 
     @Autowired
-    Oauth2AuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter
+    OAuthAuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter
@@ -187,8 +187,8 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         def httpServletResponse = createStrictMock(HttpServletResponse.class)
         def servletContext = createStrictMock(ServletContext.class)
 
-        PasswordGrantRequest passwordGrantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder().setLogin(account.getEmail()).setPassword(password).build();
-        def result = Authenticators.PASSWORD_GRANT_AUTHENTICATOR.forApplication(application).authenticate(passwordGrantRequest)
+        OAuthPasswordGrantRequestAuthentication passwordGrantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(account.getEmail()).setPassword(password).build();
+        def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(application).authenticate(passwordGrantRequest)
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
@@ -207,6 +207,23 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         Assert.isTrue(account.getRefreshTokens().getSize() == 0)
 
         verify(httpServletRequest, httpServletResponse, servletContext)
+    }
+
+    /**
+     * Asserts https://github.com/stormpath/stormpath-sdk-java/issues/605
+     * @since 1.0.0
+     */
+    @Test
+    void testPreAuthenticationCheckOnCookieRequest() {
+        HttpServletRequest servletRequest = createStrictMock(HttpServletRequest.class)
+        HttpServletResponse servletResponse = createStrictMock(HttpServletResponse.class)
+        javax.servlet.FilterChain filterChain = createStrictMock(javax.servlet.FilterChain.class)
+        Authentication authentication = createStrictMock(Authentication.class)
+
+        SecurityContextHolder.getContext().setAuthentication(authentication)
+
+        ((SpringSecurityResolvedAccountFilter)springSecurityResolvedAccountFilter).filter(servletRequest, servletResponse, filterChain)
+        Assert.isTrue(SecurityContextHolder.getContext().getAuthentication().equals(authentication))
     }
 
     ///Supporting properties and methods

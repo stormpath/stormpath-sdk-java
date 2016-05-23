@@ -188,27 +188,27 @@ Verify Link Base URL
 
 The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
 
-When a user clicks the link in the email, the |project| will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verify.uri`` configuration property:
+When a user clicks the link in the email, the |project| will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verifyEmail.uri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.verify.uri = /verify
+    stormpath.web.verifyEmail.uri = /verify
 
 You can change the value to reflect a different path if you wish.
 
 .. caution::
-    The fully qualified Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.verify.uri``.  If you change one, you must change the other.
+    The fully qualified Link Base URL configured in the Stormpath Admin Console must always reflect the path configured via ``stormpath.web.verifyEmail.uri``.  If you change one, you must change the other.
 
 .. _verify next uri:
 
 Verify Next URI
 ^^^^^^^^^^^^^^^
 
-When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verify.uri`` path, the user will be immediately redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verify.nextUri`` configuration property:
+When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verifyEmail.uri`` path, the user will be immediately redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verifyEmail.nextUri`` configuration property:
 
 .. code-block:: properties
 
-    stormpath.web.verify.nextUri = /login?status=verified
+    stormpath.web.verifyEmail.nextUri = /login?status=verified
 
 As you can see, this URI has a ``status=verified`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
 

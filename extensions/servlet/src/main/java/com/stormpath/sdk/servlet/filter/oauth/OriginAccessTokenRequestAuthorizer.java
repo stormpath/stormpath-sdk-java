@@ -39,7 +39,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     //yes, 'Referer' is supposed to be spelled incorrectly: https://tools.ietf.org/html/rfc7231#section-5.5.2 :
     public static final String REFERER_HEADER_NAME = "Referer";
     public static final String ORIGIN_URIS_CONFIG_PROPERTY_NAME =
-        "stormpath.web.accessToken.origin.authorizer.originUris";
+        "stormpath.web.oauth2.origin.authorizer.originUris";
 
     private final ServerUriResolver serverUriResolver;
     private final Resolver<Boolean> localhost;
@@ -71,7 +71,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     }
 
     @Override
-    public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OauthException {
+    public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OAuthException {
 
         boolean localhostClient = isLocalhostClient(request, response);
 
@@ -107,7 +107,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
                 "Request client (remoteAddr={}) did not specify an Origin or Referer header. Access Token request is denied",
                 request.getRemoteAddr());
 
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
 
         if (!isAuthorizedOrigin(request, response, origin)) {
@@ -122,12 +122,12 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
             // otherwise don't give a potentially-malicious client any information as to why the request failed
             // but we will log the message:
-            log.debug("Unauthorized {} header value: {}.  If this is unexpected, you might want to specify " +
-                      "one or more comma-delimited URLs via the {} property.",
-                      new Object[]{ (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin,
-                          ORIGIN_URIS_CONFIG_PROPERTY_NAME });
+            log.debug(
+                "Unauthorized {} header value: {}.  If this is unexpected, you might want to specify one or more comma-delimited URLs via the {} property.",
+                (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin, ORIGIN_URIS_CONFIG_PROPERTY_NAME
+            );
 
-            throw new OauthException(OauthErrorCode.INVALID_CLIENT, errorMessage, null);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
         }
     }
 

@@ -40,19 +40,19 @@ import javax.servlet.ServletException;
  */
 public class DefaultServletContextClientFactory implements ServletContextClientFactory {
 
-    public static final String STORMPATH_API_KEY_FILE = "stormpath.apiKey.file";
-    public static final String STORMPATH_AUTHENTICATION_SCHEME = "stormpath.authentication.scheme";
+    public static final String STORMPATH_API_KEY_FILE = "stormpath.client.apiKey.file";
+    public static final String STORMPATH_AUTHENTICATION_SCHEME = "stormpath.client.authenticationScheme";
 
-    public static final String STORMPATH_CACHE_MANAGER = "stormpath.cache.manager";
+    public static final String STORMPATH_CACHE_MANAGER = "stormpath.client.cacheManager";
 
-    public static final String STORMPATH_PROXY_HOST = "stormpath.proxy.host";
-    public static final String STORMPATH_PROXY_PORT = "stormpath.proxy.port";
-    public static final String STORMPATH_PROXY_USERNAME = "stormpath.proxy.username";
-    public static final String STORMAPTH_PROXY_PASSWORD = "stormpath.proxy.password";
+    public static final String STORMPATH_PROXY_HOST = "stormpath.client.proxy.host";
+    public static final String STORMPATH_PROXY_PORT = "stormpath.client.proxy.port";
+    public static final String STORMPATH_PROXY_USERNAME = "stormpath.client.proxy.username";
+    public static final String STORMAPTH_PROXY_PASSWORD = "stormpath.client.proxy.password";
 
     public static final String STORMPATH_APPLICATION_HREF = "stormpath.application.href";
 
-    public static final String STORMPATH_BASEURL = "stormpath.baseUrl";
+    public static final String STORMPATH_BASEURL = "stormpath.client.baseUrl";
 
     private Config config;
     private ServletContext servletContext;
@@ -123,13 +123,13 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
 
         ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
 
-        String value = config.get("stormpath.apiKey.id");
+        String value = config.get("stormpath.client.apiKey.id");
         if (Strings.hasText(value)) {
             apiKeyBuilder.setId(value);
         }
 
         //check for API Key ID embedded in the properties configuration
-        value = config.get("stormpath.apiKey.secret");
+        value = config.get("stormpath.client.apiKey.secret");
         if (Strings.hasText(value)) {
             apiKeyBuilder.setSecret(value);
         }

@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
-import com.stormpath.sdk.oauth.RefreshGrantRequest;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +24,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface RefreshTokenAuthenticationRequestFactory {
 
-    RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request)
-            throws OauthException;
+    OAuthRefreshTokenRequestAuthentication createRefreshTokenAuthenticationRequest(HttpServletRequest request)
+            throws OAuthException;
 }

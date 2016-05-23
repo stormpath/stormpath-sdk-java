@@ -17,29 +17,29 @@ package com.stormpath.spring.security.provider
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
-import org.junit.Test
+import org.testng.annotations.Test
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 import static org.easymock.EasyMock.*
-import static org.junit.Assert.assertTrue
+import static org.testng.Assert.assertTrue
 
 class StormpathUserDetailsTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testUserNotNull(){
         def account = createMock(Account)
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
         new StormpathUserDetails(null, "psswd", grantedAuthorities, account);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testGrantedAuthoritiesNotNull(){
         def account = createMock(Account)
         new StormpathUserDetails("username", "psswd", null, account);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testAccountNotNull(){
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
         new StormpathUserDetails("username", "psswd", grantedAuthorities, null);

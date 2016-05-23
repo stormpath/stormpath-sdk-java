@@ -1,0 +1,10 @@
+{
+  "stormpath": {
+    "client": {
+      "proxy": {
+        "port": 9999,
+        "host": "proxyhost"
+      }
+    }
+  }
+}

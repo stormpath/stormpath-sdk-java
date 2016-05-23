@@ -16,21 +16,21 @@
 package com.stormpath.sdk.oauth;
 
 /**
- * Interface denoting an Id Site-specific {@link Oauth2Authenticator}. It is used to exchange Id Site credentials
+ * Interface denoting an Id Site-specific {@link OAuthRequestAuthenticator}. It is used to exchange Id Site credentials
  * for a valid OAuth 2.0 token. For example:
  * <pre>
  * Application app = obtainApplication();
  *
- * IdSiteAuthenticationRequest exchangeRequest = <b>Oauth2Requests.IDSITE_AUTHENTICATION_REQUEST.builder()</b>
+ * IdSiteAuthenticationRequest exchangeRequest = <b>OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder()</b>
  *      .setToken(idSiteToken)
  *      .build();
  *
- * OauthGrantAuthenticationResult result = Authenticators.ID_SITE_AUTHENTICATOR
+ * OAuthGrantRequestAuthenticationResult result = Authenticators.ID_SITE_AUTHENTICATOR
  *       .forApplication(app)
  *       .authenticate(exchangeRequest);
  * </pre>
  *
  * @since 1.0.RC8.2
  */
-public interface IdSiteAuthenticator extends Oauth2Authenticator<OauthGrantAuthenticationResult> {
+public interface IdSiteAuthenticator extends OAuthRequestAuthenticator<OAuthGrantRequestAuthenticationResult> {
 }

@@ -942,7 +942,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * import static com.stormpath.sdk.oauth.RequestLocation.*;
      *
      * OAuthAuthenticationResult result = application.authenticateOauthRequest(httpRequest)
-     *     <b>{@link OauthRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
+     *     <b>{@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator#inLocation(com.stormpath.sdk.oauth.RequestLocation...) .inLocation(}{@link com.stormpath.sdk.oauth.RequestLocation#HEADER HEADER}, {@link com.stormpath.sdk.oauth.RequestLocation#BODY BODY}, {@link com.stormpath.sdk.oauth.RequestLocation#QUERY_PARAM QUERY_PARAM})</b>
      *     .execute();
      * </pre>
      * </p>
@@ -959,7 +959,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * <pre>
      * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
      *
-     * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+     * public void processOAuthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
      *
      *    Application application = client.getResource(myApplicationRestUrl, Application.class);
      *
@@ -1075,7 +1075,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @param httpRequest either an {@code javax.servlet.http.HttpServletRequest} instance (if your app runs in a
      *                    Servlet container or a manually-constructed {@link com.stormpath.sdk.http.HttpRequest}
      *                    instance if it does not.
-     * @return a new {@link com.stormpath.sdk.oauth.OauthRequestAuthenticator} that acts as a builder to allow you
+     * @return a new {@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator} that acts as a builder to allow you
      *         to customize request processing behavior
      * @throws IllegalArgumentException if the method argument is null or is not either a either a
      *                                  <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletRequest.html">
@@ -1084,10 +1084,10 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @see Application#authenticateApiRequest(Object)
      * @since 1.0.RC
      *
-     * @deprecated in 1.0.RC4.6 and will be removed before 1.0 final. Use {@link OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
+     * @deprecated in 1.0.RC4.6 and will be removed before 1.0 final. Use {@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} instead.
      */
     @Deprecated
-    OauthRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
+    OAuthApiRequestAuthenticator authenticateOauthRequest(Object httpRequest) throws IllegalArgumentException;
 
     /**
      * Creates a new {@link IdSiteUrlBuilder} that allows you to build a URL you can use to redirect your
@@ -1490,12 +1490,12 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
     Application saveWithResponseOptions(ApplicationOptions responseOptions);
 
     /**
-     * Returns the {@link OauthPolicy} associated with this application.
-     * @return the {@link OauthPolicy} associated with this application.
+     * Returns the {@link com.stormpath.sdk.oauth.OAuthPolicy} associated with this application.
+     * @return the {@link com.stormpath.sdk.oauth.OAuthPolicy} associated with this application.
      *
      * @since 1.0.RC7
      */
-    OauthPolicy getOauthPolicy();
+    OAuthPolicy getOAuthPolicy();
 
     /**
      * Returns the {@link SamlPolicy} associated with this application.

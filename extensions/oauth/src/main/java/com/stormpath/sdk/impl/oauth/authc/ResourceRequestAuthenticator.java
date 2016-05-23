@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyStatus;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.error.authc.AccessTokenOauthException;
+import com.stormpath.sdk.error.authc.AccessTokenOAuthException;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -29,8 +29,10 @@ import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,11 +40,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import static com.stormpath.sdk.error.authc.AccessTokenOauthException.*;
+import static com.stormpath.sdk.error.authc.AccessTokenOAuthException.*;
 import static org.apache.oltu.oauth2.common.OAuth.*;
 
 /** @since 1.0.RC */
 public class ResourceRequestAuthenticator {
+
+    private static final Logger log = LoggerFactory.getLogger(ResourceRequestAuthenticator.class);
 
     public final static String SCOPE_SEPARATOR_CHAR = " ";
 
@@ -56,19 +60,30 @@ public class ResourceRequestAuthenticator {
         this.jwtSignatureValidator = new JwtSignatureValidator(dataStore.getApiKey());
     }
 
-    public OauthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
+    public OAuthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {
 
         JwtWrapper jwtWrapper;
 
+        // TODO: When we get rid of Java 6, we can consolidate the two catch blocks below into one
         try {
             jwtWrapper = new JwtWrapper(request.getAccessToken());
             jwtSignatureValidator.validate(jwtWrapper);
         } catch (OAuthSystemException e) {
+            log.warn(
+                "Caught Exception while validating JWT signature: {}. Rethrowing as AccessTokenOAuthException",
+                e.getMessage(), e
+            );
+
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+                .newOAuthException(AccessTokenOAuthException.class, INVALID_ACCESS_TOKEN);
         } catch (InvalidJwtException e) {
+            log.warn(
+                "Caught Exception while validating JWT signature: {}. Rethrowing as AccessTokenOAuthException",
+                e.getMessage(), e
+            );
+            
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(AccessTokenOauthException.class, INVALID_ACCESS_TOKEN);
+                .newOAuthException(AccessTokenOAuthException.class, INVALID_ACCESS_TOKEN);
         }
 
         Map jsonMap = jwtWrapper.getJsonPayloadAsMap();
@@ -99,7 +114,7 @@ public class ResourceRequestAuthenticator {
             scope = Collections.emptySet();
         }
 
-        return new DefaultOauthAuthenticationResult(dataStore, apiKey, scope);
+        return new DefaultOAuthAuthenticationResult(dataStore, apiKey, scope);
     }
 
     private void assertTokenNotExpired(long expirationTimestampAsSecondsSinceEpoch) {
@@ -108,7 +123,7 @@ public class ResourceRequestAuthenticator {
 
         if (nowAsSecondsSinceEpoch >= expirationTimestampAsSecondsSinceEpoch) {
             throw ApiAuthenticationExceptionFactory
-                .newOauthException(AccessTokenOauthException.class, EXPIRED_ACCESS_TOKEN);
+                .newOAuthException(AccessTokenOAuthException.class, EXPIRED_ACCESS_TOKEN);
         }
     }
 
@@ -129,13 +144,13 @@ public class ResourceRequestAuthenticator {
         ApiKey apiKey = application.getApiKey(apiKeyId, new DefaultApiKeyOptions().withAccount());
 
         if (apiKey == null || apiKey.getStatus() == ApiKeyStatus.DISABLED) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(AccessTokenOAuthException.class, INVALID_CLIENT);
         }
 
         Account account = apiKey.getAccount();
 
         if (account.getStatus() != AccountStatus.ENABLED) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(AccessTokenOauthException.class, INVALID_CLIENT);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(AccessTokenOAuthException.class, INVALID_CLIENT);
         }
 
         return apiKey;

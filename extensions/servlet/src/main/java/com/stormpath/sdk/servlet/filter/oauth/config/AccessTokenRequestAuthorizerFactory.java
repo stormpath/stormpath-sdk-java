@@ -27,8 +27,8 @@ import javax.servlet.ServletContext;
  */
 public class AccessTokenRequestAuthorizerFactory extends ConfigSingletonFactory<RequestAuthorizer> {
 
-    public static final String SECURE_RESOLVER = "stormpath.web.accessToken.authorizer.secure.resolver";
-    public static final String ORIGIN_AUTHORIZER = "stormpath.web.accessToken.origin.authorizer";
+    public static final String SECURE_RESOLVER = "stormpath.web.oauth2.authorizer.secure.resolver";
+    public static final String ORIGIN_AUTHORIZER = "stormpath.web.oauth2.origin.authorizer";
 
     @Override
     protected RequestAuthorizer createInstance(ServletContext servletContext) throws Exception {

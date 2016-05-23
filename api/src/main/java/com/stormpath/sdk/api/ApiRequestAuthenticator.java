@@ -50,8 +50,8 @@ public interface ApiRequestAuthenticator {
      * <p>
      * This method will automatically authenticate <em>both</em> HTTP Basic and OAuth 2 requests.  However, if you
      * require more specific or customized OAuth request processing, use the
-     * {@link com.stormpath.sdk.oauth.OauthRequestAuthenticator #authenticate(com.stormpath.sdk.http.HttpRequest)} method instead. That method allows you to customize how an OAuth request
-     * is processed.  For example, you will likely want to call {@link com.stormpath.sdk.oauth.OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} for requests
+     * {@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator #authenticate(com.stormpath.sdk.http.HttpRequest)} method instead. That method allows you to customize how an OAuth request
+     * is processed.  For example, you will likely want to call {@link com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)} for requests
      * directed to your application's specific OAuth 2 token and authorization urls (often referenced as
      * {@code /oauth2/token} and {@code /oauth2/authorize} in OAuth 2 documentation).
      * </p>
@@ -93,7 +93,7 @@ public interface ApiRequestAuthenticator {
      * @return an {@link ApiAuthenticationResult} that represents the result of the authentication attempt.
      * @throws IllegalArgumentException if the method argument is null or is not a {@link com.stormpath.sdk.http.HttpRequest} instance.
      * @throws com.stormpath.sdk.resource.ResourceException if unable to authenticate the request
-     * @see com.stormpath.sdk.oauth.OauthRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)
+     * @see com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator#authenticate(com.stormpath.sdk.http.HttpRequest)
      *
      * @since 1.0.RC4.6
      */

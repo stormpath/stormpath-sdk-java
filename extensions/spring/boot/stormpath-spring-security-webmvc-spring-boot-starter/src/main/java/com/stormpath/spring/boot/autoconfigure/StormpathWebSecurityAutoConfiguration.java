@@ -23,7 +23,7 @@ import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
-import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -109,15 +109,15 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean(name="springSecuritySamlResultListener")
-    @ConditionalOnProperty(name="stormpath.web.saml.enabled")
+    @ConditionalOnProperty(name="stormpath.web.callback.enabled")
     public SamlResultListener springSecuritySamlResultListener() {
         return super.springSecuritySamlResultListener();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="oAuth2AuthenticationProcessingFilter")
-    public Oauth2AuthenticationSpringSecurityProcessingFilter oAuth2AuthenticationProcessingFilter() {
-        return super.oAuth2AuthenticationProcessingFilter();
+    @ConditionalOnMissingBean(name="oAuthAuthenticationProcessingFilter")
+    public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
+        return super.oAuthAuthenticationProcessingFilter();
     }
 
     @Bean

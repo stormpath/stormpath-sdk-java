@@ -21,41 +21,41 @@ Default TTL
 
 TTL, or 'Time to Live' is how long a cache entry is allowed to remain in the cache, regardless of how often it is accessed.  After this amount of time, the cache entry will considered invalid and will removed ('evicted') from the cache.
 
-You can specify the default TTL value for all cache regions by setting the ``stormpath.cache.ttl`` value in milliseconds:
+You can specify the default TTL value for all cache regions by setting the ``stormpath.client.cacheManager.defaultTtl`` value in milliseconds:
 
 .. code-block:: properties
 
    # 3,600,000 milliseconds = 1 hour
-   stormpath.cache.ttl = 3600000
+   stormpath.client.cacheManager.defaultTtl = 3600000
 
 Default TTI
 ^^^^^^^^^^^
 
 TTI, or 'Time to Idle' is how long a cache entry is allowed to remain idle (unreferenced, not used) in the cache before it can be removed ('evicted') from the cache.
 
-You can specify the default TTI value for all cache regions by setting the ``stormpath.cache.tti`` value in milliseconds:
+You can specify the default TTI value for all cache regions by setting the ``stormpath.client.cacheManager.defaultTti`` value in milliseconds:
 
 .. code-block:: properties
 
    # 3,600,000 milliseconds = 1 hour
-   stormpath.cache.tti = 3600000
+   stormpath.client.cacheManager.defaultTti = 3600000
 
 Cache Regions
 ^^^^^^^^^^^^^
 
 Cache Regions are automatically created as they are requested and use the default ttl and tti - you do not need to configure them explicitly.
 
-However, if you want to specify a cache region's TTL or TTI, you can do so using a configuration property convention; prefix the region name ``stormpath.cache.`` and suffix the name with ``.ttl`` or ``tti`` for TTL or TTI respectively.
+However, if you want to specify a cache region's TTL or TTI, you can do so using a configuration property convention; prefix the region name ``stormpath.client.cacheManager.caches`` and suffix the name with ``.ttl`` or ``tti`` for TTL or TTI respectively.
 
 For example, let's assume we have a cache region named ``My Test Cache Region`` and wanted a 5 minute time-to-idle and a 30 minute time-to-live.  We'd define two configuration properties as follows:
 
 .. code-block:: properties
 
    # 300,000 millis = 5 minutes:
-   stormpath.cache.My Test Cache Region.tti = 300000
+   stormpath.client.cacheManager.caches.My Test Cache Region.tti = 300000
 
    # 1,800,000 millis = 30 minutes:
-   stormpath.cache.My Test Cache Region.ttl = 1800000
+   stormpath.client.cacheManager.caches.My Test Cache Region.ttl = 1800000
 
 If a cache region does not have configured ``.tti`` or ``.ttl`` values, the :ref:`default ttl and tti values <default ttl>` are assumed.
 
@@ -72,9 +72,9 @@ If you want to configure caching rules for a particular client resource type, wh
 
 .. code-block:: properties
 
-   stormpath.cache.com.stormpath.sdk.account.Account.tti = 3600000
+   stormpath.client.cacheManager.caches.com.stormpath.sdk.account.Account.tti = 3600000
 
-   stormpath.cache.com.stormpath.sdk.group.Group.ttl = 4800000
+   stormpath.client.cacheManager.caches.com.stormpath.sdk.group.Group.ttl = 4800000
 
 .. _shared cache:
 
@@ -89,11 +89,11 @@ For example, if a user sends a request that is directed to web app instance A an
 
 If you need cache coherency, you will want to specify a ``com.stormpath.sdk.cache.CacheManager`` implementation that can communicate with a shared or distributed cache system, like Hazelcast, Redis, etc.
 
-You can do this by specifying the ``stormpath.cache.manager`` configuration property, for example:
+You can do this by specifying the ``stormpath.client.cacheManager`` configuration property, for example:
 
 .. code-block:: properties
 
-   stormpath.cache.manager = your.fully.qualified.implementation.of.CacheManager
+   stormpath.client.cacheManager = your.fully.qualified.implementation.of.CacheManager
 
 
 .. _cache coherence: http://en.wikipedia.org/wiki/Cache_coherence

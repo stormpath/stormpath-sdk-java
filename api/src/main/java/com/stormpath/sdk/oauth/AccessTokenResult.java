@@ -32,7 +32,7 @@ package com.stormpath.sdk.oauth;
  *
  * @since 1.0.RC
  */
-public interface AccessTokenResult extends OauthAuthenticationResult {
+public interface AccessTokenResult extends OAuthAuthenticationResult {
 
     /**
      * The {@link TokenResponse} obtained as a result of a successful authentication

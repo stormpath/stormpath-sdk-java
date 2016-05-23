@@ -36,7 +36,7 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
 
         mockStatic(LoggerFactory.class)
         Logger log = createMock(Logger.class)
-        expect(LoggerFactory.getLogger(isA(Class))).andReturn(log)
+        expect(LoggerFactory.getLogger((Class) isA(Class))).andReturn(log)
 
         HttpServletRequest request = createMock(HttpServletRequest.class)
         CookieConfig config = createMock(CookieConfig.class)

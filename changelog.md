@@ -1,5 +1,17 @@
 ## Change Log ##
 
+### 1.0.RC9.1 ##
+
+Notes:
+
+- Please see the [1.0.RC9.1](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC9.1+is%3Aclosed) issues list for more information
+
+### 1.0.RC9 ##
+
+Notes:
+
+- Please see the [1.0.RC9](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC9+is%3Aclosed) issues list for more information
+
 ### 1.0.RC8.6 ##
 
 Notes:
@@ -274,7 +286,7 @@ via OAuth as you wish.  This includes both OAuth 2 access token requests (e.g. t
 resource requests (e.g. `/movies/1234`).  **At no point do you ever need to see, touch, or write OAuth code!**
 The Stormpath SDK does it for you.
 
-See the `Application` interface's `authenticateApiRequest` and `authenticateOauthRequest` methods for lots of detailed
+See the `Application` interface's `authenticateApiRequest` and `authenticateOAuthRequest` methods for lots of detailed
 information.
 
 ##### Resource method chaining #####

@@ -18,12 +18,12 @@ package com.stormpath.sdk.impl.oauth.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.error.authc.OauthAuthenticationException;
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.impl.oauth.http.OauthHttpServletRequest;
+import com.stormpath.sdk.impl.oauth.http.OAuthHttpServletRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.OauthAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.oauth.RequestLocation;
 import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 
@@ -59,7 +59,7 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     }
 
     @Override
-    public OauthAuthenticationResult execute() {
+    public OAuthAuthenticationResult execute() {
 
         RequestLocation[] locations = this.locations != null ? this.locations :
                                       new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
@@ -69,19 +69,19 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
         try {
             request = new ResourceAuthenticationRequest(httpServletRequest, locations);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class,
-                                                                      OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(OAuthAuthenticationException.class,
+                    OAuthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult result = application.authenticateAccount(request);
 
-        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
+        Assert.isInstanceOf(OAuthAuthenticationResult.class, result);
 
-        return (OauthAuthenticationResult) result;
+        return (OAuthAuthenticationResult) result;
     }
 
     @Override
-    public OauthAuthenticationResult authenticate(HttpRequest httpRequest) {
+    public OAuthAuthenticationResult authenticate(HttpRequest httpRequest) {
         RequestLocation[] locations = this.locations != null ? this.locations :
                 new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
 
@@ -90,7 +90,7 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
         if (HttpServletRequest.class.isAssignableFrom(httpRequestClass)) {
             this.httpServletRequest = (HttpServletRequest) httpRequest;
         } else if (HttpRequest.class.isAssignableFrom(httpRequestClass)) {
-            this.httpServletRequest = new OauthHttpServletRequest(httpRequest);
+            this.httpServletRequest = new OAuthHttpServletRequest(httpRequest);
         } else {
             throw new IllegalArgumentException(String.format(HTTP_REQUEST_NOT_SUPPORTED_MSG, httpRequest.getClass(), HttpRequest.class.getName(), HttpServletRequest.class.getName()));
         }
@@ -99,12 +99,12 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
         try {
             request = new ResourceAuthenticationRequest(httpServletRequest, locations);
         } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException.class,
-                    OauthAuthenticationException.INVALID_REQUEST);
+            throw ApiAuthenticationExceptionFactory.newOAuthException(OAuthAuthenticationException.class,
+                    OAuthAuthenticationException.INVALID_REQUEST);
         }
 
         AuthenticationResult result = application.authenticateAccount(request);
-        Assert.isInstanceOf(OauthAuthenticationResult.class, result);
-        return (OauthAuthenticationResult) result;
+        Assert.isInstanceOf(OAuthAuthenticationResult.class, result);
+        return (OAuthAuthenticationResult) result;
     }
 }

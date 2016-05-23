@@ -15,16 +15,17 @@
  */
 package com.stormpath.spring.config
 
-import org.junit.Before
-import org.junit.Test
+import org.testng.annotations.BeforeMethod
+import org.testng.annotations.Test
 
-import static org.junit.Assert.assertNotNull
+import static org.testng.Assert.assertNotNull
+
 
 class ClientFactoryBeanTest {
 
     ClientFactoryBean clientFactoryBean
 
-    @Before
+    @BeforeMethod
     void setUp() {
         clientFactoryBean = new ClientFactoryBean()
     }

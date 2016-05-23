@@ -21,9 +21,9 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
-import com.stormpath.sdk.oauth.OauthGrantAuthenticationResult;
-import com.stormpath.sdk.oauth.PasswordGrantRequest;
-import com.stormpath.sdk.oauth.RefreshGrantRequest;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
@@ -34,8 +34,8 @@ import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.filter.oauth.OauthErrorCode;
-import com.stormpath.sdk.servlet.filter.oauth.OauthException;
+import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
+import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -164,18 +164,18 @@ public class AccessTokenController extends AbstractController {
      */
     private AccessTokenResult tokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        OauthGrantAuthenticationResult authenticationResult;
+        OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
             Application app = getApplication(request);
-            PasswordGrantRequest passwordGrantRequest = createPasswordGrantAuthenticationRequest(request);
+            OAuthPasswordGrantRequestAuthentication passwordGrantRequest = createPasswordGrantAuthenticationRequest(request);
 
-            authenticationResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+            authenticationResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR
                     .forApplication(app)
                     .authenticate(passwordGrantRequest);
         } catch (ResourceException e) {
-            log.debug("Unable to authenticate access token request: " + e.getMessage(), e);
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Unable to authenticate access token request: ", e.getDeveloperMessage());
+            log.debug("Unable to authenticate access token request: {}", e.getMessage(), e);
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate access token request: ", e.getDeveloperMessage());
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
@@ -186,18 +186,18 @@ public class AccessTokenController extends AbstractController {
      */
     private AccessTokenResult refreshTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        OauthGrantAuthenticationResult authenticationResult;
+        OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
             Application app = getApplication(request);
-            RefreshGrantRequest refreshGrantRequest = createRefreshTokenAuthenticationRequest(request);
+            OAuthRefreshTokenRequestAuthentication refreshGrantRequest = createRefreshTokenAuthenticationRequest(request);
 
-            authenticationResult = Authenticators.REFRESH_GRANT_AUTHENTICATOR
+            authenticationResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR
                     .forApplication(app)
                     .authenticate(refreshGrantRequest);
         } catch (ResourceException e) {
-            log.debug("Unable to authenticate refresh token request: " + e.getMessage(), e);
-            throw new OauthException(OauthErrorCode.INVALID_REQUEST, "Unable to authenticate refresh token request: ", e.getDeveloperMessage());
+            log.debug("Unable to authenticate refresh token request: {}", e.getMessage(), e);
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate refresh token request: ", e.getDeveloperMessage());
         }
 
         return createRefreshTokenResult(request, response, authenticationResult);
@@ -220,7 +220,7 @@ public class AccessTokenController extends AbstractController {
                 grantType = request.getParameter(GRANT_TYPE_PARAM_NAME);
                 Assert.hasText(grantType, "grant_type must not be null or empty.");
             } catch (IllegalArgumentException e){
-                throw new OauthException(OauthErrorCode.INVALID_GRANT);
+                throw new OAuthException(OAuthErrorCode.INVALID_GRANT);
             }
 
             if (grantType.equals(PASSWORD_GRANT_TYPE)) {
@@ -228,7 +228,7 @@ public class AccessTokenController extends AbstractController {
             } else if (grantType.equals(REFRESH_TOKEN_GRANT_TYPE)) {
                 result = this.refreshTokenAuthenticationRequest(request, response);
             } else {
-                throw new OauthException(OauthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
             }
 
             saveResult(request, response, result);
@@ -240,7 +240,7 @@ public class AccessTokenController extends AbstractController {
             SuccessfulAuthenticationRequestEvent e = createSuccessEvent(request, response, authcRequest, result);
             publish(e);
 
-        } catch (OauthException e) {
+        } catch (OAuthException e) {
 
             log.debug("OAuth Access Token request failed.", e);
 
@@ -253,8 +253,10 @@ public class AccessTokenController extends AbstractController {
                         new DefaultFailedAuthenticationRequestEvent(request, response, authcRequest, e);
                 publish(evt);
             } catch (Throwable t) {
-                log.warn("Unable to publish failed authentication request event due to exception: {}.  " +
-                        "Ignoring and handling original authentication exception {}.", t, e);
+                log.warn(
+                    "Unable to publish failed authentication request event due to exception: {}. Ignoring and handling original authentication exception {}.",
+                    t, e, t
+                );
             }
         }
 
@@ -283,14 +285,14 @@ public class AccessTokenController extends AbstractController {
     /**
      * @since 1.0.RC8.3
      */
-    protected RefreshGrantRequest createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OauthException {
+    protected OAuthRefreshTokenRequestAuthentication createRefreshTokenAuthenticationRequest(HttpServletRequest request) throws OAuthException {
         return getRefreshTokenAuthenticationRequestFactory().createRefreshTokenAuthenticationRequest(request);
     }
 
     /**
      * @since 1.0.RC8.3
      */
-    protected PasswordGrantRequest createPasswordGrantAuthenticationRequest(HttpServletRequest request) throws OauthException {
+    protected OAuthPasswordGrantRequestAuthentication createPasswordGrantAuthenticationRequest(HttpServletRequest request) throws OAuthException {
         return getAccessTokenAuthenticationRequestFactory().createAccessTokenAuthenticationRequest(request);
     }
 
@@ -299,12 +301,12 @@ public class AccessTokenController extends AbstractController {
      */
     protected AccessTokenResult createRefreshTokenResult(final HttpServletRequest request,
                                                          final HttpServletResponse response,
-                                                         final OauthGrantAuthenticationResult result) {
+                                                         final OAuthGrantRequestAuthenticationResult result) {
         return getRefreshTokenResultFactory().createRefreshTokenResult(request, response, result);
     }
 
     protected void assertAuthorized(HttpServletRequest request, HttpServletResponse response)
-        throws OauthException {
+        throws OAuthException {
         getRequestAuthorizer().assertAuthorized(request, response);
     }
 
@@ -313,7 +315,7 @@ public class AccessTokenController extends AbstractController {
      */
     protected AccessTokenResult createAccessTokenResult(final HttpServletRequest request,
                                                         final HttpServletResponse response,
-                                                        final OauthGrantAuthenticationResult result) {
+                                                        final OAuthGrantRequestAuthenticationResult result) {
         return getAccessTokenResultFactory().createAccessTokenResult(request, response, result);
     }
 

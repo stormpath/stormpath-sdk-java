@@ -1,0 +1,9 @@
+{
+  "stormpath": {
+    "web": {
+      "verify": {
+        "nextUri": "/home?status=fabulous"
+      }
+    }
+  }
+}

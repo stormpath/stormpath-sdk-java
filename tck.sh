@@ -37,8 +37,8 @@ case "$OPTION" in
         DIR=${OPTION_ARGUMENT01}
         if [ "${DIR}" = "NOT_SET" ] ; then DIR="stormpath-framework-tck"; fi
         echo "Checking out TCK"
-        git config --global user.email "evangelists@stormpath.com"
-        git config --global user.name "stormpath-sdk-java TCK"
+        git config user.email "evangelists@stormpath.com"
+        git config user.name "stormpath-sdk-java TCK"
         git clone git@github.com:stormpath/stormpath-framework-tck.git ${DIR}
         cd ${DIR}
         git checkout master

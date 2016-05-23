@@ -10,7 +10,7 @@ class DefaultEnvVarNameConverterTest {
     void testToEnvVarName() {
         def factory = new DefaultEnvVarNameConverter()
 
-        def name = 'stormpath.apiKey.id'
+        def name = 'stormpath.client.apiKey.id'
 
         def envVarName = factory.toEnvVarName(name);
 
@@ -25,7 +25,7 @@ class DefaultEnvVarNameConverterTest {
 
         def propName = factory.toDottedPropertyName(name);
 
-        assertEquals propName, 'stormpath.apiKey.id'
+        assertEquals propName, 'stormpath.client.apiKey.id'
     }
 
     @Test
@@ -36,7 +36,7 @@ class DefaultEnvVarNameConverterTest {
 
         def propName = factory.toDottedPropertyName(name);
 
-        assertEquals propName, 'stormpath.apiKey.secret'
+        assertEquals propName, 'stormpath.client.apiKey.secret'
     }
 
     @Test
@@ -47,7 +47,7 @@ class DefaultEnvVarNameConverterTest {
 
         def propName = factory.toDottedPropertyName(name);
 
-        assertEquals propName, 'stormpath.apiKey.file'
+        assertEquals propName, 'stormpath.client.apiKey.file'
     }
 
     @Test
@@ -58,6 +58,6 @@ class DefaultEnvVarNameConverterTest {
 
         def propName = factory.toDottedPropertyName(name);
 
-        assertEquals propName, 'stormpath.authentication.scheme'
+        assertEquals propName, 'stormpath.client.authenticationScheme'
     }
 }

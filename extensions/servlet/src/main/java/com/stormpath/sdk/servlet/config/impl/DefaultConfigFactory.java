@@ -19,10 +19,12 @@ import com.stormpath.sdk.impl.config.DefaultEnvVarNameConverter;
 import com.stormpath.sdk.impl.config.EnvVarNameConverter;
 import com.stormpath.sdk.impl.config.EnvironmentVariablesPropertiesSource;
 import com.stormpath.sdk.impl.config.FilteredPropertiesSource;
+import com.stormpath.sdk.impl.config.JSONPropertiesSource;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
 import com.stormpath.sdk.impl.config.SystemPropertiesSource;
+import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
@@ -44,6 +46,7 @@ import java.util.Scanner;
  */
 public class DefaultConfigFactory implements ConfigFactory {
 
+
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
 
@@ -56,7 +59,7 @@ public class DefaultConfigFactory implements ConfigFactory {
 
     public static final String DEFAULT_STORMPATH_PROPERTIES_SOURCES =
         //MUST always be first:
-        ClasspathResource.SCHEME_PREFIX + "META-INF/com/stormpath/sdk/servlet/default." + STORMPATH_PROPERTIES + NL +
+        ClasspathResource.SCHEME_PREFIX + "com/stormpath/sdk/servlet/config/web." + STORMPATH_PROPERTIES + NL +
         ClasspathResource.SCHEME_PREFIX + STORMPATH_PROPERTIES + NL +
         "/WEB-INF/stormpath.properties" + NL +
         CONTEXT_PARAM_TOKEN + NL +
@@ -132,6 +135,25 @@ public class DefaultConfigFactory implements ConfigFactory {
                     propertiesSource = new OptionalPropertiesSource(propertiesSource);
                 }
                 sources.add(propertiesSource);
+
+                // look for JSON and YAML files with the same name
+                if (line.contains(".properties")) {
+                    String jsonFile = line.replace(".properties", ".json");
+                    resource = resourceFactory.createResource(jsonFile);
+                    propertiesSource = new JSONPropertiesSource(resource);
+                    if (!required) {
+                        propertiesSource = new OptionalPropertiesSource(propertiesSource);
+                    }
+                    sources.add(propertiesSource);
+
+                    String yamlFile = line.replace(".properties", ".yaml");
+                    resource = resourceFactory.createResource(yamlFile);
+                    propertiesSource = new YAMLPropertiesSource(resource);
+                    if (!required) {
+                        propertiesSource = new OptionalPropertiesSource(propertiesSource);
+                    }
+                    sources.add(propertiesSource);
+                }
             }
         }
 

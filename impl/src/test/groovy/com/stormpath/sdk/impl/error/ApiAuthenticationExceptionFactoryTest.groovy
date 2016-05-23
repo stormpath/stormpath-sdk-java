@@ -1,7 +1,7 @@
 package com.stormpath.sdk.impl.error
 
 import com.stormpath.sdk.error.authc.InvalidAuthenticationException
-import com.stormpath.sdk.error.authc.OauthAuthenticationException
+import com.stormpath.sdk.error.authc.OAuthAuthenticationException
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
@@ -30,11 +30,11 @@ class ApiAuthenticationExceptionFactoryTest {
         assertEquals r.developerMessage, devMessage
     }
     @Test
-    void testOauthAuthenticationException() {
+    void testOAuthAuthenticationException() {
 
-        def devMessage = "Testing OauthenticationException"
+        def devMessage = "Testing OAuthenticationException"
 
-        def r = ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException, devMessage)
+        def r = ApiAuthenticationExceptionFactory.newOAuthException(OAuthAuthenticationException, devMessage)
 
         assertEquals r.code, ApiAuthenticationExceptionFactory.AUTH_EXCEPTION_CODE
         assertEquals r.status, ApiAuthenticationExceptionFactory.AUTH_EXCEPTION_STATUS

@@ -88,8 +88,8 @@ public class ForgotPasswordController extends FormController {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
-            field.setLabel("stormpath.web.forgot.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.forgot.form.fields." + fieldName + ".placeholder");
+            field.setLabel("stormpath.web.forgotPassword.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.forgotPassword.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
             String val = fieldValueResolver.getValue(request, fieldName);

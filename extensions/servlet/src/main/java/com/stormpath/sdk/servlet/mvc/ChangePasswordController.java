@@ -148,8 +148,8 @@ public class ChangePasswordController extends FormController {
             DefaultField field = new DefaultField();
             field.setName(fieldName);
             field.setName(fieldName);
-            field.setLabel("stormpath.web.change.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.change.form.fields." + fieldName + ".placeholder");
+            field.setLabel("stormpath.web.changePassword.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.changePassword.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("password");
             String val = fieldValueResolver.getValue(request, fieldName);
@@ -172,17 +172,17 @@ public class ChangePasswordController extends FormController {
             //TODO: update this with a specific message that tells the exact password requirements.
             //This can only be done when this functionality is available via the Stormpath REST API
             //(currently being implemented in the Stormpath server-side REST API, not yet complete)
-            String key = "stormpath.web.change.form.errors.strength";
+            String key = "stormpath.web.changePassword.form.errors.strength";
             String msg = i18n(request, key);
             errors.add(msg);
         } else if (e instanceof ResourceException && ((ResourceException) e).getCode() == 404) {
             String url = request.getContextPath() + getForgotPasswordUri();
-            String key = "stormpath.web.change.form.errors.invalid";
+            String key = "stormpath.web.changePassword.form.errors.invalid";
             String msg = i18n(request, key, url);
             errors.add(msg);
         } else {
             log.warn("Potentially unexpected change password problem.", e);
-            String key = "stormpath.web.change.form.errors.default";
+            String key = "stormpath.web.changePassword.form.errors.default";
             String msg = i18n(request, key);
             errors.add(msg);
         }
@@ -220,7 +220,7 @@ public class ChangePasswordController extends FormController {
             if (field.isRequired()) {
                 String value = Strings.clean(field.getValue());
                 if (value == null) {
-                    String key = "stormpath.web.change.form.fields." + field.getName() + ".required";
+                    String key = "stormpath.web.changePassword.form.fields." + field.getName() + ".required";
                     String msg = i18n(request, key);
                     throw new IllegalArgumentException(msg);
                 }
@@ -232,7 +232,7 @@ public class ChangePasswordController extends FormController {
         String confirmPassword = form.getFieldValue("confirmPassword");
 
         if (!password.equals(confirmPassword)) {
-            String key = "stormpath.web.change.form.errors.mismatch";
+            String key = "stormpath.web.changePassword.form.errors.mismatch";
             String msg = i18n(request, key);
             throw new MismatchedPasswordException(msg);
         }

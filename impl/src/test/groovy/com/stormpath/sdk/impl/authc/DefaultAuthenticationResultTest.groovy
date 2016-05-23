@@ -5,11 +5,11 @@ import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.authc.AuthenticationResultVisitor
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.oauth.AccessTokenResult
-import com.stormpath.sdk.oauth.OauthAuthenticationResult
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult
 import org.testng.annotations.Test
 
-import static junit.framework.TestCase.assertNotNull
 import static org.easymock.EasyMock.createStrictMock
+import static org.testng.Assert.assertNotNull
 
 /**
  * @since 1.0.RC9
@@ -47,7 +47,7 @@ class DefaultAuthenticationResultTest {
             }
 
             @Override
-            void visit(OauthAuthenticationResult result) {
+            void visit(OAuthAuthenticationResult result) {
 
             }
 

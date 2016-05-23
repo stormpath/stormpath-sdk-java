@@ -112,9 +112,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
             throw new NullPointerException("chainDefinition cannot be null or empty.");
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Creating chain [" + chainName + "] from String definition [" + chainDefinition + "]");
-        }
+        log.debug("Creating chain [{}] from String definition [{}]", chainName, chainDefinition);
 
         //parse the value by tokenizing it to get the resulting filter-specific config entries
         //

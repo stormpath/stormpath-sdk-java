@@ -27,7 +27,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
-import com.stormpath.spring.oauth.Oauth2AuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +76,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
     protected boolean csrfTokenEnabled;
 
-    @Value("#{ @environment['stormpath.web.accessToken.enabled'] ?: true }")
+    @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
@@ -128,10 +128,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     }
 
-    public Oauth2AuthenticationSpringSecurityProcessingFilter oAuth2AuthenticationProcessingFilter() {
-        Oauth2AuthenticationSpringSecurityProcessingFilter fitler = new Oauth2AuthenticationSpringSecurityProcessingFilter();
-        fitler.setEnabled(accessTokenEnabled);
-        return fitler;
+    public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
+        OAuthAuthenticationSpringSecurityProcessingFilter filter = new OAuthAuthenticationSpringSecurityProcessingFilter();
+        filter.setEnabled(accessTokenEnabled);
+        return filter;
     }
 
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {

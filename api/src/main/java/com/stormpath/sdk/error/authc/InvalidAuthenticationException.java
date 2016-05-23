@@ -19,7 +19,7 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * Thrown when the Authentication credentials (or access_token for Oauth requests) cannot be found in the {@code httpRequest}.
+ * Thrown when the Authentication credentials (or access_token for OAuth requests) cannot be found in the {@code httpRequest}.
  *
  * @since 1.0.RC
  */

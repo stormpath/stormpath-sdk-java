@@ -43,7 +43,7 @@ class DefaultAccessTokenRequestAuthorizerTest extends PowerMockTestCase {
 
         try {
             authorizer.assertSecure(request, response)
-        } catch (OauthException expected) {
+        } catch (OAuthException expected) {
         } finally {
             verify request, response, reqAuthz, resolver
         }
@@ -57,7 +57,7 @@ class DefaultAccessTokenRequestAuthorizerTest extends PowerMockTestCase {
 
         mockStatic(LoggerFactory.class)
         Logger log = createMock(Logger.class)
-        expect(LoggerFactory.getLogger(isA(Class.class))).andReturn(log)
+        expect(LoggerFactory.getLogger((Class) isA(Class.class))).andReturn(log)
 
         HttpServletRequest request = createMock(HttpServletRequest.class)
         HttpServletResponse response = createMock(HttpServletResponse.class)

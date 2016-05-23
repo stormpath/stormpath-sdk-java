@@ -16,8 +16,8 @@
 package com.stormpath.spring.security.authz
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.Assert
-import org.junit.Test
+import org.testng.Assert
+import org.testng.annotations.Test
 
 class CustomDataPermissionsEditorTest {
 
@@ -28,7 +28,7 @@ class CustomDataPermissionsEditorTest {
         Assert.assertEquals "springSecurityPermissions", CustomDataPermissionsEditor.DEFAULT_CUSTOM_DATA_FIELD_NAME
     }
 
-    @Test(expected = IllegalArgumentException)
+    @Test(expectedExceptions = IllegalArgumentException)
     void testNewInstanceWithNullArg() {
         new CustomDataPermissionsEditor(null)
     }
@@ -191,7 +191,7 @@ class CustomDataPermissionsEditorTest {
         Assert.assertTrue result.isEmpty()
     }
 
-    @Test(expected=UnsupportedOperationException)
+    @Test(expectedExceptions=UnsupportedOperationException)
     void testGetPermissionStringsReturnsImmutableSet() {
 
         def customData = new MockCustomData()

@@ -81,7 +81,7 @@ class ApiAuthenticationIT extends ClientIT {
     }
 
     @Test
-    void testOauthAuthentication() {
+    void testOAuthAuthentication() {
 
         def apiKey = account.createApiKey()
 
@@ -95,7 +95,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/json"))
 
-        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OAuthAuthenticationResult)
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).queryParameters("grant_type=client_credentials")
 
@@ -103,13 +103,13 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder.headers(createHttpHeaders(createBearerAuthzHeader(result.tokenResponse.accessToken), "application/xml"))
 
-        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OAuthAuthenticationResult)
 
         headers = ["content-type": convertToArray("application/x-www-form-urlencoded; charset=UTF-8")]
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.DELETE).headers(headers).parameters(convertToParametersMap(["access_token":result.tokenResponse.accessToken]))
 
-        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OauthAuthenticationResult)
+        attemptSuccessfulApiAuthentication(httpRequestBuilder.build(), OAuthAuthenticationResult)
 
         testWithScopeFactory(apiKey)
 
@@ -151,7 +151,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         authResult = Applications.oauthRequestAuthenticator(application).inLocation(RequestLocation.QUERY_PARAM).authenticate(httpRequestBuilder.build())
 
-        verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
+        verifySuccessfulAuthentication(authResult, application, account, OAuthAuthenticationResult)
 
         assertEquals authResult.scope.size(), 2
         assertTrue authResult.scope.contains("readResource")
@@ -168,7 +168,7 @@ class ApiAuthenticationIT extends ClientIT {
         assertTrue authResult.scope.contains("readResource")
         assertTrue authResult.scope.contains("createResource")
 
-        verifySuccessfulAuthentication(authResult, application, account, OauthAuthenticationResult)
+        verifySuccessfulAuthentication(authResult, application, account, OAuthAuthenticationResult)
     }
 
     @Test
@@ -214,7 +214,7 @@ class ApiAuthenticationIT extends ClientIT {
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(["content-type": convertToArray("application/x-www-form-urlencoded")]).parameters(convertToParametersMap(["this":"that"]))
 
-        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+        verifyError(httpRequestBuilder.build(), OAuthAuthenticationException)
 
         httpRequestBuilder.headers(createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), null))
 
@@ -234,31 +234,31 @@ class ApiAuthenticationIT extends ClientIT {
         verifyError(httpRequestBuilder.build(), DisabledAccountException)
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders(createBearerAuthzHeader("a.b.c"), "application/x-www-form-urlencoded"))
-        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+        verifyError(httpRequestBuilder.build(), OAuthAuthenticationException)
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders(createBearerAuthzHeader("a.b"), "application/x-www-form-urlencoded"))
-        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+        verifyError(httpRequestBuilder.build(), OAuthAuthenticationException)
 
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(createHttpHeaders(createBearerAuthzHeader("a.仮名.b"), "application/x-www-form-urlencoded"))
-        verifyError(httpRequestBuilder.build(), OauthAuthenticationException)
+        verifyError(httpRequestBuilder.build(), OAuthAuthenticationException)
     }
 
     @Test
-    void testOauthAuthenticationErrors() {
+    void testOAuthAuthenticationErrors() {
 
         //Try invalid formed tokens.
         def headers = createHttpHeaders(createBearerAuthzHeader("a.b.c"), "application/x-www-form-urlencoded")
         def httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
-        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.INVALID_ACCESS_TOKEN)
+        verifyOAuthError(httpRequestBuilder.build(), AccessTokenOAuthException.INVALID_ACCESS_TOKEN)
 
         //Try invalid formed tokens.
         headers = createHttpHeaders(createBearerAuthzHeader("a.b"), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
-        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.INVALID_ACCESS_TOKEN)
+        verifyOAuthError(httpRequestBuilder.build(), AccessTokenOAuthException.INVALID_ACCESS_TOKEN)
 
         headers = createHttpHeaders(createBearerAuthzHeader("a.仮名.c"), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers)
-        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.INVALID_ACCESS_TOKEN)
+        verifyOAuthError(httpRequestBuilder.build(), AccessTokenOAuthException.INVALID_ACCESS_TOKEN)
 
         def apiKey = account.createApiKey()
 
@@ -266,48 +266,48 @@ class ApiAuthenticationIT extends ClientIT {
         verifyError(httpRequestBuilder.build(), UnsupportedAuthenticationSchemeException, true)
 
         httpRequestBuilder =  HttpRequests.method(HttpMethod.GET).headers(convertToParametersMap(["content-type" : "application/json"]))
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_REQUEST)
 
         //Error: Content-Type: application/json
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/json")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_REQUEST)
 
         def parameters = convertToParametersMap(["grant_type": "client_credentials"])
 
         //Error: HttpMethod is GET
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.GET).headers(headers).parameters(parameters)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_REQUEST)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_REQUEST)
 
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
 
         //Error: grant_type: authorization_code is not supported.
         parameters = convertToParametersMap(["grant_type": "authorization_code", "code": "my_code", "redirect_uri": "http://myredirecturi.com"])
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
 
         //Error: grant_type: password is not supported.
         parameters = convertToParametersMap(["grant_type": "password", "username": "myuser", "password": "aPassword"])
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
 
         //Error: grant_type: refresh_token is not supported.
         parameters = convertToParametersMap(["grant_type": "refresh_token", "refresh_token": "myrefresh_token", "anyParam": "ignored"])
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.UNSUPPORTED_GRANT_TYPE)
 
         parameters = convertToParametersMap(["grant_type": "client_credentials", "anyParam": "ignored"])
 
         //Error: invalid apiKey id.
         headers = createHttpHeaders(createBasicAuthzHeader("unknown", apiKey.secret), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_CLIENT)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_CLIENT)
 
         //Error: invalid apiKey secret.
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, "invalid"), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
-        verifyOauthError(httpRequestBuilder.build(), OauthAuthenticationException.INVALID_CLIENT)
+        verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_CLIENT)
 
         //Create a 3 seconds token
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, apiKey.secret), "application/x-www-form-urlencoded")
@@ -324,7 +324,7 @@ class ApiAuthenticationIT extends ClientIT {
         //Wait > 3 seconds and try again
         Thread.sleep(3300)
 
-        verifyOauthError(httpRequestBuilder.build(), AccessTokenOauthException.EXPIRED_ACCESS_TOKEN)
+        verifyOAuthError(httpRequestBuilder.build(), AccessTokenOAuthException.EXPIRED_ACCESS_TOKEN)
 
         //Create a minute token
         //Create a 3 seconds token
@@ -338,9 +338,9 @@ class ApiAuthenticationIT extends ClientIT {
 
         try {
             result = Applications.oauthRequestAuthenticator(application).inLocation(RequestLocation.HEADER, RequestLocation.BODY, RequestLocation.QUERY_PARAM).authenticate(httpRequestBuilder.build())
-            fail("OauthAuthenticationException is expected")
-        } catch (OauthAuthenticationException e) {
-            assertEquals e.getOauthError(), OauthAuthenticationException.INVALID_REQUEST
+            fail("OAuthAuthenticationException is expected")
+        } catch (OAuthAuthenticationException e) {
+            assertEquals e.getOAuthError(), OAuthAuthenticationException.INVALID_REQUEST
         }
     }
 
@@ -368,7 +368,7 @@ class ApiAuthenticationIT extends ClientIT {
             }
 
             @Override
-            void visit(OauthAuthenticationResult result) {
+            void visit(OAuthAuthenticationResult result) {
                 assertNotNull result.apiKey
             }
 
@@ -401,7 +401,7 @@ class ApiAuthenticationIT extends ClientIT {
                     if (applicationScopes.contains(scope)) {
                         resultScope.add(scope)
                     } else if (throwErrorOnInvalidRequestedScope) {
-                        throw ApiAuthenticationExceptionFactory.newOauthException(OauthAuthenticationException, OauthAuthenticationException.INVALID_SCOPE)
+                        throw ApiAuthenticationExceptionFactory.newOAuthException(OAuthAuthenticationException, OAuthAuthenticationException.INVALID_SCOPE)
                     }
                 }
                 return resultScope
@@ -413,10 +413,10 @@ class ApiAuthenticationIT extends ClientIT {
         verifyError(httpRequest, exceptionClass, false)
     }
 
-    void verifyError(Object httpRequest, Class exceptionClass, boolean useOauthRequest) {
+    void verifyError(Object httpRequest, Class exceptionClass, boolean useOAuthRequest) {
         try {
 
-            if (useOauthRequest) {
+            if (useOAuthRequest) {
                 Applications.oauthRequestAuthenticator(application).authenticate(httpRequest)
             } else {
                 Applications.apiRequestAuthenticator(application).authenticate(httpRequest)
@@ -428,12 +428,12 @@ class ApiAuthenticationIT extends ClientIT {
         }
     }
 
-    void verifyOauthError(Object httpRequest, String expectedOauthError) {
+    void verifyOAuthError(Object httpRequest, String expectedOAuthError) {
         try {
             Applications.oauthRequestAuthenticator(application).authenticate(httpRequest)
-            fail("OathError: " + expectedOauthError + " was expected")
-        } catch (OauthAuthenticationException exception) {
-            assertEquals exception.getOauthError(), expectedOauthError
+            fail("OathError: " + expectedOAuthError + " was expected")
+        } catch (OAuthAuthenticationException exception) {
+            assertEquals exception.getOAuthError(), expectedOAuthError
         }
     }
 

@@ -22,14 +22,14 @@ package com.stormpath.sdk.oauth;
  *
  * <h3>Usage</h3>
  *
- * <p>When you delegate an HTTP Oauth 2 Token Request to the Stormpath SDK, if the request is successful, a
+ * <p>When you delegate an HTTP OAuth 2 Token Request to the Stormpath SDK, if the request is successful, a
  * {@code TokenResponse} will be returned.  This {@code TokenResponse} data must be sent to the OAuth client in the
  * HTTP response.  For example:</p>
  *
  * <pre>
  * //assume a POST request to, say, https://api.mycompany.com/oauth/token:
  *
- * public void processOauthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
+ * public void processOAuthTokenRequest(HttpServletRequest request, HttpServletResponse response) {
  *
  *    Application application = client.getResource(myApplicationRestUrl, Application.class);
  *
