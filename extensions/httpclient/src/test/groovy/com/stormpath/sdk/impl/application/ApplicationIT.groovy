@@ -537,6 +537,7 @@ class ApplicationIT extends ClientIT {
             assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to Google: this can be " +
                     "caused by either a bad Google directory configuration, or the provided account credentials are not " +
                     "valid."))
+
         }
     }
 
