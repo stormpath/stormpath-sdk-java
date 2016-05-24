@@ -26,7 +26,6 @@ import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
-import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
@@ -44,7 +43,6 @@ import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.filter.oauth.ClientCredentialsAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
@@ -80,7 +78,6 @@ public class AccessTokenController extends AbstractController {
     private RequestAuthorizer requestAuthorizer;
     private AccessTokenAuthenticationRequestFactory authenticationRequestFactory;
     private AccessTokenResultFactory resultFactory;
-    private ClientCredentialsAuthenticationRequestFactory clientCredentialsAuthenticationRequestFactory;
     private Saver<AuthenticationResult> accountSaver;
     private Publisher<RequestEvent> eventPublisher;
 
@@ -150,20 +147,6 @@ public class AccessTokenController extends AbstractController {
      */
     public void setRefreshTokenAuthenticationRequestFactory(RefreshTokenAuthenticationRequestFactory refreshTokenAuthenticationRequestFactory) {
         this.refreshTokenAuthenticationRequestFactory = refreshTokenAuthenticationRequestFactory;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public ClientCredentialsAuthenticationRequestFactory getClientCredentialsAuthenticationRequestFactory() {
-        return clientCredentialsAuthenticationRequestFactory;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public void setClientCredentialsAuthenticationRequestFactory(ClientCredentialsAuthenticationRequestFactory clientCredentialsAuthenticationRequestFactory) {
-        this.clientCredentialsAuthenticationRequestFactory = clientCredentialsAuthenticationRequestFactory;
     }
 
     public void init() {
@@ -363,8 +346,8 @@ public class AccessTokenController extends AbstractController {
                 publish(evt);
             } catch (Throwable t) {
                 log.warn(
-                        "Unable to publish failed authentication request event due to exception: {}. Ignoring and handling original authentication exception {}.",
-                        t, e, t
+                    "Unable to publish failed authentication request event due to exception: {}. Ignoring and handling original authentication exception {}.",
+                    t, e, t
                 );
             }
         }
@@ -406,13 +389,6 @@ public class AccessTokenController extends AbstractController {
     }
 
     /**
-     * @since 1.0.0
-     */
-    protected OAuthClientCredentialsGrantRequestAuthentication createClientCredentialsGrantAuthenticationRequest(HttpServletRequest request) throws OAuthException {
-        return getClientCredentialsAuthenticationRequestFactory().createClientCredentialsAuthenticationRequest(request);
-    }
-
-    /**
      * @since 1.0.RC8.3
      */
     protected AccessTokenResult createRefreshTokenResult(final HttpServletRequest request,
@@ -422,7 +398,7 @@ public class AccessTokenController extends AbstractController {
     }
 
     protected void assertAuthorized(HttpServletRequest request, HttpServletResponse response)
-            throws OAuthException {
+        throws OAuthException {
         getRequestAuthorizer().assertAuthorized(request, response);
     }
 
