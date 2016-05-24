@@ -28,8 +28,13 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.*;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
+import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
+import com.stormpath.sdk.servlet.filter.FilterBuilder;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
@@ -44,6 +49,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -220,13 +226,13 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
-            public CookieConfig getAccountCookieConfig() {
-                return stormpathAccountCookieConfig();
+            public CookieConfig getRefreshTokenCookieConfig() {
+                return stormpathRefreshTokenCookieConfig();
             }
 
             @Override
-            public long getAccountJwtTtl() {
-                return accountJwtTtl;
+            public CookieConfig getAccessTokenCookieConfig() {
+                return stormpathAccessTokenCookieConfig();
             }
 
             @Override
@@ -342,8 +348,18 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public CookieConfig stormpathAccountCookieConfig() {
-        return super.stormpathAccountCookieConfig();
+    public AccessTokenCookieProperties accessTokenCookieProperties() {
+        return super.accessTokenCookieProperties();
+    }
+
+    @Bean
+    public RefreshTokenCookieProperties refreshTokenCookieProperties() {
+        return super.refreshTokenCookieProperties();
+    }
+
+    @Bean
+    public CookieConfig stormpathAccessTokenCookieConfig() {
+        return super.stormpathAccessTokenCookieConfig();
     }
 
     @Bean
@@ -379,11 +395,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
-    }
-
-    @Bean
-    public AuthenticationJwtFactory stormpathAuthenticationJwtFactory() {
-        return super.stormpathAuthenticationJwtFactory();
     }
 
     @Bean
@@ -484,6 +495,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
         return super.stormpathIdSiteOrganizationResolver();
+    }
+
+    @Bean
+    public ErrorModelFactory stormpathLoginErrorModelFactory() {
+        return super.stormpathLoginErrorModelFactory();
     }
 
     @Bean

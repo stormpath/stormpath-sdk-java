@@ -28,6 +28,8 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
+import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
@@ -47,14 +49,11 @@ import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.CookieAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
-import com.stormpath.sdk.servlet.filter.account.DefaultAuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
-import com.stormpath.sdk.servlet.filter.account.DefaultJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
@@ -105,6 +104,7 @@ import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
+import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
 import com.stormpath.sdk.servlet.saml.SamlOrganizationContext;
@@ -173,29 +173,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     //corresponding value should be present in a message source:
     protected static final String I18N_TEST_KEY = "stormpath.web.login.title";
-
-    // ================  Account cookie properties  ===================
-
-    @Value("#{ @environment['stormpath.web.account.cookie.name'] ?: 'account' }")
-    protected String accountCookieName;
-
-    @Value("#{ @environment['stormpath.web.account.cookie.comment'] }")
-    protected String accountCookieComment;
-
-    @Value("#{ @environment['stormpath.web.account.cookie.domain'] }")
-    protected String accountCookieDomain;
-
-    @Value("#{ @environment['stormpath.web.account.cookie.maxAge'] ?: 86400 }") //1 day by default
-    protected int accountCookieMaxAge;
-
-    @Value("#{ @environment['stormpath.web.account.cookie.path'] }")
-    protected String accountCookiePath;
-
-    @Value("#{ @environment['stormpath.web.account.cookie.httpOnly'] ?: true }")
-    protected boolean accountCookieHttpOnly;
-
-    @Value("#{ @environment['stormpath.web.account.cookie.secure'] ?: true }")
-    protected boolean accountCookieSecure;
 
     // =================== Authentication Components ==========================
 
@@ -666,44 +643,20 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultUsernamePasswordRequestFactory(stormpathAccountStoreResolver());
     }
 
-    public CookieConfig stormpathAccountCookieConfig() {
+    public AccessTokenCookieProperties accessTokenCookieProperties() {
+        return new AccessTokenCookieProperties();
+    }
 
-        return new CookieConfig() {
-            @Override
-            public String getName() {
-                return accountCookieName;
-            }
+    public RefreshTokenCookieProperties refreshTokenCookieProperties() {
+        return new RefreshTokenCookieProperties();
+    }
 
-            @Override
-            public String getComment() {
-                return accountCookieComment;
-            }
+    public CookieConfig stormpathRefreshTokenCookieConfig() {
+        return new RefreshTokenCookieConfig(refreshTokenCookieProperties());
+    }
 
-            @Override
-            public String getDomain() {
-                return accountCookieDomain;
-            }
-
-            @Override
-            public int getMaxAge() {
-                return accountCookieMaxAge;
-            }
-
-            @Override
-            public String getPath() {
-                return accountCookiePath;
-            }
-
-            @Override
-            public boolean isSecure() {
-                return accountCookieSecure;
-            }
-
-            @Override
-            public boolean isHttpOnly() {
-                return accountCookieHttpOnly;
-            }
-        };
+    public CookieConfig stormpathAccessTokenCookieConfig() {
+        return new AccessTokenCookieConfig(accessTokenCookieProperties());
     }
 
     public Resolver<String> stormpathRemoteAddrResolver() {
@@ -722,7 +675,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (cookieAuthenticationResultSaverEnabled) {
             return new CookieAuthenticationResultSaver(
-                    stormpathAccountCookieConfig(), stormpathSecureResolver(), stormpathAuthenticationJwtFactory()
+                    stormpathAccessTokenCookieConfig(),
+                    stormpathRefreshTokenCookieConfig(),
+                    stormpathSecureResolver(),
+                    application
             );
         }
 
@@ -771,14 +727,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new AuthenticationResultSaver(savers);
     }
 
-    public AuthenticationJwtFactory stormpathAuthenticationJwtFactory() {
-        return new DefaultAuthenticationJwtFactory(
-                stormpathJwtSigningKeyResolver(), accountJwtSignatureAlgorithm, accountJwtTtl
-        );
-    }
-
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
-        return new DefaultJwtSigningKeyResolver();
+        return new JwtTokenSigningKeyResolver();
     }
 
     public RequestEventListener stormpathRequestEventListener() {
@@ -818,7 +768,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultAccessTokenResultFactory(application);
     }
 
-    /** @since 1.0.RC8.3 */
+    /**
+     * @since 1.0.RC8.3
+     */
     public RefreshTokenResultFactory stormpathRefreshTokenResultFactory() {
         return new DefaultRefreshTokenResultFactory(application);
     }
@@ -857,7 +809,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Resolver<Account> stormpathCookieAccountResolver() {
-        return new CookieAccountResolver(stormpathAccountCookieConfig(), stormpathJwtAccountResolver());
+        return new CookieAccountResolver(stormpathAccessTokenCookieConfig(), stormpathJwtAccountResolver());
     }
 
     public Resolver<Account> stormpathSessionAccountResolver() {
@@ -930,6 +882,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
+    public ErrorModelFactory stormpathLoginErrorModelFactory() {
+        SpringLoginErrorModelFactory springLoginErrorModelFactory = new SpringLoginErrorModelFactory();
+        springLoginErrorModelFactory.setMessageSource(stormpathMessageSource());
+        return springLoginErrorModelFactory;
+    }
+
     protected String createForwardView(String uri) {
         Assert.hasText("uri cannot be null or empty.");
         assert uri != null;
@@ -973,11 +931,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setAccountStoreModelFactory(stormpathAccountStoreModelFactory());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
-
-        if (loginErrorModelFactory != null) {
-            controller.setErrorModelFactory(loginErrorModelFactory);
+        if (loginErrorModelFactory == null) {
+            controller.setErrorModelFactory(stormpathLoginErrorModelFactory());
         }
-
         controller.init();
 
         return createSpaAwareSpringController(controller);
@@ -1095,11 +1051,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                 Assert.hasText(value, "i18n message key " + I18N_TEST_KEY + " must resolve to a non-empty value.");
                 stormpathI18nAlreadyConfigured = true;
             } catch (NoSuchMessageException e) {
-                log.debug(
-                        "Stormpath i18n properties have not been specified during message source configuration.  " +
-                                "Adding these property values as a fallback. Exception for reference (this and the " +
-                                "stack trace can safely be ignored): " + e.getMessage(), e
-                );
+                log.debug("Stormpath i18n properties have not been specified during message source configuration.  " +
+                          "Adding these property values as a fallback. Exception for reference (this and the " +
+                          "stack trace can safely be ignored): " + e.getMessage(), e);
             }
 
             if (!stormpathI18nAlreadyConfigured) {
@@ -1293,7 +1247,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultAccessTokenAuthenticationRequestFactory(stormpathAccountStoreResolver());
     }
 
-    /** @since 1.0.RC8.3 */
+    /**
+     * @since 1.0.RC8.3
+     */
     public RefreshTokenAuthenticationRequestFactory stormpathRefreshTokenAuthenticationRequestFactory() {
         return new DefaultRefreshTokenAuthenticationRequestFactory();
     }

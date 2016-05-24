@@ -30,29 +30,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * This account resolver, resolves the account based on the access token cookie, using internally the jwtAccountResolver
+ *
  * @since 1.0.RC3
  */
-public class CookieAccountResolver extends AccountCookieHandler implements Resolver<Account> {
+public class CookieAccountResolver implements Resolver<Account> {
 
     private static final Logger log = LoggerFactory.getLogger(CookieAccountResolver.class);
 
-    private JwtAccountResolver jwtAccountResolver;
+    private final JwtAccountResolver jwtAccountResolver;
+    private final CookieResolver cookieResolver;
 
-    public CookieAccountResolver(CookieConfig accountCookieConfig, JwtAccountResolver jwtAccountResolver) {
-        super(accountCookieConfig);
-        Assert.notNull(jwtAccountResolver, "JwtAccountResolver cannot be null.");
+    public CookieAccountResolver(CookieConfig accessTokenCookieConfig, JwtAccountResolver jwtAccountResolver) {
+        Assert.notNull(accessTokenCookieConfig, "accessTokenCookieConfig cannot be null.");
+        Assert.notNull(jwtAccountResolver, "jwtAccountResolver cannot be null.");
         this.jwtAccountResolver = jwtAccountResolver;
-    }
-
-    protected JwtAccountResolver getJwtAccountResolver() {
-        return jwtAccountResolver;
+        this.cookieResolver = new CookieResolver(accessTokenCookieConfig.getName());
     }
 
     @Override
     public Account get(HttpServletRequest request, HttpServletResponse response) {
-
-        Resolver<Cookie> resolver = getCookieResolver(request);
-        Cookie cookie = resolver.get(request, response);
+        Cookie cookie = cookieResolver.get(request, response);
 
         if (cookie == null) {
             return null;
@@ -68,30 +66,25 @@ public class CookieAccountResolver extends AccountCookieHandler implements Resol
         } catch (Exception e) {
             String msg = "Encountered invalid JWT in account cookie.  Ignoring and deleting the cookie for safety.";
             log.debug(msg, e);
-            deleteCookie(request, response, cookie);
+            deleteCookie(response, cookie);
         }
 
         return null;
     }
 
-    protected Resolver<Cookie> getCookieResolver(HttpServletRequest request) {
-        String cookieName = getAccountCookieConfig(request).getName();
-        return new CookieResolver(cookieName);
-    }
-
     protected Account getAccount(HttpServletRequest request, HttpServletResponse response, String jwt) {
 
-        Account account = getJwtAccountResolver().getAccountByJwt(request, response, jwt);
+        Account account = jwtAccountResolver.getAccountByJwt(request, response, jwt);
 
         if (account != null) {
             request.setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME,
-                                 HttpServletRequest.FORM_AUTH);
+                    HttpServletRequest.FORM_AUTH);
         }
 
         return account;
     }
 
-    protected void deleteCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {
+    protected void deleteCookie(HttpServletResponse response, Cookie cookie) {
         if (!response.isCommitted()) {
             cookie.setValue("");
             //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/207
