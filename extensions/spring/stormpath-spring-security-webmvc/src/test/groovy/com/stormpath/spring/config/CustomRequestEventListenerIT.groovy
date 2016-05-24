@@ -28,8 +28,9 @@ import org.testng.annotations.Test
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*
-import static org.testng.Assert.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertTrue;
 
 /**
  * @since 1.0.RC9

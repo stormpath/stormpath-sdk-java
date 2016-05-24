@@ -36,7 +36,7 @@ public class CookieAccountResolverFactory extends ConfigSingletonFactory<Resolve
     @Override
     protected Resolver<Account> createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        CookieConfig cookieConfig = config.getAccountCookieConfig();
+        CookieConfig cookieConfig = config.getAccessTokenCookieConfig();
         JwtAccountResolver resolver = config.getInstance(JWT_ACCOUNT_RESOLVER);
         return new CookieAccountResolver(cookieConfig, resolver);
     }

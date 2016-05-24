@@ -18,12 +18,14 @@ package com.stormpath.spring.boot.autoconfigure
 import autoconfigure.BeanOverrideStormpathWebSecurityAutoConfigurationTestApplication
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory
-import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
-import com.stormpath.spring.security.provider.*
+import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver
+import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver
+import com.stormpath.spring.security.provider.GroupPermissionResolver
+import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
+import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
@@ -32,7 +34,6 @@ import org.testng.annotations.Test
 
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
-
 
 /**
  * @since 1.0.RC5
@@ -47,13 +48,6 @@ class BeanOverrideStormpathWebSecurityAutoConfigurationIT extends AbstractTestNG
 
     @Autowired
     GroupPermissionResolver stormpathGroupPermissionResolver
-
-    //Some WebMVC Beans
-    @Autowired
-    AuthenticationJwtFactory stormpathAuthenticationJwtFactory
-
-    @Autowired
-    JwtSigningKeyResolver stormpathJwtSigningKeyResolver
 
     @Autowired
     RequestEventListener stormpathRequestEventListener
@@ -80,8 +74,6 @@ class BeanOverrideStormpathWebSecurityAutoConfigurationIT extends AbstractTestNG
         assertTrue stormpathAuthenticationProvider.authenticationTokenFactory instanceof UsernamePasswordAuthenticationTokenFactory
 
         //Some WebMVC beans
-        assertNotNull stormpathAuthenticationJwtFactory
-        assertNotNull stormpathJwtSigningKeyResolver
         assertNotNull stormpathRequestEventListener
         assertNotNull stormpathCsrfTokenManager
         assertNotNull stormpathAuthorizationHeaderAuthenticator

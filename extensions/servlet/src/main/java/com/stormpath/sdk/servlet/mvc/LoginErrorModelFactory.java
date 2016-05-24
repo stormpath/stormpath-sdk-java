@@ -21,8 +21,8 @@ import java.util.List;
 public class LoginErrorModelFactory implements ErrorModelFactory {
 
     private static final Logger log = LoggerFactory.getLogger(LoginErrorModelFactory.class);
-    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
-    private static final String  INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
+    private static final String MESSAGE_SOURCE = "stormpath.web.message.source";
+    private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
     public List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
         if (e != null) {
@@ -39,14 +39,13 @@ public class LoginErrorModelFactory implements ErrorModelFactory {
         MessageSource messageSource = null;
         try {
             messageSource = config.getInstance(MESSAGE_SOURCE);
-        }
-        catch (ServletException se){
+        } catch (ServletException se) {
             messageSource = new DefaultMessageSource();
         }
         return messageSource.getMessage(INVALID_LOGIN_MESSAGE, request.getLocale());
     }
 
-    private Config getConfig(HttpServletRequest request){
+    private Config getConfig(HttpServletRequest request) {
         return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
     }
 }

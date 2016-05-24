@@ -42,8 +42,15 @@ import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
-import com.stormpath.spring.security.provider.*
+import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver
+import com.stormpath.spring.security.provider.DefaultGroupGrantedAuthorityResolver
+import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver
+import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver
+import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
+import com.stormpath.spring.security.provider.StormpathUserDetails
+import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
@@ -114,7 +121,12 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     UsernamePasswordRequestFactory stormpathUsernamePasswordRequestFactory
 
     @Autowired
-    CookieConfig stormpathAccountCookieConfig
+    @Qualifier("stormpathRefreshTokenCookieConfig")
+    CookieConfig stormpathRefreshTokenCookieConfig
+
+    @Autowired
+    @Qualifier("stormpathAccessTokenCookieConfig")
+    CookieConfig stormpathAccessTokenCookieConfig
 
     @Autowired
     AccessTokenResultFactory stormpathAccessTokenResultFactory
@@ -167,7 +179,8 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         assertNotNull stormpathLayoutInterceptor
         assertNotNull stormpathAccountStoreResolver
         assertNotNull stormpathUsernamePasswordRequestFactory
-        assertNotNull stormpathAccountCookieConfig
+        assertNotNull stormpathAccessTokenCookieConfig
+        assertNotNull stormpathRefreshTokenCookieConfig
         assertNotNull stormpathAccessTokenResultFactory
         assertNotNull stormpathCookieAccountResolver
         assertNotNull stormpathLoginController

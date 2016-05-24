@@ -76,9 +76,6 @@
       "name": "stormpath.web.account"
     },
     {
-      "name": "stormpath.web.account.cookie"
-    },
-    {
       "name": "stormpath.web.account.jwt"
     },
     {
@@ -96,45 +93,6 @@
   ],
   "properties": [
     {
-      "name": "stormpath.web.account.cookie.name",
-      "type": "java.lang.String",
-      "description": "The name of the account identity cookie sent to the browser after successful login.  This cookie represents the account identity on every request and replaces the need for an HTTP Session (server state) for request-account affinity and ensures applications scale well.  The stormpath web mvc starter does not include any sensitive information (identifying information, passwords, etc) in this cookie by default, and also digitally signs it to prevent tampering, so it is safe to be sent to the browser.  However, TLS (aka SSL) should always be enabled during and after login at all times to help ensure the cookie cannot be also be used by 3rd parties.",
-      "defaultValue": "account"
-    },
-    {
-      "name": "stormpath.web.account.cookie.comment",
-      "type": "java.lang.String",
-      "description": "Describes the purpose of the account identity cookie sent to the browser after successful login.  This property is optional and null by default and can be safely ignored if desired.  See the stormpath.web.account.cookie.name property documentation for more information about the account identity cookie."
-    },
-    {
-      "name": "stormpath.web.account.cookie.domain",
-      "type": "java.lang.String",
-      "description": "The domain within which the account identity cookie should be presented as defined by http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain-java.lang.String-.  By default, the cookie will only be sent to the server that created the cookie (your application).  See the stormpath.web.account.cookie.name property documentation for more information about the account identity cookie."
-    },
-    {
-      "name": "stormpath.web.account.cookie.maxAge",
-      "type": "java.lang.Integer",
-      "description": "The maximum age in seconds the account identity cookie may be used before it expires as defined by http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge-int-.  The default value is 86400 seconds (1 day).  See the stormpath.web.account.cookie.name property documentation for more information about the account identity cookie.",
-      "defaultValue": 86400
-    },
-    {
-      "name": "stormpath.web.account.cookie.path",
-      "type": "java.lang.String",
-      "description": "The uri path under which the account identity cookie should be presented to your application as defined by http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath-java.lang.String-.  The default value is empty which means the servlet container will default to your application's context path.  See the stormpath.web.account.cookie.name property documentation for more information about the account identity cookie."
-    },
-    {
-      "name": "stormpath.web.account.cookie.httpOnly",
-      "type": "java.lang.Boolean",
-      "description": "Marks or unmarks the account identity cookie as HttpOnly.  If true, the cookie will not be exposed to client-side JavaScript, helping to mitigate certain Cross-Site Scripting (XSS) attacks.  Because of this desirable security trait, especially for identity cookies, this value is true by default. See the stormpath.web.account.cookie.name property documentation for more information about the account identity cookie.",
-      "defaultValue": true
-    },
-    {
-      "name": "stormpath.web.account.cookie.secure",
-      "type": "java.lang.Boolean",
-      "description": "Sets whether or not the account identity cookie should only be sent by the browser over a secure channel (HTTPS). Because it is practically never desirable for 3rd parties to obtain an identity cookie, this value is true by default. See the stormpath.web.account.cookie.name property documentation for more information about the account identity cookie.",
-      "defaultValue": true
-    },
-    {
       "name": "stormpath.web.authc.savers.cookie.enabled",
       "type": "java.lang.Boolean",
       "description": "Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.",
@@ -145,18 +103,6 @@
       "type": "java.lang.Boolean",
       "description": "Controls if a successful authentication should be reflected by storing account state in the server-side HTTP session.  This property is false by default, preferring instead the performance benefits of a stateless digitally-signed account cookie via the stormpath.web.authc.savers.cookie.enabled property.",
       "defaultValue": false
-    },
-    {
-      "name": "stormpath.web.account.jwt.ttl",
-      "type": "java.lang.Integer",
-      "description": "Specifies how long in seconds the JWT identity assertion inside the account identity cookie (not the cookie itself) may be trusted for identity assertion.  This value must be positive (greater than zero) and greater than or equal to the stormpath.web.account.cookie.maxAge value.  The default value is 259200 (3 days).",
-      "defaultValue": 259200
-    },
-    {
-      "name": "stormpath.web.account.jwt.signatureAlgorithm",
-      "type": "java.lang.String",
-      "description": "Specifies the cryptographic hash algorithm to use when digitally signing the JWT identity assertion that will be stored in the account identity cookie.  The default value is HS256 (HMAC-SHA-256). This value must be a valid algorithm name as specified in https://tools.ietf.org/html/rfc7519.",
-      "defaultValue": "HS256"
     },
     {
       "name": "stormpath.web.request.remoteUser.strategy",
@@ -1134,7 +1080,7 @@
       "defaultValue": "com.stormpath.sdk.servlet.event.RequestEventListenerAdapter"
     },
     {
-      "name": "stormpath.web.account.cookie.secure.resolver",
+      "name": "stormpath.web.cookie.secure.resolver",
       "type": "java.lang.String",
       "description": "THE FOLLOWING SECURE RESOLVER SHOULD *ALWAYS* RETURN TRUE IN PRODUCTION, EVEN IN INTRANET/PRIVATE COMPANY APPS. A 'false' value *will* make your application vulnerable to identity hijacking attacks. The default implementation however allows localhost clients to use non-TLS connections for development convenience. TLS is required for all other clients in order for the cookie to be set.",
       "defaultValue": "com.stormpath.sdk.servlet.config.SecureResolverFactory"

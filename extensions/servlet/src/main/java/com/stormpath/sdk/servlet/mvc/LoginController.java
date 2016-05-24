@@ -15,17 +15,16 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -183,11 +182,7 @@ public class LoginController extends FormController {
 
         req.login(usernameOrEmail, password);
 
-        //Login was successful - get the Account that just logged in:
-        final Account account = getAccount(req);
-
-        //simulate a result for the benefit of the 'saveResult' method signature:
-        AuthenticationResult result = new TransientAuthenticationResult(account);
+        AccessTokenResult result = (AccessTokenResult) req.getAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME);
         saveResult(req, resp, result);
 
         String next = form.getNext();
@@ -197,10 +192,6 @@ public class LoginController extends FormController {
         }
 
         return new DefaultViewModel(next).setRedirect(true);
-    }
-
-    protected Account getAccount(HttpServletRequest req) {
-        return AccountResolver.INSTANCE.getRequiredAccount(req);
     }
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {
