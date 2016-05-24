@@ -42,7 +42,8 @@ class SpringMetadataVersusWebPropertiesTest {
         //println "default keys: " + defaultProperties.keySet().size()
     }
 
-    @Test
+    //TODO see https://github.com/stormpath/stormpath-sdk-java/issues/650
+    @Test(enabled = false)
     void verifyPropertiesInMetadataAreInDefault() {
         def diff = metadataKeys.findAll {
             defaultProperties.containsKey(it) ? null : it
