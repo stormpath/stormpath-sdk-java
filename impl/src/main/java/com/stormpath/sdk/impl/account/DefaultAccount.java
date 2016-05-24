@@ -28,9 +28,9 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
@@ -97,7 +97,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<RefreshTokenList, RefreshToken> REFRESH_TOKENS =
             new CollectionReference<RefreshTokenList, RefreshToken>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
+    public static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
             PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS);

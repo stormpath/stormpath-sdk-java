@@ -18,11 +18,19 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.UserAgents;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -34,6 +42,33 @@ public abstract class AbstractController implements Controller {
     };
 
     protected String nextUri;
+    protected String view;
+    protected String uri;
+    protected MessageSource messageSource;
+    protected Publisher<RequestEvent> eventPublisher;
+
+    protected String controllerKey;
+    private Resolver<Locale> localeResolver;
+
+    public AbstractController(ControllerConfigResolver controllerConfigResolver) {
+        this.nextUri = controllerConfigResolver.getNextUri();
+        this.messageSource = controllerConfigResolver.getMessageSource();
+        this.localeResolver = controllerConfigResolver.getLocaleResolver();
+        this.view = controllerConfigResolver.getView();
+        this.uri = controllerConfigResolver.getUri();
+        this.controllerKey = controllerConfigResolver.getControllerKey();
+        this.eventPublisher = controllerConfigResolver.getRequestEventPublisher();
+
+        Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
+        Assert.hasText(this.view, "view cannot be null or empty.");
+        Assert.hasText(this.uri, "uri cannot be null or empty.");
+        Assert.notNull(this.messageSource, "messageSource cannot be null.");
+        Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
+        Assert.hasText(this.controllerKey, "controllerKey cannot be null.");
+    }
+
+    protected AbstractController() {
+    }
 
     protected Map<String, Object> newModel() {
         return new HashMap<String, Object>();
@@ -45,15 +80,20 @@ public abstract class AbstractController implements Controller {
      *
      * @return True if controller doesn't allow request when user is authenticated, false otherwise
      */
-    public abstract boolean isNotAllowIfAuthenticated();
+    public abstract boolean isNotAllowedIfAuthenticated();
 
-    public String getNextUri() {
-        return nextUri;
+    protected String i18n(HttpServletRequest request, String key) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale);
     }
 
-    public void setNextUri(String nextUri) {
-        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
-        this.nextUri = nextUri;
+    protected String i18n(HttpServletRequest request, String key, Object... args) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale, args);
+    }
+
+    protected boolean isJsonPreferred(HttpServletRequest request) {
+        return UserAgents.get(request).isJsonPreferred();
     }
 
     @Override
@@ -64,12 +104,12 @@ public abstract class AbstractController implements Controller {
         boolean hasAccount = AccountResolver.INSTANCE.hasAccount(request);
 
         if (HttpMethod.GET.name().equalsIgnoreCase(method)) {
-            if (isNotAllowIfAuthenticated() && hasAccount) {
-                return new DefaultViewModel(getNextUri()).setRedirect(true);
+            if (isNotAllowedIfAuthenticated() && hasAccount) {
+                return new DefaultViewModel(nextUri).setRedirect(true);
             }
             return doGet(request, response);
         } else if (HttpMethod.POST.name().equalsIgnoreCase(method)) {
-            if (isNotAllowIfAuthenticated() && hasAccount) {
+            if (isNotAllowedIfAuthenticated() && hasAccount) {
                 response.sendError(403);
                 return null;
             }
@@ -92,4 +132,14 @@ public abstract class AbstractController implements Controller {
         return service(request, response);
     }
 
+    protected void publishRequestEvent(RequestEvent e) throws ServletException {
+        if (e != null) {
+            try {
+                eventPublisher.publish(e);
+            } catch (Exception ex) {
+                String msg = "Unable to publish registered account request event: " + ex.getMessage();
+                throw new ServletException(msg, ex);
+            }
+        }
+    }
 }

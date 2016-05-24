@@ -15,47 +15,24 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 
 import javax.servlet.ServletException;
-import java.util.Locale;
 
 /**
  * @since 1.0.RC3
  */
 public class ChangePasswordFilter extends ControllerFilter {
 
-    public static final String CSRF_TOKEN_MANAGER = "stormpath.web.csrf.token.manager";
-    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
-    public static final String LOCALE_RESOLVER = "stormpath.web.locale.resolver";
-
     @Override
     protected void onInit() throws ServletException {
-
-        CsrfTokenManager csrfTokenManager = getConfig().getInstance(CSRF_TOKEN_MANAGER);
-        Resolver<Locale> localeResolver = getConfig().getInstance(LOCALE_RESOLVER);
-        MessageSource messageSource = getConfig().getInstance(MESSAGE_SOURCE);
-
-        ChangePasswordController controller = new ChangePasswordController();
-        controller.setUri(getConfig().getChangePasswordUrl());
-        controller.setView("stormpath/change");
-        controller.setCsrfTokenManager(csrfTokenManager);
-        controller.setNextUri(getConfig().getChangePasswordNextUrl());
-        controller.setLoginUri(getConfig().getLoginUrl());
-        controller.setForgotPasswordUri(getConfig().getForgotPasswordUrl());
-        controller.setLocaleResolver(localeResolver);
-        controller.setMessageSource(messageSource);
-        controller.init();
+        ChangePasswordController controller = new ChangePasswordController(getConfig());
 
         setController(controller);
 
         super.onInit();
     }
-
 }
 
 

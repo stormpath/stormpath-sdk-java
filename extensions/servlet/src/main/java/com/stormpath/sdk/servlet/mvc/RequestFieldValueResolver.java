@@ -1,6 +1,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 1.0.RC8
@@ -8,4 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface RequestFieldValueResolver {
 
     String getValue(HttpServletRequest request, String fieldName);
+
+    Map<String, Object> getAllFields(HttpServletRequest request);
 }

@@ -36,6 +36,8 @@ public interface Field {
      */
     String getValue();
 
+    void setValue(String value);
+
     /**
      * Form field label.  This value is usually an i18n message key instead of a raw language value.  This allows the
      * view rendering to reference a message library using the return value as an i18n key for internationalized
@@ -64,22 +66,15 @@ public interface Field {
     boolean isRequired();
 
     /**
-     * Returns {@code true} if the form field should be autofocused during view rendering, {@code false} otherwise.  A
-     * {@code true} value indicates that the text cursor should be placed in the form field immediately so the user can
-     * start filling out the form without having to click into the text field.  When rendered in an html form, this
-     * would enable the field element's <code>autofocus=&quot;autofocus&quot;</code> attribute.
-     *
-     * <p>Because only one field in a form can be auto-focused, if more than one field specifies a {@code true} value,
-     * only the first one will be autofocused.</p>
-     *
-     * @return {@code true} if the form field should be autofocused during view rendering, {@code false} otherwise.
-     */
-    boolean isAutofocus();
-
-    /**
      * Returns the form field type, for example, {@code text}, {@code password}, {@code hidden}, etc.
      *
      * @return the form field type, for example, {@code text}, {@code password}, {@code hidden}, etc.
      */
     String getType();
+
+    boolean isVisible();
+
+    boolean isEnabled();
+
+    Field copy();
 }

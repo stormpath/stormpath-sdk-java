@@ -30,12 +30,13 @@
 
                     <div class="box row">
 
-                        <div class="email-password-area col-xs-12 <c:out value="${social ? 'small col-sm-8' : 'large col-sm-12'}"/>">
+                        <div class="email-password-area col-xs-12 <c:out value="${!empty accountStores ? 'small col-sm-8' : 'large col-sm-12'}"/>">
 
                             <div class="header">
                                 <span>
                                     <sp:message key="stormpath.web.login.form.title">
-                                        <sp:param><a href="${pageContext.request.contextPath}${registerUri}"><sp:message key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
+                                        <sp:param><a href="${pageContext.request.contextPath}${registerUri}"><sp:message
+                                                key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
                                     </sp:message>
                                 </span>
                             </div>
@@ -43,7 +44,7 @@
                             <c:if test="${!empty status}">
                                 <div class="alert alert-dismissable alert-success">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                    <p><sp:message key="stormpath.web.login.status.${status}"/></p>
+                                    <p>${status}</p>
                                 </div>
                             </c:if>
 
@@ -51,51 +52,70 @@
                                 <div class="alert alert-dismissable alert-danger bad-login">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                                     <c:forEach items="${errors}" var="error">
-                                        <p>${error}</p>
+                                        <p>${error.message}</p>
                                     </c:forEach>
                                 </div>
                             </c:if>
 
                             <form method="post" role="form" class="login-form form-horizontal">
-                                <c:if test="${!empty form.next}">
-                                <input name="next" type="hidden" value="${form.next}">
-                                </c:if>
 
-                                <c:forEach items="${form.hiddenFields}" var="field">
-                                    <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                <c:forEach items="${form.fields}" var="field">
+                                    <c:choose>
+                                        <c:when test="${field.type == 'hidden'}">
+                                            <input name="${field.name}" value="${field.value}" type="${field.type}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div form-group="true" class="form-group group-${field.name}">
+                                                <label class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-4'}"/>"><sp:message
+                                                        key="${field.label}"/></label>
+                                                <div class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-8'}"/>">
+                                                    <input name="${field.name}" value="${field.value}"
+                                                           type="${field.type}"
+                                                           placeholder="<sp:message key="${field.placeholder}"/>"
+                                                           <c:if test="${field.required}">required="required" </c:if>
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:forEach>
-
-                                <c:forEach items="${form.visibleFields}" var="field">
-                                    <div form-group="true" class="form-group group-${field.name}">
-                                        <label class="<c:out value="${social ? 'col-sm-12' : 'col-sm-4'}"/>"><sp:message key="${field.label}"/></label>
-                                        <div class="col-sm-8">
-                                            <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                   placeholder="<sp:message key="${field.placeholder}"/>"
-                                                   <c:if test="${field.autofocus}">autofocus="autofocus" </c:if>
-                                                   <c:if test="${field.required}">required="required" </c:if>
-                                                   class="form-control">
-                                        </div>
-                                    </div>
-                                </c:forEach>
-
                                 <div>
-                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message key="stormpath.web.login.form.button.value"/></button>
+                                    <button type="submit" class="login btn btn-login btn-sp-green"><sp:message
+                                            key="stormpath.web.login.form.button.value"/></button>
                                 </div>
                             </form>
 
                         </div>
 
+                        <c:if test="${!empty accountStores}">
+                            <div class="provider-area  col-xs-12 col-sm-4">
+                                <div class="header">&nbsp;</div>
+                                <label>Easy 1-click login:</label>
+                                <c:forEach items="${accountStores}" var="accountStore">
+                                    <button class="btn btn-social btn-${accountStore.provider.providerId}"
+                                            id="${accountStore.provider.providerId == 'saml' ? 'saml' : accountStore.provider.clientId}">
+                                        <c:out
+                                            value="${accountStore.provider.providerId}"/></button>
+                                </c:forEach>
+                            </div>
+                        </c:if>
+
                     </div>
 
                     <c:if test="${verifyEnabled}">
-                        <a href="${pageContext.request.contextPath}${verifyUri}" class="verify"><sp:message key="stormpath.web.login.form.sendVerificationEmail.text"/></a>
+                        <a href="${pageContext.request.contextPath}${verifyUri}" class="verify"><sp:message
+                                key="stormpath.web.login.form.sendVerificationEmail.text"/></a>
                     </c:if>
-                    <a href="${pageContext.request.contextPath}${forgotLoginUri}" class="to-login"><sp:message key="stormpath.web.login.form.resetLink.text"/></a>
+                    <a href="${pageContext.request.contextPath}${forgotLoginUri}" class="to-login"><sp:message
+                            key="stormpath.web.login.form.resetLink.text"/></a>
 
                 </div>
-
+                <c:set var="req" value="${pageContext.request}"/>
+                <input type="hidden" id="baseUrl"
+                       value="${req.scheme}://${req.serverName}:${req.serverPort}${req.contextPath}"/>
             </div>
-
         </div>
+
+        <script src='${pageContext.request.contextPath}/assets/js/stormpath.js'></script>
     </jsp:body>
 </t:page>

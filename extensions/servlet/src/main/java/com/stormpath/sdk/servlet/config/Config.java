@@ -15,6 +15,11 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+
 import javax.servlet.ServletException;
 import java.util.List;
 import java.util.Map;
@@ -24,26 +29,25 @@ import java.util.Map;
  */
 public interface Config extends Map<String, String> {
 
-    /**
-     * Returns the context-relative URL of the login view.
-     *
-     * @return the context-relative URL of the login view.
-     */
-    String getLoginUrl();
+    ControllerConfigResolver getLoginControllerConfig();
 
-    String getLoginNextUrl();
+    ControllerConfigResolver getLogoutControllerConfig();
 
-    String getLogoutUrl();
+    ControllerConfigResolver getRegisterControllerConfig();
 
-    String getForgotPasswordUrl();
+    ControllerConfigResolver getForgotPasswordControllerConfig();
 
-    String getForgotPasswordNextUrl();
+    ControllerConfigResolver getVerifyControllerConfig();
 
-    String getChangePasswordUrl();
+    ControllerConfigResolver getSendVerificationEmailControllerConfig();
 
-    String getChangePasswordNextUrl();
+    ControllerConfigResolver getChangePasswordControllerConfig();
 
-    String getLogoutNextUrl();
+    Saver<AuthenticationResult> getAuthenticationResultSaver();
+
+    AccountStoreResolver getAccountStoreResolver();
+
+    boolean isRegisterAutoLoginEnabled();
 
     /**
      * @since 1.0.RC6
@@ -52,25 +56,13 @@ public interface Config extends Map<String, String> {
 
     String getAccessTokenUrl();
 
-    String getRegisterUrl();
-
-    String getRegisterNextUrl();
-
-    String getVerifyUrl();
-
-    /**
-     * @since 1.0.RC8.3
-     */
-    String getSendVerificationEmailUrl();
-
-    /**
-     * @since 1.0.RC8.3
-     */
-    boolean isVerifyEnabled();
-
-    String getVerifyNextUrl();
-
     String getUnauthorizedUrl();
+
+    boolean isMeEnabled();
+
+    String getMeUrl();
+
+    List<String> getMeExpandedProperties();
 
     CookieConfig getRefreshTokenCookieConfig();
 
@@ -80,10 +72,10 @@ public interface Config extends Map<String, String> {
 
     <T> T getInstance(String classPropertyName) throws ServletException;
 
-    <T> Map<String,T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;
+    <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;
 
     /**
      * @since 1.0.0
      */
-    List<String> getProducedMediaTypes();
+    String getProducesMediaTypes();
 }

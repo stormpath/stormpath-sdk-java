@@ -5,29 +5,34 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * 1.0.RC8
  */
 public class MeController extends AbstractController {
 
+    private List<String> expands;
+    private AccountModelFactory accountModelFactory;
+
+    public MeController(List<String> expands) {
+        this.expands = expands;
+
+        this.accountModelFactory = new DefaultAccountModelFactory();
+    }
+
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Account account = AccountResolver.INSTANCE.getAccount(request);
 
-        Map<String,Object> model = new HashMap<String, Object>();
+        response.setHeader("Cache-Control", "no-store, no-cache");
+        response.setHeader("Pragma", "no-cache");
 
-        if (AccountResolver.INSTANCE.hasAccount(request)) {
-            Account account = AccountResolver.INSTANCE.getAccount(request);
-            model.put("account", account);
-        }
-
-        return new DefaultViewModel("stormpathJsonView", model);
+        return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
     }
 }
