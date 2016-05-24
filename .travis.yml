@@ -4,7 +4,6 @@ jdk:
 - openjdk7
 - oraclejdk7
 - oraclejdk8
-- openjdk6
 env:
   global:
   - STORMPATH_API_KEY_ID=5ZAFM5P52226F24AW0IBKBRW8
