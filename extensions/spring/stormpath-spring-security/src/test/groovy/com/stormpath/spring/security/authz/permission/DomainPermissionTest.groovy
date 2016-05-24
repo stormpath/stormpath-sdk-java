@@ -15,9 +15,9 @@
  */
 package com.stormpath.spring.security.authz.permission
 
-import org.junit.Test
+import org.testng.annotations.Test
 
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  * @since 0.2.0
@@ -46,7 +46,7 @@ class DomainPermissionTest {
 
         // Verify parts
         parts = p.getParts();
-        assertEquals("Number of parts", 1, parts.size());
+        assertEquals(1, parts.size());
         set = parts.get(0);
         assertEquals(1, set.size());
         entry = set.iterator().next();

@@ -35,7 +35,6 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
@@ -49,6 +48,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -80,7 +80,7 @@ import java.util.Set;
  */
 @Configuration
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
-    implements ServletContextAware, InitializingBean {
+        implements ServletContextAware, InitializingBean {
 
     private ServletContext servletContext;
 
@@ -213,13 +213,13 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
-            public CookieConfig getAccountCookieConfig() {
-                return stormpathAccountCookieConfig();
+            public CookieConfig getRefreshTokenCookieConfig() {
+                return stormpathRefreshTokenCookieConfig();
             }
 
             @Override
-            public long getAccountJwtTtl() {
-                return accountJwtTtl;
+            public CookieConfig getAccessTokenCookieConfig() {
+                return stormpathAccessTokenCookieConfig();
             }
 
             @Override
@@ -230,19 +230,19 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             @Override
             public <T> T getInstance(String classPropertyName) throws ServletException {
                 if (MessageTag.LOCALE_RESOLVER_CONFIG_KEY.equals(classPropertyName)) {
-                    return (T)localeResolver;
+                    return (T) localeResolver;
                 } else if (MessageTag.MESSAGE_SOURCE_CONFIG_KEY.equals(classPropertyName)) {
-                    return (T)messageSource;
+                    return (T) messageSource;
                 } else {
                     String msg = "The config key '" + classPropertyName + "' is not supported in Spring environments " +
-                                 "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
+                            "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
                     throw new UnsupportedOperationException(msg);
                 }
             }
 
             @Override
             public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType)
-                throws ServletException {
+                    throws ServletException {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
             }
 
@@ -330,8 +330,18 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public CookieConfig stormpathAccountCookieConfig() {
-        return super.stormpathAccountCookieConfig();
+    public AccessTokenCookieProperties accessTokenCookieProperties() {
+        return super.accessTokenCookieProperties();
+    }
+
+    @Bean
+    public RefreshTokenCookieProperties refreshTokenCookieProperties() {
+        return super.refreshTokenCookieProperties();
+    }
+
+    @Bean
+    public CookieConfig stormpathAccessTokenCookieConfig() {
+        return super.stormpathAccessTokenCookieConfig();
     }
 
     @Bean
@@ -367,11 +377,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
-    }
-
-    @Bean
-    public AuthenticationJwtFactory stormpathAuthenticationJwtFactory() {
-        return super.stormpathAuthenticationJwtFactory();
     }
 
     @Bean
@@ -472,6 +477,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
         return super.stormpathIdSiteOrganizationResolver();
+    }
+
+    @Bean
+    public ErrorModelFactory stormpathLoginErrorModelFactory() {
+        return super.stormpathLoginErrorModelFactory();
     }
 
     @Bean
@@ -583,8 +593,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public Filter stormpathFilter() throws ServletException {
 
         FilterBuilder builder = new DefaultFilterBuilder().setFilterClass(
-            SpringStormpathFilter.class) //suppress config logic since Spring is used for config here
-            .setServletContext(servletContext).setName("stormpathFilter");
+                SpringStormpathFilter.class) //suppress config logic since Spring is used for config here
+                .setServletContext(servletContext).setName("stormpathFilter");
 
         StormpathFilter filter = (StormpathFilter) builder.build();
 

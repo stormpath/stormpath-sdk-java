@@ -1,5 +1,6 @@
 package com.stormpath.sdk.servlet.filter.account
 
+import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.http.Resolver
 import org.powermock.core.classloader.annotations.PrepareForTest
@@ -18,8 +19,8 @@ import static org.easymock.EasyMock.same
 import static org.powermock.api.easymock.PowerMock.createMock
 import static org.powermock.api.easymock.PowerMock.mockStatic
 import static org.powermock.api.easymock.PowerMock.replay
-import static org.powermock.api.easymock.PowerMock.verify
 import static org.powermock.api.easymock.PowerMock.reset
+import static org.powermock.api.easymock.PowerMock.verify
 import static org.testng.Assert.assertFalse
 
 /**
@@ -36,25 +37,26 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
 
         mockStatic(LoggerFactory.class)
         Logger log = createMock(Logger.class)
-        expect(LoggerFactory.getLogger(isA(Class))).andReturn(log)
+        expect(LoggerFactory.getLogger((Class) isA(Class))).andReturn(log)
 
         HttpServletRequest request = createMock(HttpServletRequest.class)
-        CookieConfig config = createMock(CookieConfig.class)
-        AuthenticationJwtFactory factory = createMock(AuthenticationJwtFactory.class)
+        CookieConfig accessTokenConfig = createMock(CookieConfig.class)
+        CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
+        Application application = createMock(Application.class)
         def resolver = createMock(Resolver.class)
 
-        expect(config.isSecure()).andReturn(true)
+        expect(accessTokenConfig.isSecure()).andReturn(true)
         expect(resolver.get(same(request), isNull(HttpServletResponse))).andReturn(false)
         expect(log.warn(isA(String)))
 
         replay LoggerFactory.class
-        replay log, request, config, resolver, factory
+        replay log, request, accessTokenConfig, refreshTokenConfig, resolver
 
-        def saver = new CookieAuthenticationResultSaver(config, resolver, factory)
-        assertFalse saver.isCookieSecure(request, config)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, application)
+        assertFalse saver.isCookieSecure(request, accessTokenConfig)
 
         verify LoggerFactory.class
-        verify log, request, config, resolver, factory
+        verify log, request, accessTokenConfig, refreshTokenConfig, resolver
         reset LoggerFactory.class
     }
 }

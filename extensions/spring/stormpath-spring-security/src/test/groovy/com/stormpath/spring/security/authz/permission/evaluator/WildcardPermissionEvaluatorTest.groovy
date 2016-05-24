@@ -18,13 +18,12 @@ package com.stormpath.spring.security.authz.permission.evaluator
 
 import com.stormpath.spring.security.authz.permission.Permission
 import com.stormpath.spring.security.authz.permission.WildcardPermission
-import org.junit.Test
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
-import static org.junit.Assert.assertEquals
-
+import static org.testng.Assert.*
 
 class WildcardPermissionEvaluatorTest {
 

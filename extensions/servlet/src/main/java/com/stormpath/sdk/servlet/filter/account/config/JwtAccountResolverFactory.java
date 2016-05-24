@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.servlet.filter.account.config;
 
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
+import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 
 import javax.servlet.ServletContext;
 
@@ -30,8 +30,7 @@ public class JwtAccountResolverFactory extends ConfigSingletonFactory<JwtAccount
 
     @Override
     protected JwtAccountResolver createInstance(ServletContext servletContext) throws Exception {
-        Config config = (Config) servletContext.getAttribute(Config.class.getName());
-        JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
+        JwtSigningKeyResolver resolver = new JwtTokenSigningKeyResolver();
         return new DefaultJwtAccountResolver(resolver);
     }
 }

@@ -1,11 +1,11 @@
 package com.stormpath.sdk.servlet.util
 
-import org.junit.Test
+import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
 
 import static org.easymock.EasyMock.*
-import static org.junit.Assert.*
+import static org.testng.Assert.*
 
 /**
  * @since 1.0.RC5

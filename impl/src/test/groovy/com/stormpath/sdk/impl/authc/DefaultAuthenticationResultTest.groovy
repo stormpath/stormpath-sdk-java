@@ -8,8 +8,8 @@ import com.stormpath.sdk.oauth.AccessTokenResult
 import com.stormpath.sdk.oauth.OAuthAuthenticationResult
 import org.testng.annotations.Test
 
-import static junit.framework.TestCase.assertNotNull
 import static org.easymock.EasyMock.createStrictMock
+import static org.testng.Assert.assertNotNull
 
 /**
  * @since 1.0.RC9

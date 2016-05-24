@@ -15,15 +15,20 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
+import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
+import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,31 +38,32 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @since 1.0.RC3
  */
-public class CookieAuthenticationResultSaver extends AccountCookieHandler implements Saver<AuthenticationResult> {
+public class CookieAuthenticationResultSaver implements Saver<AuthenticationResult> {
 
     private static final Logger log = LoggerFactory.getLogger(CookieAuthenticationResultSaver.class);
 
-    private AuthenticationJwtFactory authenticationJwtFactory;
+    private static final int DEFAULT_COOKIE_MAX_AGE = 259200;
+
     private Resolver<Boolean> secureCookieRequired;
 
     private boolean secureWarned = false;
 
-    public CookieAuthenticationResultSaver(CookieConfig accountCookieConfig,
+    private final CookieConfig accessTokenCookieConfig;
+    private final CookieConfig refreshTokenCookieConfig;
+    private final Application application;
+
+    public CookieAuthenticationResultSaver(CookieConfig accessTokenCookieConfig,
+                                           CookieConfig refreshTokenCookieConfig,
                                            Resolver<Boolean> secureCookieRequired,
-                                           AuthenticationJwtFactory authenticationJwtFactory) {
-        super(accountCookieConfig);
-        Assert.notNull(secureCookieRequired, "secureCookieRequired Resolver cannot be null.");
-        Assert.notNull(authenticationJwtFactory, "AuthenticationJwtFactory cannot be null.");
+                                           Application application) {
+        Assert.notNull(accessTokenCookieConfig, "accessTokenCookieConfig cannot be null.");
+        Assert.notNull(refreshTokenCookieConfig, "refreshTokenCookieConfig cannot be null.");
+        Assert.notNull(secureCookieRequired, "secureCookieRequired cannot be null.");
+        Assert.notNull(application, "application cannot be null.");
+        this.accessTokenCookieConfig = accessTokenCookieConfig;
+        this.refreshTokenCookieConfig = refreshTokenCookieConfig;
         this.secureCookieRequired = secureCookieRequired;
-        this.authenticationJwtFactory = authenticationJwtFactory;
-    }
-
-    public Resolver<Boolean> getSecureCookieRequired() {
-        return secureCookieRequired;
-    }
-
-    public AuthenticationJwtFactory getAuthenticationJwtFactory() {
-        return authenticationJwtFactory;
+        this.application = application;
     }
 
     @Override
@@ -68,34 +74,24 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
             return;
         }
 
-        String jwt;
-
         if (value instanceof AccessTokenResult) {
-            jwt = ((AccessTokenResult) value).getTokenResponse().getAccessToken();
-        } else {
-            jwt = getAuthenticationJwtFactory().createAccountJwt(request, response, value);
+            AccessTokenResult accessTokenResult = (AccessTokenResult) value;
+
+            getAccessTokenCookieSaver(request).set(request, response, accessTokenResult.getTokenResponse().getAccessToken());
+            getRefreshTokenCookieSaver(request).set(request, response, accessTokenResult.getTokenResponse().getRefreshToken());
         }
-
-        Saver<String> saver = getCookieSaver(request);
-
-        saver.set(request, response, jwt);
     }
 
     protected void remove(HttpServletRequest request, HttpServletResponse response) {
-        Saver<String> saver = getCookieSaver(request);
-        saver.set(request, response, null);
-    }
-
-    protected Saver<String> getCookieSaver(HttpServletRequest request) {
-        CookieConfig cfg = getAccountCookieConfig(request);
-        return new CookieSaver(cfg);
+        getAccessTokenCookieSaver(request).set(request, response, null);
+        getRefreshTokenCookieSaver(request).set(request, response, null);
     }
 
     protected boolean isCookieSecure(final HttpServletRequest request, CookieConfig config) {
 
         boolean configSecure = config.isSecure();
 
-        Resolver<Boolean> resolver = getSecureCookieRequired();
+        Resolver<Boolean> resolver = secureCookieRequired;
 
         boolean resolverSecure = resolver.get(request, null);
 
@@ -125,14 +121,18 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
         return configSecure && resolverSecure;
     }
 
-    @Override
-    protected CookieConfig getAccountCookieConfig(final HttpServletRequest request) {
+    private CookieSaver getRefreshTokenCookieSaver(final HttpServletRequest request) {
+        return getCookieSaver(refreshTokenCookieConfig, request);
+    }
 
-        final CookieConfig config = super.getAccountCookieConfig(request);
+    private CookieSaver getAccessTokenCookieSaver(final HttpServletRequest request) {
+        return getCookieSaver(accessTokenCookieConfig, request);
+    }
 
-        final boolean secure = isCookieSecure(request, config);
+    private CookieSaver getCookieSaver(final CookieConfig cookieConfig, final HttpServletRequest request) {
+        final boolean secure = isCookieSecure(request, cookieConfig);
 
-        String path = Strings.clean(config.getPath());
+        String path = Strings.clean(cookieConfig.getPath());
         if (!Strings.hasText(path)) {
             path = Strings.clean(request.getContextPath());
         }
@@ -143,25 +143,25 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
         final String PATH = path;
 
         //wrap it to allow for access during development:
-        return new CookieConfig() {
+        return new CookieSaver(new CookieConfig() {
             @Override
             public String getName() {
-                return config.getName();
+                return cookieConfig.getName();
             }
 
             @Override
             public String getComment() {
-                return config.getComment();
+                return cookieConfig.getComment();
             }
 
             @Override
             public String getDomain() {
-                return config.getDomain();
+                return cookieConfig.getDomain();
             }
 
             @Override
             public int getMaxAge() {
-                return config.getMaxAge();
+                return getCookieMaxAge(cookieConfig);
             }
 
             @Override
@@ -176,8 +176,21 @@ public class CookieAuthenticationResultSaver extends AccountCookieHandler implem
 
             @Override
             public boolean isHttpOnly() {
-                return config.isHttpOnly();
+                return cookieConfig.isHttpOnly();
             }
-        };
+        });
+    }
+
+    private int getCookieMaxAge(CookieConfig cookieConfig) {
+        OAuthPolicy oauthPolicy = application.getOAuthPolicy();
+
+        if (cookieConfig instanceof AccessTokenCookieConfig) {
+            return Period.parse(oauthPolicy.getAccessTokenTtl()).toStandardSeconds().getSeconds();
+        } else if (cookieConfig instanceof RefreshTokenCookieConfig) {
+            return Period.parse(oauthPolicy.getRefreshTokenTtl()).toStandardSeconds().getSeconds();
+        }
+
+        //We currently only have those 2 cookies but just in case we add a new one we default to the max value a cookie max age supports
+        return DEFAULT_COOKIE_MAX_AGE;
     }
 }

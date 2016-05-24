@@ -18,14 +18,16 @@ package com.stormpath.spring.security.provider
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
-import org.junit.Test
+import org.testng.annotations.Test
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 import static org.easymock.EasyMock.*
+import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.core.IsInstanceOf.instanceOf
-import static org.junit.Assert.*
+import static org.testng.Assert.*
+import static org.testng.AssertJUnit.assertArrayEquals
 
 class UsernamePasswordAuthenticationTokenFactoryTest {
 

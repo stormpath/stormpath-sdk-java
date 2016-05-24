@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.oauth.impl;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.filter.account.DefaultJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
@@ -43,12 +42,12 @@ import java.security.Key;
 public class JwtTokenSigningKeyResolver implements JwtSigningKeyResolver {
 
     private static final String RSA_ERR_MSG = "RSA signatures are not currently supported by the " +
-            DefaultJwtSigningKeyResolver.class.getName() + " implementation.  You " +
+            JwtTokenSigningKeyResolver.class.getName() + " implementation.  You " +
             "may want to implement your own JwtSigningKeyResolver implementation " +
             "to support RSA keys.";
 
     private static final String EC_ERR_MSG = "Elliptic Curve signatures are not currently supported by the " +
-            DefaultJwtSigningKeyResolver.class.getName() + " implementation.  You " +
+            JwtTokenSigningKeyResolver.class.getName() + " implementation.  You " +
             "may want to implement your own JwtSigningKeyResolver implementation " +
             "to support Elliptic Curve keys.";
 

@@ -21,6 +21,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.organization.CreateOrganizationRequest
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.tenant.Tenant
@@ -94,7 +95,7 @@ class DefaultOrganizationTest {
     void testCreateOrganizationWithNullArgument() {
         def internalDataStore = createStrictMock(InternalDataStore)
         def defaultTenant = new DefaultTenant(internalDataStore)
-        defaultTenant.createOrganization(null)
+        defaultTenant.createOrganization((CreateOrganizationRequest) null)
     }
 
     @Test
