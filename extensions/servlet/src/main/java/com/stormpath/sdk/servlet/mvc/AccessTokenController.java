@@ -15,22 +15,31 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -41,11 +50,15 @@ import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * @since 1.0.RC4
@@ -168,6 +181,18 @@ public class AccessTokenController extends AbstractController {
         return true;
     }
 
+    @Override
+    public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        boolean isClientCredentialsRequest = CLIENT_CREDENTIALS_GRANT_TYPE.equals(request.getParameter(GRANT_TYPE_PARAM_NAME));
+        String method = request.getMethod();
+
+        if (HttpMethod.POST.name().equalsIgnoreCase(method) && isClientCredentialsRequest) {
+            return doPost(request, response);
+        }
+
+        return super.handleRequest(request, response);
+    }
+
     protected void publish(RequestEvent e) {
         getEventPublisher().publish(e);
     }
@@ -227,21 +252,58 @@ public class AccessTokenController extends AbstractController {
      */
     private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        OAuthGrantRequestAuthenticationResult authenticationResult;
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+        Client client = ClientResolver.INSTANCE.getClient(request);
+        Application app = getApplication(request);
+        JwtBuilder jwtBuilder = Jwts.builder()
+                .setSubject(account.getHref())
+                .setIssuer(app.getHref())
+                .setAudience(client.getApiKey().getId())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60)))
+                .claim("status", "AUTHENTICATED");
+        String secret = client.getApiKey().getSecret();
+        String token = jwtBuilder.signWith(SignatureAlgorithm.HS512, secret.getBytes("UTF-8")).compact();
 
-        try {
-            Application app = getApplication(request);
-            OAuthClientCredentialsGrantRequestAuthentication clientCredentialsGrantRequest = createClientCredentialsGrantAuthenticationRequest(request);
+        IdSiteAuthenticationRequest idSiteRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(token).build();
+        final OAuthGrantRequestAuthenticationResult origResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(app).authenticate(idSiteRequest);
 
-            authenticationResult = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
-                    .forApplication(app)
-                    .authenticate(clientCredentialsGrantRequest);
-        } catch (ResourceException e) {
-            log.debug("Unable to authenticate client credentials request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate client credentials request: ", e.getDeveloperMessage());
+        if (origResult.getRefreshToken() != null) {
+            origResult.getRefreshToken().delete();
         }
 
-        return createAccessTokenResult(request, response, authenticationResult);
+        OAuthGrantRequestAuthenticationResult result = new OAuthGrantRequestAuthenticationResult() {
+            @Override
+            public String getAccessTokenString() {
+                return origResult.getAccessTokenString();
+            }
+            @Override
+            public AccessToken getAccessToken() {
+                return origResult.getAccessToken();
+            }
+            @Override
+            public String getRefreshTokenString() {
+                return null;
+            }
+            @Override
+            public RefreshToken getRefreshToken() {
+                return null;
+            }
+            @Override
+            public String getAccessTokenHref() {
+                return origResult.getAccessTokenHref();
+            }
+            @Override
+            public String getTokenType() {
+                return origResult.getTokenType();
+            }
+            @Override
+            public long getExpiresIn() {
+                return origResult.getExpiresIn();
+            }
+        };
+
+        return createAccessTokenResult(request, response, result);
     }
 
     @Override

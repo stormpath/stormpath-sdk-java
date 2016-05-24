@@ -1861,31 +1861,4 @@ class ApplicationIT extends ClientIT {
 
         assertFalse result.newAccount
     }
-
-    /* @since 1.0.0 */
-    @Test
-    void testAttemptAuthenticationWithClientCredentials() {
-        def app = createTempApp()
-        def account = createTestAccount(app)
-        def apiKey = account.createApiKey()
-        String apiKeyId = apiKey.id
-        String apiKeySecret = apiKey.secret
-
-        OAuthClientCredentialsGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
-                .setApiKeyId(apiKeyId)
-                .setApiKeySecret(apiKeySecret)
-                .build()
-
-        def grantResult = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
-                .forApplication(app)
-                .authenticate(grantRequest)
-
-        // Authenticate token against Stormpath using client credentials token <--- VALID
-        grantRequest = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
-                .setJwt(grantResult.getAccessTokenString())
-                .build()
-
-        assertNotNull Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
-                .forApplication(app).withLocalValidation().authenticate(grantRequest)
-    }
 }
