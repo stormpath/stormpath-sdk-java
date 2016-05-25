@@ -341,7 +341,7 @@ class ApplicationIT extends ClientIT {
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104), RequestId "+ e.getRequestId() + ": Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104), RequestId " + e.getRequestId() + ": Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
         }
 
         //No account store has been defined, therefore login must succeed
@@ -420,7 +420,7 @@ class ApplicationIT extends ClientIT {
             result = app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114), RequestId "+ e.getRequestId() + ": The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
+            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114), RequestId " + e.getRequestId() + ": The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
         }
     }
 
@@ -639,7 +639,7 @@ class ApplicationIT extends ClientIT {
      * @since 1.0.RC9
      */
     @Test
-    void testExpansionNotWorkingBecauseOfCache(){
+    void testExpansionNotWorkingBecauseOfCache() {
 
         //Setup 1 application with 2 accounts
         def app = createTempApp()
@@ -1258,8 +1258,8 @@ class ApplicationIT extends ClientIT {
             fail("shouldn't get here")
         } catch (IllegalArgumentException e) {
             assertEquals e.getMessage(),
-                "There are both a Directory and a Group matching the provided name in the current tenant. " +
-                "Please provide the href of the intended Resource instead of its name in order to univocally identify it."
+                    "There are both a Directory and a Group matching the provided name in the current tenant. " +
+                            "Please provide the href of the intended Resource instead of its name in order to univocally identify it."
         }
     }
 
@@ -1359,7 +1359,6 @@ class ApplicationIT extends ClientIT {
 
         assertEquals accountStoreMapping.accountStore.href, group.href
     }
-
 
     /**
      * @since 1.0.RC4.4
@@ -1884,5 +1883,4 @@ class ApplicationIT extends ClientIT {
 
         assertFalse result.newAccount
     }
-
 }

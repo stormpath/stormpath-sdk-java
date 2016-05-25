@@ -15,21 +15,30 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -39,11 +48,15 @@ import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * @since 1.0.RC4
@@ -51,6 +64,8 @@ import javax.servlet.http.HttpServletResponse;
 public class AccessTokenController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(AccessTokenController.class);
+
+    private static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
 
     private static final String PASSWORD_GRANT_TYPE = "password";
 
@@ -149,12 +164,24 @@ public class AccessTokenController extends AbstractController {
         return true;
     }
 
+    @Override
+    public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        boolean isClientCredentialsRequest = CLIENT_CREDENTIALS_GRANT_TYPE.equals(request.getParameter(GRANT_TYPE_PARAM_NAME));
+        String method = request.getMethod();
+
+        if (HttpMethod.POST.name().equalsIgnoreCase(method) && isClientCredentialsRequest) {
+            return doPost(request, response);
+        }
+
+        return super.handleRequest(request, response);
+    }
+
     protected void publish(RequestEvent e) {
         getEventPublisher().publish(e);
     }
 
     protected Application getApplication(HttpServletRequest request) {
-        Application application = (Application)request.getAttribute(Application.class.getName());
+        Application application = (Application) request.getAttribute(Application.class.getName());
         Assert.notNull(application, "request must have an application attribute.");
         return application;
     }
@@ -203,6 +230,65 @@ public class AccessTokenController extends AbstractController {
         return createRefreshTokenResult(request, response, authenticationResult);
     }
 
+    /**
+     * @since 1.0.0
+     */
+    private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+        Client client = ClientResolver.INSTANCE.getClient(request);
+        Application app = getApplication(request);
+        JwtBuilder jwtBuilder = Jwts.builder()
+                .setSubject(account.getHref())
+                .setIssuer(app.getHref())
+                .setAudience(client.getApiKey().getId())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60)))
+                .claim("status", "AUTHENTICATED");
+        String secret = client.getApiKey().getSecret();
+        String token = jwtBuilder.signWith(SignatureAlgorithm.HS512, secret.getBytes("UTF-8")).compact();
+
+        IdSiteAuthenticationRequest idSiteRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(token).build();
+        final OAuthGrantRequestAuthenticationResult origResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(app).authenticate(idSiteRequest);
+
+        if (origResult.getRefreshToken() != null) {
+            origResult.getRefreshToken().delete();
+        }
+
+        OAuthGrantRequestAuthenticationResult result = new OAuthGrantRequestAuthenticationResult() {
+            @Override
+            public String getAccessTokenString() {
+                return origResult.getAccessTokenString();
+            }
+            @Override
+            public AccessToken getAccessToken() {
+                return origResult.getAccessToken();
+            }
+            @Override
+            public String getRefreshTokenString() {
+                return null;
+            }
+            @Override
+            public RefreshToken getRefreshToken() {
+                return null;
+            }
+            @Override
+            public String getAccessTokenHref() {
+                return origResult.getAccessTokenHref();
+            }
+            @Override
+            public String getTokenType() {
+                return origResult.getTokenType();
+            }
+            @Override
+            public long getExpiresIn() {
+                return origResult.getExpiresIn();
+            }
+        };
+
+        return createAccessTokenResult(request, response, result);
+    }
+
     @Override
     protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -219,16 +305,22 @@ public class AccessTokenController extends AbstractController {
             try {
                 grantType = request.getParameter(GRANT_TYPE_PARAM_NAME);
                 Assert.hasText(grantType, "grant_type must not be null or empty.");
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 throw new OAuthException(OAuthErrorCode.INVALID_GRANT);
             }
 
-            if (grantType.equals(PASSWORD_GRANT_TYPE)) {
-                result = this.tokenAuthenticationRequest(request, response);
-            } else if (grantType.equals(REFRESH_TOKEN_GRANT_TYPE)) {
-                result = this.refreshTokenAuthenticationRequest(request, response);
-            } else {
-                throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+            switch (grantType) {
+                case PASSWORD_GRANT_TYPE:
+                    result = this.tokenAuthenticationRequest(request, response);
+                    break;
+                case REFRESH_TOKEN_GRANT_TYPE:
+                    result = this.refreshTokenAuthenticationRequest(request, response);
+                    break;
+                case CLIENT_CREDENTIALS_GRANT_TYPE:
+                    result = this.clientCredentialsAuthenticationRequest(request, response);
+                    break;
+                default:
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
             }
 
             saveResult(request, response, result);
