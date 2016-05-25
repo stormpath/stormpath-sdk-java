@@ -276,6 +276,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 if (accessTokenEnabled) {
                     http.csrf().ignoringAntMatchers(accessTokenUri);
                 }
+                if (logoutEnabled) {
+                    http.csrf().ignoringAntMatchers(logoutUri);
+                }
             }
 
         }
