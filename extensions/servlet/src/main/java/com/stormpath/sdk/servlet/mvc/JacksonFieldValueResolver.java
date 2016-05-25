@@ -32,6 +32,11 @@ public class JacksonFieldValueResolver implements RequestFieldValueResolver {
         return value != null ? Strings.clean(value.toString()) : null;
     }
 
+    @Override
+    public Map<String, Object> getAllFields(HttpServletRequest request) {
+        return ensureBodyMap(request);
+    }
+
     @SuppressWarnings("unchecked")
     private Map<String, Object> ensureBodyMap(HttpServletRequest request) {
         Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
@@ -40,8 +45,8 @@ public class JacksonFieldValueResolver implements RequestFieldValueResolver {
             boolean bodyExists =
                     request.getContentLength() > 0 ||
                             //https://tools.ietf.org/html/rfc7230#section-3.3.2
-                            request.getHeader("Transfer-Encoding") != null ||
-                            request.getHeader("Content-Length") != null;
+                            //TODO not sure about this check contentLength should be enough need to check the RCF ref in the comment above
+                            request.getHeader("Transfer-Encoding") != null;
             if (bodyExists) {
                 map = readJsonBody(request);
             }

@@ -23,11 +23,13 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
@@ -68,7 +70,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.*;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -92,10 +99,10 @@ import java.util.Set;
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-@ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.web.enabled" }, matchIfMissing = true)
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnProperty(name = {"stormpath.enabled", "stormpath.web.enabled"}, matchIfMissing = true)
+@ConditionalOnClass({Servlet.class, DispatcherServlet.class})
 @ConditionalOnWebApplication
-@AutoConfigureAfter({ WebMvcAutoConfiguration.class, StormpathAutoConfiguration.class })
+@AutoConfigureAfter({WebMvcAutoConfiguration.class, StormpathAutoConfiguration.class})
 public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcConfiguration {
 
     @Bean
@@ -112,21 +119,21 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
     /** @since 1.0.0 */
     @Bean
-    @ConditionalOnMissingBean(name="stormpathProducesMediaTypes")
+    @ConditionalOnMissingBean(name = "stormpathProducedMediaTypes")
     @Override
     public List<MediaType> stormpathProducesMediaTypes() {
         return super.stormpathProducesMediaTypes();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathJsonView")
+    @ConditionalOnMissingBean(name = "stormpathJsonView")
     @Override
     public View stormpathJsonView() {
         return super.stormpathJsonView();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathJsonViewResolver")
+    @ConditionalOnMissingBean(name = "stormpathJsonViewResolver")
     @Override
     public ViewResolver stormpathJsonViewResolver() {
         return super.stormpathJsonViewResolver();
@@ -169,25 +176,25 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathCookieAuthenticationResultSaver")
+    @ConditionalOnMissingBean(name = "stormpathCookieAuthenticationResultSaver")
     public Saver<AuthenticationResult> stormpathCookieAuthenticationResultSaver() {
         return super.stormpathCookieAuthenticationResultSaver();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathSessionAuthenticationResultSaver")
+    @ConditionalOnMissingBean(name = "stormpathSessionAuthenticationResultSaver")
     public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
         return super.stormpathSessionAuthenticationResultSaver();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAuthenticationResultSavers")
+    @ConditionalOnMissingBean(name = "stormpathAuthenticationResultSavers")
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
         return super.stormpathAuthenticationResultSavers();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAuthenticationResultSaver")
+    @ConditionalOnMissingBean(name = "stormpathAuthenticationResultSaver")
     public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
     }
@@ -205,7 +212,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathRequestEventListener")
+    @ConditionalOnMissingBean(name = "stormpathRequestEventListener")
     public RequestEventListener stormpathRequestEventListener() {
         return super.stormpathRequestEventListener();
     }
@@ -217,7 +224,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathCsrfTokenSigningKey")
+    @ConditionalOnMissingBean(name = "stormpathCsrfTokenSigningKey")
     public String stormpathCsrfTokenSigningKey() {
         return super.stormpathCsrfTokenSigningKey();
     }
@@ -229,7 +236,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathNonceCache")
+    @ConditionalOnMissingBean(name = "stormpathNonceCache")
     public Cache<String, String> stormpathNonceCache() {
         return super.stormpathNonceCache();
     }
@@ -253,13 +260,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathBasicAuthenticationScheme")
+    @ConditionalOnMissingBean(name = "stormpathBasicAuthenticationScheme")
     public HttpAuthenticationScheme stormpathBasicAuthenticationScheme() {
         return super.stormpathBasicAuthenticationScheme();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathBearerAuthenticationScheme")
+    @ConditionalOnMissingBean(name = "stormpathBearerAuthenticationScheme")
     public HttpAuthenticationScheme stormpathBearerAuthenticationScheme() {
         return super.stormpathBearerAuthenticationScheme();
     }
@@ -319,7 +326,31 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathLoginController")
+    @ConditionalOnMissingBean(name = "stormpathGoogleCallbackController")
+    public Controller stormpathGoogleCallbackController() {
+        return super.stormpathGoogleCallbackController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathGithubCallbackController")
+    public Controller stormpathGithubCallbackController() {
+        return super.stormpathGithubCallbackController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathFacebookCallbackController")
+    public Controller stormpathFacebookCallbackController() {
+        return super.stormpathFacebookCallbackController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLinkedinCallbackController")
+    public Controller stormpathLinkedinCallbackController() {
+        return super.stormpathLinkedinCallbackController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLoginController")
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
     }
@@ -339,13 +370,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathForgotPasswordController")
+    @ConditionalOnMissingBean(name = "stormpathForgotPasswordController")
     public Controller stormpathForgotPasswordController() {
         return super.stormpathForgotPasswordController();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathRegisterFormFields")
+    @ConditionalOnMissingBean(name = "stormpathRegisterFormFields")
     public List<Field> stormpathRegisterFormFields() {
         return super.stormpathRegisterFormFields();
     }
@@ -357,25 +388,25 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathSpringLocaleResolver")
+    @ConditionalOnMissingBean(name = "stormpathSpringLocaleResolver")
     public LocaleResolver stormpathSpringLocaleResolver() {
         return super.stormpathSpringLocaleResolver();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathLocaleChangeInterceptor")
+    @ConditionalOnMissingBean(name = "stormpathLocaleChangeInterceptor")
     public LocaleChangeInterceptor stormpathLocaleChangeInterceptor() {
         return super.stormpathLocaleChangeInterceptor();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathLocaleResolver")
+    @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
     public Resolver<Locale> stormpathLocaleResolver() {
         return super.stormpathLocaleResolver();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathSpringMessageSource")
+    @ConditionalOnMissingBean(name = "stormpathSpringMessageSource")
     public MessageSource stormpathSpringMessageSource() {
         return super.stormpathSpringMessageSource();
     }
@@ -387,25 +418,25 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathRegisterController")
+    @ConditionalOnMissingBean(name = "stormpathRegisterController")
     public Controller stormpathRegisterController() {
         return super.stormpathRegisterController();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathVerifyController")
+    @ConditionalOnMissingBean(name = "stormpathVerifyController")
     public Controller stormpathVerifyController() {
         return super.stormpathVerifyController();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathChangePasswordController")
+    @ConditionalOnMissingBean(name = "stormpathChangePasswordController")
     public Controller stormpathChangePasswordController() {
         return super.stormpathChangePasswordController();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAccessTokenController")
+    @ConditionalOnMissingBean(name = "stormpathAccessTokenController")
     public Controller stormpathAccessTokenController() {
         return super.stormpathAccessTokenController();
     }
@@ -417,13 +448,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathAccessTokenRequestAuthorizer")
+    @ConditionalOnMissingBean(name = "stormpathAccessTokenRequestAuthorizer")
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return super.stormpathAccessTokenRequestAuthorizer();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathOriginAccessTokenRequestAuthorizer")
+    @ConditionalOnMissingBean(name = "stormpathOriginAccessTokenRequestAuthorizer")
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return super.stormpathOriginAccessTokenRequestAuthorizer();
     }
@@ -435,26 +466,32 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathMvcLogoutController")
+    @ConditionalOnMissingBean(name = "stormpathMvcLogoutController")
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
         return super.stormpathMvcLogoutController();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathLogoutController")
+    @ConditionalOnMissingBean(name = "stormpathLogoutController")
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathIdSiteResultController")
+    @ConditionalOnMissingBean(name = "stormpathInternalConfig")
+    public Config stormpathInternalConfig() {
+        return super.stormpathInternalConfig();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathIdSiteResultController")
     public Controller stormpathIdSiteResultController() {
         return super.stormpathIdSiteResultController();
     }
 
     @Override
     @Bean
-    @ConditionalOnMissingBean(name="stormpathMeController")
+    @ConditionalOnMissingBean(name = "stormpathMeController")
     public Controller stormpathMeController() {
         return super.stormpathMeController();
     }
@@ -553,7 +590,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
             return java.util.Collections.emptySet();
         }
         Set<DispatcherType> types = new LinkedHashSet<DispatcherType>(names.size());
-        for(String name : names) {
+        for (String name : names) {
             types.add(DispatcherType.valueOf(name));
         }
         return types;
@@ -593,4 +630,46 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathAccountResolverFilter();
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLoginControllerConfigResolver")
+    public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
+        return super.stormpathLoginControllerConfigResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathForgotPasswordControllerConfigResolver")
+    public ControllerConfigResolver stormpathForgotPasswordControllerConfigResolver() {
+        return super.stormpathForgotPasswordControllerConfigResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRegisterControllerConfigResolver")
+    public ControllerConfigResolver stormpathRegisterControllerConfigResolver() {
+        return super.stormpathRegisterControllerConfigResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathSendVerificationEmailControllerConfigResolver")
+    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
+        return super.stormpathSendVerificationEmailControllerConfigResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathChangePasswordControllerConfigResolver")
+    public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
+        return super.stormpathChangePasswordControllerConfigResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLogoutControllerConfigResolver")
+    public ControllerConfigResolver stormpathLogoutControllerConfigResolver() {
+        return super.stormpathLogoutControllerConfigResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathVerifyControllerConfigResolver")
+    public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
+        return super.stormpathVerifyControllerConfigResolver();
+    }
 }
