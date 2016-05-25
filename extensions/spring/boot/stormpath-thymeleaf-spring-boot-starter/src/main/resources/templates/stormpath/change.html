@@ -15,7 +15,7 @@
   -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{stormpath.web.change.title}">|Change Your Password|</title>
+    <title th:text="#{stormpath.web.changePassword.title}">|Change Your Password|</title>
     <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
 <body class="login">
@@ -31,8 +31,8 @@
                     <div class="email-password-area col-xs-12 large col-sm-12">
 
                         <div class="header">
-                            <span th:text="#{stormpath.web.change.form.title}">|Change Your Password|</span>
-                            <p th:text="#{stormpath.web.change.form.instructions}">|Enter your new account password below.
+                            <span th:text="#{stormpath.web.changePassword.form.title}">|Change Your Password|</span>
+                            <p th:text="#{stormpath.web.changePassword.form.instructions}">|Enter your new account password below.
                                 Once confirmed, you'll be logged into your account and your new password will be active.|</p>
                         </div>
 
@@ -62,7 +62,7 @@
 
                             <div>
                                 <button type="submit" class="login btn btn-login btn-sp-green"
-                                        th:text="#{stormpath.web.change.form.button.value}">|Submit|</button>
+                                        th:text="#{stormpath.web.changePassword.form.button.value}">|Submit|</button>
                             </div>
                         </form>
 
@@ -70,7 +70,7 @@
 
                 </div>
 
-                <a th:href="@{${loginUri}}" class="to-login" th:text="#{stormpath.web.change.form.loginLink.text}">|Back to Login|</a>
+                <a th:href="@{${loginUri}}" class="to-login" th:text="#{stormpath.web.changePassword.form.loginLink.text}">|Back to Login|</a>
 
             </div>
 

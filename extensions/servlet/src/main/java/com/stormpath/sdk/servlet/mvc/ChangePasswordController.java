@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -24,6 +25,7 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +49,13 @@ public class ChangePasswordController extends FormController {
     private String loginUri;
     private Resolver<Locale> localeResolver;
     private MessageSource messageSource;
+    private ErrorMapModelFactory errorMap;
+
 
     @Override
     public void init() {
         super.init();
+        this.errorMap = new DefaultErrorMapModelFactory();
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
@@ -110,13 +115,35 @@ public class ChangePasswordController extends FormController {
 
         String sptoken = Strings.clean(request.getParameter("sptoken"));
 
-        if (sptoken == null) {
-            Map<String, String> queryParams = new HashMap<String, String>(1);
-            queryParams.put("error", "sptokenInvalid");
-            return new DefaultViewModel(getLoginUri(), queryParams).setRedirect(true);
+        if (UserAgents.get(request).isJsonPreferred()) {
+            Map<String, Object> model = new HashMap<String, Object>(1);
+            if (sptoken == null) {
+                model.put("status", "400");
+                model.put("message", i18n(request, "stormpath.web.verify.emptyToken.error"));
+            }
+            else {
+                Account account = null;
+                try {
+                    Application application = (Application) request.getAttribute(Application.class.getName());
+                    application.verifyPasswordResetToken(sptoken);
+                    model.put("status", "200");
+                    model.put("message", "OK");
+                }
+                catch (ResourceException re) {
+                    model = errorMap.toErrorMap(re.getStormpathError());
+                }
+            }
+            return new DefaultViewModel("stormpathJsonView", model);
         }
+        else {
+            if (sptoken == null) {
+                Map<String, String> queryParams = new HashMap<String, String>(1);
+                queryParams.put("error", "sptokenInvalid");
+                return new DefaultViewModel(getLoginUri(), queryParams).setRedirect(true);
+            }
 
-        return super.doGet(request, response);
+            return super.doGet(request, response);
+        }
     }
 
     @Override
@@ -148,8 +175,8 @@ public class ChangePasswordController extends FormController {
             DefaultField field = new DefaultField();
             field.setName(fieldName);
             field.setName(fieldName);
-            field.setLabel("stormpath.web.change.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.change.form.fields." + fieldName + ".placeholder");
+            field.setLabel("stormpath.web.changePassword.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.changePassword.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("password");
             String val = fieldValueResolver.getValue(request, fieldName);
@@ -172,17 +199,17 @@ public class ChangePasswordController extends FormController {
             //TODO: update this with a specific message that tells the exact password requirements.
             //This can only be done when this functionality is available via the Stormpath REST API
             //(currently being implemented in the Stormpath server-side REST API, not yet complete)
-            String key = "stormpath.web.change.form.errors.strength";
+            String key = "stormpath.web.changePassword.form.errors.strength";
             String msg = i18n(request, key);
             errors.add(msg);
         } else if (e instanceof ResourceException && ((ResourceException) e).getCode() == 404) {
             String url = request.getContextPath() + getForgotPasswordUri();
-            String key = "stormpath.web.change.form.errors.invalid";
+            String key = "stormpath.web.changePassword.form.errors.invalid";
             String msg = i18n(request, key, url);
             errors.add(msg);
         } else {
             log.warn("Potentially unexpected change password problem.", e);
-            String key = "stormpath.web.change.form.errors.default";
+            String key = "stormpath.web.changePassword.form.errors.default";
             String msg = i18n(request, key);
             errors.add(msg);
         }
@@ -220,7 +247,7 @@ public class ChangePasswordController extends FormController {
             if (field.isRequired()) {
                 String value = Strings.clean(field.getValue());
                 if (value == null) {
-                    String key = "stormpath.web.change.form.fields." + field.getName() + ".required";
+                    String key = "stormpath.web.changePassword.form.fields." + field.getName() + ".required";
                     String msg = i18n(request, key);
                     throw new IllegalArgumentException(msg);
                 }
@@ -232,7 +259,7 @@ public class ChangePasswordController extends FormController {
         String confirmPassword = form.getFieldValue("confirmPassword");
 
         if (!password.equals(confirmPassword)) {
-            String key = "stormpath.web.change.form.errors.mismatch";
+            String key = "stormpath.web.changePassword.form.errors.mismatch";
             String msg = i18n(request, key);
             throw new MismatchedPasswordException(msg);
         }
