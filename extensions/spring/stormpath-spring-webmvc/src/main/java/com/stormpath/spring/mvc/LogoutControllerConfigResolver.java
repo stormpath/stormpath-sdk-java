@@ -12,7 +12,7 @@ public class LogoutControllerConfigResolver extends AbstractSpringControllerConf
     @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
     protected String logoutUri;
 
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
     protected String logoutNextUri;
 
     @Override
