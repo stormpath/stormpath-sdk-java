@@ -46,6 +46,7 @@ public class DefaultConfig implements Config {
     public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgot.nextUri";
     public static final String CHANGE_PASSWORD_URL = "stormpath.web.changePassword.uri";
     public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.changePassword.nextUri";
+    public static final String CHANGE_PASSWORD_ERROR_URL = "stormpath.web.changePassword.errorUri";
     public static final String REGISTER_URL = "stormpath.web.register.uri";
     public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
     public static final String VERIFY_URL = "stormpath.web.verify.uri";
@@ -146,6 +147,11 @@ public class DefaultConfig implements Config {
     @Override
     public String getChangePasswordNextUrl() {
         return CFG.getString(CHANGE_PASSWORD_NEXT_URL);
+    }
+
+    @Override
+    public String getChangePasswordErrorUrl() {
+        return CFG.getString(CHANGE_PASSWORD_ERROR_URL);
     }
 
     @Override

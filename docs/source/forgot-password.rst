@@ -124,7 +124,7 @@ After the user successfully specifies their new password, they will be redirecte
 
 .. code-block:: properties
 
-    stormpath.web.changePassword.nextUri = /login?status=changed
+    stormpath.web.changePassword.nextUri = /login?status=reset
 
 As you can see, this URI has a ``status=changed`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their password has been successfully changed and that they can log in:
 

@@ -42,6 +42,8 @@ public interface Config extends Map<String, String> {
 
     String getChangePasswordNextUrl();
 
+    String getChangePasswordErrorUrl();
+
     String getLogoutNextUrl();
 
     /**

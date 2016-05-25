@@ -375,6 +375,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.changePassword.nextUri'] ?: '/login?status=changed' }")
     protected String changePasswordNextUri;
 
+    @Value("#{ @environment['stormpath.web.changePassword.errorUri'] ?: '/forgot?status=invalid_sptoken' }")
+    protected String changePasswordErrorUri;
+
     @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'stormpath/change' }")
     protected String changePasswordView;
 
@@ -1210,6 +1213,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setUri(changePasswordUri);
         controller.setCsrfTokenManager(stormpathCsrfTokenManager());
         controller.setNextUri(changePasswordNextUri);
+        controller.setErrorUri(changePasswordErrorUri);
         controller.setLoginUri(loginUri);
         controller.setForgotPasswordUri(forgotUri);
         controller.setLocaleResolver(stormpathLocaleResolver());

@@ -418,6 +418,12 @@
       "defaultValue": "/login?status=changed"
     },
     {
+      "name": "stormpath.web.changePassword.errorUri",
+      "type": "java.lang.String",
+      "description": "The context-relative path where the user will be redirected if they have arrived with an invalid sptoken.  The default value is '/forgot?status=invalid_sptoken'.  The default forgot view will recognize the query parameter and show the user a nice message explaining that the sptoken is invalid..",
+      "defaultValue": "/forgot?status=invalid_sptoken"
+    },
+    {
       "name": "stormpath.web.changePassword.view",
       "type": "java.lang.String",
       "description": "The name of the Spring MVC view that should be rendered when a user changes their password. The default value is 'stormpath/change' which will render a convenient default view provided by the Stormpath starter, but you may specify your own value to provide a custom view.",

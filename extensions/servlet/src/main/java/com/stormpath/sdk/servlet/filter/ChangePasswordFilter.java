@@ -46,6 +46,7 @@ public class ChangePasswordFilter extends ControllerFilter {
         controller.setCsrfTokenManager(csrfTokenManager);
         controller.setNextUri(getConfig().getChangePasswordNextUrl());
         controller.setLoginUri(getConfig().getLoginUrl());
+        controller.setErrorUri(getConfig().getChangePasswordErrorUrl());
         controller.setForgotPasswordUri(getConfig().getForgotPasswordUrl());
         controller.setLocaleResolver(localeResolver);
         controller.setMessageSource(messageSource);

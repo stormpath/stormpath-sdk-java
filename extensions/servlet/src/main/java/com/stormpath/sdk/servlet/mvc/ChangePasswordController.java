@@ -47,6 +47,7 @@ public class ChangePasswordController extends FormController {
 
     private String forgotPasswordUri;
     private String loginUri;
+    private String errorUri;
     private Resolver<Locale> localeResolver;
     private MessageSource messageSource;
     private ErrorMapModelFactory errorMap;
@@ -59,6 +60,7 @@ public class ChangePasswordController extends FormController {
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
+        Assert.hasText(errorUri, "errorUri cannot be null or empty.");
         Assert.notNull(localeResolver, "localeResolver cannot be null.");
         Assert.notNull(messageSource, "messageSource cannot be null.");
     }
@@ -82,6 +84,14 @@ public class ChangePasswordController extends FormController {
 
     public void setLoginUri(String loginUri) {
         this.loginUri = loginUri;
+    }
+
+    public String getErrorUri() {
+        return errorUri;
+    }
+
+    public void setErrorUri(String errorUri) {
+        this.errorUri = errorUri;
     }
 
     public Resolver<Locale> getLocaleResolver() {
@@ -122,7 +132,6 @@ public class ChangePasswordController extends FormController {
                 model.put("message", i18n(request, "stormpath.web.verify.emptyToken.error"));
             }
             else {
-                Account account = null;
                 try {
                     Application application = (Application) request.getAttribute(Application.class.getName());
                     application.verifyPasswordResetToken(sptoken);
@@ -139,10 +148,19 @@ public class ChangePasswordController extends FormController {
             if (sptoken == null) {
                 Map<String, String> queryParams = new HashMap<String, String>(1);
                 queryParams.put("error", "sptokenInvalid");
-                return new DefaultViewModel(getLoginUri(), queryParams).setRedirect(true);
+                return new DefaultViewModel(getForgotPasswordUri(), queryParams).setRedirect(true);
+            }
+            else {
+                try {
+                    Application application = (Application) request.getAttribute(Application.class.getName());
+                    application.verifyPasswordResetToken(sptoken);
+                }
+                catch (ResourceException re) {
+                    return new DefaultViewModel(getErrorUri()).setRedirect(true);
+                }
+                return super.doGet(request, response);
             }
 
-            return super.doGet(request, response);
         }
     }
 

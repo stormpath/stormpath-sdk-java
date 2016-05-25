@@ -165,10 +165,14 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             }
 
             @Override
+            public String getChangePasswordErrorUrl() {
+                return changePasswordErrorUri;
+            }
+
+            @Override
             public String getChangePasswordNextUrl() {
                 return changePasswordNextUri;
             }
-
             @Override
             public String getLogoutNextUrl() {
                 return logoutNextUri;
