@@ -44,6 +44,36 @@ class YAMLPropertiesSourceTest {
     }
 
     @Test
+    void testGetFieldOrderWithRawStrings() {
+        def yamlCollection = "fieldOrder:\n" +
+                "  - username\n" +
+                "  - givenName\n" +
+                "  - middleName\n" +
+                "  - surname\n" +
+                "  - email\n" +
+                "  - password\n" +
+                "  - confirmPassword"
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
+
+        assertEquals properties.get("fieldOrder"), "username,givenName,middleName,surname,email,password,confirmPassword"
+    }
+    
+    @Test
+    void testGetFieldOrderWithQuotedStrings() {
+        def yamlCollection = "fieldOrder:\n" +
+                "  - \"username\"\n" +
+                "  - \"givenName\"\n" +
+                "  - \"middleName\"\n" +
+                "  - \"surname\"\n" +
+                "  - \"email\"\n" +
+                "  - \"password\"\n" +
+                "  - \"confirmPassword\""
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
+
+        assertEquals properties.get("fieldOrder"), "username,givenName,middleName,surname,email,password,confirmPassword"
+    }
+
+    @Test
     void testInvalidProperties() {
         try {
             new YAMLPropertiesSource(new BadResource()).properties
