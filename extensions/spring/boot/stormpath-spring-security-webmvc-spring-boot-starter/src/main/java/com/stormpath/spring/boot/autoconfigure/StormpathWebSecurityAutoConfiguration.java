@@ -87,8 +87,6 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @Bean
     @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
-        //Spring Security supports CSRF protection already when Thymeleaf is used (and we do use it in Spring Boot),
-        // so we turn off our internal implementation to avoid conflicts
         return super.stormpathCsrfTokenManager();
     }
 
