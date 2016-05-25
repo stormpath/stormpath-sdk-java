@@ -534,9 +534,9 @@ class ApplicationIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals(e.getStatus(), 400)
             assertEquals(e.getCode(), 7200)
-            assertEquals(e.getDeveloperMessage(), "Stormpath was not able to complete the request to Google: this can be " +
+            assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to Google: this can be " +
                     "caused by either a bad Google directory configuration, or the provided account credentials are not " +
-                    "valid. Google error message: 400 Bad Request")
+                    "valid."))
         }
     }
 
