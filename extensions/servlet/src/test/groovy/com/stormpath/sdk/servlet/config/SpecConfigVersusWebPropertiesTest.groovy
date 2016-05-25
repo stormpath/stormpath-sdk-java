@@ -64,12 +64,12 @@ class SpecConfigVersusWebPropertiesTest {
             specProperties.containsKey(k) ? null : k
         }
 
-        if (diff.size != 69) {
+        if (diff.size != 62) {
             println "It looks like a new property was added to the Framework Spec or to web.stormpath.properties."
             println "Please examine this method to see the mismatch and commented code for debugging what's changed."
         }
 
-        assertEquals diff.size(), 69, "Missing keys in spec config: ${diff}"
+        assertEquals diff.size(), 62, "Missing keys in spec config: ${diff}"
 
         // to see the keys missing in spec, uncomment the following
         /*if (diff.size > 0) {
