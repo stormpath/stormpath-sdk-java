@@ -792,46 +792,10 @@
       "defaultValue": "password"
     },
     {
-      "name": "stormpath.web.register.form.fieldOrder[0]",
-      "type": "java.lang.String",
+      "name": "stormpath.web.register.form.fieldOrder",
+      "type": "java.lang.String[]",
       "description": "",
       "defaultValue": "username"
-    },
-    {
-      "name": "stormpath.web.register.form.fieldOrder[1]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "givenName"
-    },
-    {
-      "name": "stormpath.web.register.form.fieldOrder[2]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "middleName"
-    },
-    {
-      "name": "stormpath.web.register.form.fieldOrder[3]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "surname"
-    },
-    {
-      "name": "stormpath.web.register.form.fieldOrder[4]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "email"
-    },
-    {
-      "name": "stormpath.web.register.form.fieldOrder[5]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "password"
-    },
-    {
-      "name": "stormpath.web.register.form.fieldOrder[6]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "confirmPassword"
     },
     {
       "name": "stormpath.web.login.form.fields.login.enabled",
@@ -906,16 +870,10 @@
       "defaultValue": "password"
     },
     {
-      "name": "stormpath.web.login.form.fieldOrder[0]",
-      "type": "java.lang.String",
+      "name": "stormpath.web.login.form.fieldOrder",
+      "type": "java.lang.String[]",
       "description": "",
       "defaultValue": "login"
-    },
-    {
-      "name": "stormpath.web.login.form.fieldOrder[1]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "password"
     },
     {
       "name": "stormpath.web.changePassword.autoLogin",
