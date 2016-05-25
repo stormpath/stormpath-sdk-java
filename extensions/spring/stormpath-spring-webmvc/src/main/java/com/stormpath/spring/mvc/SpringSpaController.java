@@ -1,9 +1,9 @@
 package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.UserAgents;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* @since 1.0.0
-*/
+ * @since 1.0.0
+ */
 public class SpringSpaController extends AbstractController {
 
     private final Controller delegate;
@@ -43,36 +43,18 @@ public class SpringSpaController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        //Controller controller = delegate;
-
-        //String method = request.getMethod();
-
         ModelAndView mav = null;
-        UserAgent ua = UserAgents.get(request);
-        List<MediaType> preferredMediaTypes = ua.getAcceptedMediaTypes();
 
-        if (preferredMediaTypes.size() == 0 || preferredMediaTypes.get(0).equals(MediaType.ALL)) {
-            MediaType mediaType = producesMediaTypes.get(0);
+        try {
 
+            MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, response, producesMediaTypes);
+            mav = delegate.handleRequest(request, response);
             if (mediaType.equals(MediaType.APPLICATION_JSON)) {
-                mav = delegate.handleRequest(request, response);
                 mav.setViewName(jsonView);
             }
-            if (mediaType.equals(MediaType.TEXT_HTML)) {
-                mav = delegate.handleRequest(request, response);
-            }
-        }
 
-        if (ua.isJsonPreferred() && producesMediaTypes.contains(MediaType.APPLICATION_JSON)) {
-            mav = delegate.handleRequest(request, response);
-            mav.setViewName(jsonView);
-        }
-
-        if (ua.isHtmlPreferred() && producesMediaTypes.contains(MediaType.TEXT_HTML)) {
-            mav = delegate.handleRequest(request, response);
-        }
-
-        if (mav == null) {
+        } catch (UnresolvedMediaTypeException e) {
+            //No MediaType could be resolved for this request based on the produces setting. Let's return 404.
             mav = new ModelAndView(new View() {
                 @Override
                 public String getContentType() {
@@ -85,6 +67,7 @@ public class SpringSpaController extends AbstractController {
                 }
             });
         }
+
         return mav;
     }
 
