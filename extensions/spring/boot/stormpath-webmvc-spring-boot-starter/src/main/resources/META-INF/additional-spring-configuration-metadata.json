@@ -528,16 +528,10 @@
       "description": ""
     },
     {
-      "name": "stormpath.web.produces[0]",
-      "type": "java.lang.String",
+      "name": "stormpath.web.produces",
+      "type": "java.lang.String[]",
       "description": "",
       "defaultValue": "application/json"
-    },
-    {
-      "name": "stormpath.web.produces[1]",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "text/html"
     },
     {
       "name": "stormpath.web.register.autoLogin",

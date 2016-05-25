@@ -40,8 +40,7 @@ class YAMLPropertiesSourceTest {
                 "    - Item 4"
         def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
 
-        assertEquals properties.get("a_sequence[0]"), "Item 1"
-        assertEquals properties.get("a_sequence[2]"), "0.5"
+        assertEquals properties.get("a_sequence"), "Item 1,Item 2,0.5,Item 4"
     }
 
     @Test
