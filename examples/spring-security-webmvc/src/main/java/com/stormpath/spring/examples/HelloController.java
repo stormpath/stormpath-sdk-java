@@ -34,7 +34,7 @@ public class HelloController {
     private HelloService helloService;
 
     @RequestMapping("/")
-    String home(HttpServletRequest request) {
+    HelloModel home(HttpServletRequest request) {
 
         String name = "World";
 
@@ -43,7 +43,7 @@ public class HelloController {
             name = account.getGivenName();
         }
 
-        return "Hello " + name + "!";
+        return new HelloModel("Hello " + name + "!", getMessage(account));
     }
 
     @RequestMapping("/restricted")
@@ -54,4 +54,10 @@ public class HelloController {
         return mav;
     }
 
+    private String getMessage(Account account) {
+        if (account != null) {
+            return "Note: Issue a POST to /logout to logout";
+        }
+        return "Note: Issue a GET to /login in your browser to login";
+    }
 }
