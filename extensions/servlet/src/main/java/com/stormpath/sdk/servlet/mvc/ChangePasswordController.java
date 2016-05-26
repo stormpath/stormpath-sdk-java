@@ -17,6 +17,8 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
@@ -47,18 +49,23 @@ public class ChangePasswordController extends FormController {
 
     private String forgotPasswordUri;
     private String loginUri;
+    private String loginNextUri;
     private String errorUri;
     private Resolver<Locale> localeResolver;
     private MessageSource messageSource;
     private ErrorMapModelFactory errorMap;
+    private boolean autologin;
+    private AccountModelFactory accountMap;
 
 
     @Override
     public void init() {
         super.init();
         this.errorMap = new DefaultErrorMapModelFactory();
+        this.accountMap = new DefaultAccountModelFactory();
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
+        Assert.hasText(loginNextUri, "loginNextUri cannot be null or empty.");
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.hasText(errorUri, "errorUri cannot be null or empty.");
         Assert.notNull(localeResolver, "localeResolver cannot be null.");
@@ -84,6 +91,14 @@ public class ChangePasswordController extends FormController {
 
     public void setLoginUri(String loginUri) {
         this.loginUri = loginUri;
+    }
+
+    public String getLoginNextUri() {
+        return loginNextUri;
+    }
+
+    public void setLoginNextUri(String loginNextUri) {
+        this.loginNextUri = loginNextUri;
     }
 
     public String getErrorUri() {
@@ -118,6 +133,14 @@ public class ChangePasswordController extends FormController {
     protected String i18n(HttpServletRequest request, String key, Object... args) {
         Locale locale = localeResolver.get(request, null);
         return messageSource.getMessage(key, locale, args);
+    }
+
+    public boolean isAutologin() {
+        return autologin;
+    }
+
+    public void setAutologin(boolean autologin) {
+        this.autologin = autologin;
     }
 
     @Override
@@ -174,19 +197,30 @@ public class ChangePasswordController extends FormController {
     //protected List<Field> createFields(HttpServletRequest request, boolean retainPassword, Form form) {
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
 
-        List<Field> fields = new ArrayList<Field>(3);
+        List<Field> fields;
+        String[] fieldNames;
 
-        String value = Strings.clean(request.getParameter("sptoken"));
+        if (UserAgents.get(request).isJsonPreferred()) {
+            fields = new ArrayList<Field>(2);
 
-        if (value != null) {
-            DefaultField field = new DefaultField();
-            field.setName("sptoken");
-            field.setType("hidden");
-            field.setValue(value);
-            fields.add(field);
+            fieldNames = new String[]{"password", "sptoken"};
+
         }
+        else {
+            fields = new ArrayList<Field>(3);
 
-        String[] fieldNames = new String[]{ "password", "confirmPassword" };
+            String value = Strings.clean(request.getParameter("sptoken"));
+
+            if (value != null) {
+                DefaultField field = new DefaultField();
+                field.setName("sptoken");
+                field.setType("hidden");
+                field.setValue(value);
+                fields.add(field);
+            }
+
+            fieldNames = new String[]{"password", "confirmPassword"};
+        }
 
         for (String fieldName : fieldNames) {
 
@@ -202,7 +236,6 @@ public class ChangePasswordController extends FormController {
 
             fields.add(field);
         }
-
         return fields;
     }
 
@@ -243,15 +276,48 @@ public class ChangePasswordController extends FormController {
 
         Application application = (Application) request.getAttribute(Application.class.getName());
         String sptoken = form.getFieldValue("sptoken");
-        application.resetPassword(sptoken, password);
 
-        String next = form.getNext();
+        if (UserAgents.get(request).isJsonPreferred()) {
+            Map<String, Object> model = new HashMap<String, Object>();
+            try {
+                Account account = application.resetPassword(sptoken, password);
+                if (isAutologin()){
+                    model.put("status", "200");
+                    model.put("account", accountMap.toMap(account));                }
+                else {
+                    model.put("status", "200");
+                    model.put("message", "OK");
+                }
+            }
+            catch (ResourceException re) {
+                model = errorMap.toErrorMap(re.getStormpathError());
+            }
+            catch (Exception e) {
+                Map<String, Object> exceptionErrorMap = new HashMap<String, Object>();
+                exceptionErrorMap.put("message", e.getMessage());
+                exceptionErrorMap.put("status", 400);
+                Error error = new DefaultError(exceptionErrorMap);
+                model = errorMap.toErrorMap(error);
+            }
 
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
+            return new DefaultViewModel("stormpathJsonView", model);
         }
+        else {
+            application.resetPassword(sptoken, password);
+            String next;
+            if (isAutologin()){
+                next = getLoginNextUri();
+            }
+            else{
+                next = form.getNext();
 
-        return new DefaultViewModel(next).setRedirect(true);
+                if (!Strings.hasText(next)) {
+                    next = getNextUri();
+                }
+            }
+
+            return new DefaultViewModel(next).setRedirect(true);
+        }
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
@@ -259,27 +325,29 @@ public class ChangePasswordController extends FormController {
         //validate CSRF
         validateCsrfToken(request, response, form);
 
-        //ensure required fields are present:
-        List<Field> fields = form.getFields();
-        for (Field field : fields) {
-            if (field.isRequired()) {
-                String value = Strings.clean(field.getValue());
-                if (value == null) {
-                    String key = "stormpath.web.changePassword.form.fields." + field.getName() + ".required";
-                    String msg = i18n(request, key);
-                    throw new IllegalArgumentException(msg);
+        if (!UserAgents.get(request).isJsonPreferred()) {
+            //ensure required fields are present:
+            List<Field> fields = form.getFields();
+            for (Field field : fields) {
+                if (field.isRequired()) {
+                    String value = Strings.clean(field.getValue());
+                    if (value == null) {
+                        String key = "stormpath.web.changePassword.form.fields." + field.getName() + ".required";
+                        String msg = i18n(request, key);
+                        throw new IllegalArgumentException(msg);
+                    }
                 }
             }
-        }
 
-        //ensure fields match:
-        String password = form.getFieldValue("password");
-        String confirmPassword = form.getFieldValue("confirmPassword");
+            //ensure fields match:
+            String password = form.getFieldValue("password");
+            String confirmPassword = form.getFieldValue("confirmPassword");
 
-        if (!password.equals(confirmPassword)) {
-            String key = "stormpath.web.changePassword.form.errors.mismatch";
-            String msg = i18n(request, key);
-            throw new MismatchedPasswordException(msg);
+            if (!password.equals(confirmPassword)) {
+                String key = "stormpath.web.changePassword.form.errors.mismatch";
+                String msg = i18n(request, key);
+                throw new MismatchedPasswordException(msg);
+            }
         }
     }
 

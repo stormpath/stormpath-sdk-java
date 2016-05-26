@@ -57,6 +57,11 @@ public interface Config extends Map<String, String> {
 
     String getRegisterNextUrl();
 
+    /**
+     * @since 1.0.0
+     */
+    boolean getRegisterAutoLogin();
+
     String getVerifyUrl();
 
     /**

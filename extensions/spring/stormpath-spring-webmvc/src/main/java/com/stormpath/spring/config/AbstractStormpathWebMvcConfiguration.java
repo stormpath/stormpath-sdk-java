@@ -330,6 +330,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.register.form.fields'] ?: 'givenName, surname, email(required), password(required,password), confirmPassword(required,password)' }")
     protected String registerFormFields;
 
+    @Value("#{ @environment['stormpath.web.register.autoLogin'] ?: false }")
+    protected boolean registerAutoLogin;
+
     // ================  Verify Email Controller properties  ===================
 
     @Value("#{ @environment['stormpath.web.verify.enabled'] ?: true }")
@@ -1215,9 +1218,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setNextUri(changePasswordNextUri);
         controller.setErrorUri(changePasswordErrorUri);
         controller.setLoginUri(loginUri);
+        controller.setLoginNextUri(loginNextUri);
         controller.setForgotPasswordUri(forgotUri);
         controller.setLocaleResolver(stormpathLocaleResolver());
         controller.setMessageSource(stormpathMessageSource());
+        controller.setAutologin(registerAutoLogin);
         controller.init();
 
         return createSpaAwareSpringController(controller);
