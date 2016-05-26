@@ -90,7 +90,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
     protected String logoutUri;
 
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
     protected String logoutNextUri;
 
     @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
