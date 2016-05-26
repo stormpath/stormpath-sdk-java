@@ -27,6 +27,7 @@ import com.stormpath.sdk.servlet.form.Form;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,8 @@ public abstract class FormController extends AbstractController {
     private CsrfTokenManager csrfTokenManager;
     private String view;
     private String uri;
+
+    private final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
 
     public void init() {
         Assert.hasText(this.view, "view cannot be null or empty.");
@@ -96,8 +99,18 @@ public abstract class FormController extends AbstractController {
         return new DefaultViewModel(view, model);
     }
 
+    @SuppressWarnings("unchecked")
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
-        return createModel(request, response, null, null);
+        List<String> errors = null;
+        if (request.getParameter("error") != null) {
+            //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+            //See StormpathAuthenticationFailureHandler
+            errors = new ArrayList<>();
+            List<String> errorList = (List<String>) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
+            errors.addAll(errorList);
+        }
+        return createModel(request, response, null, errors);
     }
 
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response,

@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -39,16 +40,21 @@ import java.io.IOException;
  */
 public class StormpathAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
+    private final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
+
     private final AuthenticationFailureHandler delegate;
 
     private final Publisher<RequestEvent> publisher;
 
-    public StormpathAuthenticationFailureHandler(AuthenticationFailureHandler delegate, Publisher<RequestEvent> publisher) {
+    private final ErrorModelFactory errorModelFactory;
 
+    public StormpathAuthenticationFailureHandler(AuthenticationFailureHandler delegate, Publisher<RequestEvent> publisher, ErrorModelFactory errorModelFactory) {
         Assert.notNull(delegate, "Delegate AuthenticationFailureHandler argument cannot be null.");
         Assert.notNull(publisher, "RequestEvent Publisher argument cannot be null.");
+        Assert.notNull(errorModelFactory, "Error Model Factory argument cannot be null.");
         this.delegate = delegate;
         this.publisher = publisher;
+        this.errorModelFactory = errorModelFactory;
     }
 
     @Override
@@ -56,6 +62,10 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                                         AuthenticationException exception) throws IOException, ServletException {
 
         try {
+            //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
+            //along the line and that causes the saved attributes to be lost.
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+            request.getSession().setAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toErrors(request, null, exception));
             this.delegate.onAuthenticationFailure(request, response, exception);
         } finally {
             FailedAuthenticationRequestEvent event = createFailureEvent(request, response, exception);
