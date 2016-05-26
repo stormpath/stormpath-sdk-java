@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 public class HelloController {
 
     @RequestMapping("/")
-    String home(HttpServletRequest request) {
+    HelloModel home(HttpServletRequest request) {
 
         String name = "World";
 
@@ -35,7 +35,13 @@ public class HelloController {
             name = account.getGivenName();
         }
 
-        return "Hello " + name + "!";
+        return new HelloModel("Hello " + name + "!", getMessage(account));
     }
 
+    private String getMessage(Account account) {
+        if (account != null) {
+            return "Issue a POST to /logout to logout";
+        }
+        return "Issue a POST /login with parameters 'login=' and 'password=' to login.";
+    }
 }

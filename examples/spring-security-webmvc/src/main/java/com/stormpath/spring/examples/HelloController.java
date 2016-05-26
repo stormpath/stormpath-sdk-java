@@ -56,8 +56,8 @@ public class HelloController {
 
     private String getMessage(Account account) {
         if (account != null) {
-            return "Note: Issue a POST to /logout to logout";
+            return "Issue a POST to /logout to logout";
         }
-        return "Note: Issue a GET to /login in your browser to login";
+        return "Issue a POST /login with parameters 'login=' and 'password=' to login.";
     }
 }
