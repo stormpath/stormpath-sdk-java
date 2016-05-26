@@ -40,8 +40,37 @@ class YAMLPropertiesSourceTest {
                 "    - Item 4"
         def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
 
-        assertEquals properties.get("a_sequence[0]"), "Item 1"
-        assertEquals properties.get("a_sequence[2]"), "0.5"
+        assertEquals properties.get("a_sequence"), "Item 1,Item 2,0.5,Item 4"
+    }
+
+    @Test
+    void testGetFieldOrderWithRawStrings() {
+        def yamlCollection = "fieldOrder:\n" +
+                "  - username\n" +
+                "  - givenName\n" +
+                "  - middleName\n" +
+                "  - surname\n" +
+                "  - email\n" +
+                "  - password\n" +
+                "  - confirmPassword"
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
+
+        assertEquals properties.get("fieldOrder"), "username,givenName,middleName,surname,email,password,confirmPassword"
+    }
+    
+    @Test
+    void testGetFieldOrderWithQuotedStrings() {
+        def yamlCollection = "fieldOrder:\n" +
+                "  - \"username\"\n" +
+                "  - \"givenName\"\n" +
+                "  - \"middleName\"\n" +
+                "  - \"surname\"\n" +
+                "  - \"email\"\n" +
+                "  - \"password\"\n" +
+                "  - \"confirmPassword\""
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
+
+        assertEquals properties.get("fieldOrder"), "username,givenName,middleName,surname,email,password,confirmPassword"
     }
 
     @Test

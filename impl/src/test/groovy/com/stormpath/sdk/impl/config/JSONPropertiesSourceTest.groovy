@@ -27,6 +27,18 @@ class JSONPropertiesSourceTest {
     }
 
     @Test
+    void testGetCollectionProperties() {
+        def yamlCollection = "{\n" +
+                "  \"collection\": [\n" +
+                "    {\"name\": \"Item 1\"}, {\"name\": \"Item 2\"}, {\"name\": \"Item 3\"}\n" +
+                "  ]\n" +
+                "}"
+        def properties = new YAMLPropertiesSource(new TestStringResource(yamlCollection)).properties
+
+        assertEquals properties.get("collection"), "{name=Item 1},{name=Item 2},{name=Item 3}"
+    }
+
+    @Test
     void testInvalidProperties() {
         try {
             new JSONPropertiesSource(new BadResource()).properties
