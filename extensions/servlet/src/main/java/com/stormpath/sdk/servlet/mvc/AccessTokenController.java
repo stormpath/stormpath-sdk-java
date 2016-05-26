@@ -160,7 +160,7 @@ public class AccessTokenController extends AbstractController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 

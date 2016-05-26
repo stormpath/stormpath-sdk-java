@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.provider.StormpathProvider;
 
 import java.util.Map;
 
@@ -26,7 +27,7 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
-public final class DefaultProvider extends AbstractProvider {
+public final class DefaultProvider extends AbstractProvider implements StormpathProvider {
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);
 

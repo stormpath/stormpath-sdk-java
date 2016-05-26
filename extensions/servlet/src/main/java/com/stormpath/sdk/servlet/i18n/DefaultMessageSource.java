@@ -30,8 +30,7 @@ public class DefaultMessageSource implements MessageSource {
 
     @Override
     public String getMessage(String key, Locale locale) {
-        ResourceBundle bundle = getBundle(locale);
-        return bundle.getString(key);
+        return getMessage(key, locale, new Object[]{});
     }
 
     @Override

@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.UserAgent;
+import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
@@ -68,6 +69,6 @@ public class DefaultUnauthorizedHandler implements UnauthorizedHandler {
     }
 
     protected UserAgent getUserAgent(HttpServletRequest request) {
-        return new DefaultUserAgent(request);
+        return UserAgents.get(request);
     }
 }

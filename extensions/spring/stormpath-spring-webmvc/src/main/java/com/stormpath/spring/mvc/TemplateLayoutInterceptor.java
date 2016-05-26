@@ -16,6 +16,8 @@
 package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.http.UserAgent;
+import com.stormpath.sdk.servlet.http.UserAgents;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -69,16 +71,27 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
         Assert.hasText(headViewName, "headViewName must be specified.");
     }
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                           ModelAndView modelAndView) throws Exception {
+    protected boolean shouldExecute(HttpServletRequest request, HttpServletResponse response,
+                                    Object handler, ModelAndView modelAndView) {
 
         if (modelAndView == null || !modelAndView.isReference()) {
-            return;
+            return false;
         }
 
         String viewName = modelAndView.getViewName();
         if (isRedirectOrForward(viewName)) {
+            return false;
+        }
+
+        UserAgent ua = UserAgents.get(request);
+        return ua.isHtmlPreferred();
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception {
+
+        if (!shouldExecute(request, response, handler, modelAndView)) {
             return;
         }
 

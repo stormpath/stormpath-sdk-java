@@ -65,7 +65,7 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
             //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
             //along the line and that causes the saved attributes to be lost.
             //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
-            request.getSession().setAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toErrors(request, null, exception));
+            request.getSession().setAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toError(request, exception));
             this.delegate.onAuthenticationFailure(request, response, exception);
         } finally {
             FailedAuthenticationRequestEvent event = createFailureEvent(request, response, exception);

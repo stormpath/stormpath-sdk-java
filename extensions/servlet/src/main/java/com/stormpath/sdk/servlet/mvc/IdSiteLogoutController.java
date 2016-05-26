@@ -45,7 +45,6 @@ public class IdSiteLogoutController extends LogoutController {
     }
 
     public void init() {
-        super.init();
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
         IdSiteController controller = new LogoutIdSiteController();
         controller.setServerUriResolver(serverUriResolver);
@@ -56,7 +55,7 @@ public class IdSiteLogoutController extends LogoutController {
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 

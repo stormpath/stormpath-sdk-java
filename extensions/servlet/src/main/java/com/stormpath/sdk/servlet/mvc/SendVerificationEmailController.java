@@ -20,8 +20,8 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -45,38 +45,29 @@ public class SendVerificationEmailController extends FormController {
     private String loginUri;
     private AccountStoreResolver accountStoreResolver;
 
-    public void init() {
-        super.init();
-        Assert.hasText(this.nextUri, "nextUri cannot be null.");
+    public SendVerificationEmailController() {
+        super();
+    }
+
+    public SendVerificationEmailController(Config confing) {
+        super(confing.getSendVerificationEmailControllerConfig());
+
+        this.loginUri = confing.getLoginControllerConfig().getUri();
+        this.accountStoreResolver = confing.getAccountStoreResolver();
+
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
+        Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return true;
     }
 
-    protected AccountStoreResolver getAccountStoreResolver() {
-        return accountStoreResolver;
-    }
-
-    public void setAccountStoreResolver(AccountStoreResolver accountStoreResolver) {
-        this.accountStoreResolver = accountStoreResolver;
-    }
-
-    public String getLoginUri() {
-        return loginUri;
-    }
-
-    public void setLoginUri(String loginUri) {
-        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        this.loginUri = loginUri;
-    }
-
     @Override
-    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<String> errors,
+    protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("loginUri", getLoginUri());
+        model.put("loginUri", loginUri);
     }
 
     @Override
@@ -84,7 +75,7 @@ public class SendVerificationEmailController extends FormController {
 
         List<Field> fields = new ArrayList<Field>(1);
 
-        String[] fieldNames = new String[]{ "email" };
+        String[] fieldNames = new String[]{"email"};
 
         for (String fieldName : fieldNames) {
 
@@ -104,11 +95,11 @@ public class SendVerificationEmailController extends FormController {
     }
 
     @Override
-    protected List<String> toErrors(HttpServletRequest request, Form form, Exception e) {
+    protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
         log.debug("Unable to send account verification email.", e);
 
-        List<String> errors = new ArrayList<String>(1);
-        errors.add("Invalid email address.");
+        List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
+        errors.add(ErrorModel.builder().setMessage("Invalid email address.").build());
 
         return errors;
     }
@@ -122,12 +113,12 @@ public class SendVerificationEmailController extends FormController {
         try {
             //set the form on the request in case the AccountStoreResolver needs to inspect it:
             request.setAttribute("form", form);
-            AccountStore accountStore = getAccountStoreResolver().getAccountStore(request, response);
+            AccountStore accountStore = accountStoreResolver.getAccountStore(request, response);
 
             VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
-                .setLogin(email)
-                .setAccountStore(accountStore)
-                .build();
+                    .setLogin(email)
+                    .setAccountStore(accountStore)
+                    .build();
 
             application.sendVerificationEmail(verificationEmailRequest);
         } catch (ResourceException e) {
@@ -139,12 +130,6 @@ public class SendVerificationEmailController extends FormController {
             //otherwise don't do anything
         }
 
-        String next = form.getNext();
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
-        return new DefaultViewModel(next);
+        return new DefaultViewModel(nextUri);
     }
 }

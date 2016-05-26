@@ -28,6 +28,15 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
+import com.stormpath.sdk.servlet.filter.FilterBuilder;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
+import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
 import com.stormpath.sdk.servlet.filter.FilterBuilder;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
@@ -41,15 +50,16 @@ import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.form.Field;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
-import com.stormpath.sdk.servlet.i18n.MessageTag;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormFieldParser;
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +68,8 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -117,196 +129,30 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return bean;
     }
 
+    /** @since 1.0.0 */
+    @Bean
+    @Override
+    public List<MediaType> stormpathProducesMediaTypes() {
+        return super.stormpathProducesMediaTypes();
+    }
+
+    @Bean
+    @Override
+    public View stormpathJsonView() {
+        return super.stormpathJsonView();
+    }
+
+    @Bean
+    @Override
+    public ViewResolver stormpathJsonViewResolver() {
+        return super.stormpathJsonViewResolver();
+    }
+
     //this isn't needed in a Spring environment, but we have to have it because the
     //default .jsp views reference it (MessageTag uses a Config instance:
     @Bean
     public Config stormpathInternalConfig() {
-
-        final com.stormpath.sdk.servlet.i18n.MessageSource messageSource = stormpathMessageSource();
-        final Resolver<Locale> localeResolver = stormpathLocaleResolver();
-
-        return new Config() {
-            @Override
-            public String getLoginUrl() {
-                return loginUri;
-            }
-
-            @Override
-            public String getLoginNextUrl() {
-                return loginNextUri;
-            }
-
-            @Override
-            public String getLogoutUrl() {
-                return logoutUri;
-            }
-
-            @Override
-            public String getForgotPasswordUrl() {
-                return forgotUri;
-            }
-
-            @Override
-            public String getForgotPasswordNextUrl() {
-                return forgotNextUri;
-            }
-
-            @Override
-            public String getChangePasswordUrl() {
-                return changePasswordUri;
-            }
-
-            @Override
-            public String getChangePasswordNextUrl() {
-                return changePasswordNextUri;
-            }
-
-            @Override
-            public String getLogoutNextUrl() {
-                return logoutNextUri;
-            }
-
-            @Override
-            public boolean isLogoutInvalidateHttpSession() {
-                return logoutInvalidateHttpSession;
-            }
-
-            @Override
-            public String getAccessTokenUrl() {
-                return accessTokenUri;
-            }
-
-            @Override
-            public String getRegisterUrl() {
-                return registerUri;
-            }
-
-            @Override
-            public String getRegisterNextUrl() {
-                return registerNextUri;
-            }
-
-            @Override
-            public String getVerifyUrl() {
-                return verifyUri;
-            }
-
-            @Override
-            public String getVerifyNextUrl() {
-                return verifyNextUri;
-            }
-
-            /* @since 1.0.RC8.3 */
-            @Override
-            public String getSendVerificationEmailUrl() {
-                return sendVerificationEmailUri;
-            }
-
-            @Override
-            public boolean isVerifyEnabled() {
-                return verifyEnabled;
-            }
-
-            @Override
-            public String getUnauthorizedUrl() {
-                return "/unauthorized";
-            }
-
-            @Override
-            public CookieConfig getRefreshTokenCookieConfig() {
-                return stormpathRefreshTokenCookieConfig();
-            }
-
-            @Override
-            public CookieConfig getAccessTokenCookieConfig() {
-                return stormpathAccessTokenCookieConfig();
-            }
-
-            @Override
-            public String getAccessTokenValidationStrategy() {
-                return accessTokenValidationStrategy;
-            }
-
-            @Override
-            public <T> T getInstance(String classPropertyName) throws ServletException {
-                if (MessageTag.LOCALE_RESOLVER_CONFIG_KEY.equals(classPropertyName)) {
-                    return (T) localeResolver;
-                } else if (MessageTag.MESSAGE_SOURCE_CONFIG_KEY.equals(classPropertyName)) {
-                    return (T) messageSource;
-                } else {
-                    String msg = "The config key '" + classPropertyName + "' is not supported in Spring environments " +
-                            "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
-                    throw new UnsupportedOperationException(msg);
-                }
-            }
-
-            @Override
-            public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType)
-                    throws ServletException {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public int size() {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public boolean isEmpty() {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public boolean containsKey(Object o) {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public boolean containsValue(Object o) {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public String get(Object o) {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public String put(String s, String s2) {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public String remove(Object o) {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public void putAll(Map<? extends String, ? extends String> map) {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public void clear() {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public Set<String> keySet() {
-                //The Spring Boot WebMVC + Spring Security Example causes this method to be invoked. Thus, we cannot throw an exception here.
-                return Collections.EMPTY_SET;
-            }
-
-            @Override
-            public Collection<String> values() {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-
-            @Override
-            public Set<Entry<String, String>> entrySet() {
-                throw new UnsupportedOperationException("Not supported for spring environments.");
-            }
-        };
+        return super.stormpathInternalConfig();
     }
 
     @Bean
@@ -480,6 +326,26 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    public Controller stormpathGoogleCallbackController() {
+        return super.stormpathGoogleCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathGithubCallbackController() {
+        return super.stormpathGithubCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathFacebookCallbackController() {
+        return super.stormpathFacebookCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathLinkedinCallbackController() {
+        return super.stormpathLinkedinCallbackController();
+    }
+
+    @Bean
     public ErrorModelFactory stormpathLoginErrorModelFactory() {
         return super.stormpathLoginErrorModelFactory();
     }
@@ -490,18 +356,14 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
+    public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
+        return super.stormpathAccountStoreModelFactory();
+    }
+
+    @Bean
     public Controller stormpathForgotPasswordController() {
         return super.stormpathForgotPasswordController();
-    }
-
-    @Bean
-    public List<Field> stormpathRegisterFormFields() {
-        return super.stormpathRegisterFormFields();
-    }
-
-    @Bean
-    public FormFieldParser stormpathRegisterFormFieldParser() {
-        return super.stormpathRegisterFormFieldParser();
     }
 
     @Bean
@@ -547,6 +409,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Controller stormpathAccessTokenController() {
         return super.stormpathAccessTokenController();
+    }
+
+    @Bean
+    @Override
+    public Controller stormpathMeController() {
+        return super.stormpathMeController();
     }
 
     @Bean
@@ -612,4 +480,38 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathAccountResolverFilter();
     }
 
+    @Bean
+    public ControllerConfigResolver stormpathForgotPasswordControllerConfigResolver() {
+        return super.stormpathForgotPasswordControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
+        return super.stormpathLoginControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathRegisterControllerConfigResolver() {
+        return super.stormpathRegisterControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
+        return super.stormpathVerifyControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
+        return super.stormpathSendVerificationEmailControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
+        return super.stormpathChangePasswordControllerConfigResolver();
+    }
+
+    @Bean
+    public ControllerConfigResolver stormpathLogoutControllerConfigResolver() {
+        return super.stormpathLogoutControllerConfigResolver();
+    }
 }

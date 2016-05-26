@@ -20,20 +20,6 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.0
  */
-public interface GithubProvider extends Provider {
-
-    /**
-     * Getter for the Client ID of the Github application.
-     *
-     * @return the Client ID of the Github application.
-     */
-    String getClientId();
-
-    /**
-     * Getter for the Client Secret of the Github application.
-     *
-     * @return the Client Secret of the Github application.
-     */
-    String getClientSecret();
+public interface GithubProvider extends OauthProvider {
 
 }

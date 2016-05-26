@@ -22,6 +22,9 @@ copyrights:
 - Request, Response, and Signature functions were based on those in the
   Amazon AWS SDK for Java, Copyright 2010-2012 Amazon.com, Inc. or its
   affiliates.  Apache 2.0 licensed.
-- *Util classes, HttpHeaders, and Media type classes and functions from the
+- *Util classes, HttpHeaders, com.stormpath.sdk.lang.CompoundComparator,
+  com.stormpath.sdk.lang.InvertibleComparator, com.stormpath.sdk.http.InvalidMediaTypeException,
+  com.stormpath.sdk.http.InvalidMimeTypeException, com.stormpath.sdk.http.MediaType,
+  com.stormpath.sdk.http.MimeType, com.stormpath.sdk.http.MimeTypes classes and functions from the
   Spring Framework project (http://www.springframework.org).  Copyright
-  2002-2012 SpringSource and original authors.  Apache 2.0 licensed.
+  2002-2015 SpringSource, Pivotal, and original authors.  Apache 2.0 licensed.

@@ -1,19 +1,15 @@
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.servlet.form.Form;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
-import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.AbstractErrorModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @since 1.0.RC7
  */
-public class SpringSecurityLoginErrorModelFactory implements ErrorModelFactory {
+public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFactory {
 
     private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
@@ -21,22 +17,33 @@ public class SpringSecurityLoginErrorModelFactory implements ErrorModelFactory {
             "the Application's associated Account Stores with the specified username or email";
 
     @Autowired
-    MessageSource messageSource;
+    private org.springframework.context.MessageSource messageSource;
 
     @Override
-    public List<String> toErrors(HttpServletRequest request, Form form, Exception exception) {
-
-        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
-        if (exception instanceof AuthenticationServiceException) {
-            if (exception.getMessage() != null && exception.getMessage().contains(UNSUCCESSFUL_LOGIN_STORMPATH_ERROR)) {
-                return Collections.singletonList(getInvalidLoginMessage(request));
-            }
-        }
-
-        return null;
+    protected String getDefaultMessageKey() {
+        return INVALID_LOGIN_MESSAGE;
     }
 
-    private String getInvalidLoginMessage(HttpServletRequest request) {
-        return messageSource.getMessage(INVALID_LOGIN_MESSAGE, request.getLocale());
+    @Override
+    protected Object[] getMessageParams() {
+        return new Object[0];
+    }
+
+    @Override
+    protected boolean hasError(HttpServletRequest request, Exception e) {
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+        if (e instanceof AuthenticationServiceException) {
+            if (e.getMessage() != null && e.getMessage().contains(UNSUCCESSFUL_LOGIN_STORMPATH_ERROR)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected String getErrorMessage(HttpServletRequest request, String key) {
+        String defaultMessage = messageSource.getMessage(getDefaultMessageKey(), new Object[]{}, request.getLocale());
+
+        return messageSource.getMessage(key, getMessageParams(), defaultMessage, request.getLocale());
     }
 }

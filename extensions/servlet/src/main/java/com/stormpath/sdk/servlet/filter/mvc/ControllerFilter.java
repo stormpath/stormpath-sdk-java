@@ -16,10 +16,11 @@
 package com.stormpath.sdk.servlet.filter.mvc;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.sdk.servlet.mvc.Controller;
-import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
+import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.mvc.*;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 /**
  * A Servlet Filter that acts as an MVC {@link com.stormpath.sdk.servlet.mvc.Controller Controller} by delegating to an
@@ -45,8 +46,10 @@ public class ControllerFilter extends HttpFilter {
 
     private Controller controller;
 
-    private String prefix = "/WEB-INF/jsp/";
+    private String prefix = "/WEB-INF/jsp/stormpath/";
     private String suffix = ".jsp";
+
+    private ViewResolver viewResolver;
 
     public Controller getController() {
         return controller;
@@ -75,11 +78,15 @@ public class ControllerFilter extends HttpFilter {
     @Override
     protected void onInit() throws ServletException {
         Assert.notNull(controller, "Controller instance must be configured.");
+
+        InternalResourceViewResolver irvr = new InternalResourceViewResolver();
+        irvr.setPrefix(getPrefix());
+        irvr.setSuffix(getSuffix());
+        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), prroducesMediaTypes());
     }
 
     @Override
-    protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws Exception {
+    protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
 
         ViewModel vm;
         try {
@@ -95,8 +102,6 @@ public class ControllerFilter extends HttpFilter {
         String viewName = vm.getViewName();
         Assert.hasText(viewName, "ViewModel must contain a viewName.");
 
-        log.debug("Returning view name '{}' for request URI [{}]", viewName, request.getRequestURI());
-
         boolean redirect = vm.isRedirect();
 
         if (redirect) {
@@ -108,36 +113,32 @@ public class ControllerFilter extends HttpFilter {
 
     protected void redirect(HttpServletRequest request, HttpServletResponse response, ViewModel vm) throws IOException {
         String redirectUri = vm.getViewName();
+        log.debug("Redirecting to '{}' for request URI [{}]", redirectUri, request.getRequestURI());
         ServletUtils.issueRedirect(request, response, redirectUri, null, true, true);
     }
 
-    protected void render(HttpServletRequest request, HttpServletResponse response, ViewModel vm)
-        throws ServletException, IOException {
-
-        Map<String, ?> model = vm.getModel();
-        setAttributes(request, model);
-
-        String viewName = vm.getViewName();
-
-        String filePath = toFilePath(viewName);
-
-        request.getRequestDispatcher(filePath).forward(request, response);
-    }
-
-    protected String toFilePath(String viewName) {
-        return getPrefix() + viewName + getSuffix();
-    }
-
-    protected void setAttributes(HttpServletRequest request, Map<String, ?> model) {
-        if (Collections.isEmpty(model)) {
-            return;
-        }
-
-        for (String key : model.keySet()) {
-            Object value = model.get(key);
-            if (value != null) {
-                request.setAttribute(key, value);
+    protected void render(HttpServletRequest request, HttpServletResponse response, ViewModel vm) throws Exception {
+        log.debug("Rendering view '{}' for request URI [{}]", vm.getViewName(), request.getRequestURI());
+        View view = this.viewResolver.getView(vm, request);
+        if (view != null) {
+            if(view instanceof JacksonView) {
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             }
+            view.render(request, response, vm);
+        }
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    /** @since 1.0.0 */
+    protected List<MediaType> prroducesMediaTypes() {
+        String mediaTypes = Strings.clean(getConfig().getProducesMediaTypes());
+        Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
+
+        try {
+            return MediaType.parseMediaTypes(mediaTypes);
+        } catch (InvalidMediaTypeException e) {
+            String msg = "Unable to parse value in stormpath.web.produces property: " + e.getMessage();
+            throw new IllegalArgumentException(msg, e);
         }
     }
 }

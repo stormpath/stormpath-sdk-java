@@ -20,29 +20,5 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.0
  */
-public interface LinkedInProvider extends Provider {
-
-    /**
-     * Getter for the App ID of the LinkedIn application.
-     *
-     * @return the App ID of the LinkedIn application.
-     */
-    String getClientId();
-
-    /**
-     * Getter for the App Secret of the LinkedIn application.
-     *
-     * @return the App Secret of the LinkedIn application.
-     */
-    String getClientSecret();
-
-
-    /**
-     * Getter for the App Redirect Uri of the LinkedIn application.
-     *
-     * @return the App Redirect Uri of the LinkedIn application.
-     * @since 1.0.RC5
-     */
-    String getRedirectUri();
-
+public interface LinkedInProvider extends RedirectableOauthProvider {
 }
