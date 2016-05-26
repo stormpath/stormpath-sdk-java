@@ -11,7 +11,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -85,11 +84,7 @@ public class YAMLPropertiesSource implements PropertiesSource {
                 // Need a compound key
                 @SuppressWarnings("unchecked")
                 Collection<Object> collection = (Collection<Object>) value;
-                int count = 0;
-                for (Object object : collection) {
-                    buildFlattenedMap(result,
-                            Collections.singletonMap("[" + (count++) + "]", object), key);
-                }
+                result.put(key, Strings.collectionToCommaDelimitedString(collection));
             }
             else {
                 result.put(key, value != null ? String.valueOf(value) : "");

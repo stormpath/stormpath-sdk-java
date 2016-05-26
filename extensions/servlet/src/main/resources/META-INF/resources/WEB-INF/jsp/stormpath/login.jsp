@@ -41,7 +41,7 @@
                                 </span>
                             </div>
 
-                            <c:if test="${!empty status}">
+                            <c:if test="${!empty status and empty errors}">
                                 <div class="alert alert-dismissable alert-success">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                                     <p>${status}</p>
