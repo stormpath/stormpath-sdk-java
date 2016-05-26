@@ -51,13 +51,16 @@
                             <th:block th:if="${field.type == 'hidden'}">
                                 <input th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
                             </th:block>
-                            <th:block th:if="${field.type != 'hidden'}">
+                            <!--/* Check to see if key is found for custom fields. If not, just display key. */-->
+                            <!--/* https://github.com/stormpath/stormpath-sdk-java/issues/645 */-->
+                            <th:block th:if="${field.type != 'hidden'}"
+                                      th:with="label=${#messages.msg(field.label)},placeholder=${#messages.msg(field.placeholder)}">
                                 <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}"
-                                       th:text="#{${field.label}}">|Field label|</label>
+                                       th:text="${#strings.startsWith(label, '??') ? field.label : label}">|Field label|</label>
 
                                 <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
-                                           th:placeholder="#{${field.placeholder}}"
+                                           th:placeholder="${#strings.startsWith(placeholder, '??') ? field.placeholder : placeholder}"
                                            th:required="${field.required}" class="form-control"/>
                                 </div>
                             </th:block>

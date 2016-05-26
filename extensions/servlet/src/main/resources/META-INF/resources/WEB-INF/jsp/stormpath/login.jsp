@@ -17,6 +17,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
 <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <t:page>
     <jsp:attribute name="title"><sp:message key="stormpath.web.login.title"/></jsp:attribute>
@@ -65,13 +66,22 @@
                                             <input name="${field.name}" value="${field.value}" type="${field.type}"/>
                                         </c:when>
                                         <c:otherwise>
+                                            <%-- Check to see if key is found for custom fields. If not, just display key. --%>
+                                            <%-- https://github.com/stormpath/stormpath-sdk-java/issues/645 --%>
+                                            <c:set var="label" scope="page"><sp:message key="${field.label}"/></c:set>
+                                            <c:if test="${fn:startsWith(label, '!')}">
+                                                <c:set var="label">${field.label}</c:set>
+                                            </c:if>
+                                            <c:set var="placeholder" scope="page"><sp:message key="${field.placeholder}" /></c:set>
+                                            <c:if test="${fn:startsWith(placeholder, '!')}">
+                                                <c:set var="placeholder">${field.placeholder}</c:set>
+                                            </c:if>
                                             <div form-group="true" class="form-group group-${field.name}">
-                                                <label class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-4'}"/>"><sp:message
-                                                        key="${field.label}"/></label>
+                                                <label class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-4'}"/>">${label}</label>
                                                 <div class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-8'}"/>">
                                                     <input name="${field.name}" value="${field.value}"
                                                            type="${field.type}"
-                                                           placeholder="<sp:message key="${field.placeholder}"/>"
+                                                           placeholder="${placeholder}"
                                                            <c:if test="${field.required}">required="required" </c:if>
                                                            class="form-control">
                                                 </div>

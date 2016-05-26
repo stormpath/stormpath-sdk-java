@@ -345,11 +345,6 @@ p {
     }
 }
 
-.login-view .email-password-area label {
-    height: 14px;
-    line-height: 14px;
-}
-
 .login-view .email-password-area input[type='checkbox'] {
     visibility: hidden;
 }
