@@ -20,5 +20,5 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.beta
  */
-public interface FacebookProvider extends OauthProvider {
+public interface FacebookProvider extends OAuthProvider {
 }

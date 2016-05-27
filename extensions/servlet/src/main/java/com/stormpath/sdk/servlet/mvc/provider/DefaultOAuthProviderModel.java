@@ -13,24 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.servlet.mvc.provider;
+
+import com.stormpath.sdk.provider.OAuthProvider;
 
 /**
  * @since 1.0.0
  */
-public interface OauthProvider extends Provider {
+public class DefaultOAuthProviderModel implements OAuthProviderModel {
 
-    /**
-     * Returns the client ID used to authenticate requests to the 3rd party oauth provider.
-     *
-     * @return the client ID used to authenticate requests to the 3rd party oauth provider.
-     */
-    String getClientId();
+    private final OAuthProvider provider;
 
-    /**
-     * Returns the client secret used to authenticate requests to the 3rd party oauth provider.
-     *
-     * @return the client secret used to authenticate requests to the 3rd party oauth provider.
-     */
-    String getClientSecret();
+    public DefaultOAuthProviderModel(OAuthProvider provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public String getHref() {
+        return this.provider.getHref();
+    }
+
+    @Override
+    public String getProviderId() {
+        return this.provider.getProviderId();
+    }
+
+    @Override
+    public String getClientId() {
+        return this.provider.getClientId();
+    }
 }
