@@ -3,7 +3,7 @@ package com.stormpath.sdk.provider;
 /**
  * @since 1.0.RC8
  */
-public interface OauthProvider extends Provider {
+public interface OAuthProvider extends Provider {
 
     /**
      * Returns the client ID used to authenticate requests to the 3rd party oauth provider.
