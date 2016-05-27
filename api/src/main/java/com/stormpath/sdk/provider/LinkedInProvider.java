@@ -20,5 +20,5 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.0
  */
-public interface LinkedInProvider extends RedirectableOauthProvider {
+public interface LinkedInProvider extends RedirectableOAuthProvider {
 }

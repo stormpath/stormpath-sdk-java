@@ -1,15 +1,15 @@
 package com.stormpath.sdk.servlet.mvc.provider;
 
-import com.stormpath.sdk.provider.OauthProvider;
+import com.stormpath.sdk.provider.OAuthProvider;
 
 /**
  * 1.0.RC8
  */
-public class DefaultOauthProviderModel implements OauthProviderModel {
+public class DefaultOAuthProviderModel implements OAuthProviderModel {
 
-    private final OauthProvider provider;
+    private final OAuthProvider provider;
 
-    public DefaultOauthProviderModel(OauthProvider provider) {
+    public DefaultOAuthProviderModel(OAuthProvider provider) {
         this.provider = provider;
     }
 

@@ -20,6 +20,6 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.beta
  */
-public interface GoogleProvider extends RedirectableOauthProvider {
+public interface GoogleProvider extends RedirectableOAuthProvider {
 
 }

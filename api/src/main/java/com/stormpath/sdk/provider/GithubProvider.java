@@ -20,6 +20,6 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.0
  */
-public interface GithubProvider extends OauthProvider {
+public interface GithubProvider extends OAuthProvider {
 
 }

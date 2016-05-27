@@ -25,7 +25,7 @@ import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.organization.Organization;
-import com.stormpath.sdk.provider.OauthProvider;
+import com.stormpath.sdk.provider.OAuthProvider;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 
@@ -79,8 +79,8 @@ public class DefaultAccountStoreModelFactory implements AccountStoreModelFactory
 
             Provider provider = directory.getProvider();
 
-            if (provider instanceof OauthProvider) {
-                ProviderModel providerModel = new DefaultOauthProviderModel((OauthProvider) provider);
+            if (provider instanceof OAuthProvider) {
+                ProviderModel providerModel = new DefaultOAuthProviderModel((OAuthProvider) provider);
                 AccountStoreModel acctStoreModel = new DefaultAccountStoreModel(directory, providerModel);
                 accountStores.add(acctStoreModel);
             } /* TODO disable SAML we since the impl of SAML login is not working properly see https://github.com/stormpath/stormpath-sdk-java/pull/623
