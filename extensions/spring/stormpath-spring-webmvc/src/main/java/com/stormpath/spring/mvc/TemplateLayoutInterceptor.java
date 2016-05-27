@@ -83,8 +83,7 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
             return false;
         }
 
-        UserAgent ua = UserAgents.get(request);
-        return ua.isHtmlPreferred();
+        return true;
     }
 
     @Override
