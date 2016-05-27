@@ -34,7 +34,7 @@ public class HelloController {
     private HelloService helloService;
 
     @RequestMapping("/")
-    HelloModel home(HttpServletRequest request) {
+    ModelAndView home(HttpServletRequest request) {
 
         String name = "World";
 
@@ -43,7 +43,9 @@ public class HelloController {
             name = account.getGivenName();
         }
 
-        return new HelloModel("Hello " + name + "!", getMessage(account));
+        ModelAndView mav = new ModelAndView("home");
+        mav.addObject("message", "Hello " + name + "!");
+        return mav;
     }
 
     @RequestMapping("/restricted")
@@ -52,12 +54,5 @@ public class HelloController {
         ModelAndView mav = new ModelAndView("restricted");
         mav.addObject("message", helloMessage);
         return mav;
-    }
-
-    private String getMessage(Account account) {
-        if (account != null) {
-            return "Issue a POST to /logout to logout";
-        }
-        return "Issue a POST /login with parameters 'login=' and 'password=' to login.";
     }
 }
