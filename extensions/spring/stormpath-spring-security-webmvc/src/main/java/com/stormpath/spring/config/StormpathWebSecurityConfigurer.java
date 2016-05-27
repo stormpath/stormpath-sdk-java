@@ -227,7 +227,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
             http.authorizeRequests()
                 .antMatchers("/assets/css/stormpath.css").permitAll()
-                .antMatchers("/assets/css/custom.stormpath.css").permitAll();
+                .antMatchers("/assets/css/custom.stormpath.css").permitAll()
+                .antMatchers("/assets/js/stormpath.js").permitAll();
         }
 
         if (idSiteEnabled || samlEnabled || stormpathWebEnabled) {
