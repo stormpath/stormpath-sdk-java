@@ -1,5 +1,6 @@
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.AbstractErrorModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -17,7 +18,7 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
             "the Application's associated Account Stores with the specified username or email";
 
     @Autowired
-    private org.springframework.context.MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Override
     protected String getDefaultMessageKey() {
@@ -42,8 +43,6 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
 
     @Override
     protected String getErrorMessage(HttpServletRequest request, String key) {
-        String defaultMessage = messageSource.getMessage(getDefaultMessageKey(), new Object[]{}, request.getLocale());
-
-        return messageSource.getMessage(key, getMessageParams(), defaultMessage, request.getLocale());
+        return messageSource.getMessage(getDefaultMessageKey(), request.getLocale(), getMessageParams());
     }
 }
