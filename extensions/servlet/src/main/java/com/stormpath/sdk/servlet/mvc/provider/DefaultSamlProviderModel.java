@@ -17,6 +17,9 @@ package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.stormpath.sdk.provider.saml.SamlProvider;
 
+/**
+ * @since 1.0.0
+ */
 public class DefaultSamlProviderModel implements ProviderModel {
 
     private final SamlProvider provider;
