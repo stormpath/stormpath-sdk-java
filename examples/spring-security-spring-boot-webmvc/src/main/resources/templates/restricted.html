@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/head :: head"/> /*/-->
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="box col-md-6 col-md-offset-3">
+                    <div class="stormpath-header">
+                        <img src="https://stormpath.com/images/template/logo-nav.png"/>
+                    </div>
+
+                    <h1 th:text="${msg}"/>
+                    <a href="/" class="btn btn-primary">Go Home</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
