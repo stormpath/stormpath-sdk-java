@@ -16,9 +16,12 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 
 import javax.servlet.ServletException;
+import java.util.Locale;
 
 /**
  * @since 1.0.RC3
