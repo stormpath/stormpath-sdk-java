@@ -47,8 +47,8 @@ public abstract class FormController extends AbstractController {
 
     }
 
-    public FormController(ControllerConfigResolver configResolver) {
-        super(configResolver);
+    public FormController(ControllerConfigResolver configResolver, String produces) {
+        super(configResolver, produces);
         this.csrfTokenManager = configResolver.getCsrfTokenManager();
         this.formFields = configResolver.getFormFields();
 
@@ -71,7 +71,7 @@ public abstract class FormController extends AbstractController {
     }
 
     protected void setCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
-        if (!isJsonPreferred(request)) {
+        if (!isJsonPreferred(request, response)) {
             Assert.isInstanceOf(DefaultForm.class, form, "Form implementation class must equal or extend DefaultForm");
 
             String val = fieldValueResolver.getValue(request, csrfTokenManager.getTokenName());
@@ -86,7 +86,7 @@ public abstract class FormController extends AbstractController {
     }
 
     void validateCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
-        if (isCsrfProtectionEnabled() && !isJsonPreferred(request)) {
+        if (isCsrfProtectionEnabled() && !isJsonPreferred(request, response)) {
             String csrfToken = form.getFieldValue(csrfTokenManager.getTokenName());
             Assert.isTrue(csrfTokenManager.isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
             form.getField(csrfTokenManager.getTokenName()).setValue(csrfTokenManager.createCsrfToken(request, response));
@@ -234,7 +234,7 @@ public abstract class FormController extends AbstractController {
         }
 
         //If JSON ensure we are not posting undeclared fields according to the spec
-        if (isJsonPreferred(request)) {
+        if (isJsonPreferred(request, response)) {
             Map<String, Object> postedJsonFields = fieldValueResolver.getAllFields(request);
 
             for (String fieldName : postedJsonFields.keySet()) {

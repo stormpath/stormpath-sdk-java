@@ -43,7 +43,7 @@ public class ChangePasswordController extends FormController {
     }
 
     public ChangePasswordController(Config config) {
-        super(config.getChangePasswordControllerConfig());
+        super(config.getChangePasswordControllerConfig(), config.getProducesMediaTypes());
         this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
         this.loginUri = config.getLoginControllerConfig().getUri();
 

@@ -20,16 +20,21 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.UserAgents;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,6 +42,8 @@ import java.util.Map;
  * @since 1.0.RC4
  */
 public abstract class AbstractController implements Controller {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractController.class);
 
     private static final HttpServlet DEFAULT_HANDLER = new HttpServlet() {
     };
@@ -46,11 +53,12 @@ public abstract class AbstractController implements Controller {
     protected String uri;
     protected MessageSource messageSource;
     protected Publisher<RequestEvent> eventPublisher;
+    protected List<MediaType> produces;
 
     protected String controllerKey;
     private Resolver<Locale> localeResolver;
 
-    public AbstractController(ControllerConfigResolver controllerConfigResolver) {
+    public AbstractController(ControllerConfigResolver controllerConfigResolver, String produces) {
         this.nextUri = controllerConfigResolver.getNextUri();
         this.messageSource = controllerConfigResolver.getMessageSource();
         this.localeResolver = controllerConfigResolver.getLocaleResolver();
@@ -58,6 +66,7 @@ public abstract class AbstractController implements Controller {
         this.uri = controllerConfigResolver.getUri();
         this.controllerKey = controllerConfigResolver.getControllerKey();
         this.eventPublisher = controllerConfigResolver.getRequestEventPublisher();
+        this.produces = MediaType.parseMediaTypes(produces);
 
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
         Assert.hasText(this.view, "view cannot be null or empty.");
@@ -92,8 +101,22 @@ public abstract class AbstractController implements Controller {
         return messageSource.getMessage(key, locale, args);
     }
 
-    protected boolean isJsonPreferred(HttpServletRequest request) {
-        return UserAgents.get(request).isJsonPreferred();
+    protected boolean isJsonPreferred(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            return MediaType.APPLICATION_JSON.equals(ContentNegotiationResolver.INSTANCE.getContentType(request, response, produces));
+        } catch (UnresolvedMediaTypeException e) {
+            log.error("Couldn't resolve content type", e);
+            return false;
+        }
+    }
+
+    protected boolean isHtmlPreferred(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            return MediaType.TEXT_HTML.equals(ContentNegotiationResolver.INSTANCE.getContentType(request, response, produces));
+        } catch (UnresolvedMediaTypeException e) {
+            log.error("Couldn't resolve content type", e);
+            return false;
+        }
     }
 
     @Override

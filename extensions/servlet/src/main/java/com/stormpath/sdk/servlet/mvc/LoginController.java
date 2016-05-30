@@ -21,7 +21,6 @@ import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
@@ -55,7 +54,7 @@ public class LoginController extends FormController {
     }
 
     public LoginController(Config config, ErrorModelFactory errorModelFactory) {
-        super(config.getLoginControllerConfig());
+        super(config.getLoginControllerConfig(), config.getProducesMediaTypes());
 
         this.forgotLoginUri = config.getForgotPasswordControllerConfig().getUri();
         this.verifyUri = config.getVerifyControllerConfig().getUri();
@@ -92,7 +91,7 @@ public class LoginController extends FormController {
                                Map<String, Object> model) {
         model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
 
-        if (UserAgents.get(request).isHtmlPreferred()) {
+        if (isHtmlPreferred(request, response)) {
             model.put("forgotLoginUri", forgotLoginUri);
             model.put("verifyUri", verifyUri);
             model.put("verifyEnabled", verifyEnabled);
@@ -121,7 +120,7 @@ public class LoginController extends FormController {
         AccessTokenResult result = (AccessTokenResult) req.getAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME);
         saveResult(req, resp, result);
 
-        if (UserAgents.get(req).isJsonPreferred()) {
+        if (isJsonPreferred(req, resp)) {
             //noinspection unchecked
             return new DefaultViewModel(view, java.util.Collections.singletonMap("account", accountModelFactory.toMap(result.getAccount(), Collections.EMPTY_LIST)));
         }
