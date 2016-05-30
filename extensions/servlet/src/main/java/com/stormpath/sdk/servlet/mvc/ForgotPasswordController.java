@@ -157,8 +157,9 @@ public class ForgotPasswordController extends FormController {
             //exist, otherwise we open up to phishing attacks
             if (e.getCode() != 404) {
                 if (UserAgents.get(request).isJsonPreferred()) {
-
-
+                    model.put("status", 200);
+                    model.put("message", "OK");
+                    return new DefaultViewModel("stormpathJsonView", model);
                 }
                 throw e;
             }
