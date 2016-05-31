@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @since 1.0.RC3
@@ -35,6 +37,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
 
     private static final Logger log = LoggerFactory.getLogger(OriginAccessTokenRequestAuthorizer.class);
 
+    public static final String ACCEPTS_HEADER_NAME = "Accept";
     public static final String ORIGIN_HEADER_NAME = "Origin";
     //yes, 'Referer' is supposed to be spelled incorrectly: https://tools.ietf.org/html/rfc7231#section-5.5.2 :
     public static final String REFERER_HEADER_NAME = "Referer";
@@ -44,9 +47,11 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     private final ServerUriResolver serverUriResolver;
     private final Resolver<Boolean> localhost;
     private final Collection<String> authorizedOriginUrls;
+    private final boolean producesFavorsJSON;
 
     public OriginAccessTokenRequestAuthorizer(ServerUriResolver serverUriResolver, Resolver<Boolean> localhost,
-                                              Collection<String> authorizedOriginUrls) {
+                                              Collection<String> authorizedOriginUrls,
+                                              List<MediaType> producesMimeTypes) {
         Assert.notNull(serverUriResolver, "ServerUriResolver cannot be null.");
         Assert.notNull(localhost, "localhost resolver cannot be null.");
         this.serverUriResolver = serverUriResolver;
@@ -55,6 +60,15 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
             this.authorizedOriginUrls = Collections.emptyList();
         } else {
             this.authorizedOriginUrls = authorizedOriginUrls;
+        }
+        if (producesMimeTypes == null) {
+            this.producesFavorsJSON = false;
+        } else {
+            if (producesMimeTypes.size() > 0) {
+                producesFavorsJSON = producesMimeTypes.get(0).includes(MediaType.APPLICATION_JSON);
+            } else {
+                producesFavorsJSON = false;
+            }
         }
     }
 
@@ -73,61 +87,68 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
     @Override
     public void assertAuthorized(HttpServletRequest request, HttpServletResponse response) throws OAuthException {
 
-        boolean localhostClient = isLocalhostClient(request, response);
+        // #659: if the Accept header is explicitly Accept:application/json or the
+        // produces property favors json, the Origin header should not be required.
+        String accepts = Strings.clean(request.getHeader(ACCEPTS_HEADER_NAME));
+        boolean originHeaderNotRequired = accepts.contains(MediaType.APPLICATION_JSON_VALUE) || producesFavorsJSON;
 
-        String origin = Strings.clean(request.getHeader(ORIGIN_HEADER_NAME));
-        boolean fallbackToReferer = false;
+        if (!originHeaderNotRequired) {
+            boolean localhostClient = isLocalhostClient(request, response);
 
-        if (origin == null) {
-            //fall back to referer:
-            origin = Strings.clean(request.getHeader(REFERER_HEADER_NAME));
-            if (origin != null) {
-                fallbackToReferer = true;
-            }
-        }
+            String origin = Strings.clean(request.getHeader(ORIGIN_HEADER_NAME));
+            boolean fallbackToReferer = false;
 
-        if (!Strings.hasText(origin)) {
-
-            String errorMessage = null;
-
-            if (localhostClient) {
-                //convenient message during localhost testing:
-                errorMessage = "Missing Origin or Referer header (Origin preferred).";
+            if (origin == null) {
+                //fall back to referer:
+                origin = Strings.clean(request.getHeader(REFERER_HEADER_NAME));
+                if (origin != null) {
+                    fallbackToReferer = true;
+                }
             }
 
-            //it is unexpected that a modern browser wouldn't send the Origin or Referer header.
-            //Because of this, the request could likely represent someone doing something sneaky, so we should
-            //deny the request and not give them a specific error message: a detailed error message
-            //would tell them how to fix the issue and side-step the authorization check
-            //since you could just easily spoof the origin header if not a browser:
+            if (!Strings.hasText(origin)) {
 
-            //however, we will log a message though production environments can see why the
-            //request failed:
-            log.debug(
-                "Request client (remoteAddr={}) did not specify an Origin or Referer header. Access Token request is denied",
-                request.getRemoteAddr());
+                String errorMessage = null;
 
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
-        }
+                if (localhostClient) {
+                    //convenient message during localhost testing:
+                    errorMessage = "Missing Origin or Referer header (Origin preferred).";
+                }
 
-        if (!isAuthorizedOrigin(request, response, origin)) {
+                //it is unexpected that a modern browser wouldn't send the Origin or Referer header.
+                //Because of this, the request could likely represent someone doing something sneaky, so we should
+                //deny the request and not give them a specific error message: a detailed error message
+                //would tell them how to fix the issue and side-step the authorization check
+                //since you could just easily spoof the origin header if not a browser:
 
-            String errorMessage = null;
+                //however, we will log a message though production environments can see why the
+                //request failed:
+                log.debug(
+                        "Request client (remoteAddr={}) did not specify an Origin or Referer header. Access Token request is denied",
+                        request.getRemoteAddr());
 
-            if (localhostClient) {
-                //give a specific message to the developer:
-                errorMessage =
-                    "Unauthorized request " + (fallbackToReferer ? "origin (via Referer header)." : "Origin.");
+                throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
             }
 
-            // otherwise don't give a potentially-malicious client any information as to why the request failed
-            // but we will log the message:
-            log.debug(
-                "Unauthorized {} header value: {}.  If this is unexpected, you might want to specify one or more comma-delimited URLs via the {} property.",
-                (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin, ORIGIN_URIS_CONFIG_PROPERTY_NAME
-            );
+            if (!isAuthorizedOrigin(request, response, origin)) {
 
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
+                String errorMessage = null;
+
+                if (localhostClient) {
+                    //give a specific message to the developer:
+                    errorMessage =
+                            "Unauthorized request " + (fallbackToReferer ? "origin (via Referer header)." : "Origin.");
+                }
+
+                // otherwise don't give a potentially-malicious client any information as to why the request failed
+                // but we will log the message:
+                log.debug(
+                        "Unauthorized {} header value: {}.  If this is unexpected, you might want to specify one or more comma-delimited URLs via the {} property.",
+                        (fallbackToReferer ? REFERER_HEADER_NAME : ORIGIN_HEADER_NAME), origin, ORIGIN_URIS_CONFIG_PROPERTY_NAME
+                );
+
+                throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, errorMessage, null);
+            }
         }
     }
 
