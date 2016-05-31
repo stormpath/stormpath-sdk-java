@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 /**
@@ -233,8 +234,10 @@ public class AccessTokenController extends AbstractController {
     /**
      * @since 1.0.0
      */
-    private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
 
+        //If this code is ever changed, please check if IdSiteResultController#getAccessToken also needs to be updated since this
+        //piece of code has also been copied there
         Account account = AccountResolver.INSTANCE.getAccount(request);
         Client client = ClientResolver.INSTANCE.getClient(request);
         Application app = getApplication(request);
@@ -246,7 +249,7 @@ public class AccessTokenController extends AbstractController {
                 .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60)))
                 .claim("status", "AUTHENTICATED");
         String secret = client.getApiKey().getSecret();
-        String token = jwtBuilder.signWith(SignatureAlgorithm.HS512, secret.getBytes("UTF-8")).compact();
+        String token = jwtBuilder.signWith(SignatureAlgorithm.HS512, secret.getBytes(Charset.forName("UTF-8"))).compact();
 
         IdSiteAuthenticationRequest idSiteRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(token).build();
         final OAuthGrantRequestAuthenticationResult origResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(app).authenticate(idSiteRequest);

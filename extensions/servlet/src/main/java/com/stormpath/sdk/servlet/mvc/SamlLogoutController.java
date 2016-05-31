@@ -44,11 +44,12 @@ public class SamlLogoutController extends LogoutController {
     }
     */
 
+    @Override
     public void init() {
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
-
         //not implemented yet
         //controller.setSamlOrganizationResolver(idSiteOrganizationResolver);
+        super.init();
     }
 
     @Override

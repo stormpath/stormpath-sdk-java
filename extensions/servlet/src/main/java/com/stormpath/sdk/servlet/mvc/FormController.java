@@ -133,9 +133,7 @@ public abstract class FormController extends AbstractController {
     }
 
     protected Form createForm(HttpServletRequest request, HttpServletResponse response) {
-        Form form = createForm(request, response, false);
-
-        return form;
+        return createForm(request, response, false);
     }
 
     protected Form createForm(HttpServletRequest request, HttpServletResponse response, boolean retainPassword) {

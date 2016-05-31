@@ -1131,6 +1131,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutController(stormpathMvcLogoutController());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setEventPublisher(stormpathRequestEventPublisher());
+        controller.setAccessTokenResultFactory(stormpathAccessTokenResultFactory());
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
         }
@@ -1209,7 +1210,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
-        LogoutController controller = new LogoutController(stormpathLogoutControllerConfigResolver(), logoutInvalidateHttpSession);
+        LogoutController controller = new LogoutController();
 
         if (idSiteEnabled) {
             IdSiteLogoutController c = new IdSiteLogoutController();
@@ -1225,6 +1226,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             c.setSamlResultUri(samlResultUri);
             controller = c;
         }
+
+        controller.setLogoutNextUri(stormpathLogoutControllerConfigResolver().getNextUri());
+        controller.setLogoutInvalidateHttpSession(logoutInvalidateHttpSession);
+        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
+        controller.init();
 
         return controller;
     }
