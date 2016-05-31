@@ -16,7 +16,9 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.UserAgents;
 
@@ -45,26 +47,16 @@ public class DefaultViewResolver implements ViewResolver {
     @Override
     public View getView(ViewModel model, HttpServletRequest request) {
 
-        UserAgent ua = UserAgents.get(request);
-        List<MediaType> preferredMediaTypes = ua.getAcceptedMediaTypes();
-
-        if (preferredMediaTypes.size() == 0 || preferredMediaTypes.get(0).equals(MediaType.ALL)) {
-            MediaType mediaType = producesMediaTypes.get(0);
-
+        try {
+            MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, null, producesMediaTypes);
             if (mediaType.equals(MediaType.APPLICATION_JSON)) {
                 return jsonView;
             }
             if (mediaType.equals(MediaType.TEXT_HTML)) {
                 return delegateViewResolver.getView(model, request);
             }
-        }
-
-        if (ua.isJsonPreferred() && producesMediaTypes.contains(MediaType.APPLICATION_JSON)) {
-            return jsonView;
-        }
-
-        if (ua.isHtmlPreferred() && producesMediaTypes.contains(MediaType.TEXT_HTML)) {
-            return delegateViewResolver.getView(model, request);
+        } catch (UnresolvedMediaTypeException e) {
+            //No MediaType could be resolved for this request based on the produces setting. Let's return null
         }
 
         return null;

@@ -16,8 +16,6 @@
 package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.UserAgents;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -74,7 +72,7 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
     protected boolean shouldExecute(HttpServletRequest request, HttpServletResponse response,
                                     Object handler, ModelAndView modelAndView) {
 
-        if (modelAndView == null || !modelAndView.isReference()) {
+        if (modelAndView == null || !modelAndView.isReference() || "stormpathJsonView".equals(modelAndView.getViewName())) {
             return false;
         }
 
@@ -83,8 +81,7 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
             return false;
         }
 
-        UserAgent ua = UserAgents.get(request);
-        return ua.isHtmlPreferred();
+        return true;
     }
 
     @Override

@@ -48,7 +48,7 @@ public class ForgotPasswordController extends FormController {
     }
 
     public ForgotPasswordController(Config config) {
-        super(config.getForgotPasswordControllerConfig());
+        super(config.getForgotPasswordControllerConfig(), config.getProducesMediaTypes());
 
         this.loginUri = config.getLoginControllerConfig().getUri();
         this.accountStoreResolver = config.getAccountStoreResolver();

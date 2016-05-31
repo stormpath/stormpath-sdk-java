@@ -50,7 +50,7 @@ public class SendVerificationEmailController extends FormController {
     }
 
     public SendVerificationEmailController(Config confing) {
-        super(confing.getSendVerificationEmailControllerConfig());
+        super(confing.getSendVerificationEmailControllerConfig(), confing.getProducesMediaTypes());
 
         this.loginUri = confing.getLoginControllerConfig().getUri();
         this.accountStoreResolver = confing.getAccountStoreResolver();

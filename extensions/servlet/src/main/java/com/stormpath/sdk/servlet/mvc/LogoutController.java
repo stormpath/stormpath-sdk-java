@@ -82,18 +82,13 @@ public class LogoutController extends AbstractController {
             session.invalidate();
         }
 
-        if (isHtmlPreferred(request)) {
+        if (isHtmlPreferred(request, response)) {
             return new DefaultViewModel(nextUri).setRedirect(true);
         } else {
             //probably an ajax or non-browser client - return 200 ok:
             response.setStatus(HttpServletResponse.SC_OK);
             return null;
         }
-    }
-
-    protected boolean isHtmlPreferred(HttpServletRequest request) {
-        UserAgent ua = getUserAgent(request);
-        return ua.isHtmlPreferred();
     }
 
     protected UserAgent getUserAgent(HttpServletRequest request) {

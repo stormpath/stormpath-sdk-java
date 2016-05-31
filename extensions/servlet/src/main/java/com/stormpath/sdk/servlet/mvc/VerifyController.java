@@ -43,8 +43,9 @@ public class VerifyController extends AbstractController {
     public VerifyController(ControllerConfigResolver controllerConfigResolver,
                             String logoutUri,
                             String sendVerificationEmailUri,
-                            Client client) {
-        super(controllerConfigResolver);
+                            Client client,
+                            String produces) {
+        super(controllerConfigResolver, produces);
 
         this.logoutUri = logoutUri;
         this.client = client;

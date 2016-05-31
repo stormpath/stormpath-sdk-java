@@ -25,8 +25,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -67,7 +65,7 @@ public class RegisterController extends FormController {
     }
 
     public RegisterController(Config config, Client client) {
-        super(config.getRegisterControllerConfig());
+        super(config.getRegisterControllerConfig(), config.getProducesMediaTypes());
 
         this.client = client;
         this.authenticationResultSaver = config.getAuthenticationResultSaver();
@@ -93,7 +91,7 @@ public class RegisterController extends FormController {
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        if (!isJsonPreferred(request)) {
+        if (!isJsonPreferred(request, response)) {
             model.put("loginUri", loginUri);
         } else {
             model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
@@ -169,7 +167,7 @@ public class RegisterController extends FormController {
 
         publishRequestEvent(new DefaultRegisteredAccountRequestEvent(req, resp, account));
 
-        if (isJsonPreferred(req)) {
+        if (isJsonPreferred(req, resp)) {
             //noinspection unchecked
             return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST)));
         }

@@ -31,7 +31,8 @@ public class VerifyFilter extends ControllerFilter {
                 getConfig().getVerifyControllerConfig(),
                 getConfig().getLogoutControllerConfig().getUri(),
                 getConfig().getSendVerificationEmailControllerConfig().getUri(),
-                getClient()
+                getClient(),
+                getConfig().getProducesMediaTypes()
         );
 
         setController(controller);
