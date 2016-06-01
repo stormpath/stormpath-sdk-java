@@ -90,7 +90,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
     protected String logoutUri;
 
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/login?status=logout' }")
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
     protected String logoutNextUri;
 
     @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
@@ -227,7 +227,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
             http.authorizeRequests()
                 .antMatchers("/assets/css/stormpath.css").permitAll()
-                .antMatchers("/assets/css/custom.stormpath.css").permitAll();
+                .antMatchers("/assets/css/custom.stormpath.css").permitAll()
+                .antMatchers("/assets/js/stormpath.js").permitAll();
         }
 
         if (idSiteEnabled || samlEnabled || stormpathWebEnabled) {
@@ -275,6 +276,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.csrf().csrfTokenRepository(csrfTokenRepository);
                 if (accessTokenEnabled) {
                     http.csrf().ignoringAntMatchers(accessTokenUri);
+                }
+                if (logoutEnabled) {
+                    http.csrf().ignoringAntMatchers(logoutUri);
                 }
             }
 
