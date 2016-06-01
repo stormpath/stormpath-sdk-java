@@ -64,11 +64,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
         if (producesMimeTypes == null) {
             this.producesFavorsJSON = false;
         } else {
-            if (producesMimeTypes.size() > 0) {
-                producesFavorsJSON = producesMimeTypes.get(0).includes(MediaType.APPLICATION_JSON);
-            } else {
-                producesFavorsJSON = false;
-            }
+            producesFavorsJSON = producesMimeTypes.size() > 0 && producesMimeTypes.get(0).includes(MediaType.APPLICATION_JSON);
         }
     }
 
