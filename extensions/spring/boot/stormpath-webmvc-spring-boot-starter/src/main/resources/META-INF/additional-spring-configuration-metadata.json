@@ -256,7 +256,7 @@
       "name": "stormpath.web.forgotPassword.view",
       "type": "java.lang.String",
       "description": "The name of the Spring MVC view that should be rendered when visiting the stormpath.web.forgotPassword.uri.  This is the name provided to the Spring MVC view resolver.  The default value is 'stormpath/forgot' which will render a convenient default view provided by the Stormpath starter. If you want to render your own template instead of the default, set the name of your custom view here.",
-      "defaultValue": "stormpath/forgot"
+      "defaultValue": "stormpath/forgotPassword"
     },
     {
       "name": "stormpath.web.register.enabled",

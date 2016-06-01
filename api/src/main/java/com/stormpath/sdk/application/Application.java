@@ -1091,7 +1091,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
 
     /**
      * Creates a new {@link IdSiteUrlBuilder} that allows you to build a URL you can use to redirect your
-     * application users to a hosted login/registration/forgot-password site - what Stormpath
+     * application users to a hosted login/registration/forgotPassword site - what Stormpath
      * calls an 'Identity Site' (or 'ID Site' for short) - for performing common user identity functionality.  When
      * the user is done (logging in, registering, etc), they will be redirected back to a {@code callbackUri} of
      * your choice.
@@ -1140,7 +1140,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      *
      *
      * @return a new {@link IdSiteUrlBuilder} that allows you to build a URL you can use to redirect your
-     *         application users to a hosted login/registration/forgot-password 'ID Site'.
+     *         application users to a hosted login/registration/forgotPassword 'ID Site'.
      * @see IdSiteUrlBuilder#setCallbackUri(String)
      * @see IdSiteUrlBuilder#setPath(String)
      * @see IdSiteUrlBuilder#setState(String)
