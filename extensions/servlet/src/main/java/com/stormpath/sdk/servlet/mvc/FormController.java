@@ -43,6 +43,8 @@ public abstract class FormController extends AbstractController {
     protected RequestFieldValueResolver fieldValueResolver;
     protected List<Field> formFields;
 
+    public final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
+
     public FormController() {
 
     }
@@ -103,8 +105,20 @@ public abstract class FormController extends AbstractController {
         return new DefaultViewModel(view, model);
     }
 
-    protected Map<String, ?> createModel(HttpServletRequest request, HttpServletResponse response) {
-        return createModel(request, response, null, null);
+    @SuppressWarnings("unchecked")
+    protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
+        List<ErrorModel> errors = null;
+        if (request.getParameter("error") != null) {
+            //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+            //See StormpathAuthenticationFailureHandler
+            errors = new ArrayList<>();
+            ErrorModel error = (ErrorModel) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
+            if (error != null) {
+                errors.add(error);
+            }
+        }
+        return createModel(request, response, null, errors);
     }
 
     protected Map<String, ?> createModel(HttpServletRequest request, HttpServletResponse response,
