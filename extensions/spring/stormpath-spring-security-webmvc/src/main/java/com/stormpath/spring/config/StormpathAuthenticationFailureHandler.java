@@ -22,6 +22,7 @@ import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEv
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.FormController;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -39,8 +40,6 @@ import java.io.IOException;
  * @since 1.0.RC9
  */
 public class StormpathAuthenticationFailureHandler implements AuthenticationFailureHandler {
-
-    private final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
 
     private final AuthenticationFailureHandler delegate;
 
@@ -65,7 +64,7 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
             //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
             //along the line and that causes the saved attributes to be lost.
             //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
-            request.getSession().setAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toError(request, exception));
+            request.getSession().setAttribute(FormController.SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toError(request, exception));
             this.delegate.onAuthenticationFailure(request, response, exception);
         } finally {
             FailedAuthenticationRequestEvent event = createFailureEvent(request, response, exception);

@@ -14,8 +14,7 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
 
     private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
-    private static final String UNSUCCESSFUL_LOGIN_STORMPATH_ERROR = "Login attempt failed because there is no Account in " +
-            "the Application's associated Account Stores with the specified username or email";
+    private static final String UNSUCCESSFUL_LOGIN_BACKEND_ERROR = "Login attempt failed";
 
     @Autowired
     private MessageSource messageSource;
@@ -34,7 +33,7 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
     protected boolean hasError(HttpServletRequest request, Exception e) {
         //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
         if (e instanceof AuthenticationServiceException) {
-            if (e.getMessage() != null && e.getMessage().contains(UNSUCCESSFUL_LOGIN_STORMPATH_ERROR)) {
+            if (e.getMessage() != null && e.getMessage().contains(UNSUCCESSFUL_LOGIN_BACKEND_ERROR)) {
                 return true;
             }
         }

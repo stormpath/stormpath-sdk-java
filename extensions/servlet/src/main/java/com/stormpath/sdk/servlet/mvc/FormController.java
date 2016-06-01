@@ -43,7 +43,7 @@ public abstract class FormController extends AbstractController {
     protected RequestFieldValueResolver fieldValueResolver;
     protected List<Field> formFields;
 
-    private final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
+    public final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
 
     public FormController() {
 
