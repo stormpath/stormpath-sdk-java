@@ -16,7 +16,7 @@
 package com.stormpath.sdk.idsite;
 
 /**
- * Helps build a URL you can use to redirect your application users to a hosted login/registration/forgot-password site
+ * Helps build a URL you can use to redirect your application users to a hosted login/registration/forgotPassword site
  * - what Stormpath calls an 'Identity Site' (or 'ID Site' for short) - for performing common user identity
  * functionality.  When the user is done (logging in, registering, etc), they will be redirected back to a
  * {@link #setCallbackUri(String) callbackUri} of your choice.

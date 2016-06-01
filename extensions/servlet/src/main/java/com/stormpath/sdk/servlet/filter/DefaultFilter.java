@@ -33,7 +33,7 @@ public enum DefaultFilter {
     authc(AuthenticationFilter.class),
     login(LoginFilter.class),
     logout(LogoutFilter.class),
-    forgot(ForgotPasswordFilter.class),
+    forgotPassword(ForgotPasswordFilter.class),
     change(ChangePasswordFilter.class),
     register(RegisterFilter.class),
     unauthorized(UnauthorizedFilter.class),

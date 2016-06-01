@@ -23,35 +23,35 @@ import org.springframework.beans.factory.annotation.Value;
 public class ForgotPasswordControllerConfigResolver extends AbstractSpringControllerConfigResolver {
 
     @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
-    protected boolean forgotEnabled;
+    protected boolean forgotPasswordEnabled;
 
     @Value("#{ @environment['stormpath.web.forgotPassword.uri'] ?: '/forgot' }")
-    protected String forgotUri;
+    protected String forgotPasswordUri;
 
     @Value("#{ @environment['stormpath.web.forgotPassword.nextUri'] ?: '/login?status=forgot' }")
-    protected String forgotNextUri;
+    protected String forgotPasswordNextUri;
 
-    @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgot' }")
-    protected String forgotView;
+    @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgotPassword' }")
+    protected String forgotPasswordView;
 
     @Override
     public String getView() {
-        return forgotView;
+        return forgotPasswordView;
     }
 
     @Override
     public String getUri() {
-        return forgotUri;
+        return forgotPasswordUri;
     }
 
     @Override
     public String getNextUri() {
-        return forgotNextUri;
+        return forgotPasswordNextUri;
     }
 
     @Override
     public boolean isEnabled() {
-        return forgotEnabled;
+        return forgotPasswordEnabled;
     }
 
     @Override

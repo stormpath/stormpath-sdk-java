@@ -101,8 +101,8 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String logoutUrlPattern = cleanUri(logoutUrl);
         boolean logoutChainSpecified = false;
 
-        String forgotUrl = config.getForgotPasswordControllerConfig().getUri();
-        String forgotUrlPattern = cleanUri(forgotUrl);
+        String forgotPasswordUrl = config.getForgotPasswordControllerConfig().getUri();
+        String forgotPasswordUrlPattern = cleanUri(forgotPasswordUrl);
         boolean forgotChainSpecified = false;
 
         String changeUrl = config.getChangePasswordControllerConfig().getUri();
@@ -203,11 +203,11 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
-                } else if (uriPattern.startsWith(forgotUrlPattern)) {
+                } else if (uriPattern.startsWith(forgotPasswordUrlPattern)) {
                     forgotChainSpecified = true;
 
                     //did they specify the filter as a handler in the chain?  If not, append it:
-                    String filterName = DefaultFilter.forgot.name();
+                    String filterName = DefaultFilter.forgotPassword.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
@@ -285,7 +285,7 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
             fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
         }
         if (!forgotChainSpecified) {
-            fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+            fcManager.createChain(forgotPasswordUrlPattern, DefaultFilter.forgotPassword.name());
         }
         if (!changeChainSpecified) {
             fcManager.createChain(changeUrlPattern, DefaultFilter.change.name());
