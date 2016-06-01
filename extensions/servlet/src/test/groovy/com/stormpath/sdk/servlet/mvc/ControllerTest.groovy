@@ -14,6 +14,7 @@ import static org.testng.Assert.*
  *
  */
 class ControllerTest {
+
     @Test
     void testDoPostIfAllowIfAuthenticated() {
         ViewModel expectedViewModel = new DefaultViewModel()
@@ -144,8 +145,10 @@ class ControllerTest {
         [
                 new LogoutController(),
                 new SamlLogoutController(),
+                new IdSiteController(),
                 new IdSiteLogoutController(),
-                new ChangePasswordController()
+                new ChangePasswordController(),
+                new MeController()
         ].each {
             assertFalse it.isNotAllowedIfAuthenticated()
         }
@@ -156,7 +159,6 @@ class ControllerTest {
         [
                 new AccessTokenController(),
                 new ForgotPasswordController(),
-                new IdSiteController(),
                 new IdSiteResultController(),
                 new LoginController(),
                 new RegisterController(),
