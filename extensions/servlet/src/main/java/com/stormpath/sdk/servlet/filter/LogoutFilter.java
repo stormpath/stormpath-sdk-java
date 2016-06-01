@@ -27,7 +27,7 @@ public class LogoutFilter extends ControllerFilter {
 
     @Override
     protected void onInit() throws ServletException {
-        LogoutController c = new LogoutController();
+        LogoutController c = new LogoutController(getConfig());
         c.setLogoutInvalidateHttpSession(getConfig().isLogoutInvalidateHttpSession())
             .setLogoutNextUri(getConfig().getLogoutControllerConfig().getNextUri());
         setController(c);

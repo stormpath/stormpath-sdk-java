@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.UserAgents;
 
@@ -29,6 +30,14 @@ import javax.servlet.http.HttpSession;
 public class LogoutController extends AbstractController {
 
     private boolean invalidateHttpSession = true;
+
+    public LogoutController() {
+        super();
+    }
+
+    public LogoutController(Config config) {
+        super(config.getLogoutControllerConfig(), config.getProducesMediaTypes());
+    }
 
     //If sub-classess override this method they MUST CALL super.init() at some point insider their custom implementation.
     public void init() {

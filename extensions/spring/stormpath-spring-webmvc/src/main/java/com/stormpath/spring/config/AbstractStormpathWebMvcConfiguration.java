@@ -1211,7 +1211,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
-        LogoutController controller = new LogoutController();
+        LogoutController controller = new LogoutController(stormpathInternalConfig());
 
         if (idSiteEnabled) {
             IdSiteLogoutController c = new IdSiteLogoutController();
