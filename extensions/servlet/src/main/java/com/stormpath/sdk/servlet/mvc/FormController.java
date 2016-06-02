@@ -161,18 +161,22 @@ public abstract class FormController extends AbstractController {
     }
 
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
 
         for (Field templateField : formFields) {
             Field clone = templateField.copy();
 
             if (clone.isEnabled()) {
                 String val = fieldValueResolver.getValue(request, clone.getName());
-                if (clone.getName() == "password" && retainPassword) {
+                if (retainPassword && "password".equals(clone.getName())) {
                     clone.setValue(val);
                 } else {
                     clone.setValue(val);
                 }
+                // #645: Allow unresolved i18n keys to pass through for labels and placeholders
+                ((DefaultField) clone).setLabel(i18n(request, clone.getLabel(), clone.getLabel()));
+                ((DefaultField) clone).setPlaceholder(i18n(request, clone.getPlaceholder(), clone.getPlaceholder()));
+
                 fields.add(clone);
             }
         }
