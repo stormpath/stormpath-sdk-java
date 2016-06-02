@@ -34,6 +34,20 @@ public class DefaultMessageSource implements MessageSource {
     }
 
     @Override
+    public String getMessage(String key, String defaultMessage, Locale locale) {
+        ResourceBundle bundle = getBundle(locale);
+
+        try {
+            String msg = new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
+            return MessageFormat.format(msg, new Object[]{});
+        } catch (MissingResourceException e) {
+            return defaultMessage;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Couldn't load property from resource bundle", e);
+        }
+    }
+
+    @Override
     public String getMessage(String key, Locale locale, Object... args) {
         ResourceBundle bundle = getBundle(locale);
 

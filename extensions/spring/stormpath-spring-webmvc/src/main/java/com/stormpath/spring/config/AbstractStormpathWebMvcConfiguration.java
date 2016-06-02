@@ -1023,6 +1023,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
+            public String getMessage(String key, String defaultMessage, Locale locale) {
+                try {
+                    return springMessageSource.getMessage(key, new Object[0], locale);
+                } catch (NoSuchMessageException e) {
+                    //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    return defaultMessage;
+                }
+            }
+
+            @Override
             public String getMessage(String key, Locale locale, Object... args) {
                 try {
                     return springMessageSource.getMessage(key, args, locale);
@@ -1185,7 +1195,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return new DefaultAccessTokenRequestAuthorizer(
-                                                              stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
+                stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
         );
     }
 
@@ -1195,7 +1205,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return new OriginAccessTokenRequestAuthorizer(
-                                                             stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris()
+                stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris()
         );
     }
 

@@ -162,14 +162,8 @@ public abstract class FormController extends AbstractController {
                     clone.setValue(val);
                 }
                 // #645: Allow unresolved i18n keys to pass through for labels and placeholders
-                String label = i18n(request, clone.getLabel());
-                if (!label.startsWith("!")) {
-                    ((DefaultField) clone).setLabel(label);
-                }
-                String placeholder = i18n(request, clone.getPlaceholder());
-                if (!placeholder.startsWith("!")) {
-                    ((DefaultField) clone).setPlaceholder(placeholder);
-                }
+                ((DefaultField) clone).setLabel(i18n(request, clone.getLabel(), clone.getLabel()));
+                ((DefaultField) clone).setPlaceholder(i18n(request, clone.getPlaceholder(), clone.getPlaceholder()));
 
                 fields.add(clone);
             }
