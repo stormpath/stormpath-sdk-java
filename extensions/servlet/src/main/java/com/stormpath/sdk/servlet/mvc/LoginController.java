@@ -15,10 +15,14 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
@@ -116,6 +120,23 @@ public class LoginController extends FormController {
         String password = form.getFieldValue("password");
 
         req.login(usernameOrEmail, password);
+        Account account = AccountResolver.INSTANCE.getRequiredAccount(req);
+        if (account != null) {
+            CustomData data = account.getCustomData();
+            System.out.println("Custom data: " + data);
+            // validate values in login form match values in custom data
+            Map<String, Object> fields = fieldValueResolver.getAllFields(req);
+            for (String fieldName : fields.keySet()) {
+                if (form.getField(fieldName) != null && "customData".equals(fieldName)) {
+                    if (!form.getFieldValue(fieldName).equals(data.get(fieldName))) {
+                        Field field = form.getField(fieldName);
+                        String msg = "The value for \"" + field.getLabel() + "\" does not match the value you previously entered. Please try again";
+                        // question: does this need to publish an event like StormpathHttpRequest does with FailedAuthenticationRequestEvent?
+                        throw new ValidationException(msg);
+                    }
+                }
+            }
+        }
 
         AccessTokenResult result = (AccessTokenResult) req.getAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME);
         saveResult(req, resp, result);
