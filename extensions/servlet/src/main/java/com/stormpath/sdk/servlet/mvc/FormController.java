@@ -156,7 +156,7 @@ public abstract class FormController extends AbstractController {
 
             if (clone.isEnabled()) {
                 String val = fieldValueResolver.getValue(request, clone.getName());
-                if (clone.getName().equals("password") && retainPassword) {
+                if (retainPassword && "password".equals(clone.getName())) {
                     clone.setValue(val);
                 } else {
                     clone.setValue(val);
