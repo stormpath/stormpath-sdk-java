@@ -19,7 +19,7 @@ public class SamlResultFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
 
-        LogoutController logoutController = new LogoutController();
+        LogoutController logoutController = new LogoutController(getConfig().getLogoutControllerConfig(), getConfig().getProducesMediaTypes());
         logoutController.setLogoutInvalidateHttpSession(getConfig().isLogoutInvalidateHttpSession());
 
         SamlResultController controller = new SamlResultController();

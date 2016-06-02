@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,10 @@ public class SamlLogoutController extends LogoutController {
 
     private ServerUriResolver serverUriResolver;
     private String samlResultUri;
+
+    public SamlLogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
+        super(logoutControllerConfigResolver, produces);
+    }
 
     // not implemented yet
     //private Resolver<SamlOrganizationContext> samlOrganizationResolver;
