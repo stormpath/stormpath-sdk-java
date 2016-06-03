@@ -1221,10 +1221,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
-        LogoutController controller = new LogoutController();
+        LogoutController controller = new LogoutController(
+                stormpathInternalConfig().getLogoutControllerConfig(),
+                stormpathInternalConfig().getProducesMediaTypes());
 
         if (idSiteEnabled) {
-            IdSiteLogoutController c = new IdSiteLogoutController();
+            IdSiteLogoutController c = new IdSiteLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setIdSiteResultUri(idSiteResultUri);
             c.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
@@ -1232,7 +1234,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         if (samlEnabled) {
-            SamlLogoutController c = new SamlLogoutController();
+            SamlLogoutController c = new SamlLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setSamlResultUri(samlResultUri);
             controller = c;

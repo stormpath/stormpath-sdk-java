@@ -69,7 +69,6 @@ public abstract class AbstractController implements Controller {
         this.produces = MediaType.parseMediaTypes(produces);
 
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
-        Assert.hasText(this.view, "view cannot be null or empty.");
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.messageSource, "messageSource cannot be null.");
         Assert.notNull(this.localeResolver, "localeResolver cannot be null.");

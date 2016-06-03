@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
@@ -31,6 +32,10 @@ public class IdSiteLogoutController extends LogoutController {
     private String idSiteResultUri;
     private Controller idSiteController; //not injected - created during init()
     private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
+
+    public IdSiteLogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
+        super(logoutControllerConfigResolver, produces);
+    }
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
