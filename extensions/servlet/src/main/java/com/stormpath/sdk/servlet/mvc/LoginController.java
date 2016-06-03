@@ -122,18 +122,16 @@ public class LoginController extends FormController {
         req.login(usernameOrEmail, password);
         Account account = AccountResolver.INSTANCE.getRequiredAccount(req);
         if (account != null) {
-            CustomData data = account.getCustomData();
-            System.out.println("Custom data: " + data);
+            CustomData customData = account.getCustomData();
             // validate values in login form match values in custom data
-            Map<String, Object> fields = fieldValueResolver.getAllFields(req);
+            Map<String, Object> fields = getCustomData(req, form);
             for (String fieldName : fields.keySet()) {
-                if (form.getField(fieldName) != null && "customData".equals(fieldName)) {
-                    if (!form.getFieldValue(fieldName).equals(data.get(fieldName))) {
-                        Field field = form.getField(fieldName);
-                        String msg = "The value for \"" + field.getLabel() + "\" does not match the value you previously entered. Please try again";
-                        // question: does this need to publish an event like StormpathHttpRequest does with FailedAuthenticationRequestEvent?
-                        throw new ValidationException(msg);
-                    }
+                if (!form.getFieldValue(fieldName).equals(customData.get(fieldName))) {
+                    Field field = form.getField(fieldName);
+                    String msg = "The value for \"" + i18n(req, field.getLabel(), field.getLabel()) + "\" does not " +
+                            "match the value you previously entered. Please try again.";
+                    // question: does this need to publish an event like StormpathHttpRequest does with FailedAuthenticationRequestEvent?
+                    throw new ValidationException(msg);
                 }
             }
         }

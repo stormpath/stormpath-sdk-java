@@ -20,7 +20,6 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
@@ -37,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -185,25 +183,5 @@ public class RegisterController extends FormController {
             return new DefaultViewModel(loginUri + "?status=unverified").setRedirect(true);
         }
         return new DefaultViewModel(nextUri).setRedirect(true);
-    }
-
-    private Map<String, Object> getCustomData(HttpServletRequest request, Form form) {
-        //Custom fields are either declared as form fields which shouldn't not be account fields or through a customField attribute
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-
-        for (Field field : form.getFields()) {
-            //Field is not part of the default account properties then is a custom field
-            if (DefaultAccount.PROPERTY_DESCRIPTORS.get(field.getName()) == null && !field.getName().equals(csrfTokenManager.getTokenName())) {
-                result.put(field.getName(), field.getValue());
-            }
-        }
-
-        Object customData = fieldValueResolver.getAllFields(request).get("customData");
-        if (customData instanceof Map) {
-            //noinspection unchecked
-            result.putAll((Map<? extends String, ?>) customData);
-        } //If not a map ignore, the spec doesn't cover this case
-
-        return result;
     }
 }

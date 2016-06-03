@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.http.HttpMethod;
+import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -31,6 +32,7 @@ import com.stormpath.sdk.servlet.http.UserAgents;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -245,5 +247,33 @@ public abstract class FormController extends AbstractController {
                 }
             }
         }
+    }
+
+    /**
+     * Retrieve custom data fields passed in on form.
+     * @param request the current request
+     * @param form the form
+     * @return a map of fieldNames and values
+     */
+    protected Map<String, Object> getCustomData(HttpServletRequest request, Form form) {
+        //Custom fields are either declared as form fields which shouldn't not be account fields or through a customField attribute
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+
+        for (Field field : form.getFields()) {
+            //Field is not part of the default account properties then is a custom field
+            if (DefaultAccount.PROPERTY_DESCRIPTORS.get(field.getName()) == null &&
+                    !field.getName().equals(csrfTokenManager.getTokenName()) &&
+                    !field.getName().equals("login")) {
+                result.put(field.getName(), field.getValue());
+            }
+        }
+
+        Object customData = fieldValueResolver.getAllFields(request).get("customData");
+        if (customData instanceof Map) {
+            //noinspection unchecked
+            result.putAll((Map<? extends String, ?>) customData);
+        } //If not a map ignore, the spec doesn't cover this case
+
+        return result;
     }
 }
