@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 public class HelloController {
 
     @RequestMapping("/")
-    String home(HttpServletRequest request) {
+    ModelAndView home(HttpServletRequest request) {
 
         String name = "World";
 
@@ -35,7 +36,8 @@ public class HelloController {
             name = account.getGivenName();
         }
 
-        return "Hello " + name + "!";
+        ModelAndView mav = new ModelAndView("home");
+        mav.addObject("message", "Hello " + name + "!");
+        return mav;
     }
-
 }

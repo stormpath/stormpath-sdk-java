@@ -53,11 +53,11 @@
                             </th:block>
                             <th:block th:if="${field.type != 'hidden'}">
                                 <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}"
-                                       th:text="#{${field.label}}">|Field label|</label>
+                                       th:text="${field.label}">|Field label|</label>
 
                                 <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
-                                           th:placeholder="#{${field.placeholder}}"
+                                           th:placeholder="${field.placeholder}"
                                            th:required="${field.required}" class="form-control"/>
                                 </div>
                             </th:block>

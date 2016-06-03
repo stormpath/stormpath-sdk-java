@@ -69,7 +69,6 @@ public abstract class AbstractController implements Controller {
         this.produces = MediaType.parseMediaTypes(produces);
 
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");
-        Assert.hasText(this.view, "view cannot be null or empty.");
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.messageSource, "messageSource cannot be null.");
         Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
@@ -94,6 +93,11 @@ public abstract class AbstractController implements Controller {
     protected String i18n(HttpServletRequest request, String key) {
         Locale locale = localeResolver.get(request, null);
         return messageSource.getMessage(key, locale);
+    }
+
+    protected String i18n(HttpServletRequest request, String key, String defaultMessage) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, defaultMessage, locale);
     }
 
     protected String i18n(HttpServletRequest request, String key, Object... args) {

@@ -36,7 +36,7 @@ public class IdSiteController extends AbstractController {
 
     private String idSiteUri;
 
-    private String alreadyLoggedInUri = "/";
+    private String alreadyLoggedInUri = null;
 
     private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
 
@@ -64,11 +64,12 @@ public class IdSiteController extends AbstractController {
         Assert.notNull(serverUriResolver, "Application must be configured.");
         Assert.notNull(callbackUri, "callbackUri must be configured.");
         Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
+        Assert.notNull(alreadyLoggedInUri, "alreadyLoggedInUri must be configured.");
     }
 
     @Override
     public boolean isNotAllowedIfAuthenticated() {
-        return true;
+        return false;
     }
 
     protected Application getApplication(HttpServletRequest request) {

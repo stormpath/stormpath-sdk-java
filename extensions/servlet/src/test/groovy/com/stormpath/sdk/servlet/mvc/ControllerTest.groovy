@@ -1,7 +1,25 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.servlet.mvc
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver
+import com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver
+import com.stormpath.sdk.servlet.i18n.MessageSource
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
@@ -14,6 +32,7 @@ import static org.testng.Assert.*
  *
  */
 class ControllerTest {
+
     @Test
     void testDoPostIfAllowIfAuthenticated() {
         ViewModel expectedViewModel = new DefaultViewModel()
@@ -141,11 +160,39 @@ class ControllerTest {
 
     @Test
     void testControllersThatShouldAllowIfAuthenticated() {
+        def controllerConfigResolver = createNiceMock(ControllerConfigResolver)
+        def messageSource = createNiceMock(MessageSource)
+        def localeResolver = createNiceMock(DefaultLocaleResolver)
+        def produces = "application/json,text/html"
+
+        expect(controllerConfigResolver.getNextUri()).andReturn "/"
+        expect(controllerConfigResolver.getUri()).andReturn "/"
+        expect(controllerConfigResolver.getMessageSource()).andReturn messageSource
+        expect(controllerConfigResolver.getLocaleResolver()).andReturn localeResolver
+        expect(controllerConfigResolver.getControllerKey()).andReturn "someKey"
+
+        expect(controllerConfigResolver.getNextUri()).andReturn "/"
+        expect(controllerConfigResolver.getUri()).andReturn "/"
+        expect(controllerConfigResolver.getMessageSource()).andReturn messageSource
+        expect(controllerConfigResolver.getLocaleResolver()).andReturn localeResolver
+        expect(controllerConfigResolver.getControllerKey()).andReturn "someKey"
+
+        expect(controllerConfigResolver.getNextUri()).andReturn "/"
+        expect(controllerConfigResolver.getUri()).andReturn "/"
+        expect(controllerConfigResolver.getMessageSource()).andReturn messageSource
+        expect(controllerConfigResolver.getLocaleResolver()).andReturn localeResolver
+        expect(controllerConfigResolver.getControllerKey()).andReturn "someKey"
+
+        replay controllerConfigResolver
+
+        def list = Collections.emptyList()
         [
-                new LogoutController(),
-                new SamlLogoutController(),
-                new IdSiteLogoutController(),
-                new ChangePasswordController()
+                new LogoutController(controllerConfigResolver, produces),
+                new SamlLogoutController(controllerConfigResolver, produces),
+                new IdSiteController(),
+                new IdSiteLogoutController(controllerConfigResolver, produces),
+                new ChangePasswordController(),
+                new MeController(list)
         ].each {
             assertFalse it.isNotAllowedIfAuthenticated()
         }
@@ -156,7 +203,6 @@ class ControllerTest {
         [
                 new AccessTokenController(),
                 new ForgotPasswordController(),
-                new IdSiteController(),
                 new IdSiteResultController(),
                 new LoginController(),
                 new RegisterController(),

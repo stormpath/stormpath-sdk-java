@@ -1,11 +1,9 @@
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.AbstractErrorModelFactory;
-import com.stormpath.sdk.servlet.mvc.ErrorModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.AuthenticationServiceException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,8 +14,10 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
 
     private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
+    private static final String UNSUCCESSFUL_LOGIN_BACKEND_ERROR = "Login attempt failed";
+
     @Autowired
-    private org.springframework.context.MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Override
     protected String getDefaultMessageKey() {
@@ -31,14 +31,17 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
 
     @Override
     protected boolean hasError(HttpServletRequest request, Exception e) {
-        String query = Strings.clean(request.getQueryString());
-        return query != null && query.contains("error");
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+        if (e instanceof AuthenticationServiceException) {
+            if (e.getMessage() != null && e.getMessage().contains(UNSUCCESSFUL_LOGIN_BACKEND_ERROR)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     protected String getErrorMessage(HttpServletRequest request, String key) {
-        String defaultMessage = messageSource.getMessage(getDefaultMessageKey(), new Object[]{}, request.getLocale());
-
-        return messageSource.getMessage(key, getMessageParams(), defaultMessage, request.getLocale());
+        return messageSource.getMessage(getDefaultMessageKey(), request.getLocale(), getMessageParams());
     }
 }

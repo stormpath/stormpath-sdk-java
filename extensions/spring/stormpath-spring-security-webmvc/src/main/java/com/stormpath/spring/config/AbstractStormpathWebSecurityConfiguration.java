@@ -93,7 +93,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         String loginFailureUri = loginUri + "?error";
         SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler(loginFailureUri);
         handler.setAllowSessionCreation(false); //not necessary
-        return new StormpathAuthenticationFailureHandler(handler, stormpathRequestEventPublisher);
+        return new StormpathAuthenticationFailureHandler(handler, stormpathRequestEventPublisher, stormpathLoginErrorModelFactory());
     }
 
     public ErrorModelFactory stormpathLoginErrorModelFactory() {

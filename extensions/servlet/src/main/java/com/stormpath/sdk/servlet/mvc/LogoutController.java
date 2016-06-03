@@ -17,8 +17,6 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +29,16 @@ public class LogoutController extends AbstractController {
 
     private boolean invalidateHttpSession = true;
 
+    public LogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
+        super(logoutControllerConfigResolver, produces);
+    }
+
+    //If sub-classess override this method they MUST CALL super.init() at some point insider their custom implementation.
+    public void init() {
+        Assert.hasText(nextUri, "nextUri must be configured.");
+        Assert.notNull(produces, "produces cannot be null.");
+    }
+
     public boolean isInvalidateHttpSession() {
         return invalidateHttpSession;
     }
@@ -39,14 +47,20 @@ public class LogoutController extends AbstractController {
         this.invalidateHttpSession = invalidateHttpSession;
     }
 
-    public LogoutController() {
+    /**
+     * @since 1.0.0
+     */
+    public LogoutController setLogoutNextUri(String logoutNextUri) {
+        this.nextUri = logoutNextUri;
+        return this;
     }
 
-    public LogoutController(ControllerConfigResolver controllerConfigResolver, boolean invalidateHttpSession) {
-        this.nextUri = controllerConfigResolver.getNextUri();
+    /**
+     * @since 1.0.0
+     */
+    public LogoutController setLogoutInvalidateHttpSession(boolean invalidateHttpSession) {
         this.invalidateHttpSession = invalidateHttpSession;
-
-        Assert.hasText(nextUri, "nextUri property cannot be null or empty.");
+        return this;
     }
 
     @Override
@@ -79,9 +93,5 @@ public class LogoutController extends AbstractController {
             response.setStatus(HttpServletResponse.SC_OK);
             return null;
         }
-    }
-
-    protected UserAgent getUserAgent(HttpServletRequest request) {
-        return UserAgents.get(request);
     }
 }

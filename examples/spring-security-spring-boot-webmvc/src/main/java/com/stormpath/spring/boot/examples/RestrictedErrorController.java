@@ -15,47 +15,36 @@
  */
 package com.stormpath.spring.boot.examples;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
- * @since 1.0.RC4.4
+ * @since 1.0.RC5
  */
 @Controller
-public class HelloController {
+public class RestrictedErrorController implements ErrorController {
+    private static final String ERROR_PATH = "/error";
 
     @Autowired
-    private HelloService helloService;
+    private ErrorAttributes errorAttributes;
 
-    @RequestMapping("/")
-    public String home(HttpServletRequest request, Model model) {
-
-        String name = "World";
-
-        Account account = AccountResolver.INSTANCE.getAccount(request);
-        if (account != null) {
-            name = account.getGivenName();
-            model.addAttribute(account);
-        }
-
-        model.addAttribute("name", name);
-
-        return "hello";
+    @Override
+    public String getErrorPath() {
+        return ERROR_PATH;
     }
 
-    @RequestMapping("/restricted")
-    String restricted(HttpServletRequest request, Model model) {
-        Account account = AccountResolver.INSTANCE.getAccount(request);
-        String msg = helloService.sayHello(account);
-        model.addAttribute("msg", msg);
-
-        return "restricted";
+    @RequestMapping(ERROR_PATH)
+    String error(HttpServletRequest request, Model model) {
+        Map<String, Object> errorMap = errorAttributes.getErrorAttributes(new ServletRequestAttributes(request), false);
+        model.addAttribute("errors", errorMap);
+        return "error";
     }
-
 }

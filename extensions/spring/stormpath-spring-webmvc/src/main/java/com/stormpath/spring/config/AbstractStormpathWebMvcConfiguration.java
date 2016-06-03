@@ -1023,6 +1023,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
+            public String getMessage(String key, String defaultMessage, Locale locale) {
+                try {
+                    return springMessageSource.getMessage(key, new Object[0], locale);
+                } catch (NoSuchMessageException e) {
+                    //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    return defaultMessage;
+                }
+            }
+
+            @Override
             public String getMessage(String key, Locale locale, Object... args) {
                 try {
                     return springMessageSource.getMessage(key, args, locale);
@@ -1132,6 +1142,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutController(stormpathMvcLogoutController());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setEventPublisher(stormpathRequestEventPublisher());
+        controller.setAccessTokenResultFactory(stormpathAccessTokenResultFactory());
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
         }
@@ -1211,10 +1222,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
-        LogoutController controller = new LogoutController(stormpathLogoutControllerConfigResolver(), logoutInvalidateHttpSession);
+        LogoutController controller = new LogoutController(
+                stormpathInternalConfig().getLogoutControllerConfig(),
+                stormpathInternalConfig().getProducesMediaTypes());
 
         if (idSiteEnabled) {
-            IdSiteLogoutController c = new IdSiteLogoutController();
+            IdSiteLogoutController c = new IdSiteLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setIdSiteResultUri(idSiteResultUri);
             c.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
@@ -1222,11 +1235,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         if (samlEnabled) {
-            SamlLogoutController c = new SamlLogoutController();
+            SamlLogoutController c = new SamlLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setSamlResultUri(samlResultUri);
             controller = c;
         }
+
+        controller.setLogoutNextUri(stormpathLogoutControllerConfigResolver().getNextUri());
+        controller.setLogoutInvalidateHttpSession(logoutInvalidateHttpSession);
+        controller.setInvalidateHttpSession(logoutInvalidateHttpSession);
+        controller.init();
 
         return controller;
     }

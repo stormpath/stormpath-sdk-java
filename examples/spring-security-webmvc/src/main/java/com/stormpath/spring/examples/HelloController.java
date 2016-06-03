@@ -34,7 +34,7 @@ public class HelloController {
     private HelloService helloService;
 
     @RequestMapping("/")
-    String home(HttpServletRequest request) {
+    ModelAndView home(HttpServletRequest request) {
 
         String name = "World";
 
@@ -43,7 +43,9 @@ public class HelloController {
             name = account.getGivenName();
         }
 
-        return "Hello " + name + "!";
+        ModelAndView mav = new ModelAndView("home");
+        mav.addObject("message", "Hello " + name + "!");
+        return mav;
     }
 
     @RequestMapping("/restricted")
@@ -53,5 +55,4 @@ public class HelloController {
         mav.addObject("message", helloMessage);
         return mav;
     }
-
 }

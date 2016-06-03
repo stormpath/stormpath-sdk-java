@@ -15,17 +15,28 @@
 */-->
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-</head>
-<body>
-<div th:if="${account}">
-    <form id="logoutForm" th:action="@{/logout}" method="post">
-        <input type="submit" value="Logout"/>
-    </form>
-</div>
-<p th:text="'Hello, ' + ${name} + '!'"/>
-</body>
+    <head>
+        <title>Getting Started: Serving Web Content</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <div class="container">
+            <h1 th:text="'Hello, ' + ${name} + '!'"/>
+
+            <div th:unless="${account}">
+                <a th:href="@{/login}" class="btn btn-primary">Login</a>
+            </div>
+            <div th:if="${account}">
+                <form id="logoutForm" th:action="@{/logout}" method="post">
+                    <input type="submit" class="btn btn-danger" value="Logout"/>
+                </form>
+            </div>
+        </div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    </body>
 </html>
