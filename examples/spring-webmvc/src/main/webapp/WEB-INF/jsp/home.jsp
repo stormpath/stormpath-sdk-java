@@ -17,24 +17,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" uri="http://stormpath.com/jsp/tags/templates" %>
 <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ page import="com.stormpath.spring.examples.HelloService" %>
-
-<c:set var="MY_GROUP" value="<%=HelloService.MY_GROUP%>" scope="application"/>
 
 <t:page>
     <jsp:attribute name="title">Restricted</jsp:attribute>
     <jsp:body>
         <div class="container">
-            <sec:authorize access="hasAuthority('${MY_GROUP}')">
-                <h1>${message}</h1>
-            </sec:authorize>
-            <sec:authorize access="!hasAuthority('${MY_GROUP}')">
-                <h1>You do not have the proper permissions to view this page.</h1>
-            </sec:authorize>
-            <form action="/logout" method="post">
-                <input type="submit" class="btn btn-danger" value="Logout"/>
-            </form>
+            <h1>${message}</h1>
+            <c:choose>
+                <c:when test="${account != null}">
+                    <form action="/logout" method="post">
+                        <input type="submit" class="btn btn-danger" value="Logout"/>
+                    </form>
+                </c:when>
+                <c:otherwise>
+                    <a class="btn btn-primary" href="/login">Login</a>
+                </c:otherwise>
+            </c:choose>
         </div>
     </jsp:body>
 </t:page>

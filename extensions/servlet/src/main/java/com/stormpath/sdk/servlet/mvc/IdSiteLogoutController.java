@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
@@ -31,6 +32,10 @@ public class IdSiteLogoutController extends LogoutController {
     private String idSiteResultUri;
     private Controller idSiteController; //not injected - created during init()
     private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
+
+    public IdSiteLogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
+        super(logoutControllerConfigResolver, produces);
+    }
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -50,24 +55,21 @@ public class IdSiteLogoutController extends LogoutController {
         controller.setServerUriResolver(serverUriResolver);
         controller.setCallbackUri(idSiteResultUri);
         controller.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
+        controller.setAlreadyLoggedInUri(nextUri); //this will not really have any affect on logout but we need to set it otherwise controller#init() will throw
         controller.init();
         this.idSiteController = controller;
-    }
-
-    @Override
-    public boolean isNotAllowedIfAuthenticated() {
-        return false;
+        super.init();
     }
 
     @Override
     public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         //ensure the local application user state is cleared no matter what:
-        ViewModel vm = super.handleRequest(request, response);
+        super.handleRequest(request, response);
 
         if (request.getAttribute(LogoutResult.class.getName()) != null) {
             //We're currently processing a reply from ID site, don't send back to ID site:
-            return vm;
+            return new DefaultViewModel(nextUri).setRedirect(true);
         }
 
         //redirect to ID Site to perform the SSO logout to effectively log out the user across all applications:
@@ -75,9 +77,25 @@ public class IdSiteLogoutController extends LogoutController {
     }
 
     private static class LogoutIdSiteController extends IdSiteController {
+
         @Override
         protected IdSiteUrlBuilder createIdSiteUrlBuilder(HttpServletRequest request) {
             return super.createIdSiteUrlBuilder(request).forLogout();
+        }
+
+        /**
+         * @since 1.0.0
+         */
+        @Override
+        protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+            String idSiteUrl = createIdSiteUrl(request);
+
+            response.setHeader("Cache-control", "no-cache, no-store");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "-1");
+
+            return new DefaultViewModel(idSiteUrl).setRedirect(true);
         }
     }
 }

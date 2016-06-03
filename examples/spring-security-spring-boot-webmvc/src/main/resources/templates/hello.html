@@ -15,17 +15,31 @@
 */-->
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-</head>
-<body>
-<div th:if="${account}">
-    <form id="logoutForm" th:action="@{/logout}" method="post">
-        <input type="submit" value="Logout"/>
-    </form>
-</div>
-<p th:text="'Hello, ' + ${name} + '!'"/>
-</body>
+    <head>
+        <!--/*/ <th:block th:include="fragments/head :: head"/> /*/-->
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="box col-md-6 col-md-offset-3">
+                    <div class="stormpath-header">
+                        <img src="https://stormpath.com/images/template/logo-nav.png"/>
+                    </div>
+
+                    <h1 th:text="'Hello, ' + ${name} + '!'"/>
+
+                    <div th:unless="${account}">
+                        <a th:href="@{/restricted}" class="btn btn-warning">Restricted</a>
+                        <a th:href="@{/login}" class="btn btn-primary">Login</a>
+                    </div>
+                    <div th:if="${account}">
+                        <form id="logoutForm" th:action="@{/logout}" method="post">
+                            <a th:href="@{/restricted}" class="btn btn-warning">Restricted</a>
+                            <input type="submit" class="btn btn-danger" value="Logout"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

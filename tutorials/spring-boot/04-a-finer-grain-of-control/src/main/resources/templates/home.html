@@ -33,9 +33,11 @@
                     <!--/* displayed if account IS NOT null, indicating that the user IS logged in */-->
                     <div th:if="${account}">
                         <h1 th:inline="text">Hello, [[${account.givenName}]]!</h1>
-                        <a href="/restricted" class="btn btn-primary">Restricted</a>
-                        <a href="/me" class="btn btn-warning">My Groups</a>
-                        <a th:href="@{/logout}" class="btn btn-danger">Logout</a>
+                        <form th:action="@{/logout}" method="post">
+                            <a href="/restricted" class="btn btn-primary">Restricted</a>
+                            <a href="/me" class="btn btn-warning">My Groups</a>
+                            <input type="submit" class="btn btn-danger" value="Logout"/>
+                        </form>
                     </div>
 
                     <!--/* displayed if account IS null, indicating that the user IS NOT logged in */-->

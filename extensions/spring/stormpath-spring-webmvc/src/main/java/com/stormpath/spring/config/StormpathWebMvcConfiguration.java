@@ -117,6 +117,9 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
             registry.addResourceHandler("/assets/css/*stormpath.css")
                     //reference the actual files in the stormpath-sdk-servlet .jar:
                     .addResourceLocations("classpath:/META-INF/resources/assets/css/");
+            registry.addResourceHandler("/assets/js/*stormpath.js")
+                    //reference the actual files in the stormpath-sdk-servlet .jar:
+                    .addResourceLocations("classpath:/META-INF/resources/assets/js/");
         }
     }
 

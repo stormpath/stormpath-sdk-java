@@ -12,16 +12,15 @@ import javax.servlet.ServletException;
  * @since 1.0.0
  */
 public class SamlResultFilter extends ControllerFilter {
+
     private static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
 
     @Override
     protected void onInit() throws ServletException {
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
 
-        LogoutController logoutController = new LogoutController(
-                getConfig().getLogoutControllerConfig(),
-                getConfig().isLogoutInvalidateHttpSession()
-        );
+        LogoutController logoutController = new LogoutController(getConfig().getLogoutControllerConfig(), getConfig().getProducesMediaTypes());
+        logoutController.setLogoutInvalidateHttpSession(getConfig().isLogoutInvalidateHttpSession());
 
         SamlResultController controller = new SamlResultController();
         controller.setLoginNextUri(getConfig().getLoginControllerConfig().getNextUri());
