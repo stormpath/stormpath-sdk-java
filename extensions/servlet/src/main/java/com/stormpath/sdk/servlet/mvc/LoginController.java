@@ -120,7 +120,9 @@ public class LoginController extends FormController {
         String password = form.getFieldValue("password");
 
         req.login(usernameOrEmail, password);
+
         Account account = AccountResolver.INSTANCE.getRequiredAccount(req);
+
         if (account != null) {
             CustomData customData = account.getCustomData();
             // validate values in login form match values in custom data
@@ -128,9 +130,8 @@ public class LoginController extends FormController {
             for (String fieldName : fields.keySet()) {
                 if (!form.getFieldValue(fieldName).equals(customData.get(fieldName))) {
                     Field field = form.getField(fieldName);
-                    String msg = "The value for \"" + i18n(req, field.getLabel(), field.getLabel()) + "\" does not " +
-                            "match the value you previously entered. Please try again.";
-                    // question: does this need to publish an event like StormpathHttpRequest does with FailedAuthenticationRequestEvent?
+                    String fieldLabel = i18n(req, field.getLabel(), field.getLabel());
+                    String msg = i18n(req, "stormpath.web.login.form.customData.validation", new Object[]{fieldLabel});
                     throw new ValidationException(msg);
                 }
             }
