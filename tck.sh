@@ -41,7 +41,7 @@ case "$OPTION" in
         git config user.name "stormpath-sdk-java TCK"
         git clone git@github.com:stormpath/stormpath-framework-tck.git ${DIR}
         cd ${DIR}
-        git checkout master
+        git checkout more_csrf_and_cookies
         git pull
         echo "TCK cloned"
         ;;
