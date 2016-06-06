@@ -1022,11 +1022,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
+            public String getMessage(String key, String defaultMessage, Locale locale, Object... args) {
+                try {
+                    return springMessageSource.getMessage(key, args, locale);
+                } catch (NoSuchMessageException e) {
+                    //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    log.warn("i18n key not found", e);
+                    return defaultMessage;
+                }
+            }
+
+            @Override
             public String getMessage(String key, String defaultMessage, Locale locale) {
                 try {
                     return springMessageSource.getMessage(key, new Object[0], locale);
                 } catch (NoSuchMessageException e) {
                     //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    log.warn("i18n key not found", e);
                     return defaultMessage;
                 }
             }
@@ -1037,6 +1049,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                     return springMessageSource.getMessage(key, args, locale);
                 } catch (NoSuchMessageException e) {
                     //Same behavior as com.stormpath.sdk.servlet.i18n.DelegatingMessageSource
+                    log.warn("i18n key not found", e);
                     return '!' + key + '!';
                 }
             }

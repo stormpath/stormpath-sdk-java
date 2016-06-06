@@ -38,7 +38,7 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
             return null;
         }
 
-        String errorMsg = getErrorMessage(request, getDefaultMessageKey());
+        String errorMsg = getErrorMessage(request, getDefaultMessageKey(), "");
         int status = 400;
 
         if (e.getCause() instanceof ResourceException) {
@@ -56,18 +56,11 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
     private ErrorModel translateResourceException(HttpServletRequest request, ResourceException e) {
         return new ErrorModel.Builder()
                 .setStatus(e.getStormpathError().getStatus())
-                .setMessage(getErrorMessage(request, "stormpath.web.errors." + e.getStormpathError().getCode()))
+                .setMessage(getErrorMessage(request, "stormpath.web.errors." + e.getStormpathError().getCode(), e.getStormpathError().getMessage()))
                 .build();
     }
 
-    protected String getErrorMessage(HttpServletRequest request, String key) {
-        String message = messageSource.getMessage(key, request.getLocale(), getMessageParams());
-
-        //Key not found so use the default message key
-        if (message.startsWith("!") && message.endsWith("!")) {
-            return messageSource.getMessage(getDefaultMessageKey(), request.getLocale(), getMessageParams());
-        }
-
-        return message;
+    protected String getErrorMessage(HttpServletRequest request, String key, String defaultMessage) {
+        return messageSource.getMessage(key, defaultMessage, request.getLocale(), getMessageParams());
     }
 }

@@ -17,7 +17,9 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
     private static final String UNSUCCESSFUL_LOGIN_BACKEND_ERROR = "Login attempt failed";
 
     @Autowired
-    private MessageSource messageSource;
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     protected String getDefaultMessageKey() {
@@ -38,10 +40,5 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
             }
         }
         return false;
-    }
-
-    @Override
-    protected String getErrorMessage(HttpServletRequest request, String key) {
-        return messageSource.getMessage(getDefaultMessageKey(), request.getLocale(), getMessageParams());
     }
 }

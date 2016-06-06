@@ -26,6 +26,8 @@ public interface MessageSource {
 
     String getMessage(String key, String defaultMessage, Locale locale);
 
+    String getMessage(String key, String defaultMessage, Locale locale, Object... args);
+
     String getMessage(String key, Locale locale, Object... args);
 
 }
