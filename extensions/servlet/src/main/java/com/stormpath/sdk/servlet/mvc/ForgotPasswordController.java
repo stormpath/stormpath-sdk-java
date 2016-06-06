@@ -24,7 +24,6 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.UserAgents;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import org.slf4j.Logger;
@@ -90,6 +89,13 @@ public class ForgotPasswordController extends FormController {
         return messageSource.getMessage(key, locale);
     }
 
+    protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (isJsonPreferred(request, response)) {
+            return new DefaultViewModel("stormpathJsonView", Collections.EMPTY_MAP);
+        }
+        return super.doGet(request, response);
+    }
+
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
@@ -153,20 +159,14 @@ public class ForgotPasswordController extends FormController {
                 application.sendPasswordResetEmail(email);
             }
         } catch (ResourceException e) {
-            //404 == resource does not exist.  Do not let the user know that the account does not
-            //exist, otherwise we open up to phishing attacks
-            if (e.getCode() != 404) {
-                if (UserAgents.get(request).isJsonPreferred()) {
-                    model.put("status", 200);
-                    model.put("message", "OK");
-                    return new DefaultViewModel("stormpathJsonView", model);
-                }
-                throw e;
+            if (isJsonPreferred(request, response)) {
+                model.put("status", 200);
+                model.put("message", "OK");
+                return new DefaultViewModel("stormpathJsonView", model);
             }
-            //otherwise don't do anything
         }
 
-        if (UserAgents.get(request).isJsonPreferred()) {
+        if (isJsonPreferred(request, response)) {
             model.put("status", 200);
             model.put("message", "OK");
             return new DefaultViewModel("stormpathJsonView", model);
